@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeBureau", "CodeBureau.csproj", "{D912B58F-2A24-4683-9664-9A83EB92F385}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeBureau.Tests", ".\Tests\CodeBureau.Tests.csproj", "{DABB0866-681A-4CD2-BBEA-FE2C8BD53F5C}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{D912B58F-2A24-4683-9664-9A83EB92F385}.Debug.ActiveCfg = Debug|.NET
+		{D912B58F-2A24-4683-9664-9A83EB92F385}.Debug.Build.0 = Debug|.NET
+		{D912B58F-2A24-4683-9664-9A83EB92F385}.Release.ActiveCfg = Release|.NET
+		{D912B58F-2A24-4683-9664-9A83EB92F385}.Release.Build.0 = Release|.NET
+		{DABB0866-681A-4CD2-BBEA-FE2C8BD53F5C}.Debug.ActiveCfg = Debug|.NET
+		{DABB0866-681A-4CD2-BBEA-FE2C8BD53F5C}.Debug.Build.0 = Debug|.NET
+		{DABB0866-681A-4CD2-BBEA-FE2C8BD53F5C}.Release.ActiveCfg = Release|.NET
+		{DABB0866-681A-4CD2-BBEA-FE2C8BD53F5C}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

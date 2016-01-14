@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallAndroidv2", "FlatRedBallAndroidv2.csproj", "{F842215C-BCE1-472D-A4A0-7BAB70B428B3}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		FlatRedBallShared.projitems*{f842215c-bce1-472d-a4a0-7bab70b428b3}*SharedItemsImports = 4
+		FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F842215C-BCE1-472D-A4A0-7BAB70B428B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F842215C-BCE1-472D-A4A0-7BAB70B428B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F842215C-BCE1-472D-A4A0-7BAB70B428B3}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F842215C-BCE1-472D-A4A0-7BAB70B428B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F842215C-BCE1-472D-A4A0-7BAB70B428B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F842215C-BCE1-472D-A4A0-7BAB70B428B3}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = FlatRedBallAndroidv2.csproj
+	EndGlobalSection
+EndGlobal

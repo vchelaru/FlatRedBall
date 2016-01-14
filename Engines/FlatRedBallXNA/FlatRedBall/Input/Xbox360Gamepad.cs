@@ -1,0 +1,1249 @@
+#if !WINDOWS_8
+#define IMPLEMENT_INTERNALS
+#endif
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+//#if SILVERLIGHT
+//using SilverArcade.SilverSprite;
+//using SilverArcade.SilverSprite.Input;
+//using Vector2 = SilverArcade.SilverSprite.Vector2;
+//#else
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+//#endif
+
+namespace FlatRedBall.Input
+{
+    public class Xbox360GamePad
+    {
+        #region Enums
+
+        /// <summary>
+        /// Enumeration representing the buttons on the Xbox360 controller.  The values for each
+        /// entry matches the value of the Xbox 360 button index in Managed DirectX.  This improves
+        /// portability between FlatRedBall Managed DirectX and FlatRedBall XNA.
+        /// </summary>
+        public enum Button
+        {
+            A, // = 0
+            B,
+            X,
+            Y,
+            LeftShoulder,
+            RightShoulder, // = 5
+            Back,
+            Start,
+            LeftStick,
+            RightStick,
+            DPadUp, // = 10
+            DPadDown,
+            DPadLeft,
+            DPadRight,
+            LeftTrigger,
+            RightTrigger // 15 = 0
+        }
+
+        // This serves as a sentinel value.
+        const int NumberOfButtons = 16;
+
+        public enum DPadDirection
+        {
+            Up,
+            Down,
+            Left,
+            Right
+        }
+
+        public enum DirectionalControlDevice
+        {
+            LeftStick,
+            RightStick,
+            DPad
+        }
+
+#if SILVERLIGHT
+        //PULLED FROM Microsoft.Xna.Framework.Input.GamePadDeadZone
+        // Summary:
+        //     Specifies a type of dead zone processing to apply to Xbox 360 controller
+        //     analog sticks when calling GamePad.GetState.
+        public enum GamePadDeadZone
+        {
+            // Summary:
+            //     The values of each stick are not processed and are returned by GamePad.GetState
+            //     as "raw" values. This is best if you intend to implement your own dead zone
+            //     processing.
+            None = 0,
+            //
+            // Summary:
+            //     The X and Y positions of each stick are compared against the dead zone independently.
+            //     This setting is the default when calling GamePad.GetState.
+            IndependentAxes = 1,
+            //
+            // Summary:
+            //     The combined X and Y position of each stick is compared against the dead
+            //     zone. This provides better control than IndependentAxes when the stick is
+            //     used as a two-dimensional control surface, such as when controlling a character's
+            //     view in a first-person game.
+            Circular = 2,
+        }
+#endif
+
+
+        #endregion
+
+        #region Fields
+
+        DelegateBased1DInput dPadHorizontal;
+        DelegateBased1DInput dPadVertical;
+
+        DelegateBased2DInput dPad;
+
+        const float AnalogOnThreshold = .5f;
+
+        //GamePadDeadZone mGamePadDeadZone;
+
+        GamePadState mGamePadState;
+        GamePadState mLastGamePadState;
+
+        AnalogStick mLeftStick;
+        AnalogStick mRightStick;
+
+        AnalogButton mLeftTrigger;
+        AnalogButton mRightTrigger;
+
+        PlayerIndex mPlayerIndex;
+
+        KeyboardButtonMap mButtonMap;
+
+        double[] mLastButtonPush = new double[NumberOfButtons];
+        double[] mLastRepeatRate = new double[NumberOfButtons];
+
+#if !SILVERLIGHT
+        GamePadCapabilities mCapabilities;
+#endif
+
+        bool[] mButtonsIgnoredForThisFrame = new bool[NumberOfButtons];
+
+        #endregion
+
+        #region Properties
+
+        public I1DInput DPadHorizontal
+        {
+            get
+            {
+                if(dPadHorizontal == null)
+                {
+                    dPadHorizontal = new DelegateBased1DInput(
+                        () =>
+                        {
+                            if(this.ButtonDown(Button.DPadLeft))
+                            {
+                                return -1;
+                            }
+                            else if(this.ButtonDown(Button.DPadRight))
+                            {
+                                return 1;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        },
+                            () =>
+                            {
+
+                                if (this.ButtonPushed(Button.DPadLeft))
+                                {
+                                    return -1 / TimeManager.SecondDifference;
+                                }
+                                else if (this.ButtonPushed(Button.DPadRight))
+                                {
+                                    return 1 / TimeManager.SecondDifference;
+                                }
+                                else
+                                {
+                                    return 0;
+                                }
+
+
+                            }
+                        );
+                
+                }
+
+                return dPadHorizontal;
+            }
+        }
+
+        public I1DInput DPadVertical
+        {
+            get
+            {
+                if (dPadVertical == null)
+                {
+                    dPadVertical = new DelegateBased1DInput(
+                        () =>
+                        {
+                            if (this.ButtonDown(Button.DPadDown))
+                            {
+                                return -1;
+                            }
+                            else if (this.ButtonDown(Button.DPadUp))
+                            {
+                                return 1;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        },
+                        () =>
+                        {
+
+                            if (this.ButtonPushed(Button.DPadDown))
+                            {
+                                return -1 / TimeManager.SecondDifference;
+                            }
+                            else if (this.ButtonPushed(Button.DPadUp))
+                            {
+                                return 1 / TimeManager.SecondDifference;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+
+
+                        }
+                        );
+
+                }
+
+                return dPadVertical;
+            }
+        }
+
+        public I2DInput DPad
+        {
+            get
+            {
+                if(this.dPad == null)
+                {
+                    Func<float> getX = () =>
+                        {
+                            if (this.ButtonDown(Button.DPadLeft))
+                            {
+                                return -1;
+                            }
+                            else if (this.ButtonDown(Button.DPadRight))
+                            {
+                                return 1;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        };
+                    Func<float> getXVelocity = () =>
+                            {
+                                if (this.ButtonPushed(Button.DPadLeft))
+                                {
+                                    return -1 / TimeManager.SecondDifference;
+                                }
+                                else if (this.ButtonPushed(Button.DPadRight))
+                                {
+                                    return 1 / TimeManager.SecondDifference;
+                                }
+                                else
+                                {
+                                    return 0;
+                                }
+                            };
+
+
+                    Func<float> getY = () =>
+                    {
+                        if (this.ButtonDown(Button.DPadDown))
+                        {
+                            return -1;
+                        }
+                        else if (this.ButtonDown(Button.DPadUp))
+                        {
+                            return 1;
+                        }
+                        else
+                        {
+                            return 0;
+                        }
+                    };
+                    Func<float> getYVelocity = () =>
+                    {
+                        if (this.ButtonPushed(Button.DPadDown))
+                        {
+                            return -1 / TimeManager.SecondDifference;
+                        }
+                        else if (this.ButtonPushed(Button.DPadUp))
+                        {
+                            return 1 / TimeManager.SecondDifference;
+                        }
+                        else
+                        {
+                            return 0;
+                        }
+                    };
+
+                    this.dPad = new DelegateBased2DInput(
+                        getX,
+                        getY,
+                        getXVelocity,
+                        getYVelocity);
+
+                }
+                return this.dPad;
+            }
+        }
+
+        public bool IsConnected
+        {
+            get
+            {
+                if (this.FakeIsConnected == true)
+                {
+                    return true;
+                }
+                else
+                {
+                    return mGamePadState.IsConnected;
+                }
+            }
+        }
+
+        #region XML Docs
+        /// <summary>
+        /// This value can force an Xbox360GamePad's 
+        /// IsConnected to be true even if the controller
+        /// is not connected.  This can be used if game logic
+        /// requires a certain number of GamePads to be connected.
+        /// </summary>
+        #endregion
+        public bool FakeIsConnected
+        {
+            set;
+            get;
+        }
+
+        public AnalogStick LeftStick
+        {
+            get { return mLeftStick; }
+        }
+
+
+        public AnalogStick RightStick
+        {
+            get { return mRightStick; }
+        }
+
+
+        public KeyboardButtonMap ButtonMap
+        {
+            set { mButtonMap = value; }
+            get { return mButtonMap; }
+        }
+
+        #region XML Docs
+        /// <summary>
+        /// Returns the left trigger's current value.  When not pressed this property returns
+        /// 0.0f.  When fully pressed this property returns 1.0f;
+        /// </summary>
+        #endregion
+        public AnalogButton LeftTrigger
+        {
+            get { return mLeftTrigger; }
+        }
+
+        #region XML Docs
+        /// <summary>
+        /// Returns the right trigger's current value.  When not pressed this property returns
+        /// 0.0f.  When fully pressed this property returns 1.0f;
+        /// </summary>
+        #endregion
+        public AnalogButton RightTrigger
+        {
+            get { return mRightTrigger; }
+        }
+
+        public bool WasConnectedThisFrame
+        {
+            get
+            {
+#if !SILVERLIGHT && !MONODROID
+                if (mLastGamePadState == null)
+                {
+                    return false;
+                }
+                else
+#endif
+                {
+                    return !mLastGamePadState.IsConnected && mGamePadState.IsConnected;
+                }
+            }
+        }
+
+        public bool WasDisconnectedThisFrame
+        {
+            get
+            {
+#if !SILVERLIGHT && !MONODROID
+                if (mLastGamePadState == null)
+                {
+                    return false;
+                }
+                else
+#endif
+                {
+                    return mLastGamePadState.IsConnected && !mGamePadState.IsConnected;
+                }
+
+            }
+        }
+
+#if !SILVERLIGHT && !MONODROID
+        public GamePadType GamePadType
+        {
+            get
+            {
+                return mCapabilities.GamePadType;
+            }
+        }
+#endif
+        #endregion
+
+        #region Methods
+
+        #region Constructor
+
+        internal Xbox360GamePad(PlayerIndex playerIndex)
+        {
+            for (int i = 0; i < mLastButtonPush.Length; i++)
+            {
+                mLastButtonPush[i] = -1;
+            }
+
+
+            mPlayerIndex = playerIndex;
+            mLeftStick = new AnalogStick();
+            mRightStick = new AnalogStick();
+
+            mLeftTrigger = new AnalogButton();
+            mRightTrigger = new AnalogButton();
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        #region Button States
+
+        /// <summary>
+        /// Returns whether any button was pushed on this Xbox360GamePad.  This considers face buttons, trigger buttons, shoulder buttons, and d pad.
+        /// </summary>
+        /// <returns>Whether any button was pushed.</returns>
+        public bool AnyButtonPushed()
+        {
+            for (int i = 0; i < NumberOfButtons; i++)
+            {
+                if (ButtonPushed((Button)i))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+        public bool ButtonDown(Button button)
+        {
+            if (mButtonsIgnoredForThisFrame[(int)button] || InputManager.CurrentFrameInputSuspended)
+                return false;
+
+            bool returnValue = false;
+
+            #region If there is a ButtonMap
+
+            if (this.mButtonMap != null)
+            {
+                switch (button)
+                {
+                    case Button.A:
+                        returnValue |= mButtonMap.A != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.A);
+                        break;
+                    case Button.B:
+                        returnValue |= mButtonMap.B != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.B);
+                        break;
+                    case Button.X:
+                        returnValue |= mButtonMap.X != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.X);
+                        break;
+                    case Button.Y:
+                        returnValue |= mButtonMap.Y != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.Y);
+                        break;
+                    case Button.LeftShoulder:
+                        returnValue |= mButtonMap.LeftShoulder != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.LeftShoulder);
+                        break;
+                    case Button.RightShoulder:
+                        returnValue |= mButtonMap.RightShoulder != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.RightShoulder);
+                        break;
+                    case Button.Back:
+                        returnValue |= mButtonMap.Back != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.Back);
+                        break;
+                    case Button.Start:
+                        returnValue |= mButtonMap.Start != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.Start);
+                        break;
+                    case Button.LeftStick:
+                        returnValue |= mButtonMap.LeftStick != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.LeftStick);
+                        break;
+                    case Button.RightStick:
+                        returnValue |= mButtonMap.RightStick != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.RightStick);
+                        break;
+                    case Button.DPadUp:
+                        returnValue |= mButtonMap.DPadUp != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.DPadUp);
+                        break;
+                    case Button.DPadDown:
+                        returnValue |= mButtonMap.DPadDown != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.DPadDown);
+                        break;
+                    case Button.DPadLeft:
+                        returnValue |= mButtonMap.DPadLeft != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.DPadLeft);
+                        break;
+                    case Button.DPadRight:
+                        returnValue |= mButtonMap.DPadRight != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.DPadRight);
+                        break;
+                    case Button.LeftTrigger:
+                        returnValue |= mButtonMap.LeftTrigger != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.LeftTrigger);
+                        break;
+                    case Button.RightTrigger:
+                        returnValue |= mButtonMap.RightTrigger != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.RightTrigger);
+                        break;
+                    //default:
+                    //    return false;
+                }
+            }
+
+            #endregion
+
+            #region Handle the buttons if there isn't a ButtonMap (this can happen even if there is a ButtonMap)
+            switch (button)
+            {
+                case Button.A:
+                    returnValue |= mGamePadState.Buttons.A == ButtonState.Pressed;
+                    break;
+                case Button.B:
+                    returnValue |= mGamePadState.Buttons.B == ButtonState.Pressed;
+                    break;
+                case Button.X:
+                    returnValue |= mGamePadState.Buttons.X == ButtonState.Pressed;
+                    break;
+                case Button.Y:
+                    returnValue |= mGamePadState.Buttons.Y == ButtonState.Pressed;
+                    break;
+                case Button.LeftShoulder:
+                    returnValue |= mGamePadState.Buttons.LeftShoulder == ButtonState.Pressed;
+                    break;
+                case Button.RightShoulder:
+                    returnValue |= mGamePadState.Buttons.RightShoulder == ButtonState.Pressed;
+                    break;
+                case Button.Back:
+                    returnValue |= mGamePadState.Buttons.Back == ButtonState.Pressed;
+                    break;
+                case Button.Start:
+                    returnValue |= mGamePadState.Buttons.Start == ButtonState.Pressed;
+                    break;
+                case Button.LeftStick:
+                    returnValue |= mGamePadState.Buttons.LeftStick == ButtonState.Pressed;
+                    break;
+                case Button.RightStick:
+                    returnValue |= mGamePadState.Buttons.RightStick == ButtonState.Pressed;
+                    break;
+                case Button.DPadUp:
+                    returnValue |= mGamePadState.DPad.Up == ButtonState.Pressed;
+                    break;
+                case Button.DPadDown:
+                    returnValue |= mGamePadState.DPad.Down == ButtonState.Pressed;
+                    break;
+                case Button.DPadLeft:
+                    returnValue |= mGamePadState.DPad.Left == ButtonState.Pressed;
+                    break;
+                case Button.DPadRight:
+                    returnValue |= mGamePadState.DPad.Right == ButtonState.Pressed;
+                    break;
+                case Button.LeftTrigger:
+                    returnValue |= mLeftTrigger.Position >= AnalogOnThreshold;
+                    break;
+                case Button.RightTrigger:
+                    returnValue |= mRightTrigger.Position >= AnalogOnThreshold;
+                    break;
+            }
+
+            #endregion
+
+            return returnValue;
+
+        }
+
+
+        public bool ButtonPushed(Button button)
+        {
+#if SILVERLIGHT
+            return false;
+#else
+
+            if (InputManager.mIgnorePushesThisFrame || mButtonsIgnoredForThisFrame[(int)button] || InputManager.CurrentFrameInputSuspended)
+                return false;
+
+            bool returnValue = false;
+
+
+            if (this.mButtonMap != null)
+            {
+                switch (button)
+                {
+                    case Button.A:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.A);
+                        break;
+                    case Button.B:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.B);
+                        break;
+                    case Button.X:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.X);
+                        break;
+                    case Button.Y:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.Y);
+                        break;
+                    case Button.LeftShoulder:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.LeftShoulder);
+                        break;
+                    case Button.RightShoulder:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.RightShoulder);
+                        break;
+                    case Button.Back:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.Back);
+                        break;
+                    case Button.Start:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.Start);
+                        break;
+                    case Button.LeftStick:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.LeftStick);
+                        break;
+                    case Button.RightStick:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.RightStick);
+                        break;
+                    case Button.DPadUp:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.DPadUp);
+                        break;
+                    case Button.DPadDown:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.DPadDown);
+                        break;
+                    case Button.DPadLeft:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.DPadLeft);
+                        break;
+                    case Button.DPadRight:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.DPadRight);
+                        break;
+                    case Button.LeftTrigger:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.LeftTrigger);
+                        break;
+                    case Button.RightTrigger:
+                        returnValue |= InputManager.Keyboard.KeyPushed(mButtonMap.RightTrigger);
+                        break;
+                }
+            }
+
+
+            switch (button)
+            {
+                case Button.A:
+                    returnValue |= mGamePadState.Buttons.A == ButtonState.Pressed && mLastGamePadState.Buttons.A == ButtonState.Released;
+                    break;
+                case Button.B:
+                    returnValue |= mGamePadState.Buttons.B == ButtonState.Pressed && mLastGamePadState.Buttons.B == ButtonState.Released;
+                    break;
+                case Button.X:
+                    returnValue |= mGamePadState.Buttons.X == ButtonState.Pressed && mLastGamePadState.Buttons.X == ButtonState.Released;
+                    break;
+                case Button.Y:
+                    returnValue |= mGamePadState.Buttons.Y == ButtonState.Pressed && mLastGamePadState.Buttons.Y == ButtonState.Released;
+                    break;
+                case Button.LeftShoulder:
+                    returnValue |= mGamePadState.Buttons.LeftShoulder == ButtonState.Pressed && mLastGamePadState.Buttons.LeftShoulder == ButtonState.Released;
+                    break;
+                case Button.RightShoulder:
+                    returnValue |= mGamePadState.Buttons.RightShoulder == ButtonState.Pressed && mLastGamePadState.Buttons.RightShoulder == ButtonState.Released;
+                    break;
+                case Button.Back:
+                    returnValue |= mGamePadState.Buttons.Back == ButtonState.Pressed && mLastGamePadState.Buttons.Back == ButtonState.Released;
+                    break;
+                case Button.Start:
+                    returnValue |= mGamePadState.Buttons.Start == ButtonState.Pressed && mLastGamePadState.Buttons.Start == ButtonState.Released;
+                    break;
+                case Button.LeftStick:
+                    returnValue |= mGamePadState.Buttons.LeftStick == ButtonState.Pressed && mLastGamePadState.Buttons.LeftStick == ButtonState.Released;
+                    break;
+                case Button.RightStick:
+                    returnValue |= mGamePadState.Buttons.RightStick == ButtonState.Pressed && mLastGamePadState.Buttons.RightStick == ButtonState.Released;
+                    break;
+                case Button.DPadUp:
+                    returnValue |= mGamePadState.DPad.Up == ButtonState.Pressed && mLastGamePadState.DPad.Up == ButtonState.Released;
+                    break;
+                case Button.DPadDown:
+                    returnValue |= mGamePadState.DPad.Down == ButtonState.Pressed && mLastGamePadState.DPad.Down == ButtonState.Released;
+                    break;
+                case Button.DPadLeft:
+                    returnValue |= mGamePadState.DPad.Left == ButtonState.Pressed && mLastGamePadState.DPad.Left == ButtonState.Released;
+                    break;
+                case Button.DPadRight:
+                    returnValue |= mGamePadState.DPad.Right == ButtonState.Pressed && mLastGamePadState.DPad.Right == ButtonState.Released;
+                    break;
+                case Button.LeftTrigger:
+                    returnValue |= mLeftTrigger.Position >= AnalogOnThreshold && mLeftTrigger.LastPosition < AnalogOnThreshold;
+                    break;
+                case Button.RightTrigger:
+                    returnValue |= mRightTrigger.Position >= AnalogOnThreshold && mRightTrigger.LastPosition < AnalogOnThreshold;
+                    break;
+
+            }
+
+            return returnValue;
+#endif
+        }
+
+
+        public bool ButtonReleased(Button button)
+        {
+            if (mButtonsIgnoredForThisFrame[(int)button] || InputManager.CurrentFrameInputSuspended)
+                return false;
+
+            bool returnValue = false;
+
+            if (this.mButtonMap != null)
+            {
+                switch (button)
+                {
+                    case Button.A:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.A);
+                        break;
+                    case Button.B:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.B);
+                        break;
+                    case Button.X:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.X);
+                        break;
+                    case Button.Y:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.Y);
+                        break;
+                    case Button.LeftShoulder:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.LeftShoulder);
+                        break;
+                    case Button.RightShoulder:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.RightShoulder);
+                        break;
+                    case Button.Back:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.Back);
+                        break;
+                    case Button.Start:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.Start);
+                        break;
+                    case Button.LeftStick:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.LeftStick);
+                        break;
+                    case Button.RightStick:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.RightStick);
+                        break;
+                    case Button.DPadUp:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.DPadUp);
+                        break;
+                    case Button.DPadDown:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.DPadDown);
+                        break;
+                    case Button.DPadLeft:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.DPadLeft);
+                        break;
+                    case Button.DPadRight:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.DPadRight);
+                        break;
+                    case Button.LeftTrigger:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.LeftTrigger);
+                        break;
+                    case Button.RightTrigger:
+                        returnValue |= InputManager.Keyboard.KeyReleased(mButtonMap.RightTrigger);
+                        break;
+                }
+            }
+
+            switch (button)
+            {
+                case Button.A:
+                    returnValue |= mGamePadState.Buttons.A == ButtonState.Released && mLastGamePadState.Buttons.A == ButtonState.Pressed;
+                    break;
+                case Button.B:
+                    returnValue |= mGamePadState.Buttons.B == ButtonState.Released && mLastGamePadState.Buttons.B == ButtonState.Pressed;
+                    break;
+                case Button.X:
+                    returnValue |= mGamePadState.Buttons.X == ButtonState.Released && mLastGamePadState.Buttons.X == ButtonState.Pressed;
+                    break;
+                case Button.Y:
+                    returnValue |= mGamePadState.Buttons.Y == ButtonState.Released && mLastGamePadState.Buttons.Y == ButtonState.Pressed;
+                    break;
+                case Button.LeftShoulder:
+                    returnValue |= mGamePadState.Buttons.LeftShoulder == ButtonState.Released && mLastGamePadState.Buttons.LeftShoulder == ButtonState.Pressed;
+                    break;
+                case Button.RightShoulder:
+                    returnValue |= mGamePadState.Buttons.RightShoulder == ButtonState.Released && mLastGamePadState.Buttons.RightShoulder == ButtonState.Pressed;
+                    break;
+                case Button.Back:
+                    returnValue |= mGamePadState.Buttons.Back == ButtonState.Released && mLastGamePadState.Buttons.Back == ButtonState.Pressed;
+                    break;
+                case Button.Start:
+                    returnValue |= mGamePadState.Buttons.Start == ButtonState.Released && mLastGamePadState.Buttons.Start == ButtonState.Pressed;
+                    break;
+                case Button.LeftStick:
+                    returnValue |= mGamePadState.Buttons.LeftStick == ButtonState.Released && mLastGamePadState.Buttons.LeftStick == ButtonState.Pressed;
+                    break;
+                case Button.RightStick:
+                    returnValue |= mGamePadState.Buttons.RightStick == ButtonState.Released && mLastGamePadState.Buttons.RightStick == ButtonState.Pressed;
+                    break;
+                case Button.DPadUp:
+                    returnValue |= mGamePadState.DPad.Up == ButtonState.Released && mLastGamePadState.DPad.Up == ButtonState.Pressed;
+                    break;
+                case Button.DPadDown:
+                    returnValue |= mGamePadState.DPad.Down == ButtonState.Released && mLastGamePadState.DPad.Down == ButtonState.Pressed;
+                    break;
+                case Button.DPadLeft:
+                    returnValue |= mGamePadState.DPad.Left == ButtonState.Released && mLastGamePadState.DPad.Left == ButtonState.Pressed;
+                    break;
+                case Button.DPadRight:
+                    returnValue |= mGamePadState.DPad.Right == ButtonState.Released && mLastGamePadState.DPad.Right == ButtonState.Pressed;
+                    break;
+                case Button.LeftTrigger:
+                    returnValue |= mLeftTrigger.Position < AnalogOnThreshold && mLeftTrigger.LastPosition >= AnalogOnThreshold;
+                    break;
+                case Button.RightTrigger:
+                    returnValue |= mRightTrigger.Position < AnalogOnThreshold && mRightTrigger.LastPosition >= AnalogOnThreshold;
+                    break;
+            }
+
+            return returnValue;
+
+        }
+
+
+        public bool ButtonRepeatRate(Button button)
+        {
+            // Ignoring is performed inside this call.
+            return ButtonRepeatRate(button, .35, .12);
+        }
+
+
+        public bool ButtonRepeatRate(Button button, double timeAfterPush, double timeBetweenRepeating)
+        {
+            if (mButtonsIgnoredForThisFrame[(int)button])
+                return false;
+
+            if (ButtonPushed(button))
+                return true;
+
+            // If this method is called multiple times per frame this line
+            // of code guarantees that the user will get true every time until
+            // the next TimeManager.Update (next frame).
+            bool repeatedThisFrame = mLastButtonPush[(int)button] == TimeManager.CurrentTime;
+
+            if (repeatedThisFrame ||
+                (
+                ButtonDown(button) &&
+                TimeManager.CurrentTime - mLastButtonPush[(int)button] > timeAfterPush &&
+                TimeManager.CurrentTime - mLastRepeatRate[(int)button] > timeBetweenRepeating)
+                )
+            {
+                mLastRepeatRate[(int)button] = TimeManager.CurrentTime;
+                return true;
+            }
+
+            return false;
+
+        }
+
+        public Xbox360ButtonReference GetButton(Button button)
+        {
+            var toReturn = new Xbox360ButtonReference();
+            toReturn.Button = button;
+            toReturn.GamePad = this;
+            return toReturn;
+        }
+        #endregion
+
+
+        public void Clear()
+        {
+            mGamePadState = new GamePadState();
+            mLastGamePadState = new GamePadState();
+
+            for (int i = 0; i < NumberOfButtons; i++)
+            {
+                if (ButtonPushed((Button)i))
+                {
+                    IgnoreButtonForOneFrame((Button)i);
+                }
+            }
+
+            mLeftStick.Clear();
+            mRightStick.Clear();
+
+            mLeftTrigger.Clear();
+            mRightTrigger.Clear();
+        }
+
+
+        #region Control Positioned Object
+
+        public void ControlPositionedObject(PositionedObject positionedObject)
+        {
+            ControlPositionedObject(positionedObject, 10);
+        }
+
+        public void ControlPositionedObject(PositionedObject positionedObject, float velocity)
+        {
+            positionedObject.XVelocity = this.LeftStick.Position.X * velocity;
+            positionedObject.YVelocity = this.LeftStick.Position.Y * velocity;
+
+            if (ButtonDown(Button.LeftShoulder))
+                positionedObject.ZVelocity = velocity;
+            else if (ButtonDown(Button.RightShoulder))
+                positionedObject.ZVelocity = -velocity;
+            else
+                positionedObject.ZVelocity = 0;
+        }
+
+
+        public void ControlPositionedObjectDPad(PositionedObject positionedObject, float velocity)
+        {
+            if (ButtonDown(Button.DPadLeft))
+                positionedObject.XVelocity = -velocity;
+            else if (ButtonDown(Button.DPadRight))
+                positionedObject.XVelocity = velocity;
+            else
+                positionedObject.XVelocity = 0;
+
+            if (ButtonDown(Button.DPadUp))
+                positionedObject.YVelocity = velocity;
+            else if (ButtonDown(Button.DPadDown))
+                positionedObject.YVelocity = -velocity;
+            else
+                positionedObject.YVelocity = 0;
+        }
+
+
+        public void ControlPositionedObjectAcceleration(PositionedObject positionedObject, float acceleration)
+        {
+            positionedObject.Acceleration.X = this.LeftStick.Position.X * acceleration;
+            positionedObject.Acceleration.Y = this.LeftStick.Position.Y * acceleration;
+        }
+
+
+        public void ControlPositionedObjectFpsStyle(PositionedObject positionedObject, Vector3 up)
+        {
+            positionedObject.Velocity = new Vector3();
+
+            positionedObject.Velocity += positionedObject.RotationMatrix.Forward * LeftStick.Position.Y * 7;
+            positionedObject.Velocity += positionedObject.RotationMatrix.Right * LeftStick.Position.X * 7;
+
+            positionedObject.RotationMatrix *= Matrix.CreateFromAxisAngle(positionedObject.RotationMatrix.Right, TimeManager.SecondDifference * RightStick.Position.Y);
+            positionedObject.RotationMatrix *= Matrix.CreateFromAxisAngle(up, -TimeManager.SecondDifference * RightStick.Position.X);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Creates a ButtomMap for this controller using the default bindings.  This is 
+        /// a quick way to simulate an Xbox360 controller using the keyboard.
+        /// </summary>
+        /// <remarks>
+        /// This creates the following bindings:
+        /// * Left analog stick = arrow keys
+        /// * A button = A key
+        /// * B button = S key
+        /// * X button = Q key
+        /// * Y button = W key
+        /// * Left trigger = E key
+        /// * Right trigger = R key
+        /// * Left shoulder = D key
+        /// * Right Shoulder = F key
+        /// * Back button = Backspace key
+        /// * Start button = Enter key
+        /// 
+        /// This will not simulate that the controller is connected, so you will have to set 
+        /// FakeIsConnected to true if your game checks the connected state.
+        /// </remarks>
+        public void CreateDefaultButtonMap()
+        {
+            this.ButtonMap = new KeyboardButtonMap();
+
+            ButtonMap.LeftAnalogLeft = Keys.Left;
+            ButtonMap.LeftAnalogRight = Keys.Right;
+            ButtonMap.LeftAnalogUp = Keys.Up;
+            ButtonMap.LeftAnalogDown = Keys.Down;
+
+            ButtonMap.A = Keys.A;
+            ButtonMap.B = Keys.S;
+            ButtonMap.X = Keys.Q;
+            ButtonMap.Y = Keys.W;
+
+            ButtonMap.LeftTrigger = Keys.E;
+            ButtonMap.RightTrigger = Keys.R;
+            ButtonMap.LeftShoulder = Keys.D;
+            ButtonMap.RightShoulder = Keys.F;
+
+
+            ButtonMap.Back = Keys.Back;
+            ButtonMap.Start = Keys.Enter;
+        }
+
+        /// <summary>
+        /// Makes this Xbox360Gamepad ignore the argument button for the rest of the current frame.
+        /// </summary>
+        /// <param name="buttonToIgnore">The button that should be ignored for the rest of the current frame.</param>
+        public void IgnoreButtonForOneFrame(Button buttonToIgnore)
+        {
+            mButtonsIgnoredForThisFrame[(int)buttonToIgnore] = true;
+
+        }
+
+
+        /// <summary>
+        /// Updates the Xbox360Gamepad according to the argument gamepadState.  This is publicly available for games
+        /// which need to simulate Xbox360Gamepads.
+        /// </summary>
+        /// <remarks>
+        /// This function is normally called automatically by the FlatRedBall Engine
+        /// in its regular update loop.  You only need to call this function if you want
+        /// to override the behavior of the gamepad.  Be sure to call this function after
+        /// FlatRedBallServices.Update, but before any custom game logic (such as ScreenManager.Activity).
+        /// </remarks>
+        /// <param name="gamepadState">The state containing the data for this frame.</param>
+        public void Update(GamePadState gamepadState)
+        {
+            UpdateInputManagerBack();
+
+
+            mLastGamePadState = mGamePadState;
+
+            mGamePadState = gamepadState;
+
+            UpdateAnalogStickAndTriggerValues();
+
+            UpdateLastButtonPushedValues();
+        }
+
+        private void UpdateLastButtonPushedValues()
+        {
+            // Set the last pushed and clear the ignored input
+
+            for (int i = 0; i < NumberOfButtons; i++)
+            {
+                mButtonsIgnoredForThisFrame[i] = false;
+
+                if (ButtonPushed((Button)i))
+                {
+                    mLastButtonPush[i] = TimeManager.CurrentTime;
+                }
+            }
+        }
+
+        private void UpdateAnalogStickAndTriggerValues()
+        {
+            if (mButtonMap == null)
+            {
+                mLeftStick.Update(mGamePadState.ThumbSticks.Left);
+                mRightStick.Update(mGamePadState.ThumbSticks.Right);
+
+                mLeftTrigger.Update(mGamePadState.Triggers.Left);
+                mRightTrigger.Update(mGamePadState.Triggers.Right);
+            }
+            else
+            {
+                Vector2 newPosition = new Vector2();
+
+                #region Set the left analog stick position
+                if (mButtonMap.LeftAnalogLeft != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.LeftAnalogLeft))
+                {
+                    newPosition.X = -1;
+                }
+
+                else if (mButtonMap.LeftAnalogRight != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.LeftAnalogRight))
+                {
+                    newPosition.X = 1;
+                }
+
+                if (mButtonMap.LeftAnalogUp != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.LeftAnalogUp))
+                {
+                    newPosition.Y = 1;
+                }
+
+                else if (mButtonMap.LeftAnalogDown != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.LeftAnalogDown))
+                {
+                    newPosition.Y = -1;
+                }
+
+                //cap for diagonal presses
+                if (System.Math.Abs(newPosition.X) > 0.7071068f
+                    && System.Math.Abs(newPosition.Y) > 0.7071068f)
+                {
+                    newPosition.X = System.Math.Sign(newPosition.X) * 0.7071068f;
+                    newPosition.Y = System.Math.Sign(newPosition.Y) * 0.7071068f;
+                }
+
+                mLeftStick.Update(newPosition);
+
+                #endregion
+
+                #region Set the right analog stick position
+
+                newPosition = new Vector2();
+
+                if (mButtonMap.RightAnalogLeft != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.RightAnalogLeft))
+                {
+                    newPosition.X = -1;
+                }
+
+                else if (mButtonMap.RightAnalogRight != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.RightAnalogRight))
+                {
+                    newPosition.X = 1;
+                }
+
+                if (mButtonMap.RightAnalogUp != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.RightAnalogUp))
+                {
+                    newPosition.Y = 1;
+                }
+
+                else if (mButtonMap.RightAnalogDown != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.RightAnalogDown))
+                {
+                    newPosition.Y = -1;
+                }
+
+                //cap for diagonal presses
+                if (System.Math.Abs(newPosition.X) > 0.7071068f
+                    && System.Math.Abs(newPosition.Y) > 0.7071068f)
+                {
+                    newPosition.X = System.Math.Sign(newPosition.X) * 0.7071068f;
+                    newPosition.Y = System.Math.Sign(newPosition.Y) * 0.7071068f;
+                }
+
+                mRightStick.Update(newPosition);
+
+                #endregion
+
+                #region Set the trigger positions
+
+                float newAnalogPosition = 0;
+
+                if (mButtonMap.LeftTrigger != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.LeftTrigger))
+                {
+                    newAnalogPosition = 1;
+                }
+                else
+                {
+                    newAnalogPosition = 0;
+                }
+
+                mLeftTrigger.Update(newAnalogPosition);
+
+                if (mButtonMap.RightTrigger != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.RightTrigger))
+                {
+                    newAnalogPosition = 1;
+                }
+                else
+                {
+                    newAnalogPosition = 0;
+                }
+
+                mRightTrigger.Update(newAnalogPosition);
+
+                #endregion
+
+                // Button remapping is used when the methods for push, release, and down are called.
+                // Nothing to do here.
+            }
+        }
+
+        private void UpdateInputManagerBack()
+        {
+#if WINDOWS_PHONE || MONOGAME
+            if (mGamePadState.IsButtonDown(Buttons.Back) && !mLastGamePadState.IsButtonDown(Buttons.Back))
+            {
+                InputManager.BackPressed = true;
+            }
+#endif
+
+        }
+
+        #region XML Docs
+        /// <summary>
+        /// Sets the vibration of the game pad.
+        /// </summary>
+        /// <param name="leftMotor">The low-frequency motor.  Set between 0.0f and 1.0f</param>
+        /// <param name="rightMotor">The high-frequency  motor.  Set between 0.0f and 1.0f</param>
+        /// <returns>True if the vibration motors were successfully set; false if the controller
+        /// was unable to process the request.
+        /// </returns>
+        #endregion
+        public bool SetVibration(float leftMotor, float rightMotor)
+        {
+
+
+#if IMPLEMENT_INTERNALS
+            return Microsoft.Xna.Framework.Input.GamePad.SetVibration(
+                mPlayerIndex, leftMotor, rightMotor);
+#else
+            return false;
+#endif
+        }
+
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.Append("Left Stick").Append(mLeftStick);
+
+            return stringBuilder.ToString();
+
+        }
+
+
+        #endregion
+
+        #region Internal Methods
+
+        internal void Update()
+        {
+            GamePadState gamepadState;
+
+#if SILVERLIGHT || MONOGAME
+            gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex);//, GamePadDeadZone.Circular);
+#else
+            gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.Circular);
+            mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities(mPlayerIndex);
+#endif
+
+
+            Update(gamepadState);
+
+
+        }
+
+
+        #endregion
+
+        #endregion
+    }
+}

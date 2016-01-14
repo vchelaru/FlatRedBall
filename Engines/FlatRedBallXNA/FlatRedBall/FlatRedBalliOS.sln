@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBalliOS", "FlatRedBalliOS.csproj", "{1E89BEA4-2188-47DB-A277-845F83C9D6BB}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		FlatRedBallShared.projitems*{1e89bea4-2188-47db-a277-845f83c9d6bb}*SharedItemsImports = 4
+		FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|iPhone = Debug|iPhone
+		Debug|iPhoneSimulator = Debug|iPhoneSimulator
+		Release|Any CPU = Release|Any CPU
+		Release|iPhone = Release|iPhone
+		Release|iPhoneSimulator = Release|iPhoneSimulator
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Release|iPhone.Build.0 = Release|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = FlatRedBalliOS.csproj
+	EndGlobalSection
+EndGlobal

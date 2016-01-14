@@ -1,0 +1,334 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <PropertyGroup>
+    <ProjectGuid>{4FB06662-233D-445B-838F-1F81599F2CE9}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FlatRedBall.Content</RootNamespace>
+    <AssemblyName>FlatRedBall.Content</AssemblyName>
+    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Debug\Xna3.1\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_XNA</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaPlatform>Windows</XnaPlatform>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE;FRB_XNA</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaPlatform>Windows</XnaPlatform>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Xbox 360' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Xbox 360\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_XNA</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaPlatform>Xbox 360</XnaPlatform>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Xbox 360' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Xbox 360\Release</OutputPath>
+    <DefineConstants>TRACE;FRB_XNA</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaPlatform>Xbox 360</XnaPlatform>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'x86 NTSC|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\x86 NTSC\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'x86 VGA|x86' ">
+    <OutputPath>bin\x86\x86 VGA\</OutputPath>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'x86 SVGA|x86' ">
+    <OutputPath>bin\x86\x86 SVGA\</OutputPath>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'x86 XGA|x86' ">
+    <OutputPath>bin\x86\x86 XGA\</OutputPath>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'x86 HS720|x86' ">
+    <OutputPath>bin\x86\x86 HS720\</OutputPath>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'x86 HD1080|x86' ">
+    <OutputPath>bin\x86\x86 HD1080\</OutputPath>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'HD720|x86' ">
+    <OutputPath>bin\x86\HD720\</OutputPath>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'x86 HD720|x86' ">
+    <OutputPath>bin\x86\x86 HD720\</OutputPath>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Profile|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Profile\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_XNA</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Profile|Xbox 360' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Xbox 360\Profile\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_XNA</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugProfile|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\DebugProfile\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_XNA</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugProfile|Xbox 360' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Xbox 360\DebugProfile\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_XNA</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug Docs|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\Xna3.1\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_XNA</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <DocumentationFile>bin\x86\Debug\Xna3.1\FlatRedBall.Content.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug Docs|Xbox 360' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Xbox 360\Debug Docs\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_XNA</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553" />
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553" />
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AI\Pathfinding\NodeNetworkImporter.cs" />
+    <Compile Include="AI\Pathfinding\NodeNetworkProcessor.cs" />
+    <Compile Include="AI\Pathfinding\NodeNetworkWriter.cs" />
+    <Compile Include="AnimationChain\AnimationChainArrayImporter.cs" />
+    <Compile Include="AnimationChain\AnimationChainArrayProcessor.cs" />
+    <Compile Include="AnimationChain\AnimationChainArrayWriter.cs" />
+    <Compile Include="AnimationChain\AnimationChainListSaveContent.cs" />
+    <Compile Include="AnimationChain\AnimationChainSaveContent.cs" />
+    <Compile Include="AnimationChain\AnimationFrameSaveContent.cs" />
+    <Compile Include="BitmapTextureProcessor.cs" />
+    <Compile Include="IO\Csv\BuildtimeCsvRepresentation.cs" />
+    <Compile Include="IO\Csv\CsvImporter.cs" />
+    <Compile Include="IO\Csv\CsvProcessor.cs" />
+    <Compile Include="IO\Csv\CsvWriter.cs" />
+    <Compile Include="Math\Geometry\ShapeCollectionImporter.cs" />
+    <Compile Include="Math\Geometry\ShapeCollectionProcessor.cs" />
+    <Compile Include="Math\Geometry\ShapeCollectionWriter.cs" />
+    <Compile Include="ModelAnimation\AnimatedModelProcessor.cs" />
+    <Compile Include="ModelAnimation\AnimationProcessor.cs" />
+    <Compile Include="ModelAnimation\AnimationWriter.cs" />
+    <Compile Include="ModelAnimation\AsfAmc\AmcImporter.cs" />
+    <Compile Include="ModelAnimation\AsfAmc\AsfImporter.cs" />
+    <Compile Include="ModelAnimation\BoneIndexer.cs" />
+    <Compile Include="ModelAnimation\Bvh\BvhImporter.cs" />
+    <Compile Include="ModelAnimation\ContentUtil.cs" />
+    <Compile Include="ModelAnimation\MeshSplitter.cs" />
+    <Compile Include="ModelAnimation\PaletteEffectContent.cs" />
+    <Compile Include="ModelAnimation\PaletteSourceCode.cs" />
+    <Compile Include="ModelAnimation\SkinInfoContent.cs" />
+    <Compile Include="ModelAnimation\SkinTransformContent.cs" />
+    <Compile Include="ModelAnimation\X File\XFileTokenizer.cs" />
+    <Compile Include="ModelAnimation\X File\XMeshImporter.cs" />
+    <Compile Include="ModelAnimation\X File\XModelImporter.cs" />
+    <Compile Include="Model\Animation\Animation3DListImporter.cs" />
+    <Compile Include="Model\Animation\Animation3DListProcessor.cs" />
+    <Compile Include="Model\Animation\Animation3DListSaveContent.cs" />
+    <Compile Include="Model\Animation\Animation3DListWriter.cs" />
+    <Compile Include="Model\Animation\WamContent.cs" />
+    <Compile Include="Model\Animation\WamImporter.cs" />
+    <Compile Include="Model\Animation\WamProcessor.cs" />
+    <Compile Include="Model\Animation\WamWriter.cs" />
+    <Compile Include="Model\Animation\WheContent.cs" />
+    <Compile Include="Model\Animation\WheImporter.cs" />
+    <Compile Include="Model\Animation\WheProcessor.cs" />
+    <Compile Include="Model\Animation\WheWriter.cs" />
+    <Compile Include="Model\EffectParameterListSaveImporter.cs" />
+    <Compile Include="Model\EffectParameterListSaveProcessor.cs" />
+    <Compile Include="Model\EffectParameterListSaveWriter.cs" />
+    <Compile Include="Model\EffectParameterSaveContent.cs" />
+    <Compile Include="Model\MaterialSaveContent.cs" />
+    <Compile Include="Model\MaterialSaveImporter.cs" />
+    <Compile Include="Model\MaterialSaveWriter.cs" />
+    <Compile Include="Model\MaterialSaveProcessor.cs" />
+    <Compile Include="Model\PositionedModelSaveContent.cs" />
+    <Compile Include="Model\SourceReferencingByteArray.cs" />
+    <Compile Include="Model\WmeImporter.cs" />
+    <Compile Include="Model\WmeProcessor.cs" />
+    <Compile Include="Model\WmeWriter.cs" />
+    <Compile Include="ObjectWriter.cs" />
+    <Compile Include="Particle\EmitterImporter.cs" />
+    <Compile Include="Particle\EmitterProcessor.cs" />
+    <Compile Include="Particle\EmitterSaveContent.cs" />
+    <Compile Include="Particle\EmitterSaveContentList.cs" />
+    <Compile Include="Particle\EmitterWriter.cs" />
+    <Compile Include="Polygon\PolygonSaveListImporter.cs" />
+    <Compile Include="Polygon\PolygonSaveListProcessor.cs" />
+    <Compile Include="Polygon\PolygonSaveListWriter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SceneFileImporter.cs" />
+    <Compile Include="SceneFileProcessor.cs" />
+    <Compile Include="SceneFileWriter.cs" />
+    <Compile Include="Scene\PositionedModelSaveWriter.cs" />
+    <Compile Include="Scene\SpriteSaveContent.cs" />
+    <Compile Include="Scene\SpriteSaveWriter.cs" />
+    <Compile Include="Scene\TextProcessor.cs" />
+    <Compile Include="Scene\TextSaveContent.cs" />
+    <Compile Include="Scene\TextSaveWriter.cs" />
+    <Compile Include="SpriteEditorSceneContent.cs" />
+    <Compile Include="SpriteFrame\SpriteFrameProcessor.cs" />
+    <Compile Include="SpriteFrame\SpriteFrameSaveContent.cs" />
+    <Compile Include="SpriteFrame\SpriteFrameWriter.cs" />
+    <Compile Include="SpriteGrid\SpriteGridProcessor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SpriteGrid\SpriteGridSaveContent.cs" />
+    <Compile Include="SpriteGrid\SpriteGridWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SpriteProcessor.cs" />
+    <Compile Include="SpriteRig\SpriteRigSaveContent.cs" />
+    <Compile Include="SpriteRig\SpriteRigImporter.cs" />
+    <Compile Include="SpriteRig\SpriteRigProcessor.cs" />
+    <Compile Include="SpriteRig\SpriteRigWriter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libraries\FlatRedBall.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FlatRedBall\FlatRedBall.csproj">
+      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
+      <Name>FlatRedBall</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Gui\" />
+    <Folder Include="Lighting\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+     Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,1672 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TranslatedProjectSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TranslatedFileSaves>
+    <TranslatedFileSave>
+      <NamespaceModificationList>
+        <NamespaceModifications>
+          <MemberBuildSettingsLanguageList>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mCameras</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mCurrentCameraIndex</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mOrderedByDistanceFromCameraSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mOrderedSpritesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mZBufferedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mZBufferedSpritesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mAutomaticallyUpdatedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mAutomaticallyUpdatedSpritesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mManuallyUpdatedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mManuallyUpdatedSpritesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mOrderedSortType</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mSpriteFrames</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mSpriteFramesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mDrawableBatches</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mDrawableBatchesReadOnlyCollection</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mManagedPositionedObjects</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mManagedPositionedObjectsReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mEmitters</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mMaxParticleCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mParticleSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mParticleCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mFirstEmpty</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mRemoveWhenAlphaIs0</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mRemoveSpriteMethodInfo</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mLayers</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mTopLayer</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mUnderAllDrawnLayer</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>AutomaticallyUpdatedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ManuallyUpdatedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Camera</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Cameras</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>DrawableBatches</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>WritableDrawableBatchesList</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ManagedPositionedObjects</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>LayerCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ManuallyUpdatedSpriteCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ParticleCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>MaxParticleCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>SpriteFrames</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>TopLayer</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>UnderAllDrawnLayer</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>OrderedSortType</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>OrderedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ZBufferedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>OrderedByDistanceFromCameraSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ZBufferedSpritesWriteable</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Emitters</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Layers</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static Camera SetCurrentCamera(int i);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Private static SpriteManager ();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void Initialize();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Layer AddLayer();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(Sprite spriteToAdd, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(IDrawableBatch batchToAdd, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(SpriteFrame spriteFrame, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(SpriteRig spriteRig, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(AttachableList&lt;T&gt; listToAdd, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(string texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(AnimationChainList animationChainList);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(AnimationChain animationChain);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(string texture, string contentManagerName);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(string texture, string contentManagerName, Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualSprite(string texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualSprite(string texture, string contentManagerName);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddZBufferedParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddZBufferedSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddZBufferedSprite(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualZBufferedSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualZBufferedParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualZBufferedSprite(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddSprite(Sprite spriteToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddManualSprite(Sprite spriteToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(Texture2D texture, Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManagedInvisibleSprite();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddManagedInvisibleSprite(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddSpriteAtTime(Sprite spriteToAdd, double timeToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static SpriteFrame AddSpriteFrame(Texture2D texture2D, SpriteFrame.BorderSides borderSides);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddSpriteFrame(SpriteFrame spriteFrameToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddScene(Scene sceneToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddScene(Scene sceneToAdd, Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Scene AddSceneCopy(Scene sceneToAdd, string contentManagerName);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Scene AddSceneCopy(Scene sceneToAdd, string contentManagerName, Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Emitter AddEmitter(string textureToUse, string contentManagerName);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddEmitter(Emitter emitterToManage);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddEmitter(Emitter emitterToManage, Layer layerToEmitOn);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddSpriteRig(FlatRedBall.ManagedSpriteGroups.SpriteRig spriteRig);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddPositionedObject(PositionedObject positionedObjectToManage);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddDrawableBatch(IDrawableBatch drawableBatch);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool AreAnySpritesReferencingDisposedAssets();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static PositionedObject GetDuplicateMembership();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManuallyUpdated(Sprite spriteToConvert);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManuallyUpdated(SpriteList spriteList);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManuallyUpdated(PositionedObject positionedObject);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManagedInvisible(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManagedVisible(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToAutomaticallyUpdated(Sprite spriteToConvert);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToZBufferedSprite(Sprite spriteToConvert);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToOrderedSprite(Sprite spriteToConvert);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool IsAutomaticallyUpdated(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool IsManaging(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool IsManuallyUpdated(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool IsRelativeToCamera(Sprite spriteToTest);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ManualUpdate();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ManualUpdate(SpriteList spritesToUpdate);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ManualUpdate(Sprite spriteToUpdate);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void MoveToBack(Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void MoveToFront(Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveAllParticleSprites();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveEmitter(Emitter emitterToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveEmitterOneWay(Emitter emitterToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveScene(Scene sceneToRemove, bool emptyArgumentScene);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSprite(Sprite spriteToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpriteAtTime(Sprite spriteToRemove, double secondsPastCurrentTime);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpriteOneWay(Sprite spriteToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpriteFrame(SpriteFrame spriteFrameToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpriteList(IList&lt;T&gt; listToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveLayer(Layer layerToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemovePositionedObject(PositionedObject objectToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveDrawableBatch(IDrawableBatch drawableBatch);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpritePreserveRelationships(Sprite spriteToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ReplaceTexture(Texture2D oldTexture, Texture2D newTexture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void SortTexturesSecondary();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void SortYSpritesSecondary();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static string ToString();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void Update();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void Animate(double currentTime, SpriteList spritesToAnimate);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void Pause(InstructionList unpauseInstructions);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void RefreshTextureReferences();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void UpdateDependencies();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite CreateParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Private static void UpdateMaxParticleCount(int Count);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Private static void ExecuteInstructions(PositionedObjectList&lt;T&gt; list, double currentTime);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Private static void UpdateDependencies(PositionedObjectList&lt;T&gt; spriteList, double currentTime);</Name>
+            </MemberBuildSettings>
+          </MemberBuildSettingsLanguageList>
+          <AdditionalUsings />
+          <AdditionalFields />
+        </NamespaceModifications>
+        <NamespaceModifications>
+          <MemberBuildSettingsLanguageList>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mCameras</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mCurrentCameraIndex</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mOrderedByDistanceFromCameraSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mOrderedSpritesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mZBufferedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mZBufferedSpritesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mAutomaticallyUpdatedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mAutomaticallyUpdatedSpritesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mManuallyUpdatedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mManuallyUpdatedSpritesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mOrderedSortType</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mSpriteFrames</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mSpriteFramesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mDrawableBatches</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mDrawableBatchesReadOnlyCollection</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mManagedPositionedObjects</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mManagedPositionedObjectsReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mEmitters</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mMaxParticleCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mParticleSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mParticleCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mFirstEmpty</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mRemoveWhenAlphaIs0</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mRemoveSpriteMethodInfo</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mLayers</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mTopLayer</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mUnderAllDrawnLayer</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>AutomaticallyUpdatedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ManuallyUpdatedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Camera</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Cameras</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>DrawableBatches</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>WritableDrawableBatchesList</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ManagedPositionedObjects</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>LayerCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ManuallyUpdatedSpriteCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ParticleCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>MaxParticleCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>SpriteFrames</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>TopLayer</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>UnderAllDrawnLayer</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>OrderedSortType</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>OrderedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ZBufferedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>OrderedByDistanceFromCameraSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ZBufferedSpritesWriteable</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Emitters</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Layers</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static Camera SetCurrentCamera(int i);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Private static SpriteManager ();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void Initialize();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Layer AddLayer();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(Sprite spriteToAdd, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(IDrawableBatch batchToAdd, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(SpriteFrame spriteFrame, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(SpriteRig spriteRig, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(AttachableList&lt;T&gt; listToAdd, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(string texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(AnimationChainList animationChainList);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(AnimationChain animationChain);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(string texture, string contentManagerName);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(string texture, string contentManagerName, Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualSprite(string texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualSprite(string texture, string contentManagerName);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddZBufferedParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddZBufferedSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddZBufferedSprite(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualZBufferedSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualZBufferedParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualZBufferedSprite(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddSprite(Sprite spriteToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddManualSprite(Sprite spriteToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(Texture2D texture, Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManagedInvisibleSprite();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddManagedInvisibleSprite(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddSpriteAtTime(Sprite spriteToAdd, double timeToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static SpriteFrame AddSpriteFrame(Texture2D texture2D, SpriteFrame.BorderSides borderSides);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddSpriteFrame(SpriteFrame spriteFrameToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddScene(Scene sceneToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddScene(Scene sceneToAdd, Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Scene AddSceneCopy(Scene sceneToAdd, string contentManagerName);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Scene AddSceneCopy(Scene sceneToAdd, string contentManagerName, Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Emitter AddEmitter(string textureToUse, string contentManagerName);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddEmitter(Emitter emitterToManage);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddEmitter(Emitter emitterToManage, Layer layerToEmitOn);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddSpriteRig(FlatRedBall.ManagedSpriteGroups.SpriteRig spriteRig);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddPositionedObject(PositionedObject positionedObjectToManage);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddDrawableBatch(IDrawableBatch drawableBatch);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool AreAnySpritesReferencingDisposedAssets();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static PositionedObject GetDuplicateMembership();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManuallyUpdated(Sprite spriteToConvert);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManuallyUpdated(SpriteList spriteList);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManuallyUpdated(PositionedObject positionedObject);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManagedInvisible(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManagedVisible(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToAutomaticallyUpdated(Sprite spriteToConvert);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToZBufferedSprite(Sprite spriteToConvert);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToOrderedSprite(Sprite spriteToConvert);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool IsAutomaticallyUpdated(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool IsManaging(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool IsManuallyUpdated(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool IsRelativeToCamera(Sprite spriteToTest);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ManualUpdate();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ManualUpdate(SpriteList spritesToUpdate);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ManualUpdate(Sprite spriteToUpdate);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void MoveToBack(Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void MoveToFront(Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveAllParticleSprites();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveEmitter(Emitter emitterToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveEmitterOneWay(Emitter emitterToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveScene(Scene sceneToRemove, bool emptyArgumentScene);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSprite(Sprite spriteToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpriteAtTime(Sprite spriteToRemove, double secondsPastCurrentTime);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpriteOneWay(Sprite spriteToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpriteFrame(SpriteFrame spriteFrameToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpriteList(IList&lt;T&gt; listToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveLayer(Layer layerToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemovePositionedObject(PositionedObject objectToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveDrawableBatch(IDrawableBatch drawableBatch);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpritePreserveRelationships(Sprite spriteToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ReplaceTexture(Texture2D oldTexture, Texture2D newTexture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void SortTexturesSecondary();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void SortYSpritesSecondary();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static string ToString();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void Update();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void Animate(double currentTime, SpriteList spritesToAnimate);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void Pause(InstructionList unpauseInstructions);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void RefreshTextureReferences();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void UpdateDependencies();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite CreateParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Private static void UpdateMaxParticleCount(int Count);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Private static void ExecuteInstructions(PositionedObjectList&lt;T&gt; list, double currentTime);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Private static void UpdateDependencies(PositionedObjectList&lt;T&gt; spriteList, double currentTime);</Name>
+            </MemberBuildSettings>
+          </MemberBuildSettingsLanguageList>
+          <AdditionalUsings />
+          <AdditionalFields />
+        </NamespaceModifications>
+        <NamespaceModifications>
+          <MemberBuildSettingsLanguageList>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mCameras</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mCurrentCameraIndex</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mOrderedByDistanceFromCameraSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mOrderedSpritesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mZBufferedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mZBufferedSpritesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mAutomaticallyUpdatedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mAutomaticallyUpdatedSpritesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mManuallyUpdatedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mManuallyUpdatedSpritesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mOrderedSortType</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mSpriteFrames</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mSpriteFramesReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mDrawableBatches</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mDrawableBatchesReadOnlyCollection</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mManagedPositionedObjects</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mManagedPositionedObjectsReadOnly</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mEmitters</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mMaxParticleCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mParticleSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mParticleCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mFirstEmpty</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mRemoveWhenAlphaIs0</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mRemoveSpriteMethodInfo</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mLayers</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mTopLayer</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>mUnderAllDrawnLayer</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>AutomaticallyUpdatedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ManuallyUpdatedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Camera</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Cameras</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>DrawableBatches</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>WritableDrawableBatchesList</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ManagedPositionedObjects</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>LayerCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ManuallyUpdatedSpriteCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ParticleCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>MaxParticleCount</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>SpriteFrames</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>TopLayer</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>UnderAllDrawnLayer</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>OrderedSortType</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>OrderedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ZBufferedSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>OrderedByDistanceFromCameraSprites</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>ZBufferedSpritesWriteable</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Emitters</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Layers</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static Camera SetCurrentCamera(int i);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Private static SpriteManager ();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void Initialize();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Layer AddLayer();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(Sprite spriteToAdd, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(IDrawableBatch batchToAdd, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(SpriteFrame spriteFrame, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(SpriteRig spriteRig, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddToLayer(AttachableList&lt;T&gt; listToAdd, Layer layerToAddTo);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(string texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(AnimationChainList animationChainList);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(AnimationChain animationChain);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(string texture, string contentManagerName);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(string texture, string contentManagerName, Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualSprite(string texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualSprite(string texture, string contentManagerName);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddZBufferedParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddZBufferedSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddZBufferedSprite(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualZBufferedSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualZBufferedParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualZBufferedSprite(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddSprite(Sprite spriteToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddManualSprite(Sprite spriteToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddSprite(Texture2D texture, Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManualParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite AddManagedInvisibleSprite();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddManagedInvisibleSprite(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddSpriteAtTime(Sprite spriteToAdd, double timeToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static SpriteFrame AddSpriteFrame(Texture2D texture2D, SpriteFrame.BorderSides borderSides);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddSpriteFrame(SpriteFrame spriteFrameToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddScene(Scene sceneToAdd);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddScene(Scene sceneToAdd, Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Scene AddSceneCopy(Scene sceneToAdd, string contentManagerName);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Scene AddSceneCopy(Scene sceneToAdd, string contentManagerName, Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Emitter AddEmitter(string textureToUse, string contentManagerName);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddEmitter(Emitter emitterToManage);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddEmitter(Emitter emitterToManage, Layer layerToEmitOn);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddSpriteRig(FlatRedBall.ManagedSpriteGroups.SpriteRig spriteRig);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddPositionedObject(PositionedObject positionedObjectToManage);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void AddDrawableBatch(IDrawableBatch drawableBatch);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool AreAnySpritesReferencingDisposedAssets();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static PositionedObject GetDuplicateMembership();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManuallyUpdated(Sprite spriteToConvert);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManuallyUpdated(SpriteList spriteList);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManuallyUpdated(PositionedObject positionedObject);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManagedInvisible(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToManagedVisible(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToAutomaticallyUpdated(Sprite spriteToConvert);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToZBufferedSprite(Sprite spriteToConvert);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ConvertToOrderedSprite(Sprite spriteToConvert);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool IsAutomaticallyUpdated(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool IsManaging(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool IsManuallyUpdated(Sprite sprite);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static bool IsRelativeToCamera(Sprite spriteToTest);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ManualUpdate();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ManualUpdate(SpriteList spritesToUpdate);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ManualUpdate(Sprite spriteToUpdate);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void MoveToBack(Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void MoveToFront(Layer layer);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveAllParticleSprites();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveEmitter(Emitter emitterToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveEmitterOneWay(Emitter emitterToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveScene(Scene sceneToRemove, bool emptyArgumentScene);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSprite(Sprite spriteToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpriteAtTime(Sprite spriteToRemove, double secondsPastCurrentTime);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpriteOneWay(Sprite spriteToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpriteFrame(SpriteFrame spriteFrameToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpriteList(IList&lt;T&gt; listToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveLayer(Layer layerToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemovePositionedObject(PositionedObject objectToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveDrawableBatch(IDrawableBatch drawableBatch);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void RemoveSpritePreserveRelationships(Sprite spriteToRemove);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void ReplaceTexture(Texture2D oldTexture, Texture2D newTexture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void SortTexturesSecondary();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static void SortYSpritesSecondary();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static string ToString();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void Update();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void Animate(double currentTime, SpriteList spritesToAnimate);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void Pause(InstructionList unpauseInstructions);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void RefreshTextureReferences();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Internal static void UpdateDependencies();</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Public static Sprite CreateParticleSprite(Texture2D texture);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Private static void UpdateMaxParticleCount(int Count);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Private static void ExecuteInstructions(PositionedObjectList&lt;T&gt; list, double currentTime);</Name>
+            </MemberBuildSettings>
+            <MemberBuildSettings>
+              <TranslationStyle>Full</TranslationStyle>
+              <Name>Private static void UpdateDependencies(PositionedObjectList&lt;T&gt; spriteList, double currentTime);</Name>
+            </MemberBuildSettings>
+          </MemberBuildSettingsLanguageList>
+          <AdditionalUsings />
+          <AdditionalFields />
+        </NamespaceModifications>
+      </NamespaceModificationList>
+      <Name>SpriteManager</Name>
+    </TranslatedFileSave>
+  </TranslatedFileSaves>
+</TranslatedProjectSave>

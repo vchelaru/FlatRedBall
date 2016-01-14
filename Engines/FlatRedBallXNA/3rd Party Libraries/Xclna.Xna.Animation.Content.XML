@@ -1,0 +1,705 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Xclna.Xna.Animation.Content</name>
+    </assembly>
+    <members>
+        <member name="T:Xclna.Xna.Animation.Content.SkinTransformContent">
+            <summary>
+            Contains information for a skin transform.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.Content.SkinTransformContent.BoneName">
+            <summary>
+            The name of the bone attached to the transform
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.Content.SkinTransformContent.Transform">
+            <summary>
+            The transform for the bone
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.BvhImporter">
+            <summary>
+            Imports BVH (Biovision hierarchical) animation data.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.BvhImporter.Import(System.String,Microsoft.Xna.Framework.Content.Pipeline.ContentImporterContext)">
+            <summary>
+            Imports BVH (Biovision hierarchical) animation data.
+            Stores animation data in root bone.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.XModelImporter">
+            <summary>
+            Imports a directx model that contains skinning info.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.ImportRoot">
+            <summary>
+            Imports the root and animation data associated with it
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.ImportCustomMaterial">
+            <summary>
+            Loads a custom material.  That is, loads a material with a custom effect.
+            </summary>
+            <returns>The custom material</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.ImportMaterial">
+            <summary>
+            Imports a material, which defines the textures that a mesh uses and the way in which
+            light reflects off the mesh
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.GetAbsolutePath(System.String)">
+            <summary>
+            Gets an absolute path of a content item
+            </summary>
+            <param name="contentItem">The content item's local filename path</param>
+            <returns>The absolute filename of the item</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.ImportNode">
+            <summary>
+            Imports a data Node in a directx file, usually a Frame node.
+            </summary>
+            <returns>The imported node</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.ImportFrameTransformMatrix">
+            <summary>
+            Imports a transform matrix attached to a ContentNode
+            </summary>
+            <returns>The transform matrix attached to the current ContentNode</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.ImportAnimationSet">
+            <summary>
+            Imports an animation set that is added to the AnimationContentDictionary of
+            the root frame.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.ImportAnimationKey(System.Int32@)">
+            <summary>
+             Imports a key frame list associated with an animation channel
+            </summary>
+            <param name="keyType">The type of animation keys used by the current channel</param>
+            <returns>The list of key frames for the given key type in the current channel</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.ImportAnimationChannel(System.String@)">
+            <summary>
+            Fills in all the channels of an animation.  Each channel refers to 
+            a single bone's role in the animation.
+            </summary>
+            <param name="boneName">The name of the bone associated with the channel</param>
+            <returns>The imported animation channel</returns>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.XModelImporter.XMeshImporter">
+            <summary>
+            A helper for XModelImporter that loads Mesh nodes in .X files
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.XMeshImporter.#ctor(Xclna.Xna.Animation.Content.XModelImporter)">
+            <summary>
+            Creates a new instance of XMeshImporter
+            </summary>
+            <param name="model">The object that is importing the model from
+            the current .X file</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.XMeshImporter.InitializeMesh">
+            <summary>
+            Reads in the vertex positions and vertex indices for the mesh
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.XMeshImporter.ImportTextureCoords">
+            <summary>
+            Imports the texture coordinates associated with the current mesh.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.XMeshImporter.ImportNormals">
+            <summary>
+            Imports the normals associated with the current mesh.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.XMeshImporter.ImportMesh">
+            <summary>
+            Imports a mesh.
+            </summary>
+            <returns>The imported mesh</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.XMeshImporter.ImportMaterialList">
+            <summary>
+            Imports a material list that contains the materials used by the current mesh.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.XMeshImporter.AddAllChannels">
+            <summary>
+            Adds all the buffered channels to the mesh and merges duplicate positions/verts
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.XMeshImporter.AddChannel``1(System.String,``0[])">
+            <summary>
+            Adds a channel to the mesh
+            </summary>
+            <typeparam name="T">The structure that stores the channel data</typeparam>
+            <param name="channelName">The type of channel</param>
+            <param name="channelItems">The buffered items to add to the channel</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.XMeshImporter.AddWeights(System.Collections.Generic.Dictionary{System.String,System.Int32})">
+            <summary>
+            Converts the bone weight collections into working vertex channels by using the
+            provided bone index dictionary.  Converts bone names into indices.
+            </summary>
+            <param name="boneIndices">A dictionary that maps bone names to their indices</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XModelImporter.XMeshImporter.CreateGeometry">
+            <summary>
+            Creates the ModelMeshParts-to-be (geometry) by splitting up the mesh
+            via materials
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.XModelImporter.XMeshImporter.Face">
+            <summary>
+            Represents a face of the model.  Used internally to buffer mesh data so that
+            the mesh can be properly split up into ModelMeshParts such that there is
+            1 part per material
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.SkinInfoContentCollection">
+            <summary>
+            A collection of SkinInfo objects that relate to a mesh.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.SkinInfoContent">
+            <summary>
+            The skinning information for a bone.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.SkinInfoContent.PaletteIndex">
+            <summary>
+            Gets or sets the bone index used by the matrix palette of the effect.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.SkinInfoContent.BoneName">
+            <summary>
+            Gets or sets the name of the bone.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.SkinInfoContent.BoneIndex">
+            <summary>
+            Gets or sets the index of the bone in the model.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.SkinInfoContent.InverseBindPoseTransform">
+            <summary>
+            Gets or sets the bones inverse bind pose transform.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.PaletteSourceCode">
+            <summary>
+            Contains the source code for BasicPaletteEffect, but allows instanciation
+            for variable palette sizes.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.Content.PaletteSourceCode.PALETTE_SIZE">
+            <summary>
+            The size of the matrix palette.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.PaletteSourceCode.#ctor(System.Int32)">
+            <summary>
+            Creates a new instance of PaletteSourceCode.
+            </summary>
+            <param name="size">The size of the matrix palette.</param>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.PaletteSourceCode.SourceCode4BonesPerVertex">
+            <summary>
+            Returns the source code for BasicPaletteEffect for a max of
+            4 influences per vertex.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.AnimationWriter">
+            <summary>
+            Writes ModelInfo data so it can be read into an object during runtime
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimationWriter.Write(Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler.ContentWriter,Microsoft.Xna.Framework.Content.Pipeline.Graphics.AnimationContentDictionary)">
+            <summary>
+            Writes a ModelInfo object into XNB data
+            </summary>
+            <param name="output">The stream that contains the written data</param>
+            <param name="value">The instance to be serialized</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimationWriter.GetRuntimeReader(Microsoft.Xna.Framework.TargetPlatform)">
+            <summary>
+            Returns the string that describes the reader used to convert the
+            stream of data into a ModelInfo object
+            </summary>
+            <param name="targetPlatform">The current platform</param>
+            <returns>The string that describes the reader used for a ModelInfo object</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimationWriter.GetRuntimeType(Microsoft.Xna.Framework.TargetPlatform)">
+            <summary>
+            Returns the string that describes what type of object the stream
+            will be converted into at runtime (ModelInf)
+            </summary>
+            <param name="targetPlatform">The current platform</param>
+            <returns>The string that describes the run time type for the object written into
+            the stream</returns>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.PaletteInfoProcessor">
+            <summary>
+            Processes a PaletteInfo object into a PaletteMaterialContent object.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.PaletteInfoProcessor.Process(Xclna.Xna.Animation.Content.PaletteInfo,Microsoft.Xna.Framework.Content.Pipeline.ContentProcessorContext)">
+            <summary>
+            Processes a PaletteInfo object into a PaletteMaterialContent object.
+            </summary>
+            <param name="input">The PaletteInfo to process.</param>
+            <param name="context">The processor context.</param>
+            <returns>The processed PaletteMaterialContent</returns>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.PaletteInfo">
+            <summary>
+            Contains info relating to BasicPaletteEffect for processing.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.PaletteInfo.#ctor(System.String,System.Int32,Microsoft.Xna.Framework.Content.Pipeline.Graphics.BasicMaterialContent)">
+            <summary>
+            Creats a new instance of PaletteInfo.
+            </summary>
+            <param name="sourceCode">The source code for the BasicPaletteEffect</param>
+            <param name="paletteSize">The size of the matrix palette</param>
+            <param name="basicContent">The BasicMaterialContent that stores the parameters
+            to copy to BasicPaletteEffect</param>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.PaletteInfo.SourceCode">
+            <summary>
+            The source code for BasicPaletteEffect.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.PaletteInfo.PaletteSize">
+            <summary>
+            The size of the matrix palette.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.PaletteInfo.BasicContent">
+            <summary>
+            The BasicMaterialContent that stores values to copy to the palette content.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.PaletteMaterialContent">
+            <summary>
+            Content for BasicPaletteEffect.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.PaletteMaterialContent.#ctor">
+            <summary>
+            Creates a new instance of PaletteMaterialContent.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.PaletteMaterialContent.PaletteSize">
+            <summary>
+            Gets or sets the size of the matrix palette.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.PaletteMaterialContent.ByteCode">
+            <summary>
+            Gets or sets the byte code for the effect.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.ModelSplitter">
+            <summary>
+            Splits a model up into parts based on a max bone count.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.ModelSplitter.#ctor(Microsoft.Xna.Framework.Content.Pipeline.Graphics.NodeContent,System.Int32)">
+            <summary>
+            Creates a new ModelSplitter.
+            </summary>
+            <param name="modelRoot">The root of the model content.</param>
+            <param name="maxBonesPerMesh">The maximum number of bones per mesh.</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.ModelSplitter.Split">
+            <summary>
+            Splits the model meshes up based on the max number of bones.
+            </summary>
+            <returns>True if any mesh was split.</returns>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.BoneIndexer">
+            <summary>
+            Assists in creating palette indices for mesh bones.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.BoneIndexer.ContainsBone(System.String)">
+            <summary>
+            True if an index has been created for the given bone.
+            </summary>
+            <param name="boneName">The name of the bone.</param>
+            <returns>True if an index has been created for the given bone.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.BoneIndexer.GetBoneIndex(System.String)">
+            <summary>
+            Creates an index for a bone if one doesn't exist, and returns the palette
+            index for the given bone.
+            </summary>
+            <param name="boneName">The name of the bone.</param>
+            <returns>The matrix palette index of the bone.</returns>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.BoneIndexer.SkinnedBoneNames">
+            <summary>
+            The names of the skinned bones that have indices attached to this indexer.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.AnimatedModelProcessor">
+            <summary>
+            Processes a NodeContent object that was imported by SkinnedModelImporter
+            and attaches animation data to its tag
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimatedModelProcessor.Process(Microsoft.Xna.Framework.Content.Pipeline.Graphics.NodeContent,Microsoft.Xna.Framework.Content.Pipeline.ContentProcessorContext)">
+            <summary>Processes a SkinnedModelImporter NodeContent root</summary>
+            <param name="input">The root of the X file tree</param>
+            <param name="context">The context for this processor</param>
+            <returns>A model with animation data on its tag</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimatedModelProcessor.ProcessAnimation(Microsoft.Xna.Framework.Content.Pipeline.Graphics.AnimationContent)">
+            <summary>
+            Called when an AnimationContent is processed.
+            </summary>
+            <param name="animation">The AnimationContent to be processed.</param>
+            <returns>The processed AnimationContent.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimatedModelProcessor.SubdivideAnimations(Microsoft.Xna.Framework.Content.Pipeline.Graphics.AnimationContentDictionary,System.Xml.XmlDocument)">
+            <summary>
+            Called when an XML document is read that specifies how animations
+            should be split.
+            </summary>
+            <param name="animDict">The dictionary of animation name/AnimationContent
+            pairs. </param>
+            <param name="doc">The Xml document that contains info on how to split
+            the animations.</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimatedModelProcessor.ReplaceBasicEffect(Xclna.Xna.Animation.Content.SkinningType,Microsoft.Xna.Framework.Content.Pipeline.Processors.ModelMeshPartContent)">
+            <summary>
+            Called when a basic effect is encountered and potentially replaced by
+            BasicPaletteEffect (if not overridden).  This is called afer effects have been processed.
+            </summary>
+            <param name="skinningType">The the skinning type of the meshpart.</param>
+            <param name="meshPart">The MeshPart that contains the BasicMaterialContent.</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimatedModelProcessor.FindAnimations(Microsoft.Xna.Framework.Content.Pipeline.Graphics.NodeContent)">
+            <summary>
+            Searches through the NodeContent tree for all animations and puts them in
+            one AnimationContentDictionary
+            </summary>
+            <param name="node">The root of the tree</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimatedModelProcessor.ProcessVertexChannel(Microsoft.Xna.Framework.Content.Pipeline.Graphics.GeometryContent,System.Int32,Microsoft.Xna.Framework.Content.Pipeline.ContentProcessorContext)">
+            <summary>
+            Go through the vertex channels in the geometry and replace the 
+            BoneWeightCollection objects with weight and index channels.
+            </summary>
+            <param name="geometry">The geometry to process.</param>
+            <param name="vertexChannelIndex">The index of the vertex channel to process.</param>
+            <param name="context">The processor context.</param>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.AnimatedModelProcessor.SkinnedBones">
+            <summary>
+            Gets the names of the bones that should be used by the palette.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.AnimatedModelProcessor.ProcessorContext">
+            <summary>
+            Gets the processor context.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.SkinningType">
+            <summary>
+            Info on how a model is skinned.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.Content.SkinningType.None">
+            <summary>
+            No skinning.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.Content.SkinningType.FourBonesPerVertex">
+            <summary>
+            A max of four influences per vertex.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.Content.SkinningType.EightBonesPerVertex">
+            <summary>
+            A max of eight influences per vertex.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.Content.SkinningType.TwelveBonesPerVertex">
+            <summary>
+            A max of twelve influences per vertex.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.ContentUtil">
+            <summary>
+            Contains utility functions for the content pipeline relating to animation.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.Content.ContentUtil.TICKS_PER_60FPS">
+            <summary>
+            Ticks per frame at 60 frames per second.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.ContentUtil.GetSkinningType(Microsoft.Xna.Framework.Graphics.VertexElement[])">
+            <summary>
+            Gets info on what skinning info a vertex element array contains.
+            </summary>
+            <param name="elements">The vertex elements.</param>
+            <returns>Info on what type of skinning the elements contain.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.ContentUtil.ReflectMatrix(Microsoft.Xna.Framework.Matrix@)">
+            <summary>
+            Reflects a matrix across the Z axis by multiplying both the Z
+            column and the Z row by -1 such that the Z,Z element stays intact.
+            </summary>
+            <param name="m">The matrix to be reflected across the Z axis</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.ContentUtil.MergeKeyFrames(Microsoft.Xna.Framework.Content.Pipeline.Graphics.AnimationKeyframe[],Microsoft.Xna.Framework.Content.Pipeline.Graphics.AnimationKeyframe[],Microsoft.Xna.Framework.Content.Pipeline.Graphics.AnimationKeyframe[])">
+            <summary>
+            Merges scale, translation, and rotation keyframes into matrix keyframes.
+            </summary>
+            <param name="scale">The scale keyframes.</param>
+            <param name="translation">The translation keyframes.</param>
+            <param name="rotation">The rotation keyframes.</param>
+            <returns>The merged matrix keyframes.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.ContentUtil.SlerpMatrix(Microsoft.Xna.Framework.Matrix,Microsoft.Xna.Framework.Matrix,System.Single)">
+            <summary>
+            Roughly decomposes two matrices and performs spherical linear interpolation
+            </summary>
+            <param name="start">Source matrix for interpolation</param>
+            <param name="end">Destination matrix for interpolation</param>
+            <param name="slerpAmount">Ratio of interpolation</param>
+            <returns>The interpolated matrix</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.ContentUtil.CalculateSquareRoot(Microsoft.Xna.Framework.Matrix,System.Int32)">
+            <summary>
+            Calculates the square root of a matrix.
+            </summary>
+            <param name="A">The matrix.</param>
+            <param name="iterations">The number of recursive iterations used by the
+            calculation algorithm.</param>
+            <returns>The calculated square root of the matrix.</returns>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.AsfImporter">
+            <summary>
+            Imports Acclaim ASF (motion capture skeleton).
+            Stores DOF spec (degrees of freedom) as string tagged "dof" in OpaqueData for each bone.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AsfImporter.Import(System.String,Microsoft.Xna.Framework.Content.Pipeline.ContentImporterContext)">
+            <summary>
+            Imports Acclaim AFS (motion capture skeleton).
+            Stores dof spec (degrees of freedom) as string in OpaqueData for each bone.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.AmcImporter">
+            <summary>
+            Imports Acclaim AMC (motion capture data).
+            For a foo_bar.amc, expects skeleton in a file named foo.asf.
+            Returns a skeleton with Animations in root bone. 
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AmcImporter.Import(System.String,Microsoft.Xna.Framework.Content.Pipeline.ContentImporterContext)">
+            <summary>
+            Imports Acclaim AMC (motion capture data).
+            For a foo_bar.amc, expects skeleton in a file named foo.asf.
+            Returns a skeleton with Animations in root bone. 
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AmcImporter.importKeyframe(System.String[],System.Int32)">
+            <summary>
+             Imports a keyframe
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.AnimationProcessor">
+            <summary>
+            Produces AnimationContentDictionary;
+            warns of incompatibilities of model and skeleton.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimationProcessor.Process(Microsoft.Xna.Framework.Content.Pipeline.Graphics.BoneContent,Microsoft.Xna.Framework.Content.Pipeline.ContentProcessorContext)">
+            <summary>
+            Produces ModelAnimationInfo from skeleton and animations.
+            </summary>
+            <param name="input">skeleton</param>
+            <param name="context">The context for this processor</param>
+            <returns>AnimationContentDictionary</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimationProcessor.GetModelFilePath(Microsoft.Xna.Framework.Content.Pipeline.ContentIdentity)">
+            <summary>
+            Gets the path of the model.
+            </summary>
+            <param name="animationId">The identity of the AnimationContent object.</param>
+            <returns>The path of the model file.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimationProcessor.CheckBones(Microsoft.Xna.Framework.Content.Pipeline.Graphics.BoneContent,Microsoft.Xna.Framework.Content.Pipeline.Graphics.BoneContent)">
+            <summary>
+            Checks the bones to make sure the skeleton is valid.
+            </summary>
+            <param name="modelBone">The model bone to check.</param>
+            <param name="skeletonBone">The skeleton bone to check</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimationProcessor.Interpolate(Microsoft.Xna.Framework.Content.Pipeline.Graphics.AnimationContentDictionary)">
+            <summary>
+            Interpolates all the AnimationContent in the specified dictionary to 60 fps.
+            </summary>
+            <param name="input">The animation dictionary to interpolate.</param>
+            <returns>An interpolated dictionary of animations.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimationProcessor.Interpolate(Microsoft.Xna.Framework.Content.Pipeline.Graphics.AnimationContent)">
+            <summary>
+            Interpolates an AnimationContent object to 60 fps.
+            </summary>
+            <param name="input">The AnimationContent to interpolate.</param>
+            <returns>The interpolated AnimationContent.</returns>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.AnimationProcessor.Context">
+            <summary>
+            The context for the processor.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.AnimationProcessor.InputSkeleton">
+            <summary>
+            The input skeleton.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.AnimationProcessor.Model">
+            <summary>
+            The model.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.AnimationProcessor.ModelSkeleton">
+            <summary>
+            The skeleton contained in the model.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.XFileTokenizer">
+            <summary>
+            Tokenizes a .X file and provides methods to parse those tokens.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.#ctor(System.String)">
+            <summary>
+            Creates a new instance of XFileTokenizer.
+            </summary>
+            <param name="fileName">The .X file to tokenize.</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.SkipNode">
+            <summary>
+            Skips a node in a .X file and all child nodes; should be called after the opening
+            brace, "{", has been read.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.NextInt">
+            <summary>
+            Parses an integer from a .X file
+            </summary>
+            <returns>The integer represented by the next token</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.NextFloat">
+            <summary>
+            Parses a float from a .X file
+            </summary>
+            <returns>The float represented by the next token</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.NextString">
+            <summary>
+            Parses a string from a .X file
+            </summary>
+            <returns>The string represented by the next token</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.NextToken">
+            <summary>
+            Reads a generic token from a .X file
+            </summary>
+            <returns>The next token</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.NextVector2">
+            <summary>
+            Reads the next Vector2 in the stream.
+            </summary>
+            <returns>The parsed Vector2</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.NextVector3">
+            <summary>
+            Reads the next Vector3 in the stream.
+            </summary>
+            <returns>The parsed Vector3</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.NextVector4">
+            <summary>
+            Reads the next Vector4 in the stream.
+            </summary>
+            <returns>The parsed Vector4</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.NextMatrix">
+            <summary>
+            Reads the next Matrix in the stream.
+            </summary>
+            <returns>The parsed Matrix</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.SkipTokens(System.Int32)">
+            <summary>
+            Skips tokens in the stream.
+            </summary>
+            <returns>The number of tokens to skip.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.SkipName">
+            <summary>
+            Skips a nodes name and its opening curly bracket.
+            </summary>
+            <returns>The current instance for cascaded calls.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.ReadName">
+            <summary>
+            Reads a nodes name and its opening curly bracket.
+            </summary>
+            <returns>Null if the node does not contain a name, the nodes name otherwise.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.SkipToken">
+            <summary>
+            Skips a token in the stream.
+            </summary>
+            <returns>The current tokenizer for cascaded calls.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.XFileTokenizer.Reset">
+            <summary>
+            Resets the tokenizer to the beginning of the stream.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.XFileTokenizer.CurrentToken">
+            <summary>
+            Returns current token while ITERATING through the tokens
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.XFileTokenizer.Peek">
+            <summary>
+            Returns the next token without advancing the stream index
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.XFileTokenizer.AtEnd">
+            <summary>
+            True if the index is at the end of the stream.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.XFileTokenizer.Count">
+            <summary>
+            The number of tokens in the stream.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Content.XFileTokenizer.CurrentIndex">
+            <summary>
+            The current token index of the tokenizer.
+            </summary>
+        </member>
+    </members>
+</doc>

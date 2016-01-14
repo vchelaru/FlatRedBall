@@ -1,0 +1,865 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{86D66878-B52C-4844-A7DB-AF9CE78B5101}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FlatRedBallW8</RootNamespace>
+    <AssemblyName>FlatRedBallW8</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+    <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
+    <TargetFrameworkVersion />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS_8, MONOGAME, FRB_XNA, XNA4, NETFX_CORE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE, WINDOWS_8, MONOGAME, FRB_XNA, XNA4</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS_8, MONOGAME, FRB_XNA, XNA4</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE, WINDOWS_8, MONOGAME, FRB_XNA</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS_8, MONOGAME, FRB_XNA, XNA4</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS_8, MONOGAME, FRB_XNA, XNA4</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE, FRB_XNA</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\FlatRedBall\AI\Pathfinding\Link.cs">
+      <Link>AI\Pathfinding\Link.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\AI\Pathfinding\NodeNetwork.cs">
+      <Link>AI\Pathfinding\NodeNetwork.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\AI\Pathfinding\OccupiedTile.cs">
+      <Link>AI\Pathfinding\OccupiedTile.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\AI\Pathfinding\PathfindingFunctions.cs">
+      <Link>AI\Pathfinding\PathfindingFunctions.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\AI\Pathfinding\PositionedNode.cs">
+      <Link>AI\Pathfinding\PositionedNode.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\AI\Pathfinding\TileNodeNetwork.cs">
+      <Link>AI\Pathfinding\TileNodeNetwork.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Attributes\ContentSorting.cs">
+      <Link>Attributes\ContentSorting.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Attributes\ExternalInstance.cs">
+      <Link>Attributes\ExternalInstance.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Attributes\ExternalInstanceList.cs">
+      <Link>Attributes\ExternalInstanceList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Attributes\InstanceListMember.cs">
+      <Link>Attributes\InstanceListMember.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Attributes\InstanceMember.cs">
+      <Link>Attributes\InstanceMember.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Audio\AudioManager.cs">
+      <Link>Audio\AudioManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Audio\SoundEffectPlayInfo.cs">
+      <Link>Audio\SoundEffectPlayInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Camera.Common.cs">
+      <Link>Camera.Common.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Camera.cs">
+      <Link>Camera.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Compatability\System\ComponentModel\CategoryAttribute.cs">
+      <Link>Compatability\CategoryAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Compatability\System\ComponentModel\ListSortDirection.cs">
+      <Link>Compatability\ListSortDirection.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Compatability\System\Reflection\MemberTypes.cs">
+      <Link>Compatability\MemberTypes.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Compatability\System\StringExtensionMethods.cs">
+      <Link>Compatability\StringExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Compatability\System\TypeExtensionMethods.cs">
+      <Link>Compatability\TypeExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\AI\Pathfinding\LinkSave.cs">
+      <Link>Content\AI\Pathfinding\LinkSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\AI\Pathfinding\NodeNetworkSave.cs">
+      <Link>Content\AI\Pathfinding\NodeNetworkSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\AI\Pathfinding\PositionedNodeSave.cs">
+      <Link>Content\AI\Pathfinding\PositionedNodeSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\AnimationChain\AnimationChainListSave.cs">
+      <Link>Content\AnimationChain\AnimationChainListSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\AnimationChain\AnimationChainListSaveBase.cs">
+      <Link>Content\AnimationChain\AnimationChainListSaveBase.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\AnimationChain\AnimationChainSave.cs">
+      <Link>Content\AnimationChain\AnimationChainSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\AnimationChain\AnimationChainSaveBase.cs">
+      <Link>Content\AnimationChain\AnimationChainSaveBase.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\AnimationChain\AnimationFrameSave.cs">
+      <Link>Content\AnimationChain\AnimationFrameSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\AnimationChain\AnimationFrameSaveBase.cs">
+      <Link>Content\AnimationChain\AnimationFrameSaveBase.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\ContentManager.cs">
+      <Link>Content\ContentManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\DefaultFontDataColors.cs">
+      <Link>Content\DefaultFontDataColors.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Instructions\AnimationSequenceSave.cs">
+      <Link>Content\Instruction\AnimationSequenceSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Instructions\InstructionBlueprintListSave.cs">
+      <Link>Content\Instruction\InstructionBlueprintListSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Instructions\InstructionSave.cs">
+      <Link>Content\Instruction\InstructionSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Instructions\InstructionSetSave.cs">
+      <Link>Content\Instruction\InstructionSetSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Instructions\InstructionSetSaveList.cs">
+      <Link>Content\Instruction\InstructionSetSaveList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Instructions\KeyframeListSave.cs">
+      <Link>Content\Instruction\KeyframeListSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Instructions\KeyframeSave.cs">
+      <Link>Content\Instruction\KeyframeSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Instructions\TimedKeyframeListSave.cs">
+      <Link>Content\Instruction\TimedKeyframeListSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\ISaveableContent.cs">
+      <Link>Content\ISaveableContent.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Math\Geometry\AxisAlignedCubeSave.cs">
+      <Link>Content\Math\Geometry\AxisAlignedCubeSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Math\Geometry\AxisAlignedRectangleSave.cs">
+      <Link>Content\Math\Geometry\AxisAlignedRectangleSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Math\Geometry\CircleSave.cs">
+      <Link>Content\Math\Geometry\CircleSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Math\Geometry\ShapeCollectionSave.cs">
+      <Link>Content\Math\Geometry\ShapeCollectionSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Math\Geometry\SphereSave.cs">
+      <Link>Content\Math\Geometry\SphereSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Math\Splines\SplinePointSave.cs">
+      <Link>Content\Math\Splines\SplinePointSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Math\Splines\SplineSave.cs">
+      <Link>Content\Math\Splines\SplineSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Math\Splines\SplineSaveList.cs">
+      <Link>Content\Math\Splines\SplineSaveList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Particle\EmissionSettingsSave.cs">
+      <Link>Content\Particle\EmissionSettingsSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Particle\EmitterSave.cs">
+      <Link>Content\Particle\EmitterSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Particle\EmitterSaveBase.cs">
+      <Link>Content\Particle\EmitterSaveBase.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Particle\EmitterSaveList.cs">
+      <Link>Content\Particle\EmitterSaveList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Polygon\PolygonSave.cs">
+      <Link>Content\Polygon\PolygonSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Polygon\PolygonSaveList.cs">
+      <Link>Content\Polygon\PolygonSaveList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Saves\BitmapFontSave.cs">
+      <Link>Content\Saves\BitmapFontSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Saves\TextSave.cs">
+      <Link>Content\Saves\TextSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Saves\TextSaveBase.cs">
+      <Link>Content\Saves\TextSaveBase.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Scene\CameraSave.cs">
+      <Link>Content\Scene\CameraSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Scene\SceneSave.cs">
+      <Link>Content\Scene\SceneSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Scene\SpriteSave.cs">
+      <Link>Content\Scene\SpriteSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\Scene\SpriteSaveBase.cs">
+      <Link>Content\Scene\SpriteSaveBase.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\SourceReferencingFile.cs">
+      <Link>Content\SourceReferencingFile.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\SpriteEditorScene.cs">
+      <Link>Content\SpriteEditorScene.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\SpriteEditorSceneBase.cs">
+      <Link>Content\SpriteEditorSceneBase.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\SpriteFrame\SpriteFrameSave.cs">
+      <Link>Content\SpriteFrame\SpriteFrameSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\SpriteFrame\SpriteFrameSaveBase.cs">
+      <Link>Content\SpriteFrame\SpriteFrameSaveBase.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\SpriteGrid\AnimationChainGridSave.cs">
+      <Link>Content\SpriteGrid\AnimationChainGridSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\SpriteGrid\DisplayRegionGridSave.cs">
+      <Link>Content\SpriteGrid\DisplayRegionGridSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\SpriteGrid\SpriteGridSave.cs">
+      <Link>Content\SpriteGrid\SpriteGridSave.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Content\SpriteGrid\SpriteGridSaveBase.cs">
+      <Link>Content\SpriteGrid\SpriteGridSaveBase.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Debugging\AutomaticDebuggingBehavior.cs">
+      <Link>Debugging\AutomaticDebuggingBehavior.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Debugging\Debugger.cs">
+      <Link>Debugging\Debugger.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Feedback\VibrateMotor.cs">
+      <Link>Feedback\VibrateMotor.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\FlatRedBallServices.cs">
+      <Link>FlatRedBallServices.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Animation\AnimationChain.cs">
+      <Link>Graphics\Animation\AnimationChain.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Animation\AnimationChainList.cs">
+      <Link>Graphics\Animation\AnimationChainList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Animation\AnimationFrame.cs">
+      <Link>Graphics\Animation\AnimationFrame.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Animation\IAnimationChainAnimatable.cs">
+      <Link>Graphics\Animation\IAnimationChainAnimatable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\BatchForwardVectorSorter.cs">
+      <Link>Graphics\BatchForwardVectorSorter.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\BitmapCharacterInfo.cs">
+      <Link>Graphics\BitmapCharacterInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\BitmapFont.cs">
+      <Link>Graphics\BitmapFont.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\DrawableBatch.cs">
+      <Link>Graphics\DrawableBatch.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\GenericEffect.cs">
+      <Link>Graphics\GenericEffect.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\GraphicalEmumerations.cs">
+      <Link>Graphics\GraphicalEmumerations.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\GraphicsOptions.cs">
+      <Link>Graphics\GraphicsOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\IColorable.cs">
+      <Link>Graphics\IColorable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\IDestroyable.cs">
+      <Link>Graphics\IDestroyable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\ILayered.cs">
+      <Link>Graphics\ILayered.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\ITexturable.cs">
+      <Link>Graphics\ITexturable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\IVisible.cs">
+      <Link>Graphics\IVisible.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Layer.cs">
+      <Link>Graphics\Layer.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Particle\EmissionSettings.cs">
+      <Link>Graphics\Particle\EmissionSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Particle\Emitter.cs">
+      <Link>Graphics\Particle\Emitter.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Particle\EmitterList.cs">
+      <Link>Graphics\Particle\EmitterList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Particle\TimedRemovalRecord.cs">
+      <Link>Graphics\Particle\TimedRemovalRecord.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\RenderBreak.cs">
+      <Link>Graphics\RenderBreak.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Renderer.Common.cs">
+      <Link>Graphics\Renderer.Common.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Renderer.cs">
+      <Link>Graphics\Renderer.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\SpriteVertex.cs">
+      <Link>Graphics\SpriteVertex.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Text.cs">
+      <Link>Graphics\Text.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Text.PreRendered.cs">
+      <Link>Graphics\Text.PreRendered.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\TextManager.cs">
+      <Link>Graphics\TextManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Tile\GridRelativeState.cs">
+      <Link>Graphics\Tile\GridRelativeState.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Graphics\Tile\IStateGrid.cs">
+      <Link>Graphics\Tile\IStateGrid.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Gui\Cursor.cs">
+      <Link>Gui\Cursor.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Gui\Cursor.TouchScreen.cs">
+      <Link>Gui\Cursor.TouchScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Gui\GuiManager.cs">
+      <Link>Gui\GuiManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Gui\IClickable.cs">
+      <Link>Gui\IClickable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Gui\IInputReceiver.cs">
+      <Link>Gui\IInputReceiver.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Gui\IObjectDisplayer.cs">
+      <Link>Gui\IObjectDisplayer.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Gui\IWindow.cs">
+      <Link>Gui\IWindow.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Gui\WindowArray.cs">
+      <Link>Gui\WindowArray.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Input\AnalogButton.cs">
+      <Link>Input\AnalogButton.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Input\AnalogStick.cs">
+      <Link>Input\AnalogStick.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Input\ButtonMap.cs">
+      <Link>Input\ButtonMap.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Input\ICursorSelectable.cs">
+      <Link>Input\ICursorSelectable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Input\IMouseOver.cs">
+      <Link>Input\IMouseOver.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Input\InputManager.cs">
+      <Link>Input\InputManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Input\Keyboard.cs">
+      <Link>Input\Keyboard.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Input\Mouse.cs">
+      <Link>Input\Mouse.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Input\TouchScreen.cs">
+      <Link>Input\TouchScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Input\Xbox360Gamepad.cs">
+      <Link>Input\Xbox360Gamepad.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\DelegateInstruction.cs">
+      <Link>Instructions\DelegateInstruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\GenericInstruction.cs">
+      <Link>Instructions\GenericInstruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\IInstructable.cs">
+      <Link>Instructions\IInstructable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Instruction.cs">
+      <Link>Instructions\Instruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\InstructionBlueprint.cs">
+      <Link>Instructions\InstructionBlueprint.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\InstructionBlueprintList.cs">
+      <Link>Instructions\InstructionBlueprintList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\InstructionList.cs">
+      <Link>Instructions\InstructionList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\InstructionManager.cs">
+      <Link>Instructions\InstructionManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\InstructionSet.cs">
+      <Link>Instructions\InstructionSet.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Interpolation\DoubleInterpolator.cs">
+      <Link>Instructions\Interpolation\DoubleInterpolator.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Interpolation\FloatAngleInterpolator.cs">
+      <Link>Instructions\Interpolation\FloatAngleInterpolator.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Interpolation\FloatInterpolator.cs">
+      <Link>Instructions\Interpolation\FloatInterpolator.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Interpolation\IInterpolator.cs">
+      <Link>Instructions\Interpolation\IInterpolator.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Interpolation\IntInterpolator.cs">
+      <Link>Instructions\Interpolation\IntInterpolator.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Interpolation\LongInterpolator.cs">
+      <Link>Instructions\Interpolation\LongInterpolator.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\KeyframeList.cs">
+      <Link>Instructions\KeyframeList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\MethodInstruction.cs">
+      <Link>Instructions\MethodInstruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Pause\AxisAlignedRectangleUnpauseInstruction.cs">
+      <Link>Instructions\Pause\AxisAlignedRectangleUnpauseInstruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Pause\CameraUnpauseInstruction.cs">
+      <Link>Instructions\Pause\CameraUnpauseInstruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Pause\CircleUnpauseInstruction.cs">
+      <Link>Instructions\Pause\CircleUnpauseInstruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Pause\EmitterUnpauseInstruction.cs">
+      <Link>Instructions\Pause\EmitterUnpauseInstruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Pause\InstructionListUnpause.cs">
+      <Link>Instructions\Pause\InstructionListUnpause.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Pause\PositionedObjectUnpauseInstruction.cs">
+      <Link>Instructions\Pause\PositionedObjectUnpauseInstruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Pause\SphereUnpauseInstruction.cs">
+      <Link>Instructions\Pause\SphereUnpauseInstruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Pause\SpriteFrameUnpauseInstruction.cs">
+      <Link>Instructions\Pause\SpriteFrameUnpauseInstruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Pause\SpriteUnpauseInstruction.cs">
+      <Link>Instructions\Pause\SpriteUnpauseInstruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Pause\TextUnpauseInstruction.cs">
+      <Link>Instructions\Pause\TextUnpauseInstruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Pause\TimedRemovalUnpause.cs">
+      <Link>Instructions\Pause\TimedRemovalUnpause.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Pause\UnpauseInstruction.cs">
+      <Link>Instructions\Pause\UnpauseInstruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Reflection\LateBinder.cs">
+      <Link>Instructions\Reflection\LateBinder.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Reflection\MemberCondition.cs">
+      <Link>Instructions\Reflection\MemberCondition.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Reflection\PropertyCollection.cs">
+      <Link>Instructions\Reflection\PropertyCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Reflection\PropertyValuePair.cs">
+      <Link>Instructions\Reflection\PropertyValuePair.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\Reflection\TypedMember.cs">
+      <Link>Instructions\Reflection\TypedMember.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\ScriptedAnimations\AnimationSequence.cs">
+      <Link>Instructions\ScriptedAnimations\AnimationSequence.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\ScriptedAnimations\TimedKeyframeList.cs">
+      <Link>Instructions\ScriptedAnimations\TimedKeyframeList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\StaticMethodInstruction.cs">
+      <Link>Instructions\StaticMethodInstruction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Instructions\ValueRelationship.cs">
+      <Link>Instructions\ValueRelationship.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\IO\BmpLoader.cs">
+      <Link>IO\BmpLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\IO\Csv\CsvFileManager.cs">
+      <Link>IO\CSV\CsvFileManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\IO\Csv\CsvReader.cs">
+      <Link>IO\CSV\CsvReader.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\IO\Csv\CsvReader.DataReaderValidations.cs">
+      <Link>IO\CSV\CsvReader.DataReaderValidations.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\IO\Csv\CsvReader.RecordEnumerator.cs">
+      <Link>IO\CSV\CsvReader.RecordEnumerator.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\IO\Csv\Events\ParseErrorEventArgs.cs">
+      <Link>IO\CSV\Events\ParseErrorEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\IO\Csv\MemberTypeIndexPair.cs">
+      <Link>IO\CSV\MemberTypeIndexPair.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\IO\Csv\MissingFieldAction.cs">
+      <Link>IO\CSV\MissingFieldAction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\IO\Csv\ParseErrorAction.cs">
+      <Link>IO\CSV\ParseErrorAction.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\IO\Csv\RuntimeCsvRepresentation.cs">
+      <Link>IO\CSV\RuntimeCsvRepresentation.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\IO\FileManager.cs">
+      <Link>IO\FileManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\IO\FileManager.IsolatedStorage.cs">
+      <Link>IO\FileManager.IsolatedStorage.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\IO\StateManager.cs">
+      <Link>IO\StateManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Localization\LocalizationManager.cs">
+      <Link>Localization\LocalizationManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\ManagedSpriteGroups\GridPattern.cs">
+      <Link>ManagedSpriteGroups\GridPattern.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\ManagedSpriteGroups\GridRelativeTexture.cs">
+      <Link>ManagedSpriteGroups\GridRelativeTexture.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\ManagedSpriteGroups\GridRelativeTextureList.cs">
+      <Link>ManagedSpriteGroups\GridRelativeTextureList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\ManagedSpriteGroups\SpriteFrame.cs">
+      <Link>ManagedSpriteGroups\SpriteFrame.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\ManagedSpriteGroups\SpriteGrid\DoubleKeyDictionary.cs">
+      <Link>ManagedSpriteGroups\SpriteGrid\DoubleKeyDictionary.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\ManagedSpriteGroups\SpriteGrid\SpriteGrid.cs">
+      <Link>ManagedSpriteGroups\SpriteGrid\SpriteGrid.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\ManagedSpriteGroups\TextureGrid.cs">
+      <Link>ManagedSpriteGroups\TextureGrid.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\ManagedSpriteGroups\TextureLocation.cs">
+      <Link>ManagedSpriteGroups\TextureLocation.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Managers\IManager.cs">
+      <Link>Managers\IManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\AttachableList.cs">
+      <Link>Math\AttachableList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Collision\CollisionEnumerations.cs">
+      <Link>Math\Collision\CollisionEnumerations.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\AxisAlignedCube.cs">
+      <Link>Math\Geometry\AxisAlignedCube.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\AxisAlignedRectangle.cs">
+      <Link>Math\Geometry\AxisAlignedRectangle.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\Capsule2D.cs">
+      <Link>Math\Geometry\Capsule2D.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\Circle.cs">
+      <Link>Math\Geometry\Circle.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\FloatRectangle.cs">
+      <Link>Math\Geometry\FloatRectangle.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\IReadOnlyScalable.cs">
+      <Link>Math\Geometry\IReadOnlyScalable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\IScalable.cs">
+      <Link>Math\Geometry\IScalable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\IScalable3D.cs">
+      <Link>Math\Geometry\IScalable3D.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\Line.cs">
+      <Link>Math\Geometry\Line.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\Point.cs">
+      <Link>Math\Point.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\Point3D.cs">
+      <Link>Math\Geometry\Point3D.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\Polygon.cs">
+      <Link>Math\Geometry\Polygon.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\Segment.cs">
+      <Link>Math\Geometry\Segment.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\ShapeCollection.cs">
+      <Link>Math\Geometry\ShapeCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\ShapeCollectionCollision.cs">
+      <Link>Math\Geometry\ShapeCollectionCollision.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\ShapeManager.cs">
+      <Link>Math\Geometry\ShapeManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Geometry\Sphere.cs">
+      <Link>Math\Geometry\Sphere.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\IAttachable.cs">
+      <Link>Math\IAttachable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\IAttachableRemovable.cs">
+      <Link>Math\IAttachableRemovable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\IPositionable.cs">
+      <Link>Math\IPositionable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\IRotatable.cs">
+      <Link>Math\IRotatable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\IStaticPositionable.cs">
+      <Link>Math\IStaticPositionable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\MathFunctions.cs">
+      <Link>Math\MathFunctions.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\NaNException.cs">
+      <Link>Math\NaNException.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\PositionedObjectList.cs">
+      <Link>Math\PositionedObjectList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\RollingAverage.cs">
+      <Link>Math\RollingAverage.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Splines\Spline.cs">
+      <Link>Math\Splines\Spline.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Splines\SplineList.cs">
+      <Link>Math\Splines\SplineList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Math\Splines\SplinePoint.cs">
+      <Link>Math\Splines\SplinePoint.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Performance\IPoolable.cs">
+      <Link>Performance\IPoolable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Performance\Measurement\Section.cs">
+      <Link>Performance\Measurement\Section.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Performance\PoolList.cs">
+      <Link>Performance\PoolList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\PlatformServices.cs">
+      <Link>PlatformServices.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\PositionedObject.cs">
+      <Link>PositionedObject.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Scene.cs">
+      <Link>Scene.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Screens\Screen.cs">
+      <Link>Screens\Screen.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Screens\ScreenManager.cs">
+      <Link>Screens\ScreenManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Sprite.Common.cs">
+      <Link>Sprite.Common.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Sprite.cs">
+      <Link>Sprite.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\SpriteList.cs">
+      <Link>SpriteList.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\SpriteManager.cs">
+      <Link>SpriteManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\TimeManager.cs">
+      <Link>TimeManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Utilities\CustomBehaviorFunctions.cs">
+      <Link>Utilities\CustomBehaviorFunctions.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Utilities\ExportOrderAttribute.cs">
+      <Link>Utilities\ExportOrderAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Utilities\ICloneable.cs">
+      <Link>Utilities\ICloneable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Utilities\INameable.cs">
+      <Link>Utilities\INameable.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Utilities\SpriteSelectionOptions.cs">
+      <Link>Utilities\SpriteSelectionOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Utilities\StringBuilderExtensions.cs">
+      <Link>Utilities\StringBuilderExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Utilities\StringEnum.cs">
+      <Link>Utilities\StringEnum.cs</Link>
+    </Compile>
+    <Compile Include="..\FlatRedBall\Utilities\StringFunctions.cs">
+      <Link>Utilities\StringFunctions.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="IO\CSV\Resources\" />
+    <Folder Include="IO\Gif\" />
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\defaultText.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\defaultFont.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MonoGame.Framework, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX">
+      <HintPath>Libraries\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1">
+      <HintPath>Libraries\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11">
+      <HintPath>Libraries\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DXGI">
+      <HintPath>Libraries\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.MediaFoundation">
+      <HintPath>Libraries\SharpDX.MediaFoundation.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.XAudio2">
+      <HintPath>Libraries\SharpDX.XAudio2.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.XInput">
+      <HintPath>Libraries\SharpDX.XInput.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Libraries\MonoGame.Framework.dll" />
+  </ItemGroup>
+  <Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
+    <VisualStudioVersion>12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v12.0\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,386 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F842215C-BCE1-472D-A4A0-7BAB70B428B3}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FlatRedBallAndroid</RootNamespace>
+    <AssemblyName>FlatRedBallAndroid</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <AndroidApplication>true</AndroidApplication>
+    <AndroidResgenFile>FlatRedBallAndroid\Resources\Resource.Designer.cs</AndroidResgenFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <MandroidI18n />
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Android\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG;ANDROID;MONODROID;FRB_XNA;XNA4;MONOGAME</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Android\Release\</OutputPath>
+    <DefineConstants>TRACE;ANDROID;MONODROID;FRB_XNA;XNA4;MONOGAME</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <AndroidSupportedAbis>armeabi;armeabi-v7a;x86</AndroidSupportedAbis>
+    <DebugType>full</DebugType>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Android" />
+    <Reference Include="mscorlib" />
+    <Reference Include="OpenTK">
+      <HintPath>FlatRedBallAndroid\Libraries\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="MonoGame.Framework">
+      <HintPath>FlatRedBallAndroid\Libraries\MonoGame.Framework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\Content\" />
+    <Folder Include="Resources\Drawable\" />
+    <Folder Include="Resources\Layout\" />
+    <Folder Include="Resources\Values\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Properties\AndroidManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AI\LineOfSight\IViewer.cs" />
+    <Compile Include="AI\LineOfSight\ViewerInformation.cs" />
+    <Compile Include="AI\LineOfSight\VisibilityGrid.cs" />
+    <Compile Include="AI\Pathfinding\OccupiedTile.cs" />
+    <Compile Include="AI\Pathfinding\PathfindingFunctions.cs" />
+    <Compile Include="AI\Pathfinding\Link.cs" />
+    <Compile Include="AI\Pathfinding\NodeNetwork.cs" />
+    <Compile Include="AI\Pathfinding\PositionedNode.cs" />
+    <Compile Include="AI\Pathfinding\TileNodeNetwork.cs" />
+    <Compile Include="Attributes\ContentSorting.cs" />
+    <Compile Include="Attributes\ExternalInstance.cs" />
+    <Compile Include="Attributes\ExternalInstanceList.cs" />
+    <Compile Include="Attributes\InstanceListMember.cs" />
+    <Compile Include="Audio\AudioManager.cs" />
+    <Compile Include="Audio\SoundEffectPlayInfo.cs" />
+    <Compile Include="Camera.Common.cs" />
+    <Compile Include="Camera.cs" />
+    <Compile Include="Content\AI\Pathfinding\LinkSave.cs" />
+    <Compile Include="Content\AI\Pathfinding\NodeNetworkSave.cs" />
+    <Compile Include="Content\AI\Pathfinding\PositionedNodeSave.cs" />
+    <Compile Include="Content\AnimationChain\AnimationChainListSave.cs" />
+    <Compile Include="Content\AnimationChain\AnimationChainListSaveBase.cs" />
+    <Compile Include="Content\AnimationChain\AnimationChainSave.cs" />
+    <Compile Include="Content\AnimationChain\AnimationChainSaveBase.cs" />
+    <Compile Include="Content\AnimationChain\AnimationFrameSaveBase.cs" />
+    <Compile Include="Content\AnimationChain\AnimationFrameSave.cs" />
+    <Compile Include="Content\ContentLoadBatch.cs" />
+    <Compile Include="Content\ContentManager.cs" />
+    <Compile Include="Content\CsvReader.cs" />
+    <Compile Include="Content\Input\KeyboardRecordSave.cs" />
+    <Compile Include="Attributes\InstanceMember.cs" />
+    <Compile Include="Content\Instructions\AnimationSequenceSave.cs" />
+    <Compile Include="Content\Instructions\InstructionSave.cs" />
+    <Compile Include="Content\Instructions\InstructionSetSave.cs" />
+    <Compile Include="Content\Instructions\InstructionSetSaveList.cs" />
+    <Compile Include="Content\Instructions\KeyframeListSave.cs" />
+    <Compile Include="Content\Instructions\KeyframeSave.cs" />
+    <Compile Include="Content\Instructions\Reflection\MemberConditionSave.cs" />
+    <Compile Include="Content\Instructions\TimedKeyframeListSave.cs" />
+    <Compile Include="Content\ISaveableContent.cs" />
+    <Compile Include="Content\MappingMethods.cs" />
+    <Compile Include="Content\Math\Geometry\AxisAlignedCubeSave.cs" />
+    <Compile Include="Content\Math\Geometry\AxisAlignedRectangleSave.cs" />
+    <Compile Include="Content\Math\Geometry\Capsule2DSave.cs" />
+    <Compile Include="Content\Math\Geometry\CircleSave.cs" />
+    <Compile Include="Content\Math\Geometry\ShapeCollectionSave.cs" />
+    <Compile Include="Content\Math\Geometry\SphereSave.cs" />
+    <Compile Include="Content\Math\Splines\SplinePointSave.cs" />
+    <Compile Include="Content\Math\Splines\SplineSave.cs" />
+    <Compile Include="Content\Math\Splines\SplineSaveList.cs" />
+    <Compile Include="Content\ObjectMapper.cs" />
+    <Compile Include="Content\Particle\EmissionSettingsSave.cs" />
+    <Compile Include="Content\Particle\EmitterSave.cs" />
+    <Compile Include="Content\Particle\EmitterSaveBase.cs" />
+    <Compile Include="Content\Particle\EmitterSaveList.cs" />
+    <Compile Include="Content\Polygon\PolygonSave.cs" />
+    <Compile Include="Content\Polygon\PolygonSaveList.cs" />
+    <Compile Include="Content\Saves\BitmapFontSave.cs" />
+    <Compile Include="Content\Saves\TextSave.cs" />
+    <Compile Include="Content\Saves\TextSaveBase.cs" />
+    <Compile Include="Content\Scene\CameraSave.cs" />
+    <Compile Include="Content\Scene\SceneSave.cs" />
+    <Compile Include="Content\Scene\SpriteSave.cs" />
+    <Compile Include="Content\Scene\SpriteSaveBase.cs" />
+    <Compile Include="Content\SourceReferencingFile.cs" />
+    <Compile Include="Content\SpriteEditorScene.cs" />
+    <Compile Include="Content\SpriteEditorSceneBase.cs" />
+    <Compile Include="Content\SpriteFrame\SpriteFrameSave.cs" />
+    <Compile Include="Content\SpriteFrame\SpriteFrameSaveBase.cs" />
+    <Compile Include="Content\SpriteGrid\AnimationChainGridSave.cs" />
+    <Compile Include="Content\SpriteGrid\DisplayRegionGridSave.cs" />
+    <Compile Include="Content\SpriteGrid\SpriteGridSaveBase.cs" />
+    <Compile Include="Content\SpriteGrid\SpriteGridSave.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Content\Xml\XmlCleaner.cs" />
+    <Compile Include="Debugging\AutomaticDebuggingBehavior.cs" />
+    <Compile Include="Debugging\Debugger.cs" />
+    <Compile Include="Debugging\PropertyDisplayer.cs" />
+    <Compile Include="Feedback\VibrateMotor.cs" />
+    <Compile Include="FlatRedBallServices.cs" />
+    <Compile Include="Graphics\Animation\AnimationChain.cs" />
+    <Compile Include="Graphics\Animation\AnimationChain.Gif.cs" />
+    <Compile Include="Graphics\Animation\AnimationChainList.cs" />
+    <Compile Include="Graphics\Animation\AnimationFrame.cs" />
+    <Compile Include="Graphics\Animation\IAnimationChainAnimatable.cs" />
+    <Compile Include="Graphics\BatchForwardVectorSorter.cs" />
+    <Compile Include="Graphics\BitmapCharacterInfo.cs" />
+    <Compile Include="Graphics\BitmapFont.cs" />
+    <Compile Include="Graphics\DrawableBatch.cs" />
+    <Compile Include="Graphics\EffectCache.cs" />
+    <Compile Include="Graphics\EffectContainer.cs" />
+    <Compile Include="Graphics\GenericEffect.cs" />
+    <Compile Include="Graphics\GraphicalEmumerations.cs" />
+    <Compile Include="Graphics\GraphicsOptions.cs" />
+    <Compile Include="Graphics\IColorable.cs" />
+    <Compile Include="Graphics\IDestroyable.cs" />
+    <Compile Include="Graphics\ILayered.cs" />
+    <Compile Include="Graphics\ITexturable.cs" />
+    <Compile Include="Graphics\IVisible.cs" />
+    <Compile Include="Graphics\Layer.cs" />
+    <Compile Include="Graphics\Particle\EmissionSettings.cs" />
+    <Compile Include="Graphics\Particle\Emitter.cs" />
+    <Compile Include="Graphics\Particle\EmitterList.cs" />
+    <Compile Include="Graphics\Particle\TimedRemovalRecord.cs" />
+    <Compile Include="Graphics\RenderBreak.cs" />
+    <Compile Include="Graphics\RenderBreakList.cs" />
+    <Compile Include="Graphics\Renderer.Common.cs" />
+    <Compile Include="Graphics\Renderer.cs" />
+    <Compile Include="Graphics\Renderers\ImageDataRenderer.cs" />
+    <Compile Include="Graphics\Renderers\IRenderer.cs" />
+    <Compile Include="Graphics\RenderTargets.cs" />
+    <Compile Include="Graphics\SpriteVertex.cs" />
+    <Compile Include="Graphics\Text.cs" />
+    <Compile Include="Graphics\Text.PreRendered.cs" />
+    <Compile Include="Graphics\TextManager.cs" />
+    <Compile Include="Graphics\Tile\GridRelativeState.cs" />
+    <Compile Include="Graphics\Tile\IStateGrid.cs" />
+    <Compile Include="Gui\Cursor.cs" />
+    <Compile Include="Gui\Cursor.TouchScreen.cs" />
+    <Compile Include="Gui\GuiManager.cs" />
+    <Compile Include="Gui\IAutomaticallyPositionedChildWindows.cs" />
+    <Compile Include="Gui\IClickable.cs" />
+    <Compile Include="Gui\IInputReceiver.cs" />
+    <Compile Include="Gui\IObjectDisplayer.cs" />
+    <Compile Include="Gui\IWindow.cs" />
+    <Compile Include="Input\AnalogButton.cs" />
+    <Compile Include="Input\AnalogStick.cs" />
+    <Compile Include="Input\ButtonMap.cs" />
+    <Compile Include="Input\ICursorSelectable.cs" />
+    <Compile Include="Input\IMouseOver.cs" />
+    <Compile Include="Input\InputManager.cs" />
+    <Compile Include="Input\Keyboard.cs" />
+    <Compile Include="Input\Mouse.cs" />
+    <Compile Include="Input\Recording\IInputRecord.cs" />
+    <Compile Include="Input\Recording\InputEvent.cs" />
+    <Compile Include="Input\Recording\InputRecordBase.cs" />
+    <Compile Include="Input\Recording\KeyboardRecord.cs" />
+    <Compile Include="Input\TouchScreen.cs" />
+    <Compile Include="Input\Xbox360Gamepad.cs" />
+    <Compile Include="Instructions\DelegateInstruction.cs" />
+    <Compile Include="Instructions\GenericInstruction.cs" />
+    <Compile Include="Instructions\IInstructable.cs" />
+    <Compile Include="Instructions\Instruction.cs" />
+    <Compile Include="Instructions\InstructionList.cs" />
+    <Compile Include="Instructions\InstructionManager.cs" />
+    <Compile Include="Instructions\InstructionSet.cs" />
+    <Compile Include="Instructions\InstructionBlueprint.cs" />
+    <Compile Include="Instructions\InstructionBlueprintList.cs" />
+    <Compile Include="Content\Instructions\InstructionBlueprintListSave.cs" />
+    <Compile Include="Instructions\Interpolation\DoubleInterpolator.cs" />
+    <Compile Include="Instructions\Interpolation\FloatAngleInterpolator.cs" />
+    <Compile Include="Instructions\Interpolation\FloatInterpolator.cs" />
+    <Compile Include="Instructions\Interpolation\IInterpolator.cs" />
+    <Compile Include="Instructions\Interpolation\IntInterpolator.cs" />
+    <Compile Include="Instructions\Interpolation\LongInterpolator.cs" />
+    <Compile Include="Instructions\KeyframeList.cs" />
+    <Compile Include="Instructions\MethodInstruction.cs" />
+    <Compile Include="Instructions\Pause\AxisAlignedRectangleUnpauseInstruction.cs" />
+    <Compile Include="Instructions\Pause\CameraUnpauseInstruction.cs" />
+    <Compile Include="Instructions\Pause\CircleUnpauseInstruction.cs" />
+    <Compile Include="Instructions\Pause\EmitterUnpauseInstruction.cs" />
+    <Compile Include="Instructions\Pause\InstructionListUnpause.cs" />
+    <Compile Include="Instructions\Pause\SphereUnpauseInstruction.cs" />
+    <Compile Include="Instructions\Pause\SpriteFrameUnpauseInstruction.cs" />
+    <Compile Include="Instructions\Pause\TextUnpauseInstruction.cs" />
+    <Compile Include="Instructions\Pause\TimedRemovalUnpause.cs" />
+    <Compile Include="Instructions\Pause\UnpauseInstruction.cs" />
+    <Compile Include="Instructions\Pause\SpriteUnpauseInstruction.cs" />
+    <Compile Include="Instructions\Pause\PositionedObjectUnpauseInstruction.cs" />
+    <Compile Include="Instructions\Reflection\LateBinder.cs" />
+    <Compile Include="Instructions\Reflection\MemberCondition.cs" />
+    <Compile Include="Instructions\Reflection\PropertyCollection.cs" />
+    <Compile Include="Instructions\Reflection\PropertyValuePair.cs" />
+    <Compile Include="Instructions\Reflection\TypedMember.cs" />
+    <Compile Include="Instructions\ScriptedAnimations\AnimationSequence.cs" />
+    <Compile Include="Instructions\StaticMethodInstruction.cs" />
+    <Compile Include="Instructions\ScriptedAnimations\TimedKeyframeList.cs" />
+    <Compile Include="Instructions\ValueRelationship.cs" />
+    <Compile Include="IO\BmpLoader.cs" />
+    <Compile Include="IO\Csv\CsvFileManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\Csv\CsvReader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\Csv\CsvReader.DataReaderValidations.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\Csv\CsvReader.RecordEnumerator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\Csv\Events\ParseErrorEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\Csv\MemberTypeIndexPair.cs" />
+    <Compile Include="IO\Csv\MissingFieldAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\Csv\ParseErrorAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\Csv\Resources\ExceptionMessage.Designer.cs" />
+    <Compile Include="IO\Csv\RuntimeCsvRepresentation.cs" />
+    <Compile Include="IO\FileManager.cs" />
+    <Compile Include="IO\GifLoader.cs" />
+    <Compile Include="IO\Gif\ImageDataList.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Checksums\Adler32.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Checksums\IChecksum.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\SharpZipBaseException.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Zip\Compression\Deflater.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Zip\Compression\DeflaterConstants.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Zip\Compression\DeflaterEngine.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Zip\Compression\DeflaterHuffman.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Zip\Compression\DeflaterPending.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Zip\Compression\Inflater.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Zip\Compression\InflaterDynHeader.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Zip\Compression\InflaterHuffmanTree.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Zip\Compression\PendingBuffer.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Zip\Compression\Streams\InflaterInputStream.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Zip\Compression\Streams\OutputWindow.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Zip\Compression\Streams\StreamManipulator.cs" />
+    <Compile Include="IO\ICSharpCode.SharpZLib\Zip\ZipException.cs" />
+    <Compile Include="IO\PngLoader.cs" />
+    <Compile Include="IO\Remote\FtpManager.cs" />
+    <Compile Include="IO\StateManager.cs" />
+    <Compile Include="Localization\LocalizationManager.cs" />
+    <Compile Include="ManagedSpriteGroups\GridPattern.cs" />
+    <Compile Include="ManagedSpriteGroups\GridRelativeTexture.cs" />
+    <Compile Include="ManagedSpriteGroups\GridRelativeTextureList.cs" />
+    <Compile Include="ManagedSpriteGroups\SpriteChain.cs" />
+    <Compile Include="ManagedSpriteGroups\SpriteFrame.cs" />
+    <Compile Include="ManagedSpriteGroups\SpriteGrid\DBSpriteGrid.cs" />
+    <Compile Include="ManagedSpriteGroups\SpriteGrid\DoubleKeyDictionary.cs" />
+    <Compile Include="ManagedSpriteGroups\SpriteGrid\SpriteGrid.cs" />
+    <Compile Include="ManagedSpriteGroups\TextureGrid.cs" />
+    <Compile Include="ManagedSpriteGroups\TextureLocation.cs" />
+    <Compile Include="Math\AttachableList.cs" />
+    <Compile Include="Math\Attachment.cs" />
+    <Compile Include="Math\Collision\CollisionEnumerations.cs" />
+    <Compile Include="Math\Geometry\AxisAlignedCube.cs" />
+    <Compile Include="Math\Geometry\AxisAlignedRectangle.cs" />
+    <Compile Include="Math\Geometry\Capsule2D.cs" />
+    <Compile Include="Math\Geometry\Circle.cs" />
+    <Compile Include="Math\Geometry\FloatRectangle.cs" />
+    <Compile Include="Math\Geometry\Frustum.cs" />
+    <Compile Include="Math\Geometry\IReadOnlyScalable.cs" />
+    <Compile Include="Math\Geometry\IScalable.cs" />
+    <Compile Include="Math\Geometry\IScalable3D.cs" />
+    <Compile Include="Math\Geometry\Line.cs" />
+    <Compile Include="Math\Geometry\Point.cs" />
+    <Compile Include="Math\Geometry\Point3D.cs" />
+    <Compile Include="Math\Geometry\Polygon.cs" />
+    <Compile Include="Math\Geometry\Segment.cs" />
+    <Compile Include="Math\Geometry\ShapeCollection.cs" />
+    <Compile Include="Math\Geometry\ShapeCollectionCollision.cs" />
+    <Compile Include="Math\Geometry\ShapeManager.cs" />
+    <Compile Include="Math\Geometry\ShapeMerger.cs" />
+    <Compile Include="Math\Geometry\Sphere.cs" />
+    <Compile Include="Math\IAttachable.cs" />
+    <Compile Include="Math\IAttachableRemovable.cs" />
+    <Compile Include="Math\IPositionable.cs" />
+    <Compile Include="Math\IRotatable.cs" />
+    <Compile Include="Math\IStaticPositionable.cs" />
+    <Compile Include="Math\MathFunctions.cs" />
+    <Compile Include="Math\NaNException.cs" />
+    <Compile Include="Math\PositionedObjectList.cs" />
+    <Compile Include="Math\RollingAverage.cs" />
+    <Compile Include="Math\Splines\Spline.cs" />
+    <Compile Include="Math\Splines\SplineList.cs" />
+    <Compile Include="Math\Splines\SplinePoint.cs" />
+    <Compile Include="Math\Statistics\LinearRegression.cs" />
+    <Compile Include="Math\Statistics\RandomExtensions.cs" />
+    <Compile Include="Performance\IPoolable.cs" />
+    <Compile Include="Performance\Measurement\Section.cs" />
+    <Compile Include="Performance\PoolList.cs" />
+    <Compile Include="PlatformServices.cs" />
+    <Compile Include="PositionedObject.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scene.cs" />
+    <Compile Include="Screens\Screen.cs" />
+    <Compile Include="Screens\ScreenManager.cs" />
+    <Compile Include="Sprite.Common.cs" />
+    <Compile Include="Sprite.cs" />
+    <Compile Include="SpriteList.cs" />
+    <Compile Include="SpriteManager.cs" />
+    <Compile Include="TimeManager.cs" />
+    <Compile Include="Utilities\CustomBehaviorFunctions.cs" />
+    <Compile Include="Utilities\DebuggingFunctions.cs" />
+    <Compile Include="Utilities\EnumFunctions.cs" />
+    <Compile Include="Utilities\INameable.cs" />
+    <Compile Include="Utilities\ITimed.cs" />
+    <Compile Include="Utilities\SpriteSelectionOptions.cs" />
+    <Compile Include="Utilities\StringBuilderExtensions.cs" />
+    <Compile Include="Utilities\StringEnum.cs" />
+    <Compile Include="Utilities\StringFunctions.cs" />
+    <Compile Include="Gui\WindowArray.cs" />
+    <Compile Include="IO\FileManager.IsolatedStorage.cs" />
+    <Compile Include="Content\DefaultFontDataColors.cs" />
+    <Compile Include="Managers\IManager.cs" />
+    <Compile Include="Utilities\ExportOrderAttribute.cs" />
+    <Compile Include="Input\InputManager.Android.cs" />
+    <Compile Include="Input\Keyboard.Android.cs" />
+    <Compile Include="Content\ContentManager.Android.cs" />
+    <Compile Include="FlatRedBallServices.Android.cs" />
+  </ItemGroup>
+  <Import Project="FlatRedBallShared.projitems" Label="Shared" Condition="Exists('FlatRedBallShared.projitems')" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+     Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <None Include="FlatRedBallAndroid\Libraries\MonoGame.Framework.dll" />
+    <None Include="FlatRedBallAndroid\Libraries\OpenTK.dll" />
+  </ItemGroup>
+</Project>

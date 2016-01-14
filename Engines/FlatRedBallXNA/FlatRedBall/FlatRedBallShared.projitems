@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>{0BB8CBE3-8503-46C1-9272-D98E153A230E}</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>FlatRedBallShared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Graphics\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Debugging\CrossPlatform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\ICollidable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\InputManager.Common.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\IPressableInput.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\I1DInput.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\I2DInput.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\I3DInput.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\KeyReference.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Xbox360ButtonReference.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Xbox360DPadReference.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\AnalogStickHorizontal.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\DirectionalKeyGroup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\Atlas.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\AtlasedTexture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\AtlasLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\ImageData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\TextureExtensions.cs" />
+  </ItemGroup>
+</Project>

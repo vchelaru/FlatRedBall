@@ -1,0 +1,574 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Microsoft.Xna.Framework.Audio;
+using FlatRedBall.Math;
+using Microsoft.Xna.Framework.Media;
+using System.Reflection;
+using FlatRedBall.IO;
+using FlatRedBall.Instructions;
+
+#if !WINDOWS_8 && !IOS && !ANDROID
+using Microsoft.Xna.Framework.GamerServices;
+#endif
+
+namespace FlatRedBall.Audio
+{
+    #region SoundEffectPlayingBehavior
+
+    public enum SoundEffectPlayingBehavior
+    {
+        PlayAlways,
+        OncePerFrame
+    }
+
+    #endregion
+
+    public static partial class AudioManager
+    {
+        #region Fields
+
+        private static List<SoundEffectPlayInfo> mSoundEffectPlayInfos = new List<SoundEffectPlayInfo>();
+
+        private static List<string> mSoundsPlayedThisFrame = new List<string>();
+
+        private static string mSettingsFile;
+        
+
+        private static bool mIsInitialized = false;
+        private static Song mCurrentSong = null;
+        private static Song mPreviousSong = null;
+        private static bool mPreviousSongUsesGlobalContent = false;
+
+        static Song mSongLastRequested;
+        static string mLastSongNameRequested;
+
+        static bool mAreSongsEnabled;
+        static bool mAreSoundEffectsEnabled;
+
+		static bool? mDoesUserWantCustomSoundtrack = null;
+
+#if MONODROID
+        //This is for a performance issue with SoundPool
+        private static SoundEffect _droidLoop;
+        private static DateTime _lastPlay = DateTime.Now;
+#endif
+        
+
+        #endregion
+
+        #region Properties
+
+        public static bool IsCustomMusicPlaying
+        {
+            get 
+            { 
+#if SILVERLIGHT
+                return false;
+#else
+				return Microsoft.Xna.Framework.Media.MediaPlayer.GameHasControl == false; 
+#endif
+            }
+        }
+
+        public static SoundEffectPlayingBehavior SoundEffectPlayingBehavior
+        {
+            get;
+            set;
+        }
+
+        public static bool IsInitialized
+        {
+            get { return mIsInitialized; }
+        }
+
+        /// <summary>
+        /// Controls whether the Play function will produce any audio when called.
+        /// This defaults to true, and it can be set to false in response to a setting
+        /// in the game's options screen. Setting this to false will not stop any currently-playing
+        /// SoundEffects as this is an XNA limitation - SoundEffect is fire-and-forget.
+        /// </summary>
+        public static bool AreSoundEffectsEnabled
+        {
+            get
+            {
+                return mAreSoundEffectsEnabled;
+            }
+            set
+            {
+                mAreSoundEffectsEnabled = value;
+            }
+        }
+
+        public static bool AreSongsEnabled
+        {
+            get { return mAreSongsEnabled; }
+            set 
+            { 
+                mAreSongsEnabled = value;
+
+                if (CurrentlyPlayingSong != null && !mAreSongsEnabled)
+                {
+                    StopSong();
+                }
+            }
+        }
+
+        public static string SettingsFile
+        {
+            get { return mSettingsFile; }
+        }
+
+        /// <summary>
+        ///  Represents the "active" song.  This may or may not be actually playing.
+        ///  This may still be non-null when no song is playing if the code has stopped
+        ///  music from playing.  The AudioManager remembers this to resume playing later.
+        /// </summary>
+
+        public static Song CurrentSong
+        {
+            get { return mCurrentSong; }
+        }
+
+        static bool mIsSongUsingGlobalContent;
+
+        static Song mCurrentlyPlayingSongButUsePropertyPlease;
+        /// <summary>
+        /// Represents the song that is currently playing.  If no song is playing this is null.
+        /// </summary>
+        public static Song CurrentlyPlayingSong
+        {
+            get
+            {
+                return mCurrentlyPlayingSongButUsePropertyPlease;
+            }
+            private set
+            {
+                if (value != mCurrentlyPlayingSongButUsePropertyPlease)
+                {
+                    mCurrentlyPlayingSongButUsePropertyPlease = value;
+                }
+            }
+        }
+            
+#if DEBUG
+        /// <summary>
+        /// Reports the total number of sound effects that have been played by the AudioManager since the start of the program's execution.
+        /// This can be used to count sound effect plays as a rough form of profiling.
+        /// </summary>
+        public static int NumberOfSoundEffectPlays
+        {
+            get;
+            set;
+        }
+
+#endif
+
+        #endregion
+
+        #region Event Handlers
+
+
+        static void OnUnsuspending(object sender, EventArgs e)
+        {
+            if (mCurrentSong != null)
+            {
+                PlaySong(mCurrentSong, true, mIsSongUsingGlobalContent);
+            }
+        }
+
+        static void OnSuspending(object sender, EventArgs e)
+        {
+            StopSong();
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        static AudioManager()
+        {
+            AreSoundEffectsEnabled = true;
+            AreSongsEnabled = true;
+#if !WINDOWS_PHONE && !MONOGAME && !SILVERLIGHT
+            SoundListener = new PositionedSoundListener();
+            PositionedSounds = new PositionedObjectList<PositionedSound>();
+#endif
+            Microsoft.Xna.Framework.Media.MediaPlayer.MediaStateChanged += HandleMediaStateChanged;
+
+
+        }
+
+        private static void HandleMediaStateChanged(object sender, EventArgs e)
+        {
+			if(CurrentlyPlayingSong != null && Microsoft.Xna.Framework.Media.MediaPlayer.State == MediaState.Stopped)
+            {
+                CurrentlyPlayingSong = null;
+            }
+        }
+
+        public static bool IsSoundEffectPlaying(SoundEffect soundEffect)
+        {
+            for (int i = 0; i < mSoundEffectPlayInfos.Count; i++)
+            {
+                if (mSoundEffectPlayInfos[i].SoundEffect == soundEffect)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+        public static Song LoadSong(String songName, String filename, int millisecondDuration)
+        {
+#if WINDOWS_8
+            ConstructorInfo construct = typeof(Song).GetConstructor(new Type[3] { typeof(string), typeof(string), typeof(Int32) });
+#else
+            ConstructorInfo construct = typeof(Song).GetConstructor(BindingFlags.CreateInstance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance, null, new Type[3] { typeof(string), typeof(string), typeof(Int32) }, null);
+#endif
+            Song s = (Song)construct.Invoke(new object[3] { songName, filename, millisecondDuration });
+
+            return s;
+
+        }
+
+
+        public static void Play(SoundEffect soundEffect)
+        {
+            Play(soundEffect, 1);
+        }
+
+        /// <summary>
+        /// Plays the argument sound effect.
+        /// </summary>
+        /// <param name="soundEffect">The sound effect to play</param>
+        /// <param name="volume">Volume, ranging from 0.0f (silence) to 1.0f (full volume). 1.0f is full volume</param>
+        public static void Play(SoundEffect soundEffect, float volume)
+        {
+#if DEBUG
+#if !SILVERLIGHT && !MONOGAME
+            if (soundEffect.IsDisposed)
+            {
+                throw new ArgumentException("Argument SoundEffect is disposed");
+            }
+#endif
+#endif
+
+            if (AreSoundEffectsEnabled)
+            {
+                bool shouldPlay = SoundEffectPlayingBehavior == Audio.SoundEffectPlayingBehavior.PlayAlways ||
+                    mSoundsPlayedThisFrame.Contains(soundEffect.Name) == false;
+
+                if (shouldPlay)
+                {
+#if MONODROID
+                    _lastPlay = DateTime.Now;
+#endif
+
+
+					#if ANDROID && !DEBUG
+
+					try
+					{
+						if (volume < 1)
+						{
+							soundEffect.Play(volume, 0, 0);
+						}
+						else
+						{
+							soundEffect.Play();
+						}
+					}
+					catch
+					{
+					// Sept 28, 2015
+					// Monogame 3.4 (and probably 3.5) does not support 
+					// playing Sounds on ARM 64 devices. It crashes. We will
+					// catch it in release in case someone releases a FRB game
+					// and doesn't test it on these devices - better to be quiet
+					// than to crash. In debug it will crash like normal (see below)
+					}
+
+
+					#else
+					if (volume < 1)
+					{
+						soundEffect.Play(volume, 0, 0);
+					}
+					else
+					{
+						soundEffect.Play();
+					}
+
+
+					#endif
+
+
+#if DEBUG
+                    NumberOfSoundEffectPlays++;
+#endif
+                    if (SoundEffectPlayingBehavior == Audio.SoundEffectPlayingBehavior.OncePerFrame)
+                    {
+                        mSoundsPlayedThisFrame.Add(soundEffect.Name);
+                    }
+
+                    SoundEffectPlayInfo sepi = new SoundEffectPlayInfo();
+                    sepi.LastPlayTime = TimeManager.CurrentTime;
+                    sepi.SoundEffect = soundEffect;
+                    mSoundEffectPlayInfos.Add(sepi);
+                }
+            }
+        }
+
+
+        public static void PlayIfNotPlaying(SoundEffect soundEffect)
+        {
+            if(!IsSoundEffectPlaying(soundEffect))
+            {
+                Play(soundEffect);
+            }
+        }
+
+        /// <summary>
+        /// Plays the current song.  PlaySong with an argument must
+        /// be called before this can be called.  This can be used to
+        /// resume music when the game is unpaused or if audio options are
+        /// being turned on/off
+        /// </summary>
+        public static void PlaySong()
+        {
+            PlaySong(mCurrentSong, false, mIsSongUsingGlobalContent);
+        }
+
+        
+        /// <summary>
+        /// Plays the argument song, optionally restarting it if it is already playing.
+        /// </summary>
+        /// <param name="toPlay">The song to play.</param>
+        /// <param name="forceRestart">Whether the song should be restarted. If the toPlay parameter differs from the currently-playing song then it will 
+        /// restart regardless of the forceRestart value. This value only matters when the currently-playing song is passed.</param>
+        /// <param name="isSongGlobalContent">Whether the song uses a Global content manager. This is important if StopAndDisposeCurrentSongIfNameDiffers is called.
+        /// StopAndDisposeCurrentSongIfNameDiffers is called by Glue, so the isSongGlobalContent param matters even if your code is not directly calling this function.</param>
+        public static void PlaySong(Song toPlay, bool forceRestart, bool isSongGlobalContent)
+        {
+            bool shouldPlay = true;
+
+			shouldPlay = IsCustomMusicPlaying == false || (mDoesUserWantCustomSoundtrack.HasValue && mDoesUserWantCustomSoundtrack.Value == false);
+#if WINDOWS_PHONE
+
+
+
+            if (!shouldPlay && !mDoesUserWantCustomSoundtrack.HasValue && AreSongsEnabled)
+            {
+                Guide.BeginShowMessageBox(
+                    "Stop music?",
+                    "Would you like to stop your current music and listen to the music for this game?",
+                    new string[] { "Yes", "No" }, 0, MessageBoxIcon.Alert, UserPermissionCallback, null);
+
+            }
+#endif
+            if (toPlay.Name != mLastSongNameRequested || forceRestart || 
+                CurrentlyPlayingSong == null)
+            {
+                mSongLastRequested = toPlay;
+                mIsSongUsingGlobalContent = isSongGlobalContent;
+                mLastSongNameRequested = toPlay.Name;
+            }
+            else
+            {
+                shouldPlay = false;
+            }
+
+            if (shouldPlay && AreSongsEnabled)
+            {
+                mCurrentSong = toPlay;
+                
+                CurrentlyPlayingSong = mCurrentSong;
+                mIsSongUsingGlobalContent = isSongGlobalContent;
+
+
+
+				#if ANDROID
+				try
+				{
+                	MediaPlayer.Play(toPlay);
+				}
+				// November 19, 2014
+				// For some reason the
+				// automated test project
+				// would always crash when
+				// trying to play a song on
+				// a certain screen.  I was able
+				// to avoid the crash by putting a
+				// breakpoint and waiting a while before
+				// continuing execution.  I suppose it means
+				// that the song needs a little bit of time before
+				// it is played.  So I just added a catch and put 
+				catch(Java.IO.IOException e)
+				{
+					string message = e.Message;
+
+					if(message.Contains("0x64"))
+					{
+						// This needs a second before it starts up
+						int msToWait = 100;
+
+						System.Threading.Thread.Sleep(msToWait);
+						MediaPlayer.Play(toPlay);
+					}
+					else
+					{
+						throw e;
+					}
+				}
+				#else
+				Microsoft.Xna.Framework.Media.MediaPlayer.Play(toPlay);
+
+				#endif
+            }
+        }
+
+#if WINDOWS_PHONE
+        private static void UserPermissionCallback(IAsyncResult r)
+        {
+            int? dialogResult = Guide.EndShowMessageBox(r);
+
+            if (dialogResult == null || dialogResult == 1)
+            {
+                mDoesUserWantCustomSoundtrack = true;
+            }
+            else
+            {
+                mDoesUserWantCustomSoundtrack = false;
+
+                PlaySong(mSongLastRequested, true, mIsSongUsingGlobalContent);
+            }
+        }
+#endif
+
+        public static void StopSong()
+        {
+			Microsoft.Xna.Framework.Media.MediaPlayer.Stop();
+
+            CurrentlyPlayingSong = null;
+        }
+
+        public static bool StopAndDisposeCurrentSongIfNameDiffers(string nameToCompareAgainst)
+        {
+            bool wasDisposed = false;
+
+            if (CurrentlyPlayingSong != null && nameToCompareAgainst != mLastSongNameRequested)
+            {
+                Song songToDispose = CurrentlyPlayingSong;
+                StopSong();
+
+#if !SILVERLIGHT
+                if (!mIsSongUsingGlobalContent)
+                {
+                    songToDispose.Dispose();
+                }
+#endif
+                wasDisposed = true;
+            }
+            return wasDisposed;
+        }
+
+
+        public static void PlaySongThenResumeCurrent(Song toPlay, bool songUsesGlobalContent)
+        {
+            mPreviousSong = mCurrentSong;
+            mPreviousSongUsesGlobalContent = mIsSongUsingGlobalContent;
+
+            mCurrentSong = toPlay;
+            mIsSongUsingGlobalContent = songUsesGlobalContent;
+            try
+            {
+                PlaySong(toPlay, false, songUsesGlobalContent);
+
+#if WINDOWS_8
+                MethodInfo playMethod = typeof(AudioManager).GetMethod("PlaySong", new Type[1] { typeof(Song) });
+#else
+                MethodInfo playMethod = typeof(AudioManager).GetMethod("PlaySong", BindingFlags.Public | BindingFlags.Static, null, new Type[1] { typeof(Song) }, null);
+#endif
+                InstructionManager.Add(new StaticMethodInstruction(playMethod,
+                                                                    new object[1] { mPreviousSong },
+                                                                    TimeManager.CurrentTime + toPlay.Duration.TotalSeconds));
+            }
+            catch
+            {
+                // stupid DRM
+            }
+        }
+        #endregion
+
+        #region Internal Methods
+
+
+        internal static void UpdateDependencies()
+        {
+#if !WINDOWS_PHONE && !MONOGAME && !SILVERLIGHT
+            SoundListener.UpdateDependencies(TimeManager.CurrentTime);
+            SoundListener.UpdateAudio();
+
+            for (int i = 0; i < PositionedSounds.Count; i++)
+            {
+                PositionedSounds[i].UpdateDependencies(TimeManager.CurrentTime);
+                PositionedSounds[i].UpdateAudio();
+            }
+
+            if (mXnaAudioEngine != null) mXnaAudioEngine.Update();
+#endif
+
+            mSoundsPlayedThisFrame.Clear();
+
+
+        }
+
+
+        public static void Update()
+        {
+            for (int i = mSoundEffectPlayInfos.Count - 1; i > -1; i--)
+            {
+                SoundEffectPlayInfo sepi = mSoundEffectPlayInfos[i];
+                if (TimeManager.SecondsSince(sepi.LastPlayTime + sepi.SoundEffect.Duration.TotalSeconds) > 0)
+                {
+                    mSoundEffectPlayInfos.RemoveAt(i);
+                }
+
+            }
+
+
+            // TODO:  Execute instructions
+#if !WINDOWS_PHONE && !MONOGAME && !SILVERLIGHT
+            for (int i = 0; i < PositionedSounds.Count; i++)
+            {
+                PositionedSounds[i].TimedActivity(
+                    TimeManager.SecondDifference,
+                    TimeManager.SecondDifferenceSquaredDividedByTwo,
+                    TimeManager.LastSecondDifference);
+            }
+#endif
+
+// TODO [msmith] Get this working again once we add the data into the asset folder.
+			/* TODO MDS_TEMP
+#if MONODROID
+            if ((DateTime.Now - _lastPlay).Milliseconds > 200)
+            {
+                if (_droidLoop != null)
+                {
+                    _droidLoop.Play(0, 0, 0);
+                    _lastPlay = DateTime.Now;
+                }else
+                {
+                    _droidLoop = FlatRedBallServices.Load<SoundEffect>(@"performanceloop");
+                }
+            }
+#endif
+			*/
+        }
+
+        #endregion
+
+    }
+}

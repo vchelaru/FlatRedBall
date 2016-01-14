@@ -1,0 +1,814 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Xclna.Xna.Animation360</name>
+    </assembly>
+    <members>
+        <member name="T:Xclna.Xna.Animation.BasicPaletteEffect">
+            <summary>
+            Provides functionality similar to that of BasicEffect, but uses a 
+            Matrix Palette.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.BasicPaletteEffect.PALETTE_SIZE">
+            <summary>
+            The max number of bones in the effect's matrix palette.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.BasicPaletteEffect.EnableDefaultLighting">
+            <summary>
+            Enables the default lighting for this effect.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.BasicPaletteEffect.Clone(Microsoft.Xna.Framework.Graphics.GraphicsDevice)">
+            <summary>
+            Clones the current BasicPaletteEffect class.
+            </summary>
+            <param name="device">The device to contain the new instance.</param>
+            <returns>A clone of the current instance.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.BasicPaletteEffect.SetParamsFromBasicEffect(Microsoft.Xna.Framework.Graphics.BasicEffect)">
+            <summary>
+            Sets the parameters of this effect from a BasicEffect instance.
+            </summary>
+            <param name="effect">An instance containing the parameters to be copied.</param>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.Texture">
+            <summary>
+            Gets or sets the texture associated with this effect.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.FogStart">
+            <summary>
+            Gets or sets the vertex fog start distance.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.FogEnd">
+            <summary>
+            Gets or sets the vertex fog end distance.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.FogEnabled">
+            <summary>
+            Gets or sets a value enabling the fog. 
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.FogColor">
+            <summary>
+            Gets or sets the fog color.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.Alpha">
+            <summary>
+            Gets or sets the alhpa blending value.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.TextureEnabled">
+            <summary>
+            Gets or sets a value enabling the textures.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.MatrixPalette">
+            <summary>
+            Gets or sets the bone palette values.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.DirectionalLight0">
+            <summary>
+            Gets directional light zero.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.DirectionalLight1">
+            <summary>
+            Gets directional light one.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.DirectionalLight2">
+            <summary>
+            Gets directional light two.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.AmbientLightColor">
+            <summary>
+            Gets or sets the additive ambient color of this effect.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.SpecularColor">
+            <summary>
+            Gets or sets the specular color of this effect.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.SpecularPower">
+            <summary>
+            Gets or sets the specular power of this effect.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.DiffuseColor">
+            <summary>
+            Gets or sets the diffuse color of this effect.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.LightingEnabled">
+            <summary>
+            Enables or disables lighting.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.EmissiveColor">
+            <summary>
+            Gets or sets the emissive color of this effect.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.World">
+            <summary>
+            Gets or sets the world matrix of this effect.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.View">
+            <summary>
+            Gets or sets the view matrix of this effect.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.Projection">
+            <summary>
+            Gets or sets the projection matrix of this effect.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.BasicPaletteEffect.BasicDirectionalLight">
+            <summary>
+            A basic directional light that uses phong shading.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.BasicDirectionalLight.Enabled">
+            <summary>
+            Enables or disables this light.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.BasicDirectionalLight.Direction">
+            <summary>
+            Gets or sets the direction of this light.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.BasicDirectionalLight.SpecularColor">
+            <summary>
+            Gets or sets the specular color of this light.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BasicPaletteEffect.BasicDirectionalLight.DiffuseColor">
+            <summary>
+            Gets or sets the diffuse color of this light.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.SkinningType">
+            <summary>
+            Info on how a model is skinned.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.SkinningType.None">
+            <summary>
+            No skinning.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.SkinningType.FourBonesPerVertex">
+            <summary>
+            A max of four influences per vertex.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.SkinningType.EightBonesPerVertex">
+            <summary>
+            A max of eight influences per vertex.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.SkinningType.TwelveBonesPerVertex">
+            <summary>
+            A max of twelve influences per vertex.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Util">
+            <summary>
+            Provides various animation utilities.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.Util.TICKS_PER_60FPS">
+            <summary>
+            Ticks per frame at 60 frames per second.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Util.GetSkinningType(Microsoft.Xna.Framework.Graphics.VertexElement[])">
+            <summary>
+            Gets info on what skinning info a vertex element array contains.
+            </summary>
+            <param name="elements">The vertex elements.</param>
+            <returns>Info on what type of skinning the elements contain.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Util.ReflectMatrix(Microsoft.Xna.Framework.Matrix@)">
+            <summary>
+            Reflects a matrix across the Z axis by multiplying both the Z
+            column and the Z row by -1 such that the Z,Z element stays intact.
+            </summary>
+            <param name="m">The matrix to be reflected across the Z axis</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Util.Convert``1(System.Byte[],System.Int32,Microsoft.Xna.Framework.Graphics.GraphicsDevice)">
+            <summary>
+            Converts from an array of bytes to any vertex type.
+            </summary>
+            <typeparam name="T">The type of vertex to which we are converting the bytes</typeparam>
+            <param name="data">The bytes that will be converted to the vertices</param>
+            <param name="vertexSize">The size of one vertex</param>
+            <param name="device">Any working device; required to use our conversion hack</param>
+            <returns>An array of the converted vertices</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Util.SlerpMatrix(Microsoft.Xna.Framework.Matrix,Microsoft.Xna.Framework.Matrix,System.Single)">
+            <summary>
+            Roughly decomposes two matrices and performs spherical linear interpolation
+            </summary>
+            <param name="start">Source matrix for interpolation</param>
+            <param name="end">Destination matrix for interpolation</param>
+            <param name="slerpAmount">Ratio of interpolation</param>
+            <returns>The interpolated matrix</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Util.SlerpMatrix(Microsoft.Xna.Framework.Matrix@,Microsoft.Xna.Framework.Matrix@,System.Single,Microsoft.Xna.Framework.Matrix@)">
+            <summary>
+            Roughly decomposes two matrices and performs spherical linear interpolation
+            </summary>
+            <param name="start">Source matrix for interpolation</param>
+            <param name="end">Destination matrix for interpolation</param>
+            <param name="slerpAmount">Ratio of interpolation</param>
+            <param name="result">Stores the result of hte interpolation.</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Util.IsSkinned(Microsoft.Xna.Framework.Graphics.ModelMeshPart)">
+            <summary>
+            Determines whether or not a ModelMeshPart is skinned.
+            </summary>
+            <param name="meshPart">The part to check.</param>
+            <returns>True if the part is skinned.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Util.IsSkinned(Microsoft.Xna.Framework.Graphics.ModelMesh)">
+            <summary>
+            Determines whether or not a ModelMesh is skinned.
+            </summary>
+            <param name="mesh">The mesh to check.</param>
+            <returns>True if the mesh is skinned.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Util.IsSkinned(Microsoft.Xna.Framework.Graphics.Model)">
+            <summary>
+            Determines whether or not a Model is skinned.
+            </summary>
+            <param name="model">The model to check.</param>
+            <returns>True if the model is skinned.</returns>
+        </member>
+        <member name="T:Xclna.Xna.Animation.AnimationEventHandler">
+            <summary>
+            Used for events dealing with an animation controller.
+            </summary>
+            <param name="sender">The AnimationController that raised this event.</param>
+            <param name="e">The EventArgs.</param>
+        </member>
+        <member name="T:Xclna.Xna.Animation.IAnimationController">
+            <summary>
+            An interface used by BonePose that allows an animation to affect the bone
+            as a function of time.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.IAnimationController.GetCurrentBoneTransform(Xclna.Xna.Animation.BonePose,Microsoft.Xna.Framework.Matrix@)">
+            <summary>
+            Gets the current transform for the given BonePose object in the animation.
+            This is only called when a bone pose is affected by the current animation.
+            </summary>
+            <param name="pose">The BonePose object querying for the current transform in
+            the animation.</param>
+            <param name="transform">The transform of the BonePose object to be set.</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.IAnimationController.ContainsAnimationTrack(Xclna.Xna.Animation.BonePose)">
+            <summary>
+            Gets a value determining whether the animation can potentially affect the
+            given BonePose.
+            </summary>
+            <param name="pose">The BonePose to test.</param>
+            <returns>True if the animation can affect the bone and contains a track
+            for it.</returns>
+        </member>
+        <member name="E:Xclna.Xna.Animation.IAnimationController.AnimationEnded">
+            <summary>
+            Event fired when an animation ends.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.IAnimationController.IsLooping">
+            <summary>
+            Gets or sets a value indicating whether or not the animation is looping.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.IAnimationController.Duration">
+            <summary>
+            Gets the duration of the animation in ticks.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.IAnimationController.ElapsedTime">
+            <summary>
+            Gets or sets the elapsed time in ticks for the animation.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.IAnimationController.SpeedFactor">
+            <summary>
+            Gets or sets the value that is multiplied by the elapsed game time.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.AnimationController">
+            <summary>
+            Controls an animation by advancing it's time and affecting
+            bone transforms
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.AnimationController.#ctor(Microsoft.Xna.Framework.Game,Xclna.Xna.Animation.AnimationInfo)">
+            <summary>
+            Creates a new animation controller.
+            </summary>
+            <param name="game">The game to which this controller will be attached.</param>
+            <param name="sourceAnimation">The source animation that the controller will use.
+            This is stored in the ModelAnimator class.</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.AnimationController.OnAnimationEnded(System.EventArgs)">
+            <summary>
+            Called when the current animation reaches the end.
+            </summary>
+            <param name="args">The event args.</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.AnimationController.Update(Microsoft.Xna.Framework.GameTime)">
+            <summary>
+            Advances the current time in the animation.
+            </summary>
+            <param name="gameTime">Contains the time by which the animation will be advanced</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.AnimationController.GetCurrentBoneTransform(Xclna.Xna.Animation.BonePose,Microsoft.Xna.Framework.Matrix@)">
+            <summary>
+            Gets the current transform for the given BonePose object in the animation.
+            This is only called when a bone pose is affected by the current animation.
+            </summary>
+            <param name="pose">The BonePose object querying for the current transform in
+            the animation.</param>
+            <param name="transform">The transform of the BonePose object to be set.</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.AnimationController.ContainsAnimationTrack(Xclna.Xna.Animation.BonePose)">
+            <summary>
+            Returns true if the animation contains a track for the given BonePose.
+            </summary>
+            <param name="pose">The BonePose to test for track existence.</param>
+            <returns>True if the animation contains a track for the given BonePose.</returns>
+        </member>
+        <member name="E:Xclna.Xna.Animation.AnimationController.AnimationEnded">
+            <summary>
+            Fired when the controller is not looping and the animation has ended.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.AnimationController.IsLooping">
+            <summary>
+            Gets or sets a value that determines if the animation is looping.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.AnimationController.Duration">
+            <summary>
+            Gets the total duration, in ticks, of the animation.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.AnimationController.AnimationSource">
+            <summary>
+            Gets the source animation that this controller is using.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.AnimationController.ElapsedTime">
+            <summary>
+            Gets or sets the elapsed time for the animation.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.AnimationController.SpeedFactor">
+            <summary>
+            Gets or sets the value that is multiplied by the time when it is
+            advanced to determine the playback speed of the animation.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.SkinInfo">
+            <summary>
+            A structure that contains information for a bindpose skin offset.
+            Represents the inverse bind pose for a bone.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.SkinInfo.#ctor(System.String,Microsoft.Xna.Framework.Matrix,System.Int32,System.Int32)">
+            <summary>
+            Creates a new SkinInfo.
+            </summary>
+            <param name="name">The name of the bone attached to the transform.</param>
+            <param name="inverseBindPoseTransform">The inverse bind pose transform for the bone.</param>
+            <param name="paletteIndex">The index in the MatrixPalette for the bone.</param>
+            <param name="boneIndex">The index of the bone.</param>
+        </member>
+        <member name="F:Xclna.Xna.Animation.SkinInfo.BoneName">
+            <summary>
+            The name of the bone attached to the transform.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.SkinInfo.InverseBindPoseTransform">
+            <summary>
+            The transform for the bone.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.SkinInfo.PaletteIndex">
+            <summary>
+            The index in the MatrixPalette for the bone.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.SkinInfo.BoneIndex">
+            <summary>
+            The index of the bone.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.SkinInfoCollection">
+            <summary>
+            A collection of SkinInfo objects.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.SkinInfoCollection.FromModel(Microsoft.Xna.Framework.Graphics.Model)">
+            <summary>
+            Finds the skinning info for the model and calculates the inverse
+            reference poses required for animation.
+            </summary>
+            <param name="model">The model that contains the skinning info.</param>
+            <returns>A collection of SkinInfo objects.</returns>
+        </member>
+        <member name="T:Xclna.Xna.Animation.ModelAnimator">
+            <summary>
+            Animates and draws a model that was processed with AnimatedModelProcessor
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.ModelAnimator.#ctor(Microsoft.Xna.Framework.Game,Microsoft.Xna.Framework.Graphics.Model)">
+            <summary>
+            Creates a new instance of ModelAnimator.
+            </summary>
+            <param name="game">The game to which this component will belong.</param>
+            <param name="model">The model to be animated.</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.ModelAnimator.GetMeshSkinInfo(System.Int32)">
+            <summary>
+            Returns skinning information for a mesh.
+            </summary>
+            <param name="index">The index of the mesh.</param>
+            <returns>Skinning information for the mesh.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.ModelAnimator.InitializeEffectParams">
+            <summary>
+            Initializes the effect parameters.  Should be called after the effects
+            on the model are changed.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.ModelAnimator.Update(Microsoft.Xna.Framework.GameTime)">
+            <summary>
+            Updates the animator by finding the current absolute transforms.
+            </summary>
+            <param name="gameTime">The GameTime.</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.ModelAnimator.CopyAbsoluteTransformsTo(Microsoft.Xna.Framework.Matrix[])">
+            <summary>
+            Copies the current absolute transforms to the specified array.
+            </summary>
+            <param name="transforms">The array to which the transforms will be copied.</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.ModelAnimator.GetAbsoluteTransform(System.Int32)">
+            <summary>
+            Gets the current absolute transform for the given bone index.
+            </summary>
+            <param name="boneIndex"></param>
+            <returns>The current absolute transform for the bone index.</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.ModelAnimator.Draw(Microsoft.Xna.Framework.GameTime)">
+            <summary>
+            Draws the current frame
+            </summary>
+            <param name="gameTime">The game time</param>
+        </member>
+        <member name="P:Xclna.Xna.Animation.ModelAnimator.World">
+            <summary>
+            Gets or sets the world matrix for the animation scene.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.ModelAnimator.Model">
+            <summary>
+            Gets the model associated with this controller.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.ModelAnimator.Animations">
+            <summary>
+            Gets the animations that were loaded in from the content pipeline
+            for this model.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.ModelAnimator.AttachedObjects">
+            <summary>
+            Gets a list of objects that are attached to a bone in the model.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.ModelAnimator.BonePoses">
+            <summary>
+            Gets the BonePoses associated with this ModelAnimator.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.BonePoseCollection">
+            <summary>
+            A collection of BonePose objects that represent the bone transforms of a model
+            as affected by animations.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.BonePoseCollection.CopyAbsoluteTransformsTo(Microsoft.Xna.Framework.Matrix[])">
+            <summary>
+            Computes the absolute transforms for the collection and copies
+            the values.
+            </summary>
+            <param name="transforms">The array into which the transforms will be 
+            copied.</param>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BonePoseCollection.Item(System.String)">
+            <summary>
+            Gets a BonePose object.
+            </summary>
+            <param name="boneName">The name of the bone for which the BonePose 
+            will be returned.</param>
+            <returns>The BonePose associated with the bone name.</returns>
+        </member>
+        <member name="T:Xclna.Xna.Animation.BonePose">
+            <summary>
+            Represents the current pose of a model bone.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.BonePose.GetHierarchy">
+            <summary>
+            Finds a collection of bones that represents the tree of BonePoses with
+            the current BonePose as the root.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.BonePose.GetCurrentTransform">
+            <summary>
+            Calculates the current transform, based on the animations, for the bone
+            represented by the BonePose object.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BonePose.Children">
+            <summary>
+            Gets the immediate children of the current bone.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BonePose.Parent">
+            <summary>
+            Gets the bone's parent.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BonePose.Index">
+            <summary>
+            Gets the index of the bone.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BonePose.Name">
+            <summary>
+            Gets the name of the bone.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BonePose.CurrentController">
+            <summary>
+            Gets or sets the current animation that affects this bone.  If null,
+            then DefaultTransform will be used for this bone's transform.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BonePose.CurrentBlendController">
+            <summary>
+            Gets or sets the blend animation that affects this bone.  If the value
+            is null, then no blending will occur.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BonePose.BlendFactor">
+            <summary>
+            Gets or sets the amount to interpolate between the current animation and
+            the current blend animation, if the current blend animation is not null
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BonePose.DefaultTransform">
+            <summary>
+            Represents the matrix used by the BonePose when it is not affected by
+            an animation or when the animation does not contain a track for the bone.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.BoneKeyframeCollection">
+            <summary>
+            A collection of BoneKeyFrames that represents an animation track.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.BoneKeyframeCollection.GetIndexByTime(System.Int64)">
+            <summary>
+            Gets the index in the track at the given time.
+            </summary>
+            <param name="ticks">The time for which the index is found.</param>
+            <returns>The index in the track at the given time.</returns>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BoneKeyframeCollection.Duration">
+            <summary>
+            Gets the duration of the animation track.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.BoneKeyframeCollection.BoneName">
+            <summary>
+            Gets the name of the bone associated with the animation track.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.BoneKeyframe">
+            <summary>
+            Represents a keyframe in an animation track.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.BoneKeyframe.#ctor(Microsoft.Xna.Framework.Matrix,System.Int64)">
+            <summary>
+            Creats a new BoneKeyframe.
+            </summary>
+            <param name="transform">The transform for the keyframe.</param>
+            <param name="time">The time in ticks for the keyframe.</param>
+        </member>
+        <member name="F:Xclna.Xna.Animation.BoneKeyframe.Transform">
+            <summary>
+            The transform for the keyframe.
+            </summary>
+        </member>
+        <member name="F:Xclna.Xna.Animation.BoneKeyframe.Time">
+            <summary>
+            The time for the keyframe.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.AnimationChannelCollection">
+            <summary>
+            A collection of animation channels or tracks, which are sections of an
+            animation that run for one bone.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.AnimationChannelCollection.Item(System.String)">
+            <summary>
+            Gets the BoneKeyframeCollection that is associated with the given bone.
+            </summary>
+            <param name="boneName">The name of the bone that contains a track in this
+            AnimationChannelCollection.</param>
+            <returns>The track associated with the given bone.</returns>
+        </member>
+        <member name="T:Xclna.Xna.Animation.AnimationInfo">
+            <summary>
+            Contains information about an animation.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.AnimationInfo.AffectsBone(System.String)">
+            <summary>
+            Returns true if the animation contains any tracks that affect the given
+            bone.
+            </summary>
+            <param name="boneName">The bone to test for track information.</param>
+            <returns>True if the animation contains any tracks that affect the given
+            bone.</returns>
+        </member>
+        <member name="P:Xclna.Xna.Animation.AnimationInfo.AnimationChannels">
+            <summary>
+            Gets a collection of channels that represent the bone animation
+            tracks for this animation.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.AnimationInfo.AffectedBones">
+            <summary>
+            Gets a collection of bones that have tracks in this animation.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.AnimationInfo.Duration">
+            <summary>
+            Gets the total duration of this animation in ticks.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.AnimationInfo.Name">
+            <summary>
+            Gets the name of the animation.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.AnimationInfoCollection">
+            <summary>
+            A collection of AnimationInfo objects.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.AnimationInfoCollection.FromModel(Microsoft.Xna.Framework.Graphics.Model)">
+            <summary>
+            Gets a collection of animations stored in the model.
+            </summary>
+            <param name="model">The model that contains the animations.</param>
+            <returns>The animations stored in the model.</returns>
+        </member>
+        <member name="P:Xclna.Xna.Animation.AnimationInfoCollection.Item(System.Int32)">
+            <summary>
+            Gets the AnimationInfo object at the given index.
+            </summary>
+            <param name="index">The index of the AnimationInfo object.</param>
+            <returns>The AnimationInfo object at the given index.</returns>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Content.PaletteEffectReader">
+            <summary>
+            Reads a BasicPaletteEffect from the content pipeline.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.PaletteEffectReader.Read(Microsoft.Xna.Framework.Content.ContentReader,Xclna.Xna.Animation.BasicPaletteEffect)">
+            <summary>
+            Reads a BasicPaletteEffect.
+            </summary>
+            <param name="input">The input stream.</param>
+            <param name="existingInstance">N/A.</param>
+            <returns>A new instance of BasicPaletteEffec.t</returns>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Content.AnimationReader.Read(Microsoft.Xna.Framework.Content.ContentReader,Xclna.Xna.Animation.AnimationInfoCollection)">
+            <summary>
+            Reads in an XNB stream and converts it to a ModelInfo object
+            </summary>
+            <param name="input">The stream from which the data will be read</param>
+            <param name="existingInstance">Not used</param>
+            <returns>The unserialized ModelAnimationCollection object</returns>
+        </member>
+        <member name="T:Xclna.Xna.Animation.Visualization.CubeComponent">
+            <summary>
+            A cube component to assist in visualization of drawable objects.
+            </summary>
+        </member>
+        <member name="T:Xclna.Xna.Animation.IAttachable">
+            <summary>
+            An object that can be attached to a BonePose.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.IAttachable.LocalTransform">
+            <summary>
+            The local transform of the object, before the transform of the attached bone is applied.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.IAttachable.CombinedTransform">
+            <summary>
+            The world space transform of the object as affected by the bone.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.IAttachable.AttachedBone">
+            <summary>
+            The bone to which the object is attached.
+            </summary>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Visualization.CubeComponent.#ctor(Microsoft.Xna.Framework.Game,Microsoft.Xna.Framework.Graphics.Color,System.Single)">
+            <summary>
+            Creats a new CubeComponent.
+            </summary>
+            <param name="game">The game to which this component will be attached.</param>
+            <param name="color">The color of the cube.</param>
+            <param name="sideLength">The length of one side of the cube.</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Visualization.CubeComponent.Dispose(System.Boolean)">
+            <summary>
+            Immediately releases unmanaged resources.
+            </summary>
+            <param name="disposing">False if managed resources should not be disposed.</param>
+        </member>
+        <member name="M:Xclna.Xna.Animation.Visualization.CubeComponent.Draw(Microsoft.Xna.Framework.GameTime)">
+            <summary>
+            Draws the cube.
+            </summary>
+            <param name="gameTime">The game time.</param>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Visualization.CubeComponent.World">
+            <summary>
+            Gets or sets the world matrix.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Visualization.CubeComponent.View">
+            <summary>
+            Gets or sets the view matrix.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Visualization.CubeComponent.Projection">
+            <summary>
+            Gets or sets the projection matrix.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Visualization.CubeComponent.Color">
+            <summary>
+            Gets or sets the color of the cube.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Visualization.CubeComponent.BoundingBox">
+            <summary>
+            Gets the bounding box of the cube in world space.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Visualization.CubeComponent.LocalTransform">
+            <summary>
+            Gets or sets the local transform of the cube, before it as affected by the attached bone.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Visualization.CubeComponent.Xclna#Xna#Animation#IAttachable#CombinedTransform">
+            <summary>
+            Gets or sets the combined transform in world coordinates.
+            </summary>
+        </member>
+        <member name="P:Xclna.Xna.Animation.Visualization.CubeComponent.AttachedBone">
+            <summary>
+            Gets or sets the bone to which this cube is attached.
+            </summary>
+        </member>
+    </members>
+</doc>

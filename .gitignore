@@ -4,3 +4,5 @@ obj/
 *.userprefs
 *.suo
 bin/
+*.user
+*.cachefile
