@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallXna4Template", "FlatRedBallXna4Template\FlatRedBallXna4Template\FlatRedBallXna4Template.csproj", "{649DE040-99C6-4838-ADA3-533D0DBD4325}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallXna4TemplateContent", "FlatRedBallXna4Template\FlatRedBallXna4TemplateContent\FlatRedBallXna4TemplateContent.contentproj", "{64B23BEF-DD26-4B81-AAA6-D9F46B0140B4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		DebugProfile|x86 = DebugProfile|x86
+		Profile|x86 = Profile|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{649DE040-99C6-4838-ADA3-533D0DBD4325}.Debug|x86.ActiveCfg = Debug|x86
+		{649DE040-99C6-4838-ADA3-533D0DBD4325}.Debug|x86.Build.0 = Debug|x86
+		{649DE040-99C6-4838-ADA3-533D0DBD4325}.DebugProfile|x86.ActiveCfg = Debug|x86
+		{649DE040-99C6-4838-ADA3-533D0DBD4325}.DebugProfile|x86.Build.0 = Debug|x86
+		{649DE040-99C6-4838-ADA3-533D0DBD4325}.Profile|x86.ActiveCfg = Release|x86
+		{649DE040-99C6-4838-ADA3-533D0DBD4325}.Profile|x86.Build.0 = Release|x86
+		{649DE040-99C6-4838-ADA3-533D0DBD4325}.Release|x86.ActiveCfg = Release|x86
+		{649DE040-99C6-4838-ADA3-533D0DBD4325}.Release|x86.Build.0 = Release|x86
+		{64B23BEF-DD26-4B81-AAA6-D9F46B0140B4}.Debug|x86.ActiveCfg = Debug|x86
+		{64B23BEF-DD26-4B81-AAA6-D9F46B0140B4}.DebugProfile|x86.ActiveCfg = Debug|x86
+		{64B23BEF-DD26-4B81-AAA6-D9F46B0140B4}.Profile|x86.ActiveCfg = Release|x86
+		{64B23BEF-DD26-4B81-AAA6-D9F46B0140B4}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
