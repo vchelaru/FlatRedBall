@@ -1,0 +1,699 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Glue;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.IO;
+using FlatRedBall.Glue.Reflection;
+
+namespace FlatRedBall.Glue.SaveClasses
+{
+	public static class NameVerifier
+    {
+        #region Fields
+
+        public static char[] InvalidCharacters = 
+            new char[] 
+            { 
+                '~', '`', '!', '@', '#', '$', '%', '^', '&', '*', 
+                '(', ')', '-', '=', '+', ';', '\'', ':', '"', '<', 
+                ',', '>', '.', '/', '\\', '?', '[', '{', ']', '}', 
+                '|', 
+                // Spaces are handled separately
+            //    ' ' 
+            };
+        // We now allow underscore ( '_' )
+
+        static string[] mXnaReservedWords = new string[]
+        {
+            "Texture2D",
+            "Vector2",
+            "Vector3",
+            "Color"
+        };
+
+        static string[] mReservedClassNames = new string[]
+        {
+            "Sprite",
+            "Test",
+            "Cursor",
+            "PositionedObject",
+            "SpriteFrame",
+            "SpriteRig",
+            "Scene",
+            "AnimationChain",
+            "Emitter",
+            "Camera",
+            "SpriteManager",
+            "ShapeManager",
+            "TextManager",
+            "Polygon",
+            "Circle",
+            "AxisAlignedRectangle",
+            "Text",
+            "Object"
+        };
+
+
+        static string[] mOtherReservedNames = new string[]
+        {
+            "Name",
+            "Type",
+            "Collision"
+                
+        };
+
+        static string[] mCSharpKeyWords = new string[]
+        {
+            "abstract",	
+            "event",
+            "new",
+            "struct",
+            "as",
+            "explicit",
+            "null",
+            "switch",
+            "base",
+            "extern",
+            "object",
+            "this",
+            "bool",
+            "false",
+            "operator",
+            "throw",
+            "break",
+            "finally",
+            "out",
+            "true",
+            "byte",
+            "fixed",
+            "override",
+            "try",
+            "case",
+            "float",
+            "params",
+            "typeof",
+            "catch",
+            "for",
+            "private",
+            "uint",
+            "char",
+            "foreach",
+            "protected",
+            "ulong",
+            "checked",
+            "goto",
+            "public",
+            "unchecked",
+            "class",
+            "if",
+            "readonly",
+            "unsafe",
+            "const",
+            "implicit",
+            "ref",
+            "ushort",
+            "continue",
+            "in",
+            "return",
+            "using",
+            "decimal",
+            "int",
+            "sbyte",
+            "virtual",
+            "default",
+            "interface",
+            "sealed",
+            "volatile",
+            "delegate",
+            "internal",
+            "short",
+            "void",
+            "do",
+            "is",
+            "sizeof",
+            "while",
+            "double",
+            "lock",
+            "stackalloc",
+            "else",
+            "long",
+            "static",
+            "enum",
+            "namespace",
+            "string",
+            "async",
+            "await"
+        };
+
+        #endregion
+
+        public static bool IsReferencedFileNameValid(string name, AssetTypeInfo ati, ReferencedFileSave rfs, IElement container, out string whyItIsntValid)
+        {
+            whyItIsntValid = "";
+
+            CheckForCommonImproperNames(name, ref whyItIsntValid);
+
+            // CheckForExistingEntity checks if the name is already used, but we can be more specific if it's part of this entity
+            if(container != null)
+            {
+                string unqualifiedContainerName = FileManager.RemovePath(container.Name);
+
+                if(unqualifiedContainerName.ToLowerInvariant() == FileManager.RemovePath(FileManager.RemoveExtension(name)))
+                {
+                    string containerType = "Entity";
+
+                    if(container is ScreenSave)
+                    {
+                        containerType = "Screen";
+                    }
+                    else if(container is EntitySave)
+                    {
+                        containerType = "Entity";
+                    }
+                    else
+                    {
+                        containerType = "Container";
+                    }
+
+                    whyItIsntValid = "The " + containerType + " that you are adding the file to has the same name as the file.  This is not allowed in Glue.  Please rename the file";
+                }
+            }
+
+            if (string.IsNullOrEmpty(whyItIsntValid))
+            {
+                CheckForExistingEntity(name, ref whyItIsntValid);
+            }
+
+            if (string.IsNullOrEmpty(whyItIsntValid))
+            {
+                CheckForRfsWithMatchingFileName(container, name, rfs, ref whyItIsntValid);
+            }
+
+            if (string.IsNullOrEmpty(whyItIsntValid))
+            {
+                if (ati != null && ati.Extension == "csv")
+                {
+                    // Let's see if there is already a spreadsheet by this name and if so, let's warn the user
+                    // But we only want a spreadsheet that isn't using a created class:
+                    var existing = ObjectFinder.Self.GetAllReferencedFiles().Where(item =>
+                        // Is the item a CSV...
+                        item.IsCsvOrTreatedAsCsv &&
+                            // And is the item different than the rfs we're checking
+                        item != rfs &&
+                            // And do the names match?
+                        FileManager.RemovePath(FileManager.RemoveExtension(item.Name)) == name &&
+                            // And does it not use a custom class?
+                        ObjectFinder.Self.GlueProject.CustomClasses.Any(customClass => customClass.CsvFilesUsingThis.Contains(item.Name)) == false)
+                        .ToList();
+
+
+
+                    if (existing.Count != 0)
+                    {
+                        whyItIsntValid = "There is already a CSV file using the name " + name + ":  " + existing[0].ToString();
+                    }
+                }
+            }
+
+            bool returnValue = string.IsNullOrEmpty(whyItIsntValid);
+            return returnValue;
+        }
+
+        private static void CheckForRfsWithMatchingFileName(IElement container, string name, ReferencedFileSave rfsToSkip, ref string whyItIsntValid)
+        {
+
+            if (container == null)
+            {
+                // We need to see if there is already a file with the same name in Global Content
+                ReferencedFileSave existingRfs = ObjectFinder.Self.GlueProject.GlobalFiles.FirstOrDefault(
+                    rfs=>
+                        (FileManager.RemovePath(rfs.Name) == name || 
+                        rfs.GetInstanceName() == name) &&
+                        rfs != rfsToSkip
+                        );
+                if (existingRfs != null)
+                {
+                    whyItIsntValid += "There is already a file in GlobalContent using the name " + name;
+                }
+
+            }
+            else
+            {
+                // We need to see if there is already a file with the same name in Global Content
+                ReferencedFileSave existingRfs = container.ReferencedFiles.FirstOrDefault(
+                    rfs =>
+                    {
+                        return (FileManager.RemovePath(rfs.Name) == name ||
+                            FileManager.RemoveExtension(FileManager.RemovePath(rfs.Name)) == name) &&
+                            rfs != rfsToSkip
+                            ;
+                    });
+                if (existingRfs != null)
+                {
+                    whyItIsntValid += "There is already a file in " + container.Name + " using the name " + name;
+                }
+            }
+        }
+
+
+
+        public static bool IsScreenNameValid(string name, ScreenSave screenSave, out string whyItIsntValid)
+		{
+			whyItIsntValid = "";
+
+			CheckForCommonImproperNames(name, ref whyItIsntValid);
+
+            if (ObjectFinder.Self.GetScreenSave("Screens\\" + name) != null)
+			{
+				whyItIsntValid = "There is already an Screen named " + name;
+			}
+			else if (ObjectFinder.Self.GetReferencedFileSaveFromFile("Screens\\" + name) != null)
+			{
+				whyItIsntValid = "There is already a file named " + name;
+			}
+            else if (mReservedClassNames.Contains(name))
+            {
+                whyItIsntValid = "The name " + name + " is a reserved class name, so it can't be used for a Screen";
+            }
+            else if (ObjectFinder.Self.GetEntitySaveUnqualified(name) != null)
+            {
+                whyItIsntValid = "There is already an Entity named " + name + ".\n\n" +
+                    "Glue recommends naming the Screen something different than existing Entities because " +
+                    "generated code can get confused if you add this same-named Entity in the Screen.";
+            }
+            else if (name == ProjectManager.ProjectNamespace)
+            {
+                whyItIsntValid = "The Screen cannot be named the same as the root namespace (which is usually the same name as the project)";
+            }
+            return string.IsNullOrEmpty(whyItIsntValid);
+        }
+
+		public static bool IsEntityNameValid(string name, EntitySave entitySave, out string whyItIsntValid)
+		{
+			whyItIsntValid = "";
+
+			CheckForCommonImproperNames(name, ref whyItIsntValid);
+
+
+            CheckForExistingEntity(name, ref whyItIsntValid);
+
+			if (ObjectFinder.Self.GetEntitySaveUnqualified(name) != null)
+			{
+				whyItIsntValid = "There is already an entity named " + name;
+			}
+			else if (ObjectFinder.Self.GetReferencedFileSaveFromFile("Entities\\" + name) != null)
+			{
+				whyItIsntValid = "There is already a file named " + name;
+			}
+            else if (mReservedClassNames.Contains(name))
+            {
+                whyItIsntValid = "The name " + name + " is a reserved class name, so it can't be used for an Entity";
+            }
+            else if (ObjectFinder.Self.GetScreenSaveUnqualified(name) != null)
+            {
+                whyItIsntValid = "There is already a Screen named " + name + ".\n\nGlue recommends not naming your Screens and Entities the same because " +
+                    "adding an Entity to a Screen that has the same name may cause problems in the generated code.";
+
+            }
+            else if (name == ProjectManager.ProjectNamespace)
+            {
+                whyItIsntValid = "The Entity cannot be named the same as the root namespace (which is usually the same name as the project)";
+            }
+
+
+			return string.IsNullOrEmpty(whyItIsntValid);
+		}
+
+        public static bool IsStateCategoryNameValid(string name, out string whyItIsntValid)
+        {
+            whyItIsntValid = null;
+
+            CheckForCommonImproperNames(name, ref whyItIsntValid);
+
+            
+            if (mReservedClassNames.Contains(name))
+            {
+                whyItIsntValid = "The name " + name + " is a reserved class name, so it can't be used for a State Category";
+            }
+
+            return string.IsNullOrEmpty(whyItIsntValid);
+        }
+
+        public static bool IsStateNameValid(string name, IElement element, StateSaveCategory category, StateSave currentStateSave, out string whyItIsntValid)
+        {
+            whyItIsntValid = null;
+
+            CheckForCommonImproperNames(name, ref whyItIsntValid);
+
+            if(!string.IsNullOrEmpty(whyItIsntValid))
+                return false;
+
+            //Check if shared
+            if (element != null)
+            {
+                if (category == null || category.SharesVariablesWithOtherCategories)
+                {
+                    //Check states not in category
+                    if (element.States.Any(otherState => otherState.Name == name && otherState != currentStateSave))
+                    {
+                        whyItIsntValid = "Conflicts with existing state";
+                        return false;
+                    }
+
+                    //Check categories that have sharing on
+                    foreach (var stateSaveCategory in from stateSaveCategory in element.StateCategoryList
+                                                      where stateSaveCategory.SharesVariablesWithOtherCategories
+                                                      from stateSave in stateSaveCategory.States
+                                                      where name == stateSave.Name && stateSave != currentStateSave
+                                                      select stateSaveCategory)
+                    {
+                        whyItIsntValid = "Conflicts with existing state in category " + stateSaveCategory.Name;
+                        return false;
+                    }
+                }
+                else if (category != null)
+                {
+                    if (category.States.Any(state => state.Name == name && state != currentStateSave))
+                    {
+                        whyItIsntValid = "The name " + name + " is already being used in the category " + category.Name;
+                        return false;
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(element.BaseElement))
+            {
+                IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+
+                if (baseElement != null)
+                {
+                    string categoryName = null;
+
+                    if (category != null && category.SharesVariablesWithOtherCategories == false)
+                    {
+                        categoryName = category.Name;
+                    }
+
+                    if (baseElement.GetState(name, categoryName) != null)
+                    {
+                        string screenOrEntity = "screen";
+                        if(baseElement is EntitySave)
+                        {
+                            screenOrEntity = "entity";
+                        }
+
+                        whyItIsntValid = "This state name \"" + name + "\" is already used in a base " + screenOrEntity;
+                    }
+
+                    
+                }
+
+            }
+
+            return string.IsNullOrEmpty(whyItIsntValid);
+        }
+
+        public static bool IsNamedObjectNameValid(string name, out string whyItIsntValid)
+        {
+            return IsNamedObjectNameValid(name, EditorLogic.CurrentNamedObject, out whyItIsntValid);
+        }
+
+        public static bool IsNamedObjectNameValid(string name, NamedObjectSave namedObject, out string whyItIsntValid)
+        {
+            bool isDefinedInBaseButNotSetByDerived = false;
+
+            int wasRemovedFromIndex;
+            NamedObjectSave containerNos;
+            IElement element;
+            RemoveNosFromElementIfNecessary(namedObject, out wasRemovedFromIndex, out element, out containerNos);
+            
+            MembershipInfo membershipInfo = NamedObjectSaveExtensionMethodsGlue.GetMemberMembershipInfo(name);
+
+            if (wasRemovedFromIndex != -1)
+            {
+                if (containerNos == null)
+                {
+                    element.NamedObjects.Insert(wasRemovedFromIndex, namedObject);
+                }
+                else
+                {
+                    containerNos.ContainedObjects.Insert(wasRemovedFromIndex, namedObject);
+                }
+            }
+
+
+            if (membershipInfo == MembershipInfo.ContainedInBase)
+            {
+                // make sure this thing is set to be SetByDerived
+                NamedObjectSave nos = EditorLogic.CurrentElement.GetNamedObjectRecursively(name);
+
+                if (!nos.SetByDerived)
+                {
+                    isDefinedInBaseButNotSetByDerived = true;
+                }
+
+            }
+
+            whyItIsntValid = null;
+
+            CheckForCommonImproperNames(name, ref whyItIsntValid);
+
+            if (string.IsNullOrEmpty(whyItIsntValid))
+            {
+                if (isDefinedInBaseButNotSetByDerived)
+                {
+                    whyItIsntValid = "There is an object named " + name + " in the base Element but it is not Set By Derived.";
+                }
+                else if (membershipInfo == MembershipInfo.ContainedInThis)
+                {
+                    whyItIsntValid = "The name " + name + " is already being used";
+                }
+                else if (EditorLogic.CurrentElement != null && FileManager.RemovePath(EditorLogic.CurrentElement.Name) == name)
+                {
+                    if (EditorLogic.CurrentElement is EntitySave)
+                    {
+                        whyItIsntValid = "You can't name your Object the same name as the Entity it is contained in.";
+
+                    }
+                    else
+                    {
+                        whyItIsntValid = "You can't name your Object the same name as the Screen it is contained in.";
+                    }
+                }
+                else if (string.IsNullOrEmpty(name))
+                {
+                    whyItIsntValid = "The name cannot be blank.";
+                }
+                else if (char.IsDigit(name[0]))
+                {
+                    whyItIsntValid = "Object names can't start with numbers";
+                }
+
+                else if (name.Contains(' '))
+                {
+                    whyItIsntValid = "Object names can't have spaces";
+                }
+                else if (EditorLogic.CurrentElement != null &&
+                    ExposedVariableManager.GetExposableMembersFor(EditorLogic.CurrentElement, false).Any(item => item.Member == name))
+                {
+                    whyItIsntValid = "The name " + name + " is an existing or exposable variable name in " +
+                        EditorLogic.CurrentElement.ToString() + " so it is not a valid object name";
+                }
+                else if (mOtherReservedNames.Contains(name))
+                {
+
+                    whyItIsntValid = "The name \"" + name + "\" is not an allowed name for objects. ";
+                }
+                else if (IsPositionedObjectMember(name))
+                {
+                    whyItIsntValid = "The name \"" + name + "\" is a reserved name by the PositionedObject Type.";
+                }
+            }
+            return string.IsNullOrEmpty(whyItIsntValid);
+        }
+
+        private static bool IsPositionedObjectMember(string name)
+        {
+            Type type = typeof(PositionedObject);
+
+            if (type.GetProperty(name, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static) != null)
+            {
+                return true;
+            }
+
+            if (type.GetField(name, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static) != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static void RemoveNosFromElementIfNecessary(NamedObjectSave namedObject, out int wasRemovedFromIndex, out IElement element, out NamedObjectSave containingNos)
+        {
+            // We want to see if this name is already being used by other NOS's.
+            // However, if this NOS is already part of the current element, then the
+            // check for whether it's being used will always return true - because it's 
+            // being used by itself.  We don't want itself from returning the name as invalid
+            // so we're going to remove it from the NOS list before running the check, then we'll
+            // insert it back to the appropriate place.
+            wasRemovedFromIndex = -1;
+            element = EditorLogic.CurrentElement;
+
+            if (namedObject != null && element != null && element.NamedObjects.Contains(namedObject))
+            {
+                wasRemovedFromIndex = element.NamedObjects.IndexOf(namedObject);
+
+                element.NamedObjects.Remove(namedObject);
+            }
+            containingNos = null;
+
+            if (wasRemovedFromIndex == -1 && element != null)
+            {
+                foreach (NamedObjectSave containerNos in element.NamedObjects)
+                {
+                    if (containerNos.ContainedObjects.Contains(namedObject))
+                    {
+                        wasRemovedFromIndex = containerNos.ContainedObjects.IndexOf(namedObject);
+                        containerNos.ContainedObjects.Remove(namedObject);
+                        containingNos = containerNos;
+                        break;
+                    }
+                }
+            }
+        }
+
+
+
+
+
+        private static void CheckForExistingEntity(string name, ref string whyItIsntValid)
+        {
+            if (ObjectFinder.Self.GetEntitySaveUnqualified(name) != null)
+            {
+                whyItIsntValid = "Your project contains an entity named " + name + " which is the same name as your file.  Glue does not allow files with the " + 
+                    "same names as Entities to be added as this can result in code ambiguity.";
+            }
+        }
+
+		private static void CheckForCommonImproperNames(string name, ref string whyItIsntValid)
+		{
+			if (string.IsNullOrEmpty(name))
+			{
+				whyItIsntValid = "The name can't be empty.";
+			}
+			else if (char.IsDigit(name[0]))
+			{
+				whyItIsntValid = "Names can't start with a number.";
+			}
+			else if(name.IndexOfAny(InvalidCharacters) != -1)
+			{
+				whyItIsntValid = "The name can't contain invalid character " + name[name.IndexOfAny(InvalidCharacters)];
+			}
+			else if(name.Contains(' '))
+			{
+				whyItIsntValid = "The name can't have any spaces.";
+			}
+            else if (mXnaReservedWords.Contains(name))
+            {
+                whyItIsntValid = "The word '" + name + "' is a reserved word used by the engine.  This can't be used as a name";
+            }
+            else if (mCSharpKeyWords.Contains(name))
+            {
+                whyItIsntValid = "The word '" + name + "' is a C# keyword.  This can't be used as a name";
+            }
+            else if (mOtherReservedNames.Contains(name))
+            {
+                whyItIsntValid = "The word '" + name + "' is an invalid name because it can cause ambiguity";
+            }
+
+		}
+
+        
+        internal static bool IsCustomVariableNameValid(string variableName, CustomVariable customVariable, IElement containingElement, ref string whyItIsntValid)
+        {
+            CheckForCommonImproperNames(variableName, ref whyItIsntValid);
+
+            if(string.IsNullOrEmpty(whyItIsntValid))
+            {
+                if (containingElement.CustomVariables.Any(item=> item.Name == variableName && item != customVariable))
+                {
+                    string screenOrEntity = "";
+
+                    if (containingElement is ScreenSave)
+                    {
+                        screenOrEntity = "Screen";
+                    }
+                    else
+                    {
+                        screenOrEntity = "Entity";
+                    }
+
+                    whyItIsntValid += "This " + screenOrEntity + " already has a variable named " + variableName;
+                }
+            }
+
+            // This looks like duplicate code compared to what's above.  
+            //if (string.IsNullOrEmpty(whyItIsntValid))
+            //{
+            //    if (containingElement.ContainsCustomVariable(variableName))
+            //    {
+            //        string screenOrEntity = "";
+
+            //        if (containingElement is ScreenSave)
+            //        {
+            //            screenOrEntity = "Screen";
+            //        }
+            //        else
+            //        {
+            //            screenOrEntity = "Entity";
+            //        }
+
+            //        whyItIsntValid += "This " + screenOrEntity + " already has a variable named " + variableName;
+            //    }
+            //}
+
+            if (string.IsNullOrEmpty(whyItIsntValid))
+            {
+                if (containingElement.GetNamedObjectRecursively(variableName) != null)
+                {
+                    string screenOrEntity = "";
+
+                    if (containingElement is ScreenSave)
+                    {
+                        screenOrEntity = "Screen";
+                    }
+                    else
+                    {
+                        screenOrEntity = "Entity";
+                    }
+                    whyItIsntValid = "This " + screenOrEntity + 
+                        " has an object named " + variableName + " so you must choose a different variable name";
+                }
+            }
+
+            return string.IsNullOrEmpty(whyItIsntValid);
+
+        }
+
+        public static bool DoesTunneledVariableAlreadyExist(string sourceObject, string sourceObjectProperty, IElement element)
+        {
+            if (!string.IsNullOrEmpty(sourceObject))
+            {
+                if (!string.IsNullOrEmpty(sourceObjectProperty))
+                {
+                    foreach (CustomVariable variable in element.CustomVariables)
+                    {
+                        if (variable.SourceObject == sourceObject && variable.SourceObjectProperty == sourceObjectProperty)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+    }
+}

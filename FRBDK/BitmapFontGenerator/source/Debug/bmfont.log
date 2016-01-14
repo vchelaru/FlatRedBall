@@ -1,0 +1,171 @@
+﻿Build started 7/17/2011 2:54:35 PM.
+     1>Project "C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\bmfont.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating ".\Debug\bmfont.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Ilibs\zlib /Ilibs\libpng /Ilibs\libjpeg /Ilibs\squish /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _VC80_UPGRADE=0x0710 /D _MBCS /Gm- /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\Debug/" /Fd".\Debug/vc100.pdb" /Gd /TP /analyze- /errorReport:prompt about.cpp ac_image.cpp ac_string_util.cpp acimg.cpp acimg_bmp.cpp acimg_dds.cpp acimg_jpg.cpp acimg_png.cpp acimg_tga.cpp acutil_config.cpp acutil_unicode.cpp acwin_dialog.cpp acwin_filedialog.cpp acwin_listview.cpp acwin_static.cpp acwin_statusbar.cpp acwin_window.cpp charwin.cpp choosefont.cpp dynamic_funcs.cpp exportdlg.cpp fontchar.cpp fontgen.cpp fontpage.cpp iconimagedlg.cpp imagemgr.cpp imagewnd.cpp main.cpp unicode.cpp
+         about.cpp
+         ac_image.cpp
+         ac_string_util.cpp
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\ac_string_util.cpp(45): warning C4996: '_vsnprintf': This function or variable may be unsafe. Consider using _vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(363) : see declaration of '_vsnprintf'
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\ac_string_util.cpp(57): warning C4996: '_vsnprintf': This function or variable may be unsafe. Consider using _vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(363) : see declaration of '_vsnprintf'
+         acimg.cpp
+         acimg_bmp.cpp
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\acimg_bmp.cpp(85): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\acimg_bmp.cpp(163): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+         acimg_dds.cpp
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\acimg_dds.cpp(119): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\acimg_dds.cpp(283): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+         acimg_jpg.cpp
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\acimg_jpg.cpp(64): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\acimg_jpg.cpp(151): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+         acimg_png.cpp
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\acimg_png.cpp(51): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\acimg_png.cpp(143): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+         acimg_tga.cpp
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\acimg_tga.cpp(66): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\acimg_tga.cpp(321): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+         acutil_config.cpp
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\acutil_config.cpp(51): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+         acutil_unicode.cpp
+         acwin_dialog.cpp
+         acwin_filedialog.cpp
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\acwin_filedialog.cpp(124): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
+         acwin_listview.cpp
+         acwin_static.cpp
+         acwin_statusbar.cpp
+         acwin_window.cpp
+         charwin.cpp
+         choosefont.cpp
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\choosefont.cpp(102): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
+         dynamic_funcs.cpp
+         Generating Code...
+         Compiling...
+         exportdlg.cpp
+         fontchar.cpp
+         fontgen.cpp
+         fontpage.cpp
+         iconimagedlg.cpp
+         imagemgr.cpp
+         imagewnd.cpp
+         main.cpp
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\main.cpp(48): warning C4996: 'freopen': This function or variable may be unsafe. Consider using freopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(249) : see declaration of 'freopen'
+     1>c:\flatredballprojects\frbdk\bitmapfontgenerator\source\main.cpp(49): warning C4996: 'freopen': This function or variable may be unsafe. Consider using freopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(249) : see declaration of 'freopen'
+         unicode.cpp
+         Generating Code...
+       ResourceCompile:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /D _DEBUG /D _VC80_UPGRADE=0x0710 /l"0x0416" /nologo /fo".\Debug\resource.res" resource.rc 
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:".\Debug/bmfont.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:libs\libpng /LIBPATH:libs\zlib /LIBPATH:libs\libjpeg /LIBPATH:libs\squish Usp10.lib comctl32.lib libpng.lib zlib.lib libjpeg.lib squish.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:".\Debug\bmfont.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:".\Debug/bmfont.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE:NO /IMPLIB:".\Debug\bmfont.lib" /MACHINE:X86 .\Debug\resource.res
+         .\Debug/about.obj
+         .\Debug/ac_image.obj
+         .\Debug/ac_string_util.obj
+         .\Debug/acimg.obj
+         .\Debug/acimg_bmp.obj
+         .\Debug/acimg_dds.obj
+         .\Debug/acimg_jpg.obj
+         .\Debug/acimg_png.obj
+         .\Debug/acimg_tga.obj
+         .\Debug/acutil_config.obj
+         .\Debug/acutil_unicode.obj
+         .\Debug/acwin_dialog.obj
+         .\Debug/acwin_filedialog.obj
+         .\Debug/acwin_listview.obj
+         .\Debug/acwin_static.obj
+         .\Debug/acwin_statusbar.obj
+         .\Debug/acwin_window.obj
+         .\Debug/charwin.obj
+         .\Debug/choosefont.obj
+         .\Debug/dynamic_funcs.obj
+         .\Debug/exportdlg.obj
+         .\Debug/fontchar.obj
+         .\Debug/fontgen.obj
+         .\Debug/fontpage.obj
+         .\Debug/iconimagedlg.obj
+         .\Debug/imagemgr.obj
+         .\Debug/imagewnd.obj
+         .\Debug/main.obj
+         .\Debug/unicode.obj
+     1>about.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+     1>LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
+     1>libjpeg.lib(jcapimin.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jcapimin.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jcapistd.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jcapistd.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jccoefct.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jccoefct.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jccolor.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jccolor.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jcdctmgr.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jcdctmgr.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jchuff.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jchuff.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jcinit.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jcinit.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jcmainct.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jcmainct.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jcmarker.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jcmarker.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jcmaster.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jcmaster.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jcomapi.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jcomapi.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jcparam.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jcparam.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jcphuff.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jcphuff.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jcprepct.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jcprepct.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jcsample.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jcsample.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdapimin.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdapimin.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdapistd.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdapistd.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdatadst.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdatadst.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdatasrc.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdatasrc.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdcoefct.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdcoefct.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdcolor.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdcolor.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jddctmgr.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jddctmgr.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdhuff.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdhuff.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdinput.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdinput.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdmainct.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdmainct.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdmarker.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdmarker.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdmaster.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdmaster.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdmerge.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdmerge.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdphuff.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdphuff.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdpostct.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdpostct.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jdsample.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jdsample.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jerror.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jerror.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jfdctflt.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jfdctflt.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jfdctfst.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jfdctfst.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jfdctint.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jfdctint.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jidctflt.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jidctflt.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jidctfst.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jidctfst.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jidctint.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jidctint.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jidctred.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jidctred.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jmemmgr.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jmemmgr.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jmemnobs.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jmemnobs.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jquant1.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jquant1.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jquant2.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jquant2.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>libjpeg.lib(jutils.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'libjpeg.lib(jutils.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>squish.lib(alpha.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'squish.lib(alpha.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>squish.lib(clusterfit.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'squish.lib(clusterfit.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>squish.lib(colourblock.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'squish.lib(colourblock.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>squish.lib(colourfit.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'squish.lib(colourfit.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>squish.lib(colourset.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'squish.lib(colourset.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>squish.lib(maths.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'squish.lib(maths.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>squish.lib(rangefit.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'squish.lib(rangefit.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>squish.lib(singlecolourfit.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'squish.lib(singlecolourfit.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+     1>squish.lib(squish.obj) : warning LNK4099: PDB 'vc70.pdb' was not found with 'squish.lib(squish.obj)' or at 'C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\Debug\vc70.pdb'; linking object as if no debug info
+         bmfont.vcxproj -> C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\.\Debug\bmfont.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:".\Debug/bmfont.exe;#1" /manifest .\Debug\bmfont.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file ".\Debug\bmfont.unsuccessfulbuild".
+         Touching ".\Debug\bmfont.lastbuildstate".
+     1>Done Building Project "C:\FlatRedBallProjects\FRBDK\BitmapFontGenerator\source\bmfont.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:24.04

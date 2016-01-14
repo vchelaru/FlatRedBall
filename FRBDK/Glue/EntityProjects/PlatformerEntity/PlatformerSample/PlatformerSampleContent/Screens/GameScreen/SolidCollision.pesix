@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PolygonEditorSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <UsePixelCoordinates>true</UsePixelCoordinates>
+  <BoundsCameraSave>
+    <X>0</X>
+    <Y>0</Y>
+    <Z>40</Z>
+    <Orthogonal>false</Orthogonal>
+    <OrthogonalHeight>15</OrthogonalHeight>
+    <OrthogonalWidth>-1</OrthogonalWidth>
+    <NearClipPlane>1</NearClipPlane>
+    <FarClipPlane>1000</FarClipPlane>
+  </BoundsCameraSave>
+</PolygonEditorSettings>

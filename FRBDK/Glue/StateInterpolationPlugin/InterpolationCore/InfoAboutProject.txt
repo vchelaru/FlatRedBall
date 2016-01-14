@@ -1,0 +1,3 @@
+﻿The InterpolationCore project was created to be used in non-FRB Enine projects like Gum.
+It can be built and the .dll can be copied over and should work in any environment
+even if the FRB engine isn't being used.  

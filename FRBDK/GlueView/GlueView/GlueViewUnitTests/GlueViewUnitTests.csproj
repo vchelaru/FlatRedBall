@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CE48402D-9337-456B-B16F-2B99CCC8C606}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GlueViewUnitTests</RootNamespace>
+    <AssemblyName>GlueViewUnitTests</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="nunit.framework, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CustomVariableTests.cs" />
+    <Compile Include="EntityControlPlugin\ResizingTests.cs" />
+    <Compile Include="InheritanceTests.cs" />
+    <Compile Include="IVisibleTests.cs" />
+    <Compile Include="LayerTests.cs" />
+    <Compile Include="NamedObjectSaveTests.cs" />
+    <Compile Include="OverallInitializer.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReferencedFileSaveTests.cs" />
+    <Compile Include="ScriptParsing\ExpressionParserTests.cs" />
+    <Compile Include="StateTests.cs" />
+    <Compile Include="TestFramework.cs" />
+    <Compile Include="VariableSetting.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
+      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
+      <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Glue\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj">
+      <Project>{2C289A72-D6BD-4358-AFBC-B71F9D31B01E}</Project>
+      <Name>FlatRedBall.Plugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Glue\GluePropertyGridClasses\GluePropertyGridClasses.csproj">
+      <Project>{852A7438-7AFE-490E-A0C7-0A35355D6179}</Project>
+      <Name>GluePropertyGridClasses</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Glue\GlueSaveClasses\GlueSaveClasses.csproj">
+      <Project>{545FF183-4D9D-4121-9A04-1D354B0B0DBA}</Project>
+      <Name>GlueSaveClasses</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GlueViewOfficialPlugins\GlueViewOfficialPlugins.csproj">
+      <Project>{24374032-2785-44BA-92D0-75E7E85CAB0C}</Project>
+      <Name>GlueViewOfficialPlugins</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GlueViewTestPlugins\GlueViewTestPlugins.csproj">
+      <Project>{4344D74E-76BC-4F3D-A158-E2B029F24214}</Project>
+      <Name>GlueViewTestPlugins</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GlueView\GlueView.csproj">
+      <Project>{84AA3126-0F7A-4836-8EB6-01CD28020308}</Project>
+      <Name>GlueView</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GluxViewManager\GluxViewManager.csproj">
+      <Project>{6CFA6ADB-1FFD-4DD7-AEF8-090A2B86A620}</Project>
+      <Name>GluxViewManager</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Glue\Glue\Content\ContentTypes.csv">
+      <Link>Content\ContentTypes.csv</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="app.config" />
+    <None Include="Content\EnemyInfo.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Entities\ReferencedFileSaveTestsBaseEntity\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Entities\StateTestEntity\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Libraries\nunit.framework.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\redball.BMP">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

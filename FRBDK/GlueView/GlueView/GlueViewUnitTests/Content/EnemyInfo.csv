@@ -1,0 +1,7 @@
+"Name (required, string)","HP (int)","WalkSpeed (float)","Abilities (string)"
+"Imp",8,3,"Ability 1"
+,,,"Ability 2"
+,,,"Ability 3"
+"Orc",16,3,"Ability 4"
+"Goblin",11,5,"Ability 5"
+"Human",14,4,"Ability 6"

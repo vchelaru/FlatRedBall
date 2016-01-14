@@ -1,0 +1,10 @@
+The TilePlugin can currently do the following:
+* Automatically Add the TMX conversion tools to the libraries folder.
+* Automatically modify the BuildToolAssociation so that the build tools are available for TMX.
+* Automatically add all necessary code files to the user's project to use the MapDrawableBatch.
+* Modify the user's project-specific CSV to include loading to MapDrawableBatch - Glue will be able to generate code for these types.
+* If the TMX converter uses an empty .tmx, it crashes.
+
+TODO:
+
+* Add variables to ReferencedFileSave PropertyGrid for the various options available in the plugin.  gotta do that!

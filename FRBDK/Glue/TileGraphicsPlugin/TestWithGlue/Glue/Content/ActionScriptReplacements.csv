@@ -1,0 +1,7 @@
+"TypeToReplace","ReplaceWith","UsedInMethodBodies"
+"float","Number",TRUE
+"Single","Number",TRUE
+"double","Number",TRUE
+"bool","Boolean",TRUE
+"string","String",TRUE
+"List","Vector.",TRUE

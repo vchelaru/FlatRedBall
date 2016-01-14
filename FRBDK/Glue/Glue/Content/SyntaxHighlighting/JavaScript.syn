@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Language Name="JavaScript" Startblock="Code">
+<FileTypes>
+	<FileType Extension=".JS" Name="JavaScript file"/></FileTypes>
+
+	<Block Name="Code" Style="Code" IsMultiline="true">
+		<Scope Start="{" End="}" Style="Scope" Text="{...}" CauseIndent="true"/>
+<Scope Start="else" End="else" Style="Scope" Text="else...else" />
+
+		
+		<!-- Keywords that can exist inside this block -->
+		<Keywords>
+			<PatternGroup Name="C1" Style="C1" CaseSensitive="true">
+				<Patterns>
+					abstract break byte case catch char class const continue default delete do double else extends false final finally float for function goto if implements import in instanceof int interface long native null package private protected public reset return short static super switch synchronized this throw transient true try var void while with
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="C2" Style="C2" CaseSensitive="true">
+				<Patterns>
+					Anchor Applet Area Arguments Array Boolean Button Checkbox Collection Crypto Date Dictionary Document Drive Drives Element Enumerator Event File FileObject FileSystemObject FileUpload Folder Folders Form Frame Function Global Hidden History HTMLElement Image Infinity Input JavaArray JavaClass JavaObject JavaPackage JSObject Layer Link Math MimeType Navigator Number Object Option Packages Password Plugin PrivilegeManager Random RegExp Screen Select String Submit Text Textarea URL VBArray Window WScript
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="C3" Style="C3" CaseSensitive="true">
+				<Patterns>
+					above abs acos action activeElement alert alinkColor all altKey anchor anchors appCodeName applets apply appName appVersion arguments arity asin assign atan atan2 atob  availHeight availLeft availTop availWidth ActiveXObject back background below bgColor big blink blur bold border borderWidths bottom btoa button call callee caller cancelBubble captureEvents ceil charAt charCodeAt charset checked children classes className clear clearInterval clearTimeout click clientInformation  clientX clientY close closed colorDepth compile complete concat confirm constructir contains contextual cookie cos crypto ctrlKey current data defaultCharset defaultChecked defaultSelected defaultStatus defaultValue description disableExternalCapture disablePrivilege document domain E Echo  element elements embeds enabledPlugin enableExternalCapture enablePrivilege encoding escape eval event exec exp expando FromPoint fgColor fileName find fixed floor focus fontColor fontSize form forms forward frames fromCharCode fromElement  getAttribute get getClass getDate getDay getFullYear getHours getMember getMilliseconds getMinutes getMonth getSeconds getSelection getSlot getTime getTimezoneOffset  getUTCDate getUTCDay getUTCFullYear getUTCHours getUTCMilliseconds getUTCMinutes getUTCMonth getUTCSeconds getWindow getYear global go HandleEvent Height  hash hidden history home host hostName href hspace id ids ignoreCase images index indexOf inner innerHTML innerText innerWidth insertAdjacentHTML insertAdjacentText isFinite isNAN italics java javaEnabled join keyCode Links LN10 LN2 LOG10E LOG2E  lang language lastIndex lastIndexOf lastMatch lastModified lastParen layers layerX layerY left leftContext length link linkColor load location locationBar log lowsrc MAX_VALUE MIN_VALUE  margins match max menubar method mimeTypes min modifiers moveAbove moveBelow moveBy moveTo moveToAbsolute multiline NaN NEGATIVE_INFINITY  name navigate navigator netscape next number offscreenBuffering offset offsetHeight offsetLeft offsetParent offsetTop offsetWidth offsetX offsetY onabort onblur onchange onclick ondblclick ondragdrop onerror onfocus  onHelp onkeydown onkeypress onkeyup onload onmousedown onmousemove onmouseout onmouseover onmouseup onmove onreset onresize onsubmit onunload open opener options outerHeight  outerHTML outerText outerWidth POSITIVE_INFINITY PI  paddings pageX pageXOffset pageY pageYOffset parent parentElement parentLayer parentWindow parse parseFloat parseInt pathname personalbar pixelDepth platform plugins pop  port pow preference previous print prompt protocol prototype push random readyState reason referrer refresh releaseEvents reload removeAttribute removeMember replace resizeBy resizeTo returnValue reverse right rightcontext round SQRT1_2 SQRT2  screenX screenY scroll scrollbars scrollBy scrollIntoView scrollTo search select selected selectedIndex self setAttribute setDay setFullYear setHotkeys setHours setInterval  setMember setMilliseconds setMinutes setMonth setResizable setSeconds setSlot setTime setTimeout setUTCDate setUTCFullYear setUTCHours setUTCMillseconds setUTCMinutes  setUTCMonth setUTCSeconds setYear setZOptions shift shiftKey siblingAbove siblingBelow signText sin slice smallsort source sourceIndex splice split sqrt src  srcElement srcFilter status statusbar stop strike style sub submit substr substring suffixes sun sup systemLanguage TYPE  tagName tags taint taintEnabled tan target test text title toElement toGMTString toLocaleString toLowerCase toolbar top toString toUpperCase toUTCString type typeOf UTC unescape unshift untaint unwatch userAgent userLanguage  value valueOf visibility vlinkColor vspace watch which width window write writeln x y zIndex
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="C4" Style="C4" CaseSensitive="true">
+				<Patterns>
+					! $ % &amp; * + - // / : &lt; = &gt; ? [ ] " | ~ is  new sizeof  typeof unchecked
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="C5" Style="C5" CaseSensitive="true">
+				<Patterns>
+					( ) , ; { }
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Numbers" Style="Number">
+				<Pattern Text="([0-9]+)" IsComplex="true" />
+			</PatternGroup>
+		</Keywords>
+		<!-- Operators that can exist inside this block -->
+		<Operators>
+			<PatternGroup name="Operators" Style="Operator">
+				<Patterns>
+			 ~ ! @ % " &amp; * ( ) - + = | \ / { } [ ] : ; &quot; ' &lt; &gt; , . ?
+				</Patterns>
+			</PatternGroup>
+		</Operators>
+		<!-- Blocks that can exist inside this block -->
+		<ChildBlocks>
+			<Child Name="Multiline Comment" />
+			<Child Name="Singleline Comment" />
+			<Child Name="String" />
+			<Child Name="Code" />
+		</ChildBlocks>
+	</Block>	
+	<Block Name="Multiline Comment" Style="Comment"  IsMultiline="true">
+		<Scope Start="/*" End="*/" Style="Comment" Text="/*...*/"/>
+	</Block>
+	<Block Name="Singleline Comment" Style="Comment"  IsMultiline="false">
+		<Scope Start="//" End="" Style="Comment" />
+	</Block>
+	<Block Name="String" Style="String" IsMultiline="true">
+		<Scope Start="&quot;" End="&quot;" EscapeChar="" Style="String" />
+
+	</Block>"
+<Style Name="Code" ForeColor="" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Scope" ForeColor="" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Comment" ForeColor="Green" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="String" ForeColor="SteelBlue" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Number" ForeColor="Teal" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="Keyword" ForeColor="Blue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="Operator" ForeColor="Red" BackColor="" Bold="false" Italic="false" Underline="false" />
+
+	<!-- ULTRAEDIT WORD GROUPS -->
+	<Style Name="C1" ForeColor="Blue" 	BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="C2" ForeColor="DarkBlue" 	BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="C3" ForeColor="Magenta" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="C4" ForeColor="Red" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="C5" ForeColor="DarkRed" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="C6" ForeColor="Gold" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="C7" ForeColor="Green" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="C8" ForeColor="Silver" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+</Language>

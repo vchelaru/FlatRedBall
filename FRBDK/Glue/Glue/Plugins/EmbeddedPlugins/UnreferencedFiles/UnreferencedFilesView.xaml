@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="FlatRedBall.Glue.UnreferencedFiles.UnreferencedFilesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             Height="300" Width="500">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <Label Content="{Binding TopMessage, FallbackValue=UnreferencedFiles:}"></Label>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" >
+            <RadioButton IsChecked="{Binding ScanProject}" Checked="HandleRadioButtonChecked">In Game Project</RadioButton>
+            <RadioButton IsChecked="{Binding ScanFileSystem}" Checked="HandleRadioButtonChecked" Margin="24,0,0,0">On File System</RadioButton>
+        </StackPanel>
+        
+        <ListBox Grid.Row="2" ItemsSource="{Binding UnreferencedFiles}" SelectedItem="{Binding SelectedFileName}">
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Click="ViewInExplorerClick" Header="View in Explorer" />
+                </ContextMenu>
+            </ListBox.ContextMenu>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Display}"></TextBlock>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="3">
+            <Button Click="HandleRefreshClick" >
+                <Image Source="Icons/RefreshIcon.png"></Image>            
+            </Button>
+            <Button Margin="3,0,0,0" Content="Remove all references" Click="HandleRemoveAllClick"></Button>
+            <Button Margin="3,0,0,0"  Content="Remove selected reference" Visibility="{Binding RemoveReferencesVisibility}" Click="HandleRemoveSelectedClick"></Button>
+
+        </StackPanel>
+        
+    </Grid>
+</UserControl>

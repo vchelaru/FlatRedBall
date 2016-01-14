@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FB228D55-7568-44CF-9E33-703B33E0E9D2}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MasterInstaller</RootNamespace>
+    <AssemblyName>FlatRedBallInstaller</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\Setup_Install.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Glue\OfficialPlugins\FRBDKUpdater\FrbdkUpdaterSettings.cs">
+      <Link>FRBDK\FrbdkUpdaterSettings.cs</Link>
+    </Compile>
+    <Compile Include="Components\ComponentStorage.cs" />
+    <Compile Include="Components\ComponentStorageSave.cs" />
+    <Compile Include="Components\InstallableComponents\DefaultInstallControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\InstallableComponents\DefaultInstallControl.Designer.cs">
+      <DependentUpon>DefaultInstallControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\InstallableComponents\DirectX\DirectXComponent.cs" />
+    <Compile Include="Components\InstallableComponents\DotNet4\DotNet4Component.cs" />
+    <Compile Include="Components\InstallableComponents\FRBDK\FileAssociationComponent.cs" />
+    <Compile Include="Components\InstallableComponents\FRBDK\FileAssociationControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\InstallableComponents\FRBDK\FileAssociationControl.Designer.cs">
+      <DependentUpon>FileAssociationControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\InstallableComponents\FRBDK\FrbdkComponent.cs" />
+    <Compile Include="Components\InstallableComponents\XNA3_1\XNA3_1Component.cs" />
+    <Compile Include="Components\InstallableComponents\XNA4\XNA4Component.cs" />
+    <Compile Include="Components\MainComponents\BeginInstall\BeginInstallComponent.cs" />
+    <Compile Include="Components\MainComponents\BeginInstall\BeginInstallControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\MainComponents\BeginInstall\BeginInstallControl.Designer.cs">
+      <DependentUpon>BeginInstallControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\MainComponents\Completed\CompletedControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\MainComponents\Completed\CompletedControl.Designer.cs">
+      <DependentUpon>CompletedControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\MainComponents\Completed\CompletedComponent.cs" />
+    <Compile Include="Components\MainComponents\CustomSetup\CustomSetupComponent.cs" />
+    <Compile Include="Components\MainComponents\CustomSetup\CustomSetupControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\MainComponents\CustomSetup\CustomSetupControl.Designer.cs">
+      <DependentUpon>CustomSetupControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Restarter.cs" />
+    <Compile Include="Components\SetupComponents\FrbdkSetup\FrbdkSetupControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\SetupComponents\FrbdkSetup\FrbdkSetupControl.Designer.cs">
+      <DependentUpon>FrbdkSetupControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SetupComponents\FrbdkSetup\FrbdkSetupComponent.cs" />
+    <Compile Include="Components\InstallableComponentBase.cs" />
+    <Compile Include="Components\MainComponents\Introduction\IntroductionComponent.cs" />
+    <Compile Include="Components\MainComponents\Introduction\IntroductionControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\MainComponents\Introduction\IntroductionControl.Designer.cs">
+      <DependentUpon>IntroductionControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\MainComponents\SetupType\SetupTypeComponent.cs" />
+    <Compile Include="Components\MainComponents\SetupType\SetupTypeControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\MainComponents\SetupType\SetupTypeControl.Designer.cs">
+      <DependentUpon>SetupTypeControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InstallationTopBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InstallationTopBar.Designer.cs">
+      <DependentUpon>InstallationTopBar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExecutableDetails.cs" />
+    <Compile Include="Components\ComponentBase.cs" />
+    <Compile Include="InstallForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InstallForm.Designer.cs">
+      <DependentUpon>InstallForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LineSeparator.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LineSeparator.Designer.cs">
+      <DependentUpon>LineSeparator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Managers\FileIcon.cs" />
+    <Compile Include="Managers\FrbdkUpdaterManager.cs" />
+    <Compile Include="Managers\ShellLink.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerializableDictionary.cs" />
+    <EmbeddedResource Include="Components\InstallableComponents\DefaultInstallControl.resx">
+      <DependentUpon>DefaultInstallControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\InstallableComponents\FRBDK\FileAssociationControl.resx">
+      <DependentUpon>FileAssociationControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\MainComponents\BeginInstall\BeginInstallControl.resx">
+      <DependentUpon>BeginInstallControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\MainComponents\Completed\CompletedControl.resx">
+      <DependentUpon>CompletedControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\MainComponents\CustomSetup\CustomSetupControl.resx">
+      <DependentUpon>CustomSetupControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\SetupComponents\FrbdkSetup\FrbdkSetupControl.resx">
+      <DependentUpon>FrbdkSetupControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\MainComponents\Introduction\IntroductionControl.resx">
+      <DependentUpon>IntroductionControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\MainComponents\SetupType\SetupTypeControl.resx">
+      <DependentUpon>SetupTypeControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\InstallationTopBar.resx">
+      <DependentUpon>InstallationTopBar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InstallForm.resx">
+      <DependentUpon>InstallForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="Executables\xnafx31_redist.msi" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\WindowsPhoneToolsWebInstaller.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\dxwebsetup.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\dotNetFx40_Full_setup.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\Glue\Glue\bin\Debug\Plugins\FRBDKUpdater\FlatRedBall.dll">
+      <Link>Executables\FlatRedBall.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Glue\Glue\bin\Debug\Plugins\FRBDKUpdater\FRBDKUpdater.exe">
+      <Link>Executables\FRBDKUpdater.exe</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Glue\Glue\bin\Debug\Plugins\FRBDKUpdater\Ionic.Zip.dll">
+      <Link>Executables\Ionic.Zip.dll</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Frblogo_white256.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Frblogo_white128.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\roller.gif" />
+    <None Include="Resources\MultipleChecks.png" />
+    <None Include="Resources\base_checkmark_32.png" />
+    <None Include="Resources\Repair.png" />
+    <None Include="Resources\Setup_Install.ico" />
+    <Content Include="Setup_Install.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

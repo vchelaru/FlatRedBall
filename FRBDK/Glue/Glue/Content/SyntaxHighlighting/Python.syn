@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Language Name="Python" Startblock="Code">
+<FileTypes>
+	<FileType Extension=".PY" Name="Python file"/>
+</FileTypes>
+
+	<Block Name="Code" Style="Code" IsMultiline="true">
+		<Scope Start="" End="" Style="Scope" Text="..." />
+
+		
+		<!-- Keywords that can exist inside this block -->
+		<Keywords>
+			<PatternGroup Name="C1" Style="C1" CaseSensitive="true">
+				<Patterns>
+					and assert break class continue def del elif else except exec finally for from global if import in is lambda map not  None or  pass print raise range return try while
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="C2" Style="C2" CaseSensitive="true">
+				<Patterns>
+					abs apply callable chr cmp coerce compile complex delattr dir divmod eval execfile filter float getattr globals group hasattr hash hex id input int intern isinstance issubclass joinfields len list local long max min match oct open ord pow raw_input reduce reload repr round search setattr slice str splitfields tuple type vars xrange __import__
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="C3" Style="C3" CaseSensitive="true">
+				<Patterns>
+					__abs__ __add__ __and__ __call__ __cmp__ __coerce__  __del__ __delattr__ __delitem__ __delslice__ __div__ __divmod__ __float__ __getattr__ __getitem__ __getslice__ __hash__ __hex__ __invert__ __int__ __init__ __len__ __long__ __lshift__ __mod__ __mul__ __neg__ __nonzero__ __oct__ __or__ __pos__ __pow__ __radd__ __rdiv__ __rdivmod__ __rmod__ __rpow__ __rlshift__ __rrshift__ __rshift__ __rsub__ __rmul__ __repr__ __rand__ __rxor__ __ror__ __setattr__ __setitem__ __setslice__ __str__ __sub__ __xor__
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="C4" Style="C4" CaseSensitive="true">
+				<Patterns>
+					__bases__ __class__ __dict__ __methods__ __members__ __name__ __version__
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="C5" Style="C5" CaseSensitive="true">
+				<Patterns>
+					ArithmeticError AssertionError AttributeError EOFError Exception FloatingPointError IOError ImportError IndexError KeyError KeyboardInterrupt LookupError MemoryError NameError OverflowError RuntimeError StandardError SyntaxError SystemError SystemExit TypeError ValueError ZeroDivisionError
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="C6" Style="C6" CaseSensitive="true">
+				<Patterns>
+					AST BaseHTTPServer Bastion cmd commands compileall copy  CGIHTTPServer Complex dbhash dircmp dis dospath dumbdbm emacs find fmt fnmatch ftplib getopt glob gopherlib grep htmllib httplib ihooks imghdr  linecache lockfile  macpath macurl2path mailbox mailcap mimetools mimify mutex math  Mimewriter newdir ni nntplib ntpath nturl2path os ospath pdb pickle pipes poly popen2 posixfile posixpath profile pstats pyclbr  Para quopri  Queue rand random regex regsub rfc822  sched sgmllib shelve site sndhdr string sys snmp  SimpleHTTPServer StringIO SocketServer  tb tempfile toaiff token tokenize traceback tty types tzparse  Tkinter urllib urlparse util uu  UserDict UserList wave whatsound whichdb whrandom xdrlib zmod
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="C7" Style="C7" CaseSensitive="true">
+				<Patterns>
+					array fnmatch struct self
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Numbers" Style="Number">
+				<Pattern Text="([0-9]+)" IsComplex="true" />
+			</PatternGroup>
+		</Keywords>
+		<!-- Operators that can exist inside this block -->
+		<Operators>
+			<PatternGroup name="Operators" Style="Operator">
+				<Patterns>
+			 [ ] { } ( ) &lt; &gt; = &quot; ' . , : +
+				</Patterns>
+			</PatternGroup>
+		</Operators>
+		<!-- Blocks that can exist inside this block -->
+		<ChildBlocks>
+			<!-- Child Name="Multiline Comment" /-->
+			<Child Name="Singleline Comment" />
+			<Child Name="String" />
+			<Child Name="Code" />
+		</ChildBlocks>
+	</Block>	
+	<Block Name="Multiline Comment" Style="Comment"  IsMultiline="true">
+		<Scope Start="" End="" Style="Comment" Text="..."/>
+	</Block>
+	<Block Name="Singleline Comment" Style="Comment"  IsMultiline="false">
+		<Scope Start="#" End="" Style="Comment" />
+	</Block>
+	<Block Name="String" Style="String" IsMultiline="true">
+		<Scope Start="&quot;&quot;&quot;" End="&quot;&quot;&quot;" EscapeChar="\" Style="String" />
+
+	</Block>"
+<Style Name="Code" ForeColor="" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Scope" ForeColor="" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Comment" ForeColor="Green" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="String" ForeColor="SteelBlue" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Number" ForeColor="Teal" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="Keyword" ForeColor="Blue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="Operator" ForeColor="Red" BackColor="" Bold="false" Italic="false" Underline="false" />
+
+	<!-- ULTRAEDIT WORD GROUPS -->
+	<Style Name="C1" ForeColor="Blue" 	BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="C2" ForeColor="DarkBlue" 	BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="C3" ForeColor="Magenta" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="C4" ForeColor="Red" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="C5" ForeColor="DarkRed" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="C6" ForeColor="Red" 	BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="C7" ForeColor="DarkMagenta" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="C8" ForeColor="Silver" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+</Language>

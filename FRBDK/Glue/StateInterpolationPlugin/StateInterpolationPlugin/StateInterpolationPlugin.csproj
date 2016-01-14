@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D73086FC-957E-4E3F-97FA-742CBBF02EA6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>StateInterpolationPlugin</RootNamespace>
+    <AssemblyName>StateInterpolationPlugin</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EditorObjectsXna, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Glue\Glue\bin\Debug\EditorObjectsXna.dll</HintPath>
+    </Reference>
+    <Reference Include="FlatRedBall.Plugin, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Glue\Glue\bin\Debug\FlatRedBall.Plugin.dll</HintPath>
+    </Reference>
+    <Reference Include="FlatRedBall.PropertyGrid, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Glue\Glue\bin\Debug\FlatRedBall.PropertyGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="GlueSaveClasses, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Glue\Glue\bin\Debug\GlueSaveClasses.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TweenerManager.cs" />
+    <EmbeddedResource Include="Back.cs" />
+    <EmbeddedResource Include="Bounce.cs" />
+    <EmbeddedResource Include="Circular.cs" />
+    <EmbeddedResource Include="Cubic.cs" />
+    <EmbeddedResource Include="Elastic.cs" />
+    <EmbeddedResource Include="Exponential.cs" />
+    <EmbeddedResource Include="Linear.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Quadratic.cs" />
+    <EmbeddedResource Include="Quartic.cs" />
+    <EmbeddedResource Include="Quintic.cs" />
+    <EmbeddedResource Include="Sinusoidal.cs" />
+    <EmbeddedResource Include="ShakeTweener.cs" />
+    <Compile Include="StateInterpolationCodeGenerator.cs" />
+    <Compile Include="StateInterpolationPlugin.cs" />
+    <EmbeddedResource Include="Tweener.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
+      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
+      <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Glue\Glue.csproj">
+      <Project>{213357e3-f729-4ff3-9b99-e91c40d50e6e}</Project>
+      <Name>Glue</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libraries\XnaPc\EditorObjectsXna.dll" />
+    <Content Include="Libraries\XnaPc\FlatRedBall.dll" />
+    <Content Include="Libraries\XnaPc\FlatRedBall.Plugin.dll" />
+    <Content Include="Libraries\XnaPc\FlatRedBall.PropertyGrid.dll" />
+    <Content Include="Libraries\XnaPc\Glue.exe" />
+    <Content Include="Libraries\XnaPc\GlueSaveClasses.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>IF NOT EXIST %25AppData%25\FRBDK\Plugins\StateInterpolation\ MD %25AppData%25\FRBDK\Plugins\StateInterpolation\
+
+copy $(TargetDir)\StateInterpolationPlugin.dll %25AppData%25\FRBDK\Plugins\StateInterpolation\StateInterpolationPlugin.dll
+
+copy $(TargetDir)\StateInterpolationPlugin.pdb %25AppData%25\FRBDK\Plugins\StateInterpolation\StateInterpolationPlugin.pdb</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

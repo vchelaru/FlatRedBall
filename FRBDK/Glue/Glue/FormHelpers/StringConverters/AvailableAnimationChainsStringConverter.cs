@@ -1,0 +1,255 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.ComponentModel;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Content;
+using FlatRedBall.Content.Scene;
+using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Content.SpriteFrame;
+
+namespace FlatRedBall.Glue.GuiDisplay
+{
+    // Not sure why but if this is a TypeConverter, then the user can't type in custom AnimationChain names
+    // We want the user to be able to do that in case an AniamtionChain file hasn't been set on whatever we're tunneling into,
+    // so I'm inheriting from StringConverter.
+    public class AvailableAnimationChainsStringConverter : StringConverter
+    {
+        string[] mAvailableChains;
+
+        public string[] AvailableChains
+        {
+            get { return mAvailableChains; }
+        }
+
+        public string ContentDirectory
+        {
+            get
+            {
+                return Facades.FacadeContainer.Self.ProjectValues.ContentDirectory;
+            }
+        }
+
+		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+		{
+			return true;
+		}
+
+		public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+		{
+            // The user may be 
+            // setting up states
+            // for Sprites which set
+            // CurrentChainName, but the
+            // AnimationChain is loaded at
+            // runtime, so Glue doesn't know
+            // which values are available.  So
+            // we should allow for custom values.
+            //return true;
+            return false;
+		}
+
+        public AvailableAnimationChainsStringConverter(CustomVariable customVariable, StateSave stateSave = null)
+        {
+            IElement element = ObjectFinder.Self.GetVariableContainer(customVariable);
+
+            NamedObjectSave referencedNos = element.GetNamedObjectRecursively(customVariable.SourceObject);
+
+            Initialize(element, referencedNos, stateSave);
+
+        }
+
+        public AvailableAnimationChainsStringConverter(IElement element, NamedObjectSave namedObjectSave)
+        {
+            Initialize(element, namedObjectSave);
+        }
+
+        void Initialize(IElement element, NamedObjectSave referencedNos, StateSave stateSave = null)
+        {
+
+            AnimationChainListSave acls = null;        
+            acls = GetAnimationChainListFile(element, referencedNos, stateSave);
+
+
+            if (acls == null)
+            {
+                mAvailableChains = new string[0];
+            }
+            else
+            {
+
+                mAvailableChains = new string[acls.AnimationChains.Count];
+
+                for (int i = 0; i < acls.AnimationChains.Count; i++)
+                {
+                    mAvailableChains[i] = acls.AnimationChains[i].Name;
+                }
+            }
+
+
+        }
+
+        private AnimationChainListSave GetAnimationChainListFile(IElement element, NamedObjectSave referencedNos, StateSave stateSave)
+        {
+            AnimationChainListSave acls = null;
+
+            if (referencedNos != null)
+            {
+                if (referencedNos.SourceType == SourceType.File &&
+                    !string.IsNullOrEmpty(referencedNos.SourceFile) &&
+                    !string.IsNullOrEmpty(referencedNos.SourceName) &&
+                    referencedNos.SourceFile.EndsWith(".scnx"))
+                {
+                    // This is the AnimationChainListSave
+                    // referenced by the file...
+                    acls = GetAnimationChainListFromScnxReference(referencedNos);
+
+                    // ... but the user may be overriding that
+                    // through variables, so let's check if that's
+                    // the case
+                    AnimationChainListSave foundAcls = GetReferencedAclsThroughSetVariables(element, referencedNos, stateSave);
+                    if (foundAcls != null)
+                    {
+                        acls = foundAcls;
+                    }
+
+                }
+                else if (referencedNos.SourceType == SourceType.FlatRedBallType &&
+                    (referencedNos.SourceClassType == "Sprite" || referencedNos.SourceClassType == "SpriteFrame" ||
+                     referencedNos.SourceClassType == "FlatRedBall.Sprite" || referencedNos.SourceClassType == "FlatRedBall.ManagedSpriteGroups.SpriteFrame"
+                    ))
+                {
+                    AnimationChainListSave foundAcls = GetReferencedAclsThroughSetVariables(element, referencedNos, stateSave);
+
+                    acls = foundAcls;
+
+
+                }
+            }
+            return acls;
+        }
+
+        private static AnimationChainListSave GetReferencedAclsThroughSetVariables(IElement element, NamedObjectSave referencedNos, StateSave stateSave)
+        {
+            AnimationChainListSave foundAcls = null;
+
+            // Give states the priority
+            if(stateSave != null)
+            {
+                foreach(var item in stateSave.InstructionSaves)
+                {
+                    var customVariable = element.CustomVariables.FirstOrDefault(variable => variable.Name == item.Member);
+
+                    if(customVariable != null && customVariable.SourceObject == referencedNos.InstanceName && customVariable.SourceObjectProperty == "AnimationChains")
+                    {
+                        string value = (string)item.Value;
+
+                        foundAcls = LoadAnimationChainListSave(element, value);
+                    }
+                }
+
+            }
+
+            if (foundAcls == null)
+            {
+                // Does this have a set AnimationChainList?
+                foreach (CustomVariable customVariable in element.CustomVariables)
+                {
+                    if (customVariable.SourceObject == referencedNos.InstanceName && customVariable.SourceObjectProperty == "AnimationChains")
+                    {
+                        string value = (string)customVariable.DefaultValue;
+
+                        foundAcls = LoadAnimationChainListSave(element, value);
+
+                    }
+                }
+            }
+
+            // If the acls is null that means that it hasn't been set by custom variables, but the NOS itself may have a value set right on the Sprite for the current AnimationChain
+            if (foundAcls == null)
+            {
+                var instruction = referencedNos.GetInstructionFromMember("AnimationChains");
+                if (instruction != null)
+                {
+                    foundAcls = LoadAnimationChainListSave(element, (string)instruction.Value);
+                }
+            }
+
+
+            return foundAcls;
+        }
+
+        private static AnimationChainListSave LoadAnimationChainListSave(IElement element, string rfsName)
+        {
+            AnimationChainListSave acls = null;
+
+            ReferencedFileSave rfs = element.GetReferencedFileSaveByInstanceNameRecursively(rfsName);
+
+            if (rfs != null)
+            {
+                string fullFileName = Facades.FacadeContainer.Self.ProjectValues.ContentDirectory + rfs.Name;
+
+                if (System.IO.File.Exists(fullFileName))
+                {
+                    acls = AnimationChainListSave.FromFile(
+                        fullFileName);
+                }
+            }
+            return acls;
+        }
+
+        private AnimationChainListSave GetAnimationChainListFromScnxReference(NamedObjectSave referencedNos)
+        {
+            string sourceFileName = ContentDirectory + referencedNos.SourceFile;
+
+            string sourceFileDirectory = FlatRedBall.IO.FileManager.GetDirectory(sourceFileName);
+            
+            AnimationChainListSave acls = null;
+
+            SpriteEditorScene ses;
+            if (System.IO.File.Exists(sourceFileName))
+            {
+                ses = SpriteEditorScene.FromFile(sourceFileName);
+                string truncatedName = referencedNos.SourceName.Substring(0, referencedNos.SourceName.LastIndexOf('(') - 1);
+
+
+
+                SpriteSave spriteSave = ses.FindSpriteByName(truncatedName);
+
+                if (spriteSave != null && !string.IsNullOrEmpty(spriteSave.AnimationChainsFile))
+                {
+                    acls = AnimationChainListSave.FromFile(
+                        sourceFileDirectory + spriteSave.AnimationChainsFile);
+                }
+
+                if (acls == null)
+                {
+                    SpriteFrameSave sfs = ses.FindSpriteFrameSaveByName(truncatedName);
+
+                    if (sfs != null)
+                    {
+                        acls = AnimationChainListSave.FromFile(
+                        sourceFileDirectory + sfs.ParentSprite.AnimationChainsFile);
+                    }
+
+                }
+            }
+
+
+
+
+            return acls;
+        }
+
+		List<string> stringToReturn = new List<string>();
+		public override StandardValuesCollection
+					 GetStandardValues(ITypeDescriptorContext context)
+		{
+            StandardValuesCollection svc = new StandardValuesCollection(mAvailableChains);
+
+			return svc;
+		} 
+    }
+}

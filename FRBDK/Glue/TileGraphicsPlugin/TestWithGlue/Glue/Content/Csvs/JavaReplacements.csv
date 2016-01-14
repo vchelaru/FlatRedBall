@@ -1,0 +1,14 @@
+"TypeToReplace","ReplaceWith","ReplacementQualifiedName","UsedInMethodBodies"
+"float","float",,TRUE
+"Single","float",,TRUE
+"double","double",,TRUE
+"bool","boolean",,TRUE
+"string","String",,TRUE
+"IList","List",,TRUE
+"List","ArrayList",,TRUE
+"ReadOnlyCollection","List",,FALSE
+"object","Object",,TRUE
+"uint32","int",,TRUE
+"UInt32","int",,TRUE
+"Dictionary","HashMap",,TRUE
+"Type","Class",,TRUE

@@ -1,0 +1,489 @@
+<?HTML version="1.0" encoding="utf-8" ?>
+<Language Name="PHP" Startblock="text">
+	<FileTypes>
+		<FileType Extension=".PHP" Name="PHP file" />
+
+	</FileTypes>
+	<Block Name="text" Style="text" EscapeChar="" IsMultiline="true">
+		<Keywords></Keywords>
+		<Operators>
+			<PatternGroup Name="HTML Chars" Style="HTML Chars" NormalizeCase="false" CaseSensitive="false">
+				<Pattern Text="&amp;AElig;" />
+				<Pattern Text="&amp;Aacute;" />
+				<Pattern Text="&amp;Acirc;" />
+				<Pattern Text="&amp;Agrave;" />
+				<Pattern Text="&amp;Aring;" />
+				<Pattern Text="&amp;Atilde;" />
+				<Pattern Text="&amp;Auml;" />
+				<Pattern Text="&amp;Ccedil;" />
+				<Pattern Text="&amp;ETH;" />
+				<Pattern Text="&amp;Eacute;" />
+				<Pattern Text="&amp;Ecirc;" />
+				<Pattern Text="&amp;Egrave;" />
+				<Pattern Text="&amp;Euml;" />
+				<Pattern Text="&amp;Iacute;" />
+				<Pattern Text="&amp;Icirc;" />
+				<Pattern Text="&amp;Igrave;" />
+				<Pattern Text="&amp;Iuml;" />
+				<Pattern Text="&amp;Ntilde;" />
+				<Pattern Text="&amp;Oacute;" />
+				<Pattern Text="&amp;Ocirc;" />
+				<Pattern Text="&amp;Ograve;" />
+				<Pattern Text="&amp;Oslash;" />
+				<Pattern Text="&amp;Otilde;" />
+				<Pattern Text="&amp;Ouml;" />
+				<Pattern Text="&amp;THORN;" />
+				<Pattern Text="&amp;Uacute;" />
+				<Pattern Text="&amp;Ucirc;" />
+				<Pattern Text="&amp;Ugrave;" />
+				<Pattern Text="&amp;Uuml;" />
+				<Pattern Text="&amp;Yacute;" />
+				<Pattern Text="&amp;aacute;" />
+				<Pattern Text="&amp;acirc;" />
+				<Pattern Text="&amp;acute;" />
+				<Pattern Text="&amp;aelig;" />
+				<Pattern Text="&amp;agrave;" />
+				<Pattern Text="&amp;amp;" />
+				<Pattern Text="&amp;aring;" />
+				<Pattern Text="&amp;atilde;" />
+				<Pattern Text="&amp;auml;" />
+				<Pattern Text="&amp;brvbar;" />
+				<Pattern Text="&amp;ccedil;" />
+				<Pattern Text="&amp;cedil;" />
+				<Pattern Text="&amp;cent;" />
+				<Pattern Text="&amp;copy;" />
+				<Pattern Text="&amp;curren;" />
+				<Pattern Text="&amp;deg;" />
+				<Pattern Text="&amp;divide;" />
+				<Pattern Text="&amp;eacute;" />
+				<Pattern Text="&amp;ecirc;" />
+				<Pattern Text="&amp;egrave;" />
+				<Pattern Text="&amp;eth;" />
+				<Pattern Text="&amp;euml;" />
+				<Pattern Text="&amp;frac12;" />
+				<Pattern Text="&amp;frac14;" />
+				<Pattern Text="&amp;frac34;" />
+				<Pattern Text="&amp;gt;" />
+				<Pattern Text="&amp;iacute;" />
+				<Pattern Text="&amp;icirc;" />
+				<Pattern Text="&amp;iexcl;" />
+				<Pattern Text="&amp;igrave;" />
+				<Pattern Text="&amp;iquest;" />
+				<Pattern Text="&amp;iuml;" />
+				<Pattern Text="&amp;laquo;" />
+				<Pattern Text="&amp;lt;" />
+				<Pattern Text="&amp;macr;" />
+				<Pattern Text="&amp;micro;" />
+				<Pattern Text="&amp;middot;" />
+				<Pattern Text="&amp;nbsp;" />
+				<Pattern Text="&amp;not;" />
+				<Pattern Text="&amp;ntilde;" />
+				<Pattern Text="&amp;oacute;" />
+				<Pattern Text="&amp;ocirc;" />
+				<Pattern Text="&amp;ograve;" />
+				<Pattern Text="&amp;ordf;" />
+				<Pattern Text="&amp;ordm;" />
+				<Pattern Text="&amp;oslash;" />
+				<Pattern Text="&amp;otilde;" />
+				<Pattern Text="&amp;ouml;" />
+				<Pattern Text="&amp;para;" />
+				<Pattern Text="&amp;plusmn;" />
+				<Pattern Text="&amp;pound;" />
+				<Pattern Text="&amp;quot;" />
+				<Pattern Text="&amp;raquo;" />
+				<Pattern Text="&amp;reg;" />
+				<Pattern Text="&amp;sect;" />
+				<Pattern Text="&amp;shy;" />
+				<Pattern Text="&amp;sup1;" />
+				<Pattern Text="&amp;sup2;" />
+				<Pattern Text="&amp;sup3;" />
+				<Pattern Text="&amp;szlig;" />
+				<Pattern Text="&amp;thorn;" />
+				<Pattern Text="&amp;times;" />
+				<Pattern Text="&amp;uacute;" />
+				<Pattern Text="&amp;ucirc;" />
+				<Pattern Text="&amp;ugrave;" />
+				<Pattern Text="&amp;uml;" />
+				<Pattern Text="&amp;uuml;" />
+				<Pattern Text="&amp;yacute;" />
+				<Pattern Text="&amp;yen;" />
+				<Pattern Text="&amp;yuml;" />
+			</PatternGroup>
+		</Operators>
+		<ChildBlocks>
+			<Child Name="PHP Header" />
+			<Child Name="PHP" />
+			<Child Name="PHP" />
+			<Child Name="HTML Comment" />
+			<Child Name="HTML gnu" />
+			<Child Name="HTML StyleMain" />
+			<Child Name="HTML JavaScriptMain" />
+			<Child Name="HTML Tag" />
+			
+		</ChildBlocks>
+	</Block>
+	
+	<Block Name="HTML JavaScriptMain" Style="HTML JavaScript" IsMultiline="true" TerminateChildren="true" BackColor="WhiteSmoke" >
+		<Scope Start="(?i)(&lt;script(\s)*(.)*&gt;)" StartIsComplex="true" End="(?i)(&lt;/script(\s)*(.)*&gt;)"  EndIsComplex="true" Style="HTML JavaScript Pattern" Text="&lt;Script&gt;" SpawnBlockOnStart="HTML JavaScript" />
+		
+	</Block>
+	
+	
+	<Block Name="HTML StyleMain" Style="HTML Style" IsMultiline="true" TerminateChildren="true" >		
+		<Scope Start="&lt;style(\s)*(.)*&gt;" StartIsComplex="true" End="&lt;/style(\s)*(.)*&gt;"  EndIsComplex="true"  Style="HTML Style Pattern" Text="&lt;Style&gt;"  />
+		<ChildBlocks>
+			<Child Name="PHP" />		
+			<Child Name="HTML Style Comment" />		
+			<Child Name="HTML Style" />		
+		</ChildBlocks>	
+	</Block>
+	
+	<Block Name="HTML Style" Style="HTML Style Attrib" IsMultiline="true" TerminateChildren="true" >		
+		<Scope Start="{" End="}" Style="HTML Style" Text="{...}" />		
+		<ChildBlocks>		
+			<Child Name="PHP" />	
+			<Child Name="HTML Style Comment" />						
+			<Child Name="HTML Style Value" />					
+		</ChildBlocks>	
+	</Block>
+	
+	<Block Name="HTML Style Value" Style="HTML Style Value" IsMultiline="true" >		
+		<Scope Start=":" End=";" Style="HTML Style Value" Text=":...;" />		
+		<ChildBlocks>		
+			<Child Name="PHP" />					
+			<Child Name="HTML Style Comment" />					
+		</ChildBlocks>	
+	</Block>
+	
+	<Block Name="HTML Style Comment" Style="HTML Comment" IsMultiline="true" >		
+		<Scope Start="/*" End="*/" Style="HTML Comment" Text="/*...*/" />		
+		<ChildBlocks>		
+			<Child Name="PHP" />								
+		</ChildBlocks>	
+	</Block>
+	
+	<Block Name="HTML JavaScript" Style="HTML JavaScript" IsMultiline="true" >		
+		<Scope Start="{" End="}" Style="" Text="{...}" />
+		<Keywords>
+			<PatternGroup Name="Keywords" Style="PHP Keywords" CaseSensitive="false" NormalizeCase="true">
+				<Patterns>
+boolean
+break byte
+case catch char class const continue
+debugger default delete do double
+else enum export extends
+false final finally float for function 
+goto
+if implements import in instanceof int interface
+long
+native new null
+package private protected public
+return
+short static super switch synchronized
+this throw throws transient true try typeof
+var void volatile
+while with
+
+
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup  Name="Functions" Style="PHP Functions" CaseSensitive="false" NormalizeCase="true">
+				<Patterns>
+abs acos alert anchor apply asin atan atan2 atob attachEvent
+back big blink blur bold borderWidths btoa
+call captureEvents ceil charAt charCodeAt clear clearInterval clearTimeout click close compile concat confirm contextual cos createElement createEventObject createPopup createStyleSheet createTextNode
+detachEvent disableExternalCapture dump
+elementFromPoint enableExternalCapture escape eval exec execCommand execScript exp
+fileCreatedDate fileModifiedDate fileSize fileUpdatedDate find firstChild fixed floor focus fontcolor fontsize fromCharCode forward
+getAttention getDate getDay getElementById getElementsByName getElementsByTagName getFullYear getHours getMilliseconds getMinutes getMonth getSeconds getSelection getTime getTimezoneOffset getUTCDate getUTCDay getUTCFullYear getUTCHours getUTCMilliseconds getUTCMinutes getUTCMonth getUTCSeconds getYear go
+handleEvent home
+indexOf isFinite isNaN italics
+javaEnabled join
+lastIndexOf link load log
+margins match max mergeAttributes min moveAbove moveBelow moveBy moveTo moveToAbsolute
+navigate 
+open
+paddings parse parseFloat parseInt plugins.refresh pop pow preference print prompt push
+queryCommandEnabled queryCommandIndeterm queryCommandState queryCommandValue
+random recalc releaseCapture releaseEvents reload replace reset resizeBy resizeTo returnValue reverse round routeEvents
+savePreferences scroll scrollBy scrollByLines scrollByPages scrollTo scrollX scrollY search select setDate setFullYear setActive setCursor setHotKeys setHours setInterval setMilliseconds setMinutes setMonth setResizable setSeconds setTime setTimeout setUTCDate setUTCFullYear setUTCHours setUTCMilliseconds setUTCMinutes setUTCMonth setUTCSeconds setYear setZOptions shift showHelp showModalDialog showModelessDialog sidebar sin signText sizeToContent slice small sort splice split sqrt strike stop sub submit substr substring sup
+taint taintEnabled tan test toGMTString toLocaleString toLowerCase toSource toString toUpperCase toUTCString 
+UTC
+unescape unshift untaint updateCommands unwatch
+valueOf
+watch write writeln
+
+				</Patterns>
+			</PatternGroup>
+		</Keywords>
+		<Operators>
+			<PatternGroup Name="Operators2" Style="PHP Comment">
+				<Pattern Text="--&gt;" />
+				<Pattern Text="&lt;!--" />
+			</PatternGroup>
+			<PatternGroup Name="Operators" Style="Javascript Operators">
+				<Pattern Text="+" />
+				<Pattern Text="-" />
+				<Pattern Text="*" />
+				<Pattern Text="/" />
+				<Pattern Text="^" />
+				<Pattern Text="." />
+				<Pattern Text=":" />
+				<Pattern Text=";" />
+				<Pattern Text="=" />
+				<Pattern Text="&gt;" />
+				<Pattern Text="&lt;" />
+				<Pattern Text="&amp;" />
+				<Pattern Text="|" />
+			</PatternGroup>
+		</Operators>
+		<ChildBlocks>
+			<Child Name="HTML JavaScript" />
+			<Child Name="Script String" />
+			<Child Name="Script String2" />
+			<Child Name="Script MultiComment" />
+			<Child Name="PHP" />
+			
+		</ChildBlocks>
+	</Block>
+	<!-- this block is the HTML tags in HTML comments-->
+	<Block Name="HTML Tag" Style="HTML Tag" EscapeChar="" IsMultiline="true">
+		<Scope Start="&lt;" End="&gt;" Style="HTML Tag Pattern" Text="&lt;...&gt;" />
+		<Operators>
+			<PatternGroup Name="HTML Attrib" Style="HTML Attrib">
+				<!-- operator is the attributes that can exist within HTML tags-->
+				<Pattern Text="(\s[a-zA-Z:]+)" IsComplex="true" />
+			</PatternGroup>
+		</Operators>
+		<ChildBlocks>
+			<Child Name="PHP" />
+			<Child Name="HTML String" />
+		</ChildBlocks>
+	</Block>
+	<Block Name="HTML String" Style="HTML String" EscapeChar="" IsMultiline="false">
+		<Scope Start="&quot;" End="&quot;" Style="HTML String Pattern" Text="" />
+		<ChildBlocks>
+			<Child Name="PHP" />
+		</ChildBlocks>
+	</Block>
+	<Block Name="HTML Comment" Style="HTML Comment" EscapeChar="" IsMultiline="true">
+		<Scope Start="&lt;!--" End="--&gt;" Style="HTML Comment" Text="&lt;!--...--&gt;" />
+		<ChildBlocks>
+			<Child Name="PHP" />
+		</ChildBlocks>
+	</Block>
+	<Block Name="HTML gnu" Style="HTML gnu" EscapeChar="" IsMultiline="true">
+		<Scope Start="&lt;!" End="&gt;" Style="HTML Tag Pattern" Text="&lt;!...&gt;" />
+	</Block>
+	<Block Name="PHP Header" Style="PHP Pattern" EscapeChar="" IsMultiline="true">
+		<Scope Start="&lt;%@" End="%&gt;" Style="PHP Pattern" Text="&lt;%@...%&gt;" />
+	</Block>
+	<!--PHP PHP PHP PHP -->
+	<Block Name="PHP" Style="PHP" EscapeChar="" IsMultiline="true" TerminateChildren="true">
+		<Bracket Start="(" End=")" Style="PHP" />
+		<Bracket Start="[" End="]" Style="PHP" />
+		<Keywords>
+			<PatternGroup Name="Keywords" Style="PHP Keywords" CaseSensitive="false" NormalizeCase="true">
+				<Pattern Text="End Function" IsSeparator="true" />
+				<Pattern Text="End Sub" IsSeparator="true" />
+				<Pattern Text="End Property" IsSeparator="true" />
+				<Patterns>
+echo else elseif
+for
+global
+if
+return
+while
+include true false
+switch
+case
+break
+default
+
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Functions" Style="PHP Functions" CaseSensitive="false" NormalizeCase="true">
+				<Patterns>
+Abs Acos ada_afetch ada_autocommit ada_close ada_commit ada_connect ada_exec ada_fetchrow ada_fieldname ada_fieldnum ada_fieldtype ada_freeresult ada_numfields ada_numrows 
+ada_result ada_resultall ada_rollback AddCSlashes AddSlashes apache_lookup_uri apache_note array array_count_values array_flip array_keys array_merge array_pad array_pop 
+array_push array_reverse array_shift array_slice array_splice array_unshift array_values array_walk arsort Asin asort aspell_check aspell_check-raw aspell_new aspell_suggest 
+Atan Atan2
+base64_decode base64_encode basename base_convert bcadd bccomp bcdiv bcmod bcmul bcpow bcscale bcsqrt bcsub bin2hex BinDec
+Ceil chdir checkdate checkdnsrr chgrp chmod Chop chown Chr chunk_split clearstatcache closedir closelog connection_aborted connection_status connection_timeout 
+contained convert_cyr_string copy Cos count cpdf_add_annotation cpdf_add_outline cpdf_arc cpdf_begin_text cpdf_circle cpdf_clip cpdf_close cpdf_closepath 
+cpdf_closepath_fill_stroke cpdf_closepath_stroke cpdf_continue_text cpdf_curveto cpdf_end_text cpdf_fill cpdf_fill_stroke cpdf_finalize cpdf_finalize_page 
+cpdf_import_jpeg cpdf_lineto cpdf_moveto cpdf_open cpdf_output_buffer cpdf_page_init cpdf_place_inline_image cpdf_rect cpdf_restore cpdf_rlineto cpdf_rmoveto 
+cpdf_rotate cpdf_save cpdf_save_to_file cpdf_scale cpdf_setdash cpdf_setflat cpdf_setgray cpdf_setgray_fill cpdf_setgray_stroke cpdf_setlinecap cpdf_setlinejoin 
+cpdf_setlinewidth cpdf_setmiterlimit cpdf_setrgbcolor cpdf_setrgbcolor_fill cpdf_setrgbcolor_stroke cpdf_set_char_spacing cpdf_set_creator cpdf_set_current_page 
+cpdf_set_font cpdf_set_horiz_scaling cpdf_set_keywords cpdf_set_leading cpdf_set_page_animation cpdf_set_subject cpdf_set_text_matrix cpdf_set_text_pos 
+cpdf_set_text_rendering cpdf_set_text_rise cpdf_set_title cpdf_set_word_spacing cpdf_show cpdf_show_xy cpdf_stringwidth cpdf_stroke cpdf_text cpdf_translate crypt current
+date dbase_add_record dbase_close dbase_create dbase_delete_record dbase_get_record dbase_get_record_with_names dbase_numfields dbase_numrecords dbase_open dbase_pack 
+dbase_replace_record dblist dbmclose dbmdelete dbmexists dbmfetch dbmfirstkey dbminsert dbmnextkey dbmopen dbmreplace debugger_off debugger_on DecBin DecHex DecOct define 
+defined delete die dir dirname diskfreespace dl doubleval
+each easter_date easter_days echo empty end endwhile ereg eregi eregi_replace ereg_replace error_log error_reporting escapeshellcmd eval exec exit Exp explode extension_loaded extract
+fclose fdf_close fdf_create fdf_get_file fdf_get_status fdf_get_value fdf_next_field_name fdf_open fdf_save fdf_set_ap fdf_set_file fdf_set_status fdf_set_value feof fgetc 
+fgetcsv fgets fgetss file fileatime filectime filegroup fileinode filemtime fileowner fileperms filepro filepro_fieldcount filepro_fieldname filepro_fieldtype 
+filepro_fieldwidth filepro_retrieve filepro_rowcount filesize filetype file_exists flock Floor flush fopen fpassthru fputs fread FrenchToJD fseek fsockopen ftell ftp_cdup 
+ftp_chdir ftp_connect ftp_delete ftp_fget ftp_fput ftp_get ftp_login ftp_mdtm ftp_mkdir ftp_nlist ftp_pasv ftp_put ftp_pwd ftp_quit ftp_rawlist ftp_rename ftp_rmdir ftp_size 
+ftp_systype function_exists func_get_arg func_get_args func_num_args fwrite
+getallheaders getdate getenv gethostbyaddr gethostbyname gethostbynamel GetImageSize getlastmod getmxrr getmyinode getmypid getmyuid getprotobyname getprotobynumber getrandmax 
+getrusage getservbyname getservbyport gettimeofday gettype get_browser get_cfg_var get_current_user get_html_translation_table get_magic_quotes_gpc get_magic_quotes_runtime 
+get_meta_tags gmdate gmmktime gmstrftime GregorianToJD gzclose gzeof gzfile gzgetc gzgets gzgetss gzopen gzpassthru gzputs gzread gzrewind gzseek gztell gzwrite
+header HexDec htmlentities htmlspecialchars hw_Array2Objrec hw_Children hw_ChildrenObj hw_Close hw_Connect hw_Cp hw_Deleteobject hw_DocByAnchor hw_DocByAnchorObj 
+hw_DocumentAttributes hw_DocumentBodyTag hw_DocumentContent hw_DocumentSetContent hw_DocumentSize hw_EditText hw_Error hw_ErrorMsg hw_Free_Document hw_GetAnchors 
+hw_GetAnchorsObj hw_GetAndLock hw_GetChildColl hw_GetChildCollObj hw_GetChildDocColl hw_GetChildDocCollObj hw_GetObject hw_GetObjectByQuery hw_GetObjectByQueryColl 
+hw_GetObjectByQueryCollObj hw_GetObjectByQueryObj hw_GetParents hw_GetParentsObj hw_GetRemote hw_GetRemoteChildren hw_GetSrcByDestObj hw_GetText hw_Identify hw_InCollections 
+hw_Info hw_InsColl hw_InsDoc hw_InsertDocument hw_InsertObject hw_mapid hw_Modifyobject hw_Mv hw_New_Document hw_Objrec2Array hw_OutputDocument hw_pConnect hw_PipeDocument 
+hw_Root hw_Unlock hw_Username hw_Who
+ibase_bind ibase_close ibase_connect ibase_execute ibase_fetch_row ibase_free_query ibase_free_result ibase_pconnect ibase_prepare ibase_query ibase_timefmt ifxus_close_slob 
+ifxus_create_slob ifxus_open_slob ifxus_read_slob ifxus_seek_slob ifxus_tell_slob ifxus_write_slob ifx_affected_rows ifx_blobinfile_mode ifx_byteasvarchar ifx_close 
+ifx_connect ifx_copy_blob ifx_create_blob ifx_create_char ifx_do ifx_error ifx_errormsg ifx_fetch_row ifx_fieldproperties ifx_fieldtypes ifx_free_blob ifx_free_char 
+ifx_free_result ifx_free_slob ifx_getsqlca ifx_get_blob ifx_get_char ifx_htmltbl_result ifx_nullformat ifx_num_fields ifx_num_rows ifx_pconnect ifx_prepare ifx_query 
+ifx_textasvarchar ifx_update_blob ifx_update_char ignore_user_abort ImageArc ImageChar ImageCharUp ImageColorAllocate ImageColorAt ImageColorClosest ImageColorExact 
+ImageColorResolve ImageColorSet ImageColorsForIndex ImageColorsTotal ImageColorTransparent ImageCopyResized ImageCreate ImageCreateFromGif ImageDashedLine ImageDestroy 
+ImageFill ImageFilledPolygon ImageFilledRectangle ImageFillToBorder ImageFontHeight ImageFontWidth ImageGif ImageInterlace ImageLine ImageLoadFont ImagePolygon ImagePSBBox 
+ImagePSEncodeFont ImagePSFreeFont ImagePSLoadFont ImagePSText ImageRectangle ImageSetPixel ImageString ImageStringUp ImageSX ImageSY ImageTTFBBox ImageTTFText imap_8bit 
+imap_alerts imap_append imap_base64 imap_binary imap_body imap_check imap_clearflag_full imap_close imap_createmailbox imap_delete imap_deletemailbox imap_errors imap_expunge 
+imap_fetchbody imap_fetchheader imap_fetchstructure imap_getmailboxes imap_getsubscribed imap_header imap_headers imap_last_error imap_listmailbox imap_listsubscribed 
+imap_mailboxmsginfo imap_mail_copy imap_mail_move imap_msgno imap_num_msg imap_num_recent imap_open imap_ping imap_qprint imap_renamemailbox imap_reopen 
+imap_rfc822_parse_adrlist imap_rfc822_write_address imap_scanmailbox imap_search imap_setflag_full imap_sort imap_status imap_subscribe imap_uid imap_undelete 
+imap_unsubscribe implode intval in_array iptcparse isset is_array is_dir is_double is_executable is_file is_float is_int is_integer is_link is_long is_object is_readable 
+is_real is_string is_writeable
+JDDayOfWeek JDMonthName JDToFrench JDToGregorian JDToJewish JDToJulian JewishToJD join JulianToJD
+key krsort ksort
+ldap_add ldap_bind ldap_close ldap_connect ldap_count_entries ldap_delete ldap_dn2ufn ldap_err2str ldap_errno ldap_error ldap_explode_dn ldap_first_attribute ldap_first_entry 
+ldap_free_result ldap_get_attributes ldap_get_dn ldap_get_entries ldap_get_values ldap_get_values_len ldap_list ldap_modify ldap_mod_add ldap_mod_del ldap_mod_replace 
+ldap_next_attribute ldap_next_entry ldap_read ldap_search ldap_unbind leak link linkinfo list Log Log10 lstat ltrim
+mail max mcal_close mcal_date_compare mcal_date_valid mcal_days_in_month mcal_day_of_week mcal_day_of_year mcal_delete_event mcal_event_init mcal_event_set_alarm 
+mcal_event_set_category mcal_event_set_class mcal_event_set_description mcal_event_set_end mcal_event_set_recur_daily mcal_event_set_recur_monthly_mday 
+mcal_event_set_recur_monthly_wday mcal_event_set_recur_weekly mcal_event_set_recur_yearly mcal_event_set_start mcal_event_set_title mcal_fetch_current_stream_event 
+mcal_fetch_event mcal_is_leap_year mcal_list_alarms mcal_list_events mcal_next_recurrence mcal_open mcal_snooze mcal_store_event mcal_time_valid mcrypt_cbc mcrypt_cfb 
+mcrypt_create_iv mcrypt_ecb mcrypt_get_block_size mcrypt_get_cipher_name mcrypt_get_key_size mcrypt_ofb md5 Metaphone mhash mhash_count mhash_get_block_size 
+mhash_get_hash_name microtime min mkdir mktime Modifiers msql msql_affected_rows msql_close msql_connect msql_createdb msql_create_db msql_data_seek msql_dbname 
+msql_dropdb msql_drop_db msql_error msql_fetch_array msql_fetch_field msql_fetch_object msql_fetch_row msql_fieldflags msql_fieldlen msql_fieldname msql_fieldtable 
+msql_fieldtype msql_field_seek msql_freeresult msql_free_result msql_listdbs msql_listfields msql_listtables msql_list_dbs msql_list_fields msql_list_tables msql_numfields 
+msql_numrows msql_num_fields msql_num_rows msql_pconnect msql_query msql_regcase msql_result msql_selectdb msql_select_db msql_tablename mssql_close mssql_connect 
+mssql_data_seek mssql_fetch_array mssql_fetch_field mssql_fetch_object mssql_fetch_row mssql_field_seek mssql_free_result mssql_num_fields mssql_num_rows mssql_pconnect 
+mssql_query mssql_result mssql_select_db mt_getrandmax mt_rand mt_srand mysql_affected_rows mysql_change_user mysql_close mysql_connect mysql_create_db mysql_data_seek 
+mysql_db_query mysql_drop_db mysql_errno mysql_error mysql_fetch_array mysql_fetch_field mysql_fetch_lengths mysql_fetch_object mysql_fetch_row mysql_field_flags 
+mysql_field_len mysql_field_name mysql_field_seek mysql_field_table mysql_field_type mysql_free_result mysql_insert_id mysql_list_dbs mysql_list_fields mysql_list_tables 
+mysql_num_fields mysql_num_rows mysql_pconnect mysql_query mysql_result mysql_select_db mysql_tablename
+next nl2br number_format
+OCIBindByName OCIColumnIsNULL OCIColumnName OCIColumnSize OCIColumnType OCICommit OCIDefineByName OCIError OCIExecute OCIFetch OCIFetchInto OCIFetchStatement OCIFreeCursor 
+OCIFreeStatement OCIInternalDebug OCILogOff OCILogon OCINewCursor OCINewDescriptor OCINLogon OCINumCols OCIParse OCIPLogon OCIResult OCIRollback OCIRowCount OCIServerVersion 
+OCIStatementType OctDec odbc_autocommit odbc_binmode odbc_close odbc_close_all odbc_commit odbc_connect odbc_cursor odbc_do odbc_exec odbc_execute odbc_fetch_into 
+odbc_fetch_row odbc_field_len odbc_field_name odbc_field_type odbc_free_result odbc_longreadlen odbc_num_fields odbc_num_rows odbc_pconnect odbc_prepare odbc_result 
+odbc_result_all odbc_rollback odbc_setoption opendir openlog Ora_Bind Ora_Close Ora_ColumnName Ora_ColumnType Ora_Commit Ora_CommitOff Ora_CommitOn Ora_Error Ora_ErrorCode 
+Ora_Exec Ora_Fetch Ora_GetColumn Ora_Logoff Ora_Logon Ora_Open Ora_Parse Ora_Rollback Ord
+pack parse_str parse_url passthru Pattern Pattern pclose pdf_add_annotation PDF_add_outline PDF_arc PDF_begin_page PDF_circle PDF_clip PDF_close PDF_closepath 
+PDF_closepath_fill_stroke PDF_closepath_stroke PDF_close_image PDF_continue_text PDF_curveto PDF_endpath PDF_end_page PDF_execute_image PDF_fill PDF_fill_stroke 
+PDF_get_info PDF_lineto PDF_moveto PDF_open PDF_open_gif PDF_open_jpeg PDF_open_memory_image PDF_place_image PDF_put_image PDF_rect PDF_restore PDF_rotate PDF_save 
+PDF_scale PDF_setdash PDF_setflat PDF_setgray PDF_setgray_fill PDF_setgray_stroke PDF_setlinecap PDF_setlinejoin PDF_setlinewidth PDF_setmiterlimit PDF_setrgbcolor 
+PDF_setrgbcolor_fill PDF_setrgbcolor_stroke PDF_set_char_spacing PDF_set_duration PDF_set_font PDF_set_horiz_scaling PDF_set_info_author PDF_set_info_creator 
+PDF_set_info_keywords PDF_set_info_subject PDF_set_info_title PDF_set_leading PDF_set_text_matrix PDF_set_text_pos PDF_set_text_rendering PDF_set_text_rise 
+PDF_set_transition PDF_set_word_spacing PDF_show PDF_show_xy PDF_stringwidth PDF_stroke PDF_translate pfsockopen pg_Close pg_cmdTuples pg_Connect pg_DBname 
+pg_ErrorMessage pg_Exec pg_Fetch_Array pg_Fetch_Object pg_Fetch_Row pg_FieldIsNull pg_FieldName pg_FieldNum pg_FieldPrtLen pg_FieldSize pg_FieldType pg_FreeResult 
+pg_GetLastOid pg_Host pg_loclose pg_locreate pg_loopen pg_loread pg_loreadall pg_lounlink pg_lowrite pg_NumFields pg_NumRows pg_Options pg_pConnect pg_Port pg_Result 
+pg_tty phpinfo phpversion pi popen pos posix_ctermid posix_getcwd posix_getegid posix_geteuid posix_getgid posix_getgrgid posix_getgrnam posix_getgroups posix_getlogin 
+posix_getpgid posix_getpgrp posix_getpid posix_getppid posix_getpwnam posix_getpwuid posix_getrlimit posix_getuid posix_isatty posix_kill posix_mkfifo posix_setgid 
+posix_setpgid posix_setsid posix_setsid posix_setuid posix_times posix_ttyname posix_uname pow preg_grep preg_match preg_match_all preg_quote preg_replace preg_split 
+prev print printf putenv
+quoted_printable_decode QuoteMeta
+rand range rawurldecode rawurlencode readdir readfile readgzfile readlink recode_file recode_string register_shutdown_function rename reset rewind rewinddir rmdir round rsort
+sem_acquire sem_get sem_release serialize session_decode session_destroy session_encode session_id session_is_registered session_module_name session_name session_register 
+session_save_path session_start session_unregister setcookie setlocale settype set_file_buffer set_magic_quotes_runtime set_socket_blocking set_time_limit shm_attach 
+shm_detach shm_get_var shm_put_var shm_remove shm_remove_var shuffle similar_text Sin sizeof sleep snmpget snmpset snmpwalk snmpwalkoid snmp_get_quick_print 
+snmp_set_quick_print solid_close solid_connect solid_exec solid_fetchrow solid_fieldname solid_fieldnum solid_freeresult solid_numfields solid_numrows solid_result sort 
+soundex split sprintf sql_regcase Sqrt srand stat strcasecmp strchr strcmp strcspn strftime StripCSlashes StripSlashes strip_tags stristr strlen strpos strrchr strrev strrpos 
+strspn strstr strtok strtolower strtoupper strtr strval str_repeat str_replace substr substr_replac sybase_affected_rows sybase_close sybase_connect sybase_data_seek 
+sybase_fetch_array sybase_fetch_field sybase_fetch_object sybase_fetch_row sybase_field_seek sybase_free_result sybase_num_fields sybase_num_rows sybase_pconnect sybase_query 
+sybase_result sybase_select_db symlink Syntax syslog system
+Tan tempnam time touch trim
+uasort ucfirst ucwords uksort umask uniqid unlink unpack unserialize unset urldecode urlencode usleep usort utf8_decode utf8_encode
+virtual vm_addalias vm_adduser vm_delalias vm_deluser vm_passwd
+wddx_add_vars wddx_deserialize wddx_packet_end wddx_packet_start wddx_serialize_value wddx_serialize_vars
+xml_error_string xml_get_current_byte_index xml_get_current_column_number xml_get_current_line_number xml_get_error_code xml_parse xml_parser_create xml_parser_free 
+xml_parser_get_option xml_parser_set_option xml_set_character_data_handler xml_set_default_handler xml_set_element_handler xml_set_external_entity_ref_handler 
+xml_set_notation_decl_handler xml_set_object xml_set_processing_instruction_handler xml_set_unparsed_entity_decl_handler
+yp_errno yp_err_string yp_first yp_get_default_domain yp_master yp_match yp_next yp_order
+
+				</Patterns>
+
+			</PatternGroup>
+		</Keywords>
+		<Operators>
+			<PatternGroup Name="Operators" Style="PHP Operators">
+				<Pattern Text="|" />
+				<Pattern Text="%" />
+				<Pattern Text="!" />
+				<Pattern Text="@" />
+				<Pattern Text="?" />
+				<Pattern Text="+" />
+				<Pattern Text="-" />
+				<Pattern Text="*" />
+				<Pattern Text="/" />
+				<Pattern Text="^" />
+				<Pattern Text="." />
+				<Pattern Text="=" />
+				<Pattern Text="&gt;" />
+				<Pattern Text="&lt;" />
+			</PatternGroup>
+			<PatternGroup Name="Variables" Style="PHP Variables">
+				<Pattern Text="\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*" IsComplex="true" />
+			</PatternGroup>
+		</Operators>
+		<Scope Start="&lt;?" End="?&gt;" Style="PHP Pattern" Text="&lt;?...?&gt;" />
+		<ChildBlocks>
+			<Child Name="PHP String" />
+			<Child Name="PHP Comment" />
+			<Child Name="PHP Comment2" />
+		</ChildBlocks>
+	</Block>
+	<Block Name="PHP String" Style="PHP String" EscapeChar="\" IsMultiline="true" >
+		<Scope Start="'" End="'" Style="PHP String" Text="&quot;...&quot;" EscapeChar="\"/>
+		<Scope Start="&quot;" End="&quot;" Style="PHP String" Text="&quot;...&quot;" EscapeChar="\"/>
+	</Block>
+	<Block Name="PHP Comment" Style="PHP Comment" EscapeChar="" IsMultiline="false">
+		<Scope Start="//" End="" Style="PHP Comment" Text="" />
+		<Scope Start="#" End="" Style="PHP Comment" Text="" />
+	</Block>
+	<Block Name="PHP Comment2" Style="PHP Comment" EscapeChar="" IsMultiline="true">
+		<Scope Start="/*" End="*/" Style="PHP Comment" Text="/*...*/" />
+	</Block>
+	<Block Name="Script String" Style="Script String" IsMultiline="false">
+		<Scope Start="'" End="'" Style="Script String" Text="" EscapeChar="\"/>
+	</Block>
+	<Block Name="Script String2" Style="Script String" IsMultiline="false">
+		<Scope Start="&quot;" End="&quot;" Style="Script String" Text="" EscapeChar="\"/>
+	</Block>
+	<Block Name="Script MultiComment" Style="Script Comment" EscapeChar="" IsMultiline="true">
+		<Scope Start="/*" End="*/" Style="Script Comment" Text="/*...*/" />
+	</Block>
+	<Style Name="Text" ForeColor="Black" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Tag" ForeColor="DarkRed" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Tag Pattern" ForeColor="Blue" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML String Pattern" ForeColor="blue" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML String" ForeColor="blue" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Attrib" ForeColor="red" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Comment" ForeColor="green" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML gnu" ForeColor="magenta" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Style" ForeColor="DarkRed" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Style Pattern" ForeColor="black" BackColor="yellow" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Style Attrib" ForeColor="Red" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Style Value" ForeColor="Blue" BackColor="" Bold="false" Italic="false" Underline="false" />
+	
+	<Style Name="PHP" ForeColor="black" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="PHP Pattern" ForeColor="black" BackColor="Yellow" Bold="false" Italic="false" Underline="false" />
+	<Style Name="PHP Operators" ForeColor="red" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="PHP Variables" ForeColor="Magenta" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="PHP Keywords" ForeColor="blue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="PHP Functions" ForeColor="DarkBlue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="PHP Comment" ForeColor="green" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="PHP String" ForeColor="steelblue" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Chars" ForeColor="red" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="HTML JavaScript Pattern" ForeColor="black" BackColor="Yellow" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML JavaScript" ForeColor="black" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Script Operators" ForeColor="red" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Script Comment" ForeColor="green" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Script String" ForeColor="Teal" BackColor="" Bold="true" Italic="false" Underline="false" />
+</Language>

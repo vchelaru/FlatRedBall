@@ -1,0 +1,7 @@
+"FriendlyName (System.String, required)",Namespace (System.String),ZipName (System.String),Url (System.String),SupportedInGlue (bool)
+Windows Desktop,FlatRedBallXna4Template,FlatRedBallXna4Template.zip,http://www.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallXna4Template.zip,TRUE
+Android,FlatRedBallAndroidTemplate,FlatRedBallAndroidTemplate.zip,http://www.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallAndroidTemplate.zip,TRUE
+"iOS (iPhone, iPad, iPod Touch)",FlatRedBalliOSTemplate,FlatRedBalliOSTemplate.zip,http://www.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBalliOSTemplate.zip,TRUE
+Windows RT,Windows8Template,Windows8Template.zip,http://www.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/Windows8Template.zip,TRUE
+Xbox 360,FlatRedBallXna4Template,FlatRedBallXna4_360Template.zip,http://www.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallXna4_360Template.zip,TRUE
+Glue Plugin Template,GluePluginTemplate,GluePluginTemplate.zip,http://www.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/GluePluginTemplate.zip,FALSE

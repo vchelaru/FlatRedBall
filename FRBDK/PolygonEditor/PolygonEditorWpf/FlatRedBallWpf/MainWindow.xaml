@@ -1,0 +1,39 @@
+﻿<Window x:Class="PolygonEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Controls="clr-namespace:PolygonEditor.Controls"
+        Title="MainWindow"
+        Width="525"
+        Height="350">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Menu Height="24" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,-1,0,0">
+            <MenuItem Header="File">
+                <MenuItem Header="Load Shape Collection..." Click="HandleLoadShapeCollectionClick"/>
+                <Separator/>
+                <MenuItem Header="Save" Click="HandleSaveShapeCollectionClick"/>
+                <MenuItem Header="Save As..." Click="HandleSaveShapeCollectionAsClick"/>
+
+            </MenuItem>
+            <MenuItem Header="Edit" >
+                <MenuItem Header="Add">
+                    <MenuItem Header="Circle" Click="HandleAddCircleClick" />
+                    <MenuItem Header="Polygon" Click="HandleAddPolygonClick" />
+                    <MenuItem Header="Rectangle" Click="HandleAddAxisAlignedRectangleClick" />
+                </MenuItem>
+                <MenuItem x:Name="CopyMenuItem" Header="HandleCopyClick"></MenuItem>
+                <MenuItem x:Name="PasteMenuItem" Header="HandlePasteClick"></MenuItem>
+                <Separator />
+                <MenuItem x:Name="DeleteMenuItem" Header="HandleDeleteClick"></MenuItem>
+
+            </MenuItem>
+        </Menu>
+
+
+        <Controls:MainControl Grid.Row="1"></Controls:MainControl>
+    </Grid>
+</Window>

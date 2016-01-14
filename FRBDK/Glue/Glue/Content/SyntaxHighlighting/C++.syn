@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Language Name="Visual cpp" Startblock="cpp Code">
+<FileTypes>
+	<FileType Extension=".cpp" Name="cpp code file"/>
+</FileTypes>
+
+
+
+
+	<Block Name="cpp Code" Style="cpp Code" EscapeChar="" IsMultiline="true">
+		<Scope Start="{" End="}" Style="cpp Scope" Text="{...}" CauseIndent="true"/>
+		<Scope Start="#region" End="#endregion" Style="cpp Region" Text="" DefaultExpanded="false" />
+		<!-- Keywords that can exist inside this block -->
+		<Keywords>
+			<PatternGroup Name="Keywords" Style="cpp Keyword" CaseSensitive="true">
+				<Patterns>
+				bool NULL
+char class const case catch const_cast
+double default do delete dynamic_cast
+else enum explicit export extern
+for false float friend
+if inline int
+long
+mutable
+new namespace
+operator
+protected private public
+reinterpret_cast return
+short signed sizeof static struct static_cast switch
+template throw true typedef typename this try typeid
+union unsigned using
+virtual void volatile
+wchar_t while
+
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Numbers" Style="cpp Number">
+				<Pattern Text="(0x[0-9,a-f,A-F]+)" IsComplex="true" />
+				<Pattern Text="([0-9]+)" IsComplex="true" />
+			</PatternGroup>
+				
+			<PatternGroup Name="Keywords2" Style="cpp Keyword2" CaseSensitive="true">
+				<Patterns>
+asm auto
+break
+continue
+goto
+register
+				</Patterns>
+			</PatternGroup>
+
+			<PatternGroup Name="Keywords3" Style="cpp Keyword3" CaseSensitive="true">
+				<Pattern Text="(#define)" 	IsComplex="true"/>
+				<Pattern Text="(#error)" 	IsComplex="true"/>
+				<Pattern Text="(#include)" 	IsComplex="true"/>
+				<Pattern Text="(#elif)" 	IsComplex="true"/>
+				<Pattern Text="(#if)" 		IsComplex="true"/>
+				<Pattern Text="(#line)" 	IsComplex="true"/>
+				<Pattern Text="(#else)" 	IsComplex="true"/>
+				<Pattern Text="(#ifdef)" 	IsComplex="true"/>
+				<Pattern Text="(#pragma)" 	IsComplex="true"/>
+				<Pattern Text="(#endif)" 	IsComplex="true"/>
+				<Pattern Text="(#ifndef)" 	IsComplex="true"/>
+				<Pattern Text="(#undef)" 	IsComplex="true"/>   
+			</PatternGroup>
+
+
+
+			
+		</Keywords>
+		<!-- Operators that can exist inside this block -->
+		<Operators>
+			<PatternGroup name="Operators" Style="cpp Operator">
+				<Pattern Text="." />
+				<Pattern Text="!" />
+				<Pattern Text=":" />
+				<Pattern Text="^" />
+				<Pattern Text="*" />
+				<Pattern Text="/" />
+				<Pattern Text="+" />
+				<Pattern Text="-" />
+				<Pattern Text="=" />
+				<Pattern Text="|" />
+				<Pattern Text="~" />
+				<Pattern Text="&amp;" />
+				<Pattern Text="~" />
+				<Pattern Text="&gt;" />
+				<Pattern Text="&lt;" />
+			</PatternGroup>
+		</Operators>
+		<!-- Blocks that can exist inside this block -->
+		<ChildBlocks>
+			<Child Name="cpp XML Comment" />
+			<Child Name="cpp Multiline Comment" />
+			<Child Name="cpp Singleline Comment" />
+			<Child Name="cpp String" />
+			<Child Name="cpp Char" />
+			<Child Name="cpp Literal String" />
+			<Child Name="cpp Literal Char" />
+			<Child Name="cpp Code" />
+		</ChildBlocks>
+	</Block>
+	<Block Name="cpp XML Comment" Style="cpp Comment" EscapeChar="" IsMultiline="false">
+		<Scope Start="///" End="" Style="cpp XML Comment" />
+		<!-- this block can contain xml tags -->
+		<ChildBlocks>
+			<Child Name="cpp XML Comment Tag" />
+		</ChildBlocks>
+	</Block>
+	<!-- this block is the xml tags in xml comments-->
+	<Block Name="cpp XML Comment Tag" Style="cpp XML Tag Text" EscapeChar="" IsMultiline="false">
+		<Scope Start="&lt;" End="&gt;" Style="cpp XML Tag" />
+		<Operators>
+			<PatternGroup name="cpp XML Attrib" Style="cpp XML Attrib">
+				<!-- operator is the attributes that can exist within xml tags-->
+				<Pattern Text="( [a-z,A-Z,:]+)" IsComplex="true" />
+			</PatternGroup>
+		</Operators>
+		<ChildBlocks>
+			<Child Name="XML String" />
+		</ChildBlocks>
+	</Block>
+	<Block Name="XML String" Style="cpp XML String" EscapeChar="" IsMultiline="false">
+		<Scope Start="&quot;" End="&quot;" Style="cpp XML String" />
+	</Block>
+	<Block Name="cpp Multiline Comment" Style="cpp Comment" EscapeChar="" IsMultiline="true">
+		<Scope Start="/*" End="*/" Style="cpp Comment" Text="/*...*/"/>
+		<Operators>
+			<PatternGroup name="URL" Style="cpp URL">
+				<Pattern Text="http://([\w-]+\.)+[\w-]+(/[\w- ./?%&amp;=]*)?" IsComplex="true" />
+			</PatternGroup>
+		</Operators>
+	</Block>
+	<Block Name="cpp Singleline Comment" Style="cpp Comment" EscapeChar="" IsMultiline="false">
+		<Scope Start="//" End="" Style="cpp Comment" />
+	</Block>
+	<Block Name="cpp String" Style="cpp String" EscapeChar="\" IsMultiline="false">
+		<Scope Start="&quot;" End="&quot;" Style="cpp String" />
+		<Operators>
+			<PatternGroup name="URL" Style="cpp URL">
+				<Pattern Text="http://([\w-]+\.)+[\w-]+(/[\w- ./?%&amp;=]*)?" IsComplex="true" />
+			</PatternGroup>
+		</Operators>
+	</Block>
+
+	<Block Name="cpp Char" Style="cpp String" EscapeChar="" IsMultiline="false">
+		<Scope Start="'" End="'" Style="cpp String" />
+	</Block>
+
+	<Block Name="cpp Literal String" Style="cpp String" EscapeChar="" IsMultiline="true" >
+		<Scope Start="@&quot;" End="&quot;" Style="cpp String" Text="@'...'" />
+	</Block>
+
+	<Block Name="cpp Literal Char" Style="cpp String" EscapeChar="" IsMultiline="false">
+		<Scope Start="@'" End="'" Style="cpp String" />
+	</Block>
+	<Style Name="cpp Code" ForeColor="" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="cpp Scope" ForeColor="" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="cpp Region" ForeColor="blue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="cpp XML Comment" ForeColor="gray" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="cpp XML Tag" ForeColor="gray" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="cpp XML Tag Text" ForeColor="gray" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="cpp XML Attrib" ForeColor="gray" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="cpp XML String" ForeColor="gray" BackColor="lightyellow" Bold="false" Italic="false" Underline="false" />
+	<Style Name="cpp Comment" ForeColor="Green" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="cpp String" ForeColor="Teal" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="cpp Number" ForeColor="Teal" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="cpp Operator" ForeColor="Red" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="cpp Keyword" ForeColor="Blue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="cpp Keyword2" ForeColor="Red" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="cpp Keyword3" ForeColor="blue" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="cpp Datatype" ForeColor="DarkBlue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="cpp URL" ForeColor="Blue" BackColor="" Bold="false" Italic="false" Underline="true" />
+	
+</Language>

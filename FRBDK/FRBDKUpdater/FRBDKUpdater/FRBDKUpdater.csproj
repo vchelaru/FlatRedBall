@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{CB9A421A-572A-4D06-944B-E2F05345E758}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FRBDKUpdater</RootNamespace>
+    <AssemblyName>FRBDKUpdater</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Ionic.Zip">
+      <HintPath>Libraries\Ionic.Zip.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Actions\ActionStarter.cs" />
+    <Compile Include="Actions\CleanAndZipAction.cs" />
+    <Compile Include="Downloader.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="frmMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmMain.Designer.cs">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Logger.cs" />
+    <Compile Include="Messaging.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="UpdaterRuntimeSettings.cs" />
+    <EmbeddedResource Include="frmMain.resx">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="..\..\Glue\OfficialPlugins\FRBDKUpdater\FrbdkUpdaterSettings.cs">
+      <Link>FrbdkUpdaterSettings.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libraries\Ionic.Zip.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBall.Tools.csproj">
+      <Project>{571d3e67-e81f-4d73-a5a1-7e92d4093298}</Project>
+      <Name>FlatRedBall.Tools</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(SolutionDir)..\Glue\Glue\bin\Debug\Plugins\FRBDKUpdater\" md $(SolutionDir)..\Glue\Glue\bin\Debug\Plugins\FRBDKUpdater\
+
+echo Copying FlatRedBall.Tools.dll to Glue
+copy "$(TargetDir)FlatRedBall.Tools.dll" "$(SolutionDir)..\Glue\Glue\Plugins\FRBDKUpdater\"
+
+echo Copying FRBDKUpdater.exe to Glue
+copy "$(TargetDir)FRBDKUpdater.exe" "$(SolutionDir)..\Glue\Glue\Plugins\FRBDKUpdater\"
+
+echo Copying Ionic.zip.dll to Glue
+copy "$(TargetDir)Ionic.Zip.dll" "$(SolutionDir)..\Glue\Glue\Plugins\FRBDKUpdater\"
+
+
+echo Copying FlatRedBall.Tools.dll to NewProjectCreator
+copy "$(TargetDir)FlatRedBall.Tools.dll" "$(SolutionDir)..\NewProjectCreator\NewProjectCreator\Libraries\"
+
+echo Copying FRBDKUpdater.exe to NewProjectCreator
+copy "$(TargetDir)FRBDKUpdater.exe" "$(SolutionDir)..\NewProjectCreator\NewProjectCreator\Libraries\"
+
+echo Copying Ionic.zip.dll to NewProjectCreator
+copy "$(TargetDir)Ionic.Zip.dll" "$(SolutionDir)..\NewProjectCreator\NewProjectCreator\Libraries\"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

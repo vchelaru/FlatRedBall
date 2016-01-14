@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Language Name="VB" Startblock="CS Code">
+<FileTypes>
+	<FileType Extension=".bas" Name="VB Module"/>
+	<FileType Extension=".cls" Name="VB Class Module"/>
+	<FileType Extension=".frm" Name="VB Form Module"/>
+</FileTypes>
+
+	<Block Name="CS Code" Style="CS Code" PatternStyle="CS Keyword" EscapeChar="" IsMultiline="true">
+
+
+
+		<!-- Keywords that can exist inside this block -->
+		<Keywords>
+			<PatternGroup Name="Keywords" Style="CS Keyword">
+				<Patterns>
+Sub
+Function
+Property
+Declare
+Public
+Private
+Friend
+Dim
+Global
+Option
+Explicit
+Not
+And
+Xor
+Or
+String
+Long
+Integer
+Boolean
+Currency
+Date
+Byte
+Single
+Double
+Static
+As
+Const
+
+
+
+
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Constants" Style="CS Constant">
+				<Patterns>
+VbCrLf
+VbCr
+VbLf
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Numbers" Style="CS Number">
+				<Pattern Text="(&amp;h[0-9,a-f,A-F]+)" IsComplex="true" />
+				<Pattern Text="(&amp;H[0-9,a-f,A-F]+)" IsComplex="true" />
+				<Pattern Text="([0-9]+)" IsComplex="true" />
+
+			</PatternGroup>
+			<!-- Datatypes for c# -->
+			<PatternGroup Name="DataTypes" Style="CS Datatype" CaseSensitive="true">
+
+			</PatternGroup>
+		</Keywords>
+		<!-- Operators that can exist inside this block -->
+		<Operators>
+			<PatternGroup name="Operators" Style="CS Operator">
+				<Pattern Text="." />
+				<Pattern Text="!" />
+				<Pattern Text=":" />
+				<Pattern Text="^" />
+				<Pattern Text="*" />
+				<Pattern Text="/" />
+				<Pattern Text="+" />
+				<Pattern Text="-" />
+				<Pattern Text="=" />
+				<Pattern Text=";" />
+				<Pattern Text="|" />
+				<Pattern Text="&gt;" />
+				<Pattern Text="&lt;" />
+
+			</PatternGroup>
+		</Operators>
+		<!-- Blocks that can exist inside this block -->
+		<ChildBlocks>
+			<Child Name="CS Singleline Comment" />
+			<Child Name="CS String" />
+			<Child Name="CS Sub" />
+		</ChildBlocks>
+	</Block>
+
+	<Block Name="CS Sub" Style="CS Code" PatternStyle="CS Keyword" EscapeChar="" IsMultiline="true">
+
+		<Scope Start="((?i)(?&lt;!(declare)(\s)+)(sub))" End="((?i)(end)(\s)+(sub))" StartIsComplex="true" EndIsComplex="true"     EndIsSeparator="true"	Style="CS Keyword" Text="Sub *** ..." CauseIndent="true"/>
+		<Scope Start="((?i)(?&lt;!(declare)(\s)+)(function))" End="((?i)(end)(\s)+(function))" StartIsComplex="true" EndIsComplex="true"     EndIsSeparator="true"	Style="CS Keyword" Text="Sub *** ..." CauseIndent="true"/>
+
+		<Scope Start="Property" 	End="((?i)(end)(\s)+(property))" EndIsComplex="true"     EndIsSeparator="true"	Style="CS Keyword" Text="Propery *** ..." CauseIndent="true"/>
+		<Scope Start="type" 		End="((?i)(end)(\s)+(type))" 	 EndIsComplex="true"     EndIsSeparator="true"	Style="CS Keyword" Text="Type *** ..." CauseIndent="true"/>
+		<Scope Start="enum" 		End="((?i)(end)(\s)+(enum))"     EndIsComplex="true"     EndIsSeparator="true"	Style="CS Keyword" Text="Enum *** ..." CauseIndent="true"/>
+
+
+
+		<!-- Keywords that can exist inside this block -->
+		<Keywords>
+			<PatternGroup Name="Keywords" Style="CS Keyword">
+				<Patterns>
+
+Public
+Private
+Friend
+Dim
+Global
+Option
+Explicit
+For
+If
+End
+Next
+Do
+Loop
+While
+Wend
+Not
+And
+Xor
+Or
+Select
+Case
+Else
+GoTo
+GoSub
+String
+Long
+Integer
+Boolean
+Currency
+Date
+Byte
+Single
+Double
+Then
+Static
+As
+Exit
+Function
+Sub
+Property
+Nothing
+Set
+Get
+Let
+LSet
+On
+Error
+Resume
+Const
+Is
+
+
+
+
+
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Constants" Style="CS Constant">
+				<Patterns>
+VbCrLf
+VbCr
+VbLf
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Numbers" Style="CS Number">
+				<Pattern Text="(&amp;h[0-9a-fA-F]+)" IsComplex="true" />
+				<Pattern Text="(&amp;H[0-9a-fA-F]+)" IsComplex="true" />
+				<Pattern Text="([0-9]+)" IsComplex="true" />
+			</PatternGroup>
+			<!-- Datatypes for c# -->
+			<PatternGroup Name="DataTypes" Style="CS Datatype" CaseSensitive="true">
+
+			</PatternGroup>
+		</Keywords>
+		<!-- Operators that can exist inside this block -->
+		<Operators>
+			<PatternGroup name="Operators" Style="CS Operator">
+				<Pattern Text="." />
+				<Pattern Text="!" />
+				<Pattern Text=":" />
+				<Pattern Text="^" />
+				<Pattern Text="*" />
+				<Pattern Text="/" />
+				<Pattern Text="+" />
+				<Pattern Text="-" />
+				<Pattern Text="=" />
+				<Pattern Text=";" />
+				<Pattern Text="|" />
+				<Pattern Text="&gt;" />
+				<Pattern Text="&lt;" />
+
+			</PatternGroup>
+		</Operators>
+		<!-- Blocks that can exist inside this block -->
+		<ChildBlocks>
+			<Child Name="CS Singleline Comment" />
+			<Child Name="CS String" />
+		</ChildBlocks>
+	</Block>
+
+
+	<Block Name="CS Singleline Comment" Style="CS Comment" PatternStyle="" EscapeChar="" IsMultiline="false">
+		<Scope Start="'" End="" 	Style="CS Comment"  Text="" />
+	</Block>
+
+	<Block Name="CS String" Style="CS String" PatternStyle="" IsMultiline="false">
+		<Scope Start="&quot;" End="&quot;" 	Style="CS String"  Text="" />
+		<Operators>
+			<PatternGroup name="URL" Style="CS URL">
+				<Pattern Text="http://([\w-]+\.)+[\w-]+(/[\w- ./?%&amp;=]*)?" IsComplex="true" />
+			</PatternGroup>
+		</Operators>
+	</Block>
+	
+	<Style Name="CS Code" ForeColor="" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="CS Constant" ForeColor="Magenta" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="CS Code Pattern" ForeColor="" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="CS Comment" ForeColor="green" BackColor="" Bold="false" Italic="true" Underline="false" />
+	<Style Name="CS String" ForeColor="Teal" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="CS Number" ForeColor="Teal" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="CS Operator" ForeColor="Red" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="CS Keyword" ForeColor="Blue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="CS Datatype" ForeColor="DarkBlue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="CS URL" ForeColor="Blue" BackColor="" Bold="false" Italic="false" Underline="true" />
+</Language>

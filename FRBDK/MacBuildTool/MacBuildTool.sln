@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacBuildTool", "MacBuildTool\MacBuildTool.csproj", "{6201AFA4-9101-44BC-BF42-5BA2CB09C617}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpZLib", "..\..\..\Downloads\SharpZipLib\src\ICSharpCode.SharpZLib.csproj", "{0E7413FF-EB9E-4714-ACF2-BE3A6A7B2FFD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0E7413FF-EB9E-4714-ACF2-BE3A6A7B2FFD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0E7413FF-EB9E-4714-ACF2-BE3A6A7B2FFD}.Debug|x86.Build.0 = Debug|Any CPU
+		{0E7413FF-EB9E-4714-ACF2-BE3A6A7B2FFD}.Release|x86.ActiveCfg = Release|Any CPU
+		{0E7413FF-EB9E-4714-ACF2-BE3A6A7B2FFD}.Release|x86.Build.0 = Release|Any CPU
+		{6201AFA4-9101-44BC-BF42-5BA2CB09C617}.Debug|x86.ActiveCfg = Debug|x86
+		{6201AFA4-9101-44BC-BF42-5BA2CB09C617}.Debug|x86.Build.0 = Debug|x86
+		{6201AFA4-9101-44BC-BF42-5BA2CB09C617}.Release|x86.ActiveCfg = Release|x86
+		{6201AFA4-9101-44BC-BF42-5BA2CB09C617}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = MacBuildTool\MacBuildTool.csproj
+	EndGlobalSection
+EndGlobal

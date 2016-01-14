@@ -1,0 +1,524 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using FlatRedBall.Glue.ContentPipeline;
+using System.Windows.Forms;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
+using FlatRedBall.Glue.Controls;
+using Glue;
+using System.IO;
+using Microsoft.Build.BuildEngine;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.AutomatedGlue;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
+using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Parsing;
+
+namespace FlatRedBall.Glue.SetVariable
+{
+    public class ReferencedFileSaveSetVariableLogic
+    {
+        internal void ReactToChangedReferencedFile(string changedMember, object oldValue, ref bool updateTreeView)
+        {
+            ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
+
+
+
+            #region Opens With
+
+            if (changedMember == "OpensWith")
+            {
+                if (rfs.OpensWith == "New Application...")
+                {
+                    string newApplication = EditorData.FileAssociationSettings.SetApplicationForExtension(null, "New Application...");
+
+                    if (!string.IsNullOrEmpty(newApplication))
+                    {
+                        rfs.OpensWith = newApplication;
+                    }
+                    else
+                    {
+                        rfs.OpensWith = "<DEFAULT>";
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Name
+
+            else if (changedMember == "Name")
+            {
+                if ((string)oldValue != rfs.Name && ProjectManager.GlueProjectSave != null)
+                {
+                    if ((string)oldValue != null)
+                    {
+                        RenameReferencedFile((string)oldValue, rfs.Name, rfs, GlueState.Self.CurrentElement);
+                    }
+                }
+            }
+
+            #endregion
+
+            #region LoadedAtRuntime
+
+            if (changedMember == "LoadedAtRuntime")
+            {
+
+                updateTreeView = false;
+            }
+
+            #endregion
+
+            #region Loaded only when referenced
+
+            else if (changedMember == "LoadedOnlyWhenReferenced")
+            {
+                updateTreeView = false;
+                if (rfs.LoadedOnlyWhenReferenced)
+                {
+                    // We need to make this public, or else it won't work on WP7 and Silverlight.
+                    // Update - The preferred method to get access to this stuff by string is either
+                    // GetMember or GetStaticMember, so there's no reason to force this stuff as public
+                    // when LoadedWhenReferenced is set to true.
+                    //rfs.HasPublicProperty = true;
+                }
+            }
+
+            #endregion
+
+            #region Has public property
+
+            else if (changedMember == "HasPublicProperty")
+            {
+                updateTreeView = false;
+                // GetMember and GetStaticMember
+                // make it so we no longer require
+                // the member to be public. 
+                //if (rfs.LoadedOnlyWhenReferenced && !rfs.HasPublicProperty)
+                //{
+                //    System.Windows.Forms.MessageBox.Show("This file must have a public property if it " +
+                //        "is \"Loaded Only When Referenced\" so that it can be accessed through reflection " +
+                //        "on non-PC platforms.");
+
+                //    rfs.HasPublicProperty = true;
+                //}
+
+                //if (rfs.ContainerType == ContainerType.None && rfs.HasPublicProperty == false)
+                //{
+                //    System.Windows.Forms.MessageBox.Show("Global content must be public so custom code can access it.");
+                //    rfs.HasPublicProperty = true;
+                //}
+            }
+
+            #endregion
+
+            #region IsSharedStatic
+
+            else if (changedMember == "IsSharedStatic")
+            {
+                updateTreeView = false;
+                // If this is made IsSharedStatic, that means that the file will not be added to managers
+                // We should see if any named objects reference this and notify the user
+                List<NamedObjectSave> namedObjects = EditorLogic.CurrentElement.NamedObjects;
+
+                foreach (NamedObjectSave namedObject in namedObjects)
+                {
+                    if (namedObject.SourceType == SourceType.File && namedObject.SourceFile == rfs.Name && namedObject.AddToManagers == false)
+                    {
+                        DialogResult result = MessageBox.Show("The object " + namedObject.InstanceName + " references this file.  " +
+                            "Shared files are not added to the engine, but since the object has its AddToManagers also set to false " +
+                            "the content in this file will not be added to managers.  Would you like to set the object's AddToManagers to " +
+                            "true?", "Add to managers?", MessageBoxButtons.YesNo);
+
+                        if (result == DialogResult.Yes)
+                        {
+                            namedObject.AddToManagers = true;
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
+            #region IsDatabaseForLocalizing
+
+            else if (changedMember == "IsDatabaseForLocalizing")
+            {
+                updateTreeView = false;
+                bool oldValueAsBool = (bool)oldValue;
+                bool newValue = (bool)rfs.IsDatabaseForLocalizing;
+
+                // Let's revert the change just to see if 
+                // things have changed project-wide, and if
+                // have to tell the user to re-generate all code.
+                rfs.IsDatabaseForLocalizing = oldValueAsBool;
+                ObjectFinder.Self.GlueProject.UpdateIfTranslationIsUsed();
+                bool oldProjectLocalization = ObjectFinder.Self.GlueProject.UsesTranslation;
+
+                rfs.IsDatabaseForLocalizing = newValue;
+                ObjectFinder.Self.GlueProject.UpdateIfTranslationIsUsed();
+                bool newProjectLocalization = ObjectFinder.Self.GlueProject.UsesTranslation;
+
+
+
+                if (oldProjectLocalization != newProjectLocalization)
+                {
+                    MessageBox.Show("Because of the change to the \"Is Database For Localizing\" the generated code for the entire project is likely out of date." +
+                        "We recommend closing and re-opening the project in Glue to cause a full regeneration.", "Generated code is out of date");
+                }
+            }
+
+            #endregion
+
+            #region UseContentPipeline
+
+            else if (changedMember == "UseContentPipeline")
+            {
+                ContentPipelineHelper.ReactToUseContentPipelineChange(rfs);
+
+                // Make sure that
+                // all other RFS's
+                // that use this file
+                // get changed too.
+                List<ReferencedFileSave> matchingRfses = ObjectFinder.Self.GetMatchingReferencedFile(rfs);
+
+                foreach (ReferencedFileSave rfsToUpdate in matchingRfses)
+                {
+                    rfsToUpdate.UseContentPipeline = rfs.UseContentPipeline;
+                    // No need to
+                    // call this method
+                    // because there's only
+                    // one file in the project
+                    // even though there's multiple
+                    // ReferencedFileSaves, and this
+                    // method just modifies the content
+                    // project.
+                    //ContentPipelineHelper.ReactToUseContentPipelineChange(rfsToUpdate);
+
+                    IElement container = rfsToUpdate.GetContainer();
+
+                    if (container != null)
+                    {
+                        CodeWriter.GenerateCode(container);
+                    }
+                    else
+                    {
+                        GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+                    }
+                }
+
+
+                updateTreeView = false;
+            }
+
+            #endregion
+
+            #region TextureFormat
+
+            else if (changedMember == "TextureFormat")
+            {
+                ContentPipelineHelper.UpdateTextureFormatFor(rfs);
+
+                // See the UseContentPipeline section for comments on what this
+                // code does.
+                List<ReferencedFileSave> matchingRfses = ObjectFinder.Self.GetMatchingReferencedFile(rfs);
+                foreach (ReferencedFileSave rfsToUpdate in matchingRfses)
+                {
+                    rfsToUpdate.TextureFormat = rfs.TextureFormat;
+                    IElement container = rfsToUpdate.GetContainer();
+
+                    if (container != null)
+                    {
+                        CodeWriter.GenerateCode(container);
+                    }
+                    else
+                    {
+                        GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+                    }
+                }
+
+
+                updateTreeView = false;
+            }
+
+            #endregion
+
+            #region IncludeDirectoryRelativeToContainer
+
+            else if (changedMember == "IncludeDirectoryRelativeToContainer")
+            {
+                if (rfs.GetContainerType() == ContainerType.None)
+                {
+                    // This RFS
+                    // is in GlobalContent
+                    // so we need to find all
+                    // RFS's that use this RFS
+                    // and regenerate them
+                    List<IElement> elements = ObjectFinder.Self.GetAllElementsReferencingFile(rfs.Name);
+
+                    foreach (IElement element in elements)
+                    {
+                        CodeWriter.GenerateCode(element);
+                    }
+                }
+                else
+                {
+
+                }
+            }
+
+            #endregion
+
+            #region AdditionalArguments
+
+            else if (changedMember == "AdditionalArguments")
+            {
+                rfs.PerformExternalBuild(runAsync:true);
+
+            }
+
+            #endregion
+
+            #region CreatesDictionary
+
+            else if (changedMember == "CreatesDictionary")
+            {
+                // This could change things like the constants added to the code file, so let's generate the code now.
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentCsvCode();
+            }
+
+            #endregion
+        }
+
+        public static void RenameReferencedFile(string oldName, string newName, ReferencedFileSave rfs, IElement container)
+        {
+            string oldDirectory = FileManager.GetDirectory(oldName);
+            string newDirectory = FileManager.GetDirectory(newName);
+            string newFileNameAbsolute = ProjectManager.MakeAbsolute(newName);
+            string instanceName = FileManager.RemovePath(FileManager.RemoveExtension(newName));
+            string whyIsntValid;
+            if (oldDirectory != newDirectory)
+            {
+                MessageBox.Show("The old file was located in \n" + oldDirectory + "\n" +
+                    "The new file is located in \n" + newDirectory + "\n" +
+                    "Currently Glue does not support changing directories.", "Warning");
+
+                rfs.SetNameNoCall(oldName);
+            }
+            else if (NameVerifier.IsReferencedFileNameValid(instanceName, rfs.GetAssetTypeInfo(), rfs, container, out whyIsntValid) == false)
+            {
+                MessageBox.Show(whyIsntValid);
+                rfs.SetNameNoCall(oldName);
+
+            }
+            else
+            {
+                bool shouldMove = true;
+                bool shouldContinue = true;
+
+                CheckForExistingFileOfSameName(oldName, rfs, newFileNameAbsolute, ref shouldMove, ref shouldContinue);
+
+                if (shouldContinue)
+                {
+                    MoveFileIfNecessary(oldName, newName, shouldMove);
+
+                    string rfsType = rfs.RuntimeType;
+                    if (rfsType != null && rfsType.Contains("."))
+                    {
+                        // We dont want the fully qualified type.
+                        rfsType = FileManager.GetExtension(rfsType);
+                    }
+                    UpdateObjectsUsingFile(container, oldName, rfs, rfsType);
+
+                    RegenerateCodeAndUpdateUiAccordingToRfsRename(oldName, newName, rfs);
+
+                    UpdateBuildItemsForRenamedRfs(oldName, newName);
+
+                    AdjustDataFilesIfIsCsv(oldName, rfs);
+
+                    GluxCommands.Self.SaveGlux();
+
+                    ProjectManager.SaveProjects();
+                }
+            }
+        }
+
+        private static void UpdateObjectsUsingFile(IElement element, string oldName, ReferencedFileSave rfs, string rfsType)
+        {
+            string newName = rfs.Name;
+            string oldNameUnqualified = FileManager.RemoveExtension(FileManager.RemovePath(oldName));
+            string newNameUnqualified = FileManager.RemoveExtension(FileManager.RemovePath(newName));
+            if (element != null)
+            {
+                AdjustAccordingToRenamedRfs(element, oldName, rfsType, newName, oldNameUnqualified, newNameUnqualified);
+            }
+            foreach (IElement derived in ObjectFinder.Self.GetAllElementsThatInheritFrom(element))
+            {
+                AdjustAccordingToRenamedRfs(derived, oldName, rfsType, newName, oldNameUnqualified, newNameUnqualified);
+            }
+        }
+
+        private static void AdjustAccordingToRenamedRfs(IElement element, string oldName, string rfsType, string newName, string oldNameUnqualified, string newNameUnqualified)
+        {
+            foreach (NamedObjectSave nos in element.GetAllNamedObjectsRecurisvely())
+            {
+                UpdateObjectToRenamedFile(oldName, newName, nos, rfsType);
+            }
+
+            foreach (CustomVariable cv in element.CustomVariables.Where(item =>  item.DefaultValue is string && ((string)item.DefaultValue) == oldNameUnqualified))
+            {
+                cv.DefaultValue = newNameUnqualified;
+            }
+            foreach (var state in element.AllStates)
+            {
+                foreach (var variable in state.InstructionSaves.Where(item => item.Value is string && ((string)item.Value) == oldNameUnqualified))
+                {
+                    variable.Value = newNameUnqualified;
+                }
+
+            }
+        }
+
+        private static void UpdateObjectToRenamedFile(string oldName, string newName, NamedObjectSave nos, string rfsType)
+        {
+            if (nos.SourceType == SourceType.Entity && nos.SourceFile == oldName)
+            {
+                nos.SourceFile = newName;
+            }
+
+            string oldNameUnqualified = FileManager.RemoveExtension( FileManager.RemovePath(oldName) );
+            string newNameUnqualified = FileManager.RemoveExtension(FileManager.RemovePath(newName));
+            // see if any variables use this
+            foreach (var customVariable in nos.InstructionSaves)
+            {
+                if (customVariable.Value is string && (customVariable.Value as string) == oldNameUnqualified && customVariable.Type.ToLower() == rfsType.ToLower())
+                {
+                    customVariable.Value = newNameUnqualified;
+                    Plugins.PluginManager.ReceiveOutput("Changed " + nos.InstanceName + "." + customVariable.Member + " from " + oldNameUnqualified + " to " + newNameUnqualified);
+                }
+
+            }
+        }
+
+        public static void AdjustDataFilesIfIsCsv(string oldName, ReferencedFileSave rfs)
+        {
+            // We'll remove the old file from the project, delete it, then have the RFS regenerate/add the new one to the project
+
+            //////////////Early Out///////////////////
+            
+            if (!rfs.IsCsvOrTreatedAsCsv || UsesAlterntaiveClass(rfs))
+            {
+                return;
+            }
+            ////////////End Early Out/////////////////
+            string className = rfs.GetTypeForCsvFile(oldName);
+
+            string whatToRemove = "DataTypes/" + className + ".Generated.cs";
+            ProjectManager.ProjectBase.RemoveItem(whatToRemove);
+            string fileToDelete = whatToRemove;
+            fileToDelete = ProjectManager.MakeAbsolute(fileToDelete);
+            if (System.IO.File.Exists(fileToDelete))
+            {
+                try
+                {
+                    FileHelper.DeleteFile(fileToDelete);
+                }
+                catch (Exception e)
+                {
+                    GlueGui.ShowMessageBox("Could not delete the file " + fileToDelete + "\n\nThe file is no longer referneced by the project so it is not necessary to delete this file manually.");
+                }
+            }
+
+            CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
+        }
+
+        private static bool UsesAlterntaiveClass(ReferencedFileSave rfs)
+        {
+            CustomClassSave ccs = ObjectFinder.Self.GlueProject.GetCustomClassReferencingFile(rfs.Name);
+            return ccs != null;
+        }
+
+        private static void UpdateBuildItemsForRenamedRfs(string oldName, string newName)
+        {
+            if (ProjectManager.ContentProject != null)
+            {
+                BuildItem item = ProjectManager.ContentProject.GetItem(oldName);
+
+                if (newName.ToLower().Replace("/", "\\").StartsWith("content\\"))
+                {
+                    newName = newName.Substring("content\\".Length);
+                }
+
+                item.Include = newName.Replace("/", "\\");
+
+                string nameWithoutExtensions = FileManager.RemovePath(FileManager.RemoveExtension(newName));
+
+                item.SetMetadata("Name", nameWithoutExtensions);
+
+                ProjectManager.ContentProject.RenameInDictionary(oldName, newName, item);
+            }
+        }
+
+        private static void RegenerateCodeAndUpdateUiAccordingToRfsRename(string oldName, string newName, ReferencedFileSave fileSave)
+        {
+            foreach (IElement element in ProjectManager.GlueProjectSave.AllElements())
+            {
+                bool wasAnythingChanged = element.ReactToRenamedReferencedFile(oldName, newName);
+
+                if (wasAnythingChanged)
+                {
+                    CodeWriter.GenerateCode(element);
+                }
+
+                if (element.ReferencedFiles.Contains(fileSave))
+                {
+                    BaseElementTreeNode node = GlueState.Self.Find.ElementTreeNode(element);
+                    node.UpdateReferencedTreeNodes();
+                }
+            }
+        }
+
+        private static void MoveFileIfNecessary(string oldName, string newName, bool shouldMove)
+        {
+            if (shouldMove && System.IO.File.Exists(ProjectManager.MakeAbsolute(oldName)))
+            {
+                File.Move(
+                    ProjectManager.MakeAbsolute(oldName),
+                    ProjectManager.MakeAbsolute(newName));
+            }
+        }
+
+        private static void CheckForExistingFileOfSameName(string oldName, ReferencedFileSave fileSave, string newFileNameAbsolute, ref bool shouldMove, ref bool shouldContinue)
+        {
+            if (FileManager.FileExists(newFileNameAbsolute))
+            {
+                string message = "The new file name already exists.  What would you like to do?";
+
+                MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+
+                mbmb.MessageText = message;
+
+                mbmb.AddButton("Use existing file", DialogResult.Yes);
+                mbmb.AddButton("Cancel the rename", DialogResult.Cancel);
+
+                DialogResult result = mbmb.ShowDialog(MainGlueWindow.Self);
+
+
+                if (result == DialogResult.Cancel)
+                {
+                    fileSave.SetNameNoCall(oldName);
+                    shouldContinue = false;
+                }
+                else if (result == DialogResult.Yes)
+                {
+                    shouldMove = false;
+                }
+            }
+        }
+    }
+}

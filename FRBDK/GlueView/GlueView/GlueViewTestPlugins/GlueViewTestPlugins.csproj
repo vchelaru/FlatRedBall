@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4344D74E-76BC-4F3D-A158-E2B029F24214}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GlueViewTestPlugins</RootNamespace>
+    <AssemblyName>GlueViewTestPlugins</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;XNA4</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;XNA4</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="NCalc">
+      <HintPath>..\GlueView\Libraries\NCalc.dll</HintPath>
+    </Reference>
+    <Reference Include="StaffDotNet.CollapsiblePanel">
+      <HintPath>..\GlueView\Libraries\StaffDotNet.CollapsiblePanel.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
+      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
+      <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Glue\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj">
+      <Project>{2C289A72-D6BD-4358-AFBC-B71F9D31B01E}</Project>
+      <Name>FlatRedBall.Plugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Glue\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj">
+      <Project>{5FE94178-9907-4878-AFAC-8F347CA86B50}</Project>
+      <Name>FlatRedBall.PropertyGrid</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Glue\GluePropertyGridClasses\GluePropertyGridClasses.csproj">
+      <Project>{852A7438-7AFE-490E-A0C7-0A35355D6179}</Project>
+      <Name>GluePropertyGridClasses</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Glue\GlueSaveClasses\GlueSaveClasses.csproj">
+      <Project>{545FF183-4D9D-4121-9A04-1D354B0B0DBA}</Project>
+      <Name>GlueSaveClasses</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GlueView\GlueView.csproj">
+      <Project>{84AA3126-0F7A-4836-8EB6-01CD28020308}</Project>
+      <Name>GlueView</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GluxViewManager\GluxViewManager.csproj">
+      <Project>{6CFA6ADB-1FFD-4DD7-AEF8-090A2B86A620}</Project>
+      <Name>GluxViewManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InteractiveInterface\InteractiveInterface.csproj">
+      <Project>{82FE0346-E86B-46DE-BA29-93626D89C621}</Project>
+      <Name>InteractiveInterface</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if not exist $(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\EntityControl\ md $(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\EntityControl\
+copy $(ProjectDir)EntityControl\ "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\EntityControl"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

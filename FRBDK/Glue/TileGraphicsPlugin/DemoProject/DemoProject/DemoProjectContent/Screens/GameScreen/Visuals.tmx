@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="64" height="32" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="tiles" tilewidth="16" tileheight="16">
+  <image source="../../../../../../../../../Users/Victor/Downloads/PlatformerGraphics/Building a retro Flash game in Flixel Part 1/Nutmeg Part 2 - The Map/assets/tiles.png" width="304" height="96"/>
+  <tile id="40">
+   <properties>
+    <property name="Name" value="CollisionTile"/>
+   </properties>
+  </tile>
+  <tile id="41">
+   <properties>
+    <property name="Name" value="CollisionTile"/>
+   </properties>
+  </tile>
+  <tile id="42">
+   <properties>
+    <property name="Name" value="CollisionTile"/>
+   </properties>
+  </tile>
+  <tile id="43">
+   <properties>
+    <property name="Name" value="CollisionTile"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Background1" width="64" height="32">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3PsQkAIAwAwRTigO4/jFoJVmk1d/ADfAQAAAAAABxt1RP9yr//yv+Zd///2m8j6v7fKj7zvgnnbiqhACAAAA==
+  </data>
+ </layer>
+ <layer name="Foreground" width="64" height="32">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3UQQqAIBBAUa8TdYSsG1R6/8M0CwdcTDaLIqH/4KMMCLoxBAAAAAAAAABAbZDGRgDQu7t/rNX0wX2fNkuLo2jM1nJei9Vc194lR8fFPEt7lc6SsfeUX36rZSP6cSflWIKSACAAAA==
+  </data>
+ </layer>
+</map>

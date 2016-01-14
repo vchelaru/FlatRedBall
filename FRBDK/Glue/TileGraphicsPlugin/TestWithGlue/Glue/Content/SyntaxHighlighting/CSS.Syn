@@ -1,0 +1,86 @@
+<?HTML version="1.0" encoding="utf-8" ?>
+<Language Name="CSS" Startblock="HTML StyleMain">
+	<FileTypes>
+		<FileType Extension=".css" Name="Style sheet file" />
+
+	</FileTypes>
+
+	<Block Name="HTML StyleMain" Style="HTML Style" IsMultiline="true">
+		<Scope Start="" End="" Style="HTML Style" Text="" />
+		<Keywords>			
+			<PatternGroup Name="Defaults" Style="HTML Style Defaults" CaseSensitive="false">
+				<Patterns>
+				
+BODY DIV SPAN TABLE TD TR TEXTAREA 
+A:link
+A:visited
+A:active
+A:hover
+A 
+INPUT SELECT TH
+OL
+UL
+LI	
+BUTTON
+OBJECT
+LABEL
+P
+IMG
+H1
+H2
+H3
+H4
+H5
+PRE
+CODE
+				</Patterns>
+			</PatternGroup>
+		</Keywords>
+		<Operators>
+		<PatternGroup Name="Classes" Style="HTML Style Class" CaseSensitive="false">
+			<Pattern Text="(\.)(\w+)" IsComplex="true"/>				
+		</PatternGroup>
+		<PatternGroup Name="Layers" Style="HTML Style Layer" CaseSensitive="false">
+			<Pattern Text="(\#)(\w+)" IsComplex="true"/>				
+		</PatternGroup>
+
+		</Operators>
+		<ChildBlocks>
+			<Child Name="HTML Style Comment" />		
+			<Child Name="HTML Style" />		
+		</ChildBlocks>	
+	</Block>
+	
+	<Block Name="HTML Style" Style="HTML Style Attrib" IsMultiline="true" TerminateChildren="true" >		
+		<Scope Start="{" End="}" Style="HTML Style Plain" Text="{...}" />		
+		<ChildBlocks>		
+			<Child Name="HTML Style Comment" />						
+			<Child Name="HTML Style Value" />					
+		</ChildBlocks>	
+	</Block>
+	
+	<Block Name="HTML Style Value" Style="HTML Style Value" IsMultiline="true" >		
+		<Scope Start=":" End=";" Style="HTML Style Value" Text=":...;" />		
+		<ChildBlocks>		
+			<Child Name="HTML Style Comment" />					
+		</ChildBlocks>	
+	</Block>
+	
+	<Block Name="HTML Style Comment" Style="HTML Style Comment" IsMultiline="true" >		
+		<Scope Start="/*" End="*/" Style="HTML Style Comment" Text="/*...*/" />		
+		<Scope Start="&lt;!--" End="--&gt;" Style="HTML Style Comment" Text="&lt;!--...--&gt;" />		
+		<ChildBlocks>		
+		</ChildBlocks>	
+	</Block>
+	
+	<Style Name="HTML Style Plain" ForeColor="black" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Style" ForeColor="DarkRed" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Style Class" ForeColor="Blue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="HTML Style Layer" ForeColor="DarkBlue" BackColor="" Bold="true" Italic="false" Underline="false" />	
+	<Style Name="HTML Style Defaults" ForeColor="DarkRed" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="HTML Style Pattern" ForeColor="black" BackColor="yellow" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Style Attrib" ForeColor="Red" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Style Value" ForeColor="Blue" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Style Comment" ForeColor="Green" BackColor="" Bold="false" Italic="false" Underline="false" />
+	
+</Language>

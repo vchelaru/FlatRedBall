@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Language Name="XML" Startblock="text">
+	<FileTypes>
+		<FileType Extension=".xml" Name="XML file" />
+		<FileType Extension=".xsl" Name="XSL/XSLT file" />
+		<FileType Extension=".res" Name="RES file" />
+		<FileType Extension=".syn" Name="Compona Syntax file" />
+		<FileType Extension=".config" Name=".NET Config file" />
+		<FileType Extension=".csproj" Name="C# Project file" />
+	</FileTypes>
+	<Block Name="text" Style="text" EscapeChar="" IsMultiline="true">
+		<Keywords></Keywords>
+		<Operators>
+			<PatternGroup Name="HTML Chars" Style="HTML Chars">
+				<Pattern Text="&amp;AElig;" />
+				<Pattern Text="&amp;Aacute;" />
+				<Pattern Text="&amp;Acirc;" />
+				<Pattern Text="&amp;Agrave;" />
+				<Pattern Text="&amp;Aring;" />
+				<Pattern Text="&amp;Atilde;" />
+				<Pattern Text="&amp;Auml;" />
+				<Pattern Text="&amp;Ccedil;" />
+				<Pattern Text="&amp;ETH;" />
+				<Pattern Text="&amp;Eacute;" />
+				<Pattern Text="&amp;Ecirc;" />
+				<Pattern Text="&amp;Egrave;" />
+				<Pattern Text="&amp;Euml;" />
+				<Pattern Text="&amp;Iacute;" />
+				<Pattern Text="&amp;Icirc;" />
+				<Pattern Text="&amp;Igrave;" />
+				<Pattern Text="&amp;Iuml;" />
+				<Pattern Text="&amp;Ntilde;" />
+				<Pattern Text="&amp;Oacute;" />
+				<Pattern Text="&amp;Ocirc;" />
+				<Pattern Text="&amp;Ograve;" />
+				<Pattern Text="&amp;Oslash;" />
+				<Pattern Text="&amp;Otilde;" />
+				<Pattern Text="&amp;Ouml;" />
+				<Pattern Text="&amp;THORN;" />
+				<Pattern Text="&amp;Uacute;" />
+				<Pattern Text="&amp;Ucirc;" />
+				<Pattern Text="&amp;Ugrave;" />
+				<Pattern Text="&amp;Uuml;" />
+				<Pattern Text="&amp;Yacute;" />
+				<Pattern Text="&amp;aacute;" />
+				<Pattern Text="&amp;acirc;" />
+				<Pattern Text="&amp;acute;" />
+				<Pattern Text="&amp;aelig;" />
+				<Pattern Text="&amp;agrave;" />
+				<Pattern Text="&amp;amp;" />
+				<Pattern Text="&amp;aring;" />
+				<Pattern Text="&amp;atilde;" />
+				<Pattern Text="&amp;auml;" />
+				<Pattern Text="&amp;brvbar;" />
+				<Pattern Text="&amp;ccedil;" />
+				<Pattern Text="&amp;cedil;" />
+				<Pattern Text="&amp;cent;" />
+				<Pattern Text="&amp;copy;" />
+				<Pattern Text="&amp;curren;" />
+				<Pattern Text="&amp;deg;" />
+				<Pattern Text="&amp;divide;" />
+				<Pattern Text="&amp;eacute;" />
+				<Pattern Text="&amp;ecirc;" />
+				<Pattern Text="&amp;egrave;" />
+				<Pattern Text="&amp;eth;" />
+				<Pattern Text="&amp;euml;" />
+				<Pattern Text="&amp;frac12;" />
+				<Pattern Text="&amp;frac14;" />
+				<Pattern Text="&amp;frac34;" />
+				<Pattern Text="&amp;gt;" />
+				<Pattern Text="&amp;iacute;" />
+				<Pattern Text="&amp;icirc;" />
+				<Pattern Text="&amp;iexcl;" />
+				<Pattern Text="&amp;igrave;" />
+				<Pattern Text="&amp;iquest;" />
+				<Pattern Text="&amp;iuml;" />
+				<Pattern Text="&amp;laquo;" />
+				<Pattern Text="&amp;lt;" />
+				<Pattern Text="&amp;macr;" />
+				<Pattern Text="&amp;micro;" />
+				<Pattern Text="&amp;middot;" />
+				<Pattern Text="&amp;nbsp;" />
+				<Pattern Text="&amp;not;" />
+				<Pattern Text="&amp;ntilde;" />
+				<Pattern Text="&amp;oacute;" />
+				<Pattern Text="&amp;ocirc;" />
+				<Pattern Text="&amp;ograve;" />
+				<Pattern Text="&amp;ordf;" />
+				<Pattern Text="&amp;ordm;" />
+				<Pattern Text="&amp;oslash;" />
+				<Pattern Text="&amp;otilde;" />
+				<Pattern Text="&amp;ouml;" />
+				<Pattern Text="&amp;para;" />
+				<Pattern Text="&amp;plusmn;" />
+				<Pattern Text="&amp;pound;" />
+				<Pattern Text="&amp;quot;" />
+				<Pattern Text="&amp;raquo;" />
+				<Pattern Text="&amp;reg;" />
+				<Pattern Text="&amp;sect;" />
+				<Pattern Text="&amp;shy;" />
+				<Pattern Text="&amp;sup1;" />
+				<Pattern Text="&amp;sup2;" />
+				<Pattern Text="&amp;sup3;" />
+				<Pattern Text="&amp;szlig;" />
+				<Pattern Text="&amp;thorn;" />
+				<Pattern Text="&amp;times;" />
+				<Pattern Text="&amp;uacute;" />
+				<Pattern Text="&amp;ucirc;" />
+				<Pattern Text="&amp;ugrave;" />
+				<Pattern Text="&amp;uml;" />
+				<Pattern Text="&amp;uuml;" />
+				<Pattern Text="&amp;yacute;" />
+				<Pattern Text="&amp;yen;" />
+				<Pattern Text="&amp;yuml;" />
+			</PatternGroup>
+		</Operators>
+		<ChildBlocks>
+			<Child Name="ASP Header" />
+			<Child Name="ASP" />
+			<Child Name="PHP" />
+			<Child Name="HTML Comment" />
+			<Child Name="HTML gnu" />
+			<Child Name="HTML StyleMain" />
+			<Child Name="HTML JavaScriptMain" />
+			<Child Name="HTML Tag" />
+		</ChildBlocks>
+	</Block>
+
+
+<Block Name="HTML JavaScriptMain" Style="HTML JavaScript" IsMultiline="true" TerminateChildren="true" BackColor="WhiteSmoke">
+		<Scope Start="&lt;script language=&quot;javascript&quot;&gt;" End="&lt;/script&gt;" Style="HTML JavaScript Pattern" Text="&lt;Script&gt;" SpawnBlockOnStart="HTML JavaScript" />
+	</Block>
+	<Block Name="HTML StyleMain" Style="HTML Style" IsMultiline="true" TerminateChildren="true">
+		<Scope Start="&lt;Style&gt;" End="&lt;/Style&gt;" Style="HTML Style Pattern" Text="&lt;Style&gt;" />
+		<ChildBlocks>
+			<Child Name="ASP" />
+			<Child Name="HTML Style Comment" />
+			<Child Name="HTML Style" />
+		</ChildBlocks>
+	</Block>
+	<Block Name="HTML Style" Style="HTML Style Attrib" IsMultiline="true" TerminateChildren="true">
+		<Scope Start="{" End="}" Style="HTML Style" Text="{...}" />
+		<ChildBlocks>
+			<Child Name="ASP" />
+			<Child Name="HTML Style Comment" />
+			<Child Name="HTML Style Value" />
+		</ChildBlocks>
+	</Block>
+	<Block Name="HTML Style Value" Style="HTML Style Value" IsMultiline="true">
+		<Scope Start=":" End=";" Style="HTML Style Value" Text=":...;" />
+		<ChildBlocks>
+			<Child Name="ASP" />
+			<Child Name="HTML Style Comment" />
+		</ChildBlocks>
+	</Block>
+	<Block Name="HTML Style Comment" Style="HTML Comment" IsMultiline="true">
+		<Scope Start="/*" End="*/" Style="HTML Comment" Text="/*...*/" />
+		<ChildBlocks>
+			<Child Name="ASP" />
+		</ChildBlocks>
+	</Block>
+	<Block Name="HTML JavaScript" Style="HTML JavaScript" IsMultiline="true">
+		<Scope Start="{" End="}" Style="" Text="{...}" />
+		<Keywords>
+			<PatternGroup Name="Keywords" Style="ASP Keywords">
+				<Patterns>
+boolean
+break byte
+case catch char class const continue
+debugger default delete do double
+else enum export extends
+false final finally float for function 
+goto
+if implements import in instanceof int interface
+long
+native new null
+package private protected public
+return
+short static super switch synchronized
+this throw throws transient true try typeof
+var void volatile
+while with
+
+
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Functions" Style="ASP Functions">
+				<Patterns>
+abs acos alert anchor apply asin atan atan2 atob attachEvent
+back big blink blur bold borderWidths btoa
+call captureEvents ceil charAt charCodeAt clear clearInterval clearTimeout click close compile concat confirm contextual cos createElement createEventObject createPopup createStyleSheet createTextNode
+detachEvent disableExternalCapture dump
+elementFromPoint enableExternalCapture escape eval exec execCommand execScript exp
+fileCreatedDate fileModifiedDate fileSize fileUpdatedDate find firstChild fixed floor focus fontcolor fontsize fromCharCode forward
+getAttention getDate getDay getElementById getElementsByName getElementsByTagName getFullYear getHours getMilliseconds getMinutes getMonth getSeconds getSelection getTime getTimezoneOffset getUTCDate getUTCDay getUTCFullYear getUTCHours getUTCMilliseconds getUTCMinutes getUTCMonth getUTCSeconds getYear go
+handleEvent home
+indexOf isFinite isNaN italics
+javaEnabled join
+lastIndexOf link load log
+margins match max mergeAttributes min moveAbove moveBelow moveBy moveTo moveToAbsolute
+navigate 
+open
+paddings parse parseFloat parseInt plugins.refresh pop pow preference print prompt push
+queryCommandEnabled queryCommandIndeterm queryCommandState queryCommandValue
+random recalc releaseCapture releaseEvents reload replace reset resizeBy resizeTo returnValue reverse round routeEvents
+savePreferences scroll scrollBy scrollByLines scrollByPages scrollTo scrollX scrollY search select setDate setFullYear setActive setCursor setHotKeys setHours setInterval setMilliseconds setMinutes setMonth setResizable setSeconds setTime setTimeout setUTCDate setUTCFullYear setUTCHours setUTCMilliseconds setUTCMinutes setUTCMonth setUTCSeconds setYear setZOptions shift showHelp showModalDialog showModelessDialog sidebar sin signText sizeToContent slice small sort splice split sqrt strike stop sub submit substr substring sup
+taint taintEnabled tan test toGMTString toLocaleString toLowerCase toSource toString toUpperCase toUTCString 
+UTC
+unescape unshift untaint updateCommands unwatch
+valueOf
+watch write writeln
+
+				</Patterns>
+			</PatternGroup>
+		</Keywords>
+		<Operators>
+			<PatternGroup Name="Operators2" Style="ASP Comment">
+				<Pattern Text="--&gt;" />
+				<Pattern Text="&lt;!--" />
+			</PatternGroup>
+			<PatternGroup Name="Operators" Style="Javascript Operators">
+				<Pattern Text="+" />
+				<Pattern Text="-" />
+				<Pattern Text="*" />
+				<Pattern Text="/" />
+				<Pattern Text="^" />
+				<Pattern Text="." />
+				<Pattern Text=":" />
+				<Pattern Text=";" />
+				<Pattern Text="=" />
+				<Pattern Text="&gt;" />
+				<Pattern Text="&lt;" />
+				<Pattern Text="&amp;" />
+				<Pattern Text="|" />
+			</PatternGroup>
+			<PatternGroup Name="Comment" Style="ASP Comment">
+				<Pattern Text="'[a-z,A-Z,0-9 ]*" IsComplex="true" />
+			</PatternGroup>
+		</Operators>
+		<ChildBlocks>
+			<Child Name="HTML JavaScript" />
+			<Child Name="Script String" />
+			<Child Name="Script String2" />
+			<Child Name="Script MultiComment" />
+			<Child Name="ASP" />
+		</ChildBlocks>
+	</Block>
+	<!-- this block is the HTML tags in HTML comments-->
+	<Block Name="HTML Tag" Style="HTML Tag" EscapeChar="" IsMultiline="true">
+		<Scope Start="&lt;" End="&gt;" Style="HTML Tag Pattern" Text="&lt;...&gt;" />
+		<Operators>
+			<PatternGroup Name="HTML Attrib" Style="HTML Attrib">
+				<!-- operator is the attributes that can exist within HTML tags-->
+				<Pattern Text="(\s[a-zA-Z:]+)" IsComplex="true" />
+			</PatternGroup>
+		</Operators>
+		<ChildBlocks>
+			<Child Name="ASP" />
+			<Child Name="HTML String" />
+		</ChildBlocks>
+	</Block>
+	<Block Name="HTML String" Style="HTML String" EscapeChar="" IsMultiline="false">
+		<Scope Start="&quot;" End="&quot;" Style="HTML String Pattern" Text="" />
+		<ChildBlocks>
+			<Child Name="ASP" />
+		</ChildBlocks>
+	</Block>
+	<Block Name="HTML Comment" Style="HTML Comment" EscapeChar="" IsMultiline="true">
+		<Scope Start="&lt;!--" End="--&gt;" Style="HTML Comment" Text="&lt;!--...--&gt;" />
+		<ChildBlocks>
+			<Child Name="ASP" />
+		</ChildBlocks>
+	</Block>
+	<Block Name="HTML gnu" Style="HTML gnu" EscapeChar="" IsMultiline="true">
+		<Scope Start="&lt;!" End="&gt;" Style="HTML Tag Pattern" Text="&lt;!...&gt;" />
+	</Block>
+	<Block Name="ASP Header" Style="ASP Pattern" EscapeChar="" IsMultiline="true">
+		<Scope Start="&lt;%@" End="%&gt;" Style="ASP Pattern" Text="&lt;%@...%&gt;" />
+	</Block>
+	<!--ASP ASP ASP ASP -->
+	<Block Name="ASP" Style="ASP" EscapeChar="" IsMultiline="true" TerminateChildren="true">
+		<Keywords>
+			<PatternGroup Name="Keywords" Style="ASP Keywords">
+				<Pattern Text="End Function" IsSeparator="true" />
+				<Pattern Text="End Sub" IsSeparator="true" />
+				<Pattern Text="End Property" IsSeparator="true" />
+				<Patterns>
+And As
+Call Case Class Const
+Dim Do
+Each Else ElseIf Empty End Eqv Erase Error Execute Exit Explicit
+For Function
+Get Goto
+If Imp Is
+Let Loop
+Mod
+Next New Not Nothing Null
+On Option Or
+Private Property Public
+Randomize ReDim Rem Resume
+Select Set Stop Sub
+Then To 
+Until
+Wend While With
+True False
+
+
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Functions" Style="ASP Functions">
+				<Patterns>
+Server Request Response Session Application
+				</Patterns>
+			</PatternGroup>
+		</Keywords>
+		<Operators>
+			<PatternGroup Name="Operators" Style="ASP Operators">
+				<Pattern Text="+" />
+				<Pattern Text="-" />
+				<Pattern Text="*" />
+				<Pattern Text="/" />
+				<Pattern Text="^" />
+				<Pattern Text="." />
+				<Pattern Text="=" />
+				<Pattern Text="&gt;" />
+				<Pattern Text="&lt;" />
+			</PatternGroup>
+		</Operators>
+		<Scope Start="&lt;%" End="%&gt;" Style="ASP Pattern" Text="&lt;%...%&gt;" />
+		<ChildBlocks>
+			<Child Name="ASP String" />
+			<Child Name="ASP Comment" />
+		</ChildBlocks>
+	</Block>
+	<Block Name="ASP String" Style="ASP String" EscapeChar="" IsMultiline="false">
+		<Scope Start="&quot;" End="&quot;" Style="ASP String" Text="" />
+	</Block>
+	<Block Name="ASP Comment" Style="ASP Comment" EscapeChar="" IsMultiline="false">
+		<Scope Start="'" End="" Style="ASP Comment" Text="" IsMultiline="false" />
+	</Block>
+	<Block Name="Script String" Style="Script String" EscapeChar="" IsMultiline="false">
+		<Scope Start="'" End="'" Style="Script String" Text="" />
+	</Block>
+	<Block Name="Script String2" Style="Script String" EscapeChar="" IsMultiline="false">
+		<Scope Start="&quot;" End="&quot;" Style="Script String" Text="" />
+	</Block>
+	<Block Name="Script MultiComment" Style="Script Comment" EscapeChar="" IsMultiline="true">
+		<Scope Start="/*" End="*/" Style="Script Comment" Text="/*...*/" />
+	</Block>
+
+	
+	<Style Name="Text" ForeColor="Black" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Tag" ForeColor="DarkRed" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Tag Pattern" ForeColor="Blue" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML String Pattern" ForeColor="blue" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML String" ForeColor="blue" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Attrib" ForeColor="red" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Comment" ForeColor="green" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML gnu" ForeColor="magenta" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Style" ForeColor="DarkRed" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Style Pattern" ForeColor="black" BackColor="yellow" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Style Attrib" ForeColor="Red" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML Style Value" ForeColor="Blue" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="ASP" ForeColor="black" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="ASP Pattern" ForeColor="black" BackColor="Yellow" Bold="false" Italic="false" Underline="false" />
+	<Style Name="ASP Operators" ForeColor="red" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="ASP Keywords" ForeColor="blue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="ASP Functions" ForeColor="DarkBlue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="ASP Comment" ForeColor="green" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="ASP String" ForeColor="Teal" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="HTML Chars" ForeColor="red" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="HTML JavaScript Pattern" ForeColor="black" BackColor="Yellow" Bold="false" Italic="false" Underline="false" />
+	<Style Name="HTML JavaScript" ForeColor="black" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Script Operators" ForeColor="red" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Script Comment" ForeColor="green" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Script String" ForeColor="Teal" BackColor="" Bold="true" Italic="false" Underline="false" />
+</Language>

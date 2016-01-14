@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="AtlasPlugin.Controls.MainAtlasControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AtlasPlugin.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"></ColumnDefinition>
+            <ColumnDefinition  Width="6*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <ListBox ItemsSource="{Binding Atlases}" KeyDown="HandleListBoxKeyDown" SelectedItem="{Binding SelectedAtlas}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding DisplayName}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+
+
+            </ListBox>
+
+            <Button Grid.Row="1" Command="{Binding Path=AddCommand}" Content="{Binding AddButtonText}"/>
+        </Grid>
+
+        <Image Source="{Binding AtlasImage}" Grid.Column="1" ></Image>
+       
+    </Grid>
+</UserControl>

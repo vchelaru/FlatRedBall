@@ -1,0 +1,3 @@
+﻿Plugins/GlueView/SelectionInterface.dll
+Plugins/GlueView/InteractiveInterface.dll
+Plugins/GlueView/RemotingHelper.dll

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BuildToolAssociationList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <BuildToolList>
+    <BuildToolAssociation>
+      <BuildTool>Libraries/bmfont.exe</BuildTool>
+      <SourceFileType>bmfc</SourceFileType>
+      <DestinationFileType>fnt</DestinationFileType>
+      <SourceFileArgumentPrefix>-c</SourceFileArgumentPrefix>
+      <DestinationFileArgumentPrefix>-o</DestinationFileArgumentPrefix>
+    </BuildToolAssociation>
+    <BuildToolAssociation>
+      <BuildTool>Libraries/Tmx/TmxToScnx.exe</BuildTool>
+      <SourceFileType>tmx</SourceFileType>
+      <DestinationFileType>scnx</DestinationFileType>
+    </BuildToolAssociation>
+    <BuildToolAssociation>
+      <BuildTool>Libraries/Tmx/TmxToCSV.exe</BuildTool>
+      <SourceFileType>tmx</SourceFileType>
+      <DestinationFileType>csv</DestinationFileType>
+    </BuildToolAssociation>
+    <BuildToolAssociation>
+      <BuildTool>Libraries/Tmx/TmxToShcx.exe</BuildTool>
+      <SourceFileType>tmx</SourceFileType>
+      <DestinationFileType>shcx</DestinationFileType>
+    </BuildToolAssociation>
+  </BuildToolList>
+</BuildToolAssociationList>

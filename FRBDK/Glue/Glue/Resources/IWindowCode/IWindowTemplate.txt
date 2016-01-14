@@ -1,0 +1,317 @@
+﻿
+    // DELEGATE START HERE
+    
+
+        #region IWindow methods and properties
+
+        public event FlatRedBall.Gui.WindowEvent Click;
+		public event FlatRedBall.Gui.WindowEvent ClickNoSlide;
+		public event FlatRedBall.Gui.WindowEvent SlideOnClick;
+        public event FlatRedBall.Gui.WindowEvent Push;
+		public event FlatRedBall.Gui.WindowEvent DragOver;
+		public event FlatRedBall.Gui.WindowEvent RollOn;
+		public event FlatRedBall.Gui.WindowEvent RollOff;
+		public event FlatRedBall.Gui.WindowEvent RollOver;
+		public event FlatRedBall.Gui.WindowEvent LosePush;
+
+        System.Collections.ObjectModel.ReadOnlyCollection<FlatRedBall.Gui.IWindow> FlatRedBall.Gui.IWindow.Children
+        {
+            get { throw new System.NotImplementedException(); }
+        }
+
+        bool mEnabled = true;
+
+
+		bool FlatRedBall.Graphics.IVisible.Visible
+        {
+            get
+            {
+                return this.AbsoluteVisible;
+            }
+			set
+			{
+				this.Visible = value;
+			}
+        }
+		
+		public bool MovesWhenGrabbed
+        {
+            get;
+            set;
+        }
+
+        bool FlatRedBall.Gui.IWindow.GuiManagerDrawn
+        {
+            get
+            {
+                return false;
+            }
+            set
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        public bool IgnoredByCursor
+        {
+            get
+            {
+                return false;
+            }
+            set
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+
+
+        public System.Collections.ObjectModel.ReadOnlyCollection<FlatRedBall.Gui.IWindow> FloatingChildren
+        {
+            get { return null; }
+        }
+
+        public FlatRedBall.ManagedSpriteGroups.SpriteFrame SpriteFrame
+        {
+            get
+            {
+                return null;
+            }
+            set
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        float FlatRedBall.Gui.IWindow.WorldUnitX
+        {
+            get
+            {
+                return Position.X;
+            }
+            set
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        float FlatRedBall.Gui.IWindow.WorldUnitY
+        {
+            get
+            {
+                return Position.Y;
+            }
+            set
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        float FlatRedBall.Gui.IWindow.WorldUnitRelativeX
+        {
+            get
+            {
+                return RelativePosition.X;
+            }
+            set
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        float FlatRedBall.Gui.IWindow.WorldUnitRelativeY
+        {
+            get
+            {
+                return RelativePosition.Y;
+            }
+            set
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        float FlatRedBall.Gui.IWindow.ScaleX
+        {
+            get;
+            set;
+        }
+
+        float FlatRedBall.Gui.IWindow.ScaleY
+        {
+            get;
+            set;
+        }
+
+        FlatRedBall.Gui.IWindow FlatRedBall.Gui.IWindow.Parent
+        {
+            get
+            {
+                return null;
+            }
+            set
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        void FlatRedBall.Gui.IWindow.Activity(FlatRedBall.Camera camera)
+        {
+
+        }
+
+        void FlatRedBall.Gui.IWindow.CallRollOff()
+        {
+			if(RollOff != null)
+			{
+				RollOff(this);
+			}
+        }
+
+        void FlatRedBall.Gui.IWindow.CallRollOn()
+        {
+			if(RollOn != null)
+			{
+				RollOn(this);
+			}
+        }
+
+		
+		void FlatRedBall.Gui.IWindow.CallRollOver()
+		{
+			if(RollOver != null)
+			{
+				RollOver(this);
+			}	
+		}
+		
+		void CallLosePush(FlatRedBall.Gui.IWindow instance)
+		{
+			if(LosePush != null)
+			{
+				LosePush(instance);
+			}
+		}
+
+        void FlatRedBall.Gui.IWindow.CloseWindow()
+        {
+            throw new System.NotImplementedException();
+        }
+
+		void FlatRedBall.Gui.IWindow.CallClick()
+		{
+			if(Click != null)
+			{
+				Click(this);
+			}
+		}
+
+        public bool GetParentVisibility()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        bool FlatRedBall.Gui.IWindow.IsPointOnWindow(float x, float y)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void OnDragging()
+        {
+			if(DragOver != null)
+			{
+				DragOver(this);
+			}
+        }
+
+        public void OnResize()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void OnResizeEnd()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void OnLosingFocus()
+        {
+            // Do nothing
+        }
+
+        public bool OverlapsWindow(FlatRedBall.Gui.IWindow otherWindow)
+        {
+            return false; // we don't care about this.
+        }
+
+        public void SetScaleTL(float newScaleX, float newScaleY)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void SetScaleTL(float newScaleX, float newScaleY, bool keepTopLeftStatic)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public virtual void TestCollision(FlatRedBall.Gui.Cursor cursor)
+        {
+            if (HasCursorOver(cursor))
+            {
+                cursor.WindowOver = this;
+
+                if (cursor.PrimaryPush)
+                {
+
+                    cursor.WindowPushed = this;
+
+                    if (Push != null)
+                        Push(this);
+
+						
+					cursor.GrabWindow(this);
+
+                }
+
+                if (cursor.PrimaryClick) // both pushing and clicking can occur in one frame because of buffered input
+                {
+                    if (cursor.WindowPushed == this)
+                    {
+                        if (Click != null)
+                        {
+                            Click(this);
+                        }
+						if(cursor.PrimaryClickNoSlide && ClickNoSlide != null)
+						{
+							ClickNoSlide(this);
+						}
+
+                        // if (cursor.PrimaryDoubleClick && DoubleClick != null)
+                        //   DoubleClick(this);
+                    }
+					else
+					{
+						if(SlideOnClick != null)
+						{
+							SlideOnClick(this);
+						}
+					}
+                }
+            }
+        }
+
+        void FlatRedBall.Gui.IWindow.UpdateDependencies()
+        {
+            // do nothing
+        }
+
+        FlatRedBall.Graphics.Layer FlatRedBall.Graphics.ILayered.Layer
+        {
+            get
+            {
+				return LayerProvidedByContainer;
+            }
+        }
+
+
+        #endregion

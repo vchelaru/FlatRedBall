@@ -1,0 +1,49 @@
+FriendlyName,RuntimeTypeName,QualifiedRuntimeTypeName,SaveTypeName,Extension,AddToManagersMethod,LayeredAddToManagersMethod,MakeManuallyUpdatedMethod,ActivityMethod,AfterCustomActivityMethod,DestroyMethod,RecycledDestroyMethod,ShouldBeDisposed,ExtraVariablesPattern,ShouldAttach,AttachToNullOnlyMethod,FindByNameSyntax,MustBeAddedToContentPipeline,CanBeCloned,HasCursorIsOn,HasVisibleProperty,PostInitializeCode,ContentImporter,ContentProcessor
+Animation 3D List (.a3dx),Animation3DList,FlatRedBall.Graphics.Animation3D.Animation3DList,FlatRedBall.Content.Animation3D.Animation3DListSave,a3dx,,,,,,,,,,,,,,,,,,,
+Animation Chain List (.achx),AnimationChainList,FlatRedBall.Graphics.Animation.AnimationChainList,FlatRedBall.Content.AnimationChain.AnimationChainListSave,achx,,,,,,,,,,FALSE,,"[""OBJECTNAME""]",FALSE,FALSE,FALSE,FALSE,,AnimationChainArrayImporter,AnimationChainArrayProcessor
+Scene (.scnx),Scene,FlatRedBall.Scene,FlatRedBall.Content.SpriteEditorScene,scnx,this.AddToManagers(),this.AddToManagers(mLayer),this.ConvertToManuallyUpdated(),,this.ManageAll(),"this.RemoveFromManagers(ContentManagerName != ""Global"")",this.RemoveFromManagers(false),,,TRUE,AttachAllDetachedTo,"FindByName(""OBJECTNAME"")",FALSE,TRUE,TRUE,TRUE,,SceneFileImporter,SceneFileProcessor
+Shape Collection (.shcx),ShapeCollection,FlatRedBall.Math.Geometry.ShapeCollection,FlatRedBall.Content.Math.Geometry.ShapeCollectionSave,shcx,this.AddToManagers(),this.AddToManagers(mLayer),,,,"this.RemoveFromManagers(ContentManagerName != ""Global"")",this.RemoveFromManagers(false),,,TRUE,AttachAllDetachedTo,"FindByName(""OBJECTNAME"")",FALSE,TRUE,TRUE,TRUE,,ShapeCollectionImporter,ShapeCollectionProcessor
+Emitter List (.emix),EmitterList,FlatRedBall.Graphics.Particle.EmitterList,FlatRedBall.Content.Particle.EmitterSaveList,emix,this.AddToManagers(),this.AddToManagers(mLayer),,,,"this.RemoveFromManagers(ContentManagerName != ""Global"")",this.RemoveFromManagers(false),,,TRUE,AttachAllDetachedTo,"FindByName(""OBJECTNAME"")",FALSE,TRUE,FALSE,FALSE,,EmitterImporter,EmitterProcessor
+Sprite Rig (.srgx),SpriteRig,FlatRedBall.ManagedSpriteGroups.SpriteRig,FlatRedBall.Content.SpriteRig.SpriteRigSave,srgx,this.AddToManagers(),,,,this.Manage(),this.Destroy(),,,,TRUE,,,FALSE,TRUE,FALSE,FALSE,,SpriteRigImporter,SpriteRigProcessor
+Node Network (.nntx),NodeNetwork,FlatRedBall.AI.Pathfinding.NodeNetwork,FlatRedBall.Content.AI.Pathfinding.NodeNetworkSave,nntx,,,,,,,,,,FALSE,,"FindByName(""OBJECTNAME"")",FALSE,FALSE,FALSE,FALSE,,NodeNetworkImporter,NodeNetworkProcessor
+,,,,,,,,,,,,,,,,,,,,,,,
+Spline List (.splx),SplineList,FlatRedBall.Math.Splines.SplineList,FlatRedBall.Content.Math.Splines.SplineSaveList,splx,,,,,,,,,,FALSE,,"FindByName(""OBJECTNAME"")",FALSE,TRUE,FALSE,FALSE,,,
+Text (.txt),string,string,,txt,,,,,,,,,,FALSE,,,FALSE,FALSE,TRUE,TRUE,,,
+Texture (.bmp),Texture2D,Microsoft.Xna.Framework.Graphics.Texture2D,,bmp,,,,,,,,,,FALSE,,,FALSE,FALSE,FALSE,FALSE,,TextureImporter,TextureProcessor
+Texture (.png),Texture2D,Microsoft.Xna.Framework.Graphics.Texture2D,,png,,,,,,,,,,FALSE,,,FALSE,FALSE,FALSE,FALSE,,TextureImporter,TextureProcessor
+Texture (.jpg),Texture2D,Microsoft.Xna.Framework.Graphics.Texture2D,,jpg,,,,,,,,,,FALSE,,,FALSE,FALSE,FALSE,FALSE,,TextureImporter,TextureProcessor
+Texture (.tga),Texture2D,Microsoft.Xna.Framework.Graphics.Texture2D,,tga,,,,,,,,,,FALSE,,,FALSE,FALSE,FALSE,FALSE,,TextureImporter,TextureProcessor
+Texture (.gif),Texture2D,Microsoft.Xna.Framework.Graphics.Texture2D,,gif,,,,,,,,,,FALSE,,,FALSE,FALSE,FALSE,FALSE,,,
+Model (.x),Model,,,x,,,,,,,,,,FALSE,,,TRUE,FALSE,FALSE,TRUE,,XImporter,ModelProcessor
+Model (.fbx),Model,,,fbx,,,,,,,,,,FALSE,,,TRUE,FALSE,FALSE,TRUE,,FbxImporter,ModelProcessor
+Model (.wme),CustomModel,FlatRedBall.Content.Model.Helpers.CustomModel,,wme,,,,,,,,,,FALSE,,,FALSE,FALSE,FALSE,TRUE,,,
+Animation 3D (.wam),,,,wam,,,,,,,,,,FALSE,,,FALSE,FALSE,FALSE,FALSE,,,
+Hierarchy 3D (.whe),,,,whe,,,,,,,,,,FALSE,,,FALSE,FALSE,FALSE,FALSE,,,
+Song (.wma),Song,Microsoft.Xna.Framework.Media.Song,,wma,MediaPlayer.Play(this),,,,,MediaPlayer.Stop(),,TRUE,,FALSE,,,TRUE,FALSE,FALSE,FALSE,,WmaImporter,SongProcessor
+Song (.mp3),Song,Microsoft.Xna.Framework.Media.Song,,mp3,MediaPlayer.Play(this),,,,,MediaPlayer.Stop(),,TRUE,,FALSE,,,TRUE,FALSE,FALSE,FALSE,,Mp3Importer,SongProcessor
+SoundEffect (.wav),SoundEffect,Microsoft.Xna.Framework.Audio.SoundEffect,,wav,,,,,,,,TRUE,,FALSE,,,TRUE,FALSE,FALSE,FALSE,,WavImporter,SoundEffectProcessor
+FontPattern (.fnt),string,string,,fnt,,,,,,,,,,FALSE,,,FALSE,FALSE,FALSE,FALSE,,,
+BitmapFont (.bmfc),BitmapFont,FlatRedBall.Graphics.BitmapFont,,bmfc,,,,,,,,,,FALSE,,,FALSE,FALSE,FALSE,FALSE,,,
+SpriteFont (.spritefont),,,,spritefont,,,,,,,,,,,,,,,,,,FontDescriptionImporter,FontDescriptionProcessor
+Layer,Layer,FlatRedBall.Graphics.Layer,,,this = SpriteManager.AddLayer(),,,,,SpriteManager.RemoveLayer(this),,,,FALSE,,,FALSE,FALSE,FALSE,TRUE,,,
+,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,
+AxisAlignedRectangle,AxisAlignedRectangle,FlatRedBall.Math.Geometry.AxisAlignedRectangle,,,ShapeManager.AddAxisAlignedRectangle(this),"ShapeManager.AddToLayer(this, mLayer)",,,,ShapeManager.Remove(this),,,bool Visible,TRUE,,"FindByName(""OBJECTNAME"")",FALSE,TRUE,TRUE,TRUE,,,
+AxisAlignedCube,AxisAlignedCube,FlatRedBall.Math.Geometry.AxisAlignedCube,,,ShapeManager.AddAxisAlignedCube(this),"ShapeManager.AddToLayer(this, mLayer)",,,,ShapeManager.Remove(this),,,bool Visible,TRUE,,"FindByName(""OBJECTNAME"")",FALSE,TRUE,FALSE,TRUE,,,
+Circle,Circle,FlatRedBall.Math.Geometry.Circle,,,ShapeManager.AddCircle(this),"ShapeManager.AddToLayer(this, mLayer)",,,,ShapeManager.Remove(this),,,bool Visible,TRUE,,"FindByName(""OBJECTNAME"")",FALSE,TRUE,TRUE,TRUE,,,
+Polygon,Polygon,FlatRedBall.Math.Geometry.Polygon,,,ShapeManager.AddPolygon(this),"ShapeManager.AddToLayer(this, mLayer)",,,,ShapeManager.Remove(this),,,bool Visible,TRUE,,"FindByName(""OBJECTNAME"")",FALSE,TRUE,TRUE,TRUE,,,
+Sphere,Sphere,FlatRedBall.Math.Geometry.Sphere,,,ShapeManager.AddSphere(this),"ShapeManager.AddToLayer(this, mLayer)",,,,ShapeManager.Remove(this),,,bool Visible,TRUE,,"FindByName(""OBJECTNAME"")",FALSE,TRUE,TRUE,TRUE,,,
+PositionedObjectList (Generic),PositionedObjectList<T>,FlatRedBall.Math.PositionedObjectList<T>,,,,,,,,,,,,FALSE,,"FindByName(""OBJECTNAME"")",FALSE,TRUE,FALSE,FALSE,,,
+Sprite,Sprite,FlatRedBall.Sprite,FlatRedBall.Content.Scene.SpriteSave,,SpriteManager.AddSprite(this),"SpriteManager.AddToLayer(this, mLayer)",SpriteManager.ConvertToManuallyUpdated(this),,,SpriteManager.RemoveSprite(this),,,,TRUE,,"FindByName(""OBJECTNAME"")",FALSE,TRUE,TRUE,TRUE,,,
+SpriteChain,SpriteChain,FlatRedBall.ManagedSpriteGroups.SpriteChain,,,,,,,,this.Destroy(),,,,,,,FALSE,FALSE,FALSE,TRUE,,,
+SpriteGrid,SpriteGrid,FlatRedBall.ManagedSpriteGroups.SpriteGrid,,,this.PopulateGrid(),this.Layer = mLayer;  this.PopulateGrid(),this.CreatesAutomaticallyUpdatedSprites = false,,this.Manage(),this.Destroy(),,,,FALSE,,"FindByName(""OBJECTNAME"")",FALSE,TRUE,FALSE,FALSE,,,
+Emitter,Emitter,FlatRedBall.Graphics.Particle.Emitter,FlatRedBall.Content.Particle.EmitterSave,,SpriteManager.AddEmitter(this),"SpriteManager.AddEmitter(this, mLayer)",,,,SpriteManager.RemoveEmitter(this),,,,TRUE,,"FindByName(""OBJECTNAME"")",FALSE,TRUE,FALSE,FALSE,,,
+SpriteFrame,SpriteFrame,FlatRedBall.ManagedSpriteGroups.SpriteFrame,,,SpriteManager.AddSpriteFrame(this),"SpriteManager.AddToLayer(this, mLayer)",,,,SpriteManager.RemoveSpriteFrame(this),,,,TRUE,,"FindByName(""OBJECTNAME"")",FALSE,TRUE,TRUE,TRUE,,,
+Text,Text,FlatRedBall.Graphics.Text,,,TextManager.AddText(this),"TextManager.AddToLayer(this, mLayer)",TextManager.ConvertToManuallyUpdated(this),,,TextManager.RemoveText(this),,,,TRUE,,"FindByName(""OBJECTNAME"")",FALSE,TRUE,TRUE,TRUE,,,
+Spline,Spline,FlatRedBall.Math.Splines.Spline,,,,,,,,,,,,FALSE,,"FindByName(""OBJECTNAME"")",FALSE,FALSE,FALSE,FALSE,this.CalculateVelocities();  this.CalculateAccelerations();,,
+AnimationChain,AnimationChain,FlatRedBall.Graphics.Animation.AnimationChain,FlatRedBall.Content.AnimationChain.AnimationChainSave,,,,,,,,,,,FALSE,,"[""OBJECTNAME""]",FALSE,FALSE,FALSE,FALSE,,,
+PositionedModel,PositionedModel,FlatRedBall.Graphics.Model.PositionedModel,,,ModelManager.AddModel(this),,ModelManager.ConvertToManuallyUpdated(this),,,ModelManager.RemoveModel(this),,,,TRUE,,"FindByName(""OBJECTNAME"")",TRUE,TRUE,TRUE,TRUE,,,
+Camera,Camera,FlatRedBall.Camera,,,,,,,,this.Detach(),,,,TRUE,,,FALSE,,FALSE,FALSE,,,
+Effect (.fx),Effect,Microsoft.Xna.Framework.Graphics.Effect,,fx,,,,,,,,,,FALSE,,,FALSE,FALSE,FALSE,FALSE,,EffectImporter,EffectProcessor
+Video (.wmv),Video,Microsoft.Xna.Framework.Media.Video,,wmv,,,,,,,,,,FALSE,,,FALSE,FALSE,FALSE,FALSE,,WmvImporter,VideoProcessor
+XactProject (.xap),,,,xap,,,,,,,,,,FALSE,,,FALSE,FALSE,FALSE,FALSE,,XactImporter,XactProcessor

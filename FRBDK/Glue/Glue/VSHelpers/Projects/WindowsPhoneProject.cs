@@ -1,0 +1,66 @@
+﻿using System;
+using System.Collections.Generic;
+using FlatRedBall.IO;
+using Microsoft.Build.BuildEngine;
+
+namespace FlatRedBall.Glue.VSHelpers.Projects
+{
+    public class WindowsPhoneProject : VisualStudioProject
+    {
+        public WindowsPhoneProject(Project project) : base(project)
+        {
+        }
+
+        public override string ProjectId { get { return "WindowsPhone"; } }
+
+        public override string PrecompilerDirective { get { throw new NotImplementedException(); } }
+
+        public override List<string> LibraryDlls
+        {
+            get 
+            { 
+                return new List<string>
+                           {
+                               @"WindowsPhone\FlatRedBall.dll"
+                           };
+            }
+        }
+
+        public override string FolderName
+        {
+            get { return "WindowsPhone"; }
+        }
+
+
+
+        protected override string ContentProjectDirectory
+        {
+            get
+            {
+                var contentDirectory = FileManager.GetDirectory(Directory);
+                contentDirectory += Name + "Content";
+
+                return contentDirectory;
+            }
+        }
+
+        protected override void LoadContentProject()
+        {
+            List<string> files = FileManager.GetAllFilesInDirectory(ContentProjectDirectory, "contentproj", 0);
+
+            if (files.Count != 0)
+            {
+                ContentProject = ProjectCreator.LoadXnaProjectFor(this, files[0]);
+            }
+            else
+            {
+                ContentProject = this;
+            }
+        }
+
+        public override string NeededVisualStudioVersion
+        {
+            get { return "10.0"; }
+        }
+    }
+}

@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{69A59DF4-C920-44FB-9603-E3A749D441DB}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>SpriteEditor.ico</ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>SpriteEditor</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SpriteEditor</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;DEBUG;FRB_MDX</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files\Microsoft DirectX 9.0 SDK (October 2005)\Developer Runtime\x86\DirectX for Managed Code\Microsoft.DirectX.DLL</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files\Microsoft DirectX 9.0 SDK (October 2005)\Developer Runtime\x86\DirectX for Managed Code\Microsoft.DirectX.Direct3D.DLL</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.DirectX.Direct3DX, Version=1.0.2911.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.DirectInput, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files\Microsoft DirectX 9.0 SDK (October 2005)\Developer Runtime\x86\DirectX for Managed Code\Microsoft.DirectX.DirectInput.DLL</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="EditAxes.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EditorLogic.cs" />
+    <Compile Include="EditorProperties.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FileAssociationHelper.cs" />
+    <Compile Include="Gui\AttributesWindow.cs" />
+    <Compile Include="Gui\DeleteTextureWindow.cs" />
+    <Compile Include="Gui\EditorPropertiesGrid.cs" />
+    <Compile Include="Gui\InfoBarWindow.cs" />
+    <Compile Include="Gui\MenuStrip.cs" />
+    <Compile Include="Instructions\AddSpriteUndo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReactiveHud.cs" />
+    <Compile Include="SEPositionedObjects\EditorCamera.cs" />
+    <Compile Include="SEPositionedObjects\EditorSprite.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GameData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SnappingManager.cs" />
+    <Compile Include="SpriteEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\GuiData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Gui\GuiMessages.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Gui\FileButtonWindow.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Gui\ListWindow.cs" />
+    <Compile Include="Gui\SpriteGridGuiMessages.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Gui\SpriteGridCreationPropertiesWindow.cs" />
+    <Compile Include="Gui\SpriteRigSaveOptions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Gui\ToolsWindow.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SECursor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SEPositionedObjects\ISpriteEditorObject.cs" />
+    <Compile Include="SESpriteGridManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SpriteEditorSettings.cs" />
+    <Compile Include="SpriteFrameManager.cs" />
+    <Compile Include="SpriteGridBorder.cs" />
+    <Compile Include="SpriteGridObjects\SpriteGridCreationOptions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Engines\FlatRedBallMDX\FRB.csproj">
+      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
+      <Name>FRB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FRBDK Supporting Projects\EditorObjects\EditorObjects.csproj">
+      <Project>{E1D670B6-AD42-4B84-AFF8-D568097BE03D}</Project>
+      <Name>EditorObjects</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SpriteEditor.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SpriteEditor.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\DownZ.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\FreeRotation.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="SpriteEditor.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="File\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>if not exist $(SolutionDir)..\..\Build\ md $(SolutionDir)..\..\Build\
+copy $(ProjectDir)$(OutDir) $(SolutionDir)..\..\Build\</PostBuildEvent>
+  </PropertyGroup>
+</Project>

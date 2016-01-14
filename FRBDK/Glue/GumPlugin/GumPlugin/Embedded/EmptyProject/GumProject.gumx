@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GumProjectSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <CustomProperties />
+  <DefaultCanvasWidth>800</DefaultCanvasWidth>
+  <DefaultCanvasHeight>600</DefaultCanvasHeight>
+  <Guides />
+  <StandardElementReference>
+    <Name>ColoredRectangle</Name>
+    <ElementType>Standard</ElementType>
+  </StandardElementReference>
+  <StandardElementReference>
+    <Name>Component</Name>
+    <ElementType>Standard</ElementType>
+  </StandardElementReference>
+  <StandardElementReference>
+    <Name>Container</Name>
+    <ElementType>Standard</ElementType>
+  </StandardElementReference>
+  <StandardElementReference>
+    <Name>NineSlice</Name>
+    <ElementType>Standard</ElementType>
+  </StandardElementReference>
+  <StandardElementReference>
+    <Name>Sprite</Name>
+    <ElementType>Standard</ElementType>
+  </StandardElementReference>
+  <StandardElementReference>
+    <Name>Text</Name>
+    <ElementType>Standard</ElementType>
+  </StandardElementReference>
+</GumProjectSave>

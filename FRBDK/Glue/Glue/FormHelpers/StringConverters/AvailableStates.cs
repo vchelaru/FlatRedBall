@@ -1,0 +1,261 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.ComponentModel;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Elements;
+
+namespace FlatRedBall.Glue.GuiDisplay
+{
+    public class AvailableStates : TypeConverter
+    {
+        public NamedObjectSave CurrentNamedObject
+        {
+            get;
+            set;
+        }
+
+        public IElement CurrentElement
+        {
+            get;
+            set;
+        }
+
+
+        public CustomVariable CurrentCustomVariable
+        {
+            get;
+            set;
+        }
+
+        public StateSave CurrentStateSave
+        {
+            get;
+            set;
+        }
+
+
+        public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+        {
+            return true;
+        }
+
+        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+        {
+            return true;
+        }
+
+        public AvailableStates(NamedObjectSave currentNamedObject, IElement currentElement, CustomVariable currentCustomVariable, StateSave currentStateSave) : base()
+        {
+            CurrentNamedObject = currentNamedObject;
+            CurrentElement = currentElement;
+            CurrentCustomVariable = currentCustomVariable;
+            CurrentStateSave = currentStateSave;
+
+        }
+
+        List<string> listOfStates = new List<string>();
+        public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+        {
+
+            listOfStates.Clear();
+            GetListOfStates(listOfStates, context.PropertyDescriptor.DisplayName);
+
+
+
+			StandardValuesCollection svc = new StandardValuesCollection(listOfStates);
+
+			return svc;
+        }
+
+        public void GetListOfStates(List<string> listToFill, string selectedItemName)
+        {
+            if (selectedItemName != null && selectedItemName.Contains(" set in "))
+            {
+                selectedItemName = selectedItemName.Substring(0, selectedItemName.IndexOf(" set in "));
+            }
+            IElement currentElement = null;
+
+            NamedObjectSave currentNamedObject = CurrentNamedObject;
+
+            if (currentNamedObject != null)
+            {
+                FillPossibleStatesFor(listToFill, selectedItemName, currentNamedObject);
+            }
+            else
+            {
+                currentElement = CurrentElement;
+
+
+                CustomVariable customVariable = CurrentCustomVariable;
+
+                if (customVariable == null)
+                {
+                    StateSave stateSave = CurrentStateSave;
+
+                    string variableLookingFor = selectedItemName;
+
+                    for (int i = 0; i < currentElement.CustomVariables.Count; i++)
+                    {
+
+                        if (currentElement.CustomVariables[i].Name == variableLookingFor)
+                        {
+                            customVariable = currentElement.CustomVariables[i];
+                            break;
+                        }
+                    }
+                }
+
+                if (customVariable == null)
+                {
+                    int m = 3;
+                }
+                customVariable = FillPossibleStatesFor(listToFill, currentElement, customVariable);
+
+            }
+        }
+
+        private static CustomVariable FillPossibleStatesFor(List<string> listToFill, IElement currentElement, CustomVariable customVariable)
+        {
+
+            IElement sourceElement = null;
+
+            customVariable = customVariable.GetDefiningCustomVariable();
+
+            if (!string.IsNullOrEmpty(customVariable.SourceObject))
+            {
+                NamedObjectSave namedObjectSave = currentElement.GetNamedObjectRecursively(customVariable.SourceObject);
+
+                sourceElement = ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassType);
+                if (sourceElement == null)
+                {
+                    sourceElement = ObjectFinder.Self.GetScreenSave(namedObjectSave.SourceClassType);
+                }
+            }
+            else
+            {
+                sourceElement = currentElement;
+            }
+
+
+            IEnumerable<StateSave> whatToLoopThrough = null;
+
+            if (customVariable != null)
+            {
+                StateSaveCategory category = sourceElement.GetStateCategoryRecursively(customVariable.Type);
+
+                if (category != null)
+                {
+                    whatToLoopThrough = category.States;
+                }
+            }
+
+            listToFill.Add("<NONE>");
+
+            if (whatToLoopThrough == null)
+            {
+                foreach (StateSave state in sourceElement.GetUncategorizedStatesRecursively())
+                {
+                    listToFill.Add(state.Name);
+
+                }
+                foreach (StateSaveCategory ssc in sourceElement.StateCategoryList)
+                {
+                    if (ssc.SharesVariablesWithOtherCategories == true)
+                    {
+                        foreach (StateSave stateInCategory in ssc.States)
+                        {
+                            listToFill.Add(stateInCategory.Name);
+
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                // We are looping through a category
+                foreach (StateSave stateSave in whatToLoopThrough)
+                {
+                    listToFill.Add(stateSave.Name);
+                }
+            }
+            return customVariable;
+        }
+
+        public static void FillPossibleStatesFor(List<string> listToFill, string selectedItemName, NamedObjectSave currentNamedObject)
+        {
+
+
+            IElement element = currentNamedObject.GetReferencedElement();
+
+            while (element != null)
+            {
+                IEnumerable<StateSave> stateList = element.States;
+
+                // Let's see if this element has a variable by this name
+                CustomVariable foundVariable = element.GetCustomVariableRecursively(selectedItemName);
+
+                if (foundVariable != null)
+                {
+                    FillPossibleStatesFor(listToFill, element, foundVariable);
+                    break;
+                }
+                else
+                {
+                    listToFill.Add("<NONE>");
+                    bool useDefaultStateList = selectedItemName == "CurrentVariableState" ||
+                        (foundVariable == null && selectedItemName == "CurrentState");
+
+                    if (useDefaultStateList)
+                    {
+                        foreach (StateSave state in element.States)
+                        {
+                            listToFill.Add(state.Name);
+                        }
+                        foreach (StateSaveCategory ssc in element.StateCategoryList)
+                        {
+                            if (ssc.SharesVariablesWithOtherCategories)
+                            {
+                                foreach (StateSave state in ssc.States)
+                                {
+                                    listToFill.Add(state.Name);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (!useDefaultStateList)
+                        {
+                            string stateCategory = "";
+                            if (foundVariable != null)
+                            {
+                                stateCategory = foundVariable.Type;
+                            }
+                            else
+                            {
+                                stateCategory = StateSaveExtensionMethods.GetStateTypeFromCurrentVariableName(selectedItemName);
+                            }
+
+
+
+                            StateSaveCategory category = element.GetStateCategory(stateCategory);
+                            if (category != null)
+                            {
+                                stateList = category.States;
+                            }
+                        }
+
+                        foreach (StateSave state in stateList)
+                        {
+                            listToFill.Add(state.Name);
+                        }
+                    }
+                    element = ObjectFinder.Self.GetIElement(element.BaseElement);
+                }
+            }
+        }
+    }
+}

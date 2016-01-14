@@ -1,0 +1,324 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;FRB_XNA</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <Optimize>true</Optimize>
+    <DebugType>
+    </DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E1D670B6-AD42-4B84-AFF8-D568097BE03D}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>EditorObjectsXna</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>EditorObjects</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <XnaFrameworkVersion>v3.1</XnaFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;DEBUG;FRB_XNA</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;FRB_XNA</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_XNA, XNA3_1, XNA3</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Ionic.Zip, Version=1.7.2.26, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL" />
+    <Reference Include="Ionic.Zlib, Version=1.7.2.26, Culture=neutral, PublicKeyToken=c551e179877da246, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Xna.Framework, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d" />
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d" />
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML">
+      <Name>System.XML</Name>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CameraBounds.cs" />
+    <Compile Include="CameraConfiguration.cs" />
+    <Compile Include="CameraMethods.cs" />
+    <Compile Include="Cleaners\EmixCleaner.cs" />
+    <Compile Include="Cleaners\GeneralCleaner.cs" />
+    <Compile Include="Cleaners\ScnxCleaner.cs" />
+    <Compile Include="Cleaners\ShcxCleaner.cs" />
+    <Compile Include="Crosshair.cs" />
+    <Compile Include="Data\LineGridSave.cs" />
+    <Compile Include="Data\RuntimeOptions.cs" />
+    <Compile Include="EditorSettings\AIEditorPropertiesSave.cs" />
+    <Compile Include="EditorSettings\DisplayRegion.cs" />
+    <Compile Include="EditorSettings\EmitterEditorSettingsSave.cs" />
+    <Compile Include="EditorSettings\ModelEditorPropertiesSave.cs" />
+    <Compile Include="EditorSettings\PolygonEditorSettings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EditorSettings\SpriteEditorSceneProperties.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EditorSettings\TextureDisplayRegionsSave.cs" />
+    <Compile Include="ExternalBuild\BuildToolAssociation.cs" />
+    <Compile Include="ExternalBuild\PropertySorter.cs" />
+    <Compile Include="FormMethods.cs" />
+    <Compile Include="Gui\Animation3DControllerPropertyGrid.cs" />
+    <Compile Include="Gui\Animation3DInstancePropertyGrid.cs" />
+    <Compile Include="Gui\AnimationFramePropertyGrid.cs" />
+    <Compile Include="Gui\AxisAlignedCubePropertyGrid.cs" />
+    <Compile Include="Gui\AxisAlignedRectanglePropertyGrid.cs" />
+    <Compile Include="Gui\CameraBoundsPropertyGrid.cs" />
+    <Compile Include="Gui\CameraPropertyGrid.cs" />
+    <Compile Include="Gui\CirclePropertyGrid.cs" />
+    <Compile Include="Gui\ComboBoxWindow.cs" />
+    <Compile Include="Gui\CopyTexturesMultiButtonMessageBox.cs" />
+    <Compile Include="Gui\CustomModelPropertyGrid.cs" />
+    <Compile Include="Gui\EmissionSettingsPropertyGrid.cs" />
+    <Compile Include="Gui\EmitterPropertyGrid.cs" />
+    <Compile Include="Gui\GraphicsOptionsPropertyGrid.cs" />
+    <Compile Include="Gui\HierarchyDisplayWindow.cs" />
+    <Compile Include="Gui\InstructionBlueprintListPropertyGrid.cs" />
+    <Compile Include="Gui\InstructionBlueprintPropertyGrid.cs" />
+    <Compile Include="Gui\InstructionListPropertyGrid.cs" />
+    <Compile Include="Gui\LineGridPropertyGrid.cs" />
+    <Compile Include="Gui\OkListWindow.cs" />
+    <Compile Include="Gui\PolygonPointListDisplayWindow.cs" />
+    <Compile Include="Gui\PolygonPropertyGrid.cs" />
+    <Compile Include="Gui\PosePropertyGrid.cs" />
+    <Compile Include="Gui\PositionedModelPropertyGrid.cs" />
+    <Compile Include="Gui\SaveUseWindow.cs" />
+    <Compile Include="Gui\ScenePropertyGrid.cs" />
+    <Compile Include="Gui\ShapeCollectionPropertyGrid.cs" />
+    <Compile Include="Gui\SpherePropertyGrid.cs" />
+    <Compile Include="Gui\SplinePointPropertyGrid.cs">
+    </Compile>
+    <Compile Include="Gui\SplinePropertyGrid.cs">
+    </Compile>
+    <Compile Include="Gui\SpriteGridPropertyGrid.cs" />
+    <Compile Include="Gui\SpriteRigPropertyGrid.cs" />
+    <Compile Include="Gui\TextPropertyGrid.cs" />
+    <Compile Include="Gui\TextureCoordinatePropertyGridHelper.cs" />
+    <Compile Include="Gui\TimeControlButtonWindow.cs" />
+    <Compile Include="Gui\Vector3OkWindow.cs" />
+    <Compile Include="Gui\WindowAssociationHelper.cs" />
+    <Compile Include="Hud\ClosestNodeToCursorLine.cs" />
+    <Compile Include="Hud\EditorHandles.cs" />
+    <Compile Include="Hud\ScalableSelector.cs" />
+    <Compile Include="LineGrid.cs" />
+    <Compile Include="NodeNetworks\NodeNetworkEditorManager.cs" />
+    <Compile Include="Parsing\ContentParser.cs" />
+    <Compile Include="PositionedObjectMover.cs" />
+    <Compile Include="PositionedObjectRotator.cs" />
+    <Compile Include="RectangleSelector.cs" />
+    <Compile Include="Gui\SpriteFramePropertyGrid.cs" />
+    <Compile Include="Gui\SpritePropertyGrid.cs" />
+    <Compile Include="Gui\TextureCoordinatesSelectionWindow.cs" />
+    <Compile Include="PropertyComparer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Gui\ToolsWindow.cs" />
+    <Compile Include="Savers\SaveableContentExtensionMethods.cs" />
+    <Compile Include="Savers\SceneSaver.cs" />
+    <Compile Include="Undo\Instructions\SpriteGridAnimationChainPaintInstruction.cs" />
+    <Compile Include="Undo\Instructions\SpriteGridDisplayRegionPaintInstruction.cs" />
+    <Compile Include="Undo\Instructions\SpriteGridTexturePaintInstruction.cs" />
+    <Compile Include="Undo\PolygonPropertyComparer.cs" />
+    <Compile Include="Undo\PropertyComparers\SplinePointPropertyComparer.cs" />
+    <Compile Include="Undo\PropertyComparers\SpriteGridPropertyComparer.cs" />
+    <Compile Include="Undo\UndoManager.cs" />
+    <Compile Include="Visualization\HierarchyDiagram.cs" />
+    <Compile Include="Visualization\HierarchyNode.cs" />
+    <Compile Include="WorldAxesDisplay.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\CopyLocally.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\MakeRelativeKeepInPlace.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\EditorHandles\MoveX.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\MoveY.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\MoveZ.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\Origin.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\RotateX.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\RotateY.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\RotateZ.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\ScaleX.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\ScaleY.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\ScaleZ.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libraries\Ionic.Zip.dll" />
+    <Content Include="Libraries\Ionic.Zlib.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBall.csproj">
+      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
+      <Name>FlatRedBall</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SceneLoader\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

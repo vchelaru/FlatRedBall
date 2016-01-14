@@ -1,0 +1,156 @@
+What must be done for 1.13
+
+- BUG: http://www.gamedev.net/community/forums/topic.asp?topic_id=545410
+
+- Write a profiler utility so that I can determine where the optimization needs to be done
+
+- context menu for importing image on character id
+  - import image
+  - edit image
+  - delete image
+
+- Document the inclusion of icon images
+
+
+-----------------------------
+
+- Several suggestions for improvement:
+  http://www.gamedev.net/community/forums/topic.asp?topic_id=546175
+
+- Need a tool to perform automatic regression testing
+  - It can be a simple command line tool for performing a binary comparison of two files
+  - A batch file can then be used to generate fonts from configuration files, then compare 
+    these generated fonts against the control set
+
+- The saving of the font must also be done in a separate thread that can be interrupted.
+  Especially when saving with DDS format the save can take a very long time.
+
+
+- The characters should be sorted into a hash table, where there is an array for each height
+- Each array should be sorted by width
+
+
+- Add inverse glyph and inverse outline as options
+- Add outline - glyph as option (hollow text)
+- Add support for blurred glyph
+- Add support for drop shadow
+
+Add validation of configurations.
+- if the export options include outline, but no outline has been configured, a warning should be displayed.
+- if the texture size is smaller than the height of the font a warning should be displayed.
+- if the texture size is smaller than the size of any of the imported images a warning should be displayed.
+
+- Another font packing algorithm. Find pairs of characters with same width and 
+  which combined height match the height of a larger character, after which they are
+  treated as one large character together.
+- holes left over after adding the colored images must be copied to the individual 
+  channels
+- Speed up placement of characters in texture
+- Use a structure to store the available space, instead of searching pixel by pixel
+- The algorithm should always try to level the height differences. To this 
+  goal it should place characters where the difference in height is the largest, i.e.
+  to the right of the large icons. This will prevent large holes that needs to be filled.
+
+- Look into manually rendering the glyphs from the glyph outline. If I can do that I can 
+  get full 8bit anti-aliasing instead of the 5bit anti-aliasing that is currently used.
+
+- Import gray scale images and add them to the font as glyphs
+
+
+
+
+
+Future:
+
+
+- Allow fixed height characters in output texture
+  - This should be done when placing the characters in the texture
+  - The algorithm must first determine the maximum height of all characters. The yoffset of each character will be then be added to this. 
+
+
+- Visualize the texture option in the Export Options dialog. Render the character A using the chosen option.
+
+- Allow using a true type font from a file rather than installed in the system
+  AddFontResource can be used to permit GDI to use that file. Must remember to call 
+  RemoveFontResource once the font is no longer used. What happens if the application
+  crashes? (Suggestion by Michael W Brown by e-mail)
+
+
+
+- Study adding signed distance fields
+  - http://www.gamedev.net/community/forums/topic.asp?topic_id=491938
+
+
+- Image manager improvements
+Reported by Malcolm Coleman from Codemasters
+3) When an imported image is too large to fit in the generated textures,
+the error message is not clear enough. The message says that some characters
+didn't fit, then the characters are highlighted with the red box. However,
+the user may not know or remember that the imported image is placed over that
+character.
+
+- Create a acUtility::CBitMap class to hold the selected characters
+  - setBit(uint)
+  - clearBit(uint)
+  - getBit(uint)
+  - toggleBit(uint)
+  - setRange(uint,uint), clearRange(uint,uint), toggleRange(uint,uint)
+
+- Available characters should only be determined once, when the font is selected
+
+- log missing characters when selecting characters from file
+  - maybe even show the log file in a window
+
+
+
+- Need to not limit the image id to the available character set
+- skip kerning info for ids used by images
+- don't permit more than one icon on the same id
+- should spacing between characters be black or white?
+- allow import of black/white images to be stored in alpha channel
+
+- simplify LoadConfiguration() most of the attributes can be set directly
+
+- Add a way of box selecting chars. It should only set the new state when the mouse 
+  button is released
+
+- Add option for inverting character selections (CTRL+I)
+  
+- CFontGen should store generated characters in a map rather than in a 
+  static array. That way all character images can be treated equally 
+  (including the invalid character glyph)
+
+
+- Add option black-on-white output (suggestion by Victor Chelaru)
+
+- Try organizing characters that are more likely to be used together on the same texture 
+  pages. This will improve performance in engines that uses a lot of texture pages.
+
+- individual options
+
+- effects, drop shadow, etc
+
+- align characters to pixels power of 2, for better result with mipmaps
+
+- Allow use of ClearType for font smoothing. It is better than supersampling, and is able to do smoothing on small fonts.
+  - convert the true color output to grayscale by (r+g+b)/3.
+  - Allow extra pixels on the side to avoid cropping
+
+- Experiment with using kerning pairs from the original font size, instead of the supersampled font.
+  Either that or round to the nearest integer instead of just cropping. Currently the supersampling 
+  doesn't work well due to the kerning pairs being lost.
+
+- Show about box at start up. Have a link to donation page.
+
+- Need a preview window, that allow the user to type a text string 
+  which will be drawn with the font in an image. If possible make this
+  preview window update in realtime as settings are changed. This will
+  be especially useful when adding support for the colored icons.
+
+- Think about allowing the organization of the characters in a grid, instead of randomly. 
+  This would be easier to use for GPU based effects. Suggestion by Doug 
+  (admin@dmlittle.eclipse.co.uk).
+
+- Redesign the binary file format to follow alignment rules. Strings should be 32bit offsets 
+  into a large string buffer with null terminated strings at the end of the file. Suggestion 
+  by Manu.

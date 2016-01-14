@@ -1,0 +1,10 @@
+﻿<Window x:Class="FlatRedBall.Arrow.Controls.CameraSettingsForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:WpfDataUi="clr-namespace:WpfDataUi;assembly=WpfDataUi"
+        Title="CameraSettingsForm" Height="300" Width="300">
+    <Grid>
+
+        <WpfDataUi:DataUiGrid x:Name="DataGridUi" />
+    </Grid>
+</Window>

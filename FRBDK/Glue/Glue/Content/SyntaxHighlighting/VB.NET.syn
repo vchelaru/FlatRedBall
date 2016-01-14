@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Language Name="VB.NET" Startblock="VB Code">
+<FileTypes>
+	<FileType Extension=".VB" Name="VB Module"/>
+</FileTypes>
+
+	<Block Name="VB Code" Style="VB Code" PatternStyle="VB Keyword" EscapeChar="" IsMultiline="true">
+		<Scope Start="Namespace"	StartIsKeyWord="true"   End="End Namespace" EndIsSeparator="false"	Style="VB Keyword" Text="***" CauseIndent="true"/>
+		<Scope Start="#Region" 		StartIsKeyWord="true"   End="#End Region" EndIsSeparator="false"	Style="VB Keyword" Text="***" CauseIndent="true"/>
+		<Scope Start="Class" 		StartIsKeyWord="true"	End="((?i)(end)(\s)+(class))" EndIsComplex="true"     EndIsSeparator="true"	Style="VB Keyword" Text="Propery *** ..." CauseIndent="true"/>
+		<Scope Start="Interface" 	StartIsKeyWord="true"	End="((?i)(end)(\s)+(interface))" EndIsComplex="true"     EndIsSeparator="true"	Style="VB Keyword" Text="Type *** ..." CauseIndent="true"/>
+		<Bracket Start="(" End=")" Style="VB Code" />
+		<Bracket Start="[" End="]" Style="VB Code" />
+
+
+
+		<!-- Keywords that can exist inside this block -->
+		<Keywords>
+			<PatternGroup Name="Keywords" Style="VB Keyword" NormalizeCase="true" CaseSensitive="false">
+				<Patterns>
+
+Sub
+Function
+Property
+Declare
+Public
+Private
+Protected
+Overrides
+Shared
+Event
+Shadows
+Friend
+Dim
+Global
+Option
+Explicit
+Not
+And
+Xor
+Or
+String
+Long
+Integer
+Boolean
+Currency
+Date
+Byte
+Single
+Double
+Static
+As
+Const
+Inherits
+Implements
+kuko
+Imports
+
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Constants" Style="VB Constant"  NormalizeCase="true" CaseSensitive="false">
+				<Patterns>
+VbCrLf
+VbCr
+VbLf
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Numbers" Style="VB Number">
+				<Pattern Text="(&amp;h[0-9,a-f,A-F]+)" IsComplex="true" />
+				<Pattern Text="(&amp;H[0-9,a-f,A-F]+)" IsComplex="true" />
+				<Pattern Text="([0-9]+)" IsComplex="true" />
+
+			</PatternGroup>
+			<!-- Datatypes for c# -->
+			<PatternGroup Name="DataTypes" Style="VB Datatype" CaseSensitive="true">
+
+			</PatternGroup>
+		</Keywords>
+		<!-- Operators that can exist inside this block -->
+		<Operators>
+			<PatternGroup name="Operators" Style="VB Operator">
+				<Pattern Text="." />
+				<Pattern Text="!" />
+				<Pattern Text=":" />
+				<Pattern Text="^" />
+				<Pattern Text="*" />
+				<Pattern Text="/" />
+				<Pattern Text="+" />
+				<Pattern Text="-" />
+				<Pattern Text="=" />
+				<Pattern Text=";" />
+				<Pattern Text="|" />
+				<Pattern Text="\" />
+				<Pattern Text="&gt;" />
+				<Pattern Text="&lt;" />
+
+			</PatternGroup>
+		</Operators>
+		<!-- Blocks that can exist inside this block -->
+		<ChildBlocks>
+			<Child Name="VB Singleline Comment" />
+			<Child Name="VB String" />
+			<Child Name="VB Sub" />
+			<Child Name="VB Code" />
+		</ChildBlocks>
+	</Block>
+
+	<Block Name="VB Sub" Style="VB Code" PatternStyle="VB Keyword" EscapeChar="" IsMultiline="true" >
+
+		<Scope Start="((?i)(?&lt;!(declare)(\s)+)(sub))" StartIsKeyWord="true" End="((?i)(end)(\s)+(sub))" StartIsComplex="true" EndIsComplex="true"     Style="VB Keyword" Text="Sub *** ..." CauseIndent="true"/>
+		<Scope Start="((?i)(?&lt;!(declare)(\s)+)(function))" StartIsKeyWord="true" End="((?i)(end)(\s)+(function))" StartIsComplex="true" EndIsComplex="true"     Style="VB Keyword" Text="Sub *** ..." CauseIndent="true"/>
+
+		<Scope Start="Property" 	StartIsKeyWord="true"	End="((?i)(end)(\s)+(property))" EndIsComplex="true"     EndIsSeparator="true"	Style="VB Keyword" Text="Propery *** ..." CauseIndent="true"/>
+		<Scope Start="Type" 		StartIsKeyWord="true"	End="((?i)(end)(\s)+(type))" 	 EndIsComplex="true"     EndIsSeparator="true"	Style="VB Keyword" Text="Type *** ..." CauseIndent="true"/>
+		<Scope Start="Enum" 		StartIsKeyWord="true"	End="((?i)(end)(\s)+(enum))"     EndIsComplex="true"     EndIsSeparator="true"	Style="VB Keyword" Text="Enum *** ..." CauseIndent="true"/>
+		<Bracket Start="(" End=")" Style="VB Code" />
+		<Bracket Start="[" End="]" Style="VB Code" />
+
+		<!-- Keywords that can exist inside this block -->
+		<Keywords>
+			<PatternGroup Name="Keywords" Style="VB Keyword"  NormalizeCase="true" CaseSensitive="false">
+				<Patterns>
+
+AddHandler 
+AddressOf 
+Alias 
+And 
+AndAlso 
+Ansi 
+As 
+Assembly 
+Auto 
+Boolean 
+ByRef 
+Byte 
+ByVal 
+Call 
+Case 
+Catch 
+CBool 
+CByte 
+CChar 
+CDate 
+CDec 
+CDbl 
+Char 
+CInt 
+Class 
+CLng 
+CObj 
+Const 
+CShort 
+CSng 
+CStr 
+CType 
+Date 
+Decimal 
+Declare 
+Default 
+Delegate 
+Dim 
+DirectCast 
+Do 
+Double 
+Each 
+Else 
+ElseIf 
+End 
+Enum 
+Erase 
+Error 
+Event 
+Exit 
+False 
+Finally 
+For 
+Friend 
+Function 
+Get 
+GetType 
+GoTo 
+Handles 
+If 
+Imports 
+In 
+Inherits 
+Integer 
+Interface 
+Is 
+Let 
+Lib 
+Like 
+Long 
+Loop 
+Me 
+Mod 
+Module 
+MustInherit 
+MustOverride 
+MyBase 
+MyClass 
+Namespace 
+New 
+Next 
+Not 
+Nothing 
+NotInheritable 
+NotOverridable 
+Object 
+On 
+Option 
+Optional 
+Or 
+OrElse 
+Overloads 
+Overridable 
+Overrides 
+ParamArray 
+Preserve 
+Private 
+Property 
+Protected 
+Public 
+RaiseEvent 
+ReadOnly 
+ReDim 
+RemoveHandler 
+Resume 
+Return 
+Select 
+Set 
+Shadows 
+Shared 
+Short 
+Single 
+Static 
+Step 
+Stop 
+String 
+Structure 
+Sub 
+SyncLock 
+Then 
+Throw 
+To 
+True 
+Try 
+TypeOf 
+Unicode 
+Until 
+Variant 
+When 
+While 
+With 
+WithEvents 
+WriteOnly 
+Xor 
+
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Constants" Style="VB Constant"  NormalizeCase="true" CaseSensitive="false">
+				<Patterns>
+VbCrLf
+VbCr
+VbLf
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Numbers" Style="VB Number">
+				<Pattern Text="(&amp;h[0-9a-fA-F]+)" IsComplex="true" />
+				<Pattern Text="(&amp;H[0-9a-fA-F]+)" IsComplex="true" />
+				<Pattern Text="([0-9]+)" IsComplex="true" />
+			</PatternGroup>
+			<!-- Datatypes for c# -->
+			<PatternGroup Name="DataTypes" Style="VB Datatype" CaseSensitive="true">
+
+			</PatternGroup>
+		</Keywords>
+		<!-- Operators that can exist inside this block -->
+		<Operators>
+			<PatternGroup name="Operators" Style="VB Operator">
+				<Pattern Text="." />
+				<Pattern Text="!" />
+				<Pattern Text=":" />
+				<Pattern Text="^" />
+				<Pattern Text="*" />
+				<Pattern Text="/" />
+				<Pattern Text="\" />
+				<Pattern Text="+" />
+				<Pattern Text="-" />
+				<Pattern Text="=" />
+				<Pattern Text=";" />
+				<Pattern Text="|" />
+				<Pattern Text="&gt;" />
+				<Pattern Text="&lt;" />
+
+			</PatternGroup>
+		</Operators>
+		<!-- Blocks that can exist inside this block -->
+		<ChildBlocks>
+			<Child Name="VB Singleline Comment" />
+			<Child Name="VB String" />
+			<Child Name="VB Sub Region" />			
+		</ChildBlocks>
+	</Block>
+
+	<Block Name="VB Sub Region" Style="VB Code" PatternStyle="VB Keyword" EscapeChar="" IsMultiline="true">
+
+		<Scope Start="#Region" 	StartIsKeyWord="true"	End="#End Region" EndIsSeparator="false"	Style="VB Keyword" Text="***" CauseIndent="true"/>
+		<Bracket Start="(" End=")" Style="VB Code" />
+		<Bracket Start="[" End="]" Style="VB Code" />
+
+
+		<!-- Keywords that can exist inside this block -->
+		<Keywords>
+			<PatternGroup Name="Keywords" Style="VB Keyword"  NormalizeCase="true" CaseSensitive="false">
+				<Patterns>
+
+AddHandler 
+AddressOf 
+Alias 
+And 
+AndAlso 
+Ansi 
+As 
+Assembly 
+Auto 
+Boolean 
+ByRef 
+Byte 
+ByVal 
+Call 
+Case 
+Catch 
+CBool 
+CByte 
+CChar 
+CDate 
+CDec 
+CDbl 
+Char 
+CInt 
+Class 
+CLng 
+CObj 
+Const 
+CShort 
+CSng 
+CStr 
+CType 
+Date 
+Decimal 
+Declare 
+Default 
+Delegate 
+Dim 
+DirectCast 
+Do 
+Double 
+Each 
+Else 
+ElseIf 
+End 
+Enum 
+Erase 
+Error 
+Event 
+Exit 
+False 
+Finally 
+For 
+Friend 
+Function 
+Get 
+GetType 
+GoTo 
+Handles 
+If 
+Imports 
+In 
+Inherits 
+Integer 
+Interface 
+Is 
+Let 
+Lib 
+Like 
+Long 
+Loop 
+Me 
+Mod 
+Module 
+MustInherit 
+MustOverride 
+MyBase 
+MyClass 
+Namespace 
+New 
+Next 
+Not 
+Nothing 
+NotInheritable 
+NotOverridable 
+Object 
+On 
+Option 
+Optional 
+Or 
+OrElse 
+Overloads 
+Overridable 
+Overrides 
+ParamArray 
+Preserve 
+Private 
+Property 
+Protected 
+Public 
+RaiseEvent 
+ReadOnly 
+ReDim 
+RemoveHandler 
+Resume 
+Return 
+Select 
+Set 
+Shadows 
+Shared 
+Short 
+Single 
+Static 
+Step 
+Stop 
+String 
+Structure 
+Sub 
+SyncLock 
+Then 
+Throw 
+To 
+True 
+Try 
+TypeOf 
+Unicode 
+Until 
+Variant 
+When 
+While 
+With 
+WithEvents 
+WriteOnly 
+Xor 
+
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Constants" Style="VB Constant"  NormalizeCase="true" CaseSensitive="false">
+				<Patterns>
+VbCrLf
+VbCr
+VbLf
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Numbers" Style="VB Number">
+				<Pattern Text="(&amp;h[0-9a-fA-F]+)" IsComplex="true" />
+				<Pattern Text="(&amp;H[0-9a-fA-F]+)" IsComplex="true" />
+				<Pattern Text="([0-9]+)" IsComplex="true" />
+			</PatternGroup>
+			<!-- Datatypes for c# -->
+			<PatternGroup Name="DataTypes" Style="VB Datatype" CaseSensitive="true">
+
+			</PatternGroup>
+		</Keywords>
+		<!-- Operators that can exist inside this block -->
+		<Operators>
+			<PatternGroup name="Operators" Style="VB Operator">
+				<Pattern Text="." />
+				<Pattern Text="!" />
+				<Pattern Text=":" />
+				<Pattern Text="^" />
+				<Pattern Text="*" />
+				<Pattern Text="/" />
+				<Pattern Text="\" />
+				<Pattern Text="+" />
+				<Pattern Text="-" />
+				<Pattern Text="=" />
+				<Pattern Text=";" />
+				<Pattern Text="|" />
+				<Pattern Text="&gt;" />
+				<Pattern Text="&lt;" />
+
+			</PatternGroup>
+		</Operators>
+		<!-- Blocks that can exist inside this block -->
+		<ChildBlocks>
+			<Child Name="VB Singleline Comment" />
+			<Child Name="VB String" />
+			<Child Name="VB Sub Region" />			
+		</ChildBlocks>
+	</Block>
+
+
+	<Block Name="VB Singleline Comment" Style="VB Comment" PatternStyle="" EscapeChar="" IsMultiline="false">
+		<Scope Start="'" End="" 	Style="VB Comment"  Text="" />
+		<Scope Start="REM" StartIsKeyWord="true" End="" 	Style="VB Comment"  Text="" />
+	</Block>
+
+	<Block Name="VB String" Style="VB String" PatternStyle="" IsMultiline="false">
+		<Scope Start="&quot;" End="&quot;" 	Style="VB String"  Text="" />
+		<Operators>
+			<PatternGroup name="URL" Style="VB URL">
+				<Pattern Text="http://([\w-]+\.)+[\w-]+(/[\w- ./?%&amp;=]*)?" IsComplex="true" />
+			</PatternGroup>
+		</Operators>
+	</Block>
+	
+	<Style Name="VB Code" ForeColor="" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="VB Constant" ForeColor="Magenta" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="VB Code Pattern" ForeColor="" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="VB Comment" ForeColor="green" BackColor="" Bold="false" Italic="true" Underline="false" />
+	<Style Name="VB String" ForeColor="Teal" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="VB Number" ForeColor="Teal" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="VB Operator" ForeColor="Red" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="VB Keyword" ForeColor="Blue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="VB Datatype" ForeColor="DarkBlue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="VB URL" ForeColor="Blue" BackColor="" Bold="false" Italic="false" Underline="true" />
+</Language>

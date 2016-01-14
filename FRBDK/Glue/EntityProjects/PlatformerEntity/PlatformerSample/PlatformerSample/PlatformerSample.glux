@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GlueProjectSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Screens>
+    <ScreenSave>
+      <Name>Screens\CollisionTestScreen</Name>
+    </ScreenSave>
+    <ScreenSave>
+      <Name>Screens\GameScreen</Name>
+      <ReferencedFiles>
+        <ReferencedFileSave>
+          <Name>Screens/GameScreen/SolidCollision.shcx</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>FlatRedBall.Math.Geometry.ShapeCollection</RuntimeType>
+        </ReferencedFileSave>
+      </ReferencedFiles>
+      <NamedObjects>
+        <NamedObjectSave>
+          <CustomProperty>
+            <Type>Object</Type>
+            <Member>GroundMovement</Member>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>Object</Type>
+            <Member>AirMovement</Member>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>Object</Type>
+            <Member>AfterDoubleJump</Member>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>MaximumCloudRepositionLength</Member>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>WalkSpeed</Member>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>JumpVelocity</Member>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>Gravity</Member>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>bool</Type>
+            <Member>SupportDoubleJump</Member>
+          </CustomProperty>
+          <SourceType>Entity</SourceType>
+          <SourceClassType>Entities\PlatformerCharacterBase</SourceClassType>
+          <InstanceName>PlatformerCharacterBaseInstance</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <AddToManagers>true</AddToManagers>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+      </NamedObjects>
+    </ScreenSave>
+  </Screens>
+  <Entities>
+    <EntitySave>
+      <Properties>
+        <PropertySave>
+          <Name>StateChainCollection</Name>
+          <ValueAsString>&lt;?xml version="1.0"?&gt;
+&lt;StateChainCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;StateChains /&gt;
+&lt;/StateChainCollection&gt;</ValueAsString>
+        </PropertySave>
+      </Properties>
+      <Name>Entities\PlatformerCharacter</Name>
+      <Is2D>true</Is2D>
+    </EntitySave>
+    <EntitySave>
+      <Properties>
+        <PropertySave>
+          <Name>StateChainCollection</Name>
+          <ValueAsString>&lt;?xml version="1.0"?&gt;
+&lt;StateChainCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;StateChains /&gt;
+&lt;/StateChainCollection&gt;</ValueAsString>
+        </PropertySave>
+      </Properties>
+      <CustomVariables>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>Entities/PlatformerCharacterBase/MovementValues.csv</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>GroundMovement</Name>
+          <Type>Entities/PlatformerCharacterBase/MovementValues.csv</Type>
+          <DefaultValue xsi:type="xsd:string">AccelerationOnGround</DefaultValue>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>Entities/PlatformerCharacterBase/MovementValues.csv</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>AirMovement</Name>
+          <Type>Entities/PlatformerCharacterBase/MovementValues.csv</Type>
+          <DefaultValue xsi:type="xsd:string">AccelerationBeforeDoubleJump</DefaultValue>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>Entities/PlatformerCharacterBase/MovementValues.csv</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>AfterDoubleJump</Name>
+          <Type>Entities/PlatformerCharacterBase/MovementValues.csv</Type>
+          <DefaultValue xsi:type="xsd:string">AccelerationInAir</DefaultValue>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>MaximumCloudRepositionLength</Name>
+          <Type>float</Type>
+          <DefaultValue xsi:type="xsd:float">12</DefaultValue>
+        </CustomVariable>
+      </CustomVariables>
+      <Name>Entities\PlatformerCharacterBase</Name>
+      <NamedObjects>
+        <NamedObjectSave>
+          <CustomProperty>
+            <Type>bool</Type>
+            <Member>Visible</Member>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>X</Member>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>Y</Member>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>ScaleX</Member>
+            <ValueAsFloat>16</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>ScaleY</Member>
+            <ValueAsFloat>24</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>Color</Type>
+            <Member>Color</Member>
+          </CustomProperty>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceClassType>AxisAlignedRectangle</SourceClassType>
+          <InstanceName>Collision</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <AddToManagers>true</AddToManagers>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+      </NamedObjects>
+      <ReferencedFiles>
+        <ReferencedFileSave>
+          <Name>Entities/PlatformerCharacterBase/MovementValues.csv</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <CreatesDictionary>true</CreatesDictionary>
+          <RuntimeType />
+        </ReferencedFileSave>
+      </ReferencedFiles>
+      <Is2D>true</Is2D>
+    </EntitySave>
+  </Entities>
+  <GlobalFiles />
+  <GlobalContentSettingsSave>
+    <LoadAsynchronously>false</LoadAsynchronously>
+    <RecordLockContention>false</RecordLockContention>
+  </GlobalContentSettingsSave>
+  <SyncedProjects>
+    <string>../../platformersamplemdx/platformersamplemdx.csproj</string>
+  </SyncedProjects>
+  <StartUpScreen>Screens\GameScreen</StartUpScreen>
+  <In2D>true</In2D>
+  <SetResolution>true</SetResolution>
+  <ResolutionWidth>800</ResolutionWidth>
+  <ResolutionHeight>600</ResolutionHeight>
+  <SetOrthogonalResolution>true</SetOrthogonalResolution>
+  <OrthogonalWidth>800</OrthogonalWidth>
+  <OrthogonalHeight>600</OrthogonalHeight>
+  <ResolutionPresets />
+  <PerformanceSettingsSave>
+    <ThrowExceptionOnPostInitializeContentLoad>false</ThrowExceptionOnPostInitializeContentLoad>
+    <RecordInitializeSegments>false</RecordInitializeSegments>
+  </PerformanceSettingsSave>
+  <IgnoredDirectories />
+  <CustomClasses />
+  <TranslatedFiles>
+    <TranslatedFileSave>
+      <FileName>Screens\GameScreen.cs</FileName>
+      <TranslationStyle>PerformTranslate</TranslationStyle>
+    </TranslatedFileSave>
+  </TranslatedFiles>
+  <ApplyToFixedResolutionPlatforms>true</ApplyToFixedResolutionPlatforms>
+</GlueProjectSave>

@@ -1,0 +1,160 @@
+﻿<Window x:Class="Arrow.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:FlatRedBallWpf="clr-namespace:FlatRedBallWpf"
+        xmlns:WpfDataUi="clr-namespace:WpfDataUi;assembly=WpfDataUi"
+        xmlns:Xceed="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:ArrowControls="clr-namespace:FlatRedBall.Arrow.Controls"
+        Title="MainWindow"
+        Width="600"
+        Height="350">
+    <Window.Resources>
+        <DataTemplate x:Key="ElementDataTemplate">
+            <ArrowControls:ElementOrIntentGroupContainer/>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="24"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Menu Height="24" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <MenuItem Header="File">
+                <MenuItem Header="Load Project" Click="HandleLoadProjectClick">
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Edit" >
+                <MenuItem Header="Add">
+                    <MenuItem Header="Element" Click="AddElementClick" />
+                    <Separator/>
+                    <MenuItem Header="Instance">
+                        <MenuItem Header="Element Instance" Click="HandleAddElementInstanceClick" />
+                        <Separator/>
+                        <MenuItem Header="Sprite" Click="AddSpriteClick" />
+                        <Separator/>
+                        <MenuItem Header="Circle" Click="AddCircleClick" />
+                        <MenuItem Header="Rectangle" Click="AddRectangleClick" />
+                    </MenuItem>
+                    <MenuItem Header="File" >
+                        <MenuItem Header="New File" Click="AddNewFileClick"/>
+                        <MenuItem Header="Existing File"/>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem x:Name="IntentsMenuItem" Header="Intents" Click="IntentsMenuItemClick"></MenuItem>
+                <MenuItem x:Name="CopyMenuItem" Header="Copy"></MenuItem>
+                <Separator />
+                <MenuItem x:Name="DeleteMenuItem" Header="Delete"></MenuItem>
+
+            </MenuItem>
+            <MenuItem Header="Project">
+                <MenuItem Header="Camera Settings" Click="CameraSettingsClick">
+                    
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <Grid Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="195"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition></ColumnDefinition>                    
+                </Grid.ColumnDefinitions>
+                
+                
+                
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="0" Background="LightGray">Elements</Label>
+
+                        <TreeView Grid.Row="1" x:Name="AllElementsTreeView"  
+                                  ItemsSource="{Binding TopLevelItems}"
+
+                            HorizontalContentAlignment="Stretch"
+                            ItemTemplate="{DynamicResource ElementDataTemplate}"
+                            SelectedItemChanged="AllElementsTreeView_SelectedItemChanged_1">
+
+
+
+                            <TreeView.ItemContainerStyle>
+                                <Style TargetType="TreeViewItem">
+                                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                                    <Setter Property="ItemsSource" Value="{Binding ContainedElements}"/>
+                                </Style>
+                            </TreeView.ItemContainerStyle>
+
+
+
+
+
+                        </TreeView>
+                    </Grid>
+
+                    <GridSplitter HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Stretch" 
+                      Grid.Row="1" ResizeBehavior= "PreviousAndNext"
+                      Height="5" Background="#FFBCBCBC"/>
+
+
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+
+
+                        <Label x:Name="ContentsLabel" Grid.Row="0" Background="LightGray" 
+                            Content="{Binding CurrentArrowElementVm.ContentsString}"
+
+                               ></Label>
+
+
+                        <TreeView Grid.Row="1" x:Name="SingleElementTreeView" 
+                          SelectedItemChanged="SingleElementTreeView_SelectedItemChanged_1" 
+                          ItemsSource="{Binding CurrentArrowElementVm.AllInstances}">
+                            <TreeView.Resources>
+                                <Style TargetType="TreeViewItem">
+                                    <Setter Property="IsSelected"
+                                    Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                                </Style>
+                            </TreeView.Resources>
+
+                        </TreeView>
+                    </Grid>
+
+                </Grid>
+                
+                <GridSplitter HorizontalAlignment="Right" 
+                  VerticalAlignment="Stretch" 
+                  Grid.Column="1" ResizeBehavior="PreviousAndNext"
+                  Width="5" Background="#FFBCBCBC"/>
+
+                <WpfDataUi:DataUiGrid x:Name="DataGridUi" Grid.Column="2" />
+
+                <GridSplitter HorizontalAlignment="Right" 
+                  VerticalAlignment="Stretch" 
+                  Grid.Column="3" ResizeBehavior="PreviousAndNext"
+                  Width="5" Background="#FFBCBCBC"/>
+
+
+                <FlatRedBallWpf:FlatRedBallControl Grid.Column="4" x:Name="flatRedBallControl" Margin="0,0,0,0" KeyDown="flatRedBallControl_KeyDown"/>
+
+
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

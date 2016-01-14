@@ -1,0 +1,269 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>KellermanSoftware.Compare-NET-Objects</name>
+    </assembly>
+    <members>
+        <member name="T:KellermanSoftware.CompareNetObjects.CompareObjects">
+            <summary>
+            Class that allows comparison of two objects of the same type to each other.  Supports classes, lists, arrays, dictionaries, child comparison and more.
+            </summary>
+        </member>
+        <member name="F:KellermanSoftware.CompareNetObjects.CompareObjects._parents">
+            <summary>
+            Keep track of parent objects in the object hiearchy
+            </summary>
+        </member>
+        <member name="F:KellermanSoftware.CompareNetObjects.CompareObjects._propertyCache">
+            <summary>
+            Reflection Cache for property info
+            </summary>
+        </member>
+        <member name="F:KellermanSoftware.CompareNetObjects.CompareObjects._fieldCache">
+            <summary>
+            Reflection Cache for field info
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.#ctor">
+            <summary>
+            Set up defaults for the comparison
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.Compare(System.Object,System.Object)">
+            <summary>
+            Compare two objects of the same type to each other.
+            </summary>
+            <remarks>
+            Check the Differences or DifferencesString Properties for the differences.
+            Default MaxDifferences is 1 for performance
+            </remarks>
+            <param name="object1"></param>
+            <param name="object2"></param>
+            <returns>True if they are equal</returns>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.ClearCache">
+            <summary>
+            Reflection properties and fields are cached. By default this cache is cleared automatically after each compare.
+            </summary>
+            <seealso cref="P:KellermanSoftware.CompareNetObjects.CompareObjects.AutoClearCache"/>
+            <seealso cref="P:KellermanSoftware.CompareNetObjects.CompareObjects.Caching"/>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.Compare(System.Object,System.Object,System.String)">
+            <summary>
+            Compare two objects
+            </summary>
+            <param name="object1"></param>
+            <param name="object2"></param>
+            <param name="breadCrumb">Where we are in the object hiearchy</param>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.IgnoredByAttribute(System.Type)">
+            <summary>
+            Check if any type has attributes that should be bypassed
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.CompareTimespan(System.Object,System.Object,System.String)">
+            <summary>
+            Compare a timespan struct
+            </summary>
+            <param name="object1"></param>
+            <param name="object2"></param>
+            <param name="breadCrumb"></param>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.ComparePointer(System.Object,System.Object,System.String)">
+            <summary>
+            Compare a pointer struct
+            </summary>
+            <param name="object1"></param>
+            <param name="object2"></param>
+            <param name="breadCrumb"></param>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.CompareEnum(System.Object,System.Object,System.String)">
+            <summary>
+            Compare an enumeration
+            </summary>
+            <param name="object1"></param>
+            <param name="object2"></param>
+            <param name="breadCrumb"></param>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.CompareSimpleType(System.Object,System.Object,System.String)">
+            <summary>
+            Compare a simple type
+            </summary>
+            <param name="object1"></param>
+            <param name="object2"></param>
+            <param name="breadCrumb"></param>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.CompareStruct(System.Object,System.Object,System.String)">
+            <summary>
+            Compare a struct
+            </summary>
+            <param name="object1"></param>
+            <param name="object2"></param>
+            <param name="breadCrumb"></param>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.CompareClass(System.Object,System.Object,System.String)">
+            <summary>
+            Compare the properties, fields of a class
+            </summary>
+            <param name="object1"></param>
+            <param name="object2"></param>
+            <param name="breadCrumb"></param>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.PerformCompareFields(System.Type,System.Object,System.Object,System.Boolean,System.String)">
+            <summary>
+            Compare the fields of a class
+            </summary>
+            <param name="t1"></param>
+            <param name="object1"></param>
+            <param name="object2"></param>
+            <param name="breadCrumb"></param>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.PerformCompareProperties(System.Type,System.Object,System.Object,System.Boolean,System.String)">
+            <summary>
+            Compare the properties of a class
+            </summary>
+            <param name="t1"></param>
+            <param name="object1"></param>
+            <param name="object2"></param>
+            <param name="breadCrumb"></param>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.CompareIDictionary(System.Object,System.Object,System.String)">
+            <summary>
+            Compare a dictionary
+            </summary>
+            <param name="object1"></param>
+            <param name="object2"></param>
+            <param name="breadCrumb"></param>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.cStr(System.Object)">
+            <summary>
+            Convert an object to a nicely formatted string
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.CompareIList(System.Object,System.Object,System.String)">
+            <summary>
+            Compare an array or something that implements IList
+            </summary>
+            <param name="object1"></param>
+            <param name="object2"></param>
+            <param name="breadCrumb"></param>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.AddBreadCrumb(System.String,System.String,System.String,System.String)">
+            <summary>
+            Add a breadcrumb to an existing breadcrumb
+            </summary>
+            <param name="existing"></param>
+            <param name="name"></param>
+            <param name="extra"></param>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.CompareNetObjects.CompareObjects.AddBreadCrumb(System.String,System.String,System.String,System.Int32)">
+            <summary>
+            Add a breadcrumb to an existing breadcrumb
+            </summary>
+            <param name="existing"></param>
+            <param name="name"></param>
+            <param name="extra"></param>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.ElementsToIgnore">
+            <summary>
+            Ignore classes, properties, or fields by name during the comparison.
+            Case sensitive.
+            </summary>
+            <example>ElementsToIgnore.Add("CreditCardNumber")</example>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.ComparePrivateProperties">
+            <summary>
+            If true, private properties and fields will be compared. The default is false.
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.ComparePrivateFields">
+            <summary>
+            If true, private fields will be compared. The default is false.
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.CompareStaticProperties">
+            <summary>
+            If true, static properties will be compared.  The default is true.
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.CompareStaticFields">
+            <summary>
+            If true, static fields will be compared.  The default is true.
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.CompareChildren">
+            <summary>
+            If true, child objects will be compared. The default is true. 
+            If false, and a list or array is compared list items will be compared but not their children.
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.CompareReadOnly">
+            <summary>
+            If true, compare read only properties (only the getter is implemented).
+            The default is true.
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.CompareFields">
+            <summary>
+            If true, compare fields of a class (see also CompareProperties).
+            The default is true.
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.CompareProperties">
+            <summary>
+            If true, compare properties of a class (see also CompareFields).
+            The default is true.
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.MaxDifferences">
+            <summary>
+            The maximum number of differences to detect
+            </summary>
+            <remarks>
+            Default is 1 for performance reasons.
+            </remarks>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.Differences">
+            <summary>
+            The differences found during the compare
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.DifferencesString">
+            <summary>
+            The differences found in a string suitable for a textbox
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.AutoClearCache">
+            <summary>
+            Reflection properties and fields are cached. By default this cache is cleared after each compare.  Set to false to keep the cache for multiple compares.
+            </summary>
+            <seealso cref="P:KellermanSoftware.CompareNetObjects.CompareObjects.Caching"/>
+            <seealso cref="M:KellermanSoftware.CompareNetObjects.CompareObjects.ClearCache"/>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.Caching">
+            <summary>
+            By default properties and fields for types are cached for each compare.  By default this cache is cleared after each compare.
+            </summary>
+            <seealso cref="P:KellermanSoftware.CompareNetObjects.CompareObjects.AutoClearCache"/>
+            <seealso cref="M:KellermanSoftware.CompareNetObjects.CompareObjects.ClearCache"/>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.AttributesToIgnore">
+            <summary>
+            A list of attributes to ignore a class, property or field
+            </summary>
+            <example>AttributesToIgnore.Add(typeof(XmlIgnoreAttribute));</example>
+        </member>
+        <member name="P:KellermanSoftware.CompareNetObjects.CompareObjects.IgnoreObjectTypes">
+            <summary>
+            If true, objects will be compared ignore their type diferences
+            </summary>
+        </member>
+    </members>
+</doc>

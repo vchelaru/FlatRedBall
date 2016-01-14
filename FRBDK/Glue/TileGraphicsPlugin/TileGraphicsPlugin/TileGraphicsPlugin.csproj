@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D73086FC-957E-4E3F-97FA-742CBBF02EA6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TileGraphicsPlugin</RootNamespace>
+    <AssemblyName>TileGraphicsPlugin</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FlatRedBall.Plugin">
+      <HintPath>..\..\FlatRedBall.Plugin\bin\Debug\FlatRedBall.Plugin.dll</HintPath>
+    </Reference>
+    <Reference Include="FlatRedBall.PropertyGrid">
+      <HintPath>..\..\FlatRedBall.PropertyGrid\bin\Debug\FlatRedBall.PropertyGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\..\TmxConversion\testbed\TMXGlueLib\TileAnimationFrame.cs">
+      <Link>TileAnimationFrame.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\LayeredTileMapAnimation.cs">
+      <Link>LayeredTileMapAnimation.cs</Link>
+    </EmbeddedResource>
+    <Compile Include="Behaviors\InputBindingsManager.cs" />
+    <Compile Include="Managers\BuildToolSaver.cs" />
+    <Compile Include="ViewModels\AddNewLevelViewModel.cs" />
+    <Compile Include="ViewModels\CommandLineViewModel.cs" />
+    <Compile Include="Views\AddNewLevelView.xaml.cs">
+      <DependentUpon>AddNewLevelView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CommandLineArgumentsView.xaml.cs">
+      <DependentUpon>CommandLineArgumentsView.xaml</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="..\..\..\..\TmxConversion\testbed\TMXGlueLib\DataTypes\ReducedTileMapInfo.cs">
+      <Link>ReducedTileMapInfo.cs</Link>
+    </EmbeddedResource>
+    <Compile Include="AssetTypeInfoAdder.cs" />
+    <EmbeddedResource Include="TileEntityInstantiator.cs" />
+    <Compile Include="CodeGeneration\LevelCodeGenerator.cs" />
+    <Compile Include="Controllers\AddLevelController.cs" />
+    <Compile Include="Managers\BuildToolAssociationManager.cs" />
+    <Compile Include="Managers\CodeItemAdderManager.cs" />
+    <Compile Include="Managers\EntityListManager.cs" />
+    <Compile Include="Managers\FileReferenceManager.cs" />
+    <Compile Include="Managers\RightClickManager.cs" />
+    <Compile Include="Managers\TileMapInfoManager.cs" />
+    <Compile Include="TileGraphicsPluginCommands.cs" />
+    <Compile Include="TileMapInfo.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\AnimationChainContainer.cs">
+      <Link>AnimationChainContainer.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\LayeredTileMap.cs">
+      <Link>LayeredTileMap.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\MapDrawableBatch.cs">
+      <Link>MapDrawableBatch.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\Tileset.cs">
+      <Link>Tileset.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ControlForAddingCollision.resx">
+      <DependentUpon>ControlForAddingCollision.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileCollisions\TileShapeCollection.cs">
+      <Link>TileShapeCollection.cs</Link>
+    </EmbeddedResource>
+    <Compile Include="BuildToolAssociationAdder.cs" />
+    <Compile Include="Controllers\EntityCreationController.cs" />
+    <Compile Include="Controllers\TilesetXnaRightClickController.cs" />
+    <Compile Include="Controls\ControlForAddingCollision.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ControlForAddingCollision.Designer.cs">
+      <DependentUpon>ControlForAddingCollision.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataTypes\TileGraphicsPluginSettingsSave.cs" />
+    <Compile Include="Managers\CopyFileManager.cs" />
+    <Compile Include="TileGraphicsPluginClass.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
+      <Project>{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}</Project>
+      <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\TmxConversion\testbed\TMXGlueLib\TMXGlueLib.csproj">
+      <Project>{8600173a-6281-45e1-8076-54366e42cbde}</Project>
+      <Name>TMXGlueLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
+      <Project>{E1D670B6-AD42-4B84-AFF8-D568097BE03D}</Project>
+      <Name>EditorObjectsXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\TmxConversion\testbed\TmxEditor\TmxEditor.csproj">
+      <Project>{02d8d83a-96c7-4d2e-953c-9433c3817412}</Project>
+      <Name>TmxEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GlueSaveClasses\GlueSaveClasses.csproj">
+      <Project>{545ff183-4d9d-4121-9a04-1d354b0b0dba}</Project>
+      <Name>GlueSaveClasses</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Glue\Glue.csproj">
+      <Project>{213357e3-f729-4ff3-9b99-e91c40d50e6e}</Project>
+      <Name>Glue</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Tilesets\PlatformerTiles.png" />
+    <EmbeddedResource Include="Content\Tilesets\TopDown8Bit.png" />
+    <EmbeddedResource Include="ToolsAndLibrariesToCopyToProject\TmxToNntx.exe" />
+    <EmbeddedResource Include="ToolsAndLibrariesToCopyToProject\TmxToNntx.pdb" />
+    <EmbeddedResource Include="ToolsAndLibrariesToCopyToProject\TmxToShcx.exe" />
+    <EmbeddedResource Include="ToolsAndLibrariesToCopyToProject\TmxToShcx.pdb" />
+    <EmbeddedResource Include="ToolsAndLibrariesToCopyToProject\FlatRedBall.dll" />
+    <EmbeddedResource Include="ToolsAndLibrariesToCopyToProject\TMXGlueLib.dll" />
+    <EmbeddedResource Include="ToolsAndLibrariesToCopyToProject\TMXGlueLib.pdb" />
+    <EmbeddedResource Include="ToolsAndLibrariesToCopyToProject\TmxToCSV.exe" />
+    <EmbeddedResource Include="ToolsAndLibrariesToCopyToProject\TmxToCSV.pdb" />
+    <EmbeddedResource Include="ToolsAndLibrariesToCopyToProject\TmxToScnx.exe" />
+    <EmbeddedResource Include="ToolsAndLibrariesToCopyToProject\TmxToScnx.pdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Levels\PlatformerTileMap.tmx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Levels\TiledMap.tmx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Levels\TopDown8Bit.tmx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Views\AddNewLevelView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CommandLineArgumentsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Libraries\XnaPc\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>echo PostBuild
+
+IF NOT EXIST %25AppData%25\FRBDK\Plugins\TileGraphics\ MD %25AppData%25\FRBDK\Plugins\TileGraphics\
+
+echo 1
+copy $(TargetDir)\TileGraphicsPlugin.dll %25AppData%25\FRBDK\Plugins\TileGraphics\TileGraphicsPlugin.dll
+
+echo 2
+copy $(TargetDir)\TileGraphicsPlugin.pdb %25AppData%25\FRBDK\Plugins\TileGraphics\TileGraphicsPlugin.pdb
+
+echo 3
+copy $(TargetDir)\TmxEditor.exe %25AppData%25\FRBDK\Plugins\TileGraphics\TmxEditor.exe
+
+echo 4
+copy $(TargetDir)\TmxGlueLib.dll %25AppData%25\FRBDK\Plugins\TileGraphics\TmxGlueLib.dll</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>echo BeforeBuild
+
+$(ProjectDir)\ToolsAndLibrariesToCopyToProject\CopyAllHere.bat</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BuildToolAssociationList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <BuildToolList>
+    <BuildToolAssociation>
+      <BuildTool>Libraries/Tmx/TmxToScnx.exe</BuildTool>
+      <SourceFileType>tmx</SourceFileType>
+      <DestinationFileType>scnx</DestinationFileType>
+    </BuildToolAssociation>
+    <BuildToolAssociation>
+      <BuildTool>Libraries/Tmx/TmxToCSV.exe</BuildTool>
+      <SourceFileType>tmx</SourceFileType>
+      <DestinationFileType>csv</DestinationFileType>
+    </BuildToolAssociation>
+    <BuildToolAssociation>
+      <BuildTool>Libraries/Tmx/TmxToShcx.exe</BuildTool>
+      <SourceFileType>tmx</SourceFileType>
+      <DestinationFileType>shcx</DestinationFileType>
+    </BuildToolAssociation>
+    <BuildToolAssociation>
+      <BuildTool>Libraries/Tmx/TmxToScnx.exe</BuildTool>
+      <SourceFileType>tmx</SourceFileType>
+      <DestinationFileType>tilb</DestinationFileType>
+    </BuildToolAssociation>
+    <BuildToolAssociation>
+      <BuildTool>Libraries/Tmx/TmxToNntx.exe</BuildTool>
+      <SourceFileType>tmx</SourceFileType>
+      <DestinationFileType>nntx</DestinationFileType>
+    </BuildToolAssociation>
+  </BuildToolList>
+</BuildToolAssociationList>

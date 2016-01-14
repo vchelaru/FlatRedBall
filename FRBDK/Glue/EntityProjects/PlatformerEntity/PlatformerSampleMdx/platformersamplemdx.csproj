@@ -1,0 +1,237 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{584E04A8-2236-4BBA-9774-71DCB7FFF891}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PlatformerSample</RootNamespace>
+    <AssemblyName>PlatformerSampleMdx</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_MDX</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_MDX</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.Direct3DX, Version=1.0.2911.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.DirectInput, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\platformersample\platformersample\DataTypes\MovementValues.Generated.cs">
+      <Link>DataTypes\MovementValues.Generated.cs</Link>
+      <DependentUpon>MovementValues.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\Entities\PlatformerCharacter.cs">
+      <Link>Entities\PlatformerCharacter.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\Entities\PlatformerCharacter.Generated.cs">
+      <Link>Entities\PlatformerCharacter.Generated.cs</Link>
+      <DependentUpon>PlatformerCharacter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\Entities\PlatformerCharacterBase.cs">
+      <Link>Entities\PlatformerCharacterBase.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\Entities\PlatformerCharacterBase.Generated.cs">
+      <Link>Entities\PlatformerCharacterBase.Generated.cs</Link>
+      <DependentUpon>PlatformerCharacterBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\Game1.cs">
+      <Link>Game1.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\GlobalContent.Generated.cs">
+      <Link>GlobalContent.Generated.cs</Link>
+      <DependentUpon>GlobalContent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\Performance\IPoolable.Generated.cs">
+      <Link>Performance\IPoolable.Generated.cs</Link>
+      <DependentUpon>IPoolable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\Performance\PoolList.Generated.cs">
+      <Link>Performance\PoolList.Generated.cs</Link>
+      <DependentUpon>PoolList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\Screens\CollisionTestScreen.cs">
+      <Link>Screens\CollisionTestScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\Screens\CollisionTestScreen.Generated.cs">
+      <Link>Screens\CollisionTestScreen.Generated.cs</Link>
+      <DependentUpon>CollisionTestScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\Screens\GameScreen.cs">
+      <Link>Screens\GameScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\Screens\GameScreen.Generated.cs">
+      <Link>Screens\GameScreen.Generated.cs</Link>
+      <DependentUpon>GameScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\Screens\Screen.cs">
+      <Link>Screens\Screen.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\Screens\ScreenManager.cs">
+      <Link>Screens\ScreenManager.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\Setup\CameraSetup.cs">
+      <Link>Setup\CameraSetup.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\StateInterpolation\Back.cs">
+      <Link>StateInterpolation\Back.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\StateInterpolation\Bounce.cs">
+      <Link>StateInterpolation\Bounce.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\StateInterpolation\Circular.cs">
+      <Link>StateInterpolation\Circular.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\StateInterpolation\Cubic.cs">
+      <Link>StateInterpolation\Cubic.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\StateInterpolation\Elastic.cs">
+      <Link>StateInterpolation\Elastic.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\StateInterpolation\Exponential.cs">
+      <Link>StateInterpolation\Exponential.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\StateInterpolation\Linear.cs">
+      <Link>StateInterpolation\Linear.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\StateInterpolation\Quadratic.cs">
+      <Link>StateInterpolation\Quadratic.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\StateInterpolation\Quartic.cs">
+      <Link>StateInterpolation\Quartic.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\StateInterpolation\Quintic.cs">
+      <Link>StateInterpolation\Quintic.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\StateInterpolation\Sinusoidal.cs">
+      <Link>StateInterpolation\Sinusoidal.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\StateInterpolation\Tweener.cs">
+      <Link>StateInterpolation\Tweener.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\TileGraphics\AnimationChainContainer.cs">
+      <Link>TileGraphics\AnimationChainContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\TileGraphics\LayeredTileMap.cs">
+      <Link>TileGraphics\LayeredTileMap.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\TileGraphics\MapDrawableBatch.cs">
+      <Link>TileGraphics\MapDrawableBatch.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\TileGraphics\ReducedTileMapInfo.cs">
+      <Link>TileGraphics\ReducedTileMapInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\platformersample\platformersample\TileGraphics\Tileset.cs">
+      <Link>TileGraphics\Tileset.cs</Link>
+    </Compile>
+    <Compile Include="Gui\GameWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Assets\Textures\defaultText.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\Textures\defaultText.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Libraries\FlatRedBallMdx.dll" />
+    <None Include="..\platformersample\platformersamplecontent\entities\platformercharacterbase\movementvalues.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>movementvalues</Name>
+      <Link>Entities\PlatformerCharacterBase\MovementValues.csv</Link>
+    </None>
+    <None Include="..\platformersample\platformersamplecontent\screens\gamescreen\solidcollision.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>solidcollision</Name>
+      <Link>Screens\GameScreen\SolidCollision.shcx</Link>
+    </None>
+    <None Include="Libraries\FlatRedBallMdx.xml" />
+    <None Include="redball.BMP">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallMDX\FRB.csproj">
+      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
+      <Name>FRB</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

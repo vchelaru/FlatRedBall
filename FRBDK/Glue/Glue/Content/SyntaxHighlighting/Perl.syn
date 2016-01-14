@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Language Name="Perl" Startblock="Code">
+<FileTypes>
+	<FileType Extension=".CGI" Name="Perl file"/>
+</FileTypes>
+
+	<Block Name="Code" Style="Code" IsMultiline="true">
+		<Scope Start="{" End="}" Style="Scope" Text="{...}" />
+
+		
+		<!-- Keywords that can exist inside this block -->
+		<Keywords>
+			<PatternGroup Name="C1" Style="C1" CaseSensitive="true">
+				<Patterns>
+					-A -B -C -M -O -R -S -T -W -X -b -c -d -e -f -g -k -l -o -p -r -s -t -u -w -x -z    __DATA__ __END__ __FILE__ __LINE__ continue  do     else elsif    for foreach  goto         if          last local    my     next no our package   redo return require   sub      until unless use    while
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="C2" Style="C2" CaseSensitive="true">
+				<Patterns>
+					accept alarm atan2 bind binmode bless caller chdir chmod chomp chop chown chr chroot close closedir connect cos crypt dbmclose dbmopen defined delete die dump each endgrent endhostent endnetent endprotoent endpwent endservent eof eval exec exit exp exists fcntl fileno flock fork formline format  getc getgrent getgrgid getgrname gethostbyaddr gethostbyname gethostent getlogin getnetbyaddr getnetbyname getnetent getpeername getpgrp getppid getpriority getprotobyname getprotobynumber getprotoent getpwent getpwnam getpwuid getservbyname getservbyport getservent getsockname getsockopt glob gmtime grep hex index int ioctl join  keys kill lc lcfirst length link listen localtime log lstat  map mkdir msgctl msgget msgrcv msgsnd new oct open opendir ord  pack pipe pop pos print printf push  quotemeta rand read readdir readline readlink recv ref rename reset reverse rewinddir rindex rmdir  scalar seek seekdir select semctl semgett semop send setgrent sethostent setnetent setpgrp setpriority setprotoent setpwent setservent setsockopt shift shmctl shmget shmread shmwrite shutdown sin sleep socket socketpair sort splice split sprintf sqrt srand stat study substr symlink syscall sysopen sysread system syswrite tell telldir tie tied time times truncate  uc ucfirst umask undef unlink unpack unshift utime untie values vec  wait waitpid wantarray warn write
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="C3" Style="C3" CaseSensitive="true">
+				<Patterns>
+					AUTOLOAD  and BEGIN CORE  cmp DESTROY eq  END  ge gt  le lt  ne not  m  or q qq qw qx  SUPER  s  tr UNIVERSAL x xor y
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="C4" Style="C4" CaseSensitive="true">
+				<Patterns>
+					$@ @
+				</Patterns>
+			</PatternGroup>
+			<PatternGroup Name="Numbers" Style="Number">
+				<Pattern Text="([0-9]+)" IsComplex="true" />
+			</PatternGroup>
+		</Keywords>
+		<!-- Operators that can exist inside this block -->
+		<Operators>
+			<PatternGroup name="Operators" Style="Operator">
+				<Patterns>
+			 ~ ! % " &amp; * ( ) + = | \ / { } [ ] : ; &quot; ' &lt; &gt; , . ? /
+				</Patterns>
+			</PatternGroup>
+		</Operators>
+		<!-- Blocks that can exist inside this block -->
+		<ChildBlocks>
+			<!-- Child Name="Multiline Comment" /-->
+			<Child Name="Singleline Comment" />
+			<Child Name="String" />
+			<Child Name="Code" />
+		</ChildBlocks>
+	</Block>	
+	<Block Name="Multiline Comment" Style="Comment"  IsMultiline="true">
+		<Scope Start="" End="" Style="Comment" Text="..."/>
+	</Block>
+	<Block Name="Singleline Comment" Style="Comment"  IsMultiline="false">
+		<Scope Start="#" End="" Style="Comment" />
+	</Block>
+	<Block Name="String" Style="String" IsMultiline="true">
+		<Scope Start="&quot;" End="&quot;" EscapeChar="" Style="String" />
+
+	</Block>"
+<Style Name="Code" ForeColor="" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Scope" ForeColor="" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Comment" ForeColor="Green" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="String" ForeColor="SteelBlue" BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="Number" ForeColor="Teal" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="Keyword" ForeColor="Blue" BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="Operator" ForeColor="Red" BackColor="" Bold="false" Italic="false" Underline="false" />
+
+	<!-- ULTRAEDIT WORD GROUPS -->
+	<Style Name="C1" ForeColor="Blue" 	BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="C2" ForeColor="DarkBlue" 	BackColor="" Bold="true" Italic="false" Underline="false" />
+	<Style Name="C3" ForeColor="Magenta" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="C4" ForeColor="Red" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="C5" ForeColor="DarkRed" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="C6" ForeColor="Gold" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="C7" ForeColor="Green" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+	<Style Name="C8" ForeColor="Silver" 	BackColor="" Bold="false" Italic="false" Underline="false" />
+</Language>

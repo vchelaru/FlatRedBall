@@ -1,0 +1,44 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorObjects", "..\FRBDK Supporting Projects\EditorObjects\EditorObjects.csproj", "{E1D670B6-AD42-4B84-AFF8-D568097BE03D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpriteEditor", "SpriteEditor.csproj", "{69A59DF4-C920-44FB-9603-E3A749D441DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FRB", "..\..\Engines\FlatRedBallMDX\FRB.csproj", "{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Debug|x86.ActiveCfg = Debug|x86
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Debug|x86.Build.0 = Debug|x86
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Release|x86.ActiveCfg = Release|Any CPU
+		{69A59DF4-C920-44FB-9603-E3A749D441DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69A59DF4-C920-44FB-9603-E3A749D441DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69A59DF4-C920-44FB-9603-E3A749D441DB}.Debug|x86.ActiveCfg = Debug|x86
+		{69A59DF4-C920-44FB-9603-E3A749D441DB}.Debug|x86.Build.0 = Debug|x86
+		{69A59DF4-C920-44FB-9603-E3A749D441DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69A59DF4-C920-44FB-9603-E3A749D441DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69A59DF4-C920-44FB-9603-E3A749D441DB}.Release|x86.ActiveCfg = Release|x86
+		{69A59DF4-C920-44FB-9603-E3A749D441DB}.Release|x86.Build.0 = Release|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug|x86.ActiveCfg = Debug|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug|x86.Build.0 = Debug|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Release|x86.ActiveCfg = Release|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

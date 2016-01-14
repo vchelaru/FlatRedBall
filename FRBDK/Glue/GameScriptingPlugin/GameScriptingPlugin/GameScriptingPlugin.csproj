@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D73086FC-957E-4E3F-97FA-742CBBF02EA6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GameScriptingPlugin</RootNamespace>
+    <AssemblyName>GameScriptingPlugin</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EditorObjectsXna, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\XnaPc\EditorObjectsXna.dll</HintPath>
+    </Reference>
+    <Reference Include="FlatRedBall, Version=2011.11.13.868, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\XnaPc\FlatRedBall.dll</HintPath>
+    </Reference>
+    <Reference Include="FlatRedBall.Plugin, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="FlatRedBall.PropertyGrid, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\XnaPc\FlatRedBall.PropertyGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\DecisionAndList.cs">
+      <Link>EmbeddedCodeFiles\DecisionAndList.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\DecisionOrList.cs">
+      <Link>EmbeddedCodeFiles\DecisionOrList.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\GeneralAction.cs">
+      <Link>EmbeddedCodeFiles\GeneralAction.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\GeneralDecision.cs">
+      <Link>EmbeddedCodeFiles\GeneralDecision.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\IDecisionList.cs">
+      <Link>EmbeddedCodeFiles\IDecisionList.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\IDoScriptEngine.cs">
+      <Link>EmbeddedCodeFiles\IDoScriptEngine.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\IIfScriptEngine.cs">
+      <Link>EmbeddedCodeFiles\IIfScriptEngine.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\IScriptAction.cs">
+      <Link>EmbeddedCodeFiles\IScriptAction.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\IScriptDecision.cs">
+      <Link>EmbeddedCodeFiles\IScriptDecision.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\Script.cs">
+      <Link>EmbeddedCodeFiles\Script.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\ScriptEngine.cs">
+      <Link>EmbeddedCodeFiles\ScriptEngine.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\Debugging\ScriptDebuggingForm.cs">
+      <Link>EmbeddedCodeFilesDebugging\ScriptDebuggingForm.cs</Link>
+      <SubType>Form</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\Debugging\ScriptDebuggingForm.Designer.cs">
+      <Link>EmbeddedCodeFilesDebugging\ScriptDebuggingForm.Designer.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\DelegateDecision.cs">
+      <Link>EmbeddedCodeFiles\DelegateDecision.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\AfterThatDecision.cs">
+      <Link>EmbeddedCodeFiles\AfterThatDecision.cs</Link>
+    </EmbeddedResource>
+    <Compile Include="MainPluginClass.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GlueSaveClasses\GlueSaveClasses.csproj">
+      <Project>{545ff183-4d9d-4121-9a04-1d354b0b0dba}</Project>
+      <Name>GlueSaveClasses</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Glue\Glue.csproj">
+      <Project>{213357e3-f729-4ff3-9b99-e91c40d50e6e}</Project>
+      <Name>Glue</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libraries\XnaPc\EditorObjectsXna.dll" />
+    <Content Include="Libraries\XnaPc\FlatRedBall.dll" />
+    <Content Include="Libraries\XnaPc\FlatRedBall.Plugin.dll" />
+    <Content Include="Libraries\XnaPc\FlatRedBall.PropertyGrid.dll" />
+    <Content Include="Libraries\XnaPc\Glue.exe" />
+    <Content Include="Libraries\XnaPc\GlueSaveClasses.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>IF NOT EXIST %25appdata%25\FRBDK\plugins\GameScriptingPlugin\ MD %25appdata%25\FRBDK\plugins\GameScriptingPlugin\
+
+copy $(TargetDir)GameScriptingPlugin.dll  "%25appdata%25\FRBDK\plugins\GameScriptingPlugin\GameScriptingPlugin.dll"
+
+echo Copied files</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

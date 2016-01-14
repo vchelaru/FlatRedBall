@@ -1,0 +1,269 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <Optimize>true</Optimize>
+    <DebugType>
+    </DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E1D670B6-AD42-4B84-AFF8-D568097BE03D}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>EditorObjects</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>EditorObjects</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;DEBUG;FRB_MDX</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_MDX</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.Direct3DX, Version=1.0.2911.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.DirectInput, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Data.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Windows\Microsoft.NET\Framework\v2.0.50727\System.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CameraBounds.cs" />
+    <Compile Include="CameraConfiguration.cs" />
+    <Compile Include="CameraMethods.cs" />
+    <Compile Include="Crosshair.cs" />
+    <Compile Include="Data\LineGridSave.cs" />
+    <Compile Include="Data\RecordingData.cs" />
+    <Compile Include="Data\RuntimeOptions.cs" />
+    <Compile Include="EditorSettings\DisplayRegion.cs" />
+    <Compile Include="EditorSettings\PolygonEditorSettings.cs" />
+    <Compile Include="EditorSettings\SpriteEditorSceneProperties.cs" />
+    <Compile Include="EditorSettings\TextureDisplayRegionsSave.cs" />
+    <Compile Include="EditorWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExternalBuild\BuildToolAssociation.cs" />
+    <Compile Include="ExternalBuild\PropertySorter.cs" />
+    <Compile Include="Gui\AnimationChainPropertyGrid.cs" />
+    <Compile Include="Gui\AnimationFramePropertyGrid.cs" />
+    <Compile Include="Gui\AxisAlignedCubePropertyGrid.cs" />
+    <Compile Include="Gui\AxisAlignedRectanglePropertyGrid.cs" />
+    <Compile Include="Gui\CameraBoundsPropertyGrid.cs" />
+    <Compile Include="Gui\CameraPropertyGrid.cs" />
+    <Compile Include="Gui\CirclePropertyGrid.cs" />
+    <Compile Include="Gui\ComboBoxWindow.cs" />
+    <Compile Include="Gui\CopyTexturesMultiButtonMessageBox.cs" />
+    <Compile Include="Gui\EmissionSettingsPropertyGrid.cs" />
+    <Compile Include="Gui\EmitterPropertyGrid.cs" />
+    <Compile Include="Gui\GuiSkinPropertyGrid.cs" />
+    <Compile Include="Gui\InstructionBlueprintListPropertyGrid.cs" />
+    <Compile Include="Gui\InstructionBlueprintPropertyGrid.cs" />
+    <Compile Include="Gui\LayoutManager.cs" />
+    <Compile Include="Gui\LineGridPropertyGrid.cs" />
+    <Compile Include="Gui\ListBoxSkinPropertyGrid.cs" />
+    <Compile Include="Gui\ModelMeshPartTextureSettingWindow.cs" />
+    <Compile Include="Gui\MusicPlayerWindow.cs" />
+    <Compile Include="Gui\OkListWindow.cs" />
+    <Compile Include="Gui\PolygonPointListDisplayWindow.cs" />
+    <Compile Include="Gui\ShapeCollectionPropertyGrid.cs" />
+    <Compile Include="Gui\SpherePropertyGrid.cs" />
+    <Compile Include="Gui\GraphicsOptionsPropertyGrid.cs" />
+    <Compile Include="Gui\InstructionListPropertyGrid.cs" />
+    <Compile Include="Gui\PolygonPropertyGrid.cs" />
+    <Compile Include="Gui\PosePropertyGrid.cs" />
+    <Compile Include="Gui\PositionedModelPropertyGrid.cs" />
+    <Compile Include="Gui\ScenePropertyGrid.cs" />
+    <Compile Include="Gui\SpriteFramePropertyGrid.cs" />
+    <Compile Include="Gui\SpriteGridPropertyGrid.cs" />
+    <Compile Include="Gui\SpritePropertyGrid.cs" />
+    <Compile Include="Gui\SpriteRigPropertyGrid.cs" />
+    <Compile Include="Gui\TextDisplayPropertyGrid.cs" />
+    <Compile Include="Gui\TextPropertyGrid.cs" />
+    <Compile Include="Gui\TextureCoordinatePropertyGridHelper.cs" />
+    <Compile Include="Gui\TextureCoordinatesSelectionWindow.cs" />
+    <Compile Include="Gui\TimeControlButtonWindow.cs" />
+    <Compile Include="Gui\ToolsWindow.cs" />
+    <Compile Include="Gui\Vector3OkWindow.cs" />
+    <Compile Include="Gui\WindowPropertyGrid.cs" />
+    <Compile Include="Hud\ClosestNodeToCursorLine.cs" />
+    <Compile Include="Hud\EditorHandles.cs" />
+    <Compile Include="Hud\ScalableSelector.cs" />
+    <Compile Include="Hud\SpriteFrameIndividualSpriteOutline.cs" />
+    <Compile Include="Hud\TextWidthHandles.cs" />
+    <Compile Include="LineGrid.cs" />
+    <Compile Include="NodeNetworks\NodeNetworkEditorManager.cs" />
+    <Compile Include="Parsing\ContentParser.cs" />
+    <Compile Include="PositionedObjectMover.cs" />
+    <Compile Include="PositionedObjectRotator.cs" />
+    <Compile Include="RectangleSelector.cs" />
+    <Compile Include="PropertyComparer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Savers\SceneSaver.cs" />
+    <Compile Include="Undo\Instructions\SpriteGridAnimationChainPaintInstruction.cs" />
+    <Compile Include="Undo\Instructions\SpriteGridDisplayRegionPaintInstruction.cs" />
+    <Compile Include="Undo\Instructions\SpriteGridTexturePaintInstruction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Undo\PolygonPropertyComparer.cs" />
+    <Compile Include="Undo\PropertyComparers\SpriteGridPropertyComparer.cs" />
+    <Compile Include="Undo\UndoManager.cs" />
+    <Compile Include="Visualization\HierarchyDiagram.cs" />
+    <Compile Include="Visualization\HierarchyNode.cs" />
+    <Compile Include="WorldAxesDisplay.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="EditorWindow.resx">
+      <DependentUpon>EditorWindow.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\CopyLocally.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\MakeRelativeKeepInPlace.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\EditorHandles\MoveX.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\MoveY.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\MoveZ.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\Origin.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\RotateX.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\RotateY.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\RotateZ.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\ScaleX.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\ScaleY.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\EditorHandles\ScaleZ.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallMDX\FRB.csproj">
+      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
+      <Name>FRB</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

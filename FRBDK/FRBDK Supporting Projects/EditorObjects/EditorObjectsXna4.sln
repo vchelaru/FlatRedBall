@@ -1,0 +1,70 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorObjectsXna4", "EditorObjectsXna4.csproj", "{E1D670B6-AD42-4B84-AFF8-D568097BE03D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallXna4", "..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj", "{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		DebugProfile|Any CPU = DebugProfile|Any CPU
+		DebugProfile|x86 = DebugProfile|x86
+		Profile|Any CPU = Profile|Any CPU
+		Profile|x86 = Profile|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+		Submission Phone|Any CPU = Submission Phone|Any CPU
+		Submission Phone|x86 = Submission Phone|x86
+		Submission|Any CPU = Submission|Any CPU
+		Submission|x86 = Submission|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Debug|Any CPU.Build.0 = Debug|x86
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Debug|x86.ActiveCfg = Debug|x86
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Debug|x86.Build.0 = Debug|x86
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.DebugProfile|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.DebugProfile|Any CPU.Build.0 = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.DebugProfile|x86.ActiveCfg = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.DebugProfile|x86.Build.0 = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Profile|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Profile|Any CPU.Build.0 = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Profile|x86.ActiveCfg = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Profile|x86.Build.0 = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Release|x86.ActiveCfg = Release|x86
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Release|x86.Build.0 = Release|x86
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Submission Phone|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Submission Phone|Any CPU.Build.0 = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Submission Phone|x86.ActiveCfg = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Submission Phone|x86.Build.0 = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Submission|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Submission|Any CPU.Build.0 = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Submission|x86.ActiveCfg = Debug|Any CPU
+		{E1D670B6-AD42-4B84-AFF8-D568097BE03D}.Submission|x86.Build.0 = Debug|Any CPU
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug|x86.ActiveCfg = Debug|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug|x86.Build.0 = Debug|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.DebugProfile|Any CPU.ActiveCfg = DebugProfile|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.DebugProfile|x86.ActiveCfg = DebugProfile|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.DebugProfile|x86.Build.0 = DebugProfile|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Profile|Any CPU.ActiveCfg = Profile|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Profile|x86.ActiveCfg = Profile|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Profile|x86.Build.0 = Profile|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Release|Any CPU.ActiveCfg = Release|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Release|x86.ActiveCfg = Release|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Release|x86.Build.0 = Release|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Submission Phone|Any CPU.ActiveCfg = Submission Phone|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Submission Phone|x86.ActiveCfg = Submission Phone|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Submission Phone|x86.Build.0 = Submission Phone|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Submission|Any CPU.ActiveCfg = Submission|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Submission|x86.ActiveCfg = Submission|x86
+		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Submission|x86.Build.0 = Submission|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,502 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectGuid>{84AA3126-0F7A-4836-8EB6-01CD28020308}</ProjectGuid>
+    <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GlueView</RootNamespace>
+    <AssemblyName>GlueView</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
+    <XnaPlatform>Windows</XnaPlatform>
+    <XnaCrossPlatformGroupID>3072fb5f-5a35-494c-ae46-d001d7c36bef</XnaCrossPlatformGroupID>
+    <ApplicationIcon>Game.ico</ApplicationIcon>
+    <Thumbnail>GameThumbnail.png</Thumbnail>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <XnaUpgrade>
+    </XnaUpgrade>
+    <XnaOutputType>Game</XnaOutputType>
+    <XnaProfile>HiDef</XnaProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Glue\Glue\bin\Debug\Plugins\GlueView\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_XNA;WINDOWS; GLUE_VIEW; XNA4</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>false</XnaCompressContent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE;WINDOWS; XNA4</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>True</XnaCompressContent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnitTests|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\UnitTests\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_XNA;WINDOWS; GLUE_VIEW; XNA4; UNIT_TESTS</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug2\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRB_XNA;WINDOWS; GLUE_VIEW; XNA4</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.NRefactory, Version=5.0.0.0, Culture=neutral, PublicKeyToken=d4bfe873e7598c49, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\ICSharpCode.NRefactory.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.NRefactory.CSharp, Version=5.0.0.0, Culture=neutral, PublicKeyToken=d4bfe873e7598c49, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\ICSharpCode.NRefactory.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Avatar, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.GamerServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Input.Touch, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Storage, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Video, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Xact, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="mscorlib">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NCalc, Version=1.3.8.0, Culture=neutral, PublicKeyToken=973cde3f1cafed03, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\NCalc.dll</HintPath>
+    </Reference>
+    <Reference Include="SelectionInterface, Version=1.0.0.1, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Glue\Glue\bin\Debug\SelectionInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="StaffDotNet.CollapsiblePanel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\StaffDotNet.CollapsiblePanel.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\Glue\Glue\Controls\DownloadPluginProgressWindow.cs">
+      <Link>Forms\DownloadPluginProgressWindow.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\..\..\Glue\Glue\Controls\DownloadPluginProgressWindow.Designer.cs">
+      <Link>Forms\DownloadPluginProgressWindow.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Glue\Glue\Controls\PluginsWindow.cs">
+      <Link>Forms\PluginsWindow.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\..\..\Glue\Glue\Controls\PluginsWindow.designer.cs">
+      <Link>Forms\PluginsWindow.designer.cs</Link>
+      <DependentUpon>PluginsWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Back.cs">
+      <Link>States\Back.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Bounce.cs">
+      <Link>States\Bounce.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Circular.cs">
+      <Link>States\Circular.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Cubic.cs">
+      <Link>States\Cubic.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Elastic.cs">
+      <Link>States\Elastic.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Exponential.cs">
+      <Link>States\Exponential.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Linear.cs">
+      <Link>States\Linear.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Quadratic.cs">
+      <Link>States\Quadratic.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Quartic.cs">
+      <Link>States\Quartic.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Quintic.cs">
+      <Link>States\Quintic.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Sinusoidal.cs">
+      <Link>States\Sinusoidal.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Tweener.cs">
+      <Link>States\Tweener.cs</Link>
+    </Compile>
+    <Compile Include="..\GlueViewOfficialPlugins\Scripting\CodeItem.cs">
+      <Link>Scripting\CodeItem.cs</Link>
+    </Compile>
+    <Compile Include="..\GlueViewOfficialPlugins\Scripting\ConditionalCodeBlock.cs">
+      <Link>Scripting\ConditionalCodeBlock.cs</Link>
+    </Compile>
+    <Compile Include="..\GlueViewOfficialPlugins\Scripting\CsvParser.cs">
+      <Link>Scripting\CsvParser.cs</Link>
+    </Compile>
+    <Compile Include="..\GlueViewOfficialPlugins\Scripting\DotOperatorSeparator.cs">
+      <Link>Scripting\DotOperatorSeparator.cs</Link>
+    </Compile>
+    <Compile Include="..\GlueViewOfficialPlugins\Scripting\ExpressionParser.cs">
+      <Link>Scripting\ExpressionParser.cs</Link>
+    </Compile>
+    <Compile Include="..\GlueViewOfficialPlugins\Scripting\MethodCallParser.cs">
+      <Link>Scripting\MethodCallParser.cs</Link>
+    </Compile>
+    <Compile Include="..\GlueViewOfficialPlugins\Scripting\ParsedLine.cs">
+      <Link>Scripting\ParsedLine.cs</Link>
+    </Compile>
+    <Compile Include="..\GlueViewOfficialPlugins\Scripting\ReflectionExtensionMethods.cs">
+      <Link>Scripting\ReflectionExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\GlueViewOfficialPlugins\Scripting\ScriptingControl.cs">
+      <Link>Scripting\ScriptingControl.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\GlueViewOfficialPlugins\Scripting\ScriptingControl.designer.cs">
+      <Link>Scripting\ScriptingControl.designer.cs</Link>
+      <DependentUpon>ScriptingControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\GlueViewOfficialPlugins\Scripting\ScriptParsingPlugin.cs">
+      <Link>Scripting\ScriptParsingPlugin.cs</Link>
+    </Compile>
+    <Compile Include="..\GlueViewOfficialPlugins\Scripting\StateSettingException.cs">
+      <Link>Scripting\StateSettingException.cs</Link>
+    </Compile>
+    <Compile Include="CommandLineManager.cs" />
+    <Compile Include="Editing\EditingPlugin.cs" />
+    <Compile Include="EditorLogic.cs" />
+    <Compile Include="Facades\CursorState.cs" />
+    <Compile Include="Facades\ElementCommands.cs" />
+    <Compile Include="Facades\GlueProjectSaveCommands.cs" />
+    <Compile Include="Facades\GlueViewCommands.cs" />
+    <Compile Include="Facades\GlueViewState.cs" />
+    <Compile Include="Facades\ScriptingCommands.cs" />
+    <Compile Include="Forms\CameraControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\CameraControl.Designer.cs">
+      <DependentUpon>CameraControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CollapsibleFormHelper.cs" />
+    <Compile Include="Forms\LocalizationControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\LocalizationControl.Designer.cs">
+      <DependentUpon>LocalizationControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\PropertyGrids\CameraDisplayer.cs" />
+    <Compile Include="Gui\GuiData.cs" />
+    <Compile Include="Plugin\GlueViewPlugin.cs" />
+    <Compile Include="Plugin\EmbeddedPlugin.cs" />
+    <Compile Include="Plugin\InternalPlugins\CameraControlPlugin.cs" />
+    <Compile Include="Plugin\PluginManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Game1.cs" />
+    <Compile Include="Resources\Resource1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource1.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SaveClasses\ElementSettingsSave.cs" />
+    <Compile Include="SaveClasses\StateSaveExtensionMethodsGlueView.cs" />
+    <Compile Include="Forms\ToolForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ToolForm.Designer.cs">
+      <DependentUpon>ToolForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Scripting\AssignableReference.cs" />
+    <Compile Include="Scripting\BranchingParser.cs" />
+    <Compile Include="Scripting\CodeContext.cs" />
+    <Compile Include="Scripting\CsvEntry.cs" />
+    <Compile Include="Scripting\ExecuteScriptInstruction.cs" />
+    <Compile Include="Scripting\FullScriptingReplForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Scripting\FullScriptingReplForm.Designer.cs">
+      <DependentUpon>FullScriptingReplForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Scripting\IAssignableReference.cs" />
+    <Compile Include="Scripting\PrimitiveOperationManager.cs" />
+    <Compile Include="Scripting\ScriptSave.cs" />
+    <Compile Include="Scripting\StackVariableReference.cs" />
+    <Compile Include="Singleton.cs" />
+    <Compile Include="States\StateCategoryControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="States\StateCategoryControl.Designer.cs">
+      <DependentUpon>StateCategoryControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="States\StateSaveControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="States\StateSaveControl.Designer.cs">
+      <DependentUpon>StateSaveControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="States\StateSaveExtensionMethods.cs" />
+    <Compile Include="States\StateViewPlugin.cs" />
+    <Compile Include="Wcf\WcfManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Game.ico" />
+    <Content Include="GameThumbnail.png" />
+    <Content Include="Libraries\FlatRedBall.Content.dll" />
+    <Content Include="Libraries\FlatRedBall.dll" />
+    <Content Include="Libraries\ICSharpCode.NRefactory.CSharp.dll" />
+    <Content Include="Libraries\ICSharpCode.NRefactory.CSharp.xml" />
+    <Content Include="Libraries\ICSharpCode.NRefactory.dll" />
+    <Content Include="Libraries\ICSharpCode.NRefactory.xml" />
+    <Content Include="Libraries\NCalc.dll" />
+    <Content Include="Libraries\StaffDotNet.CollapsiblePanel.dll" />
+    <None Include="App1.config" />
+    <None Include="Resources\titleBackground.jpg" />
+    <None Include="Resources\ExpandIcon.jpg" />
+    <None Include="Resources\CollapseIcon.jpg" />
+    <None Include="..\..\..\Glue\Glue\Content\ContentTypes.csv">
+      <Link>Content\ContentTypes.csv</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="app.config" />
+    <None Include="redball.BMP">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <NestedContentProject Include="Content\Content.contentproj">
+      <Project>9d067734-2601-4451-94c2-cb3ac0ab499d</Project>
+      <Visible>False</Visible>
+    </NestedContentProject>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Xna.Framework.3.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft XNA Framework Redistributable 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Xna.Framework.4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft XNA Framework Redistributable 4.0</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
+      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
+      <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\EditingControlsViewProject\EditingControls\EditingControls.csproj">
+      <Project>{ACFAE928-C5FF-4D1F-8C88-3FCD44E8C5D8}</Project>
+      <Name>EditingControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
+      <Project>{E1D670B6-AD42-4B84-AFF8-D568097BE03D}</Project>
+      <Name>EditorObjectsXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Glue\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj">
+      <Project>{2C289A72-D6BD-4358-AFBC-B71F9D31B01E}</Project>
+      <Name>FlatRedBall.Plugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Glue\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj">
+      <Project>{5FE94178-9907-4878-AFAC-8F347CA86B50}</Project>
+      <Name>FlatRedBall.PropertyGrid</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Glue\GluePropertyGridClasses\GluePropertyGridClasses.csproj">
+      <Project>{852A7438-7AFE-490E-A0C7-0A35355D6179}</Project>
+      <Name>GluePropertyGridClasses</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Glue\GlueSaveClasses\GlueSaveClasses.csproj">
+      <Project>{545FF183-4D9D-4121-9A04-1D354B0B0DBA}</Project>
+      <Name>GlueSaveClasses</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Glue\GlueWcfServices\GlueWcfServices.csproj">
+      <Project>{575cdeaf-1ec5-4427-bd8e-60e773cd1511}</Project>
+      <Name>GlueWcfServices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\WinformCustomControls\CollapsibleControl\CollapsibleControl.csproj">
+      <Project>{7C0C6A02-8561-40FD-805A-265F444069F0}</Project>
+      <Name>CollapsibleControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GluxViewManager\GluxViewManager.csproj">
+      <Project>{6CFA6ADB-1FFD-4DD7-AEF8-090A2B86A620}</Project>
+      <Name>GluxViewManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InteractiveInterface\InteractiveInterface.csproj">
+      <Project>{82FE0346-E86B-46DE-BA29-93626D89C621}</Project>
+      <Name>InteractiveInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RemotingHelper\RemotingHelper.csproj">
+      <Project>{95630012-D69D-4410-ADC9-A08CDA88F10C}</Project>
+      <Name>RemotingHelper</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\Glue\Glue\Controls\DownloadPluginProgressWindow.resx">
+      <Link>Forms\DownloadPluginProgressWindow.resx</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\Glue\Glue\Controls\PluginsWindow.resx">
+      <Link>Forms\PluginsWindow.resx</Link>
+      <DependentUpon>PluginsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\GlueViewOfficialPlugins\Scripting\ScriptingControl.resx">
+      <Link>Scripting\ScriptingControl.resx</Link>
+      <DependentUpon>ScriptingControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CameraControl.resx">
+      <DependentUpon>CameraControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LocalizationControl.resx">
+      <DependentUpon>LocalizationControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ToolForm.resx">
+      <DependentUpon>ToolForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Resource1.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Scripting\FullScriptingReplForm.resx">
+      <DependentUpon>FullScriptingReplForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="States\StateCategoryControl.resx">
+      <DependentUpon>StateCategoryControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="States\StateSaveControl.resx">
+      <DependentUpon>StateSaveControl.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Reflection\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

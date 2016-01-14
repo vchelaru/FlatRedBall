@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{95F3AAD2-16DF-4E75-A6E9-67300C56B29E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PluginTestbed</RootNamespace>
+    <AssemblyName>PluginTestbed</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnitTests|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\UnitTests\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="InteractiveInterface">
+      <HintPath>..\..\LevelEditorPlugin\LevelEditorPlugin\InteractiveInterface\bin\x86\Debug\InteractiveInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zip, Version=1.7.2.26, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Glue\Libraries\Ionic.Zip.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="RemotingHelper">
+      <HintPath>..\..\GlueView\GlueView\RemotingHelper\bin\Debug\RemotingHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="SelectionInterface, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\GlueView\GlueView\SelectionInterface\bin\Debug\SelectionInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bookmark\BookmarkPlugin.cs" />
+    <Compile Include="Bookmark\ucBookmark.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Bookmark\ucBookmark.Designer.cs">
+      <DependentUpon>ucBookmark.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileOperations\FileOperationsPlugin.cs" />
+    <Compile Include="FileReferenceList\FileReferenceList.cs" />
+    <Compile Include="PluginClass.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SceneProgramChooser\SceneProgramChooserPlugin.cs" />
+    <Compile Include="SourceSetup\SourceSetupPlugin.OpenVisualStudio.cs" />
+    <Compile Include="SourceSetup\SourceSetupPlugin.cs" />
+    <Compile Include="SourceSetup\SourceSetupPluginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SourceSetup\SourceSetupPluginForm.Designer.cs">
+      <DependentUpon>SourceSetupPluginForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SourceSetup\SourceSetupSettings.cs" />
+    <Compile Include="StateChains\CodeGeneratorStateChain.cs" />
+    <Compile Include="StateChains\Example.cs" />
+    <Compile Include="StateChains\StateChain.cs" />
+    <Compile Include="StateChains\StateChainCollection.cs" />
+    <Compile Include="StateChains\StateChainsPlugin.CodeGenerator.cs" />
+    <Compile Include="StateChains\StateChainsPlugin.cs" />
+    <Compile Include="StateChains\StateChainsPluginControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="StateChains\StateChainsPluginControl.Designer.cs">
+      <DependentUpon>StateChainsPluginControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StateChains\StateChainState.cs" />
+    <Compile Include="TestingPlugins\TestingPlugin.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
+      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
+      <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
+      <Project>{E1D670B6-AD42-4B84-AFF8-D568097BE03D}</Project>
+      <Name>EditorObjectsXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj">
+      <Project>{2C289A72-D6BD-4358-AFBC-B71F9D31B01E}</Project>
+      <Name>FlatRedBall.Plugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GlueSaveClasses\GlueSaveClasses.csproj">
+      <Project>{545FF183-4D9D-4121-9A04-1D354B0B0DBA}</Project>
+      <Name>GlueSaveClasses</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Glue\Glue.csproj">
+      <Project>{213357E3-F729-4FF3-9B99-E91C40D50E6E}</Project>
+      <Name>Glue</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Bookmark\ucBookmark.resx">
+      <DependentUpon>ucBookmark.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SourceSetup\SourceSetupPluginForm.resx">
+      <DependentUpon>SourceSetupPluginForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StateChains\StateChainsPluginControl.resx">
+      <DependentUpon>StateChainsPluginControl.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SceneProgramChooser\SceneProgramChooserPlugin.TreeViewRightClick.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="StateChains\StateChainsPlugin.TreeItemSelect.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="StateChains\StateChainsPlugin.LeftTab.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="StateChains\StateChainsPlugin.StateChange.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SourceSetup\SourceSetupPlugin.Menu.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AnimationEditorPlugin\Libraries\" />
+    <Folder Include="GlobalContentManagerPlugins\" />
+    <Folder Include="PerformanceMeasurement\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if not exist $(SolutionDir)Glue\bin\Debug\Plugins\ md $(SolutionDir)Glue\bin\Debug\Plugins\
+
+if not exist $(SolutionDir)Glue\bin\Debug\Plugins\PluginTestbed\ md $(SolutionDir)Glue\bin\Debug\Plugins\PluginTestbed\
+copy $(ProjectDir)PluginClass.cs "$(SolutionDir)Glue\bin\Debug\Plugins\PluginTestbed\"
+
+if not exist $(SolutionDir)Glue\bin\Debug\Plugins\FileReferenceList\ md $(SolutionDir)Glue\bin\Debug\Plugins\FileReferenceList\
+copy $(ProjectDir)FileReferenceList\ "$(SolutionDir)Glue\bin\Debug\Plugins\FileReferenceList\"
+
+if not exist $(SolutionDir)Glue\bin\Debug\Plugins\FileOperations\ md $(SolutionDir)Glue\bin\Debug\Plugins\FileOperations\
+copy $(ProjectDir)FileOperations\ "$(SolutionDir)Glue\bin\Debug\Plugins\FileOperations\"
+
+if not exist $(SolutionDir)Glue\bin\Debug\Plugins\Bookmark\ md $(SolutionDir)Glue\bin\Debug\Plugins\Bookmark\
+copy $(ProjectDir)Bookmark\ "$(SolutionDir)Glue\bin\Debug\Plugins\Bookmark\"
+
+if not exist $(SolutionDir)Glue\bin\Debug\Plugins\PerformanceMeasurement\ md $(SolutionDir)Glue\bin\Debug\Plugins\PerformanceMeasurement\
+copy $(ProjectDir)PerformanceMeasurement\ "$(SolutionDir)Glue\bin\Debug\Plugins\PerformanceMeasurement\"
+
+if not exist $(SolutionDir)Glue\bin\Debug\Plugins\SceneProgramChooser\ md $(SolutionDir)Glue\bin\Debug\Plugins\SceneProgramChooser\
+copy $(ProjectDir)SceneProgramChooser\ "$(SolutionDir)Glue\bin\Debug\Plugins\SceneProgramChooser\"
+
+if not exist $(SolutionDir)Glue\bin\Debug\Plugins\StateChains\ md $(SolutionDir)Glue\bin\Debug\Plugins\StateChains\
+copy $(ProjectDir)StateChains\ "$(SolutionDir)Glue\bin\Debug\Plugins\StateChains\"
+
+if not exist $(SolutionDir)Glue\bin\Debug\Plugins\TortoiseSvnPlugin\ md $(SolutionDir)Glue\bin\Debug\Plugins\TortoiseSvnPlugin\
+copy $(ProjectDir)TortoiseSvnPlugin\ "$(SolutionDir)Glue\bin\Debug\Plugins\TortoiseSvnPlugin\"
+
+if not exist $(SolutionDir)Glue\bin\Debug\Plugins\MoveToLayerPlugin\ md $(SolutionDir)Glue\bin\Debug\Plugins\MoveToLayerPlugin\
+copy $(ProjectDir)MoveToLayerPlugin\ "$(SolutionDir)Glue\bin\Debug\Plugins\MoveToLayerPlugin\"
+
+if not exist $(SolutionDir)Glue\bin\Debug\Plugins\SourceSetup\ md $(SolutionDir)Glue\bin\Debug\Plugins\SourceSetup\
+copy $(ProjectDir)SourceSetup\ "$(SolutionDir)Glue\bin\Debug\Plugins\SourceSetup\"
+
+if not exist $(SolutionDir)Glue\bin\Debug\Plugins\TestingPlugins\ md $(SolutionDir)Glue\bin\Debug\Plugins\TestingPlugins\
+copy $(ProjectDir)TestingPlugins\ "$(SolutionDir)Glue\bin\Debug\Plugins\TestingPlugins\"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
