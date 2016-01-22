@@ -357,6 +357,18 @@
     <Compile Include="Plugins\EmbeddedPlugins\CsprojReferenceSharer\ManualReferenceCopier.xaml.cs">
       <DependentUpon>ManualReferenceCopier.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\GlueVaultBrowser.xaml.cs">
+      <DependentUpon>GlueVaultBrowser.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\MainControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\MainControl.Designer.cs">
+      <DependentUpon>MainControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\MainPlugin.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\ViewModels\BrowseGlueVaultViewModel.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\ViewModels\FeedItemViewModel.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\ExclusionControl.xaml.cs">
       <DependentUpon>ExclusionControl.xaml</DependentUpon>
     </Compile>
@@ -493,7 +505,7 @@
       <DependentUpon>PerformanceSettingsWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\PluginsWindow.cs">
-      <SubType>Form</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\PluginsWindow.Designer.cs">
       <DependentUpon>PluginsWindow.cs</DependentUpon>
@@ -755,6 +767,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\NewObjectTypeSelectionControl.resx">
       <DependentUpon>NewObjectTypeSelectionControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Plugins\EmbeddedPlugins\ManagePlugins\MainControl.resx">
+      <DependentUpon>MainControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Plugins\Performance\PerformanceForm.resx">
       <DependentUpon>PerformanceForm.cs</DependentUpon>
@@ -1244,6 +1259,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Plugins\EmbeddedPlugins\CsprojReferenceSharer\ManualReferenceCopier.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Plugins\EmbeddedPlugins\ManagePlugins\GlueVaultBrowser.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

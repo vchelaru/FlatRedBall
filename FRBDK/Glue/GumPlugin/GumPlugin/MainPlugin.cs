@@ -46,13 +46,12 @@ namespace GumPlugin
 
         public override Version Version
         {
-            get { return new Version(0, 7, 0, 0); }
+            get { return new Version(0, 7, 0, 2); }
         }
 
         #endregion
 
         #region Methods
-
 
         public override void StartUp()
         {
@@ -274,6 +273,11 @@ namespace GumPlugin
 
             // These are needed for code gen
             AssetTypeInfoManager.Self.AddProjectSpecificAtis();
+
+            // They may already have been added, which means the ATI for .gumx
+            // would not be refreshed. Force it:
+            AssetTypeInfoManager.Self.RefreshGumxLoadCode();
+
             EventsManager.Self.RefreshEvents();
         }
 

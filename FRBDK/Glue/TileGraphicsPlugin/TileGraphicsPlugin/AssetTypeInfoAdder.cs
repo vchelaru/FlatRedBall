@@ -1,11 +1,11 @@
 ﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using TmxEditor.Controllers;
 
 namespace TileGraphicsPlugin
 {

@@ -127,7 +127,16 @@ namespace GumPlugin.CodeGeneration
         private void GenerateInterpolateToFromCurrent(ICodeBlock currentBlock, string enumType, bool isRelative)
         {
             string functionName = "InterpolateTo";
-            string toStateRightSide = "this.ElementSave.AllStates.First(item => item.Name == toState.ToString());";
+
+            string whereToLook = "States";
+
+            if(enumType != "VariableState")
+            {
+                whereToLook = $"Categories.First(item => item.Name == \"{enumType}\").States";
+            }
+
+
+            string toStateRightSide = $"this.ElementSave.{whereToLook}.First(item => item.Name == toState.ToString());";
 
             if(isRelative)
             {
@@ -446,7 +455,7 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateInterpolateTo(ElementSave elementSave, ICodeBlock codeBlock, IEnumerable<StateSave> states, string enumName)
         {
-            string qualifiedEnum = GueDerivingClassCodeGenerator.Self.GueRuntimeNamespace + "." +
+            string qualifiedEnum = GueDerivingClassCodeGenerator.GueRuntimeNamespace + "." +
                 FlatRedBall.IO.FileManager.RemovePath( elementSave.Name) + "Runtime." + enumName;
 
             // Make this thing return the Tweener so the uer can customize it

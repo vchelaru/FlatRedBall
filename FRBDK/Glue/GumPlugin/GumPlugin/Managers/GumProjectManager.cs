@@ -15,9 +15,18 @@ namespace GumPlugin.Managers
     {
         public ReferencedFileSave GetRfsForGumProject()
         {
-            return GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().FirstOrDefault
-             (item => FileManager.GetExtension(item.Name) == "gumx");
+            var glueProject = GlueState.Self.CurrentGlueProject;
 
+            if (glueProject != null)
+            {
+
+                return glueProject.GetAllReferencedFiles().FirstOrDefault
+                 (item => FileManager.GetExtension(item.Name) == "gumx");
+            }
+            else
+            {
+                return null;
+            }
         }
 
         bool GetIsGumProjectAlreadyInGlueProject()

@@ -16,7 +16,10 @@
         
             <ScrollViewer x:Name="ScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
                 <Canvas x:Name="MainCanvas" RenderTransformOrigin="0.5,0.5" Background="LightGray" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="100" MinWidth="100" ClipToBounds="True">
-                </Canvas> 
+                <Canvas.RenderTransform>
+                    <ScaleTransform ScaleY="-1" />
+                </Canvas.RenderTransform>
+            </Canvas> 
             </ScrollViewer>
         
             <Button Grid.Row="1" Click="HandleCurrentFrameRecordClick">Start Recording</Button>

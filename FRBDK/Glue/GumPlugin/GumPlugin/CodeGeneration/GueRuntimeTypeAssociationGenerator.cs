@@ -51,7 +51,7 @@ namespace GumPlugin.CodeGeneration
                 "GumRuntime.ElementSaveExtensions.RegisterGueInstantiationType(\"" +
                 elementNameString +
                 "\", typeof(" +
-                GueDerivingClassCodeGenerator.Self.GueRuntimeNamespace + "." +
+                GueDerivingClassCodeGenerator.GueRuntimeNamespace + "." +
                 unqualifiedName + "Runtime" +
                 "));");
         }

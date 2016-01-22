@@ -25,11 +25,17 @@ namespace FlatRedBallProfiler.Controls
             InitializeComponent();
 
             this.DataContext = new ManagedObjectsViewModel();
-        }
 
+            ProfilerCommands.Self.RegisterManagedObjectsTreeView(TreeView);
+
+        }
+        
         private void HandleRefreshClick(object sender, RoutedEventArgs e)
         {
             (this.DataContext as ManagedObjectsViewModel).ManualRefresh();
+
+            ProfilerCommands.Self.RefreshManagedObjects();
+            
         }
     }
 }

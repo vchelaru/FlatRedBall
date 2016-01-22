@@ -33,14 +33,43 @@ namespace GumPlugin.Managers
             {
                 UpdateUseAtlases();
             }
-            if(propertyChanged == "AutoCreateGumScreens")
+            else if(propertyChanged == "AutoCreateGumScreens")
             {
                 // Do we need to do anything?
+            }
+            else if(propertyChanged == "ShowDottedOutlines")
+            {
+                UpdateShowDottedOutlines();
             }
 
             GlueCommands.Self.GluxCommands.SaveGlux();
         }
 
+        private void UpdateShowDottedOutlines()
+        {
+            AssetTypeInfoManager.Self.RefreshGumxLoadCode();
+
+
+            var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
+
+            if (gumRfs != null)
+            {
+                // At the time of this writing the
+                // gumx file should always be part of
+                // global content, but who knows what will
+                // happen in the future so I'm going to make
+                // this code work regardless of where it's added:
+                var container = gumRfs.GetContainer();
+                if (container == null)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+                }
+                else
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
+                }
+            }
+        }
 
         public void UpdateUseAtlases()
         {

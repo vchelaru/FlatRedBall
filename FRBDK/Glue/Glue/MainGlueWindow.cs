@@ -1394,12 +1394,6 @@ namespace Glue
             int m = 3;
         }
 
-        private void managePluginsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            PluginsWindow pluginsWindow = new PluginsWindow();
-            pluginsWindow.Show(this);
-        }
-
         private void ElementTreeView_KeyDown(object sender, KeyEventArgs e)
         {
 

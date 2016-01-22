@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D73086FC-957E-4E3F-97FA-742CBBF02EA6}</ProjectGuid>
+    <ProjectGuid>{9275379B-790B-436D-89EC-D3C2D077DCBE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AnimationEditorPlugin</RootNamespace>
@@ -97,10 +97,6 @@
     <Reference Include="FlatRedBall.Plugin, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\Glue\FlatRedBall.Plugin\bin\x86\Debug\FlatRedBall.Plugin.dll</HintPath>
     </Reference>
-    <Reference Include="GlueSaveClasses, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Glue\GlueSaveClasses\bin\x86\Debug\GlueSaveClasses.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="System" />
@@ -146,7 +142,7 @@
       <Name>XnaAndWinforms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\FlatRedBall.AnimationEditorForms\FlatRedBall.AnimationEditorForms.csproj">
-      <Project>{A484BDC1-C1CA-43F9-A888-AD0569E8F93D}</Project>
+      <Project>{a484bdc1-c1ca-43f9-a888-ad0569e8f93d}</Project>
       <Name>FlatRedBall.AnimationEditorForms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\FlatRedBall.SpecializedXnaControls\FlatRedBall.SpecializedXnaControls.csproj">
@@ -156,6 +152,10 @@
     <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
       <Project>{e1d670b6-ad42-4b84-aff8-d568097be03d}</Project>
       <Name>EditorObjectsXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Glue\GlueSaveClasses\GlueSaveClasses.csproj">
+      <Project>{545ff183-4d9d-4121-9a04-1d354b0b0dba}</Project>
+      <Name>GlueSaveClasses</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Glue\Glue\Glue.csproj">
       <Project>{213357e3-f729-4ff3-9b99-e91c40d50e6e}</Project>

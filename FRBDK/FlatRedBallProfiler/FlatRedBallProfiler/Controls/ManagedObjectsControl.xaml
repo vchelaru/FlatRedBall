@@ -24,52 +24,7 @@
                       Grid.Column="1" ResizeBehavior= "PreviousAndNext"
                       Background="#FFBCBCBC" Grid.RowSpan="2"/>
 
-        <!-- Clean this up with http://blogs.msdn.com/b/mikehillberg/archive/2009/10/30/treeview-and-hierarchicaldatatemplate-step-by-step.aspx  -->
-
-        <TreeView Grid.Column="2">
-
-
-            <TreeViewItem Header='{Binding CategorizedEntities.Title}'
-                ItemsSource="{Binding CategorizedEntities.ObjectsUsingThis}">
-                <TreeViewItem.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Name}" />
-                    </DataTemplate>
-                </TreeViewItem.ItemTemplate>
-            </TreeViewItem>
-
-
-            <TreeViewItem Header='{Binding EntitiesForSprites.Title}'
-                ItemsSource="{Binding EntitiesForSprites.ObjectsUsingThis}">
-                <TreeViewItem.ItemTemplate>
-                    <DataTemplate>
-                        <!-- Team name -->
-                        <TextBlock Text="{Binding Name}" />
-                    </DataTemplate>
-                </TreeViewItem.ItemTemplate>
-            </TreeViewItem>
-
-            <TreeViewItem Header='{Binding EntitiesForShapes.Title}'
-                ItemsSource="{Binding EntitiesForShapes.ObjectsUsingThis}">
-                <TreeViewItem.ItemTemplate>
-                    <DataTemplate>
-                        <!-- Team name -->
-                        <TextBlock Text="{Binding Name}" />
-                    </DataTemplate>
-                </TreeViewItem.ItemTemplate>
-            </TreeViewItem>
-
-            <TreeViewItem Header='{Binding EntitiesForTexts.Title}'
-                ItemsSource="{Binding EntitiesForTexts.ObjectsUsingThis}">
-                <TreeViewItem.ItemTemplate>
-                    <DataTemplate>
-                        <!-- Team name -->
-                        <TextBlock Text="{Binding Name}" />
-                    </DataTemplate>
-                </TreeViewItem.ItemTemplate>
-            </TreeViewItem>
-
-
+        <TreeView x:Name="TreeView" Grid.Column="2">
         </TreeView>
         
         <Button Grid.Column="2" Grid.Row="1" Click="HandleRefreshClick">Refresh</Button>

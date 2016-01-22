@@ -56,12 +56,18 @@ namespace Gum.Wireframe
             return false;
         }
 
+        protected virtual void CallCustomInitialize()
+        {
+
+        }
+
         partial void CustomAddToManagers()
         {
             if (IsComponentOrInstanceOfComponent())
             {
                 GuiManager.AddWindow(this);
             }
+            CallCustomInitialize();
         }
 
         partial void CustomRemoveFromManagers()
@@ -378,12 +384,7 @@ namespace Gum.Wireframe
                 throw new NotImplementedException();
             }
         }
-
-        public float Z
-        {
-            get { return 0; }
-        }
-
+        
         public bool HasCursorOver(Cursor cursor)
         {
             if (((IWindow)this).AbsoluteVisible)

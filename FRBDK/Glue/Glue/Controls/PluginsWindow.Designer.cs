@@ -169,7 +169,6 @@
             this.ClientSize = new System.Drawing.Size(425, 273);
             this.Controls.Add(this.splitContainer1);
             this.Name = "PluginsWindow";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Plugins";
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);

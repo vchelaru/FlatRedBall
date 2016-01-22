@@ -7,6 +7,8 @@ using System.Text;
 using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Math.Geometry;
+using FlatRedBall.Gui;
+using FlatRedBall.Instructions;
 
 namespace FlatRedBallProfiler.ViewModels
 {
@@ -21,28 +23,28 @@ namespace FlatRedBallProfiler.ViewModels
         }
 
 
-        public EntityViewModel EntitiesForSprites
+        EntityViewModel EntitiesForSprites
         {
             get;
-            private set;
+            set;
         }
 
-        public EntityViewModel EntitiesForShapes
+        EntityViewModel EntitiesForShapes
         {
             get;
-            private set;
+            set;
         }
 
-        public EntityViewModel EntitiesForTexts
+        EntityViewModel EntitiesForTexts
         {
             get;
-            private set;
+            set;
         }
 
-        public EntityViewModel CategorizedEntities
+        EntityViewModel CategorizedEntities
         {
             get;
-            private set;
+            set;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -51,6 +53,7 @@ namespace FlatRedBallProfiler.ViewModels
 
         public ManagedObjectsViewModel()
         {
+            // todo: Move this to an Init method so the constructor isn't so heavy
             dispatcherTimer.Tick += new EventHandler(Refresh);
             dispatcherTimer.Interval = new TimeSpan(0,0,1);
             dispatcherTimer.Start();
@@ -64,6 +67,48 @@ namespace FlatRedBallProfiler.ViewModels
                 CategorizationType = CategorizationType.Type
             
             };
+
+            ProfilerCommands.Self.AddManagedObjectsCategory("Sprites", EntitiesForSprites.GetStrings);
+            ProfilerCommands.Self.AddManagedObjectsCategory("Shapes", EntitiesForShapes.GetStrings);
+            ProfilerCommands.Self.AddManagedObjectsCategory("Texts", EntitiesForTexts.GetStrings);
+            ProfilerCommands.Self.AddManagedObjectsCategory("Entities", CategorizedEntities.GetStrings);
+
+            ProfilerCommands.Self.AddManagedObjectsCategory("Windows (FlatRedBall)", GetWindowList);
+            ProfilerCommands.Self.AddManagedObjectsCategory("Instructions", GetInstructions);
+
+        }
+
+        private IEnumerable<string> GetInstructions()
+        {
+            foreach(var item in InstructionManager.Instructions)
+            {
+                string toReturn = null;
+                if(item.Target != null)
+                {
+                    toReturn = item.Target.ToString();
+
+                    if(string.IsNullOrEmpty(toReturn))
+                    {
+                        toReturn = item.Target.GetType().Name;
+                    }
+                }
+
+                if(string.IsNullOrEmpty(toReturn))
+                {
+                    toReturn = item.ToString();
+                }
+
+                yield return toReturn;
+            }
+        }
+
+        private IEnumerable<string> GetWindowList()
+        {
+            foreach(var item in GuiManager.Windows)
+            {
+                yield return item.GetType().Name;
+            }
+
         }
 
         private void Refresh(object sender, EventArgs e)
@@ -101,12 +146,7 @@ namespace FlatRedBallProfiler.ViewModels
             {
                 CategorizedEntities.Add(item);
             }
-
-
-            EntitiesForSprites.Refresh();
-            EntitiesForShapes.Refresh();
-            EntitiesForTexts.Refresh();
-            CategorizedEntities.Refresh();
+            
         }
     }
 }

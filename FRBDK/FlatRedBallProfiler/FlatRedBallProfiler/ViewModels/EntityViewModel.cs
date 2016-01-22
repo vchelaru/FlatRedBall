@@ -27,71 +27,46 @@ namespace FlatRedBallProfiler.ViewModels
             get;
             set;
         }
-        Dictionary<string, int> childCountByType;
 
-        public string Title
-        {
-            get
-            {
-                int count = this.childCountByType.Sum(item=>item.Value);
-                return CategoryName + " " + count;
-            }
-        }
-
-        public IEnumerable<PositionedObjectViewModel> ObjectsUsingThis
-        {
-            get
-            {
-                foreach(var kvp in this.childCountByType.OrderByDescending(item=>item.Value))
-                {
-                    var toReturn = new PositionedObjectViewModel();
-
-                    
-                    toReturn.Name = kvp.Value + " " + kvp.Key;
-                    
-                    yield return toReturn;
-                }
-            }
-        }
+        List<PositionedObject> instances = new List<PositionedObject>();
 
         public EntityViewModel()
         {
-            childCountByType = new Dictionary<string, int>();
         }
 
         public void Clear()
         {
-            childCountByType.Clear();
+            instances.Clear();
         }
-
+        
         public void Add(PositionedObject objectToAdd)
         {
+            instances.Add(objectToAdd);
+        }
             
-            
+        public IEnumerable<string> GetStrings()
+        { 
             string key = null;
 
-            if (CategorizationType == ViewModels.CategorizationType.Parent)
+            foreach (var instance in instances)
             {
-                if (objectToAdd.Parent == null)
+                if (CategorizationType == ViewModels.CategorizationType.Parent)
                 {
-                    key = "<No Parent>";
+                    if (instance.Parent == null)
+                    {
+                        key = "<No Parent>";
+                    }
+                    else
+                    {
+                        key = instance.Parent.GetType().Name;
+                    }
                 }
-                else
+                else if (CategorizationType == ViewModels.CategorizationType.Type)
                 {
-                    key = objectToAdd.Parent.GetType().Name;
+                    key = instance.GetType().Name;
                 }
+                yield return key;
             }
-            else if (CategorizationType == ViewModels.CategorizationType.Type)
-            {
-                key = objectToAdd.GetType().Name;
-            }
-
-            if(childCountByType.ContainsKey(key) == false)
-            {
-                childCountByType[key] = 0;
-            }
-
-            childCountByType[key]++;
 
         }
 

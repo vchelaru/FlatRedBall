@@ -1,11 +1,14 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
 using Gum.DataTypes;
 using GumPlugin.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace GumPlugin.Managers
 {
@@ -16,6 +19,8 @@ namespace GumPlugin.Managers
         AssetTypeInfo mComponentAti;
         AssetTypeInfo mScreenAti;
         AssetTypeInfo mGraphicalUiElementAti;
+        AssetTypeInfo mGumxAti;
+
 
         List<AssetTypeInfo> mAssetTypesForThisProject = new List<FlatRedBall.Glue.Elements.AssetTypeInfo>();
 
@@ -153,48 +158,89 @@ namespace GumPlugin.Managers
             }
         }
 
+        AssetTypeInfo GumxAti
+        {
+            get
+            {
+                if(mGumxAti == null)
+                {
+                    mGumxAti = new AssetTypeInfo();
+                    mGumxAti.FriendlyName = "Gum Project (.gumx)";
+                    mGumxAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
+                    {
+                        QualifiedType = "FlatRedBall.Gum.GumIdb"
+                    };
+                    mGumxAti.QualifiedSaveTypeName = "Gum.Data.ProjectSave";
+                    mGumxAti.Extension = "gumx";
+                    mGumxAti.CustomLoadMethod = GetGumxLoadCode();
+                    mGumxAti.SupportsMakeOneWay = false;
+                    mGumxAti.ShouldAttach = false;
+                    mGumxAti.MustBeAddedToContentPipeline = false;
+                    mGumxAti.CanBeCloned = false;
+                    mGumxAti.HasCursorIsOn = false;
+                    mGumxAti.HasVisibleProperty = false;
+                    mGumxAti.CanIgnorePausing = false;
+
+                    // don't let users add this:
+                    mGumxAti.HideFromNewFileWindow = true;
+
+                    mGumxAti.CanBeObject = false;
+
+                }
+
+                return mGumxAti;
+            }
+        }
+
+        /// <summary>
+        /// Adjusts the load code according to Gumx RFS settings such as whether to show outlines.
+        /// </summary>
+        /// <remarks>
+        /// Normally something like this might be handled by a code generator, but there is no
+        /// plugin support for directly generating code inside of global content - the only access
+        /// plugins have is through the ATIs, so we'll adjust them dynamically.
+        /// </remarks>
+        public void RefreshGumxLoadCode()
+        {
+            GumxAti.CustomLoadMethod = GetGumxLoadCode();
+        }
+
+
+        string GetGumxLoadCode()
+        {
+            string toReturn = "FlatRedBall.Gum.GumIdb.StaticInitialize(\"{FILE_NAME}\"); " +
+                        "FlatRedBall.Gum.GumIdb.RegisterTypes();  " +
+                        "FlatRedBall.Gui.GuiManager.BringsClickedWindowsToFront = false;";
+
+            var gumxRfs = GumProjectManager.Self.GetRfsForGumProject();
+
+            bool shouldShowOutlines = false;
+
+            if (gumxRfs != null)
+            {
+                shouldShowOutlines = gumxRfs.Properties.GetValue<bool>("ShowDottedOutlines");
+            }
+
+            string valueAsString = shouldShowOutlines.ToString().ToLowerInvariant();
+
+            toReturn += 
+                $"Gum.Wireframe.GraphicalUiElement.ShowLineRectangles = {valueAsString};";
+
+            return toReturn;
+        }
+
         public void AddCommonAtis()
         {
-            AddGumxAti();
+            AddIfNotPresent(GumxAti);
 
             AddIfNotPresent(ComponentAti);
 
             AddIfNotPresent(ScreenAti);
 
             AddIfNotPresent(GraphicalUiElementAti);
-
         }
 
 
-
-        private void AddGumxAti()
-        {
-            AssetTypeInfo gumProjectAti = new AssetTypeInfo();
-            gumProjectAti.FriendlyName = "Gum Project (.gumx)";
-            gumProjectAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
-            {
-                QualifiedType = "FlatRedBall.Gum.GumIdb"
-            };
-            gumProjectAti.QualifiedSaveTypeName = "Gum.Data.ProjectSave";
-            gumProjectAti.Extension = "gumx";
-            gumProjectAti.CustomLoadMethod = "FlatRedBall.Gum.GumIdb.StaticInitialize(\"{FILE_NAME}\"); " +
-                "FlatRedBall.Gum.GumIdb.RegisterTypes();  " + 
-                "FlatRedBall.Gui.GuiManager.BringsClickedWindowsToFront = false;";
-            gumProjectAti.SupportsMakeOneWay = false;
-            gumProjectAti.ShouldAttach = false;
-            gumProjectAti.MustBeAddedToContentPipeline = false;
-            gumProjectAti.CanBeCloned = false;
-            gumProjectAti.HasCursorIsOn = false;
-            gumProjectAti.HasVisibleProperty = false;
-            gumProjectAti.CanIgnorePausing = false;
-
-            // don't let users add this:
-            gumProjectAti.HideFromNewFileWindow = true;
-
-            gumProjectAti.CanBeObject = false;
-
-            AddIfNotPresent(gumProjectAti);
-        }
 
         public void AddIfNotPresent(AssetTypeInfo ati)
         {
@@ -216,12 +262,6 @@ namespace GumPlugin.Managers
             }
         }
 
-        public string GetQualifiedRuntimeFor(string elementName)
-        {
-            string unqualifiedName = elementName + "Runtime";
-            return GueDerivingClassCodeGenerator.Self.GueRuntimeNamespace + "." + unqualifiedName;
-        }
-
         public List<AssetTypeInfo> GetAtisForDerivedGues()
         {
             List<AssetTypeInfo> assetTypeInfos = new List<AssetTypeInfo>();
@@ -235,13 +275,13 @@ namespace GumPlugin.Managers
                     
                     newAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
                     {
-                        QualifiedType = GetQualifiedRuntimeFor(element.Name)
+                        QualifiedType = GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(element)
                     };
 
                     if(element is ComponentSave)
                     {
                         newAti.Extension = GumProjectSave.ComponentExtension;
-                        newAti.CustomLoadMethod = ComponentAti.CustomLoadMethod + " as " + GetQualifiedRuntimeFor(element.Name);
+                        newAti.CustomLoadMethod = ComponentAti.CustomLoadMethod + " as " + GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(element);
                     }
                     string unqualifiedName = element.Name + "Runtime";
                     newAti.FriendlyName = unqualifiedName;

@@ -28,7 +28,7 @@ namespace GumPlugin.CodeGeneration
 
         #endregion
 
-        public string GueRuntimeNamespace
+        public static string GueRuntimeNamespace
         {
             get
             {
@@ -94,15 +94,24 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
-        public string GetQualifiedRuntimeTypeFor(ElementSave elementSave)
+        public static string GetQualifiedRuntimeTypeFor(InstanceSave instance)
         {
-            return this.GueRuntimeNamespace + "." + GetUnqualifiedRuntimeTypeFor(elementSave);
+            var element = ObjectFinder.Self.GetElementSave(instance);
+
+            return GetQualifiedRuntimeTypeFor(element);
         }
 
-        public string GetUnqualifiedRuntimeTypeFor(ElementSave elementSave)
+        public static string GetQualifiedRuntimeTypeFor(ElementSave elementSave)
+        {
+            return GueRuntimeNamespace + "." + GetUnqualifiedRuntimeTypeFor(elementSave);
+        }
+
+        public static string GetUnqualifiedRuntimeTypeFor(ElementSave elementSave)
         {
             return FlatRedBall.IO.FileManager.RemovePath( elementSave.Name) + "Runtime";
         }
+
+
 
         private void GenerateScreenAndComponentCodeFor(ElementSave elementSave, ICodeBlock codeBlock)
         {
@@ -123,11 +132,22 @@ namespace GumPlugin.CodeGeneration
 
             GenerateAddToManagersMethod(elementSave, currentBlock);
 
+            GenerateCallCustomInitialize(elementSave, currentBlock);
+
             GeneratePartialMethods(elementSave, currentBlock);
 
             GenerateRaiseExposedEvents(elementSave, currentBlock);
         }
 
+        private void GenerateCallCustomInitialize(ElementSave elementSave, ICodeBlock currentBlock)
+        {
+            currentBlock = currentBlock.Function("protected override void", "CallCustomInitialize", "");
+            {
+                currentBlock.Line("base.CallCustomInitialize();");
+                currentBlock.Line("CustomInitialize();");
+
+            }
+        }
 
         private ICodeBlock GenerateClassHeader(ICodeBlock codeBlock, ElementSave elementSave)
         {
@@ -307,7 +327,7 @@ namespace GumPlugin.CodeGeneration
         {
             foreach (var instance in elementSave.Instances)
             {
-                string type = FlatRedBall.IO.FileManager.RemovePath(instance.BaseType) + "Runtime";
+                string type = GetQualifiedRuntimeTypeFor(instance);
 
                 if (GetIfInstanceReferencesValidComponent(instance))
                 {
@@ -459,7 +479,7 @@ namespace GumPlugin.CodeGeneration
                     {
                         currentBlock.Line(instance.MemberNameInCode() +
                             " = this.GetGraphicalUiElementByName(\"" + instance.MemberNameInCode() + "\") as " + 
-                            FlatRedBall.IO.FileManager.RemovePath(instance.BaseType) + "Runtime;");
+                            GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(instance) + ";");
 
                         ElementSave baseElement = Gum.Managers.ObjectFinder.Self.GetElementSave(instance.BaseType);
 
@@ -484,8 +504,6 @@ namespace GumPlugin.CodeGeneration
             currentBlock = currentBlock.Function("public override void", "AddToManagers", "RenderingLibrary.SystemManagers managers, RenderingLibrary.Graphics.Layer layer");
             {
                 currentBlock.Line("base.AddToManagers(managers, layer);");
-                currentBlock.Line("CustomInitialize();");
-
             }
         }
 

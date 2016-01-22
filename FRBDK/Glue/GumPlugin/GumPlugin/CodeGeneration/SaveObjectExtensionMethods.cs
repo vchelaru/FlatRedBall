@@ -1,5 +1,7 @@
-﻿using Gum.DataTypes;
+﻿using FlatRedBall.IO;
+using Gum.DataTypes;
 using Gum.DataTypes.Variables;
+using StateAnimationPlugin.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +30,36 @@ namespace GumPlugin.CodeGeneration
         {
             return FlatRedBall.IO.FileManager.RemovePath(element.Name);
         }
+
+        public static string PropertyNameInCode(this AnimationSave animation)
+        {
+            string propertyName = animation.Name + "Animation";
+
+
+            var firstChar = propertyName.Substring(0, 1).ToUpperInvariant();
+
+            return firstChar + propertyName.Substring(1);
+        }
+
+        public static string PropertyNameInCode(this AnimationReferenceSave animation)
+        {
+            string upperCaseRootName;
+
+            var firstChar = animation.RootName.Substring(0, 1).ToUpperInvariant();
+
+            upperCaseRootName = firstChar + animation.RootName.Substring(1) + "Animation";
+
+            if (string.IsNullOrEmpty(animation.SourceObject))
+            {
+                return upperCaseRootName;
+            }
+            else
+            {
+                return FileManager.RemovePath(animation.SourceObject) + "." + upperCaseRootName;
+            }
+        }
+        
+
 
         public static string MemberNameInCode(this VariableSave variableSave, ElementSave container, Dictionary<string, string> replacements)
         {

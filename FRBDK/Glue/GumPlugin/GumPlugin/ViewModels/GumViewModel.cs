@@ -59,6 +59,27 @@ namespace GumPlugin.ViewModels
             }
         }
 
+        bool showDottedOutlines;
+        public bool ShowDottedOutlines
+        {
+            get
+            {
+                return showDottedOutlines;
+            }
+            set
+            {
+                if(showDottedOutlines != value)
+                {
+                    showDottedOutlines = value;
+
+                    backingRfs.Properties.SetValue(
+                        nameof(ShowDottedOutlines), value);
+
+                    base.NotifyPropertyChanged(nameof(ShowDottedOutlines));
+                }
+            }
+        }
+
         protected override void NotifyPropertyChanged(string propertyName)
         {
             if(shouldRaiseEvents)
@@ -76,6 +97,7 @@ namespace GumPlugin.ViewModels
 
                 UseAtlases = backingRfs.Properties.GetValue<bool>(nameof(UseAtlases));
                 AutoCreateGumScreens = backingRfs.Properties.GetValue<bool>(nameof(AutoCreateGumScreens));
+                ShowDottedOutlines = backingRfs.Properties.GetValue<bool>(nameof(ShowDottedOutlines));
             }
             shouldRaiseEvents = true;
         }

@@ -90,8 +90,6 @@
             this.customGameClassToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pluginsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.managePluginsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.installPluginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uninstallPluginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createPluginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -637,8 +635,6 @@
             // pluginsToolStripMenuItem
             // 
             this.pluginsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.managePluginsToolStripMenuItem,
-            this.toolStripSeparator6,
             this.installPluginToolStripMenuItem,
             this.uninstallPluginToolStripMenuItem,
             this.createPluginToolStripMenuItem,
@@ -647,43 +643,31 @@
             this.pluginsToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
             this.pluginsToolStripMenuItem.Text = "Plugins";
             // 
-            // managePluginsToolStripMenuItem
-            // 
-            this.managePluginsToolStripMenuItem.Name = "managePluginsToolStripMenuItem";
-            this.managePluginsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.managePluginsToolStripMenuItem.Text = "Manage Plugins";
-            this.managePluginsToolStripMenuItem.Click += new System.EventHandler(this.managePluginsToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator6
-            // 
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(156, 6);
-            // 
             // installPluginToolStripMenuItem
             // 
             this.installPluginToolStripMenuItem.Name = "installPluginToolStripMenuItem";
-            this.installPluginToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.installPluginToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.installPluginToolStripMenuItem.Text = "Install Plugin";
             this.installPluginToolStripMenuItem.Click += new System.EventHandler(this.installPluginToolStripMenuItem_Click);
             // 
             // uninstallPluginToolStripMenuItem
             // 
             this.uninstallPluginToolStripMenuItem.Name = "uninstallPluginToolStripMenuItem";
-            this.uninstallPluginToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.uninstallPluginToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.uninstallPluginToolStripMenuItem.Text = "Uninstall Plugin";
             this.uninstallPluginToolStripMenuItem.Click += new System.EventHandler(this.uninstallPluginToolStripMenuItem_Click);
             // 
             // createPluginToolStripMenuItem
             // 
             this.createPluginToolStripMenuItem.Name = "createPluginToolStripMenuItem";
-            this.createPluginToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.createPluginToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.createPluginToolStripMenuItem.Text = "Create Plugin";
             this.createPluginToolStripMenuItem.Click += new System.EventHandler(this.createPluginToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(156, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(154, 6);
             // 
             // experimentalToolStripMenuItem
             // 
@@ -1255,7 +1239,6 @@
         private System.Windows.Forms.ToolStripMenuItem getCharacterListInFilesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findFileReferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pluginsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem managePluginsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem customGameClassToolStripMenuItem;
         public System.Windows.Forms.TextBox SearchTextbox;
@@ -1279,7 +1262,6 @@
         private System.Windows.Forms.ToolStripMenuItem exportScreensAndEntitiesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem installPluginToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createPluginToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem uninstallPluginToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
         internal FlatRedBall.Glue.Controls.PluginTab PropertiesTab;

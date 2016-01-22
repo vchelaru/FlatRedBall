@@ -82,6 +82,8 @@
     <Compile Include="Managers\RenderBreakManager.cs" />
     <Compile Include="Managers\RenderBreakViewModel.cs" />
     <Compile Include="Managers\TreeViewManager.cs" />
+    <Compile Include="Plugins\ManagedObjectsCategory.cs" />
+    <Compile Include="ProfilerCommands.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -79,13 +79,6 @@ namespace FlatRedBallProfiler.Controls
             {
                 CreateHorizontalLines(i);
             }
-            //                <Line X1="0" X2="100000" Y1="50" Y2="50" Stroke="#2f000000"></Line>
-            //    <Line X1="0" X2="100000" Y1="100" Y2="100" Stroke="#7f000000"></Line>
-            //    <Line X1="0" X2="100000" Y1="150" Y2="150" Stroke="#2f000000"></Line>
-            //    <Line X1="0" X2="100000" Y1="200" Y2="200" Stroke="#7f000000"></Line>
-            //    <Line X1="0" X2="100000" Y1="250" Y2="250" Stroke="#2fff0000"></Line>
-            //    <Line X1="0" X2="100000" Y1="300" Y2="300" Stroke="#7fff0000"></Line>
-            //throw new NotImplementedException();
         }
 
         private void CreateHorizontalLines(int renderBreakCount)
@@ -230,7 +223,7 @@ namespace FlatRedBallProfiler.Controls
 
         double CountToY(int count)
         {
-            return -count * 10;
+            return count * 10;
         }
 
         private void HandleCurrentFrameRecordClick(object sender, RoutedEventArgs e)

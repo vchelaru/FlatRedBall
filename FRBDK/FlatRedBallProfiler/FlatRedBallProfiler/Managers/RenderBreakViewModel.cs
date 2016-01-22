@@ -108,7 +108,14 @@ namespace FlatRedBallProfiler.Managers
             } 
             else if (!string.IsNullOrEmpty(Texture))
             {
-                toReturn = FileManager.RemovePath(Texture) + " (" + Texture + ")";
+                if (FileManager.IsRelative(Texture))
+                {
+                    return Texture;
+                }
+                else
+                {
+                    toReturn = FileManager.RemovePath(Texture) + " (" + Texture + ")";
+                }
             }
             else if(ObjectCausingBreak != null && ObjectCausingBreak is IDrawableBatch)
             {

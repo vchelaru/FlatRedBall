@@ -24,23 +24,43 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 namespace FlatRedBall.Glue.Controls
 {
 
-    public partial class PluginsWindow : Form
+    public partial class PluginsWindow : UserControl
     {
-        #region Enum
-
-        
-
-        #endregion
-
         #region Fields
 
         AllFeed mAllFeed;
 
+        public AllFeed AllFeed
+        {
+            get
+            {
+                return mAllFeed;
+            }
+            set
+            {
+                mAllFeed = value;
+                UpdateViewToFeed();
+            }
+        }
+
         DownloadState mPanelState;
+        public DownloadState DownloadState
+        {
+            get
+            {
+                return mPanelState;
+            }
+            set
+            {
+                mPanelState = value;
+                UpdateViewToFeed();
+            }
+        }
+
+
+
 
         DownloadPluginProgressWindow mDownloadWindow;
-
-        const string mAllFeedUrl = "http://www.gluevault.com/glueplugins";
 
         #endregion
 
@@ -69,11 +89,7 @@ namespace FlatRedBall.Glue.Controls
 
             RefreshCheckBoxes();
 
-            SetGlueViewPanelState(DownloadState.Downloading);
-
-            Application.DoEvents();
-
-            StartFeedLoading();
+            DownloadState = DownloadState.Downloading;
         }
 
 
@@ -237,36 +253,20 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
-        private void StartFeedLoading()
-        {
-            AllFeed.StartDownloadingInformation(mAllFeedUrl, HandleFinishedDownloading);
-        }
-
-        private void HandleFinishedDownloading(AllFeed allFeed, DownloadState state)
-        {
-            mAllFeed = allFeed;
-            // The widndow may have been closed
+        private void UpdateViewToFeed()
+        { 
+            // The window may have been closed
             if (this.Visible)
             {
                 try
                 {
-                    this.Invoke((MethodInvoker)delegate
-                    {
-                        SetGlueViewPanelState(state); // runs on UI thread
-                    });
+                    UpdateGlueViewPanelToState(); // runs on UI thread
                 }
                 catch(ObjectDisposedException)
                 {
                     // do nothing
                 }
             }
-        }
-
-        void SetGlueViewPanelState(DownloadState state)
-        {
-            mPanelState = state;
-            
-            UpdateGlueViewPanelToState();
         }
 
         private void UpdateGlueViewPanelToState()
@@ -326,9 +326,9 @@ namespace FlatRedBall.Glue.Controls
 
                 RemoteActionButton.Visible = false;
             }
-            else if(mAllFeed != null)
+            else if(AllFeed != null)
             {
-                RssItem item = GetItemFor(mAllFeed, SelectedPlugin);
+                RssItem item = GetItemFor(AllFeed, SelectedPlugin);
 
                 SelectedRssItem = item;
 

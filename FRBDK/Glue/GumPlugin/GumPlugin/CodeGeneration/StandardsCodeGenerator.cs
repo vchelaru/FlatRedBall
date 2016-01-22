@@ -20,6 +20,8 @@ namespace GumPlugin.CodeGeneration
 
         Dictionary<string, string> mStandardVariableNameAliases = new Dictionary<string, string>();
 
+        List<string> variablesToCallLayoutAfter = new List<string>();
+
         List<string> mVariableNamesToSkipForProperties = new List<string>();
 
         #endregion
@@ -28,6 +30,8 @@ namespace GumPlugin.CodeGeneration
 
         public StandardsCodeGenerator()
         {
+            variablesToCallLayoutAfter.Add("Text");
+
             // This says what the property name is and what the contained variable name is.
             // For example:
             // public string Text
@@ -103,7 +107,7 @@ namespace GumPlugin.CodeGeneration
             }
             //////////////END EARLY OUT///////////
 
-            string runtimeClassName = GueDerivingClassCodeGenerator.Self.GetUnqualifiedRuntimeTypeFor(standardElementSave);
+            string runtimeClassName = GueDerivingClassCodeGenerator.GetUnqualifiedRuntimeTypeFor(standardElementSave);
 
             // This needs to be public because it can be exposed as public in a public class
             //ICodeBlock currentBlock = codeBlock.Class("partial", runtimeClassName, " : Gum.Wireframe.GraphicalUiElement");
@@ -231,6 +235,11 @@ namespace GumPlugin.CodeGeneration
                     rightSide = AdjustStandardElementVariableSetIfNecessary(variable, rightSide);
 
                     setter.Line(whatToGetOrSet + " = " + rightSide + ";");
+                }
+
+                if(variablesToCallLayoutAfter.Contains(variable.Name))
+                {
+                    setter.Line("UpdateLayout();");
                 }
             }
         }

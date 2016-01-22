@@ -8,10 +8,14 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel>
         <TextBlock HorizontalAlignment="Center" FontSize="16" Text="Gum Project Properties"></TextBlock>
-        <CheckBox x:Name="UseAtlasesCheckBox" VerticalContentAlignment="Center" 
-                  Content="Use Atlases" IsChecked="{Binding UseAtlases}"></CheckBox>
+        <CheckBox x:Name="ShowDottedOutlines" VerticalContentAlignment="Center" 
+                  Content="Show Dotted Outlines" IsChecked="{Binding ShowDottedOutlines}"></CheckBox>
+
+
         <CheckBox x:Name="AutoCreateGumScreens" VerticalContentAlignment="Center" 
                   Content="Automatically Create Gum Screens for Glue Screens" IsChecked="{Binding AutoCreateGumScreens}"></CheckBox>
+        <CheckBox x:Name="UseAtlasesCheckBox" VerticalContentAlignment="Center" 
+                  Content="Use Atlases" IsChecked="{Binding UseAtlases}"></CheckBox>
 
     </StackPanel>
 </UserControl>

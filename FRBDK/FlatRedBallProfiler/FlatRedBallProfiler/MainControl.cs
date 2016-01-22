@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using FlatRedBallProfiler.Managers;
 using FlatRedBall.Performance.Measurement;
 using System.Reflection;
+using FlatRedBallProfiler.Controls;
 
 namespace FlatRedBallProfiler
 {
@@ -34,6 +35,8 @@ namespace FlatRedBallProfiler
             ApplicationState.Self.Initialize(SectionTreeView);
             RenderBreakManager.Self.Initialize(tabControl1, RenderBreakTab, RenderBreakTreeView, pictureBox1);
             RenderBreakPropertyGridManager.Self.Initialize(propertyGrid1);
+
+            ProfilerCommands.Self.RegisterTabControl(this.tabControl1);
         }
 
         #endregion

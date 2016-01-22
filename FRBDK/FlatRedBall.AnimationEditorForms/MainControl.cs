@@ -215,9 +215,9 @@ namespace FlatRedBall.AnimationEditorForms
                     XnaInitialize();
                 }
             }
-            catch
+            catch (Exception e)
             {
-
+                MessageBox.Show("Error initializing main AnimationEditor control:\n" + e.ToString());
             }
         }
 

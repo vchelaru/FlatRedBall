@@ -111,13 +111,15 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateAnimationMember(ElementSave elementSave, ICodeBlock currentBlock, AnimationSave animation, AbsoluteOrRelative absoluteOrRelative)
         {
-            string referencedInstructionProperty = animation.Name + "AnimationInstructions"; 
-            string propertyName = animation.Name + "Animation";
+            string propertyName = animation.PropertyNameInCode();
             if (absoluteOrRelative == AbsoluteOrRelative.Relative)
             {
                 propertyName += "Relative";
-                referencedInstructionProperty += "Relative";
             }
+            string referencedInstructionProperty = propertyName + "Instructions";
+            // Force the property to be upper-case, since the field is lower-case:
+
+
 
             // We want to generate something like:
             //private FlatRedBall.Gum.Animation.GumAnimation uncategorizedAnimation;
@@ -163,7 +165,7 @@ namespace GumPlugin.CodeGeneration
                 {
                     if(string.IsNullOrEmpty(subAnimation.SourceObject) == false)
                     {
-                        ifBlock.Line($"{fieldName}.SubAnimations.Add({subAnimation.Name}Animation);");
+                        ifBlock.Line($"{fieldName}.SubAnimations.Add({subAnimation.PropertyNameInCode()});");
                     }
                 }
             }
@@ -226,14 +228,14 @@ namespace GumPlugin.CodeGeneration
 
             string animationType = "VariableState";
 
-            string animationName = animation.Name + "Animation";
+            string animationName = animation.PropertyNameInCode();
 
-            string propertyName = animation.Name + "AnimationInstructions";
             if(absoluteOrRelative == AbsoluteOrRelative.Relative)
             {
-                propertyName += "Relative";
                 animationName += "Relative";
             }
+
+            string propertyName = animationName + "Instructions";
 
             // Instructions used to be public - the user would grab them and add them to the InstructionManager,
             // but now everything is encased in an Animation object which handles stopping itself and provides a simple
@@ -245,7 +247,7 @@ namespace GumPlugin.CodeGeneration
                 currentBlock.Line("yield break;");
 
             }
-            if(absoluteOrRelative == AbsoluteOrRelative.Relative && animation.States.Count < 2 && animation.Animations.Count == 0)
+            else if(absoluteOrRelative == AbsoluteOrRelative.Relative && animation.States.Count < 2 && animation.Animations.Count == 0)
             {
 
                 currentBlock = currentBlock.Property("private System.Collections.Generic.IEnumerable<FlatRedBall.Instructions.Instruction>", propertyName).Get();
@@ -337,7 +339,8 @@ namespace GumPlugin.CodeGeneration
                 else
                 {
                     currentState = remainingStates[0];
-                    CreateInstructionForInterpolation(currentBlock, animationType, previousState, currentState, absoluteOrRelative, animation.Name + "Animation");
+                    CreateInstructionForInterpolation(currentBlock, animationType, previousState, 
+                        currentState, absoluteOrRelative, animation.PropertyNameInCode());
                     previousState = currentState;
 
                     remainingStates.RemoveAt(0);
@@ -350,17 +353,18 @@ namespace GumPlugin.CodeGeneration
             currentBlock = currentBlock.Block();
 
             //var instruction = new FlatRedBall.Instructions.DelegateInstruction(() =>
-                //FlatRedBall.Instructions.InstructionManager.Instructions.AddRange(ClickableBushInstance.GrowAnimation));
+            //FlatRedBall.Instructions.InstructionManager.Instructions.AddRange(ClickableBushInstance.GrowAnimation));
             //instruction.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + asdf;
             //yield return instruction;
 
-            string animationName = FlatRedBall.IO.FileManager.RemovePath(animationReferenceSave.Name) + "Animation";
+            string animationName = animationReferenceSave.PropertyNameInCode();
+                //animationReferenceSave. FlatRedBall.IO.FileManager.RemovePath(animationReferenceSave.Name) + "Animation";
             if(absoluteOrRelative == AbsoluteOrRelative.Relative)
             {
                 animationName += "Relative";
             }
 
-            currentBlock.Line($"var instruction = new FlatRedBall.Instructions.DelegateInstruction(()=>{animationName}.Play({parentAnimation.Name}Animation));");
+            currentBlock.Line($"var instruction = new FlatRedBall.Instructions.DelegateInstruction(()=>{animationName}.Play({parentAnimation.PropertyNameInCode()}));");
             currentBlock.Line("instruction.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + ToFloatString(animationReferenceSave.Time) + ";");
 
 
@@ -401,11 +405,22 @@ namespace GumPlugin.CodeGeneration
 
                     string categoryName = "VariableState";
                     var category = mElementSaveContext.Categories.FirstOrDefault(item => item.States.Any(stateCandidate => stateCandidate.Name == currentState.StateName));
+
+                    string enumValue = currentState.StateName;
+
+                    if(currentState.StateName.Contains('/'))
+                    {
+                        var split = currentState.StateName.Split('/');
+
+                        category = mElementSaveContext.Categories.FirstOrDefault(item => item.Name == split[0]);
+                        enumValue = split[1];
+                    }
+
                     if(category != null)
                     {
                         categoryName = category.Name;
                     }
-                    currentBlock.Line("Gum.DataTypes.Variables.StateSave first = GetCurrentValuesOnState(" + categoryName + "." + currentState.StateName + ");");
+                    currentBlock.Line("Gum.DataTypes.Variables.StateSave first = GetCurrentValuesOnState(" + categoryName + "." + enumValue + ");");
 
                     currentBlock.Line("Gum.DataTypes.Variables.StateSave second = first.Clone();");
                     currentBlock.Line("Gum.DataTypes.Variables.StateSaveExtensionMethods.AddIntoThis(second, difference);");
@@ -451,7 +466,15 @@ namespace GumPlugin.CodeGeneration
 
             if (previousState == null)
             {
-                string variableStateName = "CurrentVariableState";
+                string variableStateName = null;
+
+                variableStateName = "CurrentVariableState";
+
+                if (currentState.StateName.Contains("/"))
+                {
+                    var split = currentState.StateName.Split('/');
+                    animationType = split[0];
+                }
 
                 if (animationType != "VariableState")
                 {
@@ -460,8 +483,15 @@ namespace GumPlugin.CodeGeneration
 
                 // todo:  Change this on categories
                 //System.Action action = () => this.CurrentState = fromState;
+
+                string enumValue = currentState.StateName;
+                if(enumValue.Contains("/"))
+                {
+                    enumValue = enumValue.Split('/')[1];
+                }
+
                 currentBlock.Line("var toReturn = new FlatRedBall.Instructions.DelegateInstruction( ()=> this." + variableStateName + " = " +
-                    animationType + "." + currentState.StateName + ");");
+                    animationType + "." + enumValue + ");");
                 currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime;");
 
             }
@@ -495,6 +525,14 @@ namespace GumPlugin.CodeGeneration
 
                 string toState = null;
 
+                string enumValue = currentState.StateName;
+                if(currentState.StateName.Contains("/"))
+                {
+                    currentCategory = mElementSaveContext.Categories.FirstOrDefault(item => item.Name == currentState.StateName.Split('/')[0]);
+                    enumValue = currentState.StateName.Split('/')[1];
+                }
+
+
                 //if (differentCategories)
                 //{
                 //fromState = "this.ElementSave.AllStates.FirstOrDefault(item => item.Name == \"" + previousState.StateName + "\")";
@@ -505,12 +543,12 @@ namespace GumPlugin.CodeGeneration
                 //fromState = animationType + "." + previousState.StateName;
                 if (currentCategory == null)
                 {
-                    toState = "VariableState." + currentState.StateName;
+                    toState = "VariableState." + enumValue;
 
                 }
                 else
                 {
-                    toState = currentCategory.Name + "." + currentState.StateName;
+                    toState = currentCategory.Name + "." + enumValue;
                 }
                 //}
 

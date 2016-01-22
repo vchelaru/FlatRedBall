@@ -143,7 +143,7 @@ namespace FlatRedBall.Glue.Parsing
 
             #endregion
 
-            var contents = GetMethodContent();
+            var contents = GetGlobalContentFilesMethods();
 
             codeBlock.InsertBlock(contents);
 
@@ -165,7 +165,7 @@ namespace FlatRedBall.Glue.Parsing
             
         }
 
-        private static ICodeBlock GetMethodContent()
+        private static ICodeBlock GetGlobalContentFilesMethods()
         {
             ICodeBlock codeBlock = new CodeDocument();
             var currentBlock = codeBlock;

@@ -34,6 +34,8 @@ namespace FlatRedBall.Gum.Animation
 
         Dictionary<string, Action> namedActions = new Dictionary<string, Action>();
 
+        public event Action EndReached;
+
         Func<IEnumerable<Instruction>> getInstructionsFunc;
 
         public object WhatStartedPlayingThis
@@ -112,7 +114,17 @@ namespace FlatRedBall.Gum.Animation
                 instruction.Target = this;
                 InstructionManager.Instructions.Add(instruction);
             }
+
+            {
+                Action endReachedAction = () => EndReached?.Invoke();
+                var endInstruction = new DelegateInstruction(endReachedAction);
+                endInstruction.TimeToExecute = TimeManager.CurrentTime + this.Length;
+                endInstruction.Target = this;
+                InstructionManager.Instructions.Add(endInstruction);
+            }
         }
+
+
 
         public void PlayAfter(float delay, object whatStartedPlayigThis = null)
         {
