@@ -103,23 +103,19 @@
     <Compile Include="Zooming\ZoomNumbers.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gum\ContentLibrary\ContentLibrary.csproj">
-      <Project>{6e3deca0-b292-4fba-b585-7460a329de2e}</Project>
-      <Name>ContentLibrary</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gum\InputLibrary\InputLibrary.csproj">
+    <ProjectReference Include="..\..\..\Gum\InputLibrary\InputLibrary.csproj">
       <Project>{938d9a00-8529-4ce8-9077-e0a3994a73ea}</Project>
       <Name>InputLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Gum\RenderingLibrary\RenderingLibrary.csproj">
+    <ProjectReference Include="..\..\..\Gum\RenderingLibrary\RenderingLibrary.csproj">
       <Project>{a86ee399-7c93-42e1-80ed-ca4cbf4ca573}</Project>
       <Name>RenderingLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Gum\ToolsUtilities\ToolsUtilities.csproj">
+    <ProjectReference Include="..\..\..\Gum\ToolsUtilities\ToolsUtilities.csproj">
       <Project>{b941a93f-6093-4dc6-ad11-91a058b6c2cc}</Project>
       <Name>ToolsUtilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Gum\XnaAndWinforms\XnaAndWinforms.csproj">
+    <ProjectReference Include="..\..\..\Gum\XnaAndWinforms\XnaAndWinforms.csproj">
       <Project>{c39a973c-66d6-4a6c-82b5-ae0042f210f8}</Project>
       <Name>XnaAndWinforms</Name>
     </ProjectReference>

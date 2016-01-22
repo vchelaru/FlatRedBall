@@ -77,7 +77,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\..\..\..\..\TmxConversion\testbed\TMXGlueLib\TileAnimationFrame.cs">
+    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TileAnimationFrame.cs">
       <Link>TileAnimationFrame.cs</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\LayeredTileMapAnimation.cs">
@@ -93,7 +93,7 @@
     <Compile Include="Views\CommandLineArgumentsView.xaml.cs">
       <DependentUpon>CommandLineArgumentsView.xaml</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="..\..\..\..\..\..\TmxConversion\testbed\TMXGlueLib\DataTypes\ReducedTileMapInfo.cs">
+    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\DataTypes\ReducedTileMapInfo.cs">
       <Link>ReducedTileMapInfo.cs</Link>
     </EmbeddedResource>
     <Compile Include="AssetTypeInfoAdder.cs" />
@@ -141,11 +141,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\TmxConversion\testbed\TmxEditor\TmxEditor.csproj">
+    <ProjectReference Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TmxEditor\TmxEditor.csproj">
       <Project>{02d8d83a-96c7-4d2e-953c-9433c3817412}</Project>
       <Name>TmxEditor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\TmxConversion\testbed\TMXGlueLib\TMXGlueLib.csproj">
+    <ProjectReference Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TMXGlueLib.csproj">
       <Project>{8600173a-6281-45e1-8076-54366e42cbde}</Project>
       <Name>TMXGlueLib</Name>
     </ProjectReference>
