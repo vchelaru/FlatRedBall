@@ -976,7 +976,6 @@ namespace FlatRedBall.Gui
                                         break;
                                     }
                                 }
-#if !SILVERLIGHT
                                 else if (!window.IgnoredByCursor && window.HasCursorOver(c))
                                 {
                                     window.TestCollision(c);
@@ -988,7 +987,6 @@ namespace FlatRedBall.Gui
                                     break;
 
                                 }
-#endif
                             }
                         }
                     }
