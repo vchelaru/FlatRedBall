@@ -6,3 +6,4 @@ obj/
 bin/
 *.user
 *.cachefile
+Thumbs.db
