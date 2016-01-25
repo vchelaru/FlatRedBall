@@ -43,11 +43,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     MessageBox.Show(errorMessage);
                 }
-                else if (rfs == null)
-                {
-                    throw new NullReferenceException("The RFS returned by AddReferencedFileSave is null, and it shouldn't be");
-                }
-                else
+                else if(rfs != null)
                 {
                     
                     var createdFile = ProjectManager.MakeAbsolute(rfs.GetRelativePath());

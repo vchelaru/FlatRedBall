@@ -72,7 +72,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\IRenderableIpso.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\IRenderableIpso.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\IRenderableIpso.cs</Link>
     </EmbeddedResource>
     <Compile Include="Managers\GumxPropertiesManager.cs" />
@@ -83,197 +83,197 @@
     </Compile>
     <Compile Include="ViewModels\GumViewModel.cs" />
     <EmbeddedResource Include="Embedded\GumIdb.cs" />
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Camera.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Camera.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\Camera.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Content\LoaderManager.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Content\LoaderManager.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\LoaderManager.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\AnimationFrame.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\AnimationFrame.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\AnimationFrame.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\BitmapCharacterInfo.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\BitmapCharacterInfo.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\BitmapCharacterInfo.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\Fonts\BitmapFont.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\Fonts\BitmapFont.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\BitmapFont.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\Fonts\BmfcSave.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\Fonts\BmfcSave.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\BmfcSave.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\IAnimation.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\IAnimation.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\IAnimation.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\ImageData.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\ImageData.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\ImageData.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\IRenderable.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\IRenderable.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\IRenderable.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\IVisible.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\IVisible.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\IVisible.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\Layer.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\Layer.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\Layer.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\LayerCameraSettings.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\LayerCameraSettings.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\LayerCameraSettings.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\NineSlice.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\NineSlice.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\NineSlice.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\Renderer.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\Renderer.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\Renderer.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\Sprite.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\Sprite.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\Sprite.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\SpriteManager.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\SpriteManager.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\SpriteManager.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\Text.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\Text.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\Text.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\TextManager.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\TextManager.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\TextManager.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\TextureFlipAnimation.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\TextureFlipAnimation.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\TextureFlipAnimation.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\TimedSpriteSheetAnimation.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\TimedSpriteSheetAnimation.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\TimedSpriteSheetAnimation.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\IPositionedSizedObject.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\IPositionedSizedObject.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\IPositionedSizedObject.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Math\Geometry\Line.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Math\Geometry\Line.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\Line.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Math\Geometry\LineCircle.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Math\Geometry\LineCircle.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\LineCircle.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Math\Geometry\LineGrid.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Math\Geometry\LineGrid.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\LineGrid.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Math\Geometry\LinePrimitive.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Math\Geometry\LinePrimitive.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\LinePrimitive.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Math\Geometry\LineRectangle.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Math\Geometry\LineRectangle.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\LineRectangle.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Math\Geometry\ShapeManager.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Math\Geometry\ShapeManager.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\ShapeManager.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Math\Geometry\SolidRectangle.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Math\Geometry\SolidRectangle.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\SolidRectangle.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Math\MathFunctions.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Math\MathFunctions.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\MathFunctions.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\SystemManagers.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\SystemManagers.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\SystemManagers.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\ToolsUtilities\FileManager.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\ToolsUtilities\FileManager.cs">
       <Link>Embedded\LibraryFiles\ToolsUtilities\FileManager.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\ToolsUtilities\ReflectionManager.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\ToolsUtilities\ReflectionManager.cs">
       <Link>Embedded\LibraryFiles\ToolsUtilities\ReflectionManager.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\ToolsUtilities\StringFunctions.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\ToolsUtilities\StringFunctions.cs">
       <Link>Embedded\LibraryFiles\ToolsUtilities\StringFunctions.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumRuntime\ElementSaveExtensions.GumRuntime.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumRuntime\ElementSaveExtensions.GumRuntime.cs">
       <Link>Embedded\LibraryFiles\GumRuntime\ElementSaveExtensions.GumRuntime.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumRuntime\GraphicalUiElement.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumRuntime\GraphicalUiElement.cs">
       <Link>Embedded\LibraryFiles\GumRuntime\GraphicalUiElement.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumRuntime\InstanceSaveExtensionMethods.GumRuntime.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumRuntime\InstanceSaveExtensionMethods.GumRuntime.cs">
       <Link>Embedded\LibraryFiles\GumRuntime\InstanceSaveExtensionMethods.GumRuntime.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\ComponentSave.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\ComponentSave.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\ComponentSave.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\CustomPropertySave.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\CustomPropertySave.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\CustomPropertySave.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\DimensionUnitType.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\DimensionUnitType.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\DimensionUnitType.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\ElementReference.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\ElementReference.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\ElementReference.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\ElementSave.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\ElementSave.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\ElementSave.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\GuideRectangle.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\GuideRectangle.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\GuideRectangle.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\GumProjectSave.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\GumProjectSave.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\GumProjectSave.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\InstanceSave.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\InstanceSave.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\InstanceSave.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\NamedRectangle.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\NamedRectangle.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\NamedRectangle.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\ScreenSave.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\ScreenSave.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\ScreenSave.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\StandardElementSave.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\StandardElementSave.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\StandardElementSave.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\UnitConverter.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\UnitConverter.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\UnitConverter.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\Variables\IVariableFinder.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\Variables\IVariableFinder.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\IVariableFinder.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\Variables\StateSave.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\Variables\StateSave.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\StateSave.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\Variables\VariableListSave.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\Variables\VariableListSave.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\VariableListSave.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\Variables\VariableSave.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\Variables\VariableSave.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\VariableSave.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\Gum\Managers\ObjectFinder.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\Gum\Managers\ObjectFinder.cs">
       <Link>Embedded\LibraryFiles\GumRuntime\ObjectFinder.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\Gum\DataTypes\RecursiveVariableFinder.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\Gum\DataTypes\RecursiveVariableFinder.cs">
       <Link>Embedded\LibraryFiles\GumRuntime\RecursiveVariableFinder.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\Gum\Wireframe\ElementWithState.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\Gum\Wireframe\ElementWithState.cs">
       <Link>Embedded\LibraryFiles\GumRuntime\ElementWithState.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\Gum\Managers\StandardElementsManager.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\Gum\Managers\StandardElementsManager.cs">
       <Link>Embedded\LibraryFiles\GumRuntime\StandardElementsManager.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\Gum\DataTypes\StateSaveExtensionMethods.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\Gum\DataTypes\StateSaveExtensionMethods.cs">
       <Link>Embedded\LibraryFiles\GumRuntime\StateSaveExtensionMethods.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\Gum\DataTypes\VariableSaveExtensionMethods.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\Gum\DataTypes\VariableSaveExtensionMethods.cs">
       <Link>Embedded\LibraryFiles\GumRuntime\VariableSaveExtensionMethods.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\Gum\RenderingLibrary\Blend.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\Gum\RenderingLibrary\Blend.cs">
       <Link>Embedded\LibraryFiles\GumRuntime\Blend.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\Gum\DataTypes\InstanceSaveExtensionMethods.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\Gum\DataTypes\InstanceSaveExtensionMethods.cs">
       <Link>Embedded\LibraryFiles\GumRuntime\InstanceSaveExtensionMethods.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\Gum\DataTypes\ElementSaveExtensionMethods.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\Gum\DataTypes\ElementSaveExtensionMethods.cs">
       <Link>Embedded\LibraryFiles\GumRuntime\ElementSaveExtensionMethods.cs</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="Embedded\GraphicalUiElement.IWindow.cs" />
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\EventSave.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\EventSave.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\EventSave.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\GumDataTypes\Variables\StateSaveCategory.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\Variables\StateSaveCategory.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\StateSaveCategory.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\SortableLayer.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\SortableLayer.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\SortableLayer.cs</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\StateInterpolationPlugin\StateInterpolationPlugin\Back.cs">
@@ -318,37 +318,37 @@
     <EmbeddedResource Include="..\..\StateInterpolationPlugin\StateInterpolationPlugin\ShakeTweener.cs">
       <Link>Embedded\StateInterpolation\ShakeTweener.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\SpriteBatchStack.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\SpriteBatchStack.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\SpriteBatchStack.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Content\IContentLoader.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Content\IContentLoader.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\IContentLoader.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\SpriteRenderer.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\SpriteRenderer.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\SpriteRenderer.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\Atlas.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\Atlas.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\Atlas.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\Gum\RenderingLibrary\Graphics\AtlasedTexture.cs">
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\AtlasedTexture.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\AtlasedTexture.cs</Link>
     </EmbeddedResource>
-    <Compile Include="..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\AnimatedStateSave.cs">
+    <Compile Include="..\..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\AnimatedStateSave.cs">
       <Link>Animation\AnimatedStateSave.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\AnimationReferenceSave.cs">
+    <Compile Include="..\..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\AnimationReferenceSave.cs">
       <Link>Animation\AnimationReferenceSave.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\AnimationSave.cs">
+    <Compile Include="..\..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\AnimationSave.cs">
       <Link>Animation\AnimationSave.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\ElementAnimationReferenceSave.cs">
+    <Compile Include="..\..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\ElementAnimationReferenceSave.cs">
       <Link>Animation\ElementAnimationReferenceSave.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\ElementAnimationsSave.cs">
+    <Compile Include="..\..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\ElementAnimationsSave.cs">
       <Link>Animation\ElementAnimationsSave.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\NamedEventSave.cs">
+    <Compile Include="..\..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\NamedEventSave.cs">
       <Link>Animation\NamedEventSave.cs</Link>
     </Compile>
     <Compile Include="CodeGeneration\GueDerivingClassCodeGenerator.cs" />
@@ -389,15 +389,15 @@
       <Project>{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}</Project>
       <Name>FlatRedBallXna4</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Gum\GumDataTypes\GumDataTypes.csproj">
+    <ProjectReference Include="..\..\..\..\..\Gum\GumDataTypes\GumDataTypes.csproj">
       <Project>{5971a187-f6b2-4d65-a277-5613ded1f50f}</Project>
       <Name>GumDataTypes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Gum\GumRuntime\GumRuntime.csproj">
+    <ProjectReference Include="..\..\..\..\..\Gum\GumRuntime\GumRuntime.csproj">
       <Project>{0256cc51-4dc5-498b-8c39-36d05b523ed3}</Project>
       <Name>GumRuntime</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Gum\RenderingLibrary\RenderingLibrary.csproj">
+    <ProjectReference Include="..\..\..\..\..\Gum\RenderingLibrary\RenderingLibrary.csproj">
       <Project>{a86ee399-7c93-42e1-80ed-ca4cbf4ca573}</Project>
       <Name>RenderingLibrary</Name>
     </ProjectReference>
