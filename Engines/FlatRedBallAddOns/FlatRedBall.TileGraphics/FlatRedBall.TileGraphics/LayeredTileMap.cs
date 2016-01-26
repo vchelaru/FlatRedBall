@@ -10,9 +10,16 @@ using FlatRedBall.Debugging;
 using FlatRedBall.Performance.Measurement;
 using System.IO;
 using TMXGlueLib.DataTypes;
+using TMXGlueLib;
 
 namespace FlatRedBall.TileGraphics
 {
+    public struct NamedValue
+    {
+        public string Name;
+        public object Value;
+    }
+
     public class LayeredTileMap : PositionedObject
     {
         #region Fields
@@ -33,6 +40,13 @@ namespace FlatRedBall.TileGraphics
         #endregion
 
         #region Properties
+
+        public Dictionary<string, List<NamedValue>> Properties
+        {
+            get;
+            private set;
+        } = new Dictionary<string, List<NamedValue>>();
+
 
         public float RenderingScale
         {
@@ -125,6 +139,23 @@ namespace FlatRedBall.TileGraphics
 
 
         #endregion
+
+        public IEnumerable<string> TileNamesWith(string propertyName)
+        {
+            foreach (var item in Properties.Values)
+            {
+                if (item.Any(item2 => item2.Name == propertyName))
+                {
+                    var hasName = item.Any(item2 => item2.Name == "Name");
+
+                    if (hasName)
+                    {
+                        yield return item.First(item2 => item2.Name == "Name").Value as string;
+                    }
+                }
+            }
+        }
+
 
         public static LayeredTileMap FromScene(string fileName, string contentManagerName)
         {
@@ -246,6 +277,46 @@ namespace FlatRedBall.TileGraphics
             return toReturn;
         }
 
+        public static LayeredTileMap FromTiledMapSave(string fileName, string contentManager)
+        {
+            TiledMapSave tms = TiledMapSave.FromFile(fileName);
+
+
+            string directory = FlatRedBall.IO.FileManager.GetDirectory(fileName);
+
+            var rtmi = ReducedTileMapInfo.FromTiledMapSave(
+                tms, 1, 0, directory, FileReferenceType.Absolute);
+
+            var toReturn = FromReducedTileMapInfo(rtmi, contentManager, fileName);
+
+
+            foreach (var tileset in tms.Tilesets)
+            {
+                foreach (var tile in tileset.TileDictionary.Values)
+                {
+                    if (tile.properties.Count != 0)
+                    {
+                        // this needs a name:
+                        string name = tile.properties.FirstOrDefault(item => item.StrippedName.ToLowerInvariant() == "name")?.value;
+
+                        if (!string.IsNullOrEmpty(name))
+                        {
+                            List<NamedValue> namedValues = new List<NamedValue>();
+                            foreach (var prop in tile.properties)
+                            {
+                                namedValues.Add(new NamedValue() { Name = prop.StrippedName, Value = prop.value });
+                            }
+
+                            toReturn.Properties.Add(name, namedValues);
+
+                        }
+                    }
+                }
+            }
+
+            return toReturn;
+        }
+
         public void AnimateSelf()
         {
             if(Animation != null)
@@ -327,11 +398,11 @@ namespace FlatRedBall.TileGraphics
     public static class LayeredTileMapExtensions
     {
         public static void RemoveTiles(this LayeredTileMap map,
-            Func<TileMapInfo, bool> predicate,
-            IEnumerable<TileMapInfo> info)
+            Func<List<NamedValue>, bool> predicate,
+            Dictionary<string, List<NamedValue>> Properties)
         {
             // Force execution now for performance reasons
-            var filteredInfos = info.Where(predicate).ToList();
+            var filteredInfos = Properties.Values.Where(predicate).ToList();
 
             foreach (var layer in map.MapLayers)
             {
@@ -339,10 +410,15 @@ namespace FlatRedBall.TileGraphics
 
                 foreach (var itemThatPasses in filteredInfos)
                 {
-                    if (layer.NamedTileOrderedIndexes.ContainsKey(itemThatPasses.Name))
+                    string tileName = itemThatPasses
+                        .FirstOrDefault(item => item.Name.ToLowerInvariant() == "name")
+                        .Value as string;
+
+
+                    if (layer.NamedTileOrderedIndexes.ContainsKey(tileName))
                     {
                         var intsOnThisLayer =
-                            layer.NamedTileOrderedIndexes[itemThatPasses.Name];
+                            layer.NamedTileOrderedIndexes[tileName];
 
                         indexes.AddRange(intsOnThisLayer);
                     }
