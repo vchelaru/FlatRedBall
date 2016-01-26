@@ -101,8 +101,10 @@ namespace FlatRedBall.Graphics
             set { mDrawableBatchComparer = value; }
         }
 
-        private static void DrawIndividualLayer(Camera camera, RenderMode renderMode, bool changedFieldOfView, Layer layer, Section section)
+        private static void DrawIndividualLayer(Camera camera, RenderMode renderMode, Layer layer, Section section)
         {
+            bool hasLayerModifiedCamera = false;
+
             if (layer.Visible)
             {
                 Renderer.CurrentLayer = layer;
@@ -125,14 +127,12 @@ namespace FlatRedBall.Graphics
                 // if necessary.
                 mOldCameraLayerSettings.SetFromCamera(camera);
 
+                Vector3 oldPosition = camera.Position;
+
                 if (layer.LayerCameraSettings != null)
                 {
-                    layer.LayerCameraSettings.SetCamera(camera, SetCameraOptions.PerformZRotation, null);
-                    changedFieldOfView = true;
-                }
-                else
-                {
-                    changedFieldOfView = false;
+                    layer.LayerCameraSettings.ApplyValuesToCamera(camera, SetCameraOptions.PerformZRotation, null);
+                    hasLayerModifiedCamera = true;
                 }
 
                 camera.SetDeviceViewAndProjection(mCurrentEffect, layer.RelativeToCamera);
@@ -172,9 +172,10 @@ namespace FlatRedBall.Graphics
                 // the visible property list considerably.  Let's leave it like this for now
                 // to establish a pattern then if the time comes to change this we'll be comfortable
                 // with the overriding field of view pattern so a better decision can be made.
-                if (changedFieldOfView)
+                if (hasLayerModifiedCamera)
                 {
-                    mOldCameraLayerSettings.SetCamera(camera, SetCameraOptions.ApplyMatrix, layer.LayerCameraSettings);
+                    mOldCameraLayerSettings.ApplyValuesToCamera(camera, SetCameraOptions.ApplyMatrix, layer.LayerCameraSettings);
+                    camera.Position = oldPosition;
                 }
                 if (section != null)
                 {
@@ -866,9 +867,7 @@ namespace FlatRedBall.Graphics
         static LayerCameraSettings mOldCameraLayerSettings = new LayerCameraSettings();
         private static void DrawLayers(Camera camera, RenderMode renderMode, Section section)
         {
-
-            bool changedFieldOfView = false;
-
+            
             //TimeManager.SumTimeSection("Set device settings");
 
 
@@ -882,7 +881,7 @@ namespace FlatRedBall.Graphics
                 {
                     Layer layer = SpriteManager.LayersWriteable[i];
 
-                    DrawIndividualLayer(camera, renderMode, changedFieldOfView, layer, section);
+                    DrawIndividualLayer(camera, renderMode, layer, section);
 
                 }
             }
@@ -897,7 +896,7 @@ namespace FlatRedBall.Graphics
                 for (int i = 0; i < layerCount; i++)
                 {
                     Layer layer = camera.Layers[i];
-                    DrawIndividualLayer(camera, renderMode, changedFieldOfView, layer, section);
+                    DrawIndividualLayer(camera, renderMode, layer, section);
                 }
             }
             #endregion
@@ -910,7 +909,7 @@ namespace FlatRedBall.Graphics
             {
                 Layer layer = SpriteManager.TopLayer;
 
-                DrawIndividualLayer(camera, renderMode, changedFieldOfView, layer, section);
+                DrawIndividualLayer(camera, renderMode, layer, section);
 
             }
             #endregion
@@ -1059,7 +1058,7 @@ namespace FlatRedBall.Graphics
             {
                 Layer layer = SpriteManager.UnderAllDrawnLayer;
                 
-                DrawIndividualLayer(camera, RenderMode.Default, false, layer, section);
+                DrawIndividualLayer(camera, RenderMode.Default, layer, section);
 
             }
 

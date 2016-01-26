@@ -62,6 +62,8 @@ namespace FlatRedBall.Graphics
         public float LeftDestination = -1;
         public float RightDestination = -1;
 
+        public PositionedObject OffsetParent { get; set; }
+
 
         Vector3 mOldUpVector;
 
@@ -71,11 +73,13 @@ namespace FlatRedBall.Graphics
         // bug in Camera rotation.
         // I'm not 100% certain what
         // the issue is, but setting the
-        // individual rotaiton values seems
+        // individual rotation values seems
         // to fix it.
         public float RotationX;
         public float RotationY;
         public float RotationZ;
+
+
 
         public LayerCameraSettings Clone()
         {
@@ -106,7 +110,7 @@ namespace FlatRedBall.Graphics
 
 
 
-        public void SetCamera(Camera camera, SetCameraOptions options, LayerCameraSettings lastToModify)
+        public void ApplyValuesToCamera(Camera camera, SetCameraOptions options, LayerCameraSettings lastToModify)
         {
 #if !FRB_MDX
             var viewport = camera.GetViewport(this);
@@ -189,6 +193,11 @@ namespace FlatRedBall.Graphics
                 camera.UpVector = camera.RotationMatrix.Up;
 #endif
 
+            }
+
+            if(this.OffsetParent != null)
+            {
+                camera.Position -= this.OffsetParent.Position;
             }
 
 
