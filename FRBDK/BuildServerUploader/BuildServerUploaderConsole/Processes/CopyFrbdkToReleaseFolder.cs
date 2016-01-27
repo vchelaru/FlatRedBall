@@ -1,0 +1,136 @@
+﻿using System.Collections.Generic;
+using System.IO;
+using FlatRedBall.IO;
+
+namespace BuildServerUploaderConsole.Processes
+{
+
+
+    public class CopyFrbdkToReleaseFolder : ProcessStep
+    {
+        #region Fields
+
+        private List<string> _excludedDirs;
+        private List<string> _excludeFiles;
+        private string _destDirectory;
+
+        List<string> mXna3_1Tools = new List<string>
+        {
+            @"PrebuiltTools\AIEditor",
+
+            @"PrebuiltTools\ParticleEditor",
+            @"PrebuiltTools\PolygonEditor",
+            @"PrebuiltTools\SpriteEditor",
+        };
+
+        List<string> mXna4_0Tools = new List<string>
+        {
+            // Any tool that uses Glue should come before Glue
+
+            @"Glue\Glue\bin\Debug",
+            @"NewProjectCreator\NewProjectCreator\bin\x86\Debug",
+            @"SplineEditor\SplineEditor\bin\x86\Debug",
+
+        };
+
+        // I'd like to have all the tools sit in their own directories, but
+        // this is a big change so I'm going to do it incrementally by moving
+        // them 
+        List<string> mXna4_0ToolsInOwnDirectories = new List<string>
+        {
+            @"AnimationEditorPlugin\PreviewProject\bin\Debug",
+            @"FlatRedBallProfiler\FlatRedBallProfiler\bin\Debug"
+
+
+        };
+
+
+        #endregion
+
+
+        public CopyFrbdkToReleaseFolder(IResults results)
+            : base(
+                @"Copy all FRBDK .exe files, EditorObjects.dll, and the engine to ReleaseFiles\FRBDK For Zip\ (Auto)", results)
+        {
+            
+            _excludedDirs = new List<string>();
+            _excludeFiles = new List<string>();
+
+            _excludedDirs.Add(@".svn\");
+            _excludeFiles.Add(@"Thumbs.db");
+        }
+
+        public override void ExecuteStep()
+        {
+            //Create Directory
+            var frbdkForZipDirectory = DirectoryHelper.ReleaseDirectory + @"FRBDK For Zip\";
+
+            frbdkForZipDirectory = FileManager.Standardize(frbdkForZipDirectory);
+            
+            DirectoryHelper.DeleteDirectory(frbdkForZipDirectory);
+
+            if (!Directory.Exists(frbdkForZipDirectory))
+                Directory.CreateDirectory(frbdkForZipDirectory);
+
+            _destDirectory = frbdkForZipDirectory;
+
+            string frbdkDirectory = 
+                FileManager.MakeAbsolute("../../../../../");
+
+            foreach (var xna3_1tool in mXna3_1Tools)
+            {
+                CopyDirectory(frbdkDirectory + xna3_1tool, "Copied " + xna3_1tool);
+            }
+
+            //XNA 4 TOOLS
+            string xna4ToolsDirectory = FileManager.Standardize(frbdkForZipDirectory + @"\Xna 4 Tools\");
+
+            if (!Directory.Exists(xna4ToolsDirectory))
+            {
+                Directory.CreateDirectory(xna4ToolsDirectory);
+            }
+
+            _destDirectory = xna4ToolsDirectory;
+
+            foreach (var xna4_0tool in mXna4_0ToolsInOwnDirectories)
+            {
+                string subdirectory = xna4_0tool.Substring(0, xna4_0tool.IndexOf("\\")) + "\\";
+
+                CopyDirectory(frbdkDirectory + xna4_0tool, "Copied " + xna4_0tool, subdirectory);
+            }
+
+            foreach (var xna4_0tool in mXna4_0Tools)
+            {
+                CopyDirectory(frbdkDirectory + xna4_0tool, "Copied " + xna4_0tool);
+            }
+
+            #region Copy genGfx, Assets and settings folders from each tool
+
+            FileManager.CopyDirectory(frbdkForZipDirectory + @"\Assets", frbdkForZipDirectory + @"\Xna 4 Tools\Assets", false, _excludeFiles, _excludedDirs);
+
+            Results.WriteMessage("Successfully copied Assets folder." + @" Copied to " + frbdkForZipDirectory + @"\Xna 4 Tools\Assets");
+
+            FileManager.CopyDirectory(frbdkForZipDirectory + "/Content", frbdkForZipDirectory + @"\Xna 4 Tools\Content", false, _excludeFiles, _excludedDirs);
+
+            Results.WriteMessage("Successfully copied Content folder." + @" Copied to " + frbdkForZipDirectory + @"\Xna 4 Tools\Content");
+
+            #endregion
+        }
+
+        private void CopyDirectory(string sourceDirectory, string successfulMessage, string subdirectoryName = null)
+        {
+            string destination = _destDirectory;
+
+            if (!string.IsNullOrEmpty(subdirectoryName))
+            {
+                destination += subdirectoryName;
+            }
+
+
+            FileManager.CopyDirectory(sourceDirectory,
+                destination, false, _excludeFiles, _excludedDirs);
+
+            Results.WriteMessage(successfulMessage + @" Copied from " + sourceDirectory + " to " + destination);
+        }
+    }
+}
