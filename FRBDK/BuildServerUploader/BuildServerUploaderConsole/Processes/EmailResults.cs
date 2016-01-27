@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BuildServerUploaderConsole.Processes
 {
-    public class EmailResults : IResults
+    public class EmailResults
     {
         private readonly StringBuilder _bldr = new StringBuilder();
 
