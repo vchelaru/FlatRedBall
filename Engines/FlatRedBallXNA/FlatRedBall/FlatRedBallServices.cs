@@ -736,7 +736,13 @@ namespace FlatRedBall
         public static void InitializeFlatRedBall(Game game, GraphicsDeviceManager graphics,
             GraphicsOptions graphicsOptions)
         {
-            PlatformServices.Initialize();
+
+            graphics.PreparingDeviceSettings += (object sender, PreparingDeviceSettingsEventArgs args) =>
+            {
+                args.GraphicsDeviceInformation.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
+            };
+
+        PlatformServices.Initialize();
 
 #if XNA4 || WINDOWS_8
             PreInitialization(game, graphics);
