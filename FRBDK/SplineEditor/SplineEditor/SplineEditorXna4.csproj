@@ -196,7 +196,7 @@
       <Project>{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}</Project>
       <Name>FlatRedBallXna4</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Gum\WpfDataUi\WpfDataUi.csproj">
+    <ProjectReference Include="..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj">
       <Project>{47241002-7eb5-433b-b931-a530bb6b84ee}</Project>
       <Name>WpfDataUi</Name>
     </ProjectReference>
