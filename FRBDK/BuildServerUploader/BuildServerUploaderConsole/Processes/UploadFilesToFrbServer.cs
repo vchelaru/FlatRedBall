@@ -19,23 +19,20 @@ namespace BuildServerUploaderConsole.Processes
 
     public class UploadFilesToFrbServer : ProcessStep
     {
+        string absolutePath = @"C:\FlatRedBallProjects\UploadInfo.txt";
 
         string cachedPassword = null;
         public string Password
         {
             get
             {
-
-
                 if (cachedPassword == null)
                 {
-                    var absolutePath = @"C:\FlatRedBallProjects\UploadInfo.txt";
                     var doesFileExist = System.IO.File.Exists(absolutePath);
 
                     if (doesFileExist)
                     {
-
-                        cachedPassword = System.IO.File.ReadAllText(absolutePath);
+                        ReadUsernameAndPassword();
                     }
                     else
                     {
@@ -45,6 +42,38 @@ namespace BuildServerUploaderConsole.Processes
 
                 return cachedPassword;
             }
+        }
+
+        string cachedUsername = null;
+        public string Username
+        {
+            get
+            {
+                if(cachedUsername == null)
+                {
+                    var doesFileExist = System.IO.File.Exists(absolutePath);
+
+                    if (doesFileExist)
+                    {
+                        ReadUsernameAndPassword();
+                    }
+                    else
+                    {
+                        throw new Exception($"Could not find the file {absolutePath}. This file is needed and should contain the password to the FRB server.");
+                    }
+                }
+
+                return cachedUsername;
+            }
+        }
+
+        private void ReadUsernameAndPassword()
+        {
+            string fileContents = System.IO.File.ReadAllText(absolutePath);
+            var split = fileContents.Split(' ');
+
+            cachedUsername = split[0];
+            cachedPassword = split[1];
         }
 
         private readonly DateTime _deleteBeforeDate;
@@ -99,8 +128,7 @@ namespace BuildServerUploaderConsole.Processes
 
         private bool FolderExists(string fileName)
         {
-            //var files = SftpManager.GetList(host + _backupFolder, "frbadmin", Password);
-            var files = SftpManager.GetList(host, _backupFolder, "frbadmin", Password);
+            var files = SftpManager.GetList(host, _backupFolder, Username, Password);
 
             return files.Any(fileStruct => "sftp://flatredball.com/" + _backupFolder + fileStruct.Name == fileName);
         }
@@ -108,7 +136,7 @@ namespace BuildServerUploaderConsole.Processes
         private void CleanUpBackups()
         {
             //Get files in folder
-            var files = SftpManager.GetList(host, _backupFolder, "frbadmin", Password);
+            var files = SftpManager.GetList(host, _backupFolder, Username, Password);
 
             //Filename structure
             var exp = new Regex(@"^build_\d\d\d\d_\d\d_\d\d_\d\d$");
@@ -147,7 +175,7 @@ namespace BuildServerUploaderConsole.Processes
         private void DeleteDirectory(string relativeDirectory)
         {
             //Get files
-            var files = SftpManager.GetList(host, relativeDirectory, "frbadmin", Password);
+            var files = SftpManager.GetList(host, relativeDirectory, Username, Password);
 
             //Loop through files
             foreach (var fileStruct in files)
@@ -159,11 +187,11 @@ namespace BuildServerUploaderConsole.Processes
                 }
                 else
                 {
-                    SftpManager.DeleteRemoteFile(host, fileStruct.Name, "frbadmin", Password);
+                    SftpManager.DeleteRemoteFile(host, fileStruct.Name, Username, Password);
                 }
             }
 
-            SftpManager.DeleteRemoteDirectory(host, relativeDirectory, "frbadmin", Password);
+            SftpManager.DeleteRemoteDirectory(host, relativeDirectory, Username, Password);
         }
 
         public override void ExecuteStep()
@@ -196,7 +224,7 @@ namespace BuildServerUploaderConsole.Processes
 
         //    //Daily Builds
         //    var files =
-        //        SftpManager.GetList(host, "flatredball.com/content/FrbXnaTemplates/DailyBackups/", "frbadmin", Password);
+        //        SftpManager.GetList(host, "flatredball.com/content/FrbXnaTemplates/DailyBackups/", Username, Password);
         //    var folderNames = (from fileStruct in files where fileStruct.IsDirectory && exp.IsMatch(fileStruct.Name) select fileStruct.Name).ToList();
         //    folderNames.Reverse();
         //    foreach (var folderName in folderNames)
@@ -217,7 +245,7 @@ namespace BuildServerUploaderConsole.Processes
         //    }
 
         //    //Weekly Builds
-        //    files = SftpManager.GetList(host, "flatredball.com/content/FrbXnaTemplates/WeeklyBackups/", "frbadmin", Password);
+        //    files = SftpManager.GetList(host, "flatredball.com/content/FrbXnaTemplates/WeeklyBackups/", Username, Password);
         //    folderNames = (from fileStruct in files where fileStruct.IsDirectory && exp.IsMatch(fileStruct.Name) select fileStruct.Name).ToList();
         //    folderNames.Reverse();
         //    foreach (var folderName in folderNames)
@@ -239,7 +267,7 @@ namespace BuildServerUploaderConsole.Processes
 
         //    //Monthly Builds
         //    files = SftpManager.GetList(
-        //        host, "flatredball.com/content/FrbXnaTemplates/MonthlyBackups/", "frbadmin", Password);
+        //        host, "flatredball.com/content/FrbXnaTemplates/MonthlyBackups/", Username, Password);
         //    folderNames = (from fileStruct in files where fileStruct.IsDirectory && exp.IsMatch(fileStruct.Name) select fileStruct.Name).ToList();
         //    folderNames.Reverse();
         //    foreach (var folderName in folderNames)
@@ -261,7 +289,7 @@ namespace BuildServerUploaderConsole.Processes
 
         //    sw.Close();
 
-        //    SftpManager.UploadFile(localPath, host, _backupFile, "frbadmin", Password);
+        //    SftpManager.UploadFile(localPath, host, _backupFile, Username, Password);
         //}
 
         private void UploadFrbdkFiles()
@@ -271,7 +299,7 @@ namespace BuildServerUploaderConsole.Processes
             string fileName = _ftpFolder + FileManager.RemovePath(localFile);
 
             SftpManager.UploadFile(
-                localFile, host, fileName, "frbadmin", Password);
+                localFile, host, fileName, Username, Password);
 
             Results.WriteMessage(localFile + " uploaded to " + fileName);
 
@@ -282,7 +310,7 @@ namespace BuildServerUploaderConsole.Processes
         {
             List<CopyInformation> engineFiles = CopyBuiltEnginesToReleaseFolder.CopyInformationList;
 
-            using (var client = SftpManager.GetClient(host, "frbadmin", Password))
+            using (var client = SftpManager.GetClient(host, Username, Password))
             {
                 client.Connect();
                 for (int i = 0; i < engineFiles.Count; i++)
@@ -316,7 +344,7 @@ namespace BuildServerUploaderConsole.Processes
         {
             string templateDirectory = DirectoryHelper.ReleaseDirectory + @"ZippedTemplates/";
 
-            using (var client = SftpManager.GetClient(host, "frbadmin", Password))
+            using (var client = SftpManager.GetClient(host, Username, Password))
             {
                 client.Connect();
 
