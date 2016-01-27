@@ -19,10 +19,10 @@ namespace BuildServerUploaderConsole.Processes
 
     public class UploadFilesToFrbServer : ProcessStep
     {
-        string absolutePath = @"C:\FlatRedBallProjects\UploadInfo.txt";
+        static string absolutePath = @"C:\FlatRedBallProjects\UploadInfo.txt";
 
-        string cachedPassword = null;
-        public string Password
+        static string cachedPassword = null;
+        public static string Password
         {
             get
             {
@@ -44,8 +44,8 @@ namespace BuildServerUploaderConsole.Processes
             }
         }
 
-        string cachedUsername = null;
-        public string Username
+        static string cachedUsername = null;
+        public static string Username
         {
             get
             {
@@ -67,7 +67,7 @@ namespace BuildServerUploaderConsole.Processes
             }
         }
 
-        private void ReadUsernameAndPassword()
+        private static void ReadUsernameAndPassword()
         {
             string fileContents = System.IO.File.ReadAllText(absolutePath);
             var split = fileContents.Split(' ');
@@ -83,9 +83,9 @@ namespace BuildServerUploaderConsole.Processes
                 "files.flatredball.com/content/FrbXnaTemplates/";
         private readonly string _ftpCopyToFolder = null;
         //private const string host = "sftp://flatredball.com/";
-        private const string host = "flatredball.com";
+        private const string host = "files.flatredball.com";
         private const string _backupFile =
-            "flatredball.com/content/FrbXnaTemplates/BackupFolders.txt";
+            "files.flatredball.com/content/FrbXnaTemplates/BackupFolders.txt";
 
         public UploadFilesToFrbServer(IResults results, UploadType uploadType)
             : base(
@@ -111,7 +111,7 @@ namespace BuildServerUploaderConsole.Processes
                     _deleteBeforeDate = DateTime.Now.AddDays(-7);
                     _ftpFolder += "DailyBackups/";
                     _backupFolder += "DailyBackups/";
-                    _ftpCopyToFolder = "flatredball.com/content/FrbXnaTemplates/DailyBuild/";
+                    _ftpCopyToFolder = "files.flatredball.com/content/FrbXnaTemplates/DailyBuild/";
                     break;
             }
 
@@ -212,85 +212,85 @@ namespace BuildServerUploaderConsole.Processes
             //BuildBackupFile();
         }
 
-        //private void BuildBackupFile()
-        //{
-        //    string localPath = Path.GetTempPath() + @"\BackupFolders.txt";
+        public static void BuildBackupFile()
+        {
+            string localPath = Path.GetTempPath() + @"\BackupFolders.txt";
 
-        //    StreamWriter sw;
-        //    sw = File.CreateText(localPath);
+            StreamWriter sw;
+            sw = File.CreateText(localPath);
 
         //    //Filename structure
-        //    var exp = new Regex(@"^build_\d\d\d\d_\d\d_\d\d_\d\d$");
+            var exp = new Regex(@"^build_\d\d\d\d_\d\d_\d\d_\d\d$");
 
         //    //Daily Builds
-        //    var files =
-        //        SftpManager.GetList(host, "flatredball.com/content/FrbXnaTemplates/DailyBackups/", Username, Password);
-        //    var folderNames = (from fileStruct in files where fileStruct.IsDirectory && exp.IsMatch(fileStruct.Name) select fileStruct.Name).ToList();
-        //    folderNames.Reverse();
-        //    foreach (var folderName in folderNames)
-        //    {
-        //        //Get year
-        //        var year = int.Parse(folderName.Substring(6, 4));
+            var files =
+                SftpManager.GetList(host, "files.flatredball.com/content/FrbXnaTemplates/DailyBackups/", Username, Password);
+            var folderNames = (from fileStruct in files where fileStruct.IsDirectory && exp.IsMatch(fileStruct.Name) select fileStruct.Name).ToList();
+            folderNames.Reverse();
+            foreach (var folderName in folderNames)
+            {
+                //Get year
+                var year = int.Parse(folderName.Substring(6, 4));
 
-        //        //Get month
-        //        var month = int.Parse(folderName.Substring(11, 2));
+                //Get month
+                var month = int.Parse(folderName.Substring(11, 2));
 
-        //        //Get day
-        //        var day = int.Parse(folderName.Substring(14, 2));
+                //Get day
+                var day = int.Parse(folderName.Substring(14, 2));
 
-        //        //Get version
-        //        var version = int.Parse(folderName.Substring(17, 2));
+                //Get version
+                var version = int.Parse(folderName.Substring(17, 2));
 
-        //        sw.WriteLine("Daily Build - " + month + @"/" + day + @"/" + year + " " + version + ",DailyBackups/" + folderName + "/");
-        //    }
+                sw.WriteLine("Daily Build - " + month + @"/" + day + @"/" + year + " " + version + ",DailyBackups/" + folderName + "/");
+            }
 
-        //    //Weekly Builds
-        //    files = SftpManager.GetList(host, "flatredball.com/content/FrbXnaTemplates/WeeklyBackups/", Username, Password);
-        //    folderNames = (from fileStruct in files where fileStruct.IsDirectory && exp.IsMatch(fileStruct.Name) select fileStruct.Name).ToList();
-        //    folderNames.Reverse();
-        //    foreach (var folderName in folderNames)
-        //    {
-        //        //Get year
-        //        var year = int.Parse(folderName.Substring(6, 4));
+            //Weekly Builds
+            files = SftpManager.GetList(host, "files.flatredball.com/content/FrbXnaTemplates/WeeklyBackups/", Username, Password);
+            folderNames = (from fileStruct in files where fileStruct.IsDirectory && exp.IsMatch(fileStruct.Name) select fileStruct.Name).ToList();
+            folderNames.Reverse();
+            foreach (var folderName in folderNames)
+            {
+                //Get year
+                var year = int.Parse(folderName.Substring(6, 4));
 
-        //        //Get month
-        //        var month = int.Parse(folderName.Substring(11, 2));
+                //Get month
+                var month = int.Parse(folderName.Substring(11, 2));
 
-        //        //Get day
-        //        var day = int.Parse(folderName.Substring(14, 2));
+                //Get day
+                var day = int.Parse(folderName.Substring(14, 2));
 
-        //        //Get version
-        //        var version = int.Parse(folderName.Substring(17, 2));
+                //Get version
+                var version = int.Parse(folderName.Substring(17, 2));
 
-        //        sw.WriteLine("Weekly Build - " + month + @"/" + day + @"/" + year + " " + version + ",WeeklyBackups/" + folderName + "/");
-        //    }
+                sw.WriteLine("Weekly Build - " + month + @"/" + day + @"/" + year + " " + version + ",WeeklyBackups/" + folderName + "/");
+            }
 
-        //    //Monthly Builds
-        //    files = SftpManager.GetList(
-        //        host, "flatredball.com/content/FrbXnaTemplates/MonthlyBackups/", Username, Password);
-        //    folderNames = (from fileStruct in files where fileStruct.IsDirectory && exp.IsMatch(fileStruct.Name) select fileStruct.Name).ToList();
-        //    folderNames.Reverse();
-        //    foreach (var folderName in folderNames)
-        //    {
-        //        //Get year
-        //        var year = int.Parse(folderName.Substring(6, 4));
+            //Monthly Builds
+            files = SftpManager.GetList(
+                host, "files.flatredball.com/content/FrbXnaTemplates/MonthlyBackups/", Username, Password);
+            folderNames = (from fileStruct in files where fileStruct.IsDirectory && exp.IsMatch(fileStruct.Name) select fileStruct.Name).ToList();
+            folderNames.Reverse();
+            foreach (var folderName in folderNames)
+            {
+                //Get year
+                var year = int.Parse(folderName.Substring(6, 4));
 
-        //        //Get month
-        //        var month = int.Parse(folderName.Substring(11, 2));
+                //Get month
+                var month = int.Parse(folderName.Substring(11, 2));
 
-        //        //Get day
-        //        var day = int.Parse(folderName.Substring(14, 2));
+                //Get day
+                var day = int.Parse(folderName.Substring(14, 2));
 
-        //        //Get version
-        //        var version = int.Parse(folderName.Substring(17, 2));
+                //Get version
+                var version = int.Parse(folderName.Substring(17, 2));
 
-        //        sw.WriteLine("Monthly Build - " + month + @"/" + day + @"/" + year + " " + version + ",MonthlyBackups/" + folderName + "/");
-        //    }
+                sw.WriteLine("Monthly Build - " + month + @"/" + day + @"/" + year + " " + version + ",MonthlyBackups/" + folderName + "/");
+            }
 
-        //    sw.Close();
+            sw.Close();
 
-        //    SftpManager.UploadFile(localPath, host, _backupFile, Username, Password);
-        //}
+            //SftpManager.UploadFile(localPath, host, _backupFile, Username, Password);
+        }
 
         private void UploadFrbdkFiles()
         {

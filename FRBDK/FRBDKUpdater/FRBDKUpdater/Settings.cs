@@ -14,8 +14,8 @@ namespace FRBDKUpdater
 
         #region Constants
 
-        private const string DailyBuildRemoteUri = "http://www.flatredball.com/content/FrbXnaTemplates/DailyBuild/";
-        private const string StartRemoteUri = "http://www.flatredball.com/content/FrbXnaTemplates/";
+        private const string DailyBuildRemoteUri = "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/";
+        private const string StartRemoteUri = "http://files.flatredball.com/content/FrbXnaTemplates/";
 
         private const string FrbdkFileName = "FRBDK.zip";
 

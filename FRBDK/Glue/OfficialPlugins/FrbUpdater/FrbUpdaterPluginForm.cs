@@ -42,7 +42,7 @@ namespace OfficialPlugins.FrbUpdater
 
         private void AddMonth(DateTime date)
         {
-            const string path = "http://www.flatredball.com/content/FrbXnaTemplates/";
+            const string path = "http://files.flatredball.com/content/FrbXnaTemplates/";
 
             try
             {

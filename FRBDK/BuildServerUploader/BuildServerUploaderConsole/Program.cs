@@ -23,6 +23,10 @@ namespace BuildServerUploaderConsole
 
         static void Main(string[] args)
         {
+
+            // debug:
+            UploadFilesToFrbServer.BuildBackupFile();
+
             // We used to send emails on an error
             // but now the build server does this automatically
             // so we don't have to.

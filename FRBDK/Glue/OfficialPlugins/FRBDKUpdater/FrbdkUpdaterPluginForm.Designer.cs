@@ -33,7 +33,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.fbdFRBDK = new System.Windows.Forms.FolderBrowserDialog();
             this.btnSelectDirectory = new System.Windows.Forms.Button();
-            this.cbSyncTo = new System.Windows.Forms.ComboBox();
             this.btnUpdater = new System.Windows.Forms.Button();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnReset = new System.Windows.Forms.Button();
@@ -42,10 +41,9 @@
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
             this.flowLayoutPanel4 = new System.Windows.Forms.FlowLayoutPanel();
             this.cbForceDownload = new System.Windows.Forms.CheckBox();
-            this.ttMain = new System.Windows.Forms.ToolTip(this.components);
             this.ExtractUpdaterCheckBox = new System.Windows.Forms.CheckBox();
+            this.ttMain = new System.Windows.Forms.ToolTip(this.components);
             this.flowLayoutPanel1.SuspendLayout();
-            this.flowLayoutPanel2.SuspendLayout();
             this.flowLayoutPanel3.SuspendLayout();
             this.flowLayoutPanel4.SuspendLayout();
             this.SuspendLayout();
@@ -82,15 +80,6 @@
             this.ttMain.SetToolTip(this.btnSelectDirectory, "Open dialog to select directory.");
             this.btnSelectDirectory.UseVisualStyleBackColor = true;
             this.btnSelectDirectory.Click += new System.EventHandler(this.BtnSelectDirectoryClick);
-            // 
-            // cbSyncTo
-            // 
-            this.cbSyncTo.FormattingEnabled = true;
-            this.cbSyncTo.Location = new System.Drawing.Point(3, 3);
-            this.cbSyncTo.Name = "cbSyncTo";
-            this.cbSyncTo.Size = new System.Drawing.Size(354, 21);
-            this.cbSyncTo.TabIndex = 3;
-            this.ttMain.SetToolTip(this.cbSyncTo, "Which FRBDK version to update to.");
             // 
             // btnUpdater
             // 
@@ -131,17 +120,15 @@
             // 
             this.flowLayoutPanel2.AutoSize = true;
             this.flowLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.flowLayoutPanel2.Controls.Add(this.cbSyncTo);
-            this.flowLayoutPanel2.Controls.Add(this.btnUpdater);
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 35);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(450, 3);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(441, 29);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(0, 0);
             this.flowLayoutPanel2.TabIndex = 8;
             // 
             // cbCleanFolder
             // 
             this.cbCleanFolder.AutoSize = true;
-            this.cbCleanFolder.Location = new System.Drawing.Point(243, 6);
+            this.cbCleanFolder.Location = new System.Drawing.Point(162, 6);
             this.cbCleanFolder.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.cbCleanFolder.Name = "cbCleanFolder";
             this.cbCleanFolder.Size = new System.Drawing.Size(85, 17);
@@ -155,22 +142,23 @@
             this.flowLayoutPanel3.AutoSize = true;
             this.flowLayoutPanel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.flowLayoutPanel3.Controls.Add(this.flowLayoutPanel1);
-            this.flowLayoutPanel3.Controls.Add(this.flowLayoutPanel2);
             this.flowLayoutPanel3.Controls.Add(this.flowLayoutPanel4);
+            this.flowLayoutPanel3.Controls.Add(this.flowLayoutPanel2);
             this.flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel3.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel3.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel3.Name = "flowLayoutPanel3";
-            this.flowLayoutPanel3.Size = new System.Drawing.Size(450, 103);
+            this.flowLayoutPanel3.Size = new System.Drawing.Size(450, 68);
             this.flowLayoutPanel3.TabIndex = 9;
             // 
             // flowLayoutPanel4
             // 
+            this.flowLayoutPanel4.Controls.Add(this.btnUpdater);
             this.flowLayoutPanel4.Controls.Add(this.cbForceDownload);
             this.flowLayoutPanel4.Controls.Add(this.cbCleanFolder);
             this.flowLayoutPanel4.Controls.Add(this.ExtractUpdaterCheckBox);
             this.flowLayoutPanel4.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel4.Location = new System.Drawing.Point(3, 70);
+            this.flowLayoutPanel4.Location = new System.Drawing.Point(3, 35);
             this.flowLayoutPanel4.Name = "flowLayoutPanel4";
             this.flowLayoutPanel4.Size = new System.Drawing.Size(441, 28);
             this.flowLayoutPanel4.TabIndex = 9;
@@ -180,7 +168,7 @@
             this.cbForceDownload.AutoSize = true;
             this.cbForceDownload.Checked = true;
             this.cbForceDownload.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbForceDownload.Location = new System.Drawing.Point(334, 6);
+            this.cbForceDownload.Location = new System.Drawing.Point(253, 6);
             this.cbForceDownload.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.cbForceDownload.Name = "cbForceDownload";
             this.cbForceDownload.Size = new System.Drawing.Size(104, 17);
@@ -194,7 +182,7 @@
             this.ExtractUpdaterCheckBox.AutoSize = true;
             this.ExtractUpdaterCheckBox.Checked = true;
             this.ExtractUpdaterCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ExtractUpdaterCheckBox.Location = new System.Drawing.Point(89, 6);
+            this.ExtractUpdaterCheckBox.Location = new System.Drawing.Point(8, 6);
             this.ExtractUpdaterCheckBox.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.ExtractUpdaterCheckBox.Name = "ExtractUpdaterCheckBox";
             this.ExtractUpdaterCheckBox.Size = new System.Drawing.Size(148, 17);
@@ -209,7 +197,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(450, 103);
+            this.ClientSize = new System.Drawing.Size(450, 68);
             this.Controls.Add(this.flowLayoutPanel3);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -222,7 +210,6 @@
             this.Load += new System.EventHandler(this.SyncFormLoad);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
-            this.flowLayoutPanel2.ResumeLayout(false);
             this.flowLayoutPanel3.ResumeLayout(false);
             this.flowLayoutPanel3.PerformLayout();
             this.flowLayoutPanel4.ResumeLayout(false);
@@ -238,7 +225,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.FolderBrowserDialog fbdFRBDK;
         private System.Windows.Forms.Button btnSelectDirectory;
-        private System.Windows.Forms.ComboBox cbSyncTo;
         private System.Windows.Forms.Button btnUpdater;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;

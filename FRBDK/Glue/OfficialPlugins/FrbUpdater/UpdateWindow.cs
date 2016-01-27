@@ -30,8 +30,8 @@ namespace OfficialPlugins.FrbUpdater
 
         private FrbUpdaterSettings _settings;
 
-        private const string DailyBuildRemoteUri = "http://www.flatredball.com/content/FrbXnaTemplates/DailyBuild/SingleDlls/";
-        private const string StartRemoteUri = "http://www.flatredball.com/content/FrbXnaTemplates/";
+        private const string DailyBuildRemoteUri = "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/SingleDlls/";
+        private const string StartRemoteUri = "http://files.flatredball.com/content/FrbXnaTemplates/";
 
         private const string LibraryFolder = "Libraries";
 
@@ -125,7 +125,7 @@ namespace OfficialPlugins.FrbUpdater
 
         private bool IsMonthValid(DateTime date)
         {
-            const string path = "http://www.flatredball.com/content/FrbXnaTemplates/";
+            const string path = "http://files.flatredball.com/content/FrbXnaTemplates/";
 
             try
             {

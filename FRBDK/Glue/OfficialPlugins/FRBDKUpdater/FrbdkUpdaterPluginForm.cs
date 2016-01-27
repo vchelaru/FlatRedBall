@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Windows.Forms;
 using FlatRedBall.IO;
+using FlatRedBall.Glue.Plugins;
 
 namespace OfficialPlugins.FrbdkUpdater
 {
@@ -51,18 +52,6 @@ namespace OfficialPlugins.FrbdkUpdater
                 return;
             }
 
-            var inList = false;
-            foreach (var item in cbSyncTo.Items.Cast<Item>().Where(item => cbSyncTo.Text == item.Name))
-            {
-                inList = true;
-            }
-
-            if(!inList)
-            {
-                MessageBox.Show(@"Must pick source to sync to.");
-                return;
-            }
-
             if (cbCleanFolder.Checked && MessageBox.Show(
                     @"Are you sure you want to clear the contents of this folder and put the selected FRBDK into it?",
                     @"Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning) != DialogResult.Yes) return;
@@ -83,6 +72,21 @@ namespace OfficialPlugins.FrbdkUpdater
             if(!succeeded)
             {
                 return;
+            }
+
+            // see if the app exists locally where it might be checked out from github:
+            var myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            var builtLocation = myDocuments + @"\FlatRedBall\FRBDK\FRBDKUpdater\FRBDKUpdater\bin\Debug\FRBDKUpdater.exe";
+
+            if(System.IO.File.Exists(builtLocation))
+            {
+                var exePath = builtLocation;
+                var parameters = "\"" + FrbdkUpdaterSettings.DefaultSaveLocation + "\"";
+
+                var process = System.Diagnostics.Process.Start(exePath, parameters);
+
+                _plugin.GlueCommands.CloseGlue();
+
             }
 
             if (File.Exists(destinationPath + @"FRBDKUpdater.exe"))
@@ -155,7 +159,7 @@ or
         {
 
             _settings.SelectedDirectory = tbPath.Text;
-            _settings.SelectedSource = (cbSyncTo.SelectedItem as Item).Value;
+            _settings.SelectedSource = @"DailyBuild\";
             _settings.CleanFolder = cbCleanFolder.Checked;
             _settings.ForceDownload = cbForceDownload.Checked;
             _settings.GlueRunPath = Application.ExecutablePath;
@@ -165,20 +169,11 @@ or
 
         private void SyncFormLoad(object sender, EventArgs e)
         {
-            BuildMenu();
             _settings = FrbdkUpdaterSettings.LoadSettings();
 
             if (!string.IsNullOrEmpty(_settings.SelectedDirectory))
             {
                 tbPath.Text = _settings.SelectedDirectory;
-            }
-            foreach (Item item in cbSyncTo.Items)
-            {
-                if(item.Value == _settings.SelectedSource)
-                {
-                    cbSyncTo.SelectedItem = item;
-                    break;
-                }
             }
 
             cbCleanFolder.Checked = _settings.CleanFolder;
@@ -197,34 +192,6 @@ or
             {
                 // Generates the text shown in the combo box
                 return Name;
-            }
-        }
-
-        private void BuildMenu()
-        {
-            cbSyncTo.Items.Clear();
-
-            try
-            {
-                var wc = new WebClient();
-                string path = Path.GetTempPath() + @"\BackupFolders.txt";
-                wc.DownloadFile("http://www.flatredball.com/content/FrbXnaTemplates/BackupFolders.txt", path);
-
-                var file = new StreamReader(path);
-                string line;
-                while ((line = file.ReadLine()) != null)
-                {
-                    var split = line.Split(Convert.ToChar(","));
-                    cbSyncTo.Items.Add(new Item(split[0], split[1]));
-
-                    if (cbSyncTo.Items.Count == 1)
-                    {
-                        cbSyncTo.SelectedIndex = 0;
-                    }
-                }
-            }
-            catch (Exception)
-            {
             }
         }
 
