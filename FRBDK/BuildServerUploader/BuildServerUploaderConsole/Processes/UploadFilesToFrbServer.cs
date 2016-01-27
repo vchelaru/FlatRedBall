@@ -78,9 +78,9 @@ namespace BuildServerUploaderConsole.Processes
 
         private readonly DateTime _deleteBeforeDate;
         private string _ftpFolder =
-                "flatredball.com/content/FrbXnaTemplates/";
+                "files.flatredball.com/content/FrbXnaTemplates/";
         private readonly string _backupFolder =
-                "flatredball.com/content/FrbXnaTemplates/";
+                "files.flatredball.com/content/FrbXnaTemplates/";
         private readonly string _ftpCopyToFolder = null;
         //private const string host = "sftp://flatredball.com/";
         private const string host = "flatredball.com";
@@ -130,7 +130,7 @@ namespace BuildServerUploaderConsole.Processes
         {
             var files = SftpManager.GetList(host, _backupFolder, Username, Password);
 
-            return files.Any(fileStruct => "sftp://flatredball.com/" + _backupFolder + fileStruct.Name == fileName);
+            return files.Any(fileStruct => "sftp://files.flatredball.com/" + _backupFolder + fileStruct.Name == fileName);
         }
 
         private void CleanUpBackups()
