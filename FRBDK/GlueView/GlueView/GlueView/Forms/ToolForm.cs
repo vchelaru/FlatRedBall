@@ -31,7 +31,7 @@ namespace GlueView
         private void managePluginsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PluginsWindow pluginsWindow = new PluginsWindow();
-            pluginsWindow.Show(this);
+            pluginsWindow.Show();
         }
 
         private void viewPluginCompileErrorsToolStripMenuItem_Click(object sender, EventArgs e)
