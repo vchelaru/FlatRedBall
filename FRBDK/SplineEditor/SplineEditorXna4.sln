@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBall.PropertyGrid", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorObjectsXna4", "..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj", "{E1D670B6-AD42-4B84-AFF8-D568097BE03D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDataUi", "..\..\Gum\WpfDataUi\WpfDataUi.csproj", "{47241002-7EB5-433B-B931-A530BB6B84EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDataUi", "..\..\..\Gum\WpfDataUi\WpfDataUi.csproj", "{47241002-7EB5-433B-B931-A530BB6B84EE}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
