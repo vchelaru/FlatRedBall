@@ -248,6 +248,9 @@
     <None Include="Resources\base_checkmark_32.png" />
     <None Include="Resources\Repair.png" />
     <None Include="Resources\Setup_Install.ico" />
+    <EmbeddedResource Include="..\..\Glue\Glue\bin\Debug\Plugins\FRBDKUpdater\FlatRedBall.Tools.dll">
+      <Link>Executables\FlatRedBall.Tools.dll</Link>
+    </EmbeddedResource>
     <Content Include="Setup_Install.ico" />
   </ItemGroup>
   <ItemGroup>

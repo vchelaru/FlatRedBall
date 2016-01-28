@@ -58,6 +58,7 @@ namespace MasterInstaller.Components.InstallableComponents.FRBDK
             List<string> dependencies = new List<string>();
             dependencies.Add("FlatRedBall.dll");
             dependencies.Add("Ionic.Zip.dll");
+            dependencies.Add("FlatRedBall.Tools.dll");
 
             switch (ComponentStorage.GetValue<SetupTypeComponent.SetupType>(SetupTypeComponent.SetupTypeName))
             {

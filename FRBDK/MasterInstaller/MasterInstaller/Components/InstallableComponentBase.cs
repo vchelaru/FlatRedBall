@@ -95,19 +95,35 @@ namespace MasterInstaller.Components
         {
             try
             {
-                Process process;
-                if(args == null || args.Length == 0)
-                {
-                    process = Process.Start(saveAsName);
-                }else{
-                    process = Process.Start(saveAsName, Program.ConvertToArgString(args));
-                }
+                Process process = new Process();
 
+                string argsString = null;
+                if (args != null && args.Length > 0)
+                {
+                    argsString = Program.ConvertToArgString(args);
+                }
+                process.StartInfo.Arguments = argsString;
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.FileName = saveAsName;
+                process.StartInfo.RedirectStandardError = true;
+                process.StartInfo.RedirectStandardInput = true;
+                process.StartInfo.RedirectStandardOutput = true;
+
+                process.Start();
+                
                 while (!process.HasExited)
                 {
 
                     System.Threading.Thread.Sleep(10);
                     Application.DoEvents();
+                }
+
+                string errorString;
+
+                if (process.ExitCode != 0)
+                {
+                    errorString = process.StandardError.ReadToEnd() + 
+                        "\n\n" + process.StandardOutput.ReadToEnd();
                 }
 
                 return process.ExitCode;
