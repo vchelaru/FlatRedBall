@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TileGraphicsPlugin</RootNamespace>
-    <AssemblyName>TileGraphicsPlugin</AssemblyName>
+    <AssemblyName>TiledPlugin</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -82,6 +82,36 @@
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\LayeredTileMapAnimation.cs">
       <Link>LayeredTileMapAnimation.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TiledMapSave.Conversion.cs">
+      <Link>EmbeddedCodeFiles\TiledMapSave.Conversion.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TiledMapSave.Serialization.cs">
+      <Link>EmbeddedCodeFiles\TiledMapSave.Serialization.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TileAnimation.cs">
+      <Link>EmbeddedCodeFiles\TileAnimation.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\MapLayer.cs">
+      <Link>EmbeddedCodeFiles\MapLayer.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\MapTileset.cs">
+      <Link>EmbeddedCodeFiles\MapTileset.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\MapTilesetTile.cs">
+      <Link>EmbeddedCodeFiles\MapTilesetTile.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\ExternalTileset.cs">
+      <Link>EmbeddedCodeFiles\ExternalTileset.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TiledMapToShapeCollectionConverter.cs">
+      <Link>EmbeddedCodeFiles\TiledMapToShapeCollectionConverter.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TilesetExtensionMethods.cs">
+      <Link>EmbeddedCodeFiles\TilesetExtensionMethods.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\DataTypes\ReducedTileMapInfo.TiledMapSave.cs">
+      <Link>EmbeddedCodeFiles\ReducedTileMapInfo.TiledMapSave.cs</Link>
     </EmbeddedResource>
     <Compile Include="Behaviors\InputBindingsManager.cs" />
     <Compile Include="Managers\BuildToolSaver.cs" />
@@ -207,19 +237,19 @@
   <PropertyGroup>
     <PostBuildEvent>echo PostBuild
 
-IF NOT EXIST %25AppData%25\FRBDK\Plugins\TileGraphics\ MD %25AppData%25\FRBDK\Plugins\TileGraphics\
+IF NOT EXIST %25AppData%25\FRBDK\Plugins\TiledPlugin\ MD %25AppData%25\FRBDK\Plugins\TiledPlugin\
 
 echo 1
-copy $(TargetDir)\TileGraphicsPlugin.dll %25AppData%25\FRBDK\Plugins\TileGraphics\TileGraphicsPlugin.dll
+copy $(TargetDir)\TiledPlugin.dll %25AppData%25\FRBDK\Plugins\TiledPlugin\TiledPlugin.dll
 
 echo 2
-copy $(TargetDir)\TileGraphicsPlugin.pdb %25AppData%25\FRBDK\Plugins\TileGraphics\TileGraphicsPlugin.pdb
+copy $(TargetDir)\TiledPlugin.pdb %25AppData%25\FRBDK\Plugins\TiledPlugin\TiledPlugin.pdb
 
 echo 3
-copy $(TargetDir)\TmxEditor.exe %25AppData%25\FRBDK\Plugins\TileGraphics\TmxEditor.exe
+copy $(TargetDir)\TmxEditor.exe %25AppData%25\FRBDK\Plugins\TiledPlugin\TmxEditor.exe
 
 echo 4
-copy $(TargetDir)\TmxGlueLib.dll %25AppData%25\FRBDK\Plugins\TileGraphics\TmxGlueLib.dll</PostBuildEvent>
+copy $(TargetDir)\TmxGlueLib.dll %25AppData%25\FRBDK\Plugins\TiledPlugin\TmxGlueLib.dll</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>echo BeforeBuild

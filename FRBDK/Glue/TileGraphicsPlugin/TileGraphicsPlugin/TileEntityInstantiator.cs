@@ -12,14 +12,7 @@ namespace FlatRedBall.TileEntities
 {
     public static class TileEntityInstantiator
     {
-        public static void CreateEntitiesFrom(LayeredTileMap layeredTileMap, Dictionary<string, TileMapInfo> tileMapInfos)
-        {
-            IEnumerable<TileMapInfo> tileMapInfoEnumerable = tileMapInfos.Values;
-
-            CreateEntitiesFrom(layeredTileMap, tileMapInfoEnumerable);
-        }
-
-        public static void CreateEntitiesFrom(LayeredTileMap layeredTileMap, IEnumerable<TileMapInfo> tileMapInfos)
+        public static void CreateEntitiesFrom(LayeredTileMap layeredTileMap)
         {
             // prob need to clear out the tileShapeCollection
             var entitiesToRemove = new List<string>();
@@ -27,25 +20,32 @@ namespace FlatRedBall.TileEntities
             foreach (var layer in layeredTileMap.MapLayers)
             {
 
-                CreateEntitiesFrom(entitiesToRemove, layer, tileMapInfos);
+                CreateEntitiesFrom(entitiesToRemove, layer, layeredTileMap.Properties);
             }
             foreach (var entityToRemove in entitiesToRemove)
             {
                 string remove = entityToRemove;
-                layeredTileMap.RemoveTiles(t => t.EntityToCreate == remove, tileMapInfos);
+                layeredTileMap.RemoveTiles(t => t.Any(item => item.Name == "EntityToCreate" && item.Value as string == remove), layeredTileMap.Properties);
             }
         }
 
-        private static void CreateEntitiesFrom(List<string> entitiesToRemove, MapDrawableBatch layer, IEnumerable<TileMapInfo> tileMapInfos)
+        private static void CreateEntitiesFrom(List<string> entitiesToRemove, MapDrawableBatch layer, Dictionary<string, List<NamedValue>> properties)
         {
             float dimension = float.NaN;
             float dimensionHalf = 0;
 
+            var flatRedBallLayer = SpriteManager.Layers.FirstOrDefault(item => item.Batches.Contains(layer));
+
             var dictionary = layer.NamedTileOrderedIndexes;
 
-            foreach (var info in tileMapInfos)
+            foreach (var property in properties.Values.Where(item => item.Any(item2 => item2.Name == "EntityToCreate")))
             {
-                if (!string.IsNullOrEmpty(info.EntityToCreate) && dictionary.ContainsKey(info.Name))
+
+                var tileName = property.FirstOrDefault(item => item.Name.ToLowerInvariant() == "name").Value as string;
+
+                var entityType = property.FirstOrDefault(item => item.Name == "EntityToCreate").Value as string;
+
+                if (!string.IsNullOrEmpty(entityType) && dictionary.ContainsKey(tileName))
                 {
 #if WINDOWS_8
                     var assembly = typeof(TileEntityInstantiator).GetTypeInfo().Assembly;
@@ -81,10 +81,10 @@ namespace FlatRedBall.TileEntities
                         var methodInfo = type.GetMethod("CreateNew", new[] { typeof(Layer) });
                         var returntypeString = methodInfo.ReturnType.Name;
 
-                        if (info.EntityToCreate.EndsWith("\\" + returntypeString))
+                        if (entityType.EndsWith("\\" + returntypeString))
                         {
-                            entitiesToRemove.Add(info.EntityToCreate);
-                            var indexList = dictionary[info.Name];
+                            entitiesToRemove.Add(entityType);
+                            var indexList = dictionary[tileName];
 
                             foreach (var tileIndex in indexList)
                             {
@@ -99,7 +99,7 @@ namespace FlatRedBall.TileEntities
                                     dimensionHalf = dimension / 2.0f;
                                 }
 
-                                var entity = factory.CreateNew() as PositionedObject;
+                                var entity = factory.CreateNew(flatRedBallLayer) as PositionedObject;
 
 
                                 if (entity != null)
@@ -113,5 +113,6 @@ namespace FlatRedBall.TileEntities
                 }
             }
         }
+
     }
 }

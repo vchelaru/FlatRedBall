@@ -1802,7 +1802,7 @@ namespace Glue
 
         private void reportABugToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("http://www.hostedredmine.com/projects/frbdk/issues/new");
+            System.Diagnostics.Process.Start("http://bugs.flatredball.com");
 
         }
 

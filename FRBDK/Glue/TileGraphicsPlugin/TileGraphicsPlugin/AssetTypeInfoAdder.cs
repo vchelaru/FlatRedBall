@@ -12,6 +12,8 @@ namespace TileGraphicsPlugin
     public class AssetTypeInfoAdder : Singleton<AssetTypeInfoAdder>
     {
 
+
+
         public void UpdateAtiCsvPresence()
         {
             string projectFolder = FileManager.GetDirectory(FlatRedBall.Glue.ProjectManager.GlueProjectFileName);
@@ -28,6 +30,7 @@ namespace TileGraphicsPlugin
             var layeredTilemapTilb = CreateAtiForLayeredTilemapTilb();
             var tileShapeCollectionAti = CreateAtiForTileShapeCollection();
 
+            AddIfNotPresent(GetAtiForRawTmx());
             AddIfNotPresent(layeredTileMapScnx);
             AddIfNotPresent(layeredTilemapTilb);
             AddIfNotPresent(tileShapeCollectionAti);
@@ -83,6 +86,16 @@ namespace TileGraphicsPlugin
             return toReturn;
         }
 
+        private AssetTypeInfo GetAtiForRawTmx()
+        {
+            AssetTypeInfo toReturn = CreateAtiForLayeredTilemapScnx();
+            toReturn.FriendlyName = "LayeredTileMap (.tmx)";
+            toReturn.QualifiedSaveTypeName = "";
+            toReturn.Extension = "tmx";
+            toReturn.CustomLoadMethod = "{THIS} = FlatRedBall.TileGraphics.LayeredTileMap.FromTiledMapSave(\"{FILE_NAME}\", {CONTENT_MANAGER_NAME});";
+
+            return toReturn;
+        }
 
         public AssetTypeInfo CreateAtiForTileShapeCollection()
         {

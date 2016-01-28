@@ -51,7 +51,7 @@ namespace TileGraphicsPlugin
 
         public override Version Version
         {
-            get { return new Version(1, 7, 1); }
+            get { return new Version(1, 0, 1); }
         }
 
 
@@ -78,7 +78,7 @@ namespace TileGraphicsPlugin
 
         public override string FriendlyName
         {
-            get { return "Tile Graphics Plugin"; }
+            get { return "Tiled Plugin"; }
         }
 
         static TileGraphicsPluginClass mSelf;
@@ -240,9 +240,16 @@ namespace TileGraphicsPlugin
                 base.AddTab();
             }
 
-            mCommandLineViewModel.ReferencedFileSave = rfs;
+            // These aren't built anymore, so no command line
+            //mCommandLineViewModel.ReferencedFileSave = rfs;
 
-            string fullFileName = FlatRedBall.Glue.ProjectManager.MakeAbsolute(rfs.SourceFile, true);
+            string fileNameToUse = rfs.Name;
+            if(FileManager.GetExtension(rfs.SourceFile) == "tmx")
+            {
+                fileNameToUse = rfs.SourceFile;
+            }
+
+            string fullFileName = FlatRedBall.Glue.ProjectManager.MakeAbsolute(fileNameToUse, true);
             mLastFile = fullFileName;
             mControl.LoadFile(fullFileName);
         }

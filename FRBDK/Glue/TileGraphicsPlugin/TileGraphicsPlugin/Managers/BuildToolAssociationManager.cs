@@ -84,12 +84,14 @@ namespace TileGraphicsPlugin.Managers
 
         public void UpdateBuildToolAssociations()
         {
-            BuildToolAssociationAdder adder = new BuildToolAssociationAdder();
-            adder.AddIfNecessary(TmxToScnx);
-            adder.AddIfNecessary(TmxToCsv);
-            adder.AddIfNecessary(TmxToShcx);
-            adder.AddIfNecessary(TmxToTilb);
-            adder.AddIfNecessary(TmxToNntx);
+            // new TMX lib loads directly from TMX, no build tools
+
+            //BuildToolAssociationAdder adder = new BuildToolAssociationAdder();
+            //adder.AddIfNecessary(TmxToScnx);
+            //adder.AddIfNecessary(TmxToCsv);
+            //adder.AddIfNecessary(TmxToShcx);
+            //adder.AddIfNecessary(TmxToTilb);
+            //adder.AddIfNecessary(TmxToNntx);
         }
     }
 }

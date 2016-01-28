@@ -43,7 +43,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlueControls", "WpfApplicat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tiled Plugin", "Tiled Plugin", "{AF692C43-E1A3-4A29-AAA5-9228973020BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TileGraphicsPlugin", "TileGraphicsPlugin\TileGraphicsPlugin\TileGraphicsPlugin.csproj", "{D73086FC-957E-4E3F-97FA-742CBBF02EA6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiledPlugin", "TileGraphicsPlugin\TileGraphicsPlugin\TiledPlugin.csproj", "{D73086FC-957E-4E3F-97FA-742CBBF02EA6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Glue Projects", "Glue Projects", "{F61A42AE-D819-4CEA-B9A1-BFAE8D3845F3}"
 EndProject

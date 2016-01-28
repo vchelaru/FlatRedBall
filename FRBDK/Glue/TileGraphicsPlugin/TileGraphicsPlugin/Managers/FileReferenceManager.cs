@@ -21,39 +21,115 @@ namespace TileGraphicsPlugin.Managers
 
     public class FileReferenceManager : FlatRedBall.Glue.Managers.Singleton<FileReferenceManager>
     {
+        string GetTsxFileFor(ReferencedFileSave rfs)
+        {
+            if(rfs != null)
+            {
+                string candidate = rfs.Name;
+
+                if(FileManager.GetExtension(candidate) != "tmx")
+                {
+                    candidate = rfs.SourceFile;
+                }
+
+                if (FileManager.GetExtension(candidate) == "tmx") 
+                {
+                    return candidate;
+                }
+            }
+
+            return null;
+        }
+
+
         public void HandleGetFilesReferencedBy(string fileName, EditorObjects.Parsing.TopLevelOrRecursive topOrRecursive, List<string> listToFill)
         {
-            if (FileManager.GetExtension(fileName) == "tilb")
+            var extension = FileManager.GetExtension(fileName);
+            if (extension == "tilb")
             {
-                try
-                {
-                    ReducedTileMapInfo rtmi = ReducedTileMapInfo.FromFile(fileName);
+                GetTilbFileReferences(fileName, listToFill);
+            }
+            else if(extension == "tsx")
+            {
+                GetTsxFileReferences(fileName, listToFill);
+            }
+            else if(extension == "tmx")
+            {
+                GetTmxFileReferences(fileName, listToFill);
+            }
+        }
 
-                    var referencedFiles = rtmi.GetReferencedFiles();
+        private void GetTsxFileReferences(string tsxFile, List<string> referencedFiles)
+        {
+            ExternalTileSet external = null;
 
-                    string directory = FileManager.GetDirectory(fileName);
-                    for (int i = 0; i < referencedFiles.Count; i++)
-                    {
-                        referencedFiles[i] = directory + referencedFiles[i];
-                    }
+            try
+            {
+                external = FileManager.XmlDeserialize<ExternalTileSet>(tsxFile);
+            }
+            catch(Exception e)
+            {
+                PluginManager.ReceiveError(e.ToString());
+            }
 
-                    listToFill.AddRange(referencedFiles);
-                }
-                catch (EndOfStreamException e)
+            if (external != null && external.Images.Length != 0)
+            {
+                var image = external.Images[0];
+
+                string fileName = image.Source;
+
+                // keep it relative
+                referencedFiles.Add(fileName);
+
+            }
+        }
+
+        private void GetTmxFileReferences(string fileName, List<string> listToFill)
+        {
+            TiledMapSave tms = TiledMapSave.FromFile(fileName);
+
+            var referencedFiles = tms.GetReferencedFiles();
+
+            string directory = FileManager.GetDirectory(fileName);
+            for (int i = 0; i < referencedFiles.Count; i++)
+            {
+                referencedFiles[i] = directory + referencedFiles[i];
+            }
+
+            listToFill.AddRange(referencedFiles);
+        }
+
+        private static void GetTilbFileReferences(string fileName, List<string> listToFill)
+        {
+            try
+            {
+                ReducedTileMapInfo rtmi = ReducedTileMapInfo.FromFile(fileName);
+
+                var referencedFiles = rtmi.GetReferencedFiles();
+
+                string directory = FileManager.GetDirectory(fileName);
+                for (int i = 0; i < referencedFiles.Count; i++)
                 {
-                    PluginManager.ReceiveError("Error trying to read TMX: " + fileName + "\nEnd of file reached unexpectedly");
+                    referencedFiles[i] = directory + referencedFiles[i];
                 }
-                catch (Exception e)
-                {
-                    PluginManager.ReceiveError("Error trying to read TMX:\n\n" + fileName + "\n\n" + e.ToString());
-                }
+
+                listToFill.AddRange(referencedFiles);
+            }
+            catch (EndOfStreamException e)
+            {
+                PluginManager.ReceiveError("Error trying to read TMX: " + fileName + "\nEnd of file reached unexpectedly");
+            }
+            catch (Exception e)
+            {
+                PluginManager.ReceiveError("Error trying to read TMX:\n\n" + fileName + "\n\n" + e.ToString());
             }
         }
 
         public bool IsTmx(ReferencedFileSave rfs)
         {
-            return rfs != null && rfs.Name != null && !string.IsNullOrEmpty(rfs.SourceFile) &&
-                            FileManager.GetExtension(rfs.SourceFile) == "tmx";
+            string tsxFile = GetTsxFileFor(rfs);
+
+            return tsxFile != null;
         }
 
         public void UpdateAvailableTsxFiles()
@@ -73,7 +149,7 @@ namespace TileGraphicsPlugin.Managers
 
             foreach (var rfs in GlueState.Self.CurrentElement.ReferencedFiles.Where(item => IsTmx(item)))
             {
-                string fullFile = FlatRedBall.Glue.ProjectManager.MakeAbsolute(rfs.SourceFile, true);
+                string fullFile = FlatRedBall.Glue.ProjectManager.MakeAbsolute(GetTsxFileFor(rfs), true);
 
 
                 if (System.IO.File.Exists(fullFile))
@@ -95,7 +171,7 @@ namespace TileGraphicsPlugin.Managers
                         {
                             exception = e.InnerException;
                         }
-                        PluginManager.ReceiveError("Error trying to load " + rfs.SourceFile + ":\n" + exception.ToString());
+                        PluginManager.ReceiveError("Error trying to load " + GetTsxFileFor(rfs) + ":\n" + exception.ToString());
                         succeeded = false;
                     }
 
@@ -125,7 +201,7 @@ namespace TileGraphicsPlugin.Managers
             foreach (var rfs in GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Where(item => IsTmx(item)))
             {
                 TiledMapSave tms = null;
-                string fullFile = FlatRedBall.Glue.ProjectManager.MakeAbsolute(rfs.SourceFile, true);
+                string fullFile = FlatRedBall.Glue.ProjectManager.MakeAbsolute(GetTsxFileFor(rfs), true);
                 bool succeeded = true;
 
                 string tmxDirectory = FileManager.GetDirectory(fullFile);
@@ -136,7 +212,7 @@ namespace TileGraphicsPlugin.Managers
                 }
                 catch (Exception e)
                 {
-                    PluginManager.ReceiveError("Error trying to load " + rfs.SourceFile + ":\n" + e.ToString());
+                    PluginManager.ReceiveError("Error trying to load " + GetTsxFileFor( rfs)+ ":\n" + e.ToString());
                     succeeded = false;
                 }
                 if(succeeded)

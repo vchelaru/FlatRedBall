@@ -60,6 +60,12 @@ namespace FlatRedBall.TileGraphics
 
         #region Properties
 
+        public List<NamedValue> Properties
+        {
+            get;
+            private set;
+        } = new List<NamedValue>();
+
         public SortAxis SortAxis
         {
             get

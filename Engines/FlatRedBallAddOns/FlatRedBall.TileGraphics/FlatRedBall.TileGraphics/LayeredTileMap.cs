@@ -18,6 +18,11 @@ namespace FlatRedBall.TileGraphics
     {
         public string Name;
         public object Value;
+
+        public override string ToString()
+        {
+            return $"{Name}={Value}";
+        }
     }
 
     public class LayeredTileMap : PositionedObject
@@ -289,6 +294,18 @@ namespace FlatRedBall.TileGraphics
 
             var toReturn = FromReducedTileMapInfo(rtmi, contentManager, fileName);
 
+            foreach (var layer in tms.Layers)
+            {
+                var matchingLayer = toReturn.MapLayers.FirstOrDefault(item => item.Name == layer.Name);
+
+                if (matchingLayer != null)
+                {
+                    foreach (var propertyValues in layer.properties)
+                    {
+                        matchingLayer.Properties.Add(new NamedValue { Name = propertyValues.StrippedName, Value = propertyValues.value });
+                    }
+                }
+            }
 
             foreach (var tileset in tms.Tilesets)
             {
