@@ -6,12 +6,13 @@ using System.ComponentModel.Composition;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.CodeGeneration;
+using FlatRedBall.Glue.Plugins;
 
 namespace PluginTestbed.MoveToLayerPlugin
 {
         
-    [Export(typeof(ICodeGeneratorPlugin))]
-    class MoveToLayerContainer : ICodeGeneratorPlugin
+    [Export(typeof(PluginBase))]
+    class MoveToLayerContainer : PluginBase
     {
         List<ElementComponentCodeGenerator> mGeneratorList = new List<ElementComponentCodeGenerator>();
 
@@ -33,17 +34,17 @@ namespace PluginTestbed.MoveToLayerPlugin
             get { return mGeneratorList; }
         }
 
-        public string FriendlyName
+        public override string FriendlyName
         {
             get { return "Move to Layer Plugin"; }
         }
 
-        public Version Version
+        public override Version Version
         {
-            get { return new Version(); }
+            get { return new Version(1,1); }
         }
-
-        public void StartUp()
+        
+        public override void StartUp()
         {
             mIsEnabled = true;
             if (mGeneratorList.Count == 0)
@@ -52,10 +53,11 @@ namespace PluginTestbed.MoveToLayerPlugin
             }
         }
 
-        public bool ShutDown(PluginShutDownReason shutDownReason)
+        public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
             mIsEnabled = false;
             return true;
+
         }
     }
 }

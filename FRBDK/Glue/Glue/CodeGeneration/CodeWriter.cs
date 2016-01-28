@@ -1506,7 +1506,23 @@ namespace FlatRedBall.Glue.Parsing
         {
             int indexOfNamespaceStart = fileContents.IndexOf("namespace ") + "namespace ".Length;
 
-            int indexOfEndOfNamespace = fileContents.IndexOf("\r", indexOfNamespaceStart);
+            int indexOfSlashR = fileContents.IndexOf("\r", indexOfNamespaceStart);
+            int indexOfSlashN = fileContents.IndexOf("\n", indexOfNamespaceStart);
+
+            int indexOfEndOfNamespace = indexOfNamespaceStart;
+
+            if (indexOfSlashR == -1)
+            {
+                indexOfEndOfNamespace = indexOfSlashN;
+            }
+            else if(indexOfSlashN == -1)
+            {
+                indexOfEndOfNamespace = indexOfSlashR;
+            }
+            else
+            {
+                indexOfEndOfNamespace = System.Math.Min(indexOfSlashR, indexOfSlashN);
+            }
 
             oldNamespace = fileContents.Substring(indexOfNamespaceStart, indexOfEndOfNamespace - indexOfNamespaceStart);
 
