@@ -7,6 +7,7 @@ using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Parsing;
 
 namespace PluginTestbed.MoveToLayerPlugin
 {
@@ -47,15 +48,28 @@ namespace PluginTestbed.MoveToLayerPlugin
         public override void StartUp()
         {
             mIsEnabled = true;
-            if (mGeneratorList.Count == 0)
+
+            mGeneratorList.Add(new MoveToLayerComponentGenerator());
+
+            foreach(var generator in mGeneratorList)
             {
-                mGeneratorList.Add(new MoveToLayerComponentGenerator());
+                CodeWriter.CodeGenerators.Add(generator);
             }
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
             mIsEnabled = false;
+
+
+            foreach (var generator in mGeneratorList)
+            {
+                if (CodeWriter.CodeGenerators.Contains(generator))
+                {
+                    CodeWriter.CodeGenerators.Remove(generator);
+                }
+            }
+
             return true;
 
         }
