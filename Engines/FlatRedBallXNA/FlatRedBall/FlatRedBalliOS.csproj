@@ -70,8 +70,6 @@
     <Compile Include="Attributes\InstanceListMember.cs" />
     <Compile Include="Audio\AudioManager.cs" />
     <Compile Include="Audio\SoundEffectPlayInfo.cs" />
-    <Compile Include="Camera.Common.cs" />
-    <Compile Include="Camera.cs" />
     <Compile Include="Content\AI\Pathfinding\LinkSave.cs" />
     <Compile Include="Content\AI\Pathfinding\NodeNetworkSave.cs" />
     <Compile Include="Content\AI\Pathfinding\PositionedNodeSave.cs" />
@@ -135,7 +133,6 @@
     <Compile Include="Debugging\Debugger.cs" />
     <Compile Include="Debugging\PropertyDisplayer.cs" />
     <Compile Include="Feedback\VibrateMotor.cs" />
-    <Compile Include="FlatRedBallServices.cs" />
     <Compile Include="Graphics\Animation\AnimationChain.cs" />
     <Compile Include="Graphics\Animation\AnimationChain.Gif.cs" />
     <Compile Include="Graphics\Animation\AnimationChainList.cs" />
@@ -332,10 +329,7 @@
     <Compile Include="Performance\IPoolable.cs" />
     <Compile Include="Performance\Measurement\Section.cs" />
     <Compile Include="Performance\PoolList.cs" />
-    <Compile Include="PlatformServices.cs" />
-    <Compile Include="PositionedObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scene.cs" />
     <Compile Include="Screens\Screen.cs" />
     <Compile Include="Screens\ScreenManager.cs" />
     <Compile Include="Sprite.Common.cs" />

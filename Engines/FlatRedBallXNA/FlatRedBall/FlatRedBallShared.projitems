@@ -12,7 +12,10 @@
     <Folder Include="$(MSBuildThisFileDirectory)Graphics\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Camera.Common.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debugging\CrossPlatform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FlatRedBallServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\ICollidable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputManager.Common.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\IPressableInput.cs" />
@@ -29,5 +32,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\AtlasLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\ImageData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\TextureExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PositionedObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scene.cs" />
   </ItemGroup>
 </Project>

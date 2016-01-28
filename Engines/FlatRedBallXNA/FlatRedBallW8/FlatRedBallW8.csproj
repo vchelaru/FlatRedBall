@@ -141,12 +141,6 @@
     <Compile Include="..\FlatRedBall\Audio\SoundEffectPlayInfo.cs">
       <Link>Audio\SoundEffectPlayInfo.cs</Link>
     </Compile>
-    <Compile Include="..\FlatRedBall\Camera.Common.cs">
-      <Link>Camera.Common.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Camera.cs">
-      <Link>Camera.cs</Link>
-    </Compile>
     <Compile Include="..\FlatRedBall\Compatability\System\ComponentModel\CategoryAttribute.cs">
       <Link>Compatability\CategoryAttribute.cs</Link>
     </Compile>
@@ -320,9 +314,6 @@
     </Compile>
     <Compile Include="..\FlatRedBall\Feedback\VibrateMotor.cs">
       <Link>Feedback\VibrateMotor.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\FlatRedBallServices.cs">
-      <Link>FlatRedBallServices.cs</Link>
     </Compile>
     <Compile Include="..\FlatRedBall\Graphics\Animation\AnimationChain.cs">
       <Link>Graphics\Animation\AnimationChain.cs</Link>
@@ -752,15 +743,6 @@
     </Compile>
     <Compile Include="..\FlatRedBall\Performance\PoolList.cs">
       <Link>Performance\PoolList.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\PlatformServices.cs">
-      <Link>PlatformServices.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\PositionedObject.cs">
-      <Link>PositionedObject.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Scene.cs">
-      <Link>Scene.cs</Link>
     </Compile>
     <Compile Include="..\FlatRedBall\Screens\Screen.cs">
       <Link>Screens\Screen.cs</Link>
