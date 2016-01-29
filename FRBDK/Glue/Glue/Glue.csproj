@@ -1175,6 +1175,10 @@
       <Project>{b941a93f-6093-4dc6-ad11-91a058b6c2cc}</Project>
       <Name>ToolsUtilities</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj">
+      <Project>{47241002-7eb5-433b-b931-a530bb6b84ee}</Project>
+      <Name>WpfDataUi</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Gum\XnaAndWinforms\XnaAndWinforms.csproj">
       <Project>{c39a973c-66d6-4a6c-82b5-ae0042f210f8}</Project>
       <Name>XnaAndWinforms</Name>
