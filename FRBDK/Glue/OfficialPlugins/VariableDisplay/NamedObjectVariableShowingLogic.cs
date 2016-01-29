@@ -13,6 +13,8 @@ using Glue;
 using WpfDataUi;
 using WpfDataUi.DataTypes;
 using FlatRedBall.Glue.Plugins;
+using System;
+using OfficialPlugins.VariableDisplay.Controls;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -35,19 +37,7 @@ namespace OfficialPlugins.VariableDisplay
                 instance.UpdateCustomProperties();
             }
 
-            for (int i = 0; i < instance.TypedMembers.Count; i++)
-            {
-
-                TypedMemberBase typedMember = instance.TypedMembers[i];
-                InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati);
-
-                var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember);
-                
-                if (instanceMember != null)
-                {
-                    categoryToAddTo.Members.Add(instanceMember);
-                }
-            }
+            CreateCategoriesAndVariables(instance, container, categories, ati);
 
             if (ati != null)
             {
@@ -59,20 +49,25 @@ namespace OfficialPlugins.VariableDisplay
             {
                 categories.Remove(defaultCategory);
             }
-            else if(categories.Count != 1)
+            else if (categories.Count != 1)
             {
                 defaultCategory.Name = "Other Variables";
             }
 
             if (categories.Count != 0)
             {
-                // "Name" shoul be the very first property:
+                // "Name" should be the very first property:
                 var nameCategory = CreateNameInstanceMember(instance);
-                //categories.Add(nameCategory);
                 categories.Insert(0, nameCategory);
-                //categories.First().Members.Insert(0, nameInstanceMember);
             }
 
+            SetAlternatingColors(grid, categories);
+
+            grid.Refresh();
+        }
+
+        private static void SetAlternatingColors(DataUiGrid grid, List<MemberCategory> categories)
+        {
             // skip the first category in putting the alternating colors:
             for (int i = 0; i < categories.Count; i++)
             {
@@ -84,7 +79,108 @@ namespace OfficialPlugins.VariableDisplay
                 }
                 grid.Categories.Add(category);
             }
-            grid.Refresh();
+        }
+
+        private static void CreateCategoriesAndVariables(NamedObjectSave instance, IElement container, List<MemberCategory> categories, AssetTypeInfo ati)
+        {
+            for (int i = 0; i < instance.TypedMembers.Count; i++)
+            {
+
+                TypedMemberBase typedMember = instance.TypedMembers[i];
+                InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati);
+
+                var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember);
+
+                if (instanceMember != null)
+                {
+                    categoryToAddTo.Members.Add(instanceMember);
+                }
+            }
+
+            bool shouldAddSourceNameVariable = instance.SourceType == SourceType.File &&
+                !string.IsNullOrEmpty(instance.SourceFile);
+
+            if(shouldAddSourceNameVariable)
+            {
+                AddSourceNameVariable(instance, categories);
+
+            }
+        }
+
+        private static void AddSourceNameVariable(NamedObjectSave instance, List<MemberCategory> categories)
+        {
+            var categoryToAddTo = new MemberCategory("File");
+            categoryToAddTo.FontSize = 14;
+
+            if (categories.Count > 0)
+            {
+                categories.Insert(0, categoryToAddTo);
+            }
+            else
+            {
+                categories.Add(categoryToAddTo);
+            }
+
+            var instanceMember = CreateInstanceMemberForSourceName(instance);
+
+            categoryToAddTo.Members.Add(instanceMember);
+        }
+
+        private static InstanceMember CreateInstanceMemberForSourceName(NamedObjectSave instance)
+        {
+
+            var instanceMember = new DataGridItem();
+
+            instanceMember.FirstGridLength = new System.Windows.GridLength(140);
+
+            instanceMember.UnmodifiedVariableName = "SourceName";
+            string fileName = FlatRedBall.IO.FileManager.RemovePath(instance.SourceFile);
+            instanceMember.DisplayName = $"Object in {fileName}:";
+
+            // todo: get the type converter from the file
+            var typeConverter = new AvailableNameablesStringConverter(instance);
+            instanceMember.TypeConverter = typeConverter;
+
+            instanceMember.CustomGetTypeEvent += (throwaway) => typeof(string);
+
+            instanceMember.PreferredDisplayer = typeof(FileReferenceComboBox);
+
+            instanceMember.IsDefault = instance.SourceName == null;
+
+            instanceMember.CustomGetEvent += (throwaway) =>
+            {
+                return instance.SourceName;
+            };
+
+            instanceMember.CustomSetEvent += (owner, value) =>
+            {
+                instanceMember.IsDefault = false;
+                RefreshLogic.IgnoreNextRefresh();
+
+                instance.SourceName = value as string;
+                
+                GlueCommands.Self.GluxCommands.SaveGlux();
+
+                GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+            };
+
+            instanceMember.IsDefaultSet += (owner, args) =>
+            {
+                instance.SourceName = null;
+            };
+
+            instanceMember.SetValueError += (newValue) =>
+            {
+                if (newValue is string && string.IsNullOrEmpty(newValue as string))
+                {
+                    MakeDefault(instance, "SourceName");
+                }
+            };
+
+            return instanceMember;
+
         }
 
         private static MemberCategory CreateNameInstanceMember(NamedObjectSave instance)

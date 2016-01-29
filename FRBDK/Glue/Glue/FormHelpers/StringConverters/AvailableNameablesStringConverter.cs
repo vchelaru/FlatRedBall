@@ -13,7 +13,7 @@ using FlatRedBall.Glue.Plugins;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
-    class AvailableNameablesStringConverter : TypeConverter
+    public class AvailableNameablesStringConverter : TypeConverter
     {
         public NamedObjectSave NamedObjectSave
         {
