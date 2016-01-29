@@ -103,9 +103,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="InteractiveInterface">
-      <HintPath>..\..\GlueView\GlueView\InteractiveInterface\bin\x86\Debug\InteractiveInterface.dll</HintPath>
-    </Reference>
     <Reference Include="Ionic.Zip, Version=1.7.2.26, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Glue\Libraries\Ionic.Zip.dll</HintPath>
@@ -225,6 +222,10 @@
     <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
       <Project>{E1D670B6-AD42-4B84-AFF8-D568097BE03D}</Project>
       <Name>EditorObjectsXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GlueView\GlueView\InteractiveInterface\InteractiveInterface.csproj">
+      <Project>{82fe0346-e86b-46de-ba29-93626d89c621}</Project>
+      <Name>InteractiveInterface</Name>
     </ProjectReference>
     <ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj">
       <Project>{2C289A72-D6BD-4358-AFBC-B71F9D31B01E}</Project>
