@@ -134,9 +134,9 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void ScrollBarHandleTextureChange()
         {
-            AnimationFrameSave frame = SelectedState.Self.SelectedFrame;
 
-            Texture2D texture = WireframeManager.Self.GetTextureForFrame(frame);
+            Texture2D texture = WireframeManager.Self.Texture;
+
             if (texture == null)
             {
                 mScrollBarControlLogic.UpdateToImage(128, 128);

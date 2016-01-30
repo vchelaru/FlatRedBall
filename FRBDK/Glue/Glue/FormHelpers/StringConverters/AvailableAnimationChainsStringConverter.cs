@@ -79,9 +79,6 @@ namespace FlatRedBall.Glue.GuiDisplay
             AnimationChainListSave acls = null;        
             acls = GetAnimationChainListFile(element, referencedNos, stateSave);
 
-            var referencedFile = element.ReferencedFiles.FirstOrDefault(item => ObjectFinder.Self.MakeAbsoluteContent(item.Name) == acls.FileName);
-
-            this.ReferencedFileSave = referencedFile;
 
             if (acls == null)
             {
@@ -89,6 +86,9 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
             else
             {
+                var referencedFile = element.ReferencedFiles.FirstOrDefault(item => ObjectFinder.Self.MakeAbsoluteContent(item.Name) == acls.FileName);
+
+                this.ReferencedFileSave = referencedFile;
 
                 mAvailableChains = new string[acls.AnimationChains.Count];
 

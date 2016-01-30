@@ -408,6 +408,13 @@ namespace FlatRedBall.AnimationEditorForms
                     mControl.DesiredSelectorCount = 0;
                 }
             }
+
+            // Do we need to check if it's changed?
+            //if (Texture != textureBefore)
+            {
+                ApplicationEvents.Self.CallWireframeTextureChange();
+            }
+
         }
 
         private void UpdateSelectorsToAnimation(bool skipPushed, Texture2D texture)
