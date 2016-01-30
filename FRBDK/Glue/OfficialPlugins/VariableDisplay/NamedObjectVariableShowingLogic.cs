@@ -15,6 +15,8 @@ using WpfDataUi.DataTypes;
 using FlatRedBall.Glue.Plugins;
 using System;
 using OfficialPlugins.VariableDisplay.Controls;
+using OfficialPlugins.VariableDisplay.Data;
+using GluePropertyGridClasses.StringConverters;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -129,7 +131,20 @@ namespace OfficialPlugins.VariableDisplay
         private static InstanceMember CreateInstanceMemberForSourceName(NamedObjectSave instance)
         {
 
-            var instanceMember = new DataGridItem();
+            var instanceMember = new FileInstanceMember();
+
+            instanceMember.View += () =>
+            {
+                var element = GlueState.Self.CurrentElement;
+                var rfs = element.ReferencedFiles.FirstOrDefault(item => item.Name == instance.SourceFile);
+
+                if (rfs != null)
+                {
+                    GlueCommands.Self.SelectCommands.Select(
+                        rfs,
+                        instance.SourceNameWithoutParenthesis);
+                }
+            };
 
             instanceMember.FirstGridLength = new System.Windows.GridLength(140);
 
@@ -335,6 +350,11 @@ namespace OfficialPlugins.VariableDisplay
 
             if (!shouldBeSkipped)
             {
+                var typeConverter = PluginManager.GetTypeConverter(
+                     container, instance, typedMember);
+
+                bool isObjectInFile = typeConverter is IObjectsInFileConverter;
+
                 var memberType = typedMember.MemberType;
 
                 VariableDefinition variableDefinition = null;
@@ -344,7 +364,35 @@ namespace OfficialPlugins.VariableDisplay
                     variableDefinition = ati.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
                 }
 
-                instanceMember = new DataGridItem();
+                if(isObjectInFile)
+                {
+                    var fileInstanceMember = new FileInstanceMember();
+                    instanceMember = fileInstanceMember;
+
+
+                    fileInstanceMember.View += () =>
+                    {
+                        var rfs = (typeConverter as IObjectsInFileConverter).ReferencedFileSave;
+
+                        if (rfs != null)
+                        {
+                            var value = fileInstanceMember.Value as string;
+
+                            GlueCommands.Self.SelectCommands.Select(
+                                rfs,
+                                value);
+                        }
+                    };
+
+                    instanceMember.PreferredDisplayer = typeof(FileReferenceComboBox);
+
+                }
+                else
+                {
+                    instanceMember = new DataGridItem();
+
+
+                }
 
                 instanceMember.FirstGridLength = new System.Windows.GridLength(140);
 
@@ -352,8 +400,7 @@ namespace OfficialPlugins.VariableDisplay
                 string displayName = StringFunctions.InsertSpacesInCamelCaseString(typedMember.MemberName);
                 instanceMember.DisplayName = displayName;
 
-                instanceMember.TypeConverter = PluginManager.GetTypeConverter(
-                     container, instance, typedMember);
+                instanceMember.TypeConverter = typeConverter;
 
                 instanceMember.CustomGetTypeEvent += (throwaway) => memberType;
 

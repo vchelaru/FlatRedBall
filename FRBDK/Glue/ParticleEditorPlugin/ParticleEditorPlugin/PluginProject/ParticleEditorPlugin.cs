@@ -50,7 +50,7 @@ namespace PluginProject
 
         public override Version Version
         {
-            get { return new Version(1, 4); }
+            get { return new Version(1, 5); }
         }
 
 
@@ -63,6 +63,23 @@ namespace PluginProject
 
             this.ReactToFileChangeHandler += HandleFileChange;
 
+            this.SelectItemInCurrentFile += HandleSelectItemInCurrentFile;
+        }
+
+        private void HandleSelectItemInCurrentFile(string objectName)
+        {
+            if(mContainer.Controls.Contains(mTab))
+            {
+                var emitterSaveList = 
+                    ParticleEditorControls.Managers.ProjectManager.Self.EmitterSaveList;
+
+                var found = emitterSaveList.emitters.FirstOrDefault(item => item.Name == objectName);
+
+                if (found != null)
+                {
+                    ApplicationState.Self.SelectedEmitterSave = found;
+                }
+            }
         }
 
         public override bool ShutDown(PluginShutDownReason reason)

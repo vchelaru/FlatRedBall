@@ -43,13 +43,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TortoiseSvnPlugin", "Tortoi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlueControls", "WpfApplication1\GlueControls.csproj", "{A80D41ED-35D6-4FD8-83F3-7647A803F583}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolsUtilities", "..\..\Gum\ToolsUtilities\ToolsUtilities.csproj", "{B941A93F-6093-4DC6-AD11-91A058B6C2CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolsUtilities", "..\..\..\Gum\ToolsUtilities\ToolsUtilities.csproj", "{B941A93F-6093-4DC6-AD11-91A058B6C2CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenderingLibrary", "..\..\Gum\RenderingLibrary\RenderingLibrary.csproj", "{A86EE399-7C93-42E1-80ED-CA4CBF4CA573}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenderingLibrary", "..\..\..\Gum\RenderingLibrary\RenderingLibrary.csproj", "{A86EE399-7C93-42E1-80ED-CA4CBF4CA573}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputLibrary", "..\..\Gum\InputLibrary\InputLibrary.csproj", "{938D9A00-8529-4CE8-9077-E0A3994A73EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputLibrary", "..\..\..\Gum\InputLibrary\InputLibrary.csproj", "{938D9A00-8529-4CE8-9077-E0A3994A73EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentLibrary", "..\..\Gum\ContentLibrary\ContentLibrary.csproj", "{6E3DECA0-B292-4FBA-B585-7460A329DE2E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentLibrary", "..\..\..\Gum\ContentLibrary\ContentLibrary.csproj", "{6E3DECA0-B292-4FBA-B585-7460A329DE2E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GlueProjects", "GlueProjects", "{4532DFDF-D042-4AEE-9FBE-92A1A7BC5F5D}"
 EndProject
@@ -61,9 +61,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared Libraries", "Shared 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBall.SpecializedXnaControls", "..\FlatRedBall.SpecializedXnaControls\FlatRedBall.SpecializedXnaControls.csproj", "{8C80BA7B-1CBA-4579-9382-D9DC6C365070}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XnaAndWinforms", "..\..\Gum\XnaAndWinforms\XnaAndWinforms.csproj", "{C39A973C-66D6-4A6C-82B5-AE0042F210F8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XnaAndWinforms", "..\..\..\Gum\XnaAndWinforms\XnaAndWinforms.csproj", "{C39A973C-66D6-4A6C-82B5-AE0042F210F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDataUi", "..\..\Gum\WpfDataUi\WpfDataUi.csproj", "{47241002-7EB5-433B-B931-A530BB6B84EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDataUi", "..\..\..\Gum\WpfDataUi\WpfDataUi.csproj", "{47241002-7EB5-433B-B931-A530BB6B84EE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlasPlugin", "AtlasPlugin\AtlasPlugin.csproj", "{648E314B-8192-4A1E-B8DF-3B8F58DC15D5}"
 EndProject

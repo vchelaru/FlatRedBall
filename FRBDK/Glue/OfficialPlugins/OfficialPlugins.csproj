@@ -203,6 +203,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VariableDisplay\Controls\FileReferenceComboBox.cs" />
     <Compile Include="VariableDisplay\DataGridItem.cs" />
+    <Compile Include="VariableDisplay\Data\FileInstanceMember.cs" />
     <Compile Include="VariableDisplay\ElementVariableShowingLogic.cs" />
     <Compile Include="VariableDisplay\MainPlugin.cs" />
     <Compile Include="VariableDisplay\PropertyDescriptorImplementation.cs" />

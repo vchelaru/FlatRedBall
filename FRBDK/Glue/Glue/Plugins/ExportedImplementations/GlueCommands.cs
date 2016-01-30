@@ -46,6 +46,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             DialogCommands = new DialogCommands();
             GlueViewCommands = new GlueViewCommands();
             FileCommands = new FileCommands();
+            SelectCommands = new SelectCommands();
         }
 
         public IGenerateCodeCommands GenerateCodeCommands{ get; private set; }
@@ -67,6 +68,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         public GlueViewCommands GlueViewCommands { get; private set; }
 
         public IFileCommands FileCommands { get; private set; }
+
+        public ISelectCommands SelectCommands { get; private set; }
 
         public string GetAbsoluteFileName(SaveClasses.ReferencedFileSave rfs)
         {

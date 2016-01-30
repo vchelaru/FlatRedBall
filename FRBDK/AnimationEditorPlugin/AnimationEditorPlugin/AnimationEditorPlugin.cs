@@ -59,7 +59,7 @@ namespace AnimationEditorPlugin
 
         public override Version Version
         {
-            get { return new Version(1, 5, 1); }
+            get { return new Version(1, 5, 3); }
         }
 
         public bool IsSelectedItemSprite
@@ -97,6 +97,21 @@ namespace AnimationEditorPlugin
 
             this.ReactToChangedPropertyHandler += HandleChangedProperty;
 
+            this.SelectItemInCurrentFile += HandleSelectItemInCurrentFile;
+        }
+
+        private void HandleSelectItemInCurrentFile(string objectName)
+        {
+            if(mAchxControl != null)
+            {
+                var found = 
+                    mAchxControl.AnimationChainList.AnimationChains.FirstOrDefault(item => item.Name == objectName);
+
+                if(found != null)
+                {
+                    SelectedState.Self.SelectedChain = found;
+                }
+            }
         }
 
         bool ignoringChanges = false;

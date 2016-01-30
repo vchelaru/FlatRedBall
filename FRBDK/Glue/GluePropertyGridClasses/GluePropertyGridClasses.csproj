@@ -188,6 +188,9 @@
     <Compile Include="..\Glue\FormHelpers\StringConverters\ImageTypeConverter.cs">
       <Link>StringConverters\ImageTypeConverter.cs</Link>
     </Compile>
+    <Compile Include="..\Glue\FormHelpers\StringConverters\IObjectsInFileConverter.cs">
+      <Link>StringConverters\IObjectsInFileConverter.cs</Link>
+    </Compile>
     <Compile Include="..\Glue\IO\ImageHeader.cs">
       <Link>IO\ImageHeader.cs</Link>
     </Compile>

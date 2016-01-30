@@ -57,6 +57,10 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
+        // Use SelectedState
+        //public AnimationChainSave SelectedAnimationChain
+
+
         #endregion
 
         #region Events

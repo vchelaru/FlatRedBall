@@ -1679,6 +1679,19 @@ namespace FlatRedBall.Glue.Plugins
             ReceiveError(problem);
         }
 
+        public static void SelectItemInCurrentFile(string objectInFile)
+        {
+
+            CallMethodOnPluginNotUiThread(
+                delegate (PluginBase plugin)
+                {
+                    if (plugin.SelectItemInCurrentFile != null)
+                    {
+                        plugin.SelectItemInCurrentFile(objectInFile);
+                    }
+                },
+                "SelectItemInCurrentFile");
+        }
 
         public static void HitBreakpoint()
         {

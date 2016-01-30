@@ -17,13 +17,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels
         {
             AvailablePlugins.Clear();
 
-            foreach( var item in allFeed.Items)
+            if (allFeed != null)
             {
-                var viewModel = new FeedItemViewModel
+                foreach (var item in allFeed.Items)
                 {
-                    Title = item.Title
-                };
-                AvailablePlugins.Add(viewModel);
+                    var viewModel = new FeedItemViewModel
+                    {
+                        Title = item.Title
+                    };
+                    AvailablePlugins.Add(viewModel);
+                }
             }
         }
     }

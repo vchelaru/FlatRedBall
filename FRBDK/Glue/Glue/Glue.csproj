@@ -286,6 +286,7 @@
       <DependentUpon>AutoLayoutForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\BaseElementTreeNode.cs" />
+    <Compile Include="FormHelpers\StringConverters\IObjectsInFileConverter.cs" />
     <Compile Include="MVVM\CommandBase.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraMainPlugin.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSettingsWindow.cs">
@@ -642,8 +643,10 @@
     <Compile Include="Plugins\EmbeddedPlugins\TypeConverterPlugin\MainPlugin.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\UnreferencedFiles\UnreferencedFilesPlugin.cs" />
     <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\FileCommands.cs" />
+    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\SelectCommands.cs" />
     <Compile Include="Plugins\ExportedImplementations\States\Clipboard.cs" />
     <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\IFileCommands.cs" />
+    <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\ISelectCommands.cs" />
     <Compile Include="Tasks\GlueTask.cs" />
     <Compile Include="Tasks\TaskManager.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\UnreferencedFiles\UnreferencedFilesManager.cs" />

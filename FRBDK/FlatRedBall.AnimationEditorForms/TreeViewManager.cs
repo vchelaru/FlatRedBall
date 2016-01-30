@@ -37,6 +37,21 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
+        // See SelectedState
+        //public AnimationChainSave SelectedAnimationChain
+        //{
+        //    get
+        //    {
+        //        return mTreeView?.SelectedNode?.Tag as AnimationChainSave;
+        //    }
+        //    set
+        //    {
+        //        var treeNode = mTreeView.Nodes.Cast<TreeNode>().FirstOrDefault(item => item.Tag == value);
+
+        //        mTreeView.SelectedNode = treeNode;
+        //    }
+        //}
+
         #endregion
 
         #region Events

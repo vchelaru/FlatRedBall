@@ -9,13 +9,14 @@ using FlatRedBall.Content;
 using FlatRedBall.Content.Scene;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Content.SpriteFrame;
+using GluePropertyGridClasses.StringConverters;
 
 namespace FlatRedBall.Glue.GuiDisplay
 {
     // Not sure why but if this is a TypeConverter, then the user can't type in custom AnimationChain names
     // We want the user to be able to do that in case an AniamtionChain file hasn't been set on whatever we're tunneling into,
     // so I'm inheriting from StringConverter.
-    public class AvailableAnimationChainsStringConverter : StringConverter
+    public class AvailableAnimationChainsStringConverter : StringConverter, IObjectsInFileConverter
     {
         string[] mAvailableChains;
 
@@ -32,7 +33,13 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
         }
 
-		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+        public ReferencedFileSave ReferencedFileSave
+        {
+            get;
+            set;
+        }
+
+        public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
 		{
 			return true;
 		}
@@ -72,6 +79,9 @@ namespace FlatRedBall.Glue.GuiDisplay
             AnimationChainListSave acls = null;        
             acls = GetAnimationChainListFile(element, referencedNos, stateSave);
 
+            var referencedFile = element.ReferencedFiles.FirstOrDefault(item => ObjectFinder.Self.MakeAbsoluteContent(item.Name) == acls.FileName);
+
+            this.ReferencedFileSave = referencedFile;
 
             if (acls == null)
             {
