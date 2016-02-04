@@ -297,6 +297,7 @@ namespace FlatRedBall.TileGraphics
             foreach (var layer in tms.Layers)
             {
                 var matchingLayer = toReturn.MapLayers.FirstOrDefault(item => item.Name == layer.Name);
+                
 
                 if (matchingLayer != null)
                 {
@@ -304,6 +305,9 @@ namespace FlatRedBall.TileGraphics
                     {
                         matchingLayer.Properties.Add(new NamedValue { Name = propertyValues.StrippedName, Value = propertyValues.value });
                     }
+
+                    matchingLayer.Visible = layer.visible == 1;
+
                 }
             }
 

@@ -43,6 +43,7 @@ namespace GlueView
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
 
             graphics.PreferredBackBufferHeight = 600;

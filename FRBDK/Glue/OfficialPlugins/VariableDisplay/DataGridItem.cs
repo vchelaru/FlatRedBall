@@ -13,6 +13,8 @@ namespace OfficialPlugins.VariableDisplay
 
         TypeConverter typeConverter;
 
+        public event Action CustomRefreshOptions;
+
         public TypeConverter TypeConverter
         {
             get
@@ -54,10 +56,10 @@ namespace OfficialPlugins.VariableDisplay
         public void RefreshOptions()
         {
             CustomOptions.Clear();
-            
+
             if (this.typeConverter != null)
             {
-                if(string.IsNullOrEmpty(UnmodifiedVariableName))
+                if (string.IsNullOrEmpty(UnmodifiedVariableName))
                 {
                     throw new InvalidOperationException("UnmodifiedVariableName must be set first.");
                 }

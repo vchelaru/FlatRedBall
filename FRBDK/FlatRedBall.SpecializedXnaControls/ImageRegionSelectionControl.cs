@@ -65,6 +65,23 @@ namespace FlatRedBall.SpecializedXnaControls
             }
         }
 
+        int? snappingGridSize;
+        public int? SnappingGridSize
+        {
+            get
+            {
+                return snappingGridSize;
+            }
+            set
+            {
+                snappingGridSize = value;
+                foreach (var item in mRectangleSelectors)
+                {
+                    item.SnappingGridSize = snappingGridSize;
+                }
+            }
+        }
+
         Camera Camera
         {
             get
@@ -286,6 +303,8 @@ namespace FlatRedBall.SpecializedXnaControls
             newSelector.AddToManagers(mManagers);
             newSelector.Visible = false;
             newSelector.RegionChanged += new EventHandler(RegionChangedInternal);
+            newSelector.SnappingGridSize = snappingGridSize;
+            newSelector.RoundToUnitCoordinates = mRoundRectangleSelectorToUnit;
 
             mRectangleSelectors.Add(newSelector);
 
@@ -308,7 +327,7 @@ namespace FlatRedBall.SpecializedXnaControls
             }
         }
 
-        void Update()
+        void PerformActivity()
         {
             mTimeManager.Activity();
 
@@ -325,7 +344,7 @@ namespace FlatRedBall.SpecializedXnaControls
         protected override void Draw()
         {
             
-            this.Update();
+            this.PerformActivity();
 
             base.Draw();
 

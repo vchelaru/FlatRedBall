@@ -30,12 +30,14 @@
         {
             this.ComboBox = new System.Windows.Forms.ComboBox();
             this.MagicWandCheckBox = new System.Windows.Forms.CheckBox();
+            this.SnapToGridCheckBox = new System.Windows.Forms.CheckBox();
+            this.GridSizeTextBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // ComboBox
             // 
             this.ComboBox.FormattingEnabled = true;
-            this.ComboBox.Location = new System.Drawing.Point(0, 0);
+            this.ComboBox.Location = new System.Drawing.Point(0, 1);
             this.ComboBox.Name = "ComboBox";
             this.ComboBox.Size = new System.Drawing.Size(72, 21);
             this.ComboBox.TabIndex = 0;
@@ -54,14 +56,36 @@
             this.MagicWandCheckBox.UseVisualStyleBackColor = true;
             this.MagicWandCheckBox.CheckedChanged += new System.EventHandler(this.MagicWandCheckBox_CheckedChanged);
             // 
+            // SnapToGridCheckBox
+            // 
+            this.SnapToGridCheckBox.AutoSize = true;
+            this.SnapToGridCheckBox.Location = new System.Drawing.Point(174, 4);
+            this.SnapToGridCheckBox.Name = "SnapToGridCheckBox";
+            this.SnapToGridCheckBox.Size = new System.Drawing.Size(85, 17);
+            this.SnapToGridCheckBox.TabIndex = 2;
+            this.SnapToGridCheckBox.Text = "Snap to Grid";
+            this.SnapToGridCheckBox.UseVisualStyleBackColor = true;
+            this.SnapToGridCheckBox.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // GridSizeTextBox
+            // 
+            this.GridSizeTextBox.Enabled = false;
+            this.GridSizeTextBox.Location = new System.Drawing.Point(257, 2);
+            this.GridSizeTextBox.Name = "GridSizeTextBox";
+            this.GridSizeTextBox.Size = new System.Drawing.Size(43, 20);
+            this.GridSizeTextBox.TabIndex = 3;
+            this.GridSizeTextBox.Text = "16";
+            // 
             // WireframeEditControls
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.GridSizeTextBox);
+            this.Controls.Add(this.SnapToGridCheckBox);
             this.Controls.Add(this.MagicWandCheckBox);
             this.Controls.Add(this.ComboBox);
             this.Name = "WireframeEditControls";
-            this.Size = new System.Drawing.Size(215, 23);
+            this.Size = new System.Drawing.Size(379, 23);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -71,5 +95,7 @@
 
         private System.Windows.Forms.ComboBox ComboBox;
         private System.Windows.Forms.CheckBox MagicWandCheckBox;
+        private System.Windows.Forms.CheckBox SnapToGridCheckBox;
+        private System.Windows.Forms.TextBox GridSizeTextBox;
     }
 }

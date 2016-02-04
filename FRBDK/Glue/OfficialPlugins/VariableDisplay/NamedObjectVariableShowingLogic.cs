@@ -402,10 +402,29 @@ namespace OfficialPlugins.VariableDisplay
 
                 instanceMember.TypeConverter = typeConverter;
 
+                instanceMember.CustomRefreshOptions += () =>
+                {
+                    if (typeConverter != null)
+                    {
+                        instanceMember.CustomOptions.Clear();
+
+                        var values = typeConverter.GetStandardValues();
+
+                        foreach (var value in values)
+                        {
+                            instanceMember.CustomOptions.Add(value);
+                        }
+                    }
+
+                };
+
+
                 instanceMember.CustomGetTypeEvent += (throwaway) => memberType;
 
 
                 instanceMember.IsDefault = instance.GetInstructionFromMember(typedMember.MemberName) == null;
+
+
 
                 instanceMember.CustomGetEvent += (throwaway) =>
                 {
@@ -444,7 +463,10 @@ namespace OfficialPlugins.VariableDisplay
                 instanceMember.CustomSetEvent += (owner, value) =>
                 {
                     instanceMember.IsDefault = false;
-                    RefreshLogic.IgnoreNextRefresh();
+
+                    // If we ignore the next refresh, then AnimationChains won't update when the user
+                    // picks an AnimationChainList from a combo box:
+                    //RefreshLogic.IgnoreNextRefresh();
                     GlueCommands.Self.GluxCommands.SetVariableOn(
                         instance,
                         typedMember.MemberName,

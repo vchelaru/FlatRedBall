@@ -28,7 +28,9 @@ namespace OfficialPlugins.VariableDisplay
 
                 foreach (DataGridItem instanceMember in category.Members)
                 {
-                    bool shouldRefresh = instanceMember.CustomOptions.Count != 0 &&
+                    // Not sure why we check if the instanceMember has non-0 count for options.
+                    // It could have had 0 before, but after a refresh, it may now have options.
+                    bool shouldRefresh = //instanceMember.CustomOptions.Count != 0 &&
                         instanceMember.TypeConverter != null;
 
                     if (shouldRefresh)

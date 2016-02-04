@@ -109,6 +109,8 @@ namespace FlatRedBall.AnimationEditorForms
             this.imageRegionSelectionControl1.Text = "imageRegionSelectionControl1";
             this.imageRegionSelectionControl1.BringToFront();
 
+            this.zoomControl1.PropertyChanged += HandleEditorControlsPropertyChanged;
+
             SelectedState.Self.Initialize(this.AnimationTreeView);
             if (this.DesignMode == false)
             {
@@ -130,6 +132,18 @@ namespace FlatRedBall.AnimationEditorForms
             PopulateUnitTypeComboBox();
 
             PreviewManager.Self.Initialize(PreviewGraphicsControl, previewControls1);
+        }
+
+        private void HandleEditorControlsPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (zoomControl1.SnapToGrid)
+            {
+                imageRegionSelectionControl1.SnappingGridSize = zoomControl1.GridSize;
+            }
+            else
+            {
+                imageRegionSelectionControl1.SnappingGridSize = null;
+            }
         }
 
         private void ScrollBarHandleTextureChange()

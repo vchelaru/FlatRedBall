@@ -15,6 +15,8 @@ namespace OfficialPlugins.VariableDisplay
     [Export(typeof(PluginBase))]
     public class MainPlugin : EmbeddedPlugin
     {
+        #region Fields
+
         DataUiGrid settingsGrid;
         DataUiGrid variableGrid;
 
@@ -22,6 +24,8 @@ namespace OfficialPlugins.VariableDisplay
         PluginTab variableTab;
 
         const bool showSettings = false;
+
+        #endregion
 
         public override void StartUp()
         {

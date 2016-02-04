@@ -51,7 +51,7 @@ namespace TileGraphicsPlugin
 
         public override Version Version
         {
-            get { return new Version(1, 0, 1); }
+            get { return new Version(1, 0, 2); }
         }
 
 

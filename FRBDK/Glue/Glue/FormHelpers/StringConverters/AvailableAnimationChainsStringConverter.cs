@@ -18,6 +18,10 @@ namespace FlatRedBall.Glue.GuiDisplay
     // so I'm inheriting from StringConverter.
     public class AvailableAnimationChainsStringConverter : StringConverter, IObjectsInFileConverter
     {
+        IElement element;
+        StateSave stateSave;
+        NamedObjectSave referencedNos;
+
         string[] mAvailableChains;
 
         public string[] AvailableChains
@@ -75,8 +79,19 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         void Initialize(IElement element, NamedObjectSave referencedNos, StateSave stateSave = null)
         {
+            this.element = element;
+            this.stateSave = stateSave;
+            this.referencedNos = referencedNos;
 
-            AnimationChainListSave acls = null;        
+
+            RefreshList();
+
+
+        }
+
+        private void RefreshList()
+        {
+            AnimationChainListSave acls = null;
             acls = GetAnimationChainListFile(element, referencedNos, stateSave);
 
 
@@ -97,8 +112,6 @@ namespace FlatRedBall.Glue.GuiDisplay
                     mAvailableChains[i] = acls.AnimationChains[i].Name;
                 }
             }
-
-
         }
 
         private AnimationChainListSave GetAnimationChainListFile(IElement element, NamedObjectSave referencedNos, StateSave stateSave)
@@ -257,6 +270,8 @@ namespace FlatRedBall.Glue.GuiDisplay
 		public override StandardValuesCollection
 					 GetStandardValues(ITypeDescriptorContext context)
 		{
+            // We can't cache this because the same object may reuse its type converter when properties change on the property grid
+            RefreshList();
             StandardValuesCollection svc = new StandardValuesCollection(mAvailableChains);
 
 			return svc;

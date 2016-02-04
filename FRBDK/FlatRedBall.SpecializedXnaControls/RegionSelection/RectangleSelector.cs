@@ -47,7 +47,8 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
     {
         #region Fields
 
-        
+        float xBeforeSnapping;
+        float yBeforeSnapping;
 
         List<LineCircle> mHandles;
 
@@ -68,6 +69,12 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
         #region Properties
 
         public bool RoundToUnitCoordinates
+        {
+            get;
+            set;
+        }
+
+        public int? SnappingGridSize
         {
             get;
             set;
@@ -423,16 +430,12 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
         {
             if (mVisible && cursor.IsInWindow)
             {
-
-
                 float worldX = cursor.GetWorldX(managers);
                 float worldY = cursor.GetWorldY(managers);
 
                 var sideOver = GetSideOver(
                     worldX,
                     worldY);
-
-
 
                 SetWindowsCursor(container, mSideGrabbed, sideOver, ResetsCursorIfNotOver);
 
@@ -469,7 +472,12 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
 
         private float RoundIfNecessary(float value)
         {
-            if (RoundToUnitCoordinates)
+            if(SnappingGridSize != null)
+            {
+                var toReturn = MathFunctions.RoundFloat(value, SnappingGridSize.Value);
+                return toReturn;
+            }
+            else if (RoundToUnitCoordinates)
             {
                 return MathFunctions.RoundToInt(value);
             }
@@ -517,7 +525,6 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
                 widthMultiplier /= managers.Renderer.Camera.Zoom;
                 heightMultiplier /= managers.Renderer.Camera.Zoom;
 
-
                 this.Left = mCoordinates.X + xMultiplier * cursor.XChange;
                 this.Top = mCoordinates.Y + yMultiplier * cursor.YChange;
                 this.Width = mCoordinates.Width + widthMultiplier * cursor.XChange;
@@ -528,10 +535,6 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
                     RegionChanged(this, null);
                 }
             }
-
-
-
-
         }
 
         private void GetMultipliersFromSideGrabbed(ref float widthMultiplier, ref float heightMultiplier, ref float xMultiplier, ref float yMultiplier)

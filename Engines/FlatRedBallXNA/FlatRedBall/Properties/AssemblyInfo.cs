@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("FlatRedBall XNA Game Engine")]
 [assembly: AssemblyDescription("FlatRedBall XNA Game Engine")]
 [assembly: AssemblyCompany("FlatRedBall")]
-[assembly: AssemblyCopyright("Copyright ©  2006 - 2011")]
+[assembly: AssemblyCopyright("Copyright ©  2006 - 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -37,4 +37,4 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("2011.10.27.460")]
+[assembly: AssemblyVersion("2016.2.3.461")]
