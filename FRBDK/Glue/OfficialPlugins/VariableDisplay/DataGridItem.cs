@@ -36,11 +36,14 @@ namespace OfficialPlugins.VariableDisplay
             }
             set
             {
-                isDefault = value;
-
-                if(IsDefaultSet != null)
+                if (value != isDefault)
                 {
-                    IsDefaultSet(this, null);
+                    isDefault = value;
+
+                    if (IsDefaultSet != null)
+                    {
+                        IsDefaultSet(this, null);
+                    }
                 }
             }
         }

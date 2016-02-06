@@ -17,6 +17,7 @@ using System;
 using OfficialPlugins.VariableDisplay.Controls;
 using OfficialPlugins.VariableDisplay.Data;
 using GluePropertyGridClasses.StringConverters;
+using FlatRedBall.Glue.Managers;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -463,7 +464,6 @@ namespace OfficialPlugins.VariableDisplay
                 instanceMember.CustomSetEvent += (owner, value) =>
                 {
                     instanceMember.IsDefault = false;
-
                     // If we ignore the next refresh, then AnimationChains won't update when the user
                     // picks an AnimationChainList from a combo box:
                     //RefreshLogic.IgnoreNextRefresh();
@@ -474,11 +474,20 @@ namespace OfficialPlugins.VariableDisplay
                         value);
 
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
-
                     GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                    // let's make the UI faster:
+
+                    // Get this on the UI thread, but use it in the async call below
+                    var currentElement = GlueState.Self.CurrentElement;
+
+                    TaskManager.Self.AddAsyncTask(() =>
+                   {
+                       GlueCommands.Self.GluxCommands.SaveGlux();
+
+                       GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
+                   },
+                    "Saving .glux and regenerating the code for the current element");
                 };
 
                 instanceMember.IsDefaultSet += (owner, args) =>
@@ -579,8 +588,11 @@ namespace OfficialPlugins.VariableDisplay
         {
             PropertyGridRightClickHelper.SetVariableToDefault(instance, memberName);
 
-            ElementViewWindow.GenerateSelectedElementCode();
+            var element = GlueState.Self.CurrentElement;
 
+            // do we want to run this async?
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+            
             GlueCommands.Self.GluxCommands.SaveGlux();
 
             MainGlueWindow.Self.PropertyGrid.Refresh();
