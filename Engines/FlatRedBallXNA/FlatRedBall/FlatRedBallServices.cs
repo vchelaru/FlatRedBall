@@ -408,14 +408,19 @@ namespace FlatRedBall
             if (!mWindowResizing)
             {
                 mWindowResizing = true;
-#if FRB_MDX
-                mClientHeight = mOwner.ClientRectangle.Height;
-                mClientWidth = mOwner.ClientRectangle.Width;
-#else
+
                 if (mGame != null)
                 {
                     mClientHeight = mGame.Window.ClientBounds.Height;
                     mClientWidth = mGame.Window.ClientBounds.Width;
+
+                    // If we're setting the mClientWith and mClientHeight, we need
+                    // to adjust the cameras:
+                    // Update cameras
+                    foreach (Camera camera in SpriteManager.Cameras)
+                    {
+                        camera.UpdateOnResize();
+                    }
                 }
                 else
                 {
@@ -425,7 +430,11 @@ namespace FlatRedBall
                     System.Windows.Forms.Control window = System.Windows.Forms.Form.FromHandle(mWindowHandle);
                     mClientHeight = window.Height;
                     mClientWidth = window.Width;
-#endif
+
+                    foreach (Camera camera in SpriteManager.Cameras)
+                    {
+                        camera.UpdateOnResize();
+                    }
                 }
 
 
@@ -806,9 +815,8 @@ namespace FlatRedBall
             game.Window.ClientSizeChanged += new EventHandler(Window_ClientSizeChanged);
 #endif
 
-
-            //            game.Window. = new Rectangle(0, 0, mClientWidth, mClientHeight);
-            FinishInitialization(graphics);
+            CommonInitialize(graphics);
+            
         }
 
 #if WINDOWS_8
@@ -937,9 +945,15 @@ namespace FlatRedBall
             System.Windows.Forms.Form.FromHandle(mWindowHandle).Resize += new EventHandler(Window_ClientSizeChanged);
 
 #endif
-
-            FinishInitialization(graphics);
+            CommonInitialize(graphics);
         }
+
+        private static void CommonInitialize(IGraphicsDeviceService graphicsService)
+        {
+            FinishInitialization(graphicsService);
+
+        }
+
 
         #region XML Docs
         /// <summary>
@@ -1141,6 +1155,16 @@ namespace FlatRedBall
 
             if (mGraphicsOptions == null) return;
 
+            HandleResize();
+
+            // The following line causes a crash in the current effect in Renderer because it isn't set when you first run the app.
+            //Renderer.ForceSetColorOperation(Renderer.ColorOperation);
+            Renderer.ForceSetBlendOperation();
+
+        }
+
+        private static void HandleResize()
+        {
             bool hasResolutionChanged = mClientWidth != mGraphicsOptions.ResolutionWidth ||
                 mClientHeight != mGraphicsOptions.ResolutionHeight;
 
@@ -1162,11 +1186,6 @@ namespace FlatRedBall
 
                 mHandlingReset = false;
             }
-
-            // The following line causes a crash in the current effect in Renderer because it isn't set when you first run the app.
-            //Renderer.ForceSetColorOperation(Renderer.ColorOperation);
-            Renderer.ForceSetBlendOperation();
-
         }
 
         #endregion
@@ -1872,51 +1891,18 @@ namespace FlatRedBall
 
         public static void RenderAll(Section section)
         {
-#if !FRB_MDX
             lock (Renderer.Graphics.GraphicsDevice)
             {
-                // I don't think we need to do this anymore - we don't do it on iOS:
-                //#if MONODROID
-                //                    graphics_DeviceReset(null, null);
-                //#endif
-
                 Renderer.Draw(section);
             }
-#if PROFILE
+        #if PROFILE
             TimeManager.TimeSection("Renderer.Draw();");
-#endif
+        #endif
 
-
-#if SUPPORTS_FRB_DRAWN_GUI
-            TextureFilter oldTextureFilter = FlatRedBallServices.GraphicsOptions.TextureFilter;
-            FlatRedBallServices.GraphicsOptions.TextureFilter = TextureFilter.Point;
-
-
-
-            GuiManager.Draw();
-
-
-            FlatRedBallServices.GraphicsOptions.TextureFilter = oldTextureFilter;
-
-#endif
-
-#else
-            SpriteManager.Sort();
-
-
-            Renderer.BeginDrawing(SpriteManager.Cameras[0].BackgroundColor);
-
-            Renderer.Draw(SpriteManager.Cameras[0]);
-
-            SpriteManager.EndDrawing();
-
-#endif
 
             // Just in case code is going to modify any of the textures that were used in rendering:
             Renderer.Texture = null;
-#if !FRB_MDX
             GraphicsDevice.Textures[0] = null;
-#endif
         }
 
         /// <summary>
