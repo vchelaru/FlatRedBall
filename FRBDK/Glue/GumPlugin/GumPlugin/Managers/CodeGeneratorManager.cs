@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace GumPlugin.Managers
 {
@@ -160,9 +161,15 @@ namespace GumPlugin.Managers
 
                 wasAnythingAdded |= GenerateAndSaveRuntimeAssociations();
 
-                foreach (var element in AppState.Self.AllLoadedElements)
+                var elements = AppState.Self.AllLoadedElements.ToList();
+
+                // This can greatly improve 
+                Parallel.ForEach(elements, (element) =>
+                //foreach (var element in elements)
                 {
+                    var timeBefore = System.DateTime.Now;
                     bool wasSaved = GenerateCodeFor(element);
+                    var timeAfter = System.DateTime.Now;
 
                     if (wasSaved)
                     {
@@ -171,7 +178,7 @@ namespace GumPlugin.Managers
                             FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
                             FlatRedBall.Glue.ProjectManager.ProjectBase, location);
                     }
-                }
+                });
 
                 if (wasAnythingAdded)
                 {

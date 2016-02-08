@@ -211,7 +211,8 @@ namespace FlatRedBall.Glue.IO
 
             if (succeeded)
             {
-
+                // This seems to take some time (like 1 second). Can we possibly
+                // make it faster by having it chek Game1.cs first? Why is this so slow?
                 ProjectManager.FindGameClass();
 
                 AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets.Clear();

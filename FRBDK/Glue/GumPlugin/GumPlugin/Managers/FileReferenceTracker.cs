@@ -364,7 +364,7 @@ namespace GumPlugin.Managers
             }
     }
 
-    public void HandleGetFilesReferencedBy(string fileName, TopLevelOrRecursive topLevelOrRecursive,
+        public void HandleGetFilesReferencedBy(string fileName, TopLevelOrRecursive topLevelOrRecursive,
             List<string> listToFill)
         {
             ProjectOrDisk projectOrDisk = ProjectOrDisk.Project;
@@ -400,7 +400,9 @@ namespace GumPlugin.Managers
                             {
                                 GumLoadResult result;
 
+                                // Why are we reloading the gumx?
                                 GumProjectSave gumProjectSave = GumProjectSave.Load(absoluteFileName, out result);
+                                InitializeElements();
                                 GetFilesReferencedBy(gumProjectSave, topLevelOrRecursive, listToFill, projectOrDisk);
                             }
                             break;
@@ -411,6 +413,8 @@ namespace GumPlugin.Managers
                                 {
                                     gumComponentSave = FileManager.XmlDeserialize<ComponentSave>(absoluteFileName);
                                     gumComponentSave.FileName = absoluteFileName;
+                                    // See an explanation for this in LoadGumxIfNecessaryFromDirectory
+                                    gumComponentSave.Initialize(gumComponentSave.DefaultState);
                                     GetFilesReferencedBy(gumComponentSave, topLevelOrRecursive, listToFill, projectOrDisk);
                                 }
                                 catch (Exception e)
@@ -427,6 +431,8 @@ namespace GumPlugin.Managers
                                 {
                                     gumScreenSave = FileManager.XmlDeserialize<ScreenSave>(absoluteFileName);
                                     gumScreenSave.FileName = absoluteFileName;
+                                    // See an explanation for this in LoadGumxIfNecessaryFromDirectory
+                                    gumScreenSave.Initialize(gumScreenSave.DefaultState);
 
                                     GetFilesReferencedBy(gumScreenSave, topLevelOrRecursive, listToFill, projectOrDisk);
                                 }
@@ -444,6 +450,8 @@ namespace GumPlugin.Managers
                                 {
                                     standardElementSave = FileManager.XmlDeserialize<StandardElementSave>(absoluteFileName);
                                     standardElementSave.FileName = absoluteFileName;
+                                    // See an explanation for this in LoadGumxIfNecessaryFromDirectory
+                                    standardElementSave.Initialize(standardElementSave.DefaultState);
 
                                     GetFilesReferencedBy(standardElementSave, topLevelOrRecursive, listToFill, projectOrDisk);
                                 }
@@ -482,12 +490,17 @@ namespace GumPlugin.Managers
                         Gum.Managers.ObjectFinder.Self.GumProjectSave =
                             GumProjectSave.Load(gumxFile, out result);
                     }
+
+                    InitializeElements();
                 }
 
                 // this used to be in the if-block above, but we want this
                 // to always run because an already-loaded glux may have new
                 // variables which are enums.
-                InitializeElements();
+                // Update: If the .glux is loaded, we'll initialize the whole thing.
+                // If an individual element changes (or we're looking for its references),
+                // then we'll initialize that element specifically in the switch
+                //InitializeElements();
             }
         }
 

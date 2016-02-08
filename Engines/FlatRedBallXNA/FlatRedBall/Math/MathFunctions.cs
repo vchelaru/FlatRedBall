@@ -825,7 +825,6 @@ namespace FlatRedBall.Math
 #endif
         }
 
-#if FRB_XNA
         public static bool IsOrthonormal(ref Matrix matrix)
         {
             float epsilon = MatrixOrthonormalEpsilon;
@@ -837,28 +836,6 @@ namespace FlatRedBall.Math
                 Vector3.Dot(matrix.Right, matrix.Forward) < epsilon &&
                 Vector3.Dot(matrix.Up, matrix.Forward) < epsilon;
         }
-#endif
-#if !SILVERLIGHT
-
-        // September 8, 2013
-        // These seem like old
-        // functions that we don't
-        // use anymore.  I'm going to
-        // comment them out to see if it
-        // causes any problems.
-        //public static bool IsPointInside<T>(float xPosition, float yPosition, T scalablePositionable) where T : IScalable, IPositionable
-        //{
-        //    return IsPointInside(xPosition, yPosition, scalablePositionable, ref SpriteSelectionOptions.Default);
-        //}
-
-        //public static bool IsPointInside<T>(float xPosition, float yPosition, T scalablePositionable, ref SpriteSelectionOptions spriteSelectionOptions) where T : IScalable, IPositionable
-        //{
-        //    return  xPosition > scalablePositionable.X - scalablePositionable.ScaleX + spriteSelectionOptions.LeftAllowance &&
-        //            xPosition < scalablePositionable.X + scalablePositionable.ScaleX - spriteSelectionOptions.RightAllowance &&
-        //            yPosition > scalablePositionable.Y - scalablePositionable.ScaleY + spriteSelectionOptions.BottomAllowance &&
-        //            yPosition < scalablePositionable.Y + scalablePositionable.ScaleY - spriteSelectionOptions.TopAllowance;
-        //}
-#endif
 
         public static float LengthSquared2D(this Vector3 vectorToMeasure)
         {

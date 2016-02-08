@@ -181,6 +181,8 @@ namespace GumPlugin.CodeGeneration
                         // valid for the type of object we're dealing with.  
                         var defaultState = baseElement.DefaultState;
 
+                        // Not sure why this is null sometimes, but I think it's okay to set it last minute:
+                        defaultState.ParentContainer = baseElement;
 
                         RecursiveVariableFinder rvf = new RecursiveVariableFinder(defaultState);
 
