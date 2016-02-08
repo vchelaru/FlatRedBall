@@ -409,6 +409,7 @@ namespace FlatRedBall
             {
                 mWindowResizing = true;
 
+
                 if (mGame != null)
                 {
                     mClientHeight = mGame.Window.ClientBounds.Height;
@@ -430,7 +431,7 @@ namespace FlatRedBall
                     System.Windows.Forms.Control window = System.Windows.Forms.Form.FromHandle(mWindowHandle);
                     mClientHeight = window.Height;
                     mClientWidth = window.Width;
-
+#endif
                     foreach (Camera camera in SpriteManager.Cameras)
                     {
                         camera.UpdateOnResize();
@@ -471,11 +472,7 @@ namespace FlatRedBall
                 //        camera.UpdateOnResize();
                 //    }
                 //}
-#endif
 
-#if SUPPORTS_FRB_DRAWN_GUI
-                GuiManager.ReactToResizing();
-#endif
                 mWindowResizing = false;
             }
         }
