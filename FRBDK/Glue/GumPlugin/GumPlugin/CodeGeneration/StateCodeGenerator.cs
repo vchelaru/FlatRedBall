@@ -180,10 +180,7 @@ namespace GumPlugin.CodeGeneration
                         // important information accidentally.  But because of that we have to make sure that the variable we're working with is
                         // valid for the type of object we're dealing with.  
                         var defaultState = baseElement.DefaultState;
-
-                        // Not sure why this is null sometimes, but I think it's okay to set it last minute:
-                        defaultState.ParentContainer = baseElement;
-
+                        
                         RecursiveVariableFinder rvf = new RecursiveVariableFinder(defaultState);
 
                         var foundVariable = rvf.GetVariable(variable.GetRootName());

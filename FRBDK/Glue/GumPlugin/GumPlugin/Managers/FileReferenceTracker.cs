@@ -401,9 +401,8 @@ namespace GumPlugin.Managers
                                 GumLoadResult result;
 
                                 // Why are we reloading the gumx?
-                                GumProjectSave gumProjectSave = GumProjectSave.Load(absoluteFileName, out result);
-                                InitializeElements();
-                                GetFilesReferencedBy(gumProjectSave, topLevelOrRecursive, listToFill, projectOrDisk);
+                                LoadGumxIfNecessaryFromDirectory(FileManager.RelativeDirectory, force:true);
+                                GetFilesReferencedBy(Gum.Managers.ObjectFinder.Self.GumProjectSave, topLevelOrRecursive, listToFill, projectOrDisk);
                             }
                             break;
                         case "gucx":

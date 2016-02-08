@@ -361,7 +361,7 @@ namespace FlatRedBall.Glue.IO
                 SetInitWindowText("Notifying Plugins of startup");
 
 
-                PluginManager.ReactToLoadedGlux(ProjectManager.GlueProjectSave, glueProjectFile);
+                PluginManager.ReactToLoadedGlux(ProjectManager.GlueProjectSave, glueProjectFile, SetInitWindowText);
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("GenerateAllCode");
                 SetInitWindowText("Generating all code");

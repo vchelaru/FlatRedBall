@@ -1365,7 +1365,7 @@ namespace FlatRedBall.Glue.Plugins
             ResumeRelativeDirectory("ReactToLoadedGluxEarly");
         }
 
-        internal static void ReactToLoadedGlux(GlueProjectSave glueProjectSave, string fileName)
+        internal static void ReactToLoadedGlux(GlueProjectSave glueProjectSave, string fileName, Action<string> displayCurrentStatusMethod)
         {
 
             SaveRelativeDirectory();
@@ -1378,6 +1378,7 @@ namespace FlatRedBall.Glue.Plugins
 
                     if (container.IsEnabled)
                     {
+                        displayCurrentStatusMethod?.Invoke("Notifying " + container.Name + " of startup...");
                         IGluxLoad plugin1 = plugin;
                         PluginCommand(() =>
                             {
@@ -1393,6 +1394,8 @@ namespace FlatRedBall.Glue.Plugins
                     var container = pluginManager.mPluginContainers[plugin];
                     if (container.IsEnabled)
                     {
+                        displayCurrentStatusMethod?.Invoke("Notifying " + container.Name + " of startup...");
+
                         PluginBase plugin1 = plugin;
                         PluginCommand(() =>
                             {
