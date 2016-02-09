@@ -501,7 +501,7 @@ namespace FlatRedBall.Gui
 
             if (BringsClickedWindowsToFront == false)
             {
-                mWindowArray.Sort(WindowComparisonForSorting);
+                InsertionSort(mWindowArray, WindowComparisonForSorting);
             }
         }
         

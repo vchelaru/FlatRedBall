@@ -23,7 +23,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
 
         public override void StartUp()
         {
-            this.AddMenuItemTo("Mange Plugins", HandleManagePlugins, "Plugins");
+            this.AddMenuItemTo("Manage Plugins", HandleManagePlugins, "Plugins");
         }
 
         private void HandleManagePlugins(object sender, EventArgs e)
