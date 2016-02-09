@@ -398,9 +398,6 @@ namespace GumPlugin.Managers
                     {
                         case "gumx":
                             {
-                                GumLoadResult result;
-
-                                // Why are we reloading the gumx?
                                 LoadGumxIfNecessaryFromDirectory(FileManager.RelativeDirectory, force:true);
                                 GetFilesReferencedBy(Gum.Managers.ObjectFinder.Self.GumProjectSave, topLevelOrRecursive, listToFill, projectOrDisk);
                             }

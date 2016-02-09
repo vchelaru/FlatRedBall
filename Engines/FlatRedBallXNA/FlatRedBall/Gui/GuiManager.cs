@@ -1,25 +1,17 @@
-#if FRB_MDX || XNA3
-#define SUPPORTS_FRB_DRAWN_GUI
-#endif
 
 using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 
 using System.Collections;
 using System.Globalization;
 using System.Collections.Generic;
-#if FRB_MDX
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
-using Direct3D=Microsoft.DirectX.Direct3D;
-using Texture2D = FlatRedBall.Texture2D;
-#else//if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE || MONODROID
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
-#endif
 using FlatRedBall.Input;
 using FlatRedBall.ManagedSpriteGroups;
 using FlatRedBall.Graphics;
@@ -509,7 +501,7 @@ namespace FlatRedBall.Gui
 
             if (BringsClickedWindowsToFront == false)
             {
-                mWindowArray.Sort(SortZAndLayerBased);
+                mWindowArray.Sort(WindowComparisonForSorting);
             }
         }
         
@@ -710,13 +702,33 @@ namespace FlatRedBall.Gui
         /// </summary>
         public static void SortZAndLayerBased()
         {
-            //SortZAndLayerBased(mWindowArray[19], mWindowArray[18]);
-
-            mWindowArray.Sort(SortZAndLayerBased);
+            // This is not a stable sort. We need it to be:
+            //mWindowArray.Sort(SortZAndLayerBased);
+            InsertionSort(mWindowArray, WindowComparisonForSorting);
         }
 
+        public static void InsertionSort<T>(IList<T> list, Comparison<T> comparison)
+        {
+            if (list == null)
+                throw new ArgumentNullException("list");
+            if (comparison == null)
+                throw new ArgumentNullException("comparison");
 
-        static int SortZAndLayerBased(IWindow first, IWindow second)
+            int count = list.Count;
+            for (int j = 1; j < count; j++)
+            {
+                T key = list[j];
+
+                int i = j - 1;
+                for (; i >= 0 && comparison(list[i], key) > 0; i--)
+                {
+                    list[i + 1] = list[i];
+                }
+                list[i + 1] = key;
+            }
+        }
+
+        static int WindowComparisonForSorting(IWindow first, IWindow second)
         {
 #if DEBUG
 
