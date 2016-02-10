@@ -310,8 +310,9 @@ namespace Gum.Wireframe
                 #region Try handling by children
 
                 // Let's see if any children have the cursor over:
-                foreach (var child in this.Children)
+                for(int i = this.Children.Count -1; i > -1; i--)
                 {
+                    var child = this.Children[i];
                     if (child is GraphicalUiElement)
                     {
                         var asGue = child as GraphicalUiElement;
