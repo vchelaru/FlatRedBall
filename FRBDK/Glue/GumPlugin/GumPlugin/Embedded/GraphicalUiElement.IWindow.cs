@@ -63,7 +63,7 @@ namespace Gum.Wireframe
 
         partial void CustomAddToManagers()
         {
-            if (IsComponentOrInstanceOfComponent())
+            if (IsComponentOrInstanceOfComponent() && this.Parent == null)
             {
                 GuiManager.AddWindow(this);
             }
@@ -286,50 +286,106 @@ namespace Gum.Wireframe
             }
         }
 
-        public void TestCollision(Cursor cursor)
+        
+        /// <summary>
+        /// Tries to handle cursor activity. If this returns true, then either this element or one of its
+        /// children handled the activity. 
+        /// </summary>
+        /// <param name="cursor">Reference to the cursor object</param>
+        /// <returns>Whether this or one of its children handled the cursor activity, blocking other windows from receiving cursor input this frame.</returns>
+        /// <remarks>This method will always allow children to handle the activity first, as children draw in front of their parents. Only components
+        /// can have UI elements. Standard elements such as Sprites or Containers cannot themselves handle the activity, but they do give their children the
+        /// opportunity to handle activity. This is because components (such as buttons) may be part of a container for stacking or other organization.
+        /// 
+        /// Ultimately this hierarchical logic exists because only the top-most parent is added to the GuiManager, and it is responsible for
+        /// giving its children the opportunity to perform cursor-related input. </remarks>
+        private bool TryHandleCursorActivity(Cursor cursor)
         {
+            bool handledByChild = false;
+            bool handledByThis = false;
+
             if (HasCursorOver(cursor))
             {
-                cursor.WindowOver = this;
 
-                if (cursor.PrimaryPush)
+                #region Try handling by children
+
+                // Let's see if any children have the cursor over:
+                foreach (var child in this.Children)
                 {
+                    if (child is GraphicalUiElement)
+                    {
+                        var asGue = child as GraphicalUiElement;
+                        // Children should always have the opportunity to handle activity,
+                        // even if they are not components, because they may contain components as their children
+                        //if (asGue.IsComponentOrInstanceOfComponent() && asGue.HasCursorOver(cursor))
+                        if (asGue.HasCursorOver(cursor))
+                            {
+                            handledByChild = asGue.TryHandleCursorActivity(cursor);
 
-                    cursor.WindowPushed = this;
-
-                    if (Push != null)
-                        Push(this);
-
-
-                    cursor.GrabWindow(this);
-
+                            if(handledByChild)
+                            {
+                                break;
+                            }
+                        }
+                    }
                 }
 
-                if (cursor.PrimaryClick) // both pushing and clicking can occur in one frame because of buffered input
-                {
-                    if (cursor.WindowPushed == this)
-                    {
-                        if (Click != null)
-                        {
-                            Click(this);
-                        }
-                        if (cursor.PrimaryClickNoSlide && ClickNoSlide != null)
-                        {
-                            ClickNoSlide(this);
-                        }
+                #endregion
 
-                        // if (cursor.PrimaryDoubleClick && DoubleClick != null)
-                        //   DoubleClick(this);
-                    }
-                    else
+
+                if (!handledByChild && this.IsComponentOrInstanceOfComponent())
+                {
+                    handledByThis = true;
+
+                    cursor.WindowOver = this;
+
+                    if (cursor.PrimaryPush)
                     {
-                        if (SlideOnClick != null)
+
+                        cursor.WindowPushed = this;
+
+                        if (Push != null)
+                            Push(this);
+
+
+                        cursor.GrabWindow(this);
+
+                    }
+
+                    if (cursor.PrimaryClick) // both pushing and clicking can occur in one frame because of buffered input
+                    {
+                        if (cursor.WindowPushed == this)
                         {
-                            SlideOnClick(this);
+                            if (Click != null)
+                            {
+                                Click(this);
+                            }
+                            if (cursor.PrimaryClickNoSlide && ClickNoSlide != null)
+                            {
+                                ClickNoSlide(this);
+                            }
+
+                            // if (cursor.PrimaryDoubleClick && DoubleClick != null)
+                            //   DoubleClick(this);
+                        }
+                        else
+                        {
+                            if (SlideOnClick != null)
+                            {
+                                SlideOnClick(this);
+                            }
                         }
                     }
                 }
             }
+
+            return handledByThis || handledByChild;
+        }
+
+
+        public void TestCollision(Cursor cursor)
+        {
+            TryHandleCursorActivity(cursor);
         }
 
         public void UpdateDependencies()
