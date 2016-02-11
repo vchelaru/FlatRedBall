@@ -74,10 +74,9 @@ namespace Gum.Wireframe
 
         partial void CustomRemoveFromManagers()
         {
-            if (IsComponentOrInstanceOfComponent())
-            {
+            // Always remove it - if it's not a part of it, no big deal, FRB can handle that
+            //if (IsComponentOrInstanceOfComponent())
                 GuiManager.RemoveWindow(this);
-            }
         }
 
         #region IWindow implementation

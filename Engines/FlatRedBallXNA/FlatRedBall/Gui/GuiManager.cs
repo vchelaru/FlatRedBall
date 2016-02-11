@@ -1143,13 +1143,6 @@ namespace FlatRedBall.Gui
                 mDominantWindows.Remove(windowToRemove);
             }
 
-#if SUPPORTS_FRB_DRAWN_GUI
-            if (windowToRemove is Window)
-            {
-                ((Window)windowToRemove).Destroy(keepEvents);
-            }
-#endif
-
             if (InputManager.InputReceiver == windowToRemove)
                 InputManager.InputReceiver = null;
         }
