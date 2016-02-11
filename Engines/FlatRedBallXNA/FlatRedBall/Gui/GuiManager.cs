@@ -806,30 +806,13 @@ namespace FlatRedBall.Gui
         
         public static void Control()
         {
-#if SUPPORTS_FRB_DRAWN_GUI
-            mObjectDisplayManager.Activity();
-#endif
-
 #if PROFILE
             TimeManager.TimeSection("Object Display Manager Activity");
 #endif
 
             InputManager.ReceivingInputJustSet = false;
-#if SUPPORTS_FRB_DRAWN_GUI
-            TextBox tempTextBox = InputManager.ReceivingInput as TextBox;
-#endif
 
             mToolTipText = "";
-
-            #region Get rid of mCollapseItemDraggedOff when clicking
-
-#if SUPPORTS_FRB_DRAWN_GUI
-            // this has to be done before any other code so that the CollapseItemDraggedOff is valid for one frame
-            // after the click
-            if (Cursor.PrimaryClick)
-                mCollapseItemDraggedOff = null;
-#endif
-            #endregion
 
             #region Update cursors
 
@@ -847,15 +830,6 @@ namespace FlatRedBall.Gui
                     }
                 }
 
-                if ((c.MiddlePush && c.WindowOver == null) || c.MiddleClick)
-                {
-#if SUPPORTS_FRB_DRAWN_GUI
-                    if (c.WindowMiddleButtonPushed != null)
-                    {
-                        c.WindowMiddleButtonPushed = null;
-                    }
-#endif
-                }
                 #endregion
 
                 c.Update(TimeManager.CurrentTime);
@@ -865,8 +839,6 @@ namespace FlatRedBall.Gui
             }
 
             #endregion
-
-
 
             UpdateDependencies();
 
@@ -991,7 +963,8 @@ namespace FlatRedBall.Gui
                                 else if (!window.IgnoredByCursor && window.HasCursorOver(c))
                                 {
                                     window.TestCollision(c);
-                                    c.LastWindowOver = window;
+                                    // I think we should use the cursor's WindowOver which may be a child of Window
+                                    c.LastWindowOver = c.WindowOver;
                                     if (Cursor.PrimaryPush && i < mWindowArray.Count && BringsClickedWindowsToFront == true)
                                     {// we pushed a button, so let's bring it to the front
                                         mWindowArray.Remove(window); mWindowArray.Add(window);

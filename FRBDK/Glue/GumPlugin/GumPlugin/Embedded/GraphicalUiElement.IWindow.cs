@@ -63,7 +63,9 @@ namespace Gum.Wireframe
 
         partial void CustomAddToManagers()
         {
-            if (IsComponentOrInstanceOfComponent() && this.Parent == null)
+            // need to add even regular components to the GuiManager since they may contain components
+            //if (IsComponentOrInstanceOfComponent() && this.Parent == null)
+            if (this.Parent == null)
             {
                 GuiManager.AddWindow(this);
             }
