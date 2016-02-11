@@ -612,6 +612,16 @@ namespace FlatRedBall.Screens
                 }
                 #endregion
 
+                #region IWindows
+
+                if (GuiManager.Windows.Count != 0)
+                {
+                    messages.Add("The GuiManager has " + GuiManager.Windows.Count + 
+                        " windows. See \"FlatRedBall.Gui.GuiManager.Windows\"");
+                }
+
+                #endregion
+
                 if (messages.Count != 0)
                 {
                     string errorString = "The Screen that was just unloaded did not clean up after itself:";
