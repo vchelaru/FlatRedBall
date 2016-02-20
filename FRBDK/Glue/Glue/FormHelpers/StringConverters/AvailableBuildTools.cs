@@ -9,6 +9,8 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
 {
     public class AvailableBuildTools : TypeConverter
     {
+        public bool ShowNoneOption { get; set; }
+
         public string SourceFileExtensionRestriction
         {
             get;
@@ -58,12 +60,18 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
                         listToFill.RemoveAt(i);
                     }
                 }
-                
             }
+
+            if(ShowNoneOption)
+            {
+                listToFill.Insert(0, "<None>");
+            }
+
 
 			StandardValuesCollection svc = new StandardValuesCollection(listToFill);
 
 			return svc;
         }
+        
     }
 }

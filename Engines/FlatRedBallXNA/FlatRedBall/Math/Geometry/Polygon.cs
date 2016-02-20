@@ -1931,14 +1931,21 @@ namespace FlatRedBall.Math.Geometry
         /// <summary>
         /// Returns a vector from the argument point to the closest point on this Polygon.
         /// </summary>
-        /// <param name="x">The absolute X position of the point to begin the vector at.</param>
-        /// <param name="y">The absolute Y position of the point to begin the vector at.</param>
+        /// <param name="x">The absolute X to check against the polygon.</param>
+        /// <param name="y">The absolute Y to check against the polygon.</param>
         /// <returns>The shortest vector from the argument x,y to the Polygon.</returns>
         public Point3D VectorFrom(double x, double y)
         {
             return VectorFrom(x, y, out sThrowAwayInt);
         }
 
+        /// <summary>
+        /// Returns a value representing the vector from teh argument to the closest point on the Polygon.
+        /// </summary>
+        /// <param name="x">The absolute X to check against the polygon.</param>
+        /// <param name="y">The absolute Y to check against the polygon.</param>
+        /// <param name="pointIndexBefore">The index of the point that begins the line on which the closest point falls upon.</param>
+        /// <returns>The shortest vector from the argument x, y to the Polygon.</returns>
         public Point3D VectorFrom(double x, double y, out int pointIndexBefore)
         {
             return VectorFrom(x, y, mVertices, out pointIndexBefore);

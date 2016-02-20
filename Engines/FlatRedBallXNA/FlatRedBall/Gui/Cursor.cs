@@ -651,15 +651,9 @@ namespace FlatRedBall.Gui
 		}
 #endif
 
-		#region XML Docs
 		/// <summary>
-		/// The movement rate of the controlling input (usually mouse) on the z axis.
+		/// The movement rate of the controlling input (usually mouse) on the z axis. For the mouse this refers to the scroll wheel.
 		/// </summary>
-		/// <remarks>
-		/// Cursor velocity properties do not counsider bounds; that is, a cursor will still have an xVelocity
-		/// even if it is pressed against the right side of the screen and being moved to the right.
-		/// </remarks>
-		#endregion
 		public float ZVelocity
 		{
 			get{	return si.ZVelocity;	}

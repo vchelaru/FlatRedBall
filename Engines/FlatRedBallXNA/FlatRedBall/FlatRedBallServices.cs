@@ -1515,7 +1515,7 @@ namespace FlatRedBall
 #if XNA4
             lock (mContentManagers)
             {
-                FlatRedBall.Content.ContentManager.ClearPremultipliedAlphaImageData();
+                Content.ContentLoaders.TextureContentLoader.ClearPremultipliedAlphaImageData();
             }
 #endif
         }

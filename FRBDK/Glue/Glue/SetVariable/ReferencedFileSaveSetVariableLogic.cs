@@ -449,18 +449,22 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 BuildItem item = ProjectManager.ContentProject.GetItem(oldName);
 
-                if (newName.ToLower().Replace("/", "\\").StartsWith("content\\"))
+                // The item could be null if this file is excluded from the project
+                if (item != null)
                 {
-                    newName = newName.Substring("content\\".Length);
+                    if (newName.ToLower().Replace("/", "\\").StartsWith("content\\"))
+                    {
+                        newName = newName.Substring("content\\".Length);
+                    }
+
+                    item.Include = newName.Replace("/", "\\");
+
+                    string nameWithoutExtensions = FileManager.RemovePath(FileManager.RemoveExtension(newName));
+
+                    item.SetMetadata("Name", nameWithoutExtensions);
+
+                    ProjectManager.ContentProject.RenameInDictionary(oldName, newName, item);
                 }
-
-                item.Include = newName.Replace("/", "\\");
-
-                string nameWithoutExtensions = FileManager.RemovePath(FileManager.RemoveExtension(newName));
-
-                item.SetMetadata("Name", nameWithoutExtensions);
-
-                ProjectManager.ContentProject.RenameInDictionary(oldName, newName, item);
             }
         }
 

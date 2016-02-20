@@ -143,9 +143,10 @@ namespace FlatRedBall.Glue.Managers
 
         }
 
-        public BuildToolAssociation GetBuildToolAssocationAndNameFor(string fileName, out bool userCancelled, out string rfsName, out string extraCommandLineArguments)
+        public BuildToolAssociation GetBuildToolAssocationAndNameFor(string fileName, out bool userCancelled, out bool userPickedNone, out string rfsName, out string extraCommandLineArguments)
         {
             userCancelled = false;
+            userPickedNone = false;
             rfsName = null;
 
             BuildToolAssociation buildToolAssociation = null;
@@ -167,6 +168,14 @@ namespace FlatRedBall.Glue.Managers
             nfw.ComboBoxMessage = "Which builder would you like to use for this file?";
 
             int commandLineArgumentsId = nfw.AddTextBox("Enter extra command line arguments:");
+            
+            bool showNoneOption = Elements.AvailableAssetTypes.Self.AllAssetTypes
+                .Any(item => item.Extension == sourceExtension && string.IsNullOrEmpty(item.CustomBuildToolName));
+
+            if(showNoneOption)
+            {
+                nfw.AddOption("<None>");
+            }
 
             foreach (BuildToolAssociation bta in btaList)
             {
@@ -186,8 +195,15 @@ namespace FlatRedBall.Glue.Managers
             if (result == DialogResult.OK)
             {
                 buildToolAssociation = nfw.SelectedItem as BuildToolAssociation;
-                rfsName = nfw.ResultName;
-                extraCommandLineArguments = nfw.GetValueFromId(commandLineArgumentsId);
+                if (buildToolAssociation != null)
+                {
+                    rfsName = nfw.ResultName;
+                    extraCommandLineArguments = nfw.GetValueFromId(commandLineArgumentsId);
+                }
+                else
+                {
+                    userPickedNone = nfw.SelectedItem is string && (nfw.SelectedItem as string) == "<None>";
+                }
             }
             else
             {

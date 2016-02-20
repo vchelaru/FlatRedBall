@@ -238,11 +238,14 @@
     <Compile Include="Content\AnimationChain\AnimationFrameSaveBase.cs" />
     <Compile Include="Content\AnimationChain\AnimationFrameSave.cs" />
     <Compile Include="Content\ContentLoadBatch.cs" />
+    <Compile Include="Content\ContentLoaders\SongLoader.cs" />
+    <Compile Include="Content\ContentLoaders\TextureContentLoader.cs" />
     <Compile Include="Content\ContentManager.cs" />
     <Compile Include="Content\CsvReader.cs" />
     <Compile Include="Content\DefaultFontDataColors.cs" />
     <Compile Include="Content\EmissionSettingsReader.cs" />
     <Compile Include="Content\EmitterReader.cs" />
+    <Compile Include="Content\IContentLoader.cs" />
     <Compile Include="Content\Input\KeyboardRecordSave.cs" />
     <Compile Include="Attributes\InstanceMember.cs" />
     <Compile Include="Content\Instructions\AnimationSequenceSave.cs" />

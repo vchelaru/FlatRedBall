@@ -229,7 +229,6 @@ namespace FlatRedBall.Screens
         #endregion
 
         #region Public Methods
-#if !FRB_MDX
         public virtual void Activating()
         {
             this.PreActivate();// for generated code to override, to reload the statestack
@@ -242,7 +241,7 @@ namespace FlatRedBall.Screens
             this.PreDeactivate();// for generated code to override, to save the statestack
             this.OnDeactivate(PlatformServices.State);// for user generated code;
         }
-#endif
+
         #region Activation Methods
 #if !FRB_MDX
         protected virtual void OnActivate(StateManager state)
@@ -306,20 +305,13 @@ namespace FlatRedBall.Screens
 
         Type asyncScreenTypeToLoad = null;
 
-#if XBOX
-        public void StartAsyncLoad(Type type, Action afterLoaded)
-#else
+
 		public void StartAsyncLoad(Type type, Action afterLoaded = null)
-#endif
         {
             StartAsyncLoad(type.FullName, afterLoaded);
         }
 
-#if XBOX
-        public void StartAsyncLoad(string screenType, Action afterLoaded)
-#else
         public void StartAsyncLoad(string screenType, Action afterLoaded = null)
-#endif
         {
             if (AsyncLoadingState == AsyncLoadingState.LoadingScreen)
             {

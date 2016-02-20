@@ -1940,16 +1940,23 @@ namespace FlatRedBall.Glue.FormHelpers
 
             BuildToolAssociation buildToolAssociation = null;
             bool isBuiltFile = BuildToolAssociationManager.Self.GetIfIsBuiltFile(fileName);
+            bool userPickedNone = false;
+
             if (isBuiltFile)
             {
-                buildToolAssociation = BuildToolAssociationManager.Self.GetBuildToolAssocationAndNameFor(fileName, out userCancelled, out rfsName, out extraCommandLineArguments);
+                buildToolAssociation = BuildToolAssociationManager.Self.GetBuildToolAssocationAndNameFor(fileName, out userCancelled, out userPickedNone, out rfsName, out extraCommandLineArguments);
             }
 
             #endregion
 
             string sourceExtension = FileManager.GetExtension(fileName);
 
-            if (isBuiltFile && buildToolAssociation == null && !userCancelled)
+            if(userCancelled)
+            {
+                isBuiltFile = false;
+            }
+
+            if (isBuiltFile && buildToolAssociation == null && !userCancelled && !userPickedNone)
             {
                 TaskManager.Self.OnUiThread(() =>
                     {
