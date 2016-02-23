@@ -238,8 +238,6 @@
     <Compile Include="Content\AnimationChain\AnimationFrameSaveBase.cs" />
     <Compile Include="Content\AnimationChain\AnimationFrameSave.cs" />
     <Compile Include="Content\ContentLoadBatch.cs" />
-    <Compile Include="Content\ContentLoaders\SongLoader.cs" />
-    <Compile Include="Content\ContentLoaders\TextureContentLoader.cs" />
     <Compile Include="Content\ContentManager.cs" />
     <Compile Include="Content\CsvReader.cs" />
     <Compile Include="Content\DefaultFontDataColors.cs" />
