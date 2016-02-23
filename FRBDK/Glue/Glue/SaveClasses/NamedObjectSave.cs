@@ -371,11 +371,24 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             get
             {
-                return Properties.GetValue<string>("ConditionalCompilationSymbols");
+                return Properties.GetValue<string>(nameof(ConditionalCompilationSymbols));
             }
             set
             {
-                Properties.SetValue("ConditionalCompilationSymbols", value);
+                Properties.SetValue(nameof(ConditionalCompilationSymbols), value);
+            }
+        }
+
+        // this defaults to true - set in the constructor
+        public bool GenerateTimedEmit
+        {
+            get
+            {
+                return Properties.GetValue<bool>(nameof(GenerateTimedEmit));
+            }
+            set
+            {
+                Properties.SetValue(nameof(GenerateTimedEmit), value);
             }
         }
 
@@ -834,6 +847,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public NamedObjectSave()
         {
+            GenerateTimedEmit = true;
             Instantiate = true;
             mTypedMembersReadOnly = new ReadOnlyCollection<TypedMemberBase>(mTypedMembers);
             //Events = new List<EventSave>();

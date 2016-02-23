@@ -1951,7 +1951,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             string sourceExtension = FileManager.GetExtension(fileName);
 
-            if(userCancelled)
+            if(userPickedNone)
             {
                 isBuiltFile = false;
             }

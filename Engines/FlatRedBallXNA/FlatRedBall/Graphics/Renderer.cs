@@ -1,9 +1,4 @@
 
-#if !SILVERLIGHT && !WINDOWS_8 && !XNA4 && !MONOGAME && !FRB_MDX
-#define SUPPORTS_POST_PROCESSING
-#endif
-
-
 #region Using Statements
 using System;
 using System.Collections.Generic;
@@ -1439,14 +1434,14 @@ namespace FlatRedBall.Graphics
 
 
 
-            for (int c = 0; c < SpriteManager.Cameras.Count; c++)
+            for (int i = 0; i < SpriteManager.Cameras.Count; i++)
             {
                 // July 25, 2014
                 // I don't think we need to do this anymore.  This is old code that
                 // doesn't really fit the pattern.  The Camera should be passed in rather
                 // than set through this function:
                 //Camera camera = SpriteManager.SetCurrentCamera(c);
-                Camera camera = SpriteManager.Cameras[c];
+                Camera camera = SpriteManager.Cameras[i];
 
                 lock (Renderer.Graphics.GraphicsDevice)
                 {
@@ -1459,7 +1454,7 @@ namespace FlatRedBall.Graphics
                             string cameraName = camera.Name;
                             if (string.IsNullOrEmpty(cameraName))
                             {
-                                cameraName = "at index " + c;
+                                cameraName = "at index " + i;
                             }
                             Section.GetAndStartContextAndTime("Render camera " + cameraName);
                         }
