@@ -79,7 +79,9 @@ namespace FlatRedBall.Content
  : Microsoft.Xna.Framework.Content.ContentManager
 #endif
 	{
-		#region Fields
+        #region Fields
+
+        TextureContentLoader textureContentLoader = new TextureContentLoader();
 
 		//internal Dictionary<string, Type> mAssetTypeAssociation;
 		internal Dictionary<string, object> mAssets;
@@ -530,8 +532,7 @@ namespace FlatRedBall.Content
 				if (typeof(T) == typeof(Texture2D) || typeof(T) == typeof(Microsoft.Xna.Framework.Graphics.Texture2D))
 				{
                     // for now we'll create it here, eventually have it in a dictionary:
-                    var loader = new TextureContentLoader();
-					loadedAsset = loader.Load(assetName);
+					loadedAsset = textureContentLoader.Load(assetName);
 				}
 
 				#region Scene
