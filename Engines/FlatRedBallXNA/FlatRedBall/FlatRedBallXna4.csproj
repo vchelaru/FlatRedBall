@@ -243,7 +243,6 @@
     <Compile Include="Content\DefaultFontDataColors.cs" />
     <Compile Include="Content\EmissionSettingsReader.cs" />
     <Compile Include="Content\EmitterReader.cs" />
-    <Compile Include="Content\IContentLoader.cs" />
     <Compile Include="Content\Input\KeyboardRecordSave.cs" />
     <Compile Include="Attributes\InstanceMember.cs" />
     <Compile Include="Content\Instructions\AnimationSequenceSave.cs" />

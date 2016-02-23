@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentLoaders\SongLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentLoaders\TextureContentLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Content\IContentLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debugging\CrossPlatform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FlatRedBallServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\ICollidable.cs" />
