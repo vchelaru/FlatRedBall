@@ -1,7 +1,9 @@
 ﻿using FlatRedBall.Graphics;
 using FlatRedBall.Graphics.Texture;
 using FlatRedBall.IO;
+#if !WINDOWS_8
 using FlatRedBall.IO.Gif;
+#endif
 using FlatRedBall.Math;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
