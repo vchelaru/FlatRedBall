@@ -295,9 +295,12 @@ namespace FlatRedBall.Glue.Parsing
 
             // These files may exist, but not be part of the project, so let's make sure that they are
             // part of the project
-            ProjectManager.UpdateFileMembershipInProject(ProjectManager.ProjectBase, poolListFileName, false, false);
-            ProjectManager.UpdateFileMembershipInProject(ProjectManager.ProjectBase, iEntityFactoryFileName, false, false);
-            ProjectManager.SaveProjects();
+            bool wasPoolListAdded = ProjectManager.UpdateFileMembershipInProject(ProjectManager.ProjectBase, poolListFileName, false, false);
+            bool wasEntityFactoryAdded = ProjectManager.UpdateFileMembershipInProject(ProjectManager.ProjectBase, iEntityFactoryFileName, false, false);
+            if (wasPoolListAdded || wasEntityFactoryAdded)
+            {
+                Managers.TaskManager.Self.AddAsyncTask( ProjectManager.SaveProjects, "Saving Project because of performance file adds");
+            }
 
         }
 

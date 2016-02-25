@@ -324,6 +324,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             bool shouldIncludeIsContainer = true;
             bool shouldShowIsZBuffered = false;
             bool shouldIncludeSetByContainer = true;
+            bool shouldShowGenerateTimedEmit = false;
 
             ExcludeMember("InstructionSaves");
             ExcludeMember("Properties");
@@ -437,6 +438,9 @@ namespace FlatRedBall.Glue.GuiDisplay
                 shouldShowIsZBuffered = instance.SourceType == SourceType.FlatRedBallType &&
                     (instance.SourceClassType != "Sprite" || instance.SourceClassType != "SpriteFrame");
 
+                shouldShowGenerateTimedEmit = 
+                    (instance.SourceType == SourceType.FlatRedBallType && instance.SourceClassType == "Emitter") ||
+                    (instance.SourceType == SourceType.File && instance.ClassType == "Emitter");
 
                 #region Remove based off of SourceType
 
@@ -490,6 +494,14 @@ namespace FlatRedBall.Glue.GuiDisplay
                     ExcludeMember("SourceFile");
                 }
 
+                if(shouldShowGenerateTimedEmit)
+                {
+                    IncludeMember(nameof(instance.GenerateTimedEmit), typeof(NamedObjectSave));
+                }
+                else
+                {
+                    ExcludeMember(nameof(instance.GenerateTimedEmit));
+                }
 
                 if (shouldIncludeSourceName)
                 {

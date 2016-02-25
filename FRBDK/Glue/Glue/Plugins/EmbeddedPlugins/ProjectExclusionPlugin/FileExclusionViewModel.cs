@@ -75,11 +75,17 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
 
                         TaskManager.Self.AddAsyncTask(() =>
                         {
+                            if (currentElement != null)
+                            {
                                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
+                            }
+                            else
+                            {
+                                GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+                            }
 
-
-                                GlueCommands.Self.GluxCommands.SaveGlux();
-                                GlueCommands.Self.ProjectCommands.SaveProjects();
+                            GlueCommands.Self.GluxCommands.SaveGlux();
+                            GlueCommands.Self.ProjectCommands.SaveProjects();
                         },
                         "Generating element and saving projects"
                         );

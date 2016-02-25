@@ -64,6 +64,13 @@ namespace FlatRedBall.IO.Csv
             rcr.CreateObjectDictionary<KeyType, ValueType>(dictionaryToPopulate, ContentManagerName);
         }
 
+        public static void CsvDeserializeDictionary<KeyType, ValueType>(Stream stream, Dictionary<KeyType, ValueType> dictionaryToPopulate)
+        {
+            var rcr = CsvDeserializeToRuntime<RuntimeCsvRepresentation>(stream);
+
+            rcr.CreateObjectDictionary<KeyType, ValueType>(dictionaryToPopulate, ContentManagerName);
+        }
+
         public static RuntimeCsvRepresentation CsvDeserializeToRuntime(string fileName)
         {
             return CsvDeserializeToRuntime<RuntimeCsvRepresentation>(fileName);
@@ -95,82 +102,7 @@ namespace FlatRedBall.IO.Csv
                 // Creating a filestream then using that enables us to open files that are open by other apps.
                 FileStream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 #endif
-                System.IO.StreamReader streamReader = new StreamReader(stream);
-
-
-                using (CsvReader csv = new CsvReader(streamReader, true, Delimiter, CsvReader.DefaultQuote, CsvReader.DefaultEscape, CsvReader.DefaultComment, true, CsvReader.DefaultBufferSize))
-                {
-                    runtimeCsvRepresentation = new T();
-
-                    string[] fileHeaders = csv.GetFieldHeaders();
-                    runtimeCsvRepresentation.Headers = new CsvHeader[fileHeaders.Length];
-
-                    for (int i = 0; i < fileHeaders.Length; i++)
-                    {
-                        runtimeCsvRepresentation.Headers[i] = new CsvHeader(fileHeaders[i]);
-                    }
-
-                    int numberOfHeaders = runtimeCsvRepresentation.Headers.Length;
-
-                    runtimeCsvRepresentation.Records = new List<string[]>();
-
-                    int recordIndex = 0;
-                    int columnIndex = 0;
-                    string[] newRecord = null;
-                    try
-                    {
-                        while (csv.ReadNextRecord())
-                        {
-
-
-                            newRecord = new string[numberOfHeaders];
-                            if (recordIndex == 123)
-                            {
-                                int m = 3;
-                            }
-                            bool anyNonEmpty = false;
-                            for (columnIndex = 0; columnIndex < numberOfHeaders; columnIndex++)
-                            {
-                                string record = csv[columnIndex];
-
-                                newRecord[columnIndex] = record;
-                                if (record != "")
-                                {
-                                    anyNonEmpty = true;
-                                }
-                            }
-
-                            if (anyNonEmpty)
-                            {
-                                runtimeCsvRepresentation.Records.Add(newRecord);
-                            }
-                            recordIndex++;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        string message = 
-                            "Error reading record " + recordIndex + " at column " + columnIndex;
-
-                        if(columnIndex != 0 && newRecord != null)
-                        {
-                            foreach(string s in newRecord)
-                            {
-
-                                    message += "\n" + s;
-                            }
-                        }
-
-                        throw new Exception(message, e);
-
-                    }
-                }
-
-                // Vic says - not sure how this got here, but it causes a crash!
-                //streamReader.DiscardBufferedData();
-
-                FileManager.Close(streamReader);
-                streamReader.Dispose();
+                runtimeCsvRepresentation = CsvDeserializeToRuntime<T>(stream);
                 FileManager.Close(stream);
                 stream.Dispose();
 
@@ -198,6 +130,81 @@ namespace FlatRedBall.IO.Csv
             return runtimeCsvRepresentation;
         }
 
+        public static T CsvDeserializeToRuntime<T>(Stream stream) where T : RuntimeCsvRepresentation, new()
+        {
+            T runtimeCsvRepresentation;
+
+            using (System.IO.StreamReader streamReader = new StreamReader(stream))
+            using (CsvReader csv = new CsvReader(streamReader, true, Delimiter, CsvReader.DefaultQuote, CsvReader.DefaultEscape, CsvReader.DefaultComment, true, CsvReader.DefaultBufferSize))
+            {
+                runtimeCsvRepresentation = new T();
+
+                string[] fileHeaders = csv.GetFieldHeaders();
+                runtimeCsvRepresentation.Headers = new CsvHeader[fileHeaders.Length];
+
+                for (int i = 0; i < fileHeaders.Length; i++)
+                {
+                    runtimeCsvRepresentation.Headers[i] = new CsvHeader(fileHeaders[i]);
+                }
+
+                int numberOfHeaders = runtimeCsvRepresentation.Headers.Length;
+
+                runtimeCsvRepresentation.Records = new List<string[]>();
+
+                int recordIndex = 0;
+                int columnIndex = 0;
+                string[] newRecord = null;
+                try
+                {
+                    while (csv.ReadNextRecord())
+                    {
+
+
+                        newRecord = new string[numberOfHeaders];
+                        if (recordIndex == 123)
+                        {
+                            int m = 3;
+                        }
+                        bool anyNonEmpty = false;
+                        for (columnIndex = 0; columnIndex < numberOfHeaders; columnIndex++)
+                        {
+                            string record = csv[columnIndex];
+
+                            newRecord[columnIndex] = record;
+                            if (record != "")
+                            {
+                                anyNonEmpty = true;
+                            }
+                        }
+
+                        if (anyNonEmpty)
+                        {
+                            runtimeCsvRepresentation.Records.Add(newRecord);
+                        }
+                        recordIndex++;
+                    }
+                }
+                catch (Exception e)
+                {
+                    string message =
+                        "Error reading record " + recordIndex + " at column " + columnIndex;
+
+                    if (columnIndex != 0 && newRecord != null)
+                    {
+                        foreach (string s in newRecord)
+                        {
+
+                            message += "\n" + s;
+                        }
+                    }
+
+                    throw new Exception(message, e);
+
+                }
+            }
+
+            return runtimeCsvRepresentation;
+        }
 
         public static void Serialize(RuntimeCsvRepresentation rcr, string fileName)
         {

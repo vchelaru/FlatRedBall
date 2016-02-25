@@ -132,7 +132,7 @@ namespace FlatRedBall.Glue.Parsing
         {
             if (element == null)
             {
-                throw new InvalidOperationException();
+                throw new ArgumentNullException("element");
             }
 
             string template;
