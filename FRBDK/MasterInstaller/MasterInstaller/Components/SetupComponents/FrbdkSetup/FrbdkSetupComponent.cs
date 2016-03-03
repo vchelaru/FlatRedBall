@@ -1,5 +1,5 @@
 ﻿using System;
-using MasterInstaller.Components.MainComponents.SetupType;
+using MasterInstaller.Components.Controls;
 using MasterInstaller.Managers;
 
 namespace MasterInstaller.Components.SetupComponents.FrbdkSetup
@@ -10,60 +10,65 @@ namespace MasterInstaller.Components.SetupComponents.FrbdkSetup
 
         public FrbdkSetupComponent()
         {
-            Control = new FrbdkSetupControl();
+            //Control = new FrbdkSetupControl();
         }
 
-        public override ComponentBase PreviousComponent
+        protected override BasePage CreateControl()
         {
-            get { return ComponentStorage.CustomSetupComponent; }
+            throw new NotImplementedException();
         }
 
-        public override ComponentBase NextComponent
-        {
-            get { return ComponentStorage.BeginInstallComponent; }
-        }
+        //public override ComponentBase PreviousComponent
+        //{
+        //    get { return ComponentStorage.CustomSetupComponent; }
+        //}
 
-        public override void MovedToComponent()
-        {
-            base.MovedToComponent();
+        //public override ComponentBase NextComponent
+        //{
+        //    get { return ComponentStorage.BeginInstallComponent; }
+        //}
 
-            switch(ComponentStorage.GetValue<SetupTypeComponent.SetupType>(SetupTypeComponent.SetupTypeName))
-            {
-                case SetupTypeComponent.SetupType.Custom:
-                    break;
+        //public override void MovedToComponent()
+        //{
+        //    base.MovedToComponent();
 
-                default:
-                    OnMoveToNext();
-                    break;
-            }
-        }
+        //    switch(ComponentStorage.GetValue<SetupTypeComponent.SetupType>(SetupTypeComponent.SetupTypeName))
+        //    {
+        //        case SetupTypeComponent.SetupType.Custom:
+        //            break;
 
-        public override bool MovingNextFromComponent()
-        {
-            switch (ComponentStorage.GetValue<SetupTypeComponent.SetupType>(SetupTypeComponent.SetupTypeName))
-            {
-                case SetupTypeComponent.SetupType.Custom:
-                    var control = Control as FrbdkSetupControl;
-                    ComponentStorage.SetValue(Path, control.lblPath.Text);
+        //        default:
+        //            OnMoveToNext();
+        //            break;
+        //    }
+        //}
 
-                    break;
+        //public override bool MovingNextFromComponent()
+        //{
+        //    switch (ComponentStorage.GetValue<SetupTypeComponent.SetupType>(SetupTypeComponent.SetupTypeName))
+        //    {
+        //        case SetupTypeComponent.SetupType.Custom:
+        //            var control = Control as FrbdkSetupControl;
+        //            ComponentStorage.SetValue(Path, control.lblPath.Text);
 
-                default:
-                    ComponentStorage.SetValue(Path, FrbdkUpdaterManager.FrbdkInProgramFiles);
-                    break;
-            }
+        //            break;
 
-            return base.MovingNextFromComponent();
-        }
+        //        default:
+        //            ComponentStorage.SetValue(Path, FrbdkUpdaterManager.FrbdkInProgramFiles);
+        //            break;
+        //    }
 
-        protected override bool PreviousButtonEnabledByDefault
-        {
-            get { return true; }
-        }
+        //    return base.MovingNextFromComponent();
+        //}
 
-        protected override bool NextButtonEnabledByDefault
-        {
-            get { return true; }
-        }
+        //protected override bool PreviousButtonEnabledByDefault
+        //{
+        //    get { return true; }
+        //}
+
+        //protected override bool NextButtonEnabledByDefault
+        //{
+        //    get { return true; }
+        //}
     }
 }

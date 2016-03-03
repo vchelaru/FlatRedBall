@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MasterInstaller.Components
@@ -14,7 +15,7 @@ namespace MasterInstaller.Components
         public abstract string Description { get; }
         public abstract bool IsTypical { get; }
 
-        protected int Install(ExecutableDetails ed)
+        protected async Task<int> Install(ExecutableDetails ed)
         {
             var exitCode = 0;
 
@@ -31,8 +32,10 @@ namespace MasterInstaller.Components
 
             if (ed.AdditionalFiles != null)
             {
-                foreach (string file in ed.AdditionalFiles)
+                foreach (string unprocessedFile in ed.AdditionalFiles)
                 {
+                    var file = unprocessedFile.Replace("/", ".").Replace("\\", ".");
+
                     foreach (string resourceName in arrResources)
                     {
                         if (resourceName.EndsWith("." + file))
@@ -49,13 +52,15 @@ namespace MasterInstaller.Components
                 if (resourceName.EndsWith("." + installerName))
                 {
                     ExtractFileFromAssembly(currentAssembly, resourceName, installerName);
-                    exitCode = RunProcessUntilFinished(installerName, ed.Parameters);
+                    exitCode = await RunProcessUntilFinished(installerName, ed.Parameters);
                     break;
                 }
             }
 
             return exitCode;
         }
+
+        public abstract Task<int> Install();
 
         private static void ExtractFileFromAssembly(Assembly currentAssembly, string resourceName, string saveAsName)
         {
@@ -91,7 +96,7 @@ namespace MasterInstaller.Components
             }
         }
 
-        private int RunProcessUntilFinished(string saveAsName, string[] args)
+        private async Task<int> RunProcessUntilFinished(string saveAsName, string[] args)
         {
             try
             {
@@ -110,13 +115,17 @@ namespace MasterInstaller.Components
                 process.StartInfo.RedirectStandardOutput = true;
 
                 process.Start();
-                
-                while (!process.HasExited)
+
+                await Task.Run(() =>
                 {
 
-                    System.Threading.Thread.Sleep(10);
-                    Application.DoEvents();
-                }
+                    while (!process.HasExited)
+                    {
+
+                        System.Threading.Thread.Sleep(10);
+                        Application.DoEvents();
+                    }
+                });
 
                 string errorString;
 

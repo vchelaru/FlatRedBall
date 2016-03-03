@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using MasterInstaller.Components.MainComponents.SetupType;
 using MasterInstaller.Managers;
 using Microsoft.Win32;
 using System.Runtime.InteropServices;
 using System.Text;
 using MasterInstaller.Components.SetupComponents.FrbdkSetup;
-
+using MasterInstaller.Components.Controls;
+using System.Threading.Tasks;
 
 namespace MasterInstaller.Components.InstallableComponents.FRBDK
 {
@@ -16,19 +16,12 @@ namespace MasterInstaller.Components.InstallableComponents.FRBDK
 
         public FrbdkComponent()
         {
-            var control = new DefaultInstallControl {InstallName = Name, InstallDescription = Description};
-
-            Control = control;
         }
 
-        public override ComponentBase PreviousComponent
-        {
-            get { throw new System.NotImplementedException(); }
-        }
 
-        public override ComponentBase NextComponent
+        protected override BasePage CreateControl()
         {
-            get { return ComponentStorage.FileAssociationComponent; }
+            throw new NotImplementedException();
         }
 
         public override string Key
@@ -51,51 +44,55 @@ namespace MasterInstaller.Components.InstallableComponents.FRBDK
             get { return true; }
         }
 
-        public override void MovedToComponent()
-        {
-            base.MovedToComponent();
+        //public override void MovedToComponent()
+        //{
+        //    base.MovedToComponent();
 
+        //    List<string> dependencies = new List<string>();
+        //    dependencies.Add("FlatRedBall.dll");
+        //    dependencies.Add("Ionic.Zip.dll");
+        //    dependencies.Add("FlatRedBall.Tools.dll");
+
+        //    switch (ComponentStorage.GetValue<SetupTypeComponent.SetupType>(SetupTypeComponent.SetupTypeName))
+        //    {
+        //        case SetupTypeComponent.SetupType.Typical:
+        //            if (IsTypical)
+        //            {
+        //                PerformInstall(dependencies);
+        //            }
+        //            break;
+        //        case SetupTypeComponent.SetupType.Complete:
+        //            PerformInstall(dependencies);
+        //            break;
+        //        case SetupTypeComponent.SetupType.Custom:
+        //            if (ComponentStorage.GetValue<bool>(Key))
+        //            {
+        //                PerformInstall(dependencies);
+        //            }
+        //            break;
+        //        default:
+        //            throw new NotImplementedException();
+        //    }
+
+        //    OnMoveToNext();
+        //}
+
+        public override async Task<int> Install()
+        {
             List<string> dependencies = new List<string>();
             dependencies.Add("FlatRedBall.dll");
             dependencies.Add("Ionic.Zip.dll");
             dependencies.Add("FlatRedBall.Tools.dll");
 
-            switch (ComponentStorage.GetValue<SetupTypeComponent.SetupType>(SetupTypeComponent.SetupTypeName))
+            return await Install(new ExecutableDetails
             {
-                case SetupTypeComponent.SetupType.Typical:
-                    if (IsTypical)
-                    {
-                        PerformInstall(dependencies);
-                    }
-                    break;
-                case SetupTypeComponent.SetupType.Complete:
-                    PerformInstall(dependencies);
-                    break;
-                case SetupTypeComponent.SetupType.Custom:
-                    if (ComponentStorage.GetValue<bool>(Key))
-                    {
-                        PerformInstall(dependencies);
-                    }
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            OnMoveToNext();
-        }
-
-        private void PerformInstall(List<string> dependencies)
-        {
-            Install(new ExecutableDetails { ExecutableName = ExecutableName, AdditionalFiles = dependencies, ExtraLogic = FrbdkUpdaterManager.Self.CreateUpdaterFileAndAddShortcutFiles });
-
+                ExecutableName = ExecutableName,
+                AdditionalFiles = dependencies,
+                ExtraLogic = FrbdkUpdaterManager.Self.CreateUpdaterFileAndAddShortcutFiles
+            });
 
         }
-
-
-
-
-
-
+        
 
     }
 }

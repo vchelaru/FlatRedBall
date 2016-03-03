@@ -1,32 +1,27 @@
-﻿using System;
+﻿using MasterInstaller.Components.Controls;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
+using System.Linq;
 using System.Text;
-using System.Windows.Forms;
+using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace MasterInstaller.Components.InstallableComponents.FRBDK
 {
-    public partial class FileAssociationControl : UserControl
+    class FileAssociationControl : BasePage
     {
-
-
-        public bool ShouldInstall
+        public FileAssociationControl() : base()
         {
-            get
-            {
-                return checkBox1.Checked;
-            }
-            set
-            {
-                checkBox1.Checked = value;
-            }
+            CreateCheckBox();
         }
 
-        public FileAssociationControl()
+        private void CreateCheckBox()
         {
-            InitializeComponent();
+            var checkBox = new CheckBox();
+
+            checkBox.Content = "Set FRBDK file assocations";
+
+            LeftPanel.Children.Add(checkBox);
         }
     }
 }

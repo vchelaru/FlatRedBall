@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Windows.Forms;
-using MasterInstaller.Components.MainComponents.BeginInstall;
 using MasterInstaller.Components.MainComponents.Introduction;
 using Microsoft.Win32;
 using OfficialPlugins.FrbdkUpdater;
@@ -20,38 +19,38 @@ namespace MasterInstaller.Components
             //Disabled this since it wasn't quite working right.
             return;
 
-            //Set where to skip to when returning
-            ComponentStorage.SetValue(IntroductionComponent.SkipTo, component.Key);
+//            //Set where to skip to when returning
+//            ComponentStorage.SetValue(IntroductionComponent.SkipTo, component.Key);
             
-            //Set path to copy to
-            var newExePath = SavePath() + System.AppDomain.CurrentDomain.FriendlyName;
-            if (!Directory.Exists(SavePath()))
-                Directory.CreateDirectory(SavePath());
-            File.Copy(Application.ExecutablePath, newExePath, true);
+//            //Set path to copy to
+//            var newExePath = SavePath() + System.AppDomain.CurrentDomain.FriendlyName;
+//            if (!Directory.Exists(SavePath()))
+//                Directory.CreateDirectory(SavePath());
+//            File.Copy(Application.ExecutablePath, newExePath, true);
             
-            //Save current state
-            ComponentStorage.Save();
+//            //Save current state
+//            ComponentStorage.Save();
 
-            //Write exe to registry
-//#if DEBUG
-            RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
-                                                             true);
-//#else
-//            RegistryKey rk = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+//            //Write exe to registry
+////#if DEBUG
+//            RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
 //                                                             true);
-//#endif
+////#else
+////            RegistryKey rk = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+////                                                             true);
+////#endif
 
-            rk.SetValue("FRBInstaller", newExePath);
+//            rk.SetValue("FRBInstaller", newExePath);
 
-            //Prompt if the user wants to restart now
-            if(MessageBox.Show(
-                @"Application needs to restart your computer to continue.  Click Yes to restart or no to end the program.  Install will resume when the system is restarted.",
-                "Restart Needed", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                RestartComputer();
-            }
+//            //Prompt if the user wants to restart now
+//            if(MessageBox.Show(
+//                @"Application needs to restart your computer to continue.  Click Yes to restart or no to end the program.  Install will resume when the system is restarted.",
+//                "Restart Needed", MessageBoxButtons.YesNo) == DialogResult.Yes)
+//            {
+//                RestartComputer();
+//            }
 
-            System.Environment.Exit(0);
+//            System.Environment.Exit(0);
         }
 
         static void RestartComputer()

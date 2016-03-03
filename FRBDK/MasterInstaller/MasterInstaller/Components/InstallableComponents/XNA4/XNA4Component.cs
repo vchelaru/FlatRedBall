@@ -1,29 +1,24 @@
 ﻿using System;
 using System.Windows.Forms;
-using MasterInstaller.Components.MainComponents.SetupType;
 using Microsoft.Win32;
+using MasterInstaller.Components.Controls;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace MasterInstaller.Components.InstallableComponents.XNA4
 {
     public class XNA4Component : InstallableComponentBase
     {
-        private const string ExecutableName = "WindowsPhoneToolsWebInstaller.exe";
 
         public XNA4Component()
         {
-            var control = new DefaultInstallControl {InstallName = Name, InstallDescription = Description};
 
-            Control = control;
         }
 
-        public override ComponentBase PreviousComponent
-        {
-            get { throw new System.NotImplementedException(); }
-        }
 
-        public override ComponentBase NextComponent
+        protected override BasePage CreateControl()
         {
-            get { return ComponentStorage.FrbdkComponent; }
+            throw new NotImplementedException();
         }
 
         public override string Key
@@ -33,7 +28,7 @@ namespace MasterInstaller.Components.InstallableComponents.XNA4
 
         public override sealed string Name
         {
-            get { return "XNA Game Studio 4.0"; }
+            get { return "XNA 4.0 for Visual Studio 2015"; }
         }
 
         public override sealed string Description
@@ -46,59 +41,88 @@ namespace MasterInstaller.Components.InstallableComponents.XNA4
             get { return true; }
         }
 
-        public override void MovedToComponent()
+        public override async Task<int> Install()
         {
-            base.MovedToComponent();
+            var details =
+                new ExecutableDetails
+                {
+                    ExecutableName = "XNA Framework 4.0 Redist.msi"
+                };
+            int result = await Install(details);
 
-            var exitCode = -1;
-
-            switch (ComponentStorage.GetValue<SetupTypeComponent.SetupType>(SetupTypeComponent.SetupTypeName))
+            if(result == 0)
             {
-                case SetupTypeComponent.SetupType.Typical:
-                    if (IsTypical)
-                    {
-                        if (!Xna4IsInstalled)
-                        {
-                            exitCode = Install(new ExecutableDetails {ExecutableName = ExecutableName, Parameters = new[] {"/norestart"}});
-                        }
-                    }
-                    break;
-                case SetupTypeComponent.SetupType.Complete:
-                    if (!Xna4IsInstalled)
-                    {
-                        exitCode = Install(new ExecutableDetails {ExecutableName = ExecutableName, Parameters = new[] {"/norestart"}});
-                    }
-                    break;
-                case SetupTypeComponent.SetupType.Custom:
-                    if (ComponentStorage.GetValue<bool>(Key))
-                    {
-                        var install = true;
-
-                        if (Xna4IsInstalled)
-                        {
-                            if (MessageBox.Show(@"XNA 4 is already installed.  Do you want to run the installer anyways?", @"Already Installed", MessageBoxButtons.YesNo) == DialogResult.No)
-                                install = false;
-                        }
-
-                        if (install)
-                            exitCode = Install(new ExecutableDetails { ExecutableName = ExecutableName, Parameters = new[] { "/norestart" } });
-                    }
-                    break;
-                default:
-                    throw new NotImplementedException();
+                details.ExecutableName = "XNA Game Studio Platform Tools.msi";
+                result = await Install(details);
             }
 
-            switch (exitCode)
+            if (result == 0)
             {
-                case -1:    //Didn't install
-                    break;
-                case 3010: //Restart required
-                    Restarter.RestartComputerAndInstall((InstallableComponentBase)NextComponent);
-                    break;
+                details.ExecutableName = "XNA Game Studio Shared.msi";
+                result = await Install(details);
             }
 
-            OnMoveToNext();
+            if (result == 0)
+            {
+                details.ExecutableName = "XNA Game Studio 4.0.vsix";
+                result = await Install(details);
+            }
+            return result;
         }
+
+        //public override void MovedToComponent()
+        //{
+        //    base.MovedToComponent();
+
+        //    var exitCode = -1;
+
+        //    switch (ComponentStorage.GetValue<SetupTypeComponent.SetupType>(SetupTypeComponent.SetupTypeName))
+        //    {
+        //        case SetupTypeComponent.SetupType.Typical:
+        //            if (IsTypical)
+        //            {
+        //                if (!Xna4IsInstalled)
+        //                {
+        //                    exitCode = Install(new ExecutableDetails {ExecutableName = ExecutableName, Parameters = new[] {"/norestart"}});
+        //                }
+        //            }
+        //            break;
+        //        case SetupTypeComponent.SetupType.Complete:
+        //            if (!Xna4IsInstalled)
+        //            {
+        //                exitCode = Install(new ExecutableDetails {ExecutableName = ExecutableName, Parameters = new[] {"/norestart"}});
+        //            }
+        //            break;
+        //        case SetupTypeComponent.SetupType.Custom:
+        //            if (ComponentStorage.GetValue<bool>(Key))
+        //            {
+        //                var install = true;
+
+        //                if (Xna4IsInstalled)
+        //                {
+        //                    if (MessageBox.Show(@"XNA 4 is already installed.  Do you want to run the installer anyways?", @"Already Installed", MessageBoxButtons.YesNo) == DialogResult.No)
+        //                        install = false;
+        //                }
+
+        //                if (install)
+        //                    exitCode = Install(new ExecutableDetails { ExecutableName = ExecutableName, Parameters = new[] { "/norestart" } });
+        //            }
+        //            break;
+        //        default:
+        //            throw new NotImplementedException();
+        //    }
+
+        //    switch (exitCode)
+        //    {
+        //        case -1:    //Didn't install
+        //            break;
+        //        case 3010: //Restart required
+        //            Restarter.RestartComputerAndInstall((InstallableComponentBase)NextComponent);
+        //            break;
+        //    }
+
+        //    OnMoveToNext();
+        //}
 
         protected bool Xna4IsInstalled
         {

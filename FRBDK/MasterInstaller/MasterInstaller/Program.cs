@@ -60,12 +60,7 @@ namespace MasterInstaller
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-
-                if (args.Length == 2)
-                {
-                    ComponentStorage.Load(args[1]);
-                }
-
+                
                 Application.Run(new InstallForm());
             }
         }

@@ -83,7 +83,9 @@ namespace MasterInstaller.Managers
             fus.CleanFolder = true;
             fus.GlueRunPath = null;
             fus.SelectedSource = "DailyBuild/";
-            fus.SelectedDirectory = ComponentStorage.GetValue<string>(FrbdkSetupComponent.Path);
+            fus.SelectedDirectory = //ComponentStorage.GetValue<string>(FrbdkSetupComponent.Path);
+                FrbdkUpdaterManager.FrbdkInProgramFiles;
+
             fus.Passive = true;
 
             fus.SaveSettings();
@@ -121,7 +123,9 @@ namespace MasterInstaller.Managers
             using (ShellLink shortcut = new ShellLink())
             {
                 // The file that the .lnk file links to
-                string target = ComponentStorage.GetValue<string>(FrbdkSetupComponent.Path) + fileName;
+                string target = //ComponentStorage.GetValue<string>(FrbdkSetupComponent.Path) 
+                    FrbdkUpdaterManager.FrbdkInProgramFiles
+                    + fileName;
                 shortcut.Target = target;
                 shortcut.WorkingDirectory = Path.GetDirectoryName(target);
                 shortcut.Description = description;
