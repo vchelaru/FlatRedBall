@@ -400,11 +400,7 @@ namespace FlatRedBall
 
         private static void Window_ClientSizeChanged(object sender, EventArgs e)
         {
-#if WINDOWS_PHONE
-            //ignore resizing events when we're not active, such as any Guide popup.
-            if (mGame != null && !mGame.IsActive)
-                return;
-#endif
+            Console.WriteLine("Clinent size changed " + mGame.Window.ClientBounds.Width);
             if (!mWindowResizing)
             {
                 mWindowResizing = true;
@@ -459,20 +455,6 @@ namespace FlatRedBall
                     mGraphicsOptions.ResetDevice();
 #endif
                 }
-
-                //PresentationParameters pp = GraphicsDevice.PresentationParameters;
-                //pp.BackBufferWidth = mClientWidth;
-                //pp.BackBufferHeight = mClientHeight;
-                //if (mClientWidth != 0 && mClientHeight != 0)
-                //{
-                //    GraphicsDevice.Reset(pp);
-
-                //    foreach (Camera camera in SpriteManager.Cameras)
-                //    {
-                //        camera.UpdateOnResize();
-                //    }
-                //}
-
                 mWindowResizing = false;
             }
         }
@@ -652,60 +634,6 @@ namespace FlatRedBall
         }
 #endif
 
-#if FRB_MDX
-
-
-        public static void InitializeFlatRedBall(System.Windows.Forms.Control owner)
-        {
-            InitializeFlatRedBall(owner, null);
-
-        }
-
-        public static void InitializeFlatRedBall(System.Windows.Forms.Control owner, GraphicsOptions graphicsOptions)
-        {
-            PreInitialization();
-
-            if (graphicsOptions != null)
-            {
-                mGraphicsOptions = graphicsOptions;
-            }
-
-            mOwner = owner;
-
-            mOwner.Resize += new EventHandler(Window_ClientSizeChanged);
-
-
-            mClientHeight = owner.ClientRectangle.Height;
-            mClientWidth = owner.ClientRectangle.Width;
-
-            owner.SizeChanged += new EventHandler(Window_ClientSizeChanged);
-            mIsInitialized = true;
-
-
-
-            SpriteManagerSettings sms = new SpriteManagerSettings();
-            sms.fullScreen = mGraphicsOptions.FullScreen;
-            //initialize FRB objects
-            TimeManager.Initialize();
-            InstructionManager.Initialize();
-
-            ShapeManager.Initialize();
-            SpriteManager.Initialize(sms, graphicsOptions);
-
-            TextManager.Initialize();
-
-            // Initialize the GuiManager
-            GuiManager.Initialize("Assets/Textures/defaultText.tga", owner);
-
-            InputManager.Initialize(null, true);
-
-            TimeManager.Update();
-            
-
-        }
-
-#else
-
         #region XML Docs
         /// <summary>
         /// Used to initialize FlatRedBall with a game
@@ -794,11 +722,24 @@ namespace FlatRedBall
 
             mWindowHandle = game.Window.Handle;
 
-#if !XBOX360 && !WINDOWS_PHONE && !MONOGAME
+            // Victor Chelaru
+            // March 3, 2016
+            // There seems to be
+            // some inconsistency
+            // on XNA PC with resizing
+            // the window. mOwner.Resize
+            // is called whenever the user
+            // maximizes the window or restores
+            // it to windowed, but game.window.ClientSizeChanged
+            // is only raised when maximizing but not restoring. I
+            // am wondering why we have both, and why can't we just
+            // use one of them.
+
+
+#if WINDOWS
             mOwner =
                 System.Windows.Forms.Form.FromHandle(mWindowHandle);
 
-            mOwner.Resize += new EventHandler(UpdateToWindowSize);
 
             mOwner.MinimumSize = new System.Drawing.Size(mOwner.MinimumSize.Width, 35);
 
@@ -806,10 +747,11 @@ namespace FlatRedBall
 
 #endif
 
-#if XNA4 || WINDOWS_8
-            game.Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged);
+#if WINDOWS
+
+            mOwner.Resize += new EventHandler(Window_ClientSizeChanged);
 #else
-            game.Window.ClientSizeChanged += new EventHandler(Window_ClientSizeChanged);
+            game.Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged);
 #endif
 
             CommonInitialize(graphics);
@@ -858,13 +800,13 @@ namespace FlatRedBall
             InputManager.Mouse.Clear();
         }
 
-        #region XML Docs
+            #region XML Docs
         /// <summary>
         /// Used to intialize FlatRedBall without a game object (e.g. in windows forms projects)
         /// </summary>
         /// <param name="graphics">The graphics device service</param>
         /// <param name="windowHandle">The window handle</param>
-        #endregion
+            #endregion
         public static void InitializeFlatRedBall(IGraphicsDeviceService graphics, IntPtr windowHandle)
         {
             PreInitialization();
@@ -881,14 +823,14 @@ namespace FlatRedBall
             InitializeFlatRedBall(graphics, windowHandle, graphicsOptions);
         }
 
-        #region XML Docs
+            #region XML Docs
         /// <summary>
         /// Used to intialize FlatRedBall without a game object (e.g. in windows forms projects) and with graphics options
         /// </summary>
         /// <param name="graphics">The graphics device service</param>
         /// <param name="windowHandle">The window handle</param>
         /// <param name="graphicsOptions">The graphics options</param>
-        #endregion
+            #endregion
         public static void InitializeFlatRedBall(IGraphicsDeviceService graphics, IntPtr windowHandle,
             GraphicsOptions graphicsOptions)
         {
@@ -952,11 +894,11 @@ namespace FlatRedBall
         }
 
 
-        #region XML Docs
+            #region XML Docs
         /// <summary>
         /// Basic initialization steps (commond to all initialization methods)
         /// </summary>
-        #endregion
+            #endregion
         private static void FinishInitialization(IGraphicsDeviceService graphics)
         {
             // All InitializeFlatRedBall methods call this one
@@ -1095,50 +1037,15 @@ namespace FlatRedBall
 
         static void InitializeShaders()
         {
-#if WINDOWS_PHONE || MONOGAME
-            // do nothing??
-#else
+#if WINDOWS
             Renderer.Effect = mResourceContentManager.Load<Effect>("FlatRedBallShader");
-
-#if !XNA4
-            if ((int)Renderer.VertexShaderProfile >= (int)ShaderProfile.VS_1_1 &&
-                (int)Renderer.PixelShaderProfile >= (int)ShaderProfile.PS_2_0)
-            {
-                // Use 2.0
-                ModelManager.mBasicModelEffect = mResourceContentManager.Load<Effect>("BasicModelShader20");
-                ModelManager.mBasicModelEffectCache = new EffectCache(ModelManager.mBasicModelEffect, true);
-            }
-#endif
-
-
 #endif
         }
 
-        #region Graphics Device Reset Events
+            #region Graphics Device Reset Events
 
         static void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
         {
-#if XNA4 || WINDOWS_8
-
-            // do nothing?
-#else
-            int quality = 0;
-            if (mGraphicsOptions.UseMultiSampling &&
-
-                !e.GraphicsDeviceInformation.Adapter.CheckDeviceMultiSampleType(
-                e.GraphicsDeviceInformation.DeviceType,
-                e.GraphicsDeviceInformation.PresentationParameters.BackBufferFormat,
-                mGraphicsOptions.IsFullScreen,
-                mGraphicsOptions.MultiSampleType,
-                out quality))
-            {
-                throw new Exception("Multi sample type " + mGraphicsOptions.MultiSampleType + " not supported");
-            }
-            else
-            {
-                int x = 5;
-            }
-#endif
             PresentationParameters presentationParameters = e.GraphicsDeviceInformation.PresentationParameters;
             mGraphicsOptions.SetPresentationParameters(ref presentationParameters);
             e.GraphicsDeviceInformation.PresentationParameters = presentationParameters;
@@ -1185,11 +1092,9 @@ namespace FlatRedBall
             }
         }
 
-        #endregion
+            #endregion
 
-#endif
-
-        #endregion
+            #endregion
 
         #region Public Methods
 
