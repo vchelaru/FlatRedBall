@@ -759,7 +759,7 @@ namespace FlatRedBall.Glue.Elements
             return returnList;
         }
 
-        public List<ReferencedFileSave> GetMatchingReferencedFile(ReferencedFileSave rfs)
+        public List<ReferencedFileSave> GetMatchingReferencedFiles(ReferencedFileSave rfs)
         {
             // The same file 
             // can be referenced 

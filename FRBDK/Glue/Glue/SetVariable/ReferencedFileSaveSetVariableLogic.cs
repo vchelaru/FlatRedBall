@@ -185,7 +185,7 @@ namespace FlatRedBall.Glue.SetVariable
                 // all other RFS's
                 // that use this file
                 // get changed too.
-                List<ReferencedFileSave> matchingRfses = ObjectFinder.Self.GetMatchingReferencedFile(rfs);
+                List<ReferencedFileSave> matchingRfses = ObjectFinder.Self.GetMatchingReferencedFiles(rfs);
 
                 foreach (ReferencedFileSave rfsToUpdate in matchingRfses)
                 {
@@ -226,7 +226,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 // See the UseContentPipeline section for comments on what this
                 // code does.
-                List<ReferencedFileSave> matchingRfses = ObjectFinder.Self.GetMatchingReferencedFile(rfs);
+                List<ReferencedFileSave> matchingRfses = ObjectFinder.Self.GetMatchingReferencedFiles(rfs);
                 foreach (ReferencedFileSave rfsToUpdate in matchingRfses)
                 {
                     rfsToUpdate.TextureFormat = rfs.TextureFormat;

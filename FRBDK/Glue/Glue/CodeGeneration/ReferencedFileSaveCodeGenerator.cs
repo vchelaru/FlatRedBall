@@ -744,6 +744,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                 return; // There is no qualified type to load to, so let's not generate code to load it
             }
 
+            if(referencedFile.IsDatabaseForLocalizing && !referencedFile.LoadedAtRuntime)
+            {
+                return;
+            }
+
             #endregion
 
             // I'm going to only do this if we're non-null so that we don't add it for global content.  Global Content may load

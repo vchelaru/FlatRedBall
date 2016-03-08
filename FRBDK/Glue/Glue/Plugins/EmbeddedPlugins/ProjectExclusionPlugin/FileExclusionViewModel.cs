@@ -102,7 +102,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
 
         private void IncludeFileInProject(string projectName, ReferencedFileSave rfs)
         {
-            rfs.ProjectsToExcludeFrom.Remove(projectName);
+            foreach(var toChange in AllMatching(rfs))
+            {
+                toChange.ProjectsToExcludeFrom.RemoveAll(item=>item == projectName);
+            }
 
             //It's a little less efficient but we'll just perform a full sync to reuse code:
 
@@ -116,7 +119,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
 
         private static void ExcludeFileFromProject(string projectName, ReferencedFileSave rfs)
         {
-            rfs.ProjectsToExcludeFrom.Add(projectName);
+            foreach (var toChange in AllMatching(rfs))
+            {
+                if (!toChange.ProjectsToExcludeFrom.Contains(projectName))
+                {
+                    toChange.ProjectsToExcludeFrom.Add(projectName);
+                }
+            }
 
             var syncedProject = GlueState.Self.GetProjects().FirstOrDefault(item => item.Name == projectName);
 
@@ -130,6 +139,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
                 }
             }
             
+        }
+
+        private static IEnumerable<ReferencedFileSave> AllMatching(ReferencedFileSave rfs)
+        {
+            yield return rfs;
+            var matching = Elements.ObjectFinder.Self.GetMatchingReferencedFiles(rfs);
+            foreach (var match in matching)
+            {
+                yield return match;
+            }
         }
     }
 }
