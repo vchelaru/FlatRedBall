@@ -145,6 +145,15 @@
       <DependentUpon>CodeGenerationControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="CodeGenerationPlugin\MainPlugin.cs" />
+    <Compile Include="Compiler\Compiler.cs" />
+    <Compile Include="Compiler\MainControl.xaml.cs">
+      <DependentUpon>MainControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Compiler\MainPlugin.cs" />
+    <Compile Include="Compiler\Runner.cs" />
+    <Compile Include="Compiler\RunnerToolbar.xaml.cs">
+      <DependentUpon>RunnerToolbar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FilesPlugin\Controls\FileReferenceControl.xaml.cs">
       <DependentUpon>FileReferenceControl.xaml</DependentUpon>
     </Compile>
@@ -206,6 +215,7 @@
     <Compile Include="VariableDisplay\Data\FileInstanceMember.cs" />
     <Compile Include="VariableDisplay\ElementVariableShowingLogic.cs" />
     <Compile Include="VariableDisplay\MainPlugin.cs" />
+    <Compile Include="VariableDisplay\NamedObjectVariableChangeLogic.cs" />
     <Compile Include="VariableDisplay\PropertyDescriptorImplementation.cs" />
     <Compile Include="VariableDisplay\RefreshLogic.cs" />
     <Compile Include="VariableDisplay\TypeDescriptorContext.cs" />
@@ -278,10 +288,21 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Compiler\MainControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Compiler\RunnerToolbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="FilesPlugin\Controls\FileReferenceControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Compiler\play.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

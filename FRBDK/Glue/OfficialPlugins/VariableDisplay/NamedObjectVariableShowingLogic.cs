@@ -463,31 +463,7 @@ namespace OfficialPlugins.VariableDisplay
 
                 instanceMember.CustomSetEvent += (owner, value) =>
                 {
-                    instanceMember.IsDefault = false;
-                    // If we ignore the next refresh, then AnimationChains won't update when the user
-                    // picks an AnimationChainList from a combo box:
-                    //RefreshLogic.IgnoreNextRefresh();
-                    GlueCommands.Self.GluxCommands.SetVariableOn(
-                        instance,
-                        typedMember.MemberName,
-                        memberType,
-                        value);
-
-
-                    GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-
-                    // let's make the UI faster:
-
-                    // Get this on the UI thread, but use it in the async call below
-                    var currentElement = GlueState.Self.CurrentElement;
-
-                    TaskManager.Self.AddAsyncTask(() =>
-                   {
-                       GlueCommands.Self.GluxCommands.SaveGlux();
-
-                       GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
-                   },
-                    "Saving .glux and regenerating the code for the current element");
+                    NamedObjectVariableChangeLogic.ReactToValueSet(instance, typedMember, value, instanceMember, memberType);
                 };
 
                 instanceMember.IsDefaultSet += (owner, args) =>
@@ -507,6 +483,8 @@ namespace OfficialPlugins.VariableDisplay
             }
             return instanceMember;
         }
+
+
 
         private static bool GetIfShouldBeSkipped(TypedMemberBase typedMember, NamedObjectSave instance, AssetTypeInfo ati)
         {

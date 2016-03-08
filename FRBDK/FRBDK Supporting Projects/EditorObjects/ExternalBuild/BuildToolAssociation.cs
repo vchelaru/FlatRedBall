@@ -148,14 +148,12 @@ namespace EditorObjects.SaveClasses
                     printOutput(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
                 }
 
-#if !XNA3_1 && !FRB_MDX
                 if (runAsync)
                 {
                     new Task(
                         () => RunProcess(absoluteSourceFile, absoluteDestinationFile, printOutput, printError, errorString, executable, process)).Start();
                 }
                 else
-#endif
                 {
                     errorString = RunProcess(absoluteSourceFile, absoluteDestinationFile, printOutput, printError, errorString, executable, process);
                 }

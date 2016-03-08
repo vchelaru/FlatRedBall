@@ -419,12 +419,6 @@ namespace FlatRedBall.Glue.SetVariable
                         break;
                     }
                 }
-
-                if (changedMember == "AnimationChains")
-                {
-                    ReactToAnimationChainSet(namedObjectSave, oldValue);
-                }
-
             }
 
             // If we changed BitmapFont and if the NOS is marked as PixelPerfect
@@ -541,34 +535,6 @@ namespace FlatRedBall.Glue.SetVariable
                     nos.IsContainer = false;
                 }
 
-            }
-        }
-
-        private void ReactToAnimationChainSet(NamedObjectSave namedObjectSave, object oldValue)
-        {
-            AvailableAnimationChainsStringConverter aacsc = new AvailableAnimationChainsStringConverter(
-                GlueState.Self.CurrentElement, namedObjectSave);
-
-            var customVariable = namedObjectSave.GetCustomVariable("CurrentChainName");
-
-            string currentChain = null;
-
-            if (customVariable != null)
-            {
-                currentChain = customVariable.Value as string;
-            }
-
-            if (!aacsc.AvailableChains.Contains(currentChain))
-            {
-                if (aacsc.AvailableChains.Length == 0)
-                {
-                    namedObjectSave.SetPropertyValue("CurrentChainName", null);
-
-                }
-                else
-                {
-                    namedObjectSave.SetPropertyValue("CurrentChainName", aacsc.AvailableChains[0]);
-                }
             }
         }
 
