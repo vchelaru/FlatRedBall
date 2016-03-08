@@ -463,12 +463,11 @@ namespace FlatRedBall.Audio
                 Song songToDispose = CurrentlyPlayingSong;
                 StopSong();
 
-#if !SILVERLIGHT
                 if (!mIsSongUsingGlobalContent)
                 {
                     songToDispose.Dispose();
                 }
-#endif
+
                 wasDisposed = true;
             }
             return wasDisposed;
