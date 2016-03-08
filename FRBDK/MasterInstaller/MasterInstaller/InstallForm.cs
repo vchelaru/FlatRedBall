@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using MasterInstaller.Components;
 using MasterInstaller.Components.MainComponents.Introduction;
+using System.Windows.Forms.Integration;
 
 namespace MasterInstaller
 {
@@ -38,34 +39,18 @@ namespace MasterInstaller
             {
                 throw new Exception("The component " + component.GetType().Name + " does not define a Control.  Every component needs a control");
             }
-            Controls.Add(component.MainControl);
-            component.MainControl.Dock = DockStyle.Fill;
-            component.MainControl.Margin = new System.Windows.Forms.Padding(0);
+
+
+            var host = new ElementHost();
+            host.Child = newControl;
+
+            Controls.Add(host);
+            host.Dock = DockStyle.Fill;
+            host.Margin = new System.Windows.Forms.Padding(0);
 
             await component.Show();
-            //component.MovedToComponent();
         }
 
-        //void component_MoveTo(object sender, MoveToEventArgs e)
-        //{
-        //    UnsetComponenet(_currentComponent);
-        //    _currentComponent = e.Component;
-
-        //    if (_currentComponent == null)
-        //    {
-        //        Environment.Exit(0);
-        //    }
-        //    else
-        //    {
-        //        SetComponent(_currentComponent);
-        //    }
-        //}
-
-        private void UnsetComponenet(ComponentBase component)
-        {
-            Controls.Remove(component.MainControl);
-        }
-        
         private void InstallForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             Environment.Exit(0);

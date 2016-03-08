@@ -99,21 +99,9 @@
     <Compile Include="Components\MainComponents\VisualStudioInformation\VisualStudioInfoComponent.cs" />
     <Compile Include="Components\MainComponents\VisualStudioInformation\VisualStudioInfoControl.cs" />
     <Compile Include="Components\Restarter.cs" />
-    <Compile Include="Components\SetupComponents\FrbdkSetup\FrbdkSetupControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Components\SetupComponents\FrbdkSetup\FrbdkSetupControl.Designer.cs">
-      <DependentUpon>FrbdkSetupControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="Components\SetupComponents\FrbdkSetup\FrbdkSetupComponent.cs" />
     <Compile Include="Components\InstallableComponentBase.cs" />
     <Compile Include="Components\MainComponents\Introduction\IntroductionComponent.cs" />
-    <Compile Include="Controls\InstallationTopBar.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\InstallationTopBar.Designer.cs">
-      <DependentUpon>InstallationTopBar.cs</DependentUpon>
-    </Compile>
     <Compile Include="ExecutableDetails.cs" />
     <Compile Include="Components\ComponentBase.cs" />
     <Compile Include="InstallForm.cs">
@@ -121,12 +109,6 @@
     </Compile>
     <Compile Include="InstallForm.Designer.cs">
       <DependentUpon>InstallForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LineSeparator.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="LineSeparator.Designer.cs">
-      <DependentUpon>LineSeparator.cs</DependentUpon>
     </Compile>
     <Compile Include="MainFlow.cs" />
     <Compile Include="Managers\FileAssociationManager.cs" />
@@ -136,12 +118,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializableDictionary.cs" />
-    <EmbeddedResource Include="Components\SetupComponents\FrbdkSetup\FrbdkSetupControl.resx">
-      <DependentUpon>FrbdkSetupControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\InstallationTopBar.resx">
-      <DependentUpon>InstallationTopBar.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="InstallForm.resx">
       <DependentUpon>InstallForm.cs</DependentUpon>
     </EmbeddedResource>

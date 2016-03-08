@@ -1,0 +1,222 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{717F9F64-7A65-4D92-A80B-5E66D2A80EF6}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MasterInstaller</RootNamespace>
+    <AssemblyName>FlatRedBallInstaller</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\Setup_Install.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="SerializableDictionary.cs" />
+    <Page Include="Components\Controls\BasePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="..\..\glue\officialplugins\frbdkupdater\FrbdkUpdaterSettings.cs">
+      <Link>FRBDK\FrbdkUpdaterSettings.cs</Link>
+    </Compile>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\ComponentBase.cs" />
+    <Compile Include="Components\ComponentStorage.cs" />
+    <Compile Include="Components\ComponentStorageSave.cs" />
+    <Compile Include="Components\Controls\BasePage.xaml.cs">
+      <DependentUpon>BasePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\InstallableComponentBase.cs" />
+    <Compile Include="Components\InstallableComponents\DirectX\DirectXComponent.cs" />
+    <Compile Include="Components\InstallableComponents\FRBDK\FileAssociationComponent.cs" />
+    <Compile Include="Components\InstallableComponents\FRBDK\FileAssociationControl.cs" />
+    <Compile Include="Components\InstallableComponents\FRBDK\FrbdkComponent.cs" />
+    <Compile Include="Components\InstallableComponents\XNA3_1\XNA3_1Component.cs" />
+    <Compile Include="Components\InstallableComponents\XNA4\XNA4Component.cs" />
+    <Compile Include="Components\MainComponents\Completed\CompletedComponent.cs" />
+    <Compile Include="Components\MainComponents\Completed\CompletedControl.cs" />
+    <Compile Include="Components\MainComponents\ComponentInstallation\ComponentInstallationComponent.cs" />
+    <Compile Include="Components\MainComponents\ComponentInstallation\ComponentInstallationControl.cs" />
+    <Compile Include="Components\MainComponents\ComponentSelection\ComponentSelectionControl.cs" />
+    <Compile Include="Components\MainComponents\ComponentSelection\ComponentViewModel.cs" />
+    <Compile Include="Components\MainComponents\ComponentSelection\CustomSetupComponent.cs" />
+    <Compile Include="Components\MainComponents\Introduction\IntroControl.cs" />
+    <Compile Include="Components\MainComponents\Introduction\IntroductionComponent.cs" />
+    <Compile Include="Components\MainComponents\VisualStudioInformation\VisualStudioInfoComponent.cs" />
+    <Compile Include="Components\MainComponents\VisualStudioInformation\VisualStudioInfoControl.cs" />
+    <Compile Include="Components\Restarter.cs" />
+    <Compile Include="Components\SetupComponents\FrbdkSetup\FrbdkSetupComponent.cs" />
+    <Compile Include="ExecutableDetails.cs" />
+    <Compile Include="MainFlow.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Managers\FileAssociationManager.cs" />
+    <Compile Include="Managers\FileIcon.cs" />
+    <Compile Include="Managers\FrbdkUpdaterManager.cs" />
+    <Compile Include="Managers\ShellLink.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Executables\MxaVs2015\XNA Framework 4.0 Redist.msi" />
+    <EmbeddedResource Include="Executables\MxaVs2015\XNA Game Studio 4.0.vsix" />
+    <EmbeddedResource Include="Executables\MxaVs2015\XNA Game Studio Platform Tools.msi" />
+    <EmbeddedResource Include="Executables\MxaVs2015\XNA Game Studio Shared.msi" />
+    <EmbeddedResource Include="Executables\xnafx31_redist.msi" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\Controls\FrbLogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\dxwebsetup.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\FlatRedBall.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\glue\glue\bin\debug\plugins\frbdkupdater\FlatRedBall.Tools.dll">
+      <Link>Executables\FlatRedBall.Tools.dll</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\glue\glue\bin\debug\plugins\frbdkupdater\FRBDKUpdater.exe">
+      <Link>Executables\FRBDKUpdater.exe</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\glue\glue\bin\debug\plugins\frbdkupdater\Ionic.Zip.dll">
+      <Link>Executables\Ionic.Zip.dll</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\MxaVs2015\APR2007_d3dx9_33_x86.cab" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\MxaVs2015\APR2007_xinput_x86.cab" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\MxaVs2015\DSETUP.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\MxaVs2015\dsetup32.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\MxaVs2015\DXSETUP.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\MxaVs2015\dxupdate.cab" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\MxaVs2015\Feb2010_X3DAudio_x86.cab" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\MxaVs2015\Feb2010_xact_x86.cab" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\MxaVs2015\Feb2010_XAudio_x86.cab" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Executables\MxaVs2015\Mar2009_d3dx9_41_x86.cab" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Executables\MxaVs2015\README.txt" />
+    <Resource Include="Setup_Install.ico" />
+    <Resource Include="Resources\Setup_Install.ico" />
+    <Resource Include="Resources\roller.gif" />
+    <Resource Include="Resources\Repair.png" />
+    <Resource Include="Resources\MultipleChecks.png" />
+    <Resource Include="Resources\Frblogo_white256.png" />
+    <Resource Include="Resources\Frblogo_white128.png" />
+    <Resource Include="Resources\base_checkmark_32.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

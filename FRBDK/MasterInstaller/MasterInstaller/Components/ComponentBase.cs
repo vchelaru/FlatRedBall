@@ -17,9 +17,9 @@ namespace MasterInstaller.Components
     {
         public event EventHandler NextClicked;
 
-        BasePage wpfControl;
-        ElementHost control;
-        protected Control Control
+        BasePage wpfControl;       
+
+        public BasePage MainControl
         {
             get
             {
@@ -32,16 +32,10 @@ namespace MasterInstaller.Components
                         NextClicked?.Invoke(this, null);
                     };
 
-                    control = new ElementHost();
-                    control.Child = wpfControl;
                 }
-                return control;
+                return wpfControl;
             }
         }
-        
-
-        public Control MainControl
-        { get { return Control; } }
 
         public virtual async Task Show()
         {

@@ -65,12 +65,12 @@ namespace MasterInstaller
             }
         }
 
-        private static void SetKey(string keyName, string value)
-        {
-            RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
-                                                             true);
-            rk.SetValue(keyName, value);
-        }
+        //private static void SetKey(string keyName, string value)
+        //{
+        //    RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+        //                                                     true);
+        //    rk.SetValue(keyName, value);
+        //}
 
         public static T[] SubArray<T>(T[] data, int index, int length)
         {
