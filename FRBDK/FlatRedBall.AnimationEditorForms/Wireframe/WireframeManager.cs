@@ -171,18 +171,14 @@ namespace FlatRedBall.AnimationEditorForms
                     if (texture != null)
                     {
                         mControl.RectangleSelector.Left = minX;
-                        mControl.RectangleSelector.Width = maxX - minX;
-
                         mControl.RectangleSelector.Top = minY;
-                        mControl.RectangleSelector.Height = maxY - minY;
+
+                        // We add 1 because if the min and max X are equal, that means we'd
+                        // have a 1x1 pixel area, and the rectangle's width would need to be 1.
+                        mControl.RectangleSelector.Width = maxX - minX + 1;
+                        mControl.RectangleSelector.Height = maxY - minY + 1;
 
                         HandleRegionChanged(null, null);
-
-
-                        //frame.LeftCoordinate = minX / (float)texture.Width;
-                        //frame.RightCoordinate = (maxX + 1) / (float)texture.Width;
-                        //frame.TopCoordinate = minY / (float)texture.Height;
-                        //frame.BottomCoordinate = (maxY + 1) / (float)texture.Height;
                     }
 
                     RefreshAll();

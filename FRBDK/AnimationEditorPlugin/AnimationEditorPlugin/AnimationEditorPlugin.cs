@@ -59,7 +59,7 @@ namespace AnimationEditorPlugin
 
         public override Version Version
         {
-            get { return new Version(1, 5, 3); }
+            get { return new Version(1, 5, 4); }
         }
 
         public bool IsSelectedItemSprite
