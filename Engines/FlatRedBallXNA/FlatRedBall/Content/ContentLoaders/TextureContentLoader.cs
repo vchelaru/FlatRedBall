@@ -76,43 +76,7 @@ namespace FlatRedBall.Content.ContentLoaders
                     }
                     else
                     {
-                        TextureLoadingStyle loadingStyle;
-
-                        bool useImageData = FlatRedBallServices.IsThreadPrimary() == false;
-
-#if WINDOWS
-                        // Since the graphics device can get lost, we don't want to use render targets, so we'll fall
-                        // back to using ImageData:
-                        useImageData = true;
-#endif
-
-                        if (useImageData)
-                        {
-                            // Victor Chelaru
-                            // April 22, 2015
-                            // The purpose of this
-                            // code is to support loading
-                            // textures from file (as opposed
-                            // to using the content pipeline) and
-                            // having them contain premultiplied alpha.
-                            // I believe at one point using render targets
-                            // may not have worked on a secondary thread. I 
-                            // switched the code to using render targets (not
-                            // image data), and ran the automated tests which do
-                            // background texture loading on PC and all seemed to
-                            // work okay. Render targets will be much faster than ImageData
-                            // and imagedata seems to throw errors on iOS, so I'm going to try
-                            // render targets and see what happens.
-
-                            loadingStyle = TextureLoadingStyle.ImageData;
-                        }
-                        else
-                        {
-                            loadingStyle = TextureLoadingStyle.RenderTarget;
-                        }
-
-
-                        Texture2D texture = LoadTextureFromFile(assetName, loadingStyle);
+                        Texture2D texture = LoadTextureFromFile(assetName);
                         texture.Name = assetName;
                         loadedAsset = texture;
                     }
@@ -172,7 +136,7 @@ namespace FlatRedBall.Content.ContentLoaders
 
         static ImageData mPremultipliedAlphaImageData = new ImageData(256, 256);
 
-        private Texture2D LoadTextureFromFile(string loc, TextureLoadingStyle loadingStyle)
+        private Texture2D LoadTextureFromFile(string loc)
         {
             bool canLoadNow = true;
 
@@ -198,88 +162,111 @@ namespace FlatRedBall.Content.ContentLoaders
                     file = Texture2D.FromStream(Renderer.GraphicsDevice, titleStream);
                 }
 
+                file = MakePremultiplied(file);
+                return file;
+            }
+        }
 
+        public static Texture2D MakePremultiplied(Texture2D file)
+        {
 
+            bool useImageData = FlatRedBallServices.IsThreadPrimary() == false;
 
-                if (loadingStyle == TextureLoadingStyle.ImageData)
+#if WINDOWS
+            // Since the graphics device can get lost, we don't want to use render targets, so we'll fall
+            // back to using ImageData:
+            useImageData = true;
+#endif
+
+            if (useImageData)
+            {
+                // Victor Chelaru
+                // April 22, 2015
+                // The purpose of this
+                // code is to support loading
+                // textures from file (as opposed
+                // to using the content pipeline) and
+                // having them contain premultiplied alpha.
+                // I believe at one point using render targets
+                // may not have worked on a secondary thread. I 
+                // switched the code to using render targets (not
+                // image data), and ran the automated tests which do
+                // background texture loading on PC and all seemed to
+                // work okay. Render targets will be much faster than ImageData
+                // and imagedata seems to throw errors on iOS, so I'm going to try
+                // render targets and see what happens.
+                lock (mPremultipliedAlphaImageData)
                 {
-                    lock (mPremultipliedAlphaImageData)
-                    {
-                        mPremultipliedAlphaImageData.ExpandIfNecessary(file.Width, file.Height);
+                    mPremultipliedAlphaImageData.ExpandIfNecessary(file.Width, file.Height);
 
-                        mPremultipliedAlphaImageData.CopyFrom(file);
+                    mPremultipliedAlphaImageData.CopyFrom(file);
 
-                        mPremultipliedAlphaImageData.MakePremultiplied(file.Width * file.Height);
+                    mPremultipliedAlphaImageData.MakePremultiplied(file.Width * file.Height);
 
-                        mPremultipliedAlphaImageData.ToTexture2D(file);
-                    }
-                    return file;
+                    mPremultipliedAlphaImageData.ToTexture2D(file);
                 }
-                else if (loadingStyle == TextureLoadingStyle.RenderTarget)
+                return file;
+            }
+            else
+            {
+                RenderTarget2D result = null;
+                lock (Renderer.Graphics.GraphicsDevice)
                 {
-                    RenderTarget2D result = null;
-                    lock (Renderer.Graphics.GraphicsDevice)
+                    if (MathFunctions.IsPowerOfTwo(file.Width) &&
+                        MathFunctions.IsPowerOfTwo(file.Height))
                     {
-                        if (MathFunctions.IsPowerOfTwo(file.Width) &&
-                            MathFunctions.IsPowerOfTwo(file.Height))
-                        {
-                            //Setup a render target to hold our final texture which will have premulitplied alpha values
-                            result = new RenderTarget2D(Renderer.GraphicsDevice, file.Width, file.Height, CreateMipMaps, SurfaceFormat.Color, DepthFormat.None);
-                        }
-                        else
-                        {
-                            result = new RenderTarget2D(Renderer.GraphicsDevice, file.Width, file.Height);
-                        }
-
-
-                        Renderer.GraphicsDevice.SetRenderTarget(result);
-                        Renderer.GraphicsDevice.Clear(Color.Black);
-
-                        //Multiply each color by the source alpha, and write in just the color values into the final texture
-                        BlendState blendColor = new BlendState();
-                        blendColor.ColorWriteChannels = ColorWriteChannels.Red | ColorWriteChannels.Green | ColorWriteChannels.Blue;
-
-                        blendColor.AlphaDestinationBlend = Blend.Zero;
-                        blendColor.ColorDestinationBlend = Blend.Zero;
-
-                        blendColor.AlphaSourceBlend = Blend.SourceAlpha;
-                        blendColor.ColorSourceBlend = Blend.SourceAlpha;
-
-                        SpriteBatch spriteBatch = new SpriteBatch(Renderer.GraphicsDevice);
-                        spriteBatch.Begin(SpriteSortMode.Immediate, blendColor);
-                        spriteBatch.Draw(file, file.Bounds, Color.White);
-                        spriteBatch.End();
-
-                        //Now copy over the alpha values from the PNG source texture to the final one, without multiplying them
-                        BlendState blendAlpha = new BlendState();
-                        blendAlpha.ColorWriteChannels = ColorWriteChannels.Alpha;
-
-                        blendAlpha.AlphaDestinationBlend = Blend.Zero;
-                        blendAlpha.ColorDestinationBlend = Blend.Zero;
-
-                        blendAlpha.AlphaSourceBlend = Blend.One;
-                        blendAlpha.ColorSourceBlend = Blend.One;
-
-                        spriteBatch.Begin(SpriteSortMode.Immediate, blendAlpha);
-                        spriteBatch.Draw(file, file.Bounds, Color.White);
-                        spriteBatch.End();
-
-                        //Release the GPU back to drawing to the screen
-                        Renderer.GraphicsDevice.SetRenderTarget(null);
+                        //Setup a render target to hold our final texture which will have premulitplied alpha values
+                        result = new RenderTarget2D(Renderer.GraphicsDevice, file.Width, file.Height, CreateMipMaps, SurfaceFormat.Color, DepthFormat.None);
+                    }
+                    else
+                    {
+                        result = new RenderTarget2D(Renderer.GraphicsDevice, file.Width, file.Height);
                     }
 
-                    Renderer.ForceSetBlendOperation();
-                    if (Renderer.mLastColorOperationSet != ColorOperation.None)
-                    {
-                        Renderer.ForceSetColorOperation(Renderer.mLastColorOperationSet);
-                    }
 
-                    return result as Texture2D;
+                    Renderer.GraphicsDevice.SetRenderTarget(result);
+                    Renderer.GraphicsDevice.Clear(Color.Black);
+
+                    //Multiply each color by the source alpha, and write in just the color values into the final texture
+                    BlendState blendColor = new BlendState();
+                    blendColor.ColorWriteChannels = ColorWriteChannels.Red | ColorWriteChannels.Green | ColorWriteChannels.Blue;
+
+                    blendColor.AlphaDestinationBlend = Blend.Zero;
+                    blendColor.ColorDestinationBlend = Blend.Zero;
+
+                    blendColor.AlphaSourceBlend = Blend.SourceAlpha;
+                    blendColor.ColorSourceBlend = Blend.SourceAlpha;
+
+                    SpriteBatch spriteBatch = new SpriteBatch(Renderer.GraphicsDevice);
+                    spriteBatch.Begin(SpriteSortMode.Immediate, blendColor);
+                    spriteBatch.Draw(file, file.Bounds, Color.White);
+                    spriteBatch.End();
+
+                    //Now copy over the alpha values from the PNG source texture to the final one, without multiplying them
+                    BlendState blendAlpha = new BlendState();
+                    blendAlpha.ColorWriteChannels = ColorWriteChannels.Alpha;
+
+                    blendAlpha.AlphaDestinationBlend = Blend.Zero;
+                    blendAlpha.ColorDestinationBlend = Blend.Zero;
+
+                    blendAlpha.AlphaSourceBlend = Blend.One;
+                    blendAlpha.ColorSourceBlend = Blend.One;
+
+                    spriteBatch.Begin(SpriteSortMode.Immediate, blendAlpha);
+                    spriteBatch.Draw(file, file.Bounds, Color.White);
+                    spriteBatch.End();
+
+                    //Release the GPU back to drawing to the screen
+                    Renderer.GraphicsDevice.SetRenderTarget(null);
                 }
-                else
+
+                Renderer.ForceSetBlendOperation();
+                if (Renderer.mLastColorOperationSet != ColorOperation.None)
                 {
-                    throw new NotImplementedException();
+                    Renderer.ForceSetColorOperation(Renderer.mLastColorOperationSet);
                 }
+
+                return result as Texture2D;
             }
         }
 
