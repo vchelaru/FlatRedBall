@@ -58,10 +58,17 @@ namespace MasterInstaller
             else
 #endif
             {
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                
-                Application.Run(new InstallForm());
+                try
+                {
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+
+                    Application.Run(new InstallForm());
+                }
+                catch(Exception e)
+                {
+                    ExceptionHandler.HandleException(e);
+                }
             }
         }
 

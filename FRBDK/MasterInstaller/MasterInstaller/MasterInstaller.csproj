@@ -102,6 +102,7 @@
     <Compile Include="Components\SetupComponents\FrbdkSetup\FrbdkSetupComponent.cs" />
     <Compile Include="Components\InstallableComponentBase.cs" />
     <Compile Include="Components\MainComponents\Introduction\IntroductionComponent.cs" />
+    <Compile Include="ExceptionHandler.cs" />
     <Compile Include="ExecutableDetails.cs" />
     <Compile Include="Components\ComponentBase.cs" />
     <Compile Include="InstallForm.cs">

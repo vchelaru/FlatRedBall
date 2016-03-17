@@ -530,6 +530,19 @@ namespace FlatRedBall.Graphics
             }
         }
 
+        public void SetResolution(int width, int height, bool isFullscreen)
+        {
+            mIsFullScreen = isFullscreen;
+            mResolutionWidth = width;
+            mResolutionHeight = height;
+            ResetDevice();
+
+            if (SizeOrOrientationChanged != null)
+            {
+                SizeOrOrientationChanged(this, null);
+            }
+        }
+
         #region XML Docs
         /// <summary>
         /// Sets the display mode to full-screen and sets the resolution
@@ -539,15 +552,7 @@ namespace FlatRedBall.Graphics
         #endregion
         public void SetFullScreen(int width, int height)
         {
-            mIsFullScreen = true;
-            mResolutionWidth = width;
-            mResolutionHeight = height;
-            ResetDevice();
-
-            if (SizeOrOrientationChanged != null)
-            {
-                SizeOrOrientationChanged(this, null);
-            }
+            SetResolution(width, height, isFullscreen: true);
         }
 
         //#region XML Docs
@@ -642,26 +647,12 @@ namespace FlatRedBall.Graphics
                 // Reset the graphics device manager
                 if (FlatRedBallServices.mGraphics != null)
                 {
-#if !WINDOWS_PHONE
                     // Set window size
                     FlatRedBallServices.mGraphics.PreferredBackBufferWidth = mResolutionWidth;
                     FlatRedBallServices.mGraphics.PreferredBackBufferHeight = mResolutionHeight;
-#endif
-#if !SILVERLIGHT
-                    FlatRedBallServices.mGraphics.PreferMultiSampling = mUseMultiSampling 
-#if !XNA4
-                        && mMultiSampleType != MultiSampleType.None
-#endif
-                        ;
-#endif    
+                    FlatRedBallServices.mGraphics.PreferMultiSampling = mUseMultiSampling ;
                     FlatRedBallServices.mGraphics.IsFullScreen = mIsFullScreen;
-      
-#if !SILVERLIGHT && !MONOGAME && !XNA4
-                    if (Renderer.UseRenderTargets)
-                    {
-                        PostProcessing.PostProcessingManager.RefreshPostProcessingSurfaceSizes();
-                    }
-#endif
+
 
                     try
                     {
@@ -687,7 +678,7 @@ namespace FlatRedBall.Graphics
                             }
                             if (!foundResolution)
                             {
-                                string message = "The resolution is not supported in full screen mode.  Supported resolutions:\n";
+                                string message = $"The resolution {mResolutionWidth} x {mResolutionHeight} is not supported in full screen mode.  Supported resolutions:\n";
                                 message += "(width x height)\n";
 
                                 foreach (var value in GraphicsAdapter.DefaultAdapter.SupportedDisplayModes)
