@@ -627,7 +627,7 @@ namespace FlatRedBall.Graphics
                 return;
             }
 
-        #region If the Renderer.Graphics is null that means the engine is not loaded yet
+            #region If the Renderer.Graphics is null that means the engine is not loaded yet
             if (!mSuspendDeviceReset && Renderer.Graphics == null)
             {
                 throw new InvalidOperationException("Can't reset the device right now because the Renderer's Graphics are null. " +
@@ -637,9 +637,9 @@ namespace FlatRedBall.Graphics
                     "code to after FlatRedBall is initialized.");
 
             }
-        #endregion
+            #endregion
 
-        #region Else, check to make sure device resetting is not suspended and the GraphicsOptions are not loading
+            #region Else, check to make sure device resetting is not suspended and the GraphicsOptions are not loading
             else if (!mSuspendDeviceReset && !GraphicsOptions.IsLoading)
             {
                 mIsInAReset = true;
@@ -750,7 +750,7 @@ namespace FlatRedBall.Graphics
 #endif
                 mIsInAReset = false;
             }
-        #endregion
+            #endregion
         }
 
         #region XML Docs

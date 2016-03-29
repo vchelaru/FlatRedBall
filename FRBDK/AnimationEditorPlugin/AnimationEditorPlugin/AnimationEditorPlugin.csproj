@@ -203,6 +203,7 @@ copy $(TargetDir)XnaAndWinforms.pdb C:\Users\%username%\AppData\Roaming\FRBDK\Pl
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>echo Copying %25appdata%25\FRBDK\plugins\animationeditor\AnimationEditorPlugin.dll
+md %25appdata%25\FRBDK\plugins\animationeditor\
 copy $(TargetDir)AnimationEditorPlugin.dll "%25appdata%25\FRBDK\plugins\animationeditor\AnimationEditorPlugin.dll"
 copy $(TargetDir)AnimationEditorPlugin.pdb "%25appdata%25\FRBDK\plugins\animationeditor\AnimationEditorPlugin.pdb"
 

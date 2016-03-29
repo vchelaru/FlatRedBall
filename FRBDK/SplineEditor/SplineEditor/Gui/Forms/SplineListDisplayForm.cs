@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Windows.Forms.Integration;
 using ToolTemplate;
 using ToolTemplate.Gui;
 
@@ -145,6 +146,8 @@ namespace SplineEditor.Gui.Forms
         private void cameraPropertiesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CameraPropertiesWindow cameraPropertiesWindow = new CameraPropertiesWindow(ReactiveHud.Self);
+
+            ElementHost.EnableModelessKeyboardInterop(cameraPropertiesWindow);
             cameraPropertiesWindow.Show();
         }
     }

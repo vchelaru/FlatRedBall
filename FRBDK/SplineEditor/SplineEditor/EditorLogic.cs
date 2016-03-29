@@ -17,6 +17,7 @@ using EditorObjects;
 using EditorObjects.Undo.PropertyComparers;
 using SplineEditor.States;
 using SplineEditor.Commands;
+using SplineEditor.ViewModels;
 
 namespace ToolTemplate
 {
@@ -25,6 +26,8 @@ namespace ToolTemplate
         #region Fields
 
         private ReactiveHud mReactiveHud = new ReactiveHud();
+
+        AllObjectsToolbarViewModel allObjectsToolbarViewModel;
 
         Spline mCurrentSpline;
         SplinePoint mCurrentSplinePoint;
@@ -102,10 +105,12 @@ namespace ToolTemplate
                 // collapse state.  It's annoying, and I don't think we need it:
                 //GuiData.SplineListDisplay.UpdateToList();
 
+                mCurrentSpline.Visible = true;
+
                 GuiData.UpdateToSpline(mCurrentSpline);
 
 
-
+                UpdateDeselectedSplineVisibility();
 
 
                 if (mCurrentSpline == null ||
@@ -128,6 +133,20 @@ namespace ToolTemplate
                 mCurrentSplinePoint = value;
 
                 GuiData.UpdateToSplinePoint(mCurrentSplinePoint);
+            }
+        }
+
+        bool showDeselectedSplines;
+        public bool ShowDeselectedSplines
+        {
+            get
+            {
+                return showDeselectedSplines;
+            }
+            set
+            {
+                showDeselectedSplines = value;
+                UpdateDeselectedSplineVisibility();
             }
         }
 
@@ -157,6 +176,30 @@ namespace ToolTemplate
             AppCommands.Self.Preview.SplineCrawlerActivity();
 
             KeyboardShortcutActivity();
+        }
+
+        internal AllObjectsToolbarViewModel GetAllObjectsToolbarViewModel()
+        {
+            if(allObjectsToolbarViewModel == null)
+            {
+                CreateAllObjectsToolbarViewModel();
+            }
+            return allObjectsToolbarViewModel;
+        }
+
+        private void CreateAllObjectsToolbarViewModel()
+        {
+            allObjectsToolbarViewModel = new AllObjectsToolbarViewModel();
+            this.ShowDeselectedSplines = allObjectsToolbarViewModel.ShowDeselectedSplines;
+            allObjectsToolbarViewModel.PropertyChanged += AllObjectsToolbarViewModel_PropertyChanged;
+        }
+
+        private void AllObjectsToolbarViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == nameof(allObjectsToolbarViewModel.ShowDeselectedSplines))
+            {
+                ShowDeselectedSplines = allObjectsToolbarViewModel.ShowDeselectedSplines;
+            }
         }
 
         #endregion
@@ -234,6 +277,18 @@ namespace ToolTemplate
             }
 
             return null;
+        }
+
+
+        private void UpdateDeselectedSplineVisibility()
+        {
+            foreach(var spline in EditorData.SplineList)
+            {
+                if(spline != mCurrentSpline)
+                {
+                    spline.Visible = showDeselectedSplines;
+                }
+            }
         }
 
 

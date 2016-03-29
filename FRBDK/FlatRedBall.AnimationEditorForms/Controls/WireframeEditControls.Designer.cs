@@ -32,6 +32,7 @@
             this.MagicWandCheckBox = new System.Windows.Forms.CheckBox();
             this.SnapToGridCheckBox = new System.Windows.Forms.CheckBox();
             this.GridSizeTextBox = new System.Windows.Forms.TextBox();
+            this.ShowFullAlphaCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // ComboBox
@@ -76,16 +77,28 @@
             this.GridSizeTextBox.TabIndex = 3;
             this.GridSizeTextBox.Text = "16";
             // 
+            // ShowFullAlpha
+            // 
+            this.ShowFullAlphaCheckBox.AutoSize = true;
+            this.ShowFullAlphaCheckBox.Location = new System.Drawing.Point(320, 4);
+            this.ShowFullAlphaCheckBox.Name = "ShowFullAlpha";
+            this.ShowFullAlphaCheckBox.Size = new System.Drawing.Size(102, 17);
+            this.ShowFullAlphaCheckBox.TabIndex = 4;
+            this.ShowFullAlphaCheckBox.Text = "Show Full Alpha";
+            this.ShowFullAlphaCheckBox.UseVisualStyleBackColor = true;
+            this.ShowFullAlphaCheckBox.CheckedChanged += new System.EventHandler(this.ShowFullAlpha_CheckedChanged);
+            // 
             // WireframeEditControls
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ShowFullAlphaCheckBox);
             this.Controls.Add(this.GridSizeTextBox);
             this.Controls.Add(this.SnapToGridCheckBox);
             this.Controls.Add(this.MagicWandCheckBox);
             this.Controls.Add(this.ComboBox);
             this.Name = "WireframeEditControls";
-            this.Size = new System.Drawing.Size(379, 23);
+            this.Size = new System.Drawing.Size(530, 23);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -97,5 +110,6 @@
         private System.Windows.Forms.CheckBox MagicWandCheckBox;
         private System.Windows.Forms.CheckBox SnapToGridCheckBox;
         private System.Windows.Forms.TextBox GridSizeTextBox;
+        private System.Windows.Forms.CheckBox ShowFullAlphaCheckBox;
     }
 }

@@ -44,6 +44,19 @@ namespace FlatRedBall.AnimationEditorForms.Controls
             }
         }
 
+        public bool ShowFullAlpha
+        {
+            get
+            {
+                return ShowFullAlphaCheckBox.Checked;
+            }
+            set
+            {
+                ShowFullAlphaCheckBox.Checked = value;
+                this.OnPropertyChanged(nameof(ShowFullAlpha));
+            }
+        }
+
         public bool SnapToGrid
         {
             get
@@ -141,6 +154,11 @@ namespace FlatRedBall.AnimationEditorForms.Controls
         {
 
             this.OnPropertyChanged(nameof(SnapToGrid));
+        }
+
+        private void ShowFullAlpha_CheckedChanged(object sender, EventArgs e)
+        {
+            this.OnPropertyChanged(nameof(ShowFullAlpha));
         }
     }
 }

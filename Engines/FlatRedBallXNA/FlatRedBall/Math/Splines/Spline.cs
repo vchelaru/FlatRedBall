@@ -89,7 +89,7 @@ namespace FlatRedBall.Math.Splines
 #if DEBUG
                     if (mDistanceToTimes == null || mDistanceToTimes.Count == 0)
                     {
-                        throw new InvalidOperationException("Be sure to call CalculateDistanceTimeRelationships() before checking Spline.Length, Holmes");
+                        throw new InvalidOperationException("CalculateDistanceTimeRelationships() must be called before getting a Spline's Length.");
                     }
 #endif
                     return mDistanceToTimes[mDistanceToTimes.Count - 1].Distance;
@@ -246,7 +246,7 @@ namespace FlatRedBall.Math.Splines
 #if DEBUG
             if (!mAccelerationsCalculated)
             {
-                throw new InvalidOperationException("Spline.CalculateAccelerations() should be called before Spline.CalculateDistanceTimeRelationships(), Holmes");
+                throw new InvalidOperationException("Spline.CalculateAccelerations() must be called before Spline.CalculateDistanceTimeRelationships()");
             }
 #endif
             float currentTime = 0;
@@ -287,6 +287,13 @@ namespace FlatRedBall.Math.Splines
 
         public double GetTimeAtLengthAlongSpline(float length)
         {
+#if DEBUG
+            if (mDistanceToTimes == null || mDistanceToTimes.Count == 0)
+            {
+                throw new InvalidOperationException("CalculateDistanceTimeRelationships() must be called before calling GetTimeAtLengthAlongSpline.");
+            }
+#endif
+
             if (length < 0)
                 length = 0;
 
@@ -489,7 +496,7 @@ namespace FlatRedBall.Math.Splines
             if (mDistanceToTimes == null || mDistanceToTimes.Count == 0)
             {
 #if DEBUG
-                throw new InvalidOperationException("Be sure to call CalculateDistanceTimeRelationships() before getting the closest point on a spline, Holmes");
+                throw new InvalidOperationException("CalculateDistanceTimeRelationships() must be called before getting the closest point on a spline.");
 #endif
                 return new DistanceToTimeRelationship();
             }

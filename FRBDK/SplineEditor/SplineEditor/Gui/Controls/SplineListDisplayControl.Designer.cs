@@ -30,7 +30,10 @@
         {
             this.TreeView = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.AllObjectToolBar = new System.Windows.Forms.Integration.ElementHost();
+            this.allObjectsToolbar1 = new SplineEditor.Gui.Controls.AllObjectsToolbar();
             this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.SelectedItemToolBar = new System.Windows.Forms.Integration.ElementHost();
             this.panel1 = new System.Windows.Forms.Panel();
             this.VelocityTypeComboBox = new System.Windows.Forms.ComboBox();
             this.VelocityTextBox = new System.Windows.Forms.TextBox();
@@ -46,9 +49,9 @@
             // 
             this.TreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TreeView.HideSelection = false;
-            this.TreeView.Location = new System.Drawing.Point(0, 0);
+            this.TreeView.Location = new System.Drawing.Point(0, 30);
             this.TreeView.Name = "TreeView";
-            this.TreeView.Size = new System.Drawing.Size(185, 379);
+            this.TreeView.Size = new System.Drawing.Size(185, 349);
             this.TreeView.TabIndex = 0;
             this.TreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
             // 
@@ -61,23 +64,45 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.TreeView);
+            this.splitContainer1.Panel1.Controls.Add(this.AllObjectToolBar);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.PropertyGrid);
+            this.splitContainer1.Panel2.Controls.Add(this.SelectedItemToolBar);
             this.splitContainer1.Size = new System.Drawing.Size(556, 379);
             this.splitContainer1.SplitterDistance = 185;
             this.splitContainer1.TabIndex = 1;
+            // 
+            // AllObjectToolBar
+            // 
+            this.AllObjectToolBar.Dock = System.Windows.Forms.DockStyle.Top;
+            this.AllObjectToolBar.Location = new System.Drawing.Point(0, 0);
+            this.AllObjectToolBar.Name = "AllObjectToolBar";
+            this.AllObjectToolBar.Size = new System.Drawing.Size(185, 30);
+            this.AllObjectToolBar.TabIndex = 2;
+            this.AllObjectToolBar.Text = "elementHost1";
+            this.AllObjectToolBar.Child = this.allObjectsToolbar1;
             // 
             // PropertyGrid
             // 
             this.PropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PropertyGrid.HelpVisible = false;
-            this.PropertyGrid.Location = new System.Drawing.Point(0, 0);
+            this.PropertyGrid.Location = new System.Drawing.Point(0, 30);
             this.PropertyGrid.Name = "PropertyGrid";
-            this.PropertyGrid.Size = new System.Drawing.Size(367, 379);
+            this.PropertyGrid.Size = new System.Drawing.Size(367, 349);
             this.PropertyGrid.TabIndex = 0;
             this.PropertyGrid.ToolbarVisible = false;
+            // 
+            // SelectedItemToolBar
+            // 
+            this.SelectedItemToolBar.Dock = System.Windows.Forms.DockStyle.Top;
+            this.SelectedItemToolBar.Location = new System.Drawing.Point(0, 0);
+            this.SelectedItemToolBar.Name = "SelectedItemToolBar";
+            this.SelectedItemToolBar.Size = new System.Drawing.Size(367, 30);
+            this.SelectedItemToolBar.TabIndex = 1;
+            this.SelectedItemToolBar.Text = "elementHost1";
+            this.SelectedItemToolBar.Child = null;
             // 
             // panel1
             // 
@@ -149,5 +174,8 @@
         private System.Windows.Forms.ComboBox VelocityTypeComboBox;
         private System.Windows.Forms.TextBox VelocityTextBox;
         private System.Windows.Forms.Button PreviewButton;
+        private System.Windows.Forms.Integration.ElementHost AllObjectToolBar;
+        private System.Windows.Forms.Integration.ElementHost SelectedItemToolBar;
+        private AllObjectsToolbar allObjectsToolbar1;
     }
 }

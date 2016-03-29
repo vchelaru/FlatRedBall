@@ -98,33 +98,9 @@ namespace GlueView
             // settings can be saved.
             PluginManager.ReactToElementLoad();
 
-
-            bool wasCameraSet = false;
-
-            // If the object contains a camera, then that should have priority over
-            // Glue camera settings
-            foreach (var nos in obj.GetAllNamedObjectsRecurisvely())
-            {
-                if (nos.SourceType == SourceType.FlatRedBallType & nos.SourceClassType == "Camera" &&
-                    !nos.IsNewCamera)
-                {
-                    wasCameraSet = true;
-                    break;
-                }
-            }
-
-            if (!wasCameraSet && obj != null)
-            {
-                wasCameraSet = mElementSettingsSave.SetCameraToSavedValues(obj, SpriteManager.Camera);
-            }
-
-            if (!wasCameraSet)
-            {
-                MakeCamera2DIfViewingPixelPerfectObjects(obj);
-
-            }
+            // This used to set the camera explicitly here, but we have a camera controller that does that for
+            // us now, so we can get rid of it here:
             
-
         }
 
         static void OnElementHighlighted(ElementRuntime elementRuntime)
@@ -205,29 +181,7 @@ namespace GlueView
 			PluginManager.ReactToUpdate();
            
         }
-
-        private static void MakeCamera2DIfViewingPixelPerfectObjects(IElement element)
-        {
-
-            bool is2D = false;
-            if (element != null)
-            {
-                List<NamedObjectSave> namedObjectSaveList = element.NamedObjects;
-
-                is2D = DoesNamedObjectSaveListContain2DObjects(namedObjectSaveList);
-
-                if (!is2D)
-                {
-                    is2D = element is EntitySave && ((EntitySave)element).Is2D;
-                }
-            }
-
-            if (is2D)
-            {
-                SpriteManager.Camera.UsePixelCoordinates();
-            }
-        }
-
+        
         private static bool DoesNamedObjectSaveListContain2DObjects(List<NamedObjectSave> namedObjectSaveList)
         {
             bool is2D = false;

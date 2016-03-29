@@ -144,6 +144,8 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 imageRegionSelectionControl1.SnappingGridSize = null;
             }
+
+            imageRegionSelectionControl1.ShowFullAlpha = zoomControl1.ShowFullAlpha;
         }
 
         private void ScrollBarHandleTextureChange()

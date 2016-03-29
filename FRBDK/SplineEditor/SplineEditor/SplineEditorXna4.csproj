@@ -113,6 +113,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\AppCommands.cs" />
@@ -125,6 +126,9 @@
     <Compile Include="Entities\SplineCrawler.cs" />
     <Compile Include="Entities\SplineMover.cs" />
     <Compile Include="Entities\SplinePointSelectionMarker.cs" />
+    <Compile Include="Gui\Controls\AllObjectsToolbar.xaml.cs">
+      <DependentUpon>AllObjectsToolbar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Gui\Controls\SplineListDisplayControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -150,10 +154,14 @@
     <Compile Include="Singleton.cs" />
     <Compile Include="States\AppState.cs" />
     <Compile Include="States\PreviewState.cs" />
+    <Compile Include="ViewModels\AllObjectsToolbarViewModel.cs" />
     <Compile Include="ViewModels\CameraBoundsViewModel.cs" />
+    <Compile Include="ViewModels\ViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Hud\MoveEntireSpline.png" />
+    <None Include="Content\Hud\MoveEntireSpline.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
     <Content Include="Libraries\Xna4Pc\FlatRedBall.Content.dll" />
@@ -227,6 +235,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Gui\Controls\AllObjectsToolbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Gui\Forms\CameraPropertiesWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

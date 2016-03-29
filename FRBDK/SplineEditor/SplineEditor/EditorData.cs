@@ -69,11 +69,12 @@ namespace ToolTemplate
             mBoundsCamera = new Camera(FlatRedBallServices.GlobalContentManager);
             mBoundsCamera.DrawsWorld = false;
             mBoundsCamera.DrawsToScreen = false;
+
+            // This needs to happen after the bounds camera is created, but before GuiData is initialized.
+            mEditorLogic = new EditorLogic();
             
             GuiData.Initialize();
 
-            // This needs to happen after the bounds camera is created.
-            mEditorLogic = new EditorLogic();
 
             // make resizable
             new EditorObjects.FormMethods();

@@ -613,10 +613,6 @@ namespace FlatRedBall
 
                 mWindowHandle = game.Window.Handle;
             }
-#if !MONOGAME
-            mResourceContentManager = new Microsoft.Xna.Framework.Content.ResourceContentManager(
-                mServices, FlatRedBall.Resources_Xna_4.x86.Resources.ResourceManager);
-#endif
 #else
             mServices = new ServiceContainer();
 
@@ -911,43 +907,10 @@ namespace FlatRedBall
 
             #region Set up the resources manager and load fonts
 
-#if WINDOWS_PHONE
-            mResourceContentManager = new ResourceContentManager(
-                mServices, FlatRedBall.Resources.WindowsPhone.Resource.ResourceManager);
-            fontTexture = mResourceContentManager.Load<Texture2D>("defaultText");
-
-            TextManager.DefaultFont = new BitmapFont(fontTexture,
-                FlatRedBall.Resources.WindowsPhone.Resource.defaultFont);
-
-#elif XBOX360 && !XNA4
-            mResourceContentManager = new Microsoft.Xna.Framework.Content.ResourceContentManager(
-                mServices, FlatRedBall.Resources.Xbox_360.Resources.ResourceManager);
-
-            fontTexture = mResourceContentManager.Load<Texture2D>("defaultText");
-
-            TextManager.DefaultFont = new BitmapFont(fontTexture,
-                FlatRedBall.Resources.Xbox_360.Resources.defaultFont);
-#elif XNA4 && XBOX360
-            mResourceContentManager = new Microsoft.Xna.Framework.Content.ResourceContentManager(
-                mServices, FlatRedBall.Resources_Xna_4.Xbox_360.Resources.ResourceManager);
-
-            fontTexture = mResourceContentManager.Load<Texture2D>("defaultText");
-                //new ContentManager(mServices).Load<Texture2D>("Content/Textures/defaultText");
-
-            fontTexture.Name = "Default Font Texture";
-            TextManager.DefaultFont = new BitmapFont(fontTexture,
-                FlatRedBall.Resources_Xna_4.Xbox_360.Resources.defaultFont);
-
-#elif XNA4
-
-#if XNA4 && !MONOGAME
-            mResourceContentManager = new Microsoft.Xna.Framework.Content.ResourceContentManager(
-                mServices, FlatRedBall.Resources_Xna_4.x86.Resources.ResourceManager);
-#endif
+#if XNA4
+            
             fontTexture = FlatRedBall.Content.ContentManager.GetDefaultFontTexture(graphics.GraphicsDevice);
-            //mResourceContentManager.Load<Texture2D>("defaultText");
-            //new ContentManager(mServices).Load<Texture2D>("Content/Textures/defaultText");
-
+            
             fontTexture.Name = "Default Font Texture";
             TextManager.DefaultFont = new BitmapFont(fontTexture,
                 DefaultFontDataColors.GetFontPattern());
@@ -1035,9 +998,21 @@ namespace FlatRedBall
 
         }
 
-        static void InitializeShaders()
+        public const string ShaderContentManager = "InternalShaderContentManager";
+        public static void InitializeShaders()
         {
+
 #if WINDOWS
+            if(mResourceContentManager != null)
+            {
+                mResourceContentManager.Dispose();
+            }
+
+            mResourceContentManager = new Microsoft.Xna.Framework.Content.ResourceContentManager(
+                mServices, FlatRedBall.Resources_Xna_4.x86.Resources.ResourceManager);
+
+
+
             Renderer.Effect = mResourceContentManager.Load<Effect>("FlatRedBallShader");
 #endif
         }

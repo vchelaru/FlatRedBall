@@ -29,7 +29,7 @@ namespace OfficialPlugins.Compiler
         {
             get
             {
-                return new Version(0, 1);
+                return new Version(0, 2);
             }
         }
 
@@ -54,9 +54,21 @@ namespace OfficialPlugins.Compiler
             var toolbar = new RunnerToolbar();
             toolbar.RunClicked += delegate
             {
+                PluginManager.ReceiveOutput("Building Project. See \"Build\" tab for more information...");
                 Compile((succeeded) =>
                 {
-                    if (succeeded) runner.Run();
+                    if (succeeded)
+                    {
+                        PluginManager.ReceiveOutput("Building succeeded. Running project...");
+
+                        runner.Run();
+                    }
+                    else
+                    {
+                        PluginManager.ReceiveError("Building failed. See \"Build\" tab for more information.");
+
+
+                    }
                 });
             };
             base.AddToToolBar(toolbar, "Standard");

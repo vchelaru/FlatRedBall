@@ -11,6 +11,8 @@ using SplineEditor.Gui.Displayers;
 using SplineEditor.Commands;
 using SplineEditor.States;
 using ToolTemplate.Entities;
+using SplineEditor.ViewModels;
+using ToolTemplate;
 
 namespace SplineEditor.Gui.Controls
 {
@@ -144,6 +146,8 @@ namespace SplineEditor.Gui.Controls
 
             mSplineDisplayer.RefreshOnTimer = false;
             mSplinePointDisplayer.RefreshOnTimer = false;
+
+            ((System.Windows.Controls.UserControl)AllObjectToolBar.Child).DataContext = EditorData.EditorLogic.GetAllObjectsToolbarViewModel();
         }
 
         private void InitializeVelocityTypeComboBox()
