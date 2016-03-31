@@ -23,7 +23,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels
                 {
                     var viewModel = new FeedItemViewModel
                     {
-                        Title = item.Title
+                        Title = item.Title,
+                        RssItem = item
                     };
                     AvailablePlugins.Add(viewModel);
                 }

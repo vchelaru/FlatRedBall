@@ -16,7 +16,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{Binding Title}"></TextBlock>
-                        <Button Grid.Column="1">Download</Button>
+                        <Button Grid.Column="1" Command="{Binding ClickCommand}">Download</Button>
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>

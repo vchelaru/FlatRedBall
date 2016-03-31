@@ -66,6 +66,11 @@ namespace OfficialPlugins.VariableDisplay
 
             SetAlternatingColors(grid, categories);
 
+            foreach(var category in categories)
+            {
+                grid.Categories.Add(category);
+            }
+
             grid.Refresh();
         }
 
@@ -80,7 +85,6 @@ namespace OfficialPlugins.VariableDisplay
                     const byte brightness = 227;
                     category.SetAlternatingColors(new SolidColorBrush(Color.FromRgb(brightness, brightness, brightness)), Brushes.Transparent);
                 }
-                grid.Categories.Add(category);
             }
         }
 

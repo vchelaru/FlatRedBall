@@ -252,9 +252,8 @@ echo 4
 copy $(TargetDir)\TmxGlueLib.dll %25AppData%25\FRBDK\Plugins\TiledPlugin\TmxGlueLib.dll</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>echo BeforeBuild
-
-$(ProjectDir)\ToolsAndLibrariesToCopyToProject\CopyAllHere.bat</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

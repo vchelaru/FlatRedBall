@@ -198,7 +198,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (node.IsRootObjectNode())
             {
-                if (menuShowingAction == MenuShowingAction.RightButtonDrag)
+                bool isSameObject = node.GetContainingElementTreeNode() == node.GetContainingElementTreeNode();
+
+                if (menuShowingAction == MenuShowingAction.RightButtonDrag && !isSameObject)
                 {
                     menu.Items.Add(mAddEntityInstance);
                     menu.Items.Add(mAddEntityList);

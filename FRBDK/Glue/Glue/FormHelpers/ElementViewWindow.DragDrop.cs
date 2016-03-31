@@ -1104,14 +1104,13 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #endregion
 
-            DialogResult result =
-                MessageBox.Show("Create a new Object in\n\n" + elementToCreateIn.Name + "\n\nusing\n\n\t" + entitySaveMoved.Name + "?", "Create new Object?", MessageBoxButtons.YesNo);
+            // We used to ask the user if they're sure, but this isn't a destructive action so just do it:
+            //DialogResult result =
+            //    MessageBox.Show("Create a new Object in\n\n" + elementToCreateIn.Name + "\n\nusing\n\n\t" + entitySaveMoved.Name + "?", "Create new Object?", MessageBoxButtons.YesNo);
 
-            if (result == DialogResult.Yes)
-            {
-                NamedObjectSave newNamedObject = CreateNewNamedObjectInElement(elementToCreateIn, entitySaveMoved);
-                newTreeNode = GlueState.Self.Find.NamedObjectTreeNode(newNamedObject);
-            }
+            NamedObjectSave newNamedObject = CreateNewNamedObjectInElement(elementToCreateIn, entitySaveMoved);
+            newTreeNode = GlueState.Self.Find.NamedObjectTreeNode(newNamedObject);
+
             return newTreeNode;
         }
 
@@ -1196,6 +1195,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
 
             NamedObjectSaveExtensionMethodsGlue.AddNewNamedObjectToElementTreeNode(elementTreeNode, newNamedObject, true);
+
+            Plugins.PluginManager.ReceiveOutput($"Created {newNamedObject}");
 
             return newNamedObject;
         }
