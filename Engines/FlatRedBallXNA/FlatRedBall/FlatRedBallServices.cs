@@ -400,7 +400,6 @@ namespace FlatRedBall
 
         private static void Window_ClientSizeChanged(object sender, EventArgs e)
         {
-            Console.WriteLine("Clinent size changed " + mGame.Window.ClientBounds.Width);
             if (!mWindowResizing)
             {
                 mWindowResizing = true;
