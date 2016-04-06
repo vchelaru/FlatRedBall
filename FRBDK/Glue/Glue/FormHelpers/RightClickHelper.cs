@@ -101,10 +101,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
 
         ///////////////////////////////////////////////////////////
-        public static void PopulateRightClickItems(TreeNode node, MenuShowingAction menuShowingAction = MenuShowingAction.RegularRightClick)
+        public static void PopulateRightClickItems(TreeNode targetNode, MenuShowingAction menuShowingAction = MenuShowingAction.RegularRightClick)
         {
 
-            MainGlueWindow.Self.ElementTreeView.SelectedNode = node;
+            MainGlueWindow.Self.ElementTreeView.SelectedNode = targetNode;
             MainGlueWindow form = MainGlueWindow.Self;
 
             ContextMenuStrip menu = MainGlueWindow.Self.mElementContextMenu;
@@ -114,7 +114,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #region IsScreenNode
 
-            if (node.IsScreenNode())
+            if (targetNode.IsScreenNode())
             {
                 if (menuShowingAction == MenuShowingAction.RightButtonDrag)
                 {
@@ -150,7 +150,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #region IsEntityNode
 
-            else if (node.IsEntityNode())
+            else if (targetNode.IsEntityNode())
             {
                 if (menuShowingAction == MenuShowingAction.RightButtonDrag)
                 {
@@ -166,7 +166,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     menu.Items.Add(mExportElement);
                     menu.Items.Add(mFindAllReferences);
 
-                    EntitySave entitySave = ((EntityTreeNode)node).EntitySave;
+                    EntitySave entitySave = ((EntityTreeNode)targetNode).EntitySave;
 
                     if (entitySave.PooledByFactory)
                     {
@@ -180,13 +180,13 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #region IsFileContainerNode OR IsFolderInFilesContainerNode
 
-            else if (node.IsFilesContainerNode() || node.IsFolderInFilesContainerNode())
+            else if (targetNode.IsFilesContainerNode() || targetNode.IsFolderInFilesContainerNode())
             {
                 menu.Items.Add(form.addFileToolStripMenuItem);
                 menu.Items.Add(form.addFolderToolStripMenuItem);
                 menu.Items.Add("-");
                 menu.Items.Add(form.viewInExplorerToolStripMenuItem);
-                if (node.IsFolderInFilesContainerNode())
+                if (targetNode.IsFolderInFilesContainerNode())
                 {
                     menu.Items.Add(mDeleteFolder);
                 }
@@ -196,9 +196,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #region IsScreenObjectContainerNode
 
-            else if (node.IsRootObjectNode())
+            else if (targetNode.IsRootObjectNode())
             {
-                bool isSameObject = node.GetContainingElementTreeNode() == node.GetContainingElementTreeNode();
+                bool isSameObject = targetNode.GetContainingElementTreeNode().Tag ==
+                    ElementViewWindow.TreeNodeDraggedOff.Tag as ElementCommands;
 
                 if (menuShowingAction == MenuShowingAction.RightButtonDrag && !isSameObject)
                 {
@@ -214,7 +215,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
 
             #region IsGlobalContentContainerNode
-            else if (node.IsGlobalContentContainerNode())
+            else if (targetNode.IsGlobalContentContainerNode())
             {
                 menu.Items.Add(form.addFileToolStripMenuItem);
                 menu.Items.Add(form.addFolderToolStripMenuItem);
@@ -227,7 +228,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
 
             #region IsRootEntityNode
-            else if (node.IsRootEntityNode())
+            else if (targetNode.IsRootEntityNode())
             {
                 menu.Items.Add(form.addEntityToolStripMenuItem);
 
@@ -239,7 +240,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
 
             #region IsRootScreenNode
-            else if (node.IsRootScreenNode())
+            else if (targetNode.IsRootScreenNode())
             {
                 menu.Items.Add(form.addScreenToolStripMenuItem);
 
@@ -250,7 +251,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
 
             #region IsRootBehaviorsNode
-            else if (node.IsRootBehaviorsNode())
+            else if (targetNode.IsRootBehaviorsNode())
             {
                 menu.Items.Add(form.addBehaviorToolStripMenuItem);
                 menu.Items.Add(form.openBehaviorFolderToolStripMenuItem);
@@ -260,7 +261,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #region IsRootCustomVariables
 
-            else if (node.IsRootCustomVariablesNode())
+            else if (targetNode.IsRootCustomVariablesNode())
             {
                 menu.Items.Add(form.addVariableToolStripMenuItem);
             }
@@ -268,7 +269,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
 
             #region IsRootEventNode
-            else if (node.IsRootEventsNode())
+            else if (targetNode.IsRootEventsNode())
             {
                 menu.Items.Add(mAddEventMenuItem);
             }
@@ -276,7 +277,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #region IsNamedObjectNode
 
-            else if (node.IsNamedObjectNode())
+            else if (targetNode.IsNamedObjectNode())
             {
                 AddRemoveFromProjectItems(form, menu);
 
@@ -311,7 +312,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
 
             #region IsReferencedFileNode
-            else if (node.IsReferencedFile())
+            else if (targetNode.IsReferencedFile())
             {
                 menu.Items.Add(form.viewInExplorerToolStripMenuItem);
                 menu.Items.Add(mFindAllReferences);
@@ -328,7 +329,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 menu.Items.Add(mUseContentPipeline);
                 //menu.Items.Add(form.openWithDEFAULTToolStripMenuItem);
 
-                ReferencedFileSave rfs = (ReferencedFileSave)node.Tag;
+                ReferencedFileSave rfs = (ReferencedFileSave)targetNode.Tag;
 
                 if (FileManager.GetExtension(rfs.Name) == "csv" || rfs.TreatAsCsv)
                 {
@@ -356,7 +357,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
 
             #region IsCustomVariable
-            else if (node.IsCustomVariable())
+            else if (targetNode.IsCustomVariable())
             {
                 AddRemoveFromProjectItems(form, menu);
 
@@ -376,7 +377,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
 
             #region IsBehaviorNode
-            else if (node.IsBehaviorNode())
+            else if (targetNode.IsBehaviorNode())
             {
 
                 AddRemoveFromProjectItems(form, menu);
@@ -386,7 +387,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
 
             #region IsCodeNode
-            else if (node.IsCodeNode())
+            else if (targetNode.IsCodeNode())
             {
 
                 menu.Items.Add(form.viewInExplorerToolStripMenuItem);
@@ -397,7 +398,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #region IsRootCodeNode
 
-            else if (node.IsRootCodeNode())
+            else if (targetNode.IsRootCodeNode())
             {
                 menu.Items.Add(form.reGenerateCodeToolStripMenuItem);
             }
@@ -406,7 +407,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
 
             #region IsDirectoryNode
-            else if (node.IsDirectoryNode())
+            else if (targetNode.IsDirectoryNode())
             {
                 //menu.Items.Add(form.viewInExplorerToolStripMenuItem);
                 menu.Items.Add(mViewContentFilesInExplorer);
@@ -416,7 +417,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 menu.Items.Add(form.addFolderToolStripMenuItem);
 
-                if (node.Root().IsRootEntityNode())
+                if (targetNode.Root().IsRootEntityNode())
                 {
                     menu.Items.Add(form.addEntityToolStripMenuItem);
 
@@ -440,7 +441,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #region IsStateListNode
 
-            else if (node.IsStateListNode())
+            else if (targetNode.IsStateListNode())
             {
                 menu.Items.Add(mAddState);
                 menu.Items.Add(mAddStateCategory);
@@ -449,7 +450,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
 
             #region IsStateCategoryNode
-            else if (node.IsStateCategoryNode())
+            else if (targetNode.IsStateCategoryNode())
             {
                 menu.Items.Add(mAddState);
                 AddRemoveFromProjectItems(form, menu);
@@ -459,7 +460,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #region IsStateNode
 
-            else if (node.IsStateNode())
+            else if (targetNode.IsStateNode())
             {
                 AddRemoveFromProjectItems(form, menu);
 
@@ -473,14 +474,14 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #region IsEventTreeNode
 
-            else if (node.IsEventResponseTreeNode())
+            else if (targetNode.IsEventResponseTreeNode())
             {
                 AddRemoveFromProjectItems(form, menu);
 
             }
 
             #endregion
-            PluginManager.ReactToTreeViewRightClick(node, menu);
+            PluginManager.ReactToTreeViewRightClick(targetNode, menu);
         }
 
 
