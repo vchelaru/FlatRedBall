@@ -181,6 +181,11 @@ namespace FlatRedBall.ContentExtensions.ContentTypes
 
         public void Stop()
         {
+            // When a song stops, we want to reset the volume back to 1 so the next song plays full volume and sfx aren't impacted
+            if (waveOut != null)
+            {
+                waveOut.Volume = 1;
+            }
             TryDisposeContainedObjects();
         }
 
