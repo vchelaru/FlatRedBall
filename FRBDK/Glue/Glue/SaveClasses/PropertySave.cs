@@ -87,22 +87,20 @@ namespace FlatRedBall.Glue.SaveClasses
             }
             else
             {
-                foreach (PropertySave propertySave in propertySaveList)
+                var existingProperty = propertySaveList.FirstOrDefault(item => item.Name == nameToSearchFor);
+                if(existingProperty != null)
                 {
-                    if (propertySave.Name == nameToSearchFor)
-                    {
-                        propertySave.Value = value;
-                        return;
-                    }
+
+                    existingProperty.Value = value;
                 }
-
-
-                // If we got here then that means there isn't already something in place for this
-                PropertySave newPropertySave = new PropertySave();
-                newPropertySave.Name = nameToSearchFor;
-                newPropertySave.Value = value;
-
-                propertySaveList.Add(newPropertySave);
+                else
+                {
+                    // If we got here then that means there isn't already something in place for this
+                    PropertySave newPropertySave = new PropertySave();
+                    newPropertySave.Name = nameToSearchFor;
+                    newPropertySave.Value = value;
+                    propertySaveList.Add(newPropertySave);
+                }
             }
         }
 

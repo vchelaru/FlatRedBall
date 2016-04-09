@@ -198,8 +198,13 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (targetNode.IsRootObjectNode())
             {
-                bool isSameObject = targetNode.GetContainingElementTreeNode().Tag ==
+                bool isSameObject = false;
+
+                if (targetNode.GetContainingElementTreeNode() != null && ElementViewWindow.TreeNodeDraggedOff != null)
+                {
+                    isSameObject = targetNode.GetContainingElementTreeNode().Tag ==
                     ElementViewWindow.TreeNodeDraggedOff.Tag as ElementCommands;
+                }
 
                 if (menuShowingAction == MenuShowingAction.RightButtonDrag && !isSameObject)
                 {

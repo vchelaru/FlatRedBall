@@ -379,17 +379,17 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        // this defaults to true - set in the constructor
+        // This used to use the Properties list to store its value, but it caused a bug.
+        // Since this defaulted to true in the constructor, the constructor would add a "true"
+        // value for this. The constructor is called whenever XML deserialization occurs. After
+        // this value was set to true, deserialization would add properties, and "true" would be
+        // in the XML file too, causing a duplicate entry.
+        // The moreal is - if the starting default for a value does not match the default for the type,
+        // then the property should use get;set; instead of the properties.
         public bool GenerateTimedEmit
         {
-            get
-            {
-                return Properties.GetValue<bool>(nameof(GenerateTimedEmit));
-            }
-            set
-            {
-                Properties.SetValue(nameof(GenerateTimedEmit), value);
-            }
+            get;
+            set;
         }
 
 
