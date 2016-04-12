@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MasterInstallerWpf"
         mc:Ignorable="d"
-        Title="Install FlatRedBall" Height="400" Width="650" ResizeMode="NoResize" Icon="Resources/Setup_Install.ico" WindowStartupLocation="CenterScreen">
+        Title="Install FlatRedBall" Height="500" Width="700" ResizeMode="NoResize" Icon="Resources/Setup_Install.ico" WindowStartupLocation="CenterScreen">
     <Grid>
         
     </Grid>

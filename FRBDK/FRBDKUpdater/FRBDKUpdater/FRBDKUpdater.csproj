@@ -108,7 +108,7 @@
 echo Copying FlatRedBall.Tools.dll to Glue
 copy "$(TargetDir)FlatRedBall.Tools.dll" "$(SolutionDir)..\Glue\Glue\Plugins\FRBDKUpdater\"
 
-echo Copying FRBDKUpdater.exe to Glue
+echo Copying FRBDKUpdater.exe to "$(SolutionDir)..\Glue\Glue\Plugins\FRBDKUpdater\"
 copy "$(TargetDir)FRBDKUpdater.exe" "$(SolutionDir)..\Glue\Glue\Plugins\FRBDKUpdater\"
 
 echo Copying Ionic.zip.dll to Glue

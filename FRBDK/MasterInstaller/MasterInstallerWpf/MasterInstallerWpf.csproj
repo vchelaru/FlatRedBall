@@ -38,6 +38,9 @@
   <PropertyGroup>
     <ApplicationIcon>Resources\Setup_Install.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
