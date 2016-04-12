@@ -137,6 +137,9 @@
     <EmbeddedResource Include="Executables\MxaVs2015\XNA Game Studio Platform Tools.msi" />
     <EmbeddedResource Include="Executables\MxaVs2015\XNA Game Studio Shared.msi" />
     <EmbeddedResource Include="Executables\xnafx31_redist.msi" />
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -131,11 +131,15 @@ namespace MasterInstaller.Components
                     argsString = ConvertToArgString(args);
                 }
                 process.StartInfo.Arguments = argsString;
-                process.StartInfo.UseShellExecute = false;
+                //process.StartInfo.CreateNoWindow = true;
+                // According to:
+                // http://stackoverflow.com/questions/6141821/run-application-via-shortcut-using-process-start-c-sharp
+                // This seems to cause problems on Win10:
+                //process.StartInfo.UseShellExecute = false;
                 process.StartInfo.FileName = saveAsName;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.RedirectStandardInput = true;
-                process.StartInfo.RedirectStandardOutput = true;
+                //process.StartInfo.RedirectStandardError = true;
+                //process.StartInfo.RedirectStandardInput = true;
+                //process.StartInfo.RedirectStandardOutput = true;
 
                 process.Start();
 
@@ -149,18 +153,19 @@ namespace MasterInstaller.Components
                     }
                 });
 
-                string errorString;
+                //string errorString;
 
-                if (process.ExitCode != 0)
-                {
-                    errorString = process.StandardError.ReadToEnd() + 
-                        "\n\n" + process.StandardOutput.ReadToEnd();
-                }
+                //if (process.ExitCode != 0)
+                //{
+                //    errorString = process.StandardError.ReadToEnd() + 
+                //        "\n\n" + process.StandardOutput.ReadToEnd();
+                //}
 
                 return process.ExitCode;
             }
-            catch (Win32Exception)
+            catch (Win32Exception e)
             {
+                Debug.WriteLine(e.ToString());
                 // probably cancelled - don't do anything.
                 return 0;
             }

@@ -6,20 +6,23 @@ namespace FRBDKUpdater
     {
         public static void Empty(this DirectoryInfo directory)
         {
-            foreach (var file in directory.GetFiles())
+            if (directory.Exists)
             {
-                file.Delete();
-            }
-            foreach (var subDirectory in directory.GetDirectories())
-            {
-                try
+                foreach (var file in directory.GetFiles())
                 {
-                    subDirectory.Delete(true);
+                    file.Delete();
                 }
-                catch(IOException e)
+                foreach (var subDirectory in directory.GetDirectories())
                 {
-                    Messaging.Alert(@"Could not delete " + subDirectory.FullName + @"\n\nPlease delete this manually then click OK to continue");
-                    throw e;
+                    try
+                    {
+                        subDirectory.Delete(true);
+                    }
+                    catch (IOException e)
+                    {
+                        Messaging.Alert(@"Could not delete " + subDirectory.FullName + @"\n\nPlease delete this manually then click OK to continue");
+                        throw e;
+                    }
                 }
             }
         }
