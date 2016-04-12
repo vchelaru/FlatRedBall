@@ -2267,7 +2267,7 @@ namespace FlatRedBall.Graphics
 
                     for (int i = 0; i < polygons.Count; i++)
                     {
-                        if (polygons[i].Points.Count > 1)
+                        if (polygons[i].Points != null && polygons[i].Points.Count > 1)
                         {
                             // if this polygon knocks us into the next vertex buffer, then set the data for this one, then move on
                             if (vertNum + polygons[i].Points.Count > 6000)

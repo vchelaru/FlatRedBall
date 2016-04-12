@@ -104,8 +104,6 @@ namespace BuildServerUploaderConsole.Processes
                 CopyDirectory(frbdkDirectory + xna4_0tool, "Copied " + xna4_0tool);
             }
 
-            #region Copy genGfx, Assets and settings folders from each tool
-
             FileManager.CopyDirectory(frbdkForZipDirectory + @"\Assets", frbdkForZipDirectory + @"\Xna 4 Tools\Assets", false, _excludeFiles, _excludedDirs);
 
             Results.WriteMessage("Successfully copied Assets folder." + @" Copied to " + frbdkForZipDirectory + @"\Xna 4 Tools\Assets");
@@ -113,8 +111,6 @@ namespace BuildServerUploaderConsole.Processes
             FileManager.CopyDirectory(frbdkForZipDirectory + "/Content", frbdkForZipDirectory + @"\Xna 4 Tools\Content", false, _excludeFiles, _excludedDirs);
 
             Results.WriteMessage("Successfully copied Content folder." + @" Copied to " + frbdkForZipDirectory + @"\Xna 4 Tools\Content");
-
-            #endregion
         }
 
         private void CopyDirectory(string sourceDirectory, string successfulMessage, string subdirectoryName = null)
