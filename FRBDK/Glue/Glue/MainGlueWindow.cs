@@ -42,6 +42,7 @@ using FlatRedBall.Glue.SetVariable;
 using Container = EditorObjects.IoC;
 using FlatRedBall.Glue.UnreferencedFiles;
 using FlatRedBall.Glue.Controls.ProjectSync;
+using System.Linq;
 
 //using EnvDTE;
 
@@ -93,13 +94,34 @@ namespace Glue
                 OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
                 openFileDialog1.InitialDirectory = "c:\\";
-                openFileDialog1.Filter = "VS Project files (*.vcproj)|*.vcproj|C# Project files (*.csproj)|*.csproj";
+                openFileDialog1.Filter = "Project/Solution files (*.vcproj;*.csproj;*.sln)|*.vcproj;*.csproj;*.sln;";
                 openFileDialog1.FilterIndex = 2;
                 openFileDialog1.RestoreDirectory = true;
 
                 if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 {
                     string projectFileName = openFileDialog1.FileName;
+
+                    if(FileManager.GetExtension(projectFileName) == "sln")
+                    {
+                        var solution = VSSolution.FromFile(projectFileName);
+
+                        string solutionName = projectFileName;
+
+                        projectFileName = solution.ReferencedProjects.FirstOrDefault(item=>
+                        {
+                            var isRegularProject = FileManager.GetExtension(item) == "csproj" || FileManager.GetExtension(item) == "vsproj";
+
+                            bool hasSameName = FileManager.RemovePath(FileManager.RemoveExtension(solutionName)).ToLowerInvariant() ==
+                                FileManager.RemovePath(FileManager.RemoveExtension(item)).ToLowerInvariant();
+
+
+                            return isRegularProject && hasSameName;
+                        });
+
+                        projectFileName = FileManager.GetDirectory(solutionName) + projectFileName;
+                    }
+
                     LoadProject(projectFileName, null);
 
                     SaveSettings();
