@@ -941,6 +941,11 @@ namespace FlatRedBall.Glue.SaveClasses
             return null;
         }
 
+        /// <summary>
+        /// Returns whether this instance has the argument variable. This controls whether the variable should appear in the property grid.
+        /// </summary>
+        /// <param name="customVariableName"></param>
+        /// <returns></returns>
         public bool HasCustomVariable(string customVariableName)
         {
             for (int i = 0; i < mTypedMembers.Count; i++)

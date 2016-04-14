@@ -20,6 +20,9 @@ namespace FlatRedBall.Glue.VSHelpers
         NeverCopy
     }
 
+    /// <summary>
+    /// Extracts code files from an assembly and saves them to disk, relative to the current project.
+    /// </summary>
     public class CodeBuildItemAdder
     {
         #region Fields
