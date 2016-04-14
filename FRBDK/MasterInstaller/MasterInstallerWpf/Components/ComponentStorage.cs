@@ -22,7 +22,6 @@ namespace MasterInstaller.Components
         public static XNA3_1Component Xna3_1Component;
         public static XNA4Component Xna4Component;
         public static FrbdkComponent FrbdkComponent;
-        public static FileAssociationComponent FileAssociationComponent;
         public static CompletedComponent CompletedComponent;
 
         public static void SetValue(string name, bool value)

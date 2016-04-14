@@ -88,7 +88,6 @@
     </Compile>
     <Compile Include="Components\InstallableComponentBase.cs" />
     <Compile Include="Components\InstallableComponents\DirectX\DirectXComponent.cs" />
-    <Compile Include="Components\InstallableComponents\FRBDK\FileAssociationComponent.cs" />
     <Compile Include="Components\InstallableComponents\FRBDK\FileAssociationControl.cs" />
     <Compile Include="Components\InstallableComponents\FRBDK\FrbdkComponent.cs" />
     <Compile Include="Components\InstallableComponents\XNA3_1\XNA3_1Component.cs" />

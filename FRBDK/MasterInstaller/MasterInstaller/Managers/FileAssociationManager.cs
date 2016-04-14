@@ -63,6 +63,12 @@ namespace MasterInstaller.Managers
                     glueFileName);
             }
 
+            string splineEditorFileName = frbdkFolder + "Xna 4 Tools\\SplineEditor.exe";
+            if (System.IO.File.Exists(splineEditorFileName))
+            {
+                Associate(".splx", "FlatRedBall.FRBDK.SplineEditor", "Spline file",
+                    splineEditorFileName);
+            }
         }
 
 
