@@ -43,6 +43,10 @@
             this.deleteSplinePointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.cameraPropertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.duplicateSplineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.flipXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -110,6 +114,10 @@
             this.toolStripSeparator2,
             this.deleteSplineToolStripMenuItem,
             this.deleteSplinePointToolStripMenuItem,
+            this.toolStripSeparator4,
+            this.duplicateSplineToolStripMenuItem,
+            this.toolStripSeparator5,
+            this.flipXToolStripMenuItem,
             this.toolStripSeparator3,
             this.cameraPropertiesToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
@@ -161,6 +169,30 @@
             this.cameraPropertiesToolStripMenuItem.Text = "Camera Properties";
             this.cameraPropertiesToolStripMenuItem.Click += new System.EventHandler(this.cameraPropertiesToolStripMenuItem_Click);
             // 
+            // duplicateSplineToolStripMenuItem
+            // 
+            this.duplicateSplineToolStripMenuItem.Name = "duplicateSplineToolStripMenuItem";
+            this.duplicateSplineToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.duplicateSplineToolStripMenuItem.Text = "Duplicate Spline";
+            this.duplicateSplineToolStripMenuItem.Click += new System.EventHandler(this.duplicateSplineToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(170, 6);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(170, 6);
+            // 
+            // flipXToolStripMenuItem
+            // 
+            this.flipXToolStripMenuItem.Name = "flipXToolStripMenuItem";
+            this.flipXToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.flipXToolStripMenuItem.Text = "Flip X";
+            this.flipXToolStripMenuItem.Click += new System.EventHandler(this.flipXToolStripMenuItem_Click);
+            // 
             // SplineListDisplayForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -200,5 +232,9 @@
         private System.Windows.Forms.ToolStripMenuItem loadScenescnxToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem cameraPropertiesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem duplicateSplineToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripMenuItem flipXToolStripMenuItem;
     }
 }

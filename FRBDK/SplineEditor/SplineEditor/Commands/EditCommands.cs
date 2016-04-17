@@ -1,5 +1,6 @@
 ﻿using FlatRedBall;
 using FlatRedBall.Math.Splines;
+using FlatRedBall.Utilities;
 using Microsoft.Xna.Framework;
 using SplineEditor.States;
 using System;
@@ -24,6 +25,8 @@ namespace SplineEditor.Commands
             // Refresh tree view after InitializeSplineAfterCreation 
             // so that the new Spline has a name
             AppCommands.Self.Gui.RefreshTreeView();
+
+            AppState.Self.CurrentSpline = spline;
 
         }
 
@@ -108,7 +111,26 @@ namespace SplineEditor.Commands
 
         }
 
+        internal void DuplicateSpline()
+        {
+            var whatToCopy = AppState.Self.CurrentSpline;
 
+            if (whatToCopy != null)
+            {
+                var newSpline = AppState.Self.CurrentSpline.Clone();
+
+                var casted = EditorData.SplineList.Cast<INameable>();
+
+                EditorData.SplineList.Add(newSpline);
+
+                EditorData.InitializeSplineAfterCreation(newSpline);
+                // Refresh tree view after InitializeSplineAfterCreation 
+                // so that the new Spline has a name
+                AppCommands.Self.Gui.RefreshTreeView();
+
+                AppState.Self.CurrentSpline = newSpline;
+            }
+        }
 
         internal void DeleteCurrentSpline()
         {
@@ -122,6 +144,27 @@ namespace SplineEditor.Commands
 
                 AppCommands.Self.Gui.RefreshTreeView();
                 AppCommands.Self.Gui.RefreshPropertyGrid();
+            }
+        }
+
+        internal void FlipX()
+        {
+            var splineToFlip = AppState.Self.CurrentSpline;
+
+            if(splineToFlip != null)
+            {
+                foreach(var point in splineToFlip)
+                {
+                    point.Position.X *= -1f;
+                }
+
+
+                splineToFlip.CalculateVelocities();
+                splineToFlip.CalculateAccelerations();
+                splineToFlip.CalculateDistanceTimeRelationships(.1f);
+
+                GuiData.PropertyGrid.Refresh();
+
             }
         }
     }

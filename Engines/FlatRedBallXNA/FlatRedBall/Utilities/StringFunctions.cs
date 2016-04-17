@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 
@@ -748,8 +749,31 @@ namespace FlatRedBall.Utilities
                 }
             }
         }
-        
-        
+
+        public static void MakeNameUnique<T>(T nameable, IEnumerable<T> list)
+            where T : INameable
+        {
+            var count = list.Count();
+
+            for (int i = 0; i < list.Count(); i++)
+            {
+                var atI = list.ElementAt(i);
+
+                if (((object)nameable) != ((object)atI) &&
+                    (nameable.Name == atI.Name ||
+                     (string.IsNullOrEmpty(nameable.Name) && string.IsNullOrEmpty(atI.Name)))
+                    )
+                {
+                    // the name matches an item in the list that isn't the same reference, so increment the number.
+                    nameable.Name = IncrementNumberAtEnd(nameable.Name);
+
+                    // restart the loop:
+                    i = -1;
+                }
+            }
+        }
+
+
         /// <summary>
         /// Makes an INameable's name unique given a list of existing INameables.
         /// </summary>

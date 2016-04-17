@@ -98,14 +98,14 @@ namespace ToolTemplate
                     mCurrentSpline.CalculateVelocities();
                     mCurrentSpline.CalculateAccelerations();
                     mCurrentSpline.CalculateDistanceTimeRelationships(.05f);
+
+                    // Before highlighting the object let's make sure that the list is showing it
+                    // Update: Doing this actually refreshes the list and this can screw selection and
+                    // collapse state.  It's annoying, and I don't think we need it:
+                    //GuiData.SplineListDisplay.UpdateToList();
+
+                    mCurrentSpline.Visible = true;
                 }
-
-                // Before highlighting the object let's make sure that the list is showing it
-                // Update: Doing this actually refreshes the list and this can screw selection and
-                // collapse state.  It's annoying, and I don't think we need it:
-                //GuiData.SplineListDisplay.UpdateToList();
-
-                mCurrentSpline.Visible = true;
 
                 GuiData.UpdateToSpline(mCurrentSpline);
 

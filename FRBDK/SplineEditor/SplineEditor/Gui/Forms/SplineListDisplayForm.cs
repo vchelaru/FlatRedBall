@@ -150,5 +150,15 @@ namespace SplineEditor.Gui.Forms
             ElementHost.EnableModelessKeyboardInterop(cameraPropertiesWindow);
             cameraPropertiesWindow.Show();
         }
+
+        private void duplicateSplineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AppCommands.Self.Edit.DuplicateSpline();
+        }
+
+        private void flipXToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AppCommands.Self.Edit.FlipX();
+        }
     }
 }
