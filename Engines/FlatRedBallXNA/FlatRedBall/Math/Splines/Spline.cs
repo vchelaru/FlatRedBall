@@ -320,6 +320,41 @@ namespace FlatRedBall.Math.Splines
             }
         }
 
+        public double GetLengthAtTime(double time)
+        {
+#if DEBUG
+            if (mDistanceToTimes == null || mDistanceToTimes.Count == 0)
+            {
+                throw new InvalidOperationException("CalculateDistanceTimeRelationships() must be called before calling GetLengthAtTime.");
+            }
+#endif
+
+            if (time < 0)
+                time = 0;
+
+            int indexBeforeTime = GetDistanceTimeRelationshipIndexBeforeTime(time);
+
+            if (time == 0)
+            {
+                return indexBeforeTime = 0;
+            }
+            if (indexBeforeTime == mDistanceToTimes.Count - 1)
+            {
+                return mDistanceToTimes[indexBeforeTime].Distance;
+            }
+            else
+            {
+                int indexAfterTime = indexBeforeTime + 1;
+
+                double timeAfterLastRelationship = time - mDistanceToTimes[indexBeforeTime].Time;
+                double timeBetweenRelationships = mDistanceToTimes[indexAfterTime].Time - mDistanceToTimes[indexBeforeTime].Time;
+
+                double ratio = timeAfterLastRelationship / timeBetweenRelationships;
+
+                return mDistanceToTimes[indexBeforeTime].Distance + (ratio * (mDistanceToTimes[indexAfterTime].Distance - mDistanceToTimes[indexBeforeTime].Distance));
+            }
+        }
+
         public Vector3 GetPositionAtTime(double time)
         {
             #region Special-case for a count of 0 or 1
@@ -685,6 +720,20 @@ namespace FlatRedBall.Math.Splines
             for (int i = mDistanceToTimes.Count - 1; i > -1; i--)
             {
                 if (mDistanceToTimes[i].Distance < length)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+
+        }
+
+        private int GetDistanceTimeRelationshipIndexBeforeTime(double time)
+        {
+            for (int i = mDistanceToTimes.Count - 1; i > -1; i--)
+            {
+                if (mDistanceToTimes[i].Time < time)
                 {
                     return i;
                 }
