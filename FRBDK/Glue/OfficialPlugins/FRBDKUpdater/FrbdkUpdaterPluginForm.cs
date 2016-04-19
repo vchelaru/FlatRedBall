@@ -78,35 +78,34 @@ namespace OfficialPlugins.FrbdkUpdater
             var myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             var builtLocation = myDocuments + @"\FlatRedBall\FRBDK\FRBDKUpdater\FRBDKUpdater\bin\Debug\FRBDKUpdater.exe";
 
-            if(System.IO.File.Exists(builtLocation))
+            System.Diagnostics.Process process = null;
+            string exePath = null;
+
+            if (System.IO.File.Exists(builtLocation))
             {
-                var exePath = builtLocation;
-                var parameters = "\"" + FrbdkUpdaterSettings.DefaultSaveLocation + "\"";
-
-                var process = System.Diagnostics.Process.Start(exePath, parameters);
-
-                _plugin.GlueCommands.CloseGlue();
-
+                exePath = builtLocation;
             }
-
             if (File.Exists(destinationPath + @"FRBDKUpdater.exe"))
             {
-                var exePath = destinationPath + @"FRBDKUpdater.exe";
-                var parameters = "\"" + FrbdkUpdaterSettings.DefaultSaveLocation + "\"";
-
-                var process = System.Diagnostics.Process.Start(exePath, parameters);
-
-                _plugin.GlueCommands.CloseGlue();
+                exePath = destinationPath + @"FRBDKUpdater.exe";
             }
             else if (File.Exists(destinationPath + @"FRBDKUpdater\FRBDKUpdater.exe"))
             {
-                var exePath = destinationPath + @"FRBDKUpdater\FRBDKUpdater.exe";
-                var parameters = "\"" + FrbdkUpdaterSettings.DefaultSaveLocation + "\"";
+                exePath = destinationPath + @"FRBDKUpdater\FRBDKUpdater.exe";
+            }
 
-                var process = System.Diagnostics.Process.Start(exePath, parameters);
+            if(exePath != null)
+            {
+                string parameters = "\"" + FrbdkUpdaterSettings.DefaultSaveLocation + "\"";
+                process = new System.Diagnostics.Process();
+                process.StartInfo.Verb = "runas";
+                process.StartInfo.FileName = exePath;
+                process.StartInfo.Arguments = parameters;
+                process.Start();
 
                 _plugin.GlueCommands.CloseGlue();
             }
+
             else
             {
                 MessageBox.Show(

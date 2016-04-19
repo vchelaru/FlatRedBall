@@ -19,6 +19,7 @@ using FlatRedBall.IO;
 using FlatRedBall.IO.Csv;
 using FlatRedBall.Utilities;
 using FRBDKUpdater;
+using NewProjectCreator.Managers;
 
 namespace NewProjectCreator
 {
@@ -28,10 +29,6 @@ namespace NewProjectCreator
     public static class ProjectCreationHelper
     {
         #region Fields
-
-
-
-        static List<PlatformProjectInfo> mAllProjects = new List<PlatformProjectInfo>();
 
         /// <summary>
         /// This list contains names which should not be used as project names.
@@ -62,29 +59,6 @@ namespace NewProjectCreator
         };
 
         #endregion
-
-
-        public static List<PlatformProjectInfo> AllProjects
-        {
-            get { return mAllProjects; }
-        }
-
-        public static void CreateProjectInfo()
-        {
-            string fileName = "Content/AvailableFiles.csv";
-
-            string absoluteFile = FileManager.RelativeDirectory + fileName;
-
-            if (!File.Exists(absoluteFile))
-            {
-                MessageBox.Show("The New Project Creator is missing a critical file called AvailableFiles.csv.  Full path is\n\n" +
-                    absoluteFile + "\n\nThis file is needed to get the list of available projects that the New Project Creator can create");
-            }
-            else
-            {
-                CsvFileManager.CsvDeserializeList(typeof(PlatformProjectInfo), fileName, mAllProjects);
-            }
-        }
 
         public static bool MakeNewProject(NewProjectViewModel viewModel)
         {
@@ -159,22 +133,12 @@ namespace NewProjectCreator
                             }
 
 
-                            succeeded = UnzipFile(zipToUnpack, unpackDirectory);
+                            succeeded = UnzipManager.UnzipFile(zipToUnpack, unpackDirectory);
                         }
 
                         if (succeeded)
                         {
-                            RenameFiles(unpackDirectory, stringToReplace,
-                                viewModel.ProjectName);
-
-                            UpdateSolutionContents(unpackDirectory, stringToReplace,
-                                viewModel.ProjectName);
-
-                            UpdateNamespaces(unpackDirectory, stringToReplace,
-                                viewModel.DifferentNamespace);
-
-                            UpdateProjects(unpackDirectory, stringToReplace,
-                                viewModel.DifferentNamespace);
+                            RenameEverything(viewModel, stringToReplace, unpackDirectory);
 
                             CreateGuidInAssemblyInfo(unpackDirectory);
 
@@ -191,6 +155,27 @@ namespace NewProjectCreator
             }
 
             return succeeded;
+        }
+
+        private static void RenameEverything(NewProjectViewModel viewModel, string stringToReplace, string unpackDirectory)
+        {
+            RenameFiles(unpackDirectory, stringToReplace,
+                viewModel.ProjectName);
+
+            UpdateSolutionContents(unpackDirectory, stringToReplace,
+                viewModel.ProjectName);
+
+            // UpdateProjects does a simple "Replace" call, which should
+            // happen before we do the stricter UpdateNamespace call below.
+            // Otherwise, if the user changes the project name to something that contains
+            // the original name (like "StarBlaster"), then UpdateProject will result in the
+            // namespace being incorrect.
+            UpdateProjects(unpackDirectory, stringToReplace,
+                viewModel.DifferentNamespace);
+
+            UpdateNamespaces(unpackDirectory, stringToReplace,
+                viewModel.DifferentNamespace);
+
         }
 
         private static string GetZipToUnpack(NewProjectViewModel viewModel, string fileToDownload, ref bool hasUserCancelled, out bool shouldTryDownloading)
@@ -286,30 +271,6 @@ namespace NewProjectCreator
             return isFileNameValid;
         }
 
-        private static bool UnzipFile(string zipToUnpack, string unpackDirectory)
-        {
-            bool succeeded = true;
-            try
-            {
-
-                using (ZipFile zip1 = ZipFile.Read(zipToUnpack))
-                {
-                    // here, we extract every entry, but we could extract conditionally
-                    // based on entry name, size, date, checkbox status, etc.  
-                    foreach (ZipEntry zipEntry in zip1)
-                    {
-                        zipEntry.Extract(unpackDirectory, true);
-                    }
-                }
-            }
-            catch
-            {
-                succeeded = false;
-                MessageBox.Show("The local .zip file could not be unzipped.  Deleting this file.  Attempt to create the project again to re-download it.");
-                File.Delete(zipToUnpack);
-            }
-            return succeeded;
-        }
 
         private static bool DownloadFileSync(NewProjectViewModel viewModel, string zipToUnpack, string fileToDownoad)
         {
@@ -433,6 +394,9 @@ namespace NewProjectCreator
 
             filesToReplace.AddRange(FileManager.GetAllFilesInDirectory(
                 unpackDirectory, "contentproj"));
+
+            filesToReplace.AddRange(FileManager.GetAllFilesInDirectory(
+                unpackDirectory, "glux"));
 
 
             foreach (string fileName in filesToReplace)
@@ -591,6 +555,20 @@ namespace NewProjectCreator
                 FileManager.SaveText(contents, fileName);
             }
 
+            filesToFix.Clear();
+            filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "glux"));
+
+            foreach(string fileName in filesToFix)
+            {
+                string contents = FileManager.FromFileText(fileName);
+
+                string whatToSearchFor = stringToReplace + ".";
+                string replacement = stringToReplaceWith + ".";
+
+                contents = contents.Replace(whatToSearchFor, replacement);
+
+                FileManager.SaveText(contents, fileName);
+            }
         }
 
         private static void UpdateProjects(string unpackDirectory, string stringToReplace, string stringToReplaceWith)
@@ -744,6 +722,10 @@ namespace NewProjectCreator
 
         public static void GetDefaultZipLocationAndStringToReplace(PlatformProjectInfo project, string templateLocation, out string zipToUnpack, out string stringToReplace)
         {
+            if(project == null)
+            {
+                throw new ArgumentNullException("project");
+            }
             zipToUnpack = "";
 
             stringToReplace = "";

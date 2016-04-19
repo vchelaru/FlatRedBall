@@ -92,16 +92,37 @@ namespace FRBDKUpdater
             {
                 Logger.Log("Downloading from " + mSettings.Url);
 
-                var response = GetResponseForRequest();
 
-                var fileSize = response.ContentLength;
+                int maxFailures = 4;
+                int msToSleepOn0Length = 400;
+                int numberOfFailures = 0;
+
+                HttpWebResponse response = null;
+                long fileSize = 0;
+
+                while (numberOfFailures < maxFailures)
+                {
+                    response = GetResponseForRequest();
+                    fileSize = response.ContentLength;
+
+                    if (fileSize <= 0)
+                    {
+                        System.Threading.Thread.Sleep(msToSleepOn0Length);
+                        numberOfFailures++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
 
                 if (fileSize <= 0)
                 {
                     mHasErrorOccured = true;
-                    if(ErrorOccured != null)
+                    if (ErrorOccured != null)
                     {
-                        ErrorOccured(this, new DownloaderErrorEventArgs("File size for .zip was not greater than 0"));
+                        ErrorOccured(this, new DownloaderErrorEventArgs(
+                            $"File size for .zip was not greater than 0. Attempted to download the file {maxFailures} times."));
                     }
                 }
 

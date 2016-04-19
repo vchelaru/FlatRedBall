@@ -81,10 +81,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Ionic.Zlib.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -96,6 +99,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\FRBDKUpdater\FRBDKUpdater\UpdaterRuntimeSettings.cs">
@@ -117,13 +123,20 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Managers\CommandLineManager.cs" />
+    <Compile Include="Managers\DataLoader.cs" />
     <Compile Include="Managers\MessageBoxShower.cs" />
     <Compile Include="Managers\Singleton.cs" />
+    <Compile Include="Managers\UnzipManager.cs" />
     <Compile Include="PlatformProjectInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectCreationHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\NewProjectViewModel.cs" />
+    <Compile Include="ViewModels\TemplateCategoryViewModel.cs" />
+    <Compile Include="ViewModels\TemplateViewModel.cs" />
+    <Compile Include="Views\MainControl.xaml.cs">
+      <DependentUpon>MainControl.xaml</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="..\..\Glue\Glue\Controls\MultiButtonMessageBox.resx">
       <Link>Controls\MultiButtonMessageBox.resx</Link>
       <DependentUpon>MultiButtonMessageBox.cs</DependentUpon>
@@ -145,7 +158,10 @@
     <None Include="app.manifest">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Content\AvailableFiles.csv">
+    <None Include="Content\EmptyTemplates.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\StarterProjects.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Properties\Settings.settings">
@@ -194,7 +210,12 @@
       <Name>NewProjectCreator.Logic</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Page Include="Views\MainControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

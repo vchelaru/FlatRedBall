@@ -34,19 +34,27 @@ namespace FRBDKUpdater
                 }
                 else if (args.Length == 1)
                 {
-                    mMainForm = new FrmMain(args[0]);
+                    string fileNameToLoad = args[0];
+                    mMainForm = new FrmMain(fileNameToLoad);
 
                     Application.Run(mMainForm);
                 }
                 else
                 {
-                    switch (args[1])
+                    var operation = args[1];
+
+                    switch (operation)
                     {
                         case "CleanAndZip":
                             try
                             {
                                 Messaging.ShowAlerts = Convert.ToBoolean(args[5]);
-                                CleanAndZipAction.CleanAndZip(args[0], args[2], args[3], args[4]);
+
+                                string userAppPath = args[0];
+                                string directoryToClear = args[2];
+                                string zippedFile = args[3];
+                                string extractionPath = args[4];
+                                CleanAndZipAction.CleanAndZip(userAppPath, directoryToClear, zippedFile, extractionPath);
                             }
                             catch (ZipException zipException)
                             {

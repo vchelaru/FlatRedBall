@@ -6,7 +6,7 @@ namespace FRBDKUpdater.Actions
 {
     public class CleanAndZipAction
     {
-        public static void CleanAndZip(string userAppPath, string directoryToClear, string saveFile, string extractionPath)
+        public static void CleanAndZip(string userAppPath, string directoryToClear, string zipFile, string extractionPath)
         {
             if (!string.IsNullOrEmpty(directoryToClear))
             {
@@ -16,10 +16,10 @@ namespace FRBDKUpdater.Actions
             }
 
             //Extract downloaded zip if it's a .zip file.  
-            if (FileManager.GetExtension(saveFile) == "zip" && !string.IsNullOrEmpty(extractionPath))
+            if (FileManager.GetExtension(zipFile) == "zip" && !string.IsNullOrEmpty(extractionPath))
             {
-                Logger.Log("Unzipping file " + saveFile + " to " + extractionPath);
-                using (var zip = new ZipFile(saveFile))
+                Logger.Log("Unzipping file " + zipFile + " to " + extractionPath);
+                using (var zip = new ZipFile(zipFile))
                 {
                     zip.ExtractAll(extractionPath, true);
                 }

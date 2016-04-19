@@ -2468,7 +2468,7 @@ namespace FlatRedBall.IO
 
 #if !SILVERLIGHT && !WINDOWS_8
 
-        private static void CopyDirectoryHelper(string sourceDirectory, string destDirectory, bool deletePrevious, List<string> excludeFiles, List<string> excludeDirectories)
+        private static void CopyDirectoryHelper(string sourceDirectory, string destDirectory, bool clearDestination, List<string> excludeFiles, List<string> excludeDirectories)
         {
             destDirectory = FileManager.Standardize(destDirectory);
 
@@ -2477,7 +2477,7 @@ namespace FlatRedBall.IO
                 destDirectory += @"\";
             }
 
-            if (Directory.Exists(destDirectory) && deletePrevious)
+            if (Directory.Exists(destDirectory) && clearDestination)
             {
                 DeleteDirectory(destDirectory);
             }
@@ -2501,7 +2501,7 @@ namespace FlatRedBall.IO
                 dirName = RemovePath(dir);
 
                 if (excludeDirectories == null || !excludeDirectories.Contains(dirName))
-                    CopyDirectoryHelper(dir, destDirectory + dirName, deletePrevious, excludeFiles, excludeDirectories);
+                    CopyDirectoryHelper(dir, destDirectory + dirName, clearDestination, excludeFiles, excludeDirectories);
             }
 
         }

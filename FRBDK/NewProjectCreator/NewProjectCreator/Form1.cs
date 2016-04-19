@@ -20,6 +20,8 @@ namespace NewProjectCreator
 {
     public partial class Form1 : Form
     {
+        NewProjectViewModel viewModel;
+
         #region Properties
 
         public string InfoBarLabelText
@@ -43,18 +45,19 @@ namespace NewProjectCreator
         {
             InitializeComponent();
 
-            ProjectCreationHelper.CreateProjectInfo();
+            DataLoader.LoadAvailableProjectsFromCsv();
 
-            FillAvailableProjectTypes();
+            viewModel = new NewProjectViewModel();
 
             SetInitialProjectLocation();
             //RemoteFileManager.Initialize();
 
             ProcessCommandLineArguments();
-
-            ProjectTypeListBox.SelectedIndex = 0;
+            
 
             UseDifferentNamespaceCheckBoxChanged(null, null);
+
+            ((System.Windows.Controls.Control)WpfHost.Child).DataContext = viewModel;
         }
 
         private void ProcessCommandLineArguments()
@@ -82,14 +85,6 @@ namespace NewProjectCreator
             ProjectLocationTextBox.Text = folderName;
         }
 
-        private void FillAvailableProjectTypes()
-        {
-            foreach (var item in ProjectCreationHelper.AllProjects)
-            {
-                this.ProjectTypeListBox.Items.Add(item);
-            }
-        }
-
         private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e)
         {
 
@@ -114,32 +109,28 @@ namespace NewProjectCreator
             }
         }
 
-        public NewProjectViewModel ToViewModel()
+        public void ApplyViewToViewModel()
         {
-            NewProjectViewModel toReturn = new NewProjectViewModel();
 
-            toReturn.ProjectName = this.ProjectNameTextBox.Text;
+            viewModel.ProjectName = this.ProjectNameTextBox.Text;
 
-            toReturn.UseDifferentNamespace = DifferentNamespaceCheckbox.Checked;
+            viewModel.UseDifferentNamespace = DifferentNamespaceCheckbox.Checked;
 
-            toReturn.DifferentNamespace = DifferentNamespaceTextbox.Text;
+            viewModel.DifferentNamespace = DifferentNamespaceTextbox.Text;
 
-            toReturn.CheckForNewVersions = CheckForNewVersionCheckBox.Checked;
-
-            toReturn.ProjectType = ProjectTypeListBox.SelectedItem as PlatformProjectInfo;
+            viewModel.CheckForNewVersions = CheckForNewVersionCheckBox.Checked;
 
             // todo - the logic for this is in Form1.cs and it should be in the VM
-            toReturn.ProjectLocation = ProjectLocationTextBox.Text;
+            viewModel.ProjectLocation = ProjectLocationTextBox.Text;
+
+
+            viewModel.CreateProjectDirectory = CreateProjectDirectoryCheckBox.Checked;
             
-
-            toReturn.CreateProjectDirectory = CreateProjectDirectoryCheckBox.Checked;
-
-            return toReturn;
         }
 
         private void MakeMyProjectClick(object sender, EventArgs e)
         {
-            var viewModel = ToViewModel();
+            ApplyViewToViewModel();
 
             string whyIsntValid = viewModel.GetWhyIsntValid();
 
@@ -196,8 +187,9 @@ namespace NewProjectCreator
             
             if (CreateProjectDirectoryCheckBox.CheckState == CheckState.Checked)
             {
+                ApplyViewToViewModel();
                 // this is heavy but whatever, we'll fix it up later
-                FinalDirectoryLabel.Text = ToViewModel().CombinedProjectDirectory;
+                FinalDirectoryLabel.Text = viewModel.CombinedProjectDirectory;
             }
             else
             {

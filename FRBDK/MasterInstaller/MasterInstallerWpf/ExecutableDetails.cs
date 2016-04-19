@@ -9,5 +9,6 @@ namespace MasterInstaller
         public List<string> AdditionalFiles;
         public Action<object> ExtraLogic;
         public string[] Parameters;
+        public bool RunAsAdministrator;
     }
 }

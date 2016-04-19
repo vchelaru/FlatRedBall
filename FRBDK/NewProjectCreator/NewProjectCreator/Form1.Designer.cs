@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.ProjectTypeListBox = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.ProjectNameTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -46,9 +45,11 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewTemplateZipFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.WpfHost = new System.Windows.Forms.Integration.ElementHost();
+            this.mainControl1 = new NewProjectCreator.Views.MainControl();
             this.InfoBar.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -56,16 +57,6 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // ProjectTypeListBox
-            // 
-            this.ProjectTypeListBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ProjectTypeListBox.FormattingEnabled = true;
-            this.ProjectTypeListBox.Location = new System.Drawing.Point(0, 17);
-            this.ProjectTypeListBox.Name = "ProjectTypeListBox";
-            this.ProjectTypeListBox.Size = new System.Drawing.Size(323, 191);
-            this.ProjectTypeListBox.TabIndex = 0;
-            this.ProjectTypeListBox.SelectedIndexChanged += new System.EventHandler(this.ProjectTypeListBox_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -82,7 +73,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ProjectNameTextBox.Location = new System.Drawing.Point(81, 2);
             this.ProjectNameTextBox.Name = "ProjectNameTextBox";
-            this.ProjectNameTextBox.Size = new System.Drawing.Size(317, 20);
+            this.ProjectNameTextBox.Size = new System.Drawing.Size(196, 20);
             this.ProjectNameTextBox.TabIndex = 2;
             this.ProjectNameTextBox.Text = "NewFlatRedBallProject";
             this.ProjectNameTextBox.TextChanged += new System.EventHandler(this.ProjectNameTextBox_TextChanged);
@@ -102,7 +93,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ProjectLocationTextBox.Location = new System.Drawing.Point(81, 77);
             this.ProjectLocationTextBox.Name = "ProjectLocationTextBox";
-            this.ProjectLocationTextBox.Size = new System.Drawing.Size(287, 20);
+            this.ProjectLocationTextBox.Size = new System.Drawing.Size(166, 20);
             this.ProjectLocationTextBox.TabIndex = 4;
             this.ProjectLocationTextBox.Text = "C:\\FlatRedBallProjects";
             this.ProjectLocationTextBox.TextChanged += new System.EventHandler(this.ProjectLocationTextBox_TextChanged);
@@ -110,7 +101,7 @@
             // SelectLocationButton
             // 
             this.SelectLocationButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.SelectLocationButton.Location = new System.Drawing.Point(374, 76);
+            this.SelectLocationButton.Location = new System.Drawing.Point(253, 76);
             this.SelectLocationButton.Name = "SelectLocationButton";
             this.SelectLocationButton.Size = new System.Drawing.Size(24, 21);
             this.SelectLocationButton.TabIndex = 5;
@@ -124,7 +115,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.MakeMyProject.Location = new System.Drawing.Point(3, 175);
             this.MakeMyProject.Name = "MakeMyProject";
-            this.MakeMyProject.Size = new System.Drawing.Size(395, 30);
+            this.MakeMyProject.Size = new System.Drawing.Size(274, 30);
             this.MakeMyProject.TabIndex = 6;
             this.MakeMyProject.Text = "Make my project!";
             this.MakeMyProject.UseVisualStyleBackColor = true;
@@ -156,7 +147,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FinalDirectoryLabel.Location = new System.Drawing.Point(40, 143);
             this.FinalDirectoryLabel.Name = "FinalDirectoryLabel";
-            this.FinalDirectoryLabel.Size = new System.Drawing.Size(358, 51);
+            this.FinalDirectoryLabel.Size = new System.Drawing.Size(237, 51);
             this.FinalDirectoryLabel.TabIndex = 9;
             this.FinalDirectoryLabel.Text = "C:\\FlatRedBallProjects\\NewFlatRedBallProject";
             // 
@@ -179,7 +170,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.DifferentNamespaceTextbox.Location = new System.Drawing.Point(81, 45);
             this.DifferentNamespaceTextbox.Name = "DifferentNamespaceTextbox";
-            this.DifferentNamespaceTextbox.Size = new System.Drawing.Size(317, 20);
+            this.DifferentNamespaceTextbox.Size = new System.Drawing.Size(196, 20);
             this.DifferentNamespaceTextbox.TabIndex = 11;
             this.DifferentNamespaceTextbox.Text = "NewFlatRedBallProject";
             // 
@@ -191,7 +182,7 @@
             this.CheckForNewVersionCheckBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.CheckForNewVersionCheckBox.Location = new System.Drawing.Point(0, 0);
             this.CheckForNewVersionCheckBox.Name = "CheckForNewVersionCheckBox";
-            this.CheckForNewVersionCheckBox.Size = new System.Drawing.Size(323, 17);
+            this.CheckForNewVersionCheckBox.Size = new System.Drawing.Size(444, 17);
             this.CheckForNewVersionCheckBox.TabIndex = 12;
             this.CheckForNewVersionCheckBox.Text = "Check for new version";
             this.CheckForNewVersionCheckBox.UseVisualStyleBackColor = true;
@@ -234,9 +225,24 @@
             // viewTemplateZipFolderToolStripMenuItem
             // 
             this.viewTemplateZipFolderToolStripMenuItem.Name = "viewTemplateZipFolderToolStripMenuItem";
-            this.viewTemplateZipFolderToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.viewTemplateZipFolderToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.viewTemplateZipFolderToolStripMenuItem.Text = "View Template Zip Folder";
             this.viewTemplateZipFolderToolStripMenuItem.Click += new System.EventHandler(this.viewTemplateZipFolderToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // splitContainer1
             // 
@@ -247,7 +253,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.ProjectTypeListBox);
+            this.splitContainer1.Panel1.Controls.Add(this.WpfHost);
             this.splitContainer1.Panel1.Controls.Add(this.CheckForNewVersionCheckBox);
             // 
             // splitContainer1.Panel2
@@ -264,23 +270,18 @@
             this.splitContainer1.Panel2.Controls.Add(this.DifferentNamespaceCheckbox);
             this.splitContainer1.Panel2.Controls.Add(this.label3);
             this.splitContainer1.Size = new System.Drawing.Size(736, 212);
-            this.splitContainer1.SplitterDistance = 327;
+            this.splitContainer1.SplitterDistance = 448;
             this.splitContainer1.TabIndex = 17;
             // 
-            // helpToolStripMenuItem
+            // WpfHost
             // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.aboutToolStripMenuItem.Text = "About";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            this.WpfHost.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.WpfHost.Location = new System.Drawing.Point(0, 17);
+            this.WpfHost.Name = "WpfHost";
+            this.WpfHost.Size = new System.Drawing.Size(444, 191);
+            this.WpfHost.TabIndex = 13;
+            this.WpfHost.Text = "elementHost1";
+            this.WpfHost.Child = this.mainControl1;
             // 
             // Form1
             // 
@@ -310,8 +311,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.ListBox ProjectTypeListBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button SelectLocationButton;
@@ -332,6 +331,8 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.Integration.ElementHost WpfHost;
+        private Views.MainControl mainControl1;
     }
 }
 

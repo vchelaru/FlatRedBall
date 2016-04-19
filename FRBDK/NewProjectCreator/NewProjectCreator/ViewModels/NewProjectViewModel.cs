@@ -1,12 +1,17 @@
-﻿using System;
+﻿using NewProjectCreator.Managers;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
 namespace NewProjectCreator.ViewModels
 {
-    public class NewProjectViewModel
+    public class NewProjectViewModel : INotifyPropertyChanged
     {
+        #region Fields
+
         char[] invalidNamespaceCharacters = new char[] 
             { 
                 '~', '`', '!', '@', '#', '$', '%', '^', '&', '*', 
@@ -16,6 +21,8 @@ namespace NewProjectCreator.ViewModels
                 // Spaces are handled separately
             //    ' ' 
             };
+
+        #endregion
 
         public bool OpenSlnFolderAfterCreation { get; set; }
 
@@ -27,11 +34,83 @@ namespace NewProjectCreator.ViewModels
 
         public bool CheckForNewVersions { get; set; }
 
-        public PlatformProjectInfo ProjectType { get; set; }
+        public PlatformProjectInfo ProjectType
+        {
+            get
+            {
+                if(SelectedTemplate == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return SelectedTemplate.BackingData;
+                }
+            }
+        }
 
         public string ProjectLocation { get; set; }
 
         public bool CreateProjectDirectory { get; set; }
+
+        public ObservableCollection<TemplateCategoryViewModel> Categories
+        {
+            get;
+            private set;
+        } = new ObservableCollection<TemplateCategoryViewModel>();
+        TemplateCategoryViewModel selectedCategory;
+        public TemplateCategoryViewModel SelectedCategory
+        {
+            get { return selectedCategory; }
+            set
+            {
+                selectedCategory = value;
+
+                NotifyPropertyChanged(nameof(SelectedCategory));
+
+                RefreshAvailableTemplates();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+
+        public ObservableCollection<TemplateViewModel> AvailableTemplates
+        {
+            get;
+            private set;
+        } = new ObservableCollection<TemplateViewModel>();
+        public TemplateViewModel SelectedTemplate
+        {
+            get;
+            set;
+        }
+
+        public NewProjectViewModel()
+        {
+
+            Categories.Add(
+                new TemplateCategoryViewModel
+                {
+                    Name = "Starter Projects"
+                }
+                );
+            Categories.Add(
+                new TemplateCategoryViewModel
+                {
+                    Name = "Empty Projects"
+                }
+                );
+
+            SelectedCategory = Categories[0];
+
+            RefreshAvailableTemplates();
+        }
+
+        void NotifyPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         public string CombinedProjectDirectory
         {
@@ -79,6 +158,44 @@ namespace NewProjectCreator.ViewModels
 
 
             return whyIsntValid;
+        }
+
+        void RefreshAvailableTemplates()
+        {
+            AvailableTemplates.Clear();
+
+            if (SelectedCategory != null)
+            {
+                if (SelectedCategory.Name == "Starter Projects")
+                {
+                    foreach (var item in DataLoader.StarterProjects)
+                    {
+                        var viewModel = new TemplateViewModel
+                        {
+                            BackingData = item
+                        };
+
+                        AvailableTemplates.Add(viewModel);
+                    }
+                }
+                else
+                {
+                    foreach (var item in DataLoader.EmptyProjects)
+                    {
+                        var viewModel = new TemplateViewModel
+                        {
+                            BackingData = item
+                        };
+
+                        AvailableTemplates.Add(viewModel);
+                    }
+                }
+            }
+
+            if(AvailableTemplates.Count != 0)
+            {
+                SelectedTemplate = AvailableTemplates[0];
+            }
         }
     }
 }

@@ -88,7 +88,8 @@ namespace MasterInstaller.Components.InstallableComponents.FRBDK
             {
                 ExecutableName = ExecutableName,
                 AdditionalFiles = dependencies,
-                ExtraLogic = FrbdkUpdaterManager.Self.CreateUpdaterFileAndAddShortcutFiles
+                ExtraLogic = FrbdkUpdaterManager.Self.CreateUpdaterFileAndAddShortcutFiles,
+                RunAsAdministrator = true
             });
 
         }

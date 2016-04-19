@@ -1,0 +1,2 @@
+"FriendlyName (System.String, required)",Namespace (System.String),ZipName (System.String),Url (System.String),SupportedInGlue (bool)
+Star Blaster,StarBlaster,StarBlaster.zip,https://github.com/vchelaru/StarBlaster/archive/master.zip,TRUE

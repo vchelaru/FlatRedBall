@@ -51,7 +51,7 @@ namespace MasterInstaller.Components
                 if (resourceName.EndsWith("." + installerName))
                 {
                     ExtractFileFromAssembly(currentAssembly, resourceName, installerName);
-                    exitCode = await RunProcessUntilFinished(installerName, ed.Parameters);
+                    exitCode = await RunProcessUntilFinished(installerName, ed.Parameters, ed.RunAsAdministrator);
                     break;
                 }
             }
@@ -119,7 +119,7 @@ namespace MasterInstaller.Components
             return result;
         }
 
-        private async Task<int> RunProcessUntilFinished(string saveAsName, string[] args)
+        private async Task<int> RunProcessUntilFinished(string saveAsName, string[] args, bool runAsAdministrator)
         {
             try
             {
@@ -140,7 +140,10 @@ namespace MasterInstaller.Components
                 //process.StartInfo.RedirectStandardError = true;
                 //process.StartInfo.RedirectStandardInput = true;
                 //process.StartInfo.RedirectStandardOutput = true;
-
+                if(runAsAdministrator)
+                {
+                    process.StartInfo.Verb = "runas";
+                }
                 process.Start();
 
                 await Task.Run(() =>
