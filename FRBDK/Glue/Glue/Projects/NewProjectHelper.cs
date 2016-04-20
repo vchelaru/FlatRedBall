@@ -21,10 +21,10 @@ namespace FlatRedBall.Glue.Projects
 
         public static Process RunNewProjectCreator()
         {
-            return RunNewProjectCreator(null, null);
+            return RunNewProjectCreator(null, null, false);
         }
 
-        public static Process RunNewProjectCreator(string directoryForNewProject, string namespaceForNewProject)
+        public static Process RunNewProjectCreator(string directoryForNewProject, string namespaceForNewProject, bool creatingSyncedProject)
         {
 
             string directory =
@@ -95,6 +95,11 @@ namespace FlatRedBall.Glue.Projects
                     processStartInfo.Arguments += " openedby=glue";
                 }
 
+                if(creatingSyncedProject)
+                {
+                    processStartInfo.Arguments += " emptyprojects";
+                }
+
                 Process process = Process.Start(processStartInfo);
 
                 return process;
@@ -162,7 +167,7 @@ namespace FlatRedBall.Glue.Projects
             }
 
 
-            Process process = NewProjectHelper.RunNewProjectCreator(directory, ProjectManager.ProjectBase.Name);
+            Process process = NewProjectHelper.RunNewProjectCreator(directory, ProjectManager.ProjectBase.Name, creatingSyncedProject:true);
 
             if (process != null)
             {

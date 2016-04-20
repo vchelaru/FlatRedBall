@@ -25,6 +25,12 @@ namespace NewProjectCreator.Managers
             private set;
         }
 
+        public bool EmptyProjectsOnly
+        {
+            get;
+            private set;
+        }
+
         public void ProcessCommandLineArguments()
         {
             foreach (string arg in Environment.GetCommandLineArgs())
@@ -33,7 +39,6 @@ namespace NewProjectCreator.Managers
                 {
                     HandleDirectoryEquals(arg);
                 }
-
                 else if (arg.StartsWith("namespace="))
                 {
                     HandleNamespaceEquals(arg);
@@ -41,6 +46,10 @@ namespace NewProjectCreator.Managers
                 else if (arg.ToLower().StartsWith("openedby="))
                 {
                     HandleOpenedBy(arg);
+                }
+                else if(arg.ToLower() == "emptyprojects")
+                {
+                    EmptyProjectsOnly = true;
                 }
             }
         }

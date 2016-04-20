@@ -22,6 +22,9 @@ namespace NewProjectCreator.ViewModels
             //    ' ' 
             };
 
+        TemplateCategoryViewModel starterCategory;
+        TemplateCategoryViewModel emptyProjectsCategory;
+
         #endregion
 
         public bool OpenSlnFolderAfterCreation { get; set; }
@@ -53,11 +56,14 @@ namespace NewProjectCreator.ViewModels
 
         public bool CreateProjectDirectory { get; set; }
 
+        ObservableCollection<TemplateCategoryViewModel> allCategories = new ObservableCollection<TemplateCategoryViewModel>();
+        ObservableCollection<TemplateCategoryViewModel> filteredCategories = new ObservableCollection<TemplateCategoryViewModel>();
+
         public ObservableCollection<TemplateCategoryViewModel> Categories
         {
-            get;
-            private set;
-        } = new ObservableCollection<TemplateCategoryViewModel>();
+            get { return filteredCategories; }
+        }
+
         TemplateCategoryViewModel selectedCategory;
         public TemplateCategoryViewModel SelectedCategory
         {
@@ -86,23 +92,52 @@ namespace NewProjectCreator.ViewModels
             set;
         }
 
+        bool emptyProjectsOnly = false;
+        public bool EmptyProjectsOnly
+        {
+            get
+            {
+                return emptyProjectsOnly;
+            }
+            set
+            {
+                emptyProjectsOnly = value;
+
+                filteredCategories.Clear();
+
+                bool addStarter = emptyProjectsOnly == false;
+
+                if(addStarter)
+                {
+                    filteredCategories.Add(starterCategory);
+                }
+                filteredCategories.Add(emptyProjectsCategory);
+
+                SelectedCategory = filteredCategories[0];
+            }
+        }
+
         public NewProjectViewModel()
         {
 
-            Categories.Add(
-                new TemplateCategoryViewModel
-                {
-                    Name = "Starter Projects"
-                }
-                );
-            Categories.Add(
-                new TemplateCategoryViewModel
-                {
-                    Name = "Empty Projects"
-                }
-                );
+            starterCategory = new TemplateCategoryViewModel
+            {
+                Name = "Starter Projects"
+            };
 
-            SelectedCategory = Categories[0];
+            emptyProjectsCategory = new TemplateCategoryViewModel
+            {
+                Name = "Empty Projects"
+            };
+            allCategories.Add(starterCategory);
+            allCategories.Add(emptyProjectsCategory);
+
+            foreach(var category in allCategories)
+            {
+                filteredCategories.Add(category);
+            }
+
+            SelectedCategory = filteredCategories[0];
 
             RefreshAvailableTemplates();
         }

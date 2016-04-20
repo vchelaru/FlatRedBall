@@ -77,6 +77,8 @@ namespace NewProjectCreator
 
                 DifferentNamespaceTextbox.Text = CommandLineManager.Self.DifferentNamespace;
             }
+
+            viewModel.EmptyProjectsOnly = CommandLineManager.Self.EmptyProjectsOnly;
         }
 
         private void SetInitialProjectLocation()
