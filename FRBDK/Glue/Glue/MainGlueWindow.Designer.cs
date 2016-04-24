@@ -110,9 +110,15 @@
             this.exportScreensAndEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FileWatchTimer = new System.Windows.Forms.Timer(this.components);
             this.ElementViewWindowToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.NavigateForwardButton = new System.Windows.Forms.Button();
-            this.NavigateBackButton = new System.Windows.Forms.Button();
             this.rightPanelContainer = new System.Windows.Forms.SplitContainer();
+            this.PropertyGridContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.topPanelContainer = new System.Windows.Forms.SplitContainer();
+            this.leftPanelContainer = new System.Windows.Forms.SplitContainer();
+            this.bottomPanelContainer = new System.Windows.Forms.SplitContainer();
+            this.msProcesses = new System.Windows.Forms.MenuStrip();
+            this.TortoiseWatchTimer = new System.Windows.Forms.Timer(this.components);
+            this.tcTop = new FlatRedBall.Glue.Controls.TabControlEx();
+            this.tcLeft = new FlatRedBall.Glue.Controls.TabControlEx();
             this.MainTabControl = new FlatRedBall.Glue.Controls.TabControlEx();
             this.PropertiesTab = new FlatRedBall.Glue.Controls.PluginTab();
             this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
@@ -124,16 +130,10 @@
             this.ElementTreeView = new System.Windows.Forms.TreeView();
             this.SearchListBox = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.NavigateForwardButton = new System.Windows.Forms.Button();
+            this.NavigateBackButton = new System.Windows.Forms.Button();
             this.SearchTextbox = new System.Windows.Forms.TextBox();
-            this.PropertyGridContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.topPanelContainer = new System.Windows.Forms.SplitContainer();
-            this.tcTop = new FlatRedBall.Glue.Controls.TabControlEx();
-            this.leftPanelContainer = new System.Windows.Forms.SplitContainer();
-            this.tcLeft = new FlatRedBall.Glue.Controls.TabControlEx();
-            this.bottomPanelContainer = new System.Windows.Forms.SplitContainer();
             this.tcBottom = new FlatRedBall.Glue.Controls.TabControlEx();
-            this.msProcesses = new System.Windows.Forms.MenuStrip();
-            this.TortoiseWatchTimer = new System.Windows.Forms.Timer(this.components);
             this.elementHost2 = new System.Windows.Forms.Integration.ElementHost();
             this.toolbarControl1 = new FlatRedBall.Glue.Controls.ToolbarControl();
             this.mElementContextMenu.SuspendLayout();
@@ -142,12 +142,6 @@
             this.rightPanelContainer.Panel1.SuspendLayout();
             this.rightPanelContainer.Panel2.SuspendLayout();
             this.rightPanelContainer.SuspendLayout();
-            this.MainTabControl.SuspendLayout();
-            this.PropertiesTab.SuspendLayout();
-            this.CodeTab.SuspendLayout();
-            this.tcRight.SuspendLayout();
-            this.ExplorerTab.SuspendLayout();
-            this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.topPanelContainer)).BeginInit();
             this.topPanelContainer.Panel1.SuspendLayout();
             this.topPanelContainer.Panel2.SuspendLayout();
@@ -160,6 +154,12 @@
             this.bottomPanelContainer.Panel1.SuspendLayout();
             this.bottomPanelContainer.Panel2.SuspendLayout();
             this.bottomPanelContainer.SuspendLayout();
+            this.MainTabControl.SuspendLayout();
+            this.PropertiesTab.SuspendLayout();
+            this.CodeTab.SuspendLayout();
+            this.tcRight.SuspendLayout();
+            this.ExplorerTab.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // mElementContextMenu
@@ -529,7 +529,7 @@
             this.forAllProjectsToolStripMenuItem,
             this.forThisProjectOnlyToolStripMenuItem});
             this.viewAdditionalContentTypesToolStripMenuItem1.Name = "viewAdditionalContentTypesToolStripMenuItem1";
-            this.viewAdditionalContentTypesToolStripMenuItem1.Size = new System.Drawing.Size(237, 22);
+            this.viewAdditionalContentTypesToolStripMenuItem1.Size = new System.Drawing.Size(236, 22);
             this.viewAdditionalContentTypesToolStripMenuItem1.Text = "View Additional Content Types";
             // 
             // forAllProjectsToolStripMenuItem
@@ -549,14 +549,14 @@
             // newContentCSVToolStripMenuItem
             // 
             this.newContentCSVToolStripMenuItem.Name = "newContentCSVToolStripMenuItem";
-            this.newContentCSVToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.newContentCSVToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
             this.newContentCSVToolStripMenuItem.Text = "New Content CSV...";
             this.newContentCSVToolStripMenuItem.Click += new System.EventHandler(this.newContentCSVToolStripMenuItem_Click);
             // 
             // viewNewFileTemplateFolderToolStripMenuItem
             // 
             this.viewNewFileTemplateFolderToolStripMenuItem.Name = "viewNewFileTemplateFolderToolStripMenuItem";
-            this.viewNewFileTemplateFolderToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.viewNewFileTemplateFolderToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
             this.viewNewFileTemplateFolderToolStripMenuItem.Text = "View New File Template Folder";
             this.viewNewFileTemplateFolderToolStripMenuItem.Click += new System.EventHandler(this.viewNewFileTemplateFolderToolStripMenuItem_Click);
             // 
@@ -782,30 +782,6 @@
             this.FileWatchTimer.Interval = 1000;
             this.FileWatchTimer.Tick += new System.EventHandler(this.FileWatchTimer_Tick);
             // 
-            // NavigateForwardButton
-            // 
-            this.NavigateForwardButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.NavigateForwardButton.Location = new System.Drawing.Point(175, 0);
-            this.NavigateForwardButton.Name = "NavigateForwardButton";
-            this.NavigateForwardButton.Size = new System.Drawing.Size(22, 23);
-            this.NavigateForwardButton.TabIndex = 7;
-            this.NavigateForwardButton.Text = ">";
-            this.ElementViewWindowToolTip.SetToolTip(this.NavigateForwardButton, "Navigate Forward ( ALT + -> )");
-            this.NavigateForwardButton.UseVisualStyleBackColor = true;
-            this.NavigateForwardButton.Click += new System.EventHandler(this.NavigateForwardButton_Click);
-            // 
-            // NavigateBackButton
-            // 
-            this.NavigateBackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.NavigateBackButton.Location = new System.Drawing.Point(154, 0);
-            this.NavigateBackButton.Name = "NavigateBackButton";
-            this.NavigateBackButton.Size = new System.Drawing.Size(22, 23);
-            this.NavigateBackButton.TabIndex = 6;
-            this.NavigateBackButton.Text = "<";
-            this.ElementViewWindowToolTip.SetToolTip(this.NavigateBackButton, "Navigate Back ( ALT + <- )");
-            this.NavigateBackButton.UseVisualStyleBackColor = true;
-            this.NavigateBackButton.Click += new System.EventHandler(this.NavigateBackButton_Click);
-            // 
             // rightPanelContainer
             // 
             this.rightPanelContainer.BackColor = System.Drawing.SystemColors.AppWorkspace;
@@ -826,179 +802,6 @@
             this.rightPanelContainer.SplitterDistance = 546;
             this.rightPanelContainer.TabIndex = 4;
             this.rightPanelContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.rightPanelContainer_SplitterMoved);
-            // 
-            // MainTabControl
-            // 
-            this.MainTabControl.Controls.Add(this.PropertiesTab);
-            this.MainTabControl.Controls.Add(this.CodeTab);
-            this.MainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            this.MainTabControl.IgnoreFirst = false;
-            this.MainTabControl.Location = new System.Drawing.Point(0, 0);
-            this.MainTabControl.Name = "MainTabControl";
-            this.MainTabControl.SelectedIndex = 0;
-            this.MainTabControl.Size = new System.Drawing.Size(542, 575);
-            this.MainTabControl.TabIndex = 4;
-            // 
-            // PropertiesTab
-            // 
-            this.PropertiesTab.Controls.Add(this.PropertyGrid);
-            this.PropertiesTab.DrawX = false;
-            this.PropertiesTab.LastTabControl = this.MainTabControl;
-            this.PropertiesTab.LastTimeClicked = new System.DateTime(((long)(0)));
-            this.PropertiesTab.Location = new System.Drawing.Point(4, 22);
-            this.PropertiesTab.Name = "PropertiesTab";
-            this.PropertiesTab.Padding = new System.Windows.Forms.Padding(3);
-            this.PropertiesTab.Size = new System.Drawing.Size(534, 549);
-            this.PropertiesTab.TabIndex = 0;
-            this.PropertiesTab.Text = "Properties";
-            this.PropertiesTab.UseVisualStyleBackColor = true;
-            // 
-            // PropertyGrid
-            // 
-            this.PropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.PropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PropertyGrid.Location = new System.Drawing.Point(3, 3);
-            this.PropertyGrid.Name = "PropertyGrid";
-            this.PropertyGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.PropertyGrid.Size = new System.Drawing.Size(528, 543);
-            this.PropertyGrid.TabIndex = 2;
-            this.PropertyGrid.ToolbarVisible = false;
-            this.PropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
-            this.PropertyGrid.SelectedGridItemChanged += new System.Windows.Forms.SelectedGridItemChangedEventHandler(this.PropertyGrid_SelectedGridItemChanged);
-            this.PropertyGrid.SelectedObjectsChanged += new System.EventHandler(this.PropertyGrid_SelectedObjectsChanged);
-            this.PropertyGrid.Click += new System.EventHandler(this.PropertyGrid_Click);
-            this.PropertyGrid.DoubleClick += new System.EventHandler(this.PropertyGrid_DoubleClick);
-            this.PropertyGrid.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.PropertyGrid_MouseDoubleClick);
-            // 
-            // CodeTab
-            // 
-            this.CodeTab.Controls.Add(this.CodeEditor);
-            this.CodeTab.Controls.Add(this.CodePreviewTextBox);
-            this.CodeTab.Location = new System.Drawing.Point(4, 22);
-            this.CodeTab.Name = "CodeTab";
-            this.CodeTab.Size = new System.Drawing.Size(534, 549);
-            this.CodeTab.TabIndex = 1;
-            this.CodeTab.Text = "Code";
-            this.CodeTab.UseVisualStyleBackColor = true;
-            // 
-            // CodeEditor
-            // 
-            this.CodeEditor.BottomText = "";
-            this.CodeEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CodeEditor.Location = new System.Drawing.Point(0, 0);
-            this.CodeEditor.Name = "CodeEditor";
-            this.CodeEditor.Size = new System.Drawing.Size(534, 549);
-            this.CodeEditor.TabIndex = 4;
-            this.CodeEditor.TopText = "";
-            // 
-            // CodePreviewTextBox
-            // 
-            this.CodePreviewTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CodePreviewTextBox.Location = new System.Drawing.Point(0, 0);
-            this.CodePreviewTextBox.Name = "CodePreviewTextBox";
-            this.CodePreviewTextBox.ReadOnly = true;
-            this.CodePreviewTextBox.Size = new System.Drawing.Size(534, 549);
-            this.CodePreviewTextBox.TabIndex = 3;
-            this.CodePreviewTextBox.Text = "";
-            this.CodePreviewTextBox.Visible = false;
-            this.CodePreviewTextBox.WordWrap = false;
-            this.CodePreviewTextBox.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
-            // 
-            // tcRight
-            // 
-            this.tcRight.Controls.Add(this.ExplorerTab);
-            this.tcRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tcRight.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            this.tcRight.IgnoreFirst = false;
-            this.tcRight.Location = new System.Drawing.Point(0, 0);
-            this.tcRight.Name = "tcRight";
-            this.tcRight.SelectedIndex = 0;
-            this.tcRight.Size = new System.Drawing.Size(210, 575);
-            this.tcRight.TabIndex = 2;
-            this.tcRight.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.ControlAddedToRightView);
-            this.tcRight.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.ControlRemovedFromRightView);
-            // 
-            // ExplorerTab
-            // 
-            this.ExplorerTab.Controls.Add(this.ElementTreeView);
-            this.ExplorerTab.Controls.Add(this.SearchListBox);
-            this.ExplorerTab.Controls.Add(this.panel1);
-            this.ExplorerTab.DrawX = false;
-            this.ExplorerTab.LastTabControl = this.tcRight;
-            this.ExplorerTab.LastTimeClicked = new System.DateTime(((long)(0)));
-            this.ExplorerTab.Location = new System.Drawing.Point(4, 22);
-            this.ExplorerTab.Name = "ExplorerTab";
-            this.ExplorerTab.Padding = new System.Windows.Forms.Padding(3, 0, 3, 3);
-            this.ExplorerTab.Size = new System.Drawing.Size(202, 549);
-            this.ExplorerTab.TabIndex = 0;
-            this.ExplorerTab.Text = "Explorer";
-            this.ExplorerTab.UseVisualStyleBackColor = true;
-            // 
-            // ElementTreeView
-            // 
-            this.ElementTreeView.AllowDrop = true;
-            this.ElementTreeView.BackColor = System.Drawing.Color.Black;
-            this.ElementTreeView.ContextMenuStrip = this.mElementContextMenu;
-            this.ElementTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ElementTreeView.ForeColor = System.Drawing.Color.White;
-            this.ElementTreeView.HideSelection = false;
-            this.ElementTreeView.ImageIndex = 0;
-            this.ElementTreeView.ImageList = this.ElementImages;
-            this.ElementTreeView.Location = new System.Drawing.Point(3, 23);
-            this.ElementTreeView.Name = "ElementTreeView";
-            this.ElementTreeView.SelectedImageIndex = 0;
-            this.ElementTreeView.Size = new System.Drawing.Size(196, 523);
-            this.ElementTreeView.TabIndex = 0;
-            this.ElementTreeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.ElementTreeView_ItemDrag);
-            this.ElementTreeView.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.ElementTreeView_BeforeSelect);
-            this.ElementTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ElementTreeView_AfterSelect);
-            this.ElementTreeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.ElementTreeView_DragDrop);
-            this.ElementTreeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.ElementTreeView_DragEnter);
-            this.ElementTreeView.DragOver += new System.Windows.Forms.DragEventHandler(this.ElementTreeView_DragOver);
-            this.ElementTreeView.DoubleClick += new System.EventHandler(this.mElementTreeView_DoubleClick);
-            this.ElementTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ElementTreeView_KeyDown);
-            this.ElementTreeView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ElementTreeView_KeyPress);
-            this.ElementTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.mElementTreeView_MouseClick);
-            this.ElementTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ElementTreeView_MouseDown);
-            this.ElementTreeView.MouseHover += new System.EventHandler(this.ElementTreeView_MouseHover);
-            // 
-            // SearchListBox
-            // 
-            this.SearchListBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SearchListBox.FormattingEnabled = true;
-            this.SearchListBox.Location = new System.Drawing.Point(3, 23);
-            this.SearchListBox.Name = "SearchListBox";
-            this.SearchListBox.Size = new System.Drawing.Size(196, 523);
-            this.SearchListBox.TabIndex = 1;
-            this.SearchListBox.Visible = false;
-            this.SearchListBox.Click += new System.EventHandler(this.SearchListBox_Click);
-            this.SearchListBox.SelectedIndexChanged += new System.EventHandler(this.SearchListBox_SelectedIndexChanged);
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.NavigateForwardButton);
-            this.panel1.Controls.Add(this.NavigateBackButton);
-            this.panel1.Controls.Add(this.SearchTextbox);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(3, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(196, 23);
-            this.panel1.TabIndex = 6;
-            // 
-            // SearchTextbox
-            // 
-            this.SearchTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.SearchTextbox.Location = new System.Drawing.Point(0, 2);
-            this.SearchTextbox.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.SearchTextbox.Name = "SearchTextbox";
-            this.SearchTextbox.Size = new System.Drawing.Size(154, 20);
-            this.SearchTextbox.TabIndex = 5;
-            this.SearchTextbox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            this.SearchTextbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchTextbox_KeyDown);
-            this.SearchTextbox.Leave += new System.EventHandler(this.SearchTextbox_Leave);
             // 
             // PropertyGridContextMenu
             // 
@@ -1025,19 +828,6 @@
             this.topPanelContainer.SplitterDistance = 82;
             this.topPanelContainer.TabIndex = 6;
             // 
-            // tcTop
-            // 
-            this.tcTop.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tcTop.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            this.tcTop.IgnoreFirst = false;
-            this.tcTop.Location = new System.Drawing.Point(0, 0);
-            this.tcTop.Name = "tcTop";
-            this.tcTop.SelectedIndex = 0;
-            this.tcTop.Size = new System.Drawing.Size(146, 78);
-            this.tcTop.TabIndex = 0;
-            this.tcTop.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlAdded);
-            this.tcTop.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlRemoved);
-            // 
             // leftPanelContainer
             // 
             this.leftPanelContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -1056,19 +846,6 @@
             this.leftPanelContainer.Size = new System.Drawing.Size(764, 579);
             this.leftPanelContainer.SplitterDistance = 138;
             this.leftPanelContainer.TabIndex = 9;
-            // 
-            // tcLeft
-            // 
-            this.tcLeft.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tcLeft.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            this.tcLeft.IgnoreFirst = false;
-            this.tcLeft.Location = new System.Drawing.Point(0, 0);
-            this.tcLeft.Name = "tcLeft";
-            this.tcLeft.SelectedIndex = 0;
-            this.tcLeft.Size = new System.Drawing.Size(134, 96);
-            this.tcLeft.TabIndex = 1;
-            this.tcLeft.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlAdded);
-            this.tcLeft.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlRemoved);
             // 
             // bottomPanelContainer
             // 
@@ -1091,19 +868,6 @@
             this.bottomPanelContainer.SplitterDistance = 520;
             this.bottomPanelContainer.TabIndex = 7;
             // 
-            // tcBottom
-            // 
-            this.tcBottom.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tcBottom.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            this.tcBottom.IgnoreFirst = false;
-            this.tcBottom.Location = new System.Drawing.Point(0, 0);
-            this.tcBottom.Name = "tcBottom";
-            this.tcBottom.SelectedIndex = 0;
-            this.tcBottom.Size = new System.Drawing.Size(146, 42);
-            this.tcBottom.TabIndex = 1;
-            this.tcBottom.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel2_ControlAdded);
-            this.tcBottom.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel2_ControlRemoved);
-            // 
             // msProcesses
             // 
             this.msProcesses.AllowItemReorder = true;
@@ -1121,6 +885,250 @@
             this.TortoiseWatchTimer.Enabled = true;
             this.TortoiseWatchTimer.Interval = 1000;
             this.TortoiseWatchTimer.Tick += new System.EventHandler(this.TortoiseWatchTimer_Tick);
+            // 
+            // tcTop
+            // 
+            this.tcTop.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
+            this.tcTop.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tcTop.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            this.tcTop.IgnoreFirst = false;
+            this.tcTop.Location = new System.Drawing.Point(0, 0);
+            this.tcTop.Name = "tcTop";
+            this.tcTop.SelectedIndex = 0;
+            this.tcTop.Size = new System.Drawing.Size(146, 78);
+            this.tcTop.TabIndex = 0;
+            this.tcTop.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlAdded);
+            this.tcTop.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlRemoved);
+            // 
+            // tcLeft
+            // 
+            this.tcLeft.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
+            this.tcLeft.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tcLeft.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            this.tcLeft.IgnoreFirst = false;
+            this.tcLeft.Location = new System.Drawing.Point(0, 0);
+            this.tcLeft.Name = "tcLeft";
+            this.tcLeft.SelectedIndex = 0;
+            this.tcLeft.Size = new System.Drawing.Size(134, 96);
+            this.tcLeft.TabIndex = 1;
+            this.tcLeft.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlAdded);
+            this.tcLeft.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlRemoved);
+            // 
+            // MainTabControl
+            // 
+            this.MainTabControl.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
+            this.MainTabControl.Controls.Add(this.PropertiesTab);
+            this.MainTabControl.Controls.Add(this.CodeTab);
+            this.MainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            this.MainTabControl.IgnoreFirst = false;
+            this.MainTabControl.Location = new System.Drawing.Point(0, 0);
+            this.MainTabControl.Name = "MainTabControl";
+            this.MainTabControl.SelectedIndex = 0;
+            this.MainTabControl.Size = new System.Drawing.Size(542, 575);
+            this.MainTabControl.TabIndex = 4;
+            // 
+            // PropertiesTab
+            // 
+            this.PropertiesTab.Controls.Add(this.PropertyGrid);
+            this.PropertiesTab.DrawX = false;
+            this.PropertiesTab.LastTabControl = this.MainTabControl;
+            this.PropertiesTab.LastTimeClicked = new System.DateTime(((long)(0)));
+            this.PropertiesTab.Location = new System.Drawing.Point(4, 25);
+            this.PropertiesTab.Margin = new System.Windows.Forms.Padding(0);
+            this.PropertiesTab.Name = "PropertiesTab";
+            this.PropertiesTab.Size = new System.Drawing.Size(534, 546);
+            this.PropertiesTab.TabIndex = 0;
+            this.PropertiesTab.Text = "Properties";
+            this.PropertiesTab.UseVisualStyleBackColor = true;
+            // 
+            // PropertyGrid
+            // 
+            this.PropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
+            this.PropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PropertyGrid.Location = new System.Drawing.Point(0, 0);
+            this.PropertyGrid.Margin = new System.Windows.Forms.Padding(0);
+            this.PropertyGrid.Name = "PropertyGrid";
+            this.PropertyGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
+            this.PropertyGrid.Size = new System.Drawing.Size(534, 546);
+            this.PropertyGrid.TabIndex = 2;
+            this.PropertyGrid.ToolbarVisible = false;
+            this.PropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
+            this.PropertyGrid.SelectedGridItemChanged += new System.Windows.Forms.SelectedGridItemChangedEventHandler(this.PropertyGrid_SelectedGridItemChanged);
+            this.PropertyGrid.SelectedObjectsChanged += new System.EventHandler(this.PropertyGrid_SelectedObjectsChanged);
+            this.PropertyGrid.Click += new System.EventHandler(this.PropertyGrid_Click);
+            this.PropertyGrid.DoubleClick += new System.EventHandler(this.PropertyGrid_DoubleClick);
+            this.PropertyGrid.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.PropertyGrid_MouseDoubleClick);
+            // 
+            // CodeTab
+            // 
+            this.CodeTab.Controls.Add(this.CodeEditor);
+            this.CodeTab.Controls.Add(this.CodePreviewTextBox);
+            this.CodeTab.Location = new System.Drawing.Point(4, 25);
+            this.CodeTab.Name = "CodeTab";
+            this.CodeTab.Size = new System.Drawing.Size(534, 546);
+            this.CodeTab.TabIndex = 1;
+            this.CodeTab.Text = "Code";
+            this.CodeTab.UseVisualStyleBackColor = true;
+            // 
+            // CodeEditor
+            // 
+            this.CodeEditor.BottomText = "";
+            this.CodeEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CodeEditor.Location = new System.Drawing.Point(0, 0);
+            this.CodeEditor.Name = "CodeEditor";
+            this.CodeEditor.Size = new System.Drawing.Size(534, 546);
+            this.CodeEditor.TabIndex = 4;
+            this.CodeEditor.TopText = "";
+            // 
+            // CodePreviewTextBox
+            // 
+            this.CodePreviewTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CodePreviewTextBox.Location = new System.Drawing.Point(0, 0);
+            this.CodePreviewTextBox.Name = "CodePreviewTextBox";
+            this.CodePreviewTextBox.ReadOnly = true;
+            this.CodePreviewTextBox.Size = new System.Drawing.Size(534, 546);
+            this.CodePreviewTextBox.TabIndex = 3;
+            this.CodePreviewTextBox.Text = "";
+            this.CodePreviewTextBox.Visible = false;
+            this.CodePreviewTextBox.WordWrap = false;
+            this.CodePreviewTextBox.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
+            // 
+            // tcRight
+            // 
+            this.tcRight.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
+            this.tcRight.Controls.Add(this.ExplorerTab);
+            this.tcRight.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tcRight.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            this.tcRight.IgnoreFirst = false;
+            this.tcRight.Location = new System.Drawing.Point(0, 0);
+            this.tcRight.Margin = new System.Windows.Forms.Padding(0);
+            this.tcRight.Name = "tcRight";
+            this.tcRight.Padding = new System.Drawing.Point(6, 0);
+            this.tcRight.SelectedIndex = 0;
+            this.tcRight.Size = new System.Drawing.Size(210, 575);
+            this.tcRight.TabIndex = 2;
+            this.tcRight.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.ControlAddedToRightView);
+            this.tcRight.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.ControlRemovedFromRightView);
+            // 
+            // ExplorerTab
+            // 
+            this.ExplorerTab.Controls.Add(this.ElementTreeView);
+            this.ExplorerTab.Controls.Add(this.SearchListBox);
+            this.ExplorerTab.Controls.Add(this.panel1);
+            this.ExplorerTab.DrawX = false;
+            this.ExplorerTab.LastTabControl = this.tcRight;
+            this.ExplorerTab.LastTimeClicked = new System.DateTime(2016, 4, 23, 12, 13, 55, 981);
+            this.ExplorerTab.Location = new System.Drawing.Point(4, 23);
+            this.ExplorerTab.Margin = new System.Windows.Forms.Padding(0);
+            this.ExplorerTab.Name = "ExplorerTab";
+            this.ExplorerTab.Size = new System.Drawing.Size(202, 548);
+            this.ExplorerTab.TabIndex = 0;
+            this.ExplorerTab.Text = "Explorer";
+            this.ExplorerTab.UseVisualStyleBackColor = true;
+            // 
+            // ElementTreeView
+            // 
+            this.ElementTreeView.AllowDrop = true;
+            this.ElementTreeView.BackColor = System.Drawing.Color.Black;
+            this.ElementTreeView.ContextMenuStrip = this.mElementContextMenu;
+            this.ElementTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ElementTreeView.ForeColor = System.Drawing.Color.White;
+            this.ElementTreeView.HideSelection = false;
+            this.ElementTreeView.ImageIndex = 0;
+            this.ElementTreeView.ImageList = this.ElementImages;
+            this.ElementTreeView.Location = new System.Drawing.Point(0, 23);
+            this.ElementTreeView.Name = "ElementTreeView";
+            this.ElementTreeView.SelectedImageIndex = 0;
+            this.ElementTreeView.Size = new System.Drawing.Size(202, 525);
+            this.ElementTreeView.TabIndex = 0;
+            this.ElementTreeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.ElementTreeView_ItemDrag);
+            this.ElementTreeView.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.ElementTreeView_BeforeSelect);
+            this.ElementTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ElementTreeView_AfterSelect);
+            this.ElementTreeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.ElementTreeView_DragDrop);
+            this.ElementTreeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.ElementTreeView_DragEnter);
+            this.ElementTreeView.DragOver += new System.Windows.Forms.DragEventHandler(this.ElementTreeView_DragOver);
+            this.ElementTreeView.DoubleClick += new System.EventHandler(this.mElementTreeView_DoubleClick);
+            this.ElementTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ElementTreeView_KeyDown);
+            this.ElementTreeView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ElementTreeView_KeyPress);
+            this.ElementTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.mElementTreeView_MouseClick);
+            this.ElementTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ElementTreeView_MouseDown);
+            this.ElementTreeView.MouseHover += new System.EventHandler(this.ElementTreeView_MouseHover);
+            // 
+            // SearchListBox
+            // 
+            this.SearchListBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SearchListBox.FormattingEnabled = true;
+            this.SearchListBox.Location = new System.Drawing.Point(0, 23);
+            this.SearchListBox.Name = "SearchListBox";
+            this.SearchListBox.Size = new System.Drawing.Size(202, 525);
+            this.SearchListBox.TabIndex = 1;
+            this.SearchListBox.Visible = false;
+            this.SearchListBox.Click += new System.EventHandler(this.SearchListBox_Click);
+            this.SearchListBox.SelectedIndexChanged += new System.EventHandler(this.SearchListBox_SelectedIndexChanged);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.NavigateForwardButton);
+            this.panel1.Controls.Add(this.NavigateBackButton);
+            this.panel1.Controls.Add(this.SearchTextbox);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(202, 23);
+            this.panel1.TabIndex = 6;
+            // 
+            // NavigateForwardButton
+            // 
+            this.NavigateForwardButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.NavigateForwardButton.Location = new System.Drawing.Point(181, 0);
+            this.NavigateForwardButton.Name = "NavigateForwardButton";
+            this.NavigateForwardButton.Size = new System.Drawing.Size(22, 23);
+            this.NavigateForwardButton.TabIndex = 7;
+            this.NavigateForwardButton.Text = ">";
+            this.ElementViewWindowToolTip.SetToolTip(this.NavigateForwardButton, "Navigate Forward ( ALT + -> )");
+            this.NavigateForwardButton.UseVisualStyleBackColor = true;
+            this.NavigateForwardButton.Click += new System.EventHandler(this.NavigateForwardButton_Click);
+            // 
+            // NavigateBackButton
+            // 
+            this.NavigateBackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.NavigateBackButton.Location = new System.Drawing.Point(160, 0);
+            this.NavigateBackButton.Name = "NavigateBackButton";
+            this.NavigateBackButton.Size = new System.Drawing.Size(22, 23);
+            this.NavigateBackButton.TabIndex = 6;
+            this.NavigateBackButton.Text = "<";
+            this.ElementViewWindowToolTip.SetToolTip(this.NavigateBackButton, "Navigate Back ( ALT + <- )");
+            this.NavigateBackButton.UseVisualStyleBackColor = true;
+            this.NavigateBackButton.Click += new System.EventHandler(this.NavigateBackButton_Click);
+            // 
+            // SearchTextbox
+            // 
+            this.SearchTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.SearchTextbox.Location = new System.Drawing.Point(0, 2);
+            this.SearchTextbox.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.SearchTextbox.Name = "SearchTextbox";
+            this.SearchTextbox.Size = new System.Drawing.Size(160, 20);
+            this.SearchTextbox.TabIndex = 5;
+            this.SearchTextbox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.SearchTextbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchTextbox_KeyDown);
+            this.SearchTextbox.Leave += new System.EventHandler(this.SearchTextbox_Leave);
+            // 
+            // tcBottom
+            // 
+            this.tcBottom.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
+            this.tcBottom.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tcBottom.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            this.tcBottom.IgnoreFirst = false;
+            this.tcBottom.Location = new System.Drawing.Point(0, 0);
+            this.tcBottom.Name = "tcBottom";
+            this.tcBottom.SelectedIndex = 0;
+            this.tcBottom.Size = new System.Drawing.Size(146, 42);
+            this.tcBottom.TabIndex = 1;
+            this.tcBottom.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel2_ControlAdded);
+            this.tcBottom.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel2_ControlRemoved);
             // 
             // elementHost2
             // 
@@ -1156,13 +1164,6 @@
             this.rightPanelContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.rightPanelContainer)).EndInit();
             this.rightPanelContainer.ResumeLayout(false);
-            this.MainTabControl.ResumeLayout(false);
-            this.PropertiesTab.ResumeLayout(false);
-            this.CodeTab.ResumeLayout(false);
-            this.tcRight.ResumeLayout(false);
-            this.ExplorerTab.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.topPanelContainer.Panel1.ResumeLayout(false);
             this.topPanelContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.topPanelContainer)).EndInit();
@@ -1175,6 +1176,13 @@
             this.bottomPanelContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.bottomPanelContainer)).EndInit();
             this.bottomPanelContainer.ResumeLayout(false);
+            this.MainTabControl.ResumeLayout(false);
+            this.PropertiesTab.ResumeLayout(false);
+            this.CodeTab.ResumeLayout(false);
+            this.tcRight.ResumeLayout(false);
+            this.ExplorerTab.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

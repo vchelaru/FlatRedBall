@@ -494,11 +494,19 @@ namespace FlatRedBall.Screens
             NextScreen = screenClass;
         }
 		
-		
         public void MoveToScreen(Type screenType)
         {
             IsActivityFinished = true;
             NextScreen = screenType.FullName;
+        }
+
+        public void RestartScreen(bool reloadContent)
+        {
+            if (reloadContent == false)
+            {
+                UnloadsContentManagerWhenDestroyed = false;
+            }
+            MoveToScreen(this.GetType());
         }
 
         #endregion

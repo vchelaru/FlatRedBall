@@ -180,6 +180,23 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
+        protected bool RemoveFromToolbar(System.Windows.Controls.UserControl control, string toolbarName)
+        {
+            var tray = PluginManager.ToolBarTray;
+
+            var toRemoveFrom = tray.ToolBars.FirstOrDefault(item => item.Name == toolbarName);
+
+            bool wasRemoved = false;
+
+            if (toRemoveFrom != null)
+            {
+                toRemoveFrom.Items.Remove(control);
+                wasRemoved = true;
+            }
+
+            return wasRemoved;
+        }
+
         ToolStripMenuItem GetItem(string name)
         {
             foreach (ToolStripMenuItem item in GlueGui.MenuStrip.Items)
