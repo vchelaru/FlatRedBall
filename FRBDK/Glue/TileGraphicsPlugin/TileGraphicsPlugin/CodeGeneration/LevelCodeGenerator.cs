@@ -55,7 +55,7 @@ namespace TileGraphicsPlugin.CodeGeneration
 
             GenerateAddCollisionAndEntities(function);
 
-            GenerateInitializeAnimations(function);
+            //GenerateInitializeAnimations(function);
         }
 
         private static bool GetIfShouldGenerate(IElement element)
@@ -88,9 +88,6 @@ namespace TileGraphicsPlugin.CodeGeneration
 
             // Add it to managers
             function.Line("CurrentTileMap.AddToManagers();");
-
-            // Get the CSV
-            function.Line("var levelInfoObject = GetFile(levelName + \"Info\");");
         }
 
         private static void GenerateInitializeCamera(ICodeBlock function)
@@ -105,23 +102,13 @@ namespace TileGraphicsPlugin.CodeGeneration
 
         private static void GenerateAddCollisionAndEntities(ICodeBlock function)
         {
-            var ifCode = function.If("levelInfoObject is System.Collections.Generic.List<DataTypes.TileMapInfo>");
-            {
-                ifCode.Line("FlatRedBall.TileCollisions.TileShapeCollectionLayeredTileMapExtensions.AddCollisionFrom(" +
-                    "SolidCollisions, CurrentTileMap, levelInfoObject as System.Collections.Generic.List<DataTypes.TileMapInfo>);");
+            function.Line("FlatRedBall.TileCollisions.TileShapeCollectionLayeredTileMapExtensions.AddCollisionFrom(" +
+                    "SolidCollisions, CurrentTileMap);");
 
-                ifCode.Line("FlatRedBall.TileEntities.TileEntityInstantiator.CreateEntitiesFrom(" +
-                    "CurrentTileMap, levelInfoObject as System.Collections.Generic.List<DataTypes.TileMapInfo>);");
+            function.Line("FlatRedBall.TileEntities.TileEntityInstantiator.CreateEntitiesFrom(" +
+                    "CurrentTileMap);");
 
-            }
-            var elseCode = ifCode.End().Else();
-            {
-                elseCode.Line("FlatRedBall.TileCollisions.TileShapeCollectionLayeredTileMapExtensions.AddCollisionFrom(" +
-                    "SolidCollisions, CurrentTileMap, levelInfoObject as System.Collections.Generic.Dictionary<string, DataTypes.TileMapInfo>);");
 
-                elseCode.Line("FlatRedBall.TileEntities.TileEntityInstantiator.CreateEntitiesFrom(" +
-                    "CurrentTileMap, levelInfoObject as System.Collections.Generic.Dictionary<string, DataTypes.TileMapInfo>);");
-            }
         }
 
         private static void GenerateInitializeAnimations(ICodeBlock function)

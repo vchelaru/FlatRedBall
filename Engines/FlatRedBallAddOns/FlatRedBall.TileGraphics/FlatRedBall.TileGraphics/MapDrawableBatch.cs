@@ -403,12 +403,7 @@ namespace FlatRedBall.TileGraphics
 #endif
 
             Texture2D texture = FlatRedBallServices.Load<Texture2D>(textureName, contentManagerName);
-#if DEBUG
-            if (!MathFunctions.IsPowerOfTwo(texture.Width) || !MathFunctions.IsPowerOfTwo(texture.Height))
-            {
-                throw new Exception("The dimensions of the texture file " + texture.Name + " are not power of 2!");
-            }
-#endif
+
             MapDrawableBatch toReturn = new MapDrawableBatch(reducedLayerInfo.Quads.Count, tileDimensionWidth, tileDimensionHeight, texture);
 
             toReturn.Name = reducedLayerInfo.Name;

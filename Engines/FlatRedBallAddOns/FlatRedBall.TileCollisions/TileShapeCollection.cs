@@ -363,7 +363,7 @@ namespace FlatRedBall.TileCollisions
     {
         // This was not originally public but made public for situations where users want to 
         // manually specify which tiles to use rather than relying on the HasCollision methods.
-        public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,  
+        public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
             LayeredTileMap layeredTileMap, IEnumerable<string> namesToUse)
         {
             // prob need to clear out the tileShapeCollection
@@ -372,7 +372,7 @@ namespace FlatRedBall.TileCollisions
             float dimensionHalf = 0;
             foreach (var layer in layeredTileMap.MapLayers)
             {
-                
+
                 var dictionary = layer.NamedTileOrderedIndexes;
 
                 foreach (var name in namesToUse)
@@ -389,7 +389,7 @@ namespace FlatRedBall.TileCollisions
 
                             if (float.IsNaN(dimension))
                             {
-                                dimension = layer.Vertices[(index*4) + 1].Position.X - left;
+                                dimension = layer.Vertices[(index * 4) + 1].Position.X - left;
                                 dimensionHalf = dimension / 2.0f;
                                 tileShapeCollection.GridSize = dimension;
                             }
@@ -403,7 +403,7 @@ namespace FlatRedBall.TileCollisions
         }
 
 
-        static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,  
+        static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
             Scene scene, IEnumerable<string> namesToUse)
         {
             // prob need to clear out the tileShapeCollection
@@ -431,41 +431,60 @@ namespace FlatRedBall.TileCollisions
         }
 
 
-
-
+        public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
+            LayeredTileMap layeredTileMap)
+        {
+            foreach (var layer in layeredTileMap.MapLayers)
+            {
+                AddCollisionFrom(layer, layeredTileMap.Properties);
+            }
+        }
 
 
         public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
-            LayeredTileMap layeredTileMap, IEnumerable<TileMapInfo> tileMapInfos)
+            LayeredTileMap layeredTileMap)
         {
-            var stringEnum = tileMapInfos.Where(item => item.HasCollision).Select(item=>item.Name);
 
-            tileShapeCollection.AddCollisionFrom(layeredTileMap, stringEnum);
+            var tilesWithCollision = layeredTileMap.Properties
+                .Where(item => item.Value.Any(property => property.Name == "HasCollision" && (string)property.Value == "True"))
+                .Select(item => item.Key).ToList();
+
+            tileShapeCollection.AddCollisionFrom(layeredTileMap, tilesWithCollision);
+
         }
 
-        public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
-            LayeredTileMap layeredTileMap, Dictionary<string, TileMapInfo> tileMapInfos)
-        {
-            var stringEnum = tileMapInfos.Values.Where(item => item.HasCollision).Select(item=>item.Name);
 
-            tileShapeCollection.AddCollisionFrom(layeredTileMap, stringEnum);
-        }
+        //public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
+        //    LayeredTileMap layeredTileMap, IEnumerable<TileMapInfo> tileMapInfos)
+        //{
+        //    var stringEnum = tileMapInfos.Where(item => item.HasCollision).Select(item=>item.Name);
 
-        public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
-            Scene scene, IEnumerable<TileMapInfo> tileMapInfos)
-        {
-            var stringEnum = tileMapInfos.Where(item => item.HasCollision).Select(item => item.Name);
+        //    tileShapeCollection.AddCollisionFrom(layeredTileMap, stringEnum);
+        //}
 
-            tileShapeCollection.AddCollisionFrom(scene, stringEnum);
-        }
+        //public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
+        //    LayeredTileMap layeredTileMap, Dictionary<string, TileMapInfo> tileMapInfos)
+        //{
+        //    var stringEnum = tileMapInfos.Values.Where(item => item.HasCollision).Select(item=>item.Name);
 
-        public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
-            Scene scene, Dictionary<string, TileMapInfo> tileMapInfos)
-        {
-            var stringEnum = tileMapInfos.Values.Where(item => item.HasCollision).Select(item => item.Name);
+        //    tileShapeCollection.AddCollisionFrom(layeredTileMap, stringEnum);
+        //}
 
-            tileShapeCollection.AddCollisionFrom(scene, stringEnum);
-        }
+        //public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
+        //    Scene scene, IEnumerable<TileMapInfo> tileMapInfos)
+        //{
+        //    var stringEnum = tileMapInfos.Where(item => item.HasCollision).Select(item => item.Name);
+
+        //    tileShapeCollection.AddCollisionFrom(scene, stringEnum);
+        //}
+
+        //public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
+        //    Scene scene, Dictionary<string, TileMapInfo> tileMapInfos)
+        //{
+        //    var stringEnum = tileMapInfos.Values.Where(item => item.HasCollision).Select(item => item.Name);
+
+        //    tileShapeCollection.AddCollisionFrom(scene, stringEnum);
+        //}
 
 
     }

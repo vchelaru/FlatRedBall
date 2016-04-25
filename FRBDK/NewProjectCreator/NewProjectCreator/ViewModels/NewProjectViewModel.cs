@@ -27,6 +27,8 @@ namespace NewProjectCreator.ViewModels
 
         #endregion
 
+        #region Properties
+
         public bool OpenSlnFolderAfterCreation { get; set; }
 
         public string ProjectName { get; set; }
@@ -86,10 +88,19 @@ namespace NewProjectCreator.ViewModels
             get;
             private set;
         } = new ObservableCollection<TemplateViewModel>();
+
+        public TemplateViewModel selectedTemplate;
         public TemplateViewModel SelectedTemplate
         {
-            get;
-            set;
+            get
+            {
+                return selectedTemplate;
+            }
+            set
+            {
+                selectedTemplate = value;
+                NotifyPropertyChanged(nameof(SelectedTemplate));
+            }
         }
 
         bool emptyProjectsOnly = false;
@@ -116,6 +127,10 @@ namespace NewProjectCreator.ViewModels
                 SelectedCategory = filteredCategories[0];
             }
         }
+
+        #endregion
+
+
 
         public NewProjectViewModel()
         {

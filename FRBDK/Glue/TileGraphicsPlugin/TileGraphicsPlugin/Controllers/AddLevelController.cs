@@ -379,9 +379,38 @@ namespace TileGraphicsPlugin.Controllers
             var levelsFolder = filesTreeNode.Nodes.FirstOrDefault(item => item.Text == "Levels");
             var tilesetFolder = filesTreeNode.Nodes.FirstOrDefault(item => item.Text == "Tilesets");
 
-            AddTilbReferencedFileSave(levelName, levelsFolder);
+            // This plugin used to add TILB and CSV
+            //AddTilbReferencedFileSave(levelName, levelsFolder);
+            //AddCsvReferencedFileSave(levelName, levelsFolder: levelsFolder, tilesetFolder: tilesetFolder);
+            AddTmxReferencedFileSave(levelName, levelsFolder);
+        }
 
-            AddCsvReferencedFileSave(levelName, levelsFolder: levelsFolder, tilesetFolder: tilesetFolder);
+        private static void AddTmxReferencedFileSave(string levelName, TreeNode levelsFolder)
+        {
+            string absoluteLevelsDirectory = GlueCommands.Self.ProjectCommands.MakeAbsolute(
+                levelsFolder.GetRelativePath(), forceAsContent: true);
+            string fullTmxFile = absoluteLevelsDirectory + levelName + ".tmx";
+            GlueState.Self.CurrentTreeNode = levelsFolder;
+
+            var currentElement = GlueState.Self.CurrentElement;
+            var directory = levelsFolder.GetRelativePath();
+
+            var newRfs = GlueCommands.Self.GluxCommands.AddSingleFileTo(fullTmxFile, levelName,
+                null,
+                null,
+                isBuiltFile: false,
+                options: null,
+                sourceElement: currentElement,
+                directoryOfTreeNode: directory);
+
+            if (newRfs == null)
+            {
+                MessageBox.Show("Error trying to add new file to Glue project");
+            }
+            else
+            {
+                newRfs.LoadedOnlyWhenReferenced = true;
+            }
         }
 
         private static void AddTilbReferencedFileSave(string levelName, TreeNode levelsFolder)
@@ -404,8 +433,10 @@ namespace TileGraphicsPlugin.Controllers
             var newRfs = GlueCommands.Self.GluxCommands.AddSingleFileTo(fullTmxFile, levelName, 
                 commandLineArguments,
                 builderToolAssociation,
-                true,
-                null, currentElement, directory);
+                isBuiltFile:false,
+                options:null, 
+                sourceElement:currentElement, 
+                directoryOfTreeNode:directory);
 
             if (newRfs == null)
             {
