@@ -434,11 +434,14 @@ namespace FlatRedBall.TileGraphics
                 // A multi-layer map will offset the individual layer Z values, the quads should have a Z of 0.
                 // position.Z = reducedLayerInfo.Z;
 
+                // Bring the texture coordinates in to adjust for rendering issues on dx9/ogl
+                const float adjustment = .00002f;
+
                 var textureValues = new Vector4();
-                textureValues.X = (float)quad.LeftTexturePixel / (float)texture.Width; // Left
-                textureValues.Y = (float)(quad.LeftTexturePixel + tileDimensionWidth) / (float)texture.Width; // Right
-                textureValues.Z = (float)quad.TopTexturePixel / (float)texture.Height; // Top
-                textureValues.W = (float)(quad.TopTexturePixel + tileDimensionHeight) / (float)texture.Height; // Bottom
+                textureValues.X = adjustment + (float)quad.LeftTexturePixel / (float)texture.Width; // Left
+                textureValues.Y = -adjustment + (float)(quad.LeftTexturePixel + tileDimensionWidth) / (float)texture.Width; // Right
+                textureValues.Z = adjustment + (float)quad.TopTexturePixel / (float)texture.Height; // Top
+                textureValues.W = -adjustment + (float)(quad.TopTexturePixel + tileDimensionHeight) / (float)texture.Height; // Bottom
 
                 // pad before doing any rotations/flipping
                 const bool pad = true;
