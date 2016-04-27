@@ -72,11 +72,13 @@ namespace TileGraphicsPlugin.Managers
                 PluginManager.ReceiveError(e.ToString());
             }
 
+            var directory = FileManager.GetDirectory(tsxFile);
+
             if (external != null && external.Images.Length != 0)
             {
                 var image = external.Images[0];
 
-                string fileName = image.Source;
+                string fileName = directory + image.Source;
 
                 // keep it relative
                 referencedFiles.Add(fileName);
