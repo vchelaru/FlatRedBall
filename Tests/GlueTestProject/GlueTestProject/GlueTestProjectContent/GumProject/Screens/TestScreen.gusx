@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ScreenSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>TestScreen</Name>
+  <State>
+    <Name>Default</Name>
+    <Variable>
+      <Type>float</Type>
+      <Name>ContainerInstance.X</Name>
+      <Value xsi:type="xsd:float">38</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ContainerInstance.Y</Name>
+      <Value xsi:type="xsd:float">415</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>MakeMePublic.X</Name>
+      <Value xsi:type="xsd:float">34</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>MakeMePublic.Y</Name>
+      <Value xsi:type="xsd:float">196</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NameWith-Dash.X</Name>
+      <Value xsi:type="xsd:float">39</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NameWith-Dash.Y</Name>
+      <Value xsi:type="xsd:float">119</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>NineSliceButtonInstance1.State</Name>
+      <Value xsi:type="xsd:string">Disabled</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceButtonInstance1.Y</Name>
+      <Value xsi:type="xsd:float">138</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>NineSliceButtonInstance2.State</Name>
+      <Value xsi:type="xsd:string">Highlighted</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceButtonInstance2.X</Name>
+      <Value xsi:type="xsd:float">200</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceButtonInstance2.Y</Name>
+      <Value xsi:type="xsd:float">100</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>NineSliceButtonInstance3.State</Name>
+      <Value xsi:type="xsd:string">BigBoy</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceButtonInstance3.X</Name>
+      <Value xsi:type="xsd:float">123</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceButtonInstance3.Y</Name>
+      <Value xsi:type="xsd:float">230</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance.Height</Name>
+      <Value xsi:type="xsd:float">95.20002</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance.Width</Name>
+      <Value xsi:type="xsd:float">89.60002</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance.X</Name>
+      <Value xsi:type="xsd:float">71.6000061</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance.Y</Name>
+      <Value xsi:type="xsd:float">30.4000015</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ParentStateComponentInstance.X</Name>
+      <Value xsi:type="xsd:float">385</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ParentStateComponentInstance.Y</Name>
+      <Value xsi:type="xsd:float">26</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>StateCategory1State</Type>
+      <Name>StateCategory1State</Name>
+      <Value xsi:type="xsd:string">On</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>SwitchInstance.X</Name>
+      <Value xsi:type="xsd:float">425</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>SwitchInstance.Y</Name>
+      <Value xsi:type="xsd:float">246</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TopButton.Y</Name>
+      <Value xsi:type="xsd:float">42</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+  </State>
+  <Category>
+    <Name>StateCategory1</Name>
+    <State>
+      <Name>On</Name>
+      <Variable>
+        <Type>State</Type>
+        <Name>SwitchInstance.State</Name>
+        <Value xsi:type="xsd:string">On</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
+    <State>
+      <Name>Off</Name>
+      <Variable>
+        <Type>State</Type>
+        <Name>SwitchInstance.State</Name>
+        <Value xsi:type="xsd:string">Off</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
+  </Category>
+  <Instance>
+    <Name>TopButton</Name>
+    <BaseType>NineSliceButton</BaseType>
+  </Instance>
+  <Instance>
+    <Name>NineSliceButtonInstance1</Name>
+    <BaseType>NineSliceButton</BaseType>
+  </Instance>
+  <Instance>
+    <Name>NineSliceButtonInstance2</Name>
+    <BaseType>NineSliceButton</BaseType>
+  </Instance>
+  <Instance>
+    <Name>NineSliceButtonInstance3</Name>
+    <BaseType>NineSliceButton</BaseType>
+  </Instance>
+  <Instance>
+    <Name>ParentStateComponentInstance</Name>
+    <BaseType>ParentStateComponent</BaseType>
+  </Instance>
+  <Instance>
+    <Name>MakeMePublic</Name>
+    <BaseType>TestComponent</BaseType>
+  </Instance>
+  <Instance>
+    <Name>NineSliceInstance</Name>
+    <BaseType>NineSlice</BaseType>
+  </Instance>
+  <Instance>
+    <Name>NameWith-Dash</Name>
+    <BaseType>ColoredRectangle</BaseType>
+  </Instance>
+  <Instance>
+    <Name>SwitchInstance</Name>
+    <BaseType>Switch</BaseType>
+  </Instance>
+  <Instance>
+    <Name>ContainerInstance</Name>
+    <BaseType>Container</BaseType>
+  </Instance>
+</ScreenSave>

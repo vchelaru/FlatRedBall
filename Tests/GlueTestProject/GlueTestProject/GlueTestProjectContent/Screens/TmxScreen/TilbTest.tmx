@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="32" height="32" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="BaronTown" tilewidth="16" tileheight="16">
+  <image source="BaronTown.png" width="512" height="512"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="32" height="32">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC61WWW6EMBTLeSFchHYukrYXoTN3KkixMNZbQtsPK8zLYudtk6mUMu9YOlrHumPqc7XPTYJFxsjufYMHHKwh0/Ef/OCoomFEx6PbMa7y+2HY9BvnYVQNqiPSg7kvGaNv7OezPB2RnkjXtuPVR/3G2qnYGiIdv/XTi/ZgHiPWWjr+osfTARuvGdXBGMkNr5bmHgtLA+uI9ODOeo7Fxet5He+1dHh6uH+xBosv4q+0d0QHw/KD5QPlt3yF2lAdkR7m13q2eLO8wB1Yh6dnLdfcsGJtnZ/938C+Caw61/5h8U/CXRP+LD4Mzc9jz9uO93L2+4l40fMzH0S5zHOr7D/sHzs+y9nvV+JFzx2Jg5fLPKdxOOzfO57l7PeNeDlvM/6l2D7gOCMO8IPyQytzwx8jGjwfeOs8DRyrVux7ZvUQ5XkWA47VVq71wH3Bq1mtNc3z7P7gBbfVE6qMURw0z7kmPB/w/Sw/j/Qs73zcO/KBVTdR3L1v6/yROqzl2o/uvp8sv/D52f3Rd5U/ej9l/YFjl/HPtObOu25USyMtDO67uH/0prvrm2Zwz8LLebHKfPbGzPyjNaycANcI20femSNaPG7kRHP4FXf0KJSTa30TOxBpUT0R90zcTXi1Nn4AvD0F3wAQAAA=
+  </data>
+ </layer>
+</map>

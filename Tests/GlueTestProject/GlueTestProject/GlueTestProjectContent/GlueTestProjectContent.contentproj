@@ -1,0 +1,862 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{64B23BEF-DD26-4B81-AAA6-D9F46B0140B4}</ProjectGuid>
+    <ProjectTypeGuids>{96E2B04D-8817-42c6-938A-82C39BA4D311};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
+    <OutputPath>bin\$(Platform)\$(Configuration)</OutputPath>
+    <ContentRootDirectory>Content</ContentRootDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>FrbXna4Test1Content</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FlatRedBall.Content">
+      <HintPath>..\GlueTestProject\Libraries\Xna4Pc\FlatRedBall.Content.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.EffectImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.FBXImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.TextureImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.XImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.AudioImporters, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.VideoImporters, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
+      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
+      <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="EmitterListFile.emix">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmitterListFile</Name>
+    </None>
+    <None Include="Entities\AndroidTests\myassets.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>myassets</Name>
+    </None>
+    <None Include="Entities\AnimationChainEntity\AnimationChainListFile.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimationChainListFile</Name>
+    </None>
+    <None Include="Entities\AnimationChainEntity\AnimationChainListFile2.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimationChainListFile2</Name>
+    </None>
+    <None Include="Entities\AnimationChainEntity\lttp_NPCs.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>lttp_NPCs</Name>
+    </None>
+    <None Include="Entities\AnimationChainEntity\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Entities\BaseEntity\BobbleBikerLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BobbleBikerLogo</Name>
+    </None>
+    <None Include="Entities\BaseEntity\StaticFile1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>StaticFile1</Name>
+    </None>
+    <None Include="Entities\CsvEntity\CsvForVariable.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvForVariable</Name>
+    </None>
+    <None Include="Entities\CsvEntity\CsvLoadedToList.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvLoadedToList</Name>
+    </None>
+    <None Include="Entities\CsvEntity\CsvWithCustomTypes.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvWithCustomTypes</Name>
+    </None>
+    <None Include="Entities\CsvEntity\CsvWithExtraCells.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvWithExtraCells</Name>
+    </None>
+    <None Include="Entities\CsvEntity\redball.BMP">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>redball</Name>
+    </None>
+    <None Include="Entities\CsvEntity\SharedClassEntityCsv.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SharedClassEntityCsv</Name>
+    </None>
+    <None Include="Entities\CsvEntity\WithFileAtEndFile.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>WithFileAtEndFile</Name>
+    </None>
+    <None Include="Entities\CsvEntity\yellowball.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>yellowball</Name>
+    </None>
+    <None Include="Entities\CustomContentTypeEntity\LineOfTextFile.lin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LineOfTextFile</Name>
+    </None>
+    <None Include="Entities\CustomContentTypeEntity\LoadedOnlyWhenReferencedFile.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LoadedOnlyWhenReferencedFile</Name>
+    </None>
+    <None Include="Entities\CustomContentTypeEntity\TestRuntimeClassFile.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TestRuntimeClassFile</Name>
+    </None>
+    <None Include="Entities\DerivedEntity\Bear.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Bear</Name>
+    </None>
+    <None Include="Entities\DerivedEntity\ShapeCollectionFile.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ShapeCollectionFile</Name>
+    </None>
+    <None Include="Entities\EmitterEntity\EmitterListFile1.emix">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmitterListFile1</Name>
+    </None>
+    <None Include="Entities\EmitterEntity\EmitterLoadedOnlyWhenReferenced.emix">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmitterLoadedOnlyWhenReferenced</Name>
+    </None>
+    <None Include="Entities\EmitterEntity\redball.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>redball</Name>
+    </None>
+    <None Include="Entities\EntityForTestPlugin\SpreadsheetFile.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SpreadsheetFile</Name>
+    </None>
+    <None Include="Entities\FactoryEntity\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Entities\FileReferencingEntity\Bear.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Bear</Name>
+    </None>
+    <None Include="Entities\FileReferencingEntity\BearClaws_attack.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BearClaws_attack</Name>
+    </None>
+    <None Include="Entities\FileReferencingEntity\Folder1\book.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>book</Name>
+    </None>
+    <None Include="Entities\FileReferencingEntity\Folder1\EmptyTmx.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmptyTmx</Name>
+    </None>
+    <None Include="Entities\FileReferencingEntity\Folder1\Slug.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Slug</Name>
+    </None>
+    <None Include="Entities\FileReferencingEntity\Folder2\Slug.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Slug</Name>
+    </None>
+    <None Include="Entities\FileReferencingEntity\ProjectSpecificShcx.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ProjectSpecificShcx</Name>
+    </None>
+    <None Include="Entities\FileReferencingEntity\punchhit.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>punchhit</Name>
+    </None>
+    <None Include="Entities\FileReferencingEntity\RegularScene.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>RegularScene</Name>
+    </None>
+    <None Include="Entities\FileReferencingEntity\SceneLoadedOnlyWhenReferenced.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneLoadedOnlyWhenReferenced</Name>
+    </None>
+    <None Include="Entities\FileReferencingEntity\TextFile.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TextFile</Name>
+    </None>
+    <None Include="Entities\FlatRedBallTypeEntity\SceneFileWithSprite.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFileWithSprite</Name>
+    </None>
+    <None Include="Entities\FlatRedBallTypeEntity\SceneWithAttachmentOffset.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneWithAttachmentOffset</Name>
+    </None>
+    <None Include="Entities\GlobalContentEntity\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Entities\IncompleteDefinitionEntity\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Entities\LayerOwner\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Entities\LayerOwner\SceneFile2.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile2</Name>
+    </None>
+    <None Include="Entities\LoadedOnlyWhenReferenced\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Entities\LoadedOnlyWhenReferenced\ShapeCollectionOption1.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ShapeCollectionOption1</Name>
+    </None>
+    <None Include="Entities\LoadedOnlyWhenReferenced\ShapeCollectionOption2.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ShapeCollectionOption2</Name>
+    </None>
+    <None Include="Entities\ManuallyUpdatedEntity\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Entities\NoIWindowBase\Bear.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Bear</Name>
+    </None>
+    <None Include="Entities\PlatformerCharacterBase\Animations.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Animations</Name>
+    </None>
+    <None Include="Entities\PlatformerCharacterBase\characters_7.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>characters_7</Name>
+    </None>
+    <None Include="Entities\PlatformerCharacterBase\MovementValues.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>MovementValues</Name>
+    </None>
+    <None Include="Entities\PositioningEntity\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Entities\SceneEntity\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Entities\ScnxAttachmentTest\AttachmentScnx.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AttachmentScnx</Name>
+    </None>
+    <None Include="Entities\ShapeEntity\ShapeCollectionFile.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ShapeCollectionFile</Name>
+    </None>
+    <None Include="Entities\SplineEntity\SplineListFile.splx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SplineListFile</Name>
+    </None>
+    <None Include="Entities\SpriteEntity\Monster.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Monster</Name>
+    </None>
+    <None Include="Entities\SpriteInheritingEntity\Bear.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Bear</Name>
+    </None>
+    <None Include="Entities\StateEntity\AnimationChainListFile.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimationChainListFile</Name>
+    </None>
+    <None Include="Entities\StateEntity\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Entities\TextEntity\BadFont.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BadFont</Name>
+    </None>
+    <None Include="Entities\TextEntity\BitmapFontFile.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BitmapFontFile</Name>
+    </None>
+    <None Include="Entities\TextEntity\nesfontTexture.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>nesfontTexture</Name>
+    </None>
+    <None Include="Entities\TextureContainer\pipeJuiceBlue.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>pipeJuiceBlue</Name>
+    </None>
+    <None Include="Entities\TextureContainer\sharedlogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>sharedlogo</Name>
+    </None>
+    <None Include="Entities\TexturePixelEntity\Bear.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Bear</Name>
+    </None>
+    <None Include="Entities\TunneledVariableEntity\AnimationChainListFile.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimationChainListFile</Name>
+    </None>
+    <None Include="Entities\VariableEntity\SceneFileForSourceFileSet.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFileForSourceFileSet</Name>
+    </None>
+    <None Include="Entities\XmlEntity\XMLFile.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>XMLFile</Name>
+    </None>
+    <None Include="FolderAtContentRoot\OtherRedBall.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>OtherRedBall</Name>
+    </None>
+    <None Include="GlobalContent\arrow01.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>arrow01</Name>
+    </None>
+    <None Include="GlobalContent\Book.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Book</Name>
+    </None>
+    <None Include="GlobalContent\CreatedByExcel1.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CreatedByExcel1</Name>
+    </None>
+    <None Include="GlobalContent\CsvFolder\CsvFromTmx.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvFromTmx</Name>
+    </None>
+    <None Include="GlobalContent\LoadedAtRuntimeFalseCsv.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LoadedAtRuntimeFalseCsv</Name>
+    </None>
+    <None Include="GlobalContent\NotLoadedTextFile.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>NotLoadedTextFile</Name>
+    </None>
+    <None Include="GlobalContent\ReplaceWithThis.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ReplaceWithThis</Name>
+      <Importer>CsvImporter</Importer>
+      <Processor>CsvProcessor</Processor>
+    </None>
+    <None Include="GlobalContent\CsvFolder\SpreadsheetFile1.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SpreadsheetFile1</Name>
+    </None>
+    <None Include="GlobalContent\CsvFolder\SpreadsheetFile2.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SpreadsheetFile2</Name>
+    </None>
+    <None Include="GlobalContent\FolderInGlobalContent\book.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>book</Name>
+    </None>
+    <None Include="GlobalContent\FolderInGlobalContent\EmptyTmx.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmptyTmx</Name>
+    </None>
+    <None Include="GlobalContent\FolderInGlobalContent\SceneFileInFolder.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFileInFolder</Name>
+    </None>
+    <None Include="GlobalContent\GlobalCsv.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>GlobalCsv</Name>
+    </None>
+    <None Include="GlobalContent\HugeCsv.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>HugeCsv</Name>
+    </None>
+    <None Include="GlobalContent\ListCsv.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ListCsv</Name>
+    </None>
+    <None Include="GlobalContent\LocalizationDatabase.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LocalizationDatabase</Name>
+    </None>
+    <None Include="GlobalContent\Resources.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Resources</Name>
+    </None>
+    <None Include="GlobalContent\SharedClassGlobalCsv.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SharedClassGlobalCsv</Name>
+    </None>
+    <None Include="GlobalContent\SpreadsheetToReplace.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SpreadsheetToReplace</Name>
+    </None>
+    <None Include="GlobalContent\TextureSettingsInfo.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TextureSettingsInfo</Name>
+    </None>
+    <None Include="GlobalContent\Waves.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Waves</Name>
+    </None>
+    <None Include="GumProject\Components\AlignmentObject.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AlignmentObject</Name>
+    </None>
+    <None Include="GumProject\Components\AnimatedComponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimatedComponent</Name>
+    </None>
+    <None Include="GumProject\Components\ChildStateComponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ChildStateComponent</Name>
+    </None>
+    <None Include="GumProject\Components\ComponentContainingSprite.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ComponentContainingSprite</Name>
+    </None>
+    <None Include="GumProject\Components\NineSliceButton.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>NineSliceButton</Name>
+    </None>
+    <None Include="GumProject\Components\ParentStateComponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ParentStateComponent</Name>
+    </None>
+    <None Include="GumProject\Components\SpriteInheritingComponnt.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SpriteInheritingComponnt</Name>
+    </None>
+    <None Include="GumProject\Components\StackingComponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>StackingComponent</Name>
+    </None>
+    <None Include="GumProject\Components\star_particle.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>star_particle</Name>
+    </None>
+    <None Include="GumProject\Components\Switch.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Switch</Name>
+    </None>
+    <None Include="GumProject\Components\TestComponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TestComponent</Name>
+    </None>
+    <None Include="GumProject\Components\TextureSettingInStateComponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TextureSettingInStateComponent</Name>
+    </None>
+    <None Include="GumProject\Components\UsedToInheritFromTextComponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>UsedToInheritFromTextComponent</Name>
+    </None>
+    <None Include="GumProject\FontCache\Font18Arial.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Font18Arial</Name>
+    </None>
+    <None Include="GumProject\FontCache\Font18Arial_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Font18Arial_0</Name>
+    </None>
+    <None Include="GumProject\FontCache\Font22Arial.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Font22Arial</Name>
+    </None>
+    <None Include="GumProject\FontCache\Font22Arial_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Font22Arial_0</Name>
+    </None>
+    <None Include="GumProject\GumProject.gumx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>GumProject</Name>
+    </None>
+    <None Include="GumProject\Screens\TestScreen.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TestScreen</Name>
+    </None>
+    <None Include="GumProject\Standards\ColoredRectangle.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ColoredRectangle</Name>
+    </None>
+    <None Include="GumProject\Standards\Component.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Component</Name>
+    </None>
+    <None Include="GumProject\Standards\Container.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Container</Name>
+    </None>
+    <None Include="GumProject\Standards\NineSlice.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>NineSlice</Name>
+    </None>
+    <None Include="GumProject\Standards\Sprite.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Sprite</Name>
+    </None>
+    <None Include="GumProject\Standards\StandardGraphics\Red_bottomCenter.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Red_bottomCenter</Name>
+    </None>
+    <None Include="GumProject\Standards\StandardGraphics\Red_bottomLeft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Red_bottomLeft</Name>
+    </None>
+    <None Include="GumProject\Standards\StandardGraphics\Red_bottomRight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Red_bottomRight</Name>
+    </None>
+    <None Include="GumProject\Standards\StandardGraphics\Red_center.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Red_center</Name>
+    </None>
+    <None Include="GumProject\Standards\StandardGraphics\Red_left.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Red_left</Name>
+    </None>
+    <None Include="GumProject\Standards\StandardGraphics\Red_right.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Red_right</Name>
+    </None>
+    <None Include="GumProject\Standards\StandardGraphics\Red_topCenter.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Red_topCenter</Name>
+    </None>
+    <None Include="GumProject\Standards\StandardGraphics\Red_topLeft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Red_topLeft</Name>
+    </None>
+    <None Include="GumProject\Standards\StandardGraphics\Red_topRight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Red_topRight</Name>
+    </None>
+    <None Include="GumProject\Standards\Text.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Text</Name>
+    </None>
+    <None Include="LoadedOnlyWhenReferencedScene.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LoadedOnlyWhenReferencedScene</Name>
+    </None>
+    <None Include="redball.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>redball</Name>
+    </None>
+    <None Include="Screens\CsvScreen\CsvManuallyLoadedForPropertyTest.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvManuallyLoadedForPropertyTest</Name>
+    </None>
+    <None Include="Screens\CsvScreen\CsvUsingCustomDataFile.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvUsingCustomDataFile</Name>
+    </None>
+    <None Include="Screens\CsvScreen\CsvWithAnimationFrameSaveBase.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvWithAnimationFrameSaveBase</Name>
+    </None>
+    <None Include="Screens\CsvScreen\CustomCsvClassLoadedOnlyWhenReferenced.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CustomCsvClassLoadedOnlyWhenReferenced</Name>
+    </None>
+    <None Include="Screens\CsvScreen\SharedClassScreenCsv.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SharedClassScreenCsv</Name>
+    </None>
+    <None Include="Screens\CsvScreen\SpreadsheetFile.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SpreadsheetFile</Name>
+    </None>
+    <None Include="Screens\CustomContentTypeScreen\LineOfTextFile.lin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LineOfTextFile</Name>
+    </None>
+    <None Include="Screens\FileScreen\EmitterFileLoadedOnlyWhenReferenced.emix">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmitterFileLoadedOnlyWhenReferenced</Name>
+    </None>
+    <None Include="Screens\FileScreen\EmitterListFile1.emix">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmitterListFile1</Name>
+    </None>
+    <None Include="Screens\FileScreen\NotAddedToManagers.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>NotAddedToManagers</Name>
+    </None>
+    <None Include="Screens\FileScreen\redball.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>redball</Name>
+    </None>
+    <None Include="Screens\FileScreen\SceneFile1.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile1</Name>
+    </None>
+    <None Include="Screens\FileScreen\SceneFile2.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile2</Name>
+    </None>
+    <None Include="Screens\FileScreen\ShapeCollectionFile.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ShapeCollectionFile</Name>
+    </None>
+    <None Include="Screens\FileScreen\StaticGuy.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>StaticGuy</Name>
+    </None>
+    <None Include="Screens\FileScreen\Book.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Book</Name>
+    </None>
+    <None Include="Screens\FlatRedBallTypeScreen\Aura.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Aura</Name>
+    </None>
+    <None Include="Screens\FlatRedBallTypeScreen\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Screens\FlatRedBallTypeScreen\SceneOption1.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneOption1</Name>
+    </None>
+    <None Include="Screens\FlatRedBallTypeScreen\SceneOption2.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneOption2</Name>
+    </None>
+    <None Include="Screens\FlatRedBallTypeScreen\ShapeCollectionFile.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ShapeCollectionFile</Name>
+    </None>
+    <None Include="Screens\GlobalContentScreen\BackgroundEmitters.emix">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BackgroundEmitters</Name>
+    </None>
+    <None Include="Screens\GlobalContentScreen\particle_bubble.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>particle_bubble</Name>
+    </None>
+    <None Include="Screens\GlobalContentScreen\particle_leaves.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>particle_leaves</Name>
+    </None>
+    <None Include="Screens\GlobalContentScreen\particle_smoke.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>particle_smoke</Name>
+    </None>
+    <None Include="Screens\GlobalContentScreen\particle_star.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>particle_star</Name>
+    </None>
+    <None Include="Screens\GlobalContentScreen\particle_wind.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>particle_wind</Name>
+    </None>
+    <None Include="Screens\GlobalContentScreen\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Screens\LayerScreen\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Screens\LocalizationScreen\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Screens\LocalizationScreen\SceneForObjects.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneForObjects</Name>
+    </None>
+    <None Include="Screens\LocalizationScreen\SceneForTextObjectOnly.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneForTextObjectOnly</Name>
+    </None>
+    <None Include="Screens\NodeNetworkScreen\LayeredNodeNetwork.nntx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LayeredNodeNetwork</Name>
+    </None>
+    <None Include="Screens\NodeNetworkScreen\NodeNetworkFile.nntx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>NodeNetworkFile</Name>
+    </None>
+    <None Include="Screens\RepeatingScreen\EmitterListFile1.emix">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmitterListFile1</Name>
+    </None>
+    <None Include="Screens\RepeatingScreen\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Screens\SaveClassScreen\SceneSaveFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneSaveFile</Name>
+    </None>
+    <None Include="Screens\ScreenToLoadAsync\Frb1024.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Frb1024</Name>
+    </None>
+    <None Include="Screens\ScreenToLoadAsync\Logo2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Logo2</Name>
+    </None>
+    <None Include="Screens\ScreenToLoadAsync\Logo3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Logo3</Name>
+    </None>
+    <None Include="Screens\SplashScreen\frblogo512.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>frblogo512</Name>
+    </None>
+    <None Include="Screens\SplashScreen\SceneFile.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SceneFile</Name>
+    </None>
+    <None Include="Screens\TiledLevelScreen\Levels\Level1.tilb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Level1</Name>
+    </None>
+    <None Include="Screens\TiledLevelScreen\Tilesets\Level1Info.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Level1Info</Name>
+    </None>
+    <None Include="Screens\TiledLevelScreen\tilesets\platformertiles.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>platformertiles</Name>
+    </None>
+    <None Include="Screens\TmxScreen\barontown.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>barontown</Name>
+    </None>
+    <None Include="Screens\TmxScreen\emptyMap1.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>emptyMap1</Name>
+    </None>
+    <None Include="Screens\TmxScreen\FinalFantasyScene.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>FinalFantasyScene</Name>
+    </None>
+    <None Include="Screens\TmxScreen\RotatedTileTmx.tilb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>RotatedTileTmx</Name>
+    </None>
+    <None Include="Screens\TmxScreen\TestLevel2.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TestLevel2</Name>
+    </None>
+    <None Include="Screens\TmxScreen\TilbTest.tilb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TilbTest</Name>
+    </None>
+    <None Include="Screens\TmxScreen\TmxWithEmptyLayers.tilb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxWithEmptyLayers</Name>
+    </None>
+    <None Include="Screens\TmxScreen\TmxWithLayersWithProperties.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxWithLayersWithProperties</Name>
+    </None>
+    <None Include="Screens\TmxScreen\TmxWithTileProperties.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxWithTileProperties</Name>
+    </None>
+    <None Include="Screens\TransparencyRenderingScreen\ColorTest.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ColorTest</Name>
+    </None>
+    <None Include="Screens\XmlScreen\XmlFileWithNoBackingObject.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>XmlFileWithNoBackingObject</Name>
+    </None>
+    <None Include="SimpleScene.scnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SimpleScene</Name>
+    </None>
+    <None Include="SimpleShapeCollection.shcx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SimpleShapeCollection</Name>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Entities\GlobalContentEntity\burnOrb.wav">
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Name>burnOrb</Name>
+    </Compile>
+    <Compile Include="Entities\PausingEntity\SoundEffectFile.wav">
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Name>SoundEffectFile</Name>
+    </Compile>
+    <Compile Include="Entities\SoundEffectEntity\DogBarkSoundEffect.wav">
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Name>DogBarkSoundEffect</Name>
+    </Compile>
+    <Compile Include="Entities\SoundEffectEntity\DogBarkSoundEffect2.wav">
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Name>DogBarkSoundEffect2</Name>
+    </Compile>
+    <Compile Include="Entities\SoundEffectEntity\SoundEffectInstanceFile.wav">
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Name>SoundEffectInstanceFile</Name>
+    </Compile>
+    <Compile Include="GlobalContent\BearContentPipeline.png">
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Name>BearContentPipeline</Name>
+    </Compile>
+    <Compile Include="GlobalContent\DogBarkSoundEffect.wav">
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Name>DogBarkSoundEffect</Name>
+    </Compile>
+    <Compile Include="GlobalContent\DogBarkSoundEffect2.wav">
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Name>DogBarkSoundEffect2</Name>
+    </Compile>
+    <Compile Include="Screens\AudioScreen\boom.wav">
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Name>boom</Name>
+    </Compile>
+    <Compile Include="Screens\GlobalContentScreen\MenuSong.mp3">
+      <Importer>Mp3Importer</Importer>
+      <Processor>SongProcessor</Processor>
+      <Name>MenuSong</Name>
+    </Compile>
+    <Compile Include="Screens\PauseScreen\SoundEffectInstanceFile.wav">
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Name>SoundEffectInstanceFile</Name>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
+  <!--  To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

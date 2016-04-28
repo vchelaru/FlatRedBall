@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnimationChainArraySave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <FileRelativeTextures>true</FileRelativeTextures>
+  <TimeMeasurementUnit>Undefined</TimeMeasurementUnit>
+  <AnimationChain>
+    <Name>Animation1</Name>
+    <ColorKey>0</ColorKey>
+  </AnimationChain>
+  <AnimationChain>
+    <Name>Animation2</Name>
+    <ColorKey>0</ColorKey>
+  </AnimationChain>
+  <AnimationChain>
+    <Name>Animation3</Name>
+    <ColorKey>0</ColorKey>
+  </AnimationChain>
+  <FileName>C:/FlatRedBallProjects/FrbTests/GlueTestProject/GlueTestProject/GlueTestProjectContent/Entities/StateEntity/AnimationChainListFile.achx</FileName>
+</AnimationChainArraySave>

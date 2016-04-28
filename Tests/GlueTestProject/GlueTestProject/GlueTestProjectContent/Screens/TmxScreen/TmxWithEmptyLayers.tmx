@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="32" height="32" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="BaronTown" tilewidth="16" tileheight="16">
+  <image source="BaronTown.png" width="512" height="512"/>
+ </tileset>
+ <layer name="EmptyLayer" width="32" height="32">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3BAQ0AAADCoPdPbQ8HFAAAAPBuEQAcxwAQAAA=
+  </data>
+ </layer>
+ <layer name="LayerWithStuff" width="32" height="32">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3N11FCUQBF0ceMOVVhTlVgwlCFiLkKBcRQhZJEqxBURKowpxpcTdzxw3dm1u/ZURTvL5dkjnkWWGSJFMussMpaoP46aTbIsMkW2+ywyx77gfoHHJIlR54jChxzwilngfrnXFCkRJkKVS6pccV1oP4NdRrccsc9TR5o8Ug7UP+JZ1545Y13Pvjki29+AvU7ElHUSRfd9NBLH/0MMMhQIkx/2O8Io4wxzgSTTDHNDLOB+km/c8yzwCJLpFhmhVXWAvXX/abZIMMmW2yzwy577AfqH/g9JEuOPEcUOOaEU84C9c/9XlCkRJkKVS6pccV1oP6N3zoNbrnjniYPtHikHagfL168ePHixft/+wX9AfkzABAAAA==
+  </data>
+ </layer>
+</map>

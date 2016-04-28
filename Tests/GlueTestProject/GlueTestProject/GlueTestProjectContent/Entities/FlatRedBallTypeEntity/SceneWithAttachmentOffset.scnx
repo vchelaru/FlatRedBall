@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SpriteEditorScene xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Sprite>
+    <X>-13.4765577</X>
+    <ScaleX>5</ScaleX>
+    <ScaleY>5</ScaleY>
+    <TintRed>255</TintRed>
+    <ColorOperation>SelectArg2</ColorOperation>
+    <Name>Parent1</Name>
+    <Ordered>false</Ordered>
+    <ConstantPixelSize>0</ConstantPixelSize>
+  </Sprite>
+  <Sprite>
+    <X>-13.4765577</X>
+    <Y>-4.99999952</Y>
+    <Z>4.99999952</Z>
+    <RotationX>4.712389</RotationX>
+    <ScaleX>5</ScaleX>
+    <ScaleY>5</ScaleY>
+    <RelativeY>-4.99999952</RelativeY>
+    <RelativeZ>4.99999952</RelativeZ>
+    <RelativeRotationX>4.712389</RelativeRotationX>
+    <TintRed>255</TintRed>
+    <TintBlue>255</TintBlue>
+    <ColorOperation>SelectArg2</ColorOperation>
+    <Name>Child5</Name>
+    <Parent>Parent1</Parent>
+    <ConstantPixelSize>0</ConstantPixelSize>
+  </Sprite>
+  <Camera>
+    <X>0</X>
+    <Y>0</Y>
+    <Z>-40</Z>
+    <Orthogonal>false</Orthogonal>
+    <OrthogonalHeight>600</OrthogonalHeight>
+    <OrthogonalWidth>-1</OrthogonalWidth>
+    <NearClipPlane>1</NearClipPlane>
+    <FarClipPlane>1000</FarClipPlane>
+  </Camera>
+  <PixelSize>0</PixelSize>
+  <AssetsRelativeToSceneFile>true</AssetsRelativeToSceneFile>
+  <CoordinateSystem>LeftHanded</CoordinateSystem>
+</SpriteEditorScene>

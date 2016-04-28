@@ -1,0 +1,4 @@
+"Name (required)","FloatProperty (float)","StringProperty (string)","IntProperty (int)"
+"Name1",1.2,"a",1
+"Name2",2.3,"b",2
+"Name3",3.4,"c",3

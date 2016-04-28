@@ -1,0 +1,6 @@
+"Name (string, required)",Health (GlueTestProject.DataTypes.DataTypeForCsv),ListOfDataTypes (List<GlueTestProject.DataTypes.DataTypeForCsv>)
+First,"IsMagical = false, Name = UmpireNeck, Value = 333","IsMagical = false, Name = UmpireNeck, Value = 123"
+,,"IsMagical = false, Name = UmpireNeck, Value = 456"
+,,"WhereCanBeBought = (""SLC"", ""Ogden""), Value = 333, Name = Lumpster"
+Second,,
+Third,,

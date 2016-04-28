@@ -1,0 +1,2645 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F46A8B17-6B24-4D23-832E-36EE3C679DCF}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GlueTestProject</RootNamespace>
+    <AssemblyName>GlueTestProject</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <AndroidApplication>true</AndroidApplication>
+    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AndroidSupportedAbis>armeabi%3barmeabi-v7a%3bx86</AndroidSupportedAbis>
+    <AndroidStoreUncompressedFileExtensions />
+    <MandroidI18n />
+    <TargetFrameworkVersion>v4.4</TargetFrameworkVersion>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;ANDROID; XNA4; MONOGAME; FRB_XNA</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidLinkMode>None</AndroidLinkMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;ANDROID; XNA4; MONOGAME; FRB_XNA</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Mono.Android">
+      <HintPath>Libraries\Mono.Android.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK">
+      <HintPath>Libraries\Android\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>Libraries\Android\Debug\MonoGame.Framework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\CustomDataTypes\CustomDataType.cs">
+      <Link>CustomDataTypes\CustomDataType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\ClassWithNoAssociatedCsvs.Generated.cs">
+      <Link>DataTypes\ClassWithNoAssociatedCsvs.Generated.cs</Link>
+      <DependentUpon>ClassWithNoAssociatedCsvs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\CreatedByExcel1.Generated.cs">
+      <Link>DataTypes\CreatedByExcel1.Generated.cs</Link>
+      <DependentUpon>CreatedByExcel1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\CsvForVariable.Generated.cs">
+      <Link>DataTypes\CsvForVariable.Generated.cs</Link>
+      <DependentUpon>CsvForVariable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\CsvFromTmx.Generated.cs">
+      <Link>DataTypes\CsvFromTmx.Generated.cs</Link>
+      <DependentUpon>CsvFromTmx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\CsvLoadedToList.Generated.cs">
+      <Link>DataTypes\CsvLoadedToList.Generated.cs</Link>
+      <DependentUpon>CsvLoadedToList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\CsvManuallyLoadedForPropertyTest.Generated.cs">
+      <Link>DataTypes\CsvManuallyLoadedForPropertyTest.Generated.cs</Link>
+      <DependentUpon>CsvManuallyLoadedForPropertyTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\CsvWithAnimationFrameSaveBase.Generated.cs">
+      <Link>DataTypes\CsvWithAnimationFrameSaveBase.Generated.cs</Link>
+      <DependentUpon>CsvWithAnimationFrameSaveBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\CsvWithCustomTypes.Generated.cs">
+      <Link>DataTypes\CsvWithCustomTypes.Generated.cs</Link>
+      <DependentUpon>CsvWithCustomTypes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\CsvWithExtraCells.Generated.cs">
+      <Link>DataTypes\CsvWithExtraCells.Generated.cs</Link>
+      <DependentUpon>CsvWithExtraCells.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\DataTypeForCsv.cs">
+      <Link>DataTypes\DataTypeForCsv.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\emptyMap1.Generated.cs">
+      <Link>DataTypes\emptyMap1.Generated.cs</Link>
+      <DependentUpon>emptyMap1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\GlobalCsv.Generated.cs">
+      <Link>DataTypes\GlobalCsv.Generated.cs</Link>
+      <DependentUpon>GlobalCsv.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\HugeCsv.Generated.cs">
+      <Link>DataTypes\HugeCsv.Generated.cs</Link>
+      <DependentUpon>HugeCsv.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\Level1Info.Generated.cs">
+      <Link>DataTypes\Level1Info.Generated.cs</Link>
+      <DependentUpon>Level1Info.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\ListCsv.Generated.cs">
+      <Link>DataTypes\ListCsv.Generated.cs</Link>
+      <DependentUpon>ListCsv.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\LoadedAtRuntimeFalseCsv.Generated.cs">
+      <Link>DataTypes\LoadedAtRuntimeFalseCsv.Generated.cs</Link>
+      <DependentUpon>LoadedAtRuntimeFalseCsv.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\MovementValues.Generated.cs">
+      <Link>DataTypes\MovementValues.Generated.cs</Link>
+      <DependentUpon>MovementValues.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\Resources.Generated.cs">
+      <Link>DataTypes\Resources.Generated.cs</Link>
+      <DependentUpon>Resources.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\SharedClass1.Generated.cs">
+      <Link>DataTypes\SharedClass1.Generated.cs</Link>
+      <DependentUpon>SharedClass1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\Spreadsheet.Generated.cs">
+      <Link>DataTypes\Spreadsheet.Generated.cs</Link>
+      <DependentUpon>Spreadsheet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\SpreadsheetClass.Generated.cs">
+      <Link>DataTypes\SpreadsheetClass.Generated.cs</Link>
+      <DependentUpon>SpreadsheetClass.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\SpreadsheetToReplace.Generated.cs">
+      <Link>DataTypes\SpreadsheetToReplace.Generated.cs</Link>
+      <DependentUpon>SpreadsheetToReplace.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\TestSaveClass.cs">
+      <Link>DataTypes\TestSaveClass.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\TextureSettingsInfo.Generated.cs">
+      <Link>DataTypes\TextureSettingsInfo.Generated.cs</Link>
+      <DependentUpon>TextureSettingsInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\TileMapInfo.Generated.cs">
+      <Link>DataTypes\TileMapInfo.Generated.cs</Link>
+      <DependentUpon>TileMapInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\TmxWithLayersWithProperties.Generated.cs">
+      <Link>DataTypes\TmxWithLayersWithProperties.Generated.cs</Link>
+      <DependentUpon>TmxWithLayersWithProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\TmxWithTileProperties.Generated.cs">
+      <Link>DataTypes\TmxWithTileProperties.Generated.cs</Link>
+      <DependentUpon>TmxWithTileProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\Waves.Generated.cs">
+      <Link>DataTypes\Waves.Generated.cs</Link>
+      <DependentUpon>Waves.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\WithFileAtEnd.Generated.cs">
+      <Link>DataTypes\WithFileAtEnd.Generated.cs</Link>
+      <DependentUpon>WithFileAtEnd.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\AndroidTests.cs">
+      <Link>Entities\AndroidTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\AndroidTests.Generated.cs">
+      <Link>Entities\AndroidTests.Generated.cs</Link>
+      <DependentUpon>AndroidTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\AnimationChainEntity.cs">
+      <Link>Entities\AnimationChainEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\AnimationChainEntity.Generated.cs">
+      <Link>Entities\AnimationChainEntity.Generated.cs</Link>
+      <DependentUpon>AnimationChainEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\AttachedToCamera.cs">
+      <Link>Entities\AttachedToCamera.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\AttachedToCamera.Generated.cs">
+      <Link>Entities\AttachedToCamera.Generated.cs</Link>
+      <DependentUpon>AttachedToCamera.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\AttachedToCameraCopy.cs">
+      <Link>Entities\AttachedToCameraCopy.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\AttachedToCameraCopy.Generated.cs">
+      <Link>Entities\AttachedToCameraCopy.Generated.cs</Link>
+      <DependentUpon>AttachedToCameraCopy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseEnityWithCategorizedStates.cs">
+      <Link>Entities\BaseEnityWithCategorizedStates.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseEnityWithCategorizedStates.Generated.cs">
+      <Link>Entities\BaseEnityWithCategorizedStates.Generated.cs</Link>
+      <DependentUpon>BaseEnityWithCategorizedStates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseEntity.cs">
+      <Link>Entities\BaseEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseEntity.Event.cs">
+      <Link>Entities\BaseEntity.Event.cs</Link>
+      <DependentUpon>BaseEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseEntity.Generated.cs">
+      <Link>Entities\BaseEntity.Generated.cs</Link>
+      <DependentUpon>BaseEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseEntity.Generated.Event.cs">
+      <Link>Entities\BaseEntity.Generated.Event.cs</Link>
+      <DependentUpon>BaseEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseEntityWithNoStates.cs">
+      <Link>Entities\BaseEntityWithNoStates.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseEntityWithNoStates.Generated.cs">
+      <Link>Entities\BaseEntityWithNoStates.Generated.cs</Link>
+      <DependentUpon>BaseEntityWithNoStates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseNotPooled.cs">
+      <Link>Entities\BaseNotPooled.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseNotPooled.Generated.cs">
+      <Link>Entities\BaseNotPooled.Generated.cs</Link>
+      <DependentUpon>BaseNotPooled.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BasePositioningEntity.cs">
+      <Link>Entities\BasePositioningEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BasePositioningEntity.Generated.cs">
+      <Link>Entities\BasePositioningEntity.Generated.cs</Link>
+      <DependentUpon>BasePositioningEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseStateEntityWithOnlyCategorized.cs">
+      <Link>Entities\BaseStateEntityWithOnlyCategorized.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseStateEntityWithOnlyCategorized.Generated.cs">
+      <Link>Entities\BaseStateEntityWithOnlyCategorized.Generated.cs</Link>
+      <DependentUpon>BaseStateEntityWithOnlyCategorized.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseWithCollision.cs">
+      <Link>Entities\BaseWithCollision.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseWithCollision.Generated.cs">
+      <Link>Entities\BaseWithCollision.Generated.cs</Link>
+      <DependentUpon>BaseWithCollision.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CameraAttachedToThisEntity.cs">
+      <Link>Entities\CameraAttachedToThisEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CameraAttachedToThisEntity.Generated.cs">
+      <Link>Entities\CameraAttachedToThisEntity.Generated.cs</Link>
+      <DependentUpon>CameraAttachedToThisEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CameraModifyingEntity.cs">
+      <Link>Entities\CameraModifyingEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CameraModifyingEntity.Generated.cs">
+      <Link>Entities\CameraModifyingEntity.Generated.cs</Link>
+      <DependentUpon>CameraModifyingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ChildOfPositioningEntity.cs">
+      <Link>Entities\ChildOfPositioningEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ChildOfPositioningEntity.Generated.cs">
+      <Link>Entities\ChildOfPositioningEntity.Generated.cs</Link>
+      <DependentUpon>ChildOfPositioningEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CircleContainer.cs">
+      <Link>Entities\CircleContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CircleContainer.Generated.cs">
+      <Link>Entities\CircleContainer.Generated.cs</Link>
+      <DependentUpon>CircleContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CircleContainerSetCircleInCustomVariables.cs">
+      <Link>Entities\CircleContainerSetCircleInCustomVariables.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CircleContainerSetCircleInCustomVariables.Generated.cs">
+      <Link>Entities\CircleContainerSetCircleInCustomVariables.Generated.cs</Link>
+      <DependentUpon>CircleContainerSetCircleInCustomVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CollidableEntity.cs">
+      <Link>Entities\CollidableEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CollidableEntity.Generated.cs">
+      <Link>Entities\CollidableEntity.Generated.cs</Link>
+      <DependentUpon>CollidableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CollisionEntity.cs">
+      <Link>Entities\CollisionEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CollisionEntity.Generated.cs">
+      <Link>Entities\CollisionEntity.Generated.cs</Link>
+      <DependentUpon>CollisionEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ConditionalCompilationEntity.cs">
+      <Link>Entities\ConditionalCompilationEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ConditionalCompilationEntity.Generated.cs">
+      <Link>Entities\ConditionalCompilationEntity.Generated.cs</Link>
+      <DependentUpon>ConditionalCompilationEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ContainerOfFactoryEntityList.cs">
+      <Link>Entities\ContainerOfFactoryEntityList.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ContainerOfFactoryEntityList.Generated.cs">
+      <Link>Entities\ContainerOfFactoryEntityList.Generated.cs</Link>
+      <DependentUpon>ContainerOfFactoryEntityList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CsvEntity.cs">
+      <Link>Entities\CsvEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CsvEntity.Event.cs">
+      <Link>Entities\CsvEntity.Event.cs</Link>
+      <DependentUpon>CsvEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CsvEntity.Generated.cs">
+      <Link>Entities\CsvEntity.Generated.cs</Link>
+      <DependentUpon>CsvEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CsvEntity.Generated.Event.cs">
+      <Link>Entities\CsvEntity.Generated.Event.cs</Link>
+      <DependentUpon>CsvEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CustomContentTypeEntity.cs">
+      <Link>Entities\CustomContentTypeEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CustomContentTypeEntity.Generated.cs">
+      <Link>Entities\CustomContentTypeEntity.Generated.cs</Link>
+      <DependentUpon>CustomContentTypeEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DelayedInstantiationEntity.cs">
+      <Link>Entities\DelayedInstantiationEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DelayedInstantiationEntity.Generated.cs">
+      <Link>Entities\DelayedInstantiationEntity.Generated.cs</Link>
+      <DependentUpon>DelayedInstantiationEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedCsvEntity.cs">
+      <Link>Entities\DerivedCsvEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedCsvEntity.Generated.cs">
+      <Link>Entities\DerivedCsvEntity.Generated.cs</Link>
+      <DependentUpon>DerivedCsvEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedEntity.cs">
+      <Link>Entities\DerivedEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedEntity.Event.cs">
+      <Link>Entities\DerivedEntity.Event.cs</Link>
+      <DependentUpon>DerivedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedEntity.Generated.cs">
+      <Link>Entities\DerivedEntity.Generated.cs</Link>
+      <DependentUpon>DerivedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedEntity.Generated.Event.cs">
+      <Link>Entities\DerivedEntity.Generated.Event.cs</Link>
+      <DependentUpon>DerivedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedEntityOutOfFolder.cs">
+      <Link>Entities\DerivedEntityOutOfFolder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedEntityOutOfFolder.Generated.cs">
+      <Link>Entities\DerivedEntityOutOfFolder.Generated.cs</Link>
+      <DependentUpon>DerivedEntityOutOfFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedEventEntity.cs">
+      <Link>Entities\DerivedEventEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedEventEntity.Generated.cs">
+      <Link>Entities\DerivedEventEntity.Generated.cs</Link>
+      <DependentUpon>DerivedEventEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedFromBaseWithCategorizedStates.cs">
+      <Link>Entities\DerivedFromBaseWithCategorizedStates.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedFromBaseWithCategorizedStates.Generated.cs">
+      <Link>Entities\DerivedFromBaseWithCategorizedStates.Generated.cs</Link>
+      <DependentUpon>DerivedFromBaseWithCategorizedStates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedFromBaseWithNoStates.cs">
+      <Link>Entities\DerivedFromBaseWithNoStates.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedFromBaseWithNoStates.Generated.cs">
+      <Link>Entities\DerivedFromBaseWithNoStates.Generated.cs</Link>
+      <DependentUpon>DerivedFromBaseWithNoStates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedICollidable.cs">
+      <Link>Entities\DerivedICollidable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedICollidable.Generated.cs">
+      <Link>Entities\DerivedICollidable.Generated.cs</Link>
+      <DependentUpon>DerivedICollidable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedPooledFromNotPooled.cs">
+      <Link>Entities\DerivedPooledFromNotPooled.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedPooledFromNotPooled.Generated.cs">
+      <Link>Entities\DerivedPooledFromNotPooled.Generated.cs</Link>
+      <DependentUpon>DerivedPooledFromNotPooled.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedPositioningEntity.cs">
+      <Link>Entities\DerivedPositioningEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedPositioningEntity.Generated.cs">
+      <Link>Entities\DerivedPositioningEntity.Generated.cs</Link>
+      <DependentUpon>DerivedPositioningEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedStateEntity.cs">
+      <Link>Entities\DerivedStateEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedStateEntity.Generated.cs">
+      <Link>Entities\DerivedStateEntity.Generated.cs</Link>
+      <DependentUpon>DerivedStateEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DisabledObjectEntity.cs">
+      <Link>Entities\DisabledObjectEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DisabledObjectEntity.Generated.cs">
+      <Link>Entities\DisabledObjectEntity.Generated.cs</Link>
+      <DependentUpon>DisabledObjectEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EmitterEntity.cs">
+      <Link>Entities\EmitterEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EmitterEntity.Generated.cs">
+      <Link>Entities\EmitterEntity.Generated.cs</Link>
+      <DependentUpon>EmitterEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EmptyEntity.cs">
+      <Link>Entities\EmptyEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EmptyEntity.Generated.cs">
+      <Link>Entities\EmptyEntity.Generated.cs</Link>
+      <DependentUpon>EmptyEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EntityFolder\BaseEntityInFolder.cs">
+      <Link>Entities\EntityFolder\BaseEntityInFolder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EntityFolder\BaseEntityInFolder.Generated.cs">
+      <Link>Entities\EntityFolder\BaseEntityInFolder.Generated.cs</Link>
+      <DependentUpon>BaseEntityInFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EntityFolder\EntityInFolder.cs">
+      <Link>Entities\EntityFolder\EntityInFolder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EntityFolder\EntityInFolder.Generated.cs">
+      <Link>Entities\EntityFolder\EntityInFolder.Generated.cs</Link>
+      <DependentUpon>EntityInFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EntityFolder\NewEntity.cs">
+      <Link>Entities\EntityFolder\NewEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EntityFolder\NewEntity.Generated.cs">
+      <Link>Entities\EntityFolder\NewEntity.Generated.cs</Link>
+      <DependentUpon>NewEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EntityFolder\StateEntityInFolder.cs">
+      <Link>Entities\EntityFolder\StateEntityInFolder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EntityFolder\StateEntityInFolder.Generated.cs">
+      <Link>Entities\EntityFolder\StateEntityInFolder.Generated.cs</Link>
+      <DependentUpon>StateEntityInFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EntityForTestPlugin.cs">
+      <Link>Entities\EntityForTestPlugin.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EntityForTestPlugin.Generated.cs">
+      <Link>Entities\EntityForTestPlugin.Generated.cs</Link>
+      <DependentUpon>EntityForTestPlugin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EventEntity.cs">
+      <Link>Entities\EventEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EventEntity.Event.cs">
+      <Link>Entities\EventEntity.Event.cs</Link>
+      <DependentUpon>EventEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EventEntity.Generated.cs">
+      <Link>Entities\EventEntity.Generated.cs</Link>
+      <DependentUpon>EventEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EventEntity.Generated.Event.cs">
+      <Link>Entities\EventEntity.Generated.Event.cs</Link>
+      <DependentUpon>EventEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\FactoryEntity.cs">
+      <Link>Entities\FactoryEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\FactoryEntity.Generated.cs">
+      <Link>Entities\FactoryEntity.Generated.cs</Link>
+      <DependentUpon>FactoryEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\FactoryEntityDerived.cs">
+      <Link>Entities\FactoryEntityDerived.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\FactoryEntityDerived.Generated.cs">
+      <Link>Entities\FactoryEntityDerived.Generated.cs</Link>
+      <DependentUpon>FactoryEntityDerived.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\FileReferencingEntity.cs">
+      <Link>Entities\FileReferencingEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\FileReferencingEntity.Generated.cs">
+      <Link>Entities\FileReferencingEntity.Generated.cs</Link>
+      <DependentUpon>FileReferencingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\FlatRedBallEntityContainer.cs">
+      <Link>Entities\FlatRedBallEntityContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\FlatRedBallEntityContainer.Generated.cs">
+      <Link>Entities\FlatRedBallEntityContainer.Generated.cs</Link>
+      <DependentUpon>FlatRedBallEntityContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\FlatRedBallTypeEntity.cs">
+      <Link>Entities\FlatRedBallTypeEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\FlatRedBallTypeEntity.Generated.cs">
+      <Link>Entities\FlatRedBallTypeEntity.Generated.cs</Link>
+      <DependentUpon>FlatRedBallTypeEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\GlobalContentEntity.cs">
+      <Link>Entities\GlobalContentEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\GlobalContentEntity.Generated.cs">
+      <Link>Entities\GlobalContentEntity.Generated.cs</Link>
+      <DependentUpon>GlobalContentEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\GumComponentContainer.cs">
+      <Link>Entities\GumComponentContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\GumComponentContainer.Generated.cs">
+      <Link>Entities\GumComponentContainer.Generated.cs</Link>
+      <DependentUpon>GumComponentContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\HasPublicPropertyEntity.cs">
+      <Link>Entities\HasPublicPropertyEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\HasPublicPropertyEntity.Generated.cs">
+      <Link>Entities\HasPublicPropertyEntity.Generated.cs</Link>
+      <DependentUpon>HasPublicPropertyEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ICollidableBase.cs">
+      <Link>Entities\ICollidableBase.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ICollidableBase.Generated.cs">
+      <Link>Entities\ICollidableBase.Generated.cs</Link>
+      <DependentUpon>ICollidableBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ICollidableDerived.cs">
+      <Link>Entities\ICollidableDerived.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ICollidableDerived.Generated.cs">
+      <Link>Entities\ICollidableDerived.Generated.cs</Link>
+      <DependentUpon>ICollidableDerived.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IDrawableBatchEntity.cs">
+      <Link>Entities\IDrawableBatchEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IDrawableBatchEntity.Generated.cs">
+      <Link>Entities\IDrawableBatchEntity.Generated.cs</Link>
+      <DependentUpon>IDrawableBatchEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IncompleteDefinitionEntity.cs">
+      <Link>Entities\IncompleteDefinitionEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IncompleteDefinitionEntity.Generated.cs">
+      <Link>Entities\IncompleteDefinitionEntity.Generated.cs</Link>
+      <DependentUpon>IncompleteDefinitionEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\InheritingFromSpriteInheritingEntity.cs">
+      <Link>Entities\InheritingFromSpriteInheritingEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\InheritingFromSpriteInheritingEntity.Generated.cs">
+      <Link>Entities\InheritingFromSpriteInheritingEntity.Generated.cs</Link>
+      <DependentUpon>InheritingFromSpriteInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\InListEntity.cs">
+      <Link>Entities\InListEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\InListEntity.Generated.cs">
+      <Link>Entities\InListEntity.Generated.cs</Link>
+      <DependentUpon>InListEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\InterpolationEntity.cs">
+      <Link>Entities\InterpolationEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\InterpolationEntity.Generated.cs">
+      <Link>Entities\InterpolationEntity.Generated.cs</Link>
+      <DependentUpon>InterpolationEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\InterpolationEntitySub.cs">
+      <Link>Entities\InterpolationEntitySub.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\InterpolationEntitySub.Generated.cs">
+      <Link>Entities\InterpolationEntitySub.Generated.cs</Link>
+      <DependentUpon>InterpolationEntitySub.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IVisibleEntity.cs">
+      <Link>Entities\IVisibleEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IVisibleEntity.Generated.cs">
+      <Link>Entities\IVisibleEntity.Generated.cs</Link>
+      <DependentUpon>IVisibleEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IVisibleFrbTypeInheritingEntity.cs">
+      <Link>Entities\IVisibleFrbTypeInheritingEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IVisibleFrbTypeInheritingEntity.Generated.cs">
+      <Link>Entities\IVisibleFrbTypeInheritingEntity.Generated.cs</Link>
+      <DependentUpon>IVisibleFrbTypeInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowContainer.cs">
+      <Link>Entities\IWindowContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowContainer.Generated.cs">
+      <Link>Entities\IWindowContainer.Generated.cs</Link>
+      <DependentUpon>IWindowContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowDerivedFromNoIWindow.cs">
+      <Link>Entities\IWindowDerivedFromNoIWindow.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowDerivedFromNoIWindow.Event.cs">
+      <Link>Entities\IWindowDerivedFromNoIWindow.Event.cs</Link>
+      <DependentUpon>IWindowDerivedFromNoIWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowDerivedFromNoIWindow.Generated.cs">
+      <Link>Entities\IWindowDerivedFromNoIWindow.Generated.cs</Link>
+      <DependentUpon>IWindowDerivedFromNoIWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowDerivedFromNoIWindow.Generated.Event.cs">
+      <Link>Entities\IWindowDerivedFromNoIWindow.Generated.Event.cs</Link>
+      <DependentUpon>IWindowDerivedFromNoIWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowDerivingEntity.cs">
+      <Link>Entities\IWindowDerivingEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowDerivingEntity.Generated.cs">
+      <Link>Entities\IWindowDerivingEntity.Generated.cs</Link>
+      <DependentUpon>IWindowDerivingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowEntity.cs">
+      <Link>Entities\IWindowEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowEntity.Event.cs">
+      <Link>Entities\IWindowEntity.Event.cs</Link>
+      <DependentUpon>IWindowEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowEntity.Generated.cs">
+      <Link>Entities\IWindowEntity.Generated.cs</Link>
+      <DependentUpon>IWindowEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowEntity.Generated.Event.cs">
+      <Link>Entities\IWindowEntity.Generated.Event.cs</Link>
+      <DependentUpon>IWindowEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowEntityWithExposedVariables.cs">
+      <Link>Entities\IWindowEntityWithExposedVariables.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowEntityWithExposedVariables.Event.cs">
+      <Link>Entities\IWindowEntityWithExposedVariables.Event.cs</Link>
+      <DependentUpon>IWindowEntityWithExposedVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowEntityWithExposedVariables.Generated.cs">
+      <Link>Entities\IWindowEntityWithExposedVariables.Generated.cs</Link>
+      <DependentUpon>IWindowEntityWithExposedVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\IWindowEntityWithExposedVariables.Generated.Event.cs">
+      <Link>Entities\IWindowEntityWithExposedVariables.Generated.Event.cs</Link>
+      <DependentUpon>IWindowEntityWithExposedVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\LayerOwner.cs">
+      <Link>Entities\LayerOwner.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\LayerOwner.Generated.cs">
+      <Link>Entities\LayerOwner.Generated.cs</Link>
+      <DependentUpon>LayerOwner.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ListEntity.cs">
+      <Link>Entities\ListEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ListEntity.Generated.cs">
+      <Link>Entities\ListEntity.Generated.cs</Link>
+      <DependentUpon>ListEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\LoadedOnlyWhenReferenced.cs">
+      <Link>Entities\LoadedOnlyWhenReferenced.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\LoadedOnlyWhenReferenced.Generated.cs">
+      <Link>Entities\LoadedOnlyWhenReferenced.Generated.cs</Link>
+      <DependentUpon>LoadedOnlyWhenReferenced.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ManuallyUpdatedEntity.cs">
+      <Link>Entities\ManuallyUpdatedEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ManuallyUpdatedEntity.Generated.cs">
+      <Link>Entities\ManuallyUpdatedEntity.Generated.cs</Link>
+      <DependentUpon>ManuallyUpdatedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\NewEntity2.cs">
+      <Link>Entities\NewEntity2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\NewEntity2.Event.cs">
+      <Link>Entities\NewEntity2.Event.cs</Link>
+      <DependentUpon>NewEntity2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\NewEntity2.Generated.cs">
+      <Link>Entities\NewEntity2.Generated.cs</Link>
+      <DependentUpon>NewEntity2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\NewEntity2.Generated.Event.cs">
+      <Link>Entities\NewEntity2.Generated.Event.cs</Link>
+      <DependentUpon>NewEntity2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\NoInstantiationObjectContainer.cs">
+      <Link>Entities\NoInstantiationObjectContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\NoInstantiationObjectContainer.Generated.cs">
+      <Link>Entities\NoInstantiationObjectContainer.Generated.cs</Link>
+      <DependentUpon>NoInstantiationObjectContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\NoIWindowBase.cs">
+      <Link>Entities\NoIWindowBase.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\NoIWindowBase.Generated.cs">
+      <Link>Entities\NoIWindowBase.Generated.cs</Link>
+      <DependentUpon>NoIWindowBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\OptionallyAddedEntity.cs">
+      <Link>Entities\OptionallyAddedEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\OptionallyAddedEntity.Generated.cs">
+      <Link>Entities\OptionallyAddedEntity.Generated.cs</Link>
+      <DependentUpon>OptionallyAddedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PausingEntity.cs">
+      <Link>Entities\PausingEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PausingEntity.Generated.cs">
+      <Link>Entities\PausingEntity.Generated.cs</Link>
+      <DependentUpon>PausingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PlatformerCharacterBase.cs">
+      <Link>Entities\PlatformerCharacterBase.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PlatformerCharacterBase.Event.cs">
+      <Link>Entities\PlatformerCharacterBase.Event.cs</Link>
+      <DependentUpon>PlatformerCharacterBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PlatformerCharacterBase.Generated.cs">
+      <Link>Entities\PlatformerCharacterBase.Generated.cs</Link>
+      <DependentUpon>PlatformerCharacterBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PlatformerCharacterBase.Generated.Event.cs">
+      <Link>Entities\PlatformerCharacterBase.Generated.Event.cs</Link>
+      <DependentUpon>PlatformerCharacterBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PolygonEntity.cs">
+      <Link>Entities\PolygonEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PolygonEntity.Generated.cs">
+      <Link>Entities\PolygonEntity.Generated.cs</Link>
+      <DependentUpon>PolygonEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PooledDontInheritFromThis.cs">
+      <Link>Entities\PooledDontInheritFromThis.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PooledDontInheritFromThis.Generated.cs">
+      <Link>Entities\PooledDontInheritFromThis.Generated.cs</Link>
+      <DependentUpon>PooledDontInheritFromThis.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PositionedEntity.cs">
+      <Link>Entities\PositionedEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PositionedEntity.Generated.cs">
+      <Link>Entities\PositionedEntity.Generated.cs</Link>
+      <DependentUpon>PositionedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PositioningEntity.cs">
+      <Link>Entities\PositioningEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PositioningEntity.Event.cs">
+      <Link>Entities\PositioningEntity.Event.cs</Link>
+      <DependentUpon>PositioningEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PositioningEntity.Generated.cs">
+      <Link>Entities\PositioningEntity.Generated.cs</Link>
+      <DependentUpon>PositioningEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\RectangleContainer.cs">
+      <Link>Entities\RectangleContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\RectangleContainer.Generated.cs">
+      <Link>Entities\RectangleContainer.Generated.cs</Link>
+      <DependentUpon>RectangleContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\RecyclableEntity.cs">
+      <Link>Entities\RecyclableEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\RecyclableEntity.Generated.cs">
+      <Link>Entities\RecyclableEntity.Generated.cs</Link>
+      <DependentUpon>RecyclableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\RemoveObjectsWhenInvisibleEntity.cs">
+      <Link>Entities\RemoveObjectsWhenInvisibleEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\RemoveObjectsWhenInvisibleEntity.Generated.cs">
+      <Link>Entities\RemoveObjectsWhenInvisibleEntity.Generated.cs</Link>
+      <DependentUpon>RemoveObjectsWhenInvisibleEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ResetVariableEntity.cs">
+      <Link>Entities\ResetVariableEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ResetVariableEntity.Generated.cs">
+      <Link>Entities\ResetVariableEntity.Generated.cs</Link>
+      <DependentUpon>ResetVariableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SceneEntity.cs">
+      <Link>Entities\SceneEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SceneEntity.Generated.cs">
+      <Link>Entities\SceneEntity.Generated.cs</Link>
+      <DependentUpon>SceneEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ScnxAttachmentTest.cs">
+      <Link>Entities\ScnxAttachmentTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ScnxAttachmentTest.Generated.cs">
+      <Link>Entities\ScnxAttachmentTest.Generated.cs</Link>
+      <DependentUpon>ScnxAttachmentTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ScrollableEntity.cs">
+      <Link>Entities\ScrollableEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ScrollableEntity.Generated.cs">
+      <Link>Entities\ScrollableEntity.Generated.cs</Link>
+      <DependentUpon>ScrollableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ScrollableListEntityNoItemType.cs">
+      <Link>Entities\ScrollableListEntityNoItemType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ScrollableListEntityNoItemType.Generated.cs">
+      <Link>Entities\ScrollableListEntityNoItemType.Generated.cs</Link>
+      <DependentUpon>ScrollableListEntityNoItemType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SetByContainerEntity.cs">
+      <Link>Entities\SetByContainerEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SetByContainerEntity.Generated.cs">
+      <Link>Entities\SetByContainerEntity.Generated.cs</Link>
+      <DependentUpon>SetByContainerEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ShapeEntity.cs">
+      <Link>Entities\ShapeEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ShapeEntity.Generated.cs">
+      <Link>Entities\ShapeEntity.Generated.cs</Link>
+      <DependentUpon>ShapeEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ShapeEntityCreatedByOtherEntities.cs">
+      <Link>Entities\ShapeEntityCreatedByOtherEntities.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ShapeEntityCreatedByOtherEntities.Generated.cs">
+      <Link>Entities\ShapeEntityCreatedByOtherEntities.Generated.cs</Link>
+      <DependentUpon>ShapeEntityCreatedByOtherEntities.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SizingEntity.cs">
+      <Link>Entities\SizingEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SizingEntity.Generated.cs">
+      <Link>Entities\SizingEntity.Generated.cs</Link>
+      <DependentUpon>SizingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SoundEffectEntity.cs">
+      <Link>Entities\SoundEffectEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SoundEffectEntity.Generated.cs">
+      <Link>Entities\SoundEffectEntity.Generated.cs</Link>
+      <DependentUpon>SoundEffectEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SplineEntity.cs">
+      <Link>Entities\SplineEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SplineEntity.Generated.cs">
+      <Link>Entities\SplineEntity.Generated.cs</Link>
+      <DependentUpon>SplineEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SpriteEntity.cs">
+      <Link>Entities\SpriteEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SpriteEntity.Generated.cs">
+      <Link>Entities\SpriteEntity.Generated.cs</Link>
+      <DependentUpon>SpriteEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SpriteFrameInheritingEntity.cs">
+      <Link>Entities\SpriteFrameInheritingEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SpriteFrameInheritingEntity.Generated.cs">
+      <Link>Entities\SpriteFrameInheritingEntity.Generated.cs</Link>
+      <DependentUpon>SpriteFrameInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SpriteFrameInheritingEntityZBuffered.cs">
+      <Link>Entities\SpriteFrameInheritingEntityZBuffered.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SpriteFrameInheritingEntityZBuffered.Generated.cs">
+      <Link>Entities\SpriteFrameInheritingEntityZBuffered.Generated.cs</Link>
+      <DependentUpon>SpriteFrameInheritingEntityZBuffered.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SpriteInheritingEntity.cs">
+      <Link>Entities\SpriteInheritingEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\SpriteInheritingEntity.Generated.cs">
+      <Link>Entities\SpriteInheritingEntity.Generated.cs</Link>
+      <DependentUpon>SpriteInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StateEntity.cs">
+      <Link>Entities\StateEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StateEntity.Event.cs">
+      <Link>Entities\StateEntity.Event.cs</Link>
+      <DependentUpon>StateEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StateEntity.Generated.cs">
+      <Link>Entities\StateEntity.Generated.cs</Link>
+      <DependentUpon>StateEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StateEntity.Generated.Event.cs">
+      <Link>Entities\StateEntity.Generated.Event.cs</Link>
+      <DependentUpon>StateEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StateEntityChild.cs">
+      <Link>Entities\StateEntityChild.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StateEntityChild.Generated.cs">
+      <Link>Entities\StateEntityChild.Generated.cs</Link>
+      <DependentUpon>StateEntityChild.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StateEntityContainer.cs">
+      <Link>Entities\StateEntityContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StateEntityContainer.Generated.cs">
+      <Link>Entities\StateEntityContainer.Generated.cs</Link>
+      <DependentUpon>StateEntityContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StateEntityWithoutCurrentStateVariable.cs">
+      <Link>Entities\StateEntityWithoutCurrentStateVariable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StateEntityWithoutCurrentStateVariable.Generated.cs">
+      <Link>Entities\StateEntityWithoutCurrentStateVariable.Generated.cs</Link>
+      <DependentUpon>StateEntityWithoutCurrentStateVariable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StaticVariableEntity.cs">
+      <Link>Entities\StaticVariableEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StaticVariableEntity.Generated.cs">
+      <Link>Entities\StaticVariableEntity.Generated.cs</Link>
+      <DependentUpon>StaticVariableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\TextEntity.cs">
+      <Link>Entities\TextEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\TextEntity.Generated.cs">
+      <Link>Entities\TextEntity.Generated.cs</Link>
+      <DependentUpon>TextEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\TextInheritingEntity.cs">
+      <Link>Entities\TextInheritingEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\TextInheritingEntity.Generated.cs">
+      <Link>Entities\TextInheritingEntity.Generated.cs</Link>
+      <DependentUpon>TextInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\TextureContainer.cs">
+      <Link>Entities\TextureContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\TextureContainer.Generated.cs">
+      <Link>Entities\TextureContainer.Generated.cs</Link>
+      <DependentUpon>TextureContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\TexturePixelEntity.cs">
+      <Link>Entities\TexturePixelEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\TexturePixelEntity.Generated.cs">
+      <Link>Entities\TexturePixelEntity.Generated.cs</Link>
+      <DependentUpon>TexturePixelEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ToBeDeleted.cs">
+      <Link>Entities\ToBeDeleted.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ToBeDeleted.Generated.cs">
+      <Link>Entities\ToBeDeleted.Generated.cs</Link>
+      <DependentUpon>ToBeDeleted.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\TunneledVariableEntity.cs">
+      <Link>Entities\TunneledVariableEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\TunneledVariableEntity.Generated.cs">
+      <Link>Entities\TunneledVariableEntity.Generated.cs</Link>
+      <DependentUpon>TunneledVariableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\VariableEntity.cs">
+      <Link>Entities\VariableEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\VariableEntity.Generated.cs">
+      <Link>Entities\VariableEntity.Generated.cs</Link>
+      <DependentUpon>VariableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\XmlEntity.cs">
+      <Link>Entities\XmlEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\XmlEntity.Generated.cs">
+      <Link>Entities\XmlEntity.Generated.cs</Link>
+      <DependentUpon>XmlEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ZBufferedEntity.cs">
+      <Link>Entities\ZBufferedEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ZBufferedEntity.Generated.cs">
+      <Link>Entities\ZBufferedEntity.Generated.cs</Link>
+      <DependentUpon>ZBufferedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\BaseNotPooledFactory.Generated.cs">
+      <Link>Factories\BaseNotPooledFactory.Generated.cs</Link>
+      <DependentUpon>BaseNotPooledFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\ChildOfPositioningEntityFactory.Generated.cs">
+      <Link>Factories\ChildOfPositioningEntityFactory.Generated.cs</Link>
+      <DependentUpon>ChildOfPositioningEntityFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\DerivedPooledFromNotPooledFactory.Generated.cs">
+      <Link>Factories\DerivedPooledFromNotPooledFactory.Generated.cs</Link>
+      <DependentUpon>DerivedPooledFromNotPooledFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\EntityInFolderFactory.Generated.cs">
+      <Link>Factories\EntityInFolderFactory.Generated.cs</Link>
+      <DependentUpon>EntityInFolderFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\FactoryEntityDerivedFactory.Generated.cs">
+      <Link>Factories\FactoryEntityDerivedFactory.Generated.cs</Link>
+      <DependentUpon>FactoryEntityDerivedFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\FactoryEntityFactory.Generated.cs">
+      <Link>Factories\FactoryEntityFactory.Generated.cs</Link>
+      <DependentUpon>FactoryEntityFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\IWindowDerivedFromNoIWindowFactory.Generated.cs">
+      <Link>Factories\IWindowDerivedFromNoIWindowFactory.Generated.cs</Link>
+      <DependentUpon>IWindowDerivedFromNoIWindowFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\PooledDontInheritFromThisFactory.Generated.cs">
+      <Link>Factories\PooledDontInheritFromThisFactory.Generated.cs</Link>
+      <DependentUpon>PooledDontInheritFromThisFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\PositioningEntityFactory.Generated.cs">
+      <Link>Factories\PositioningEntityFactory.Generated.cs</Link>
+      <DependentUpon>PositioningEntityFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\RecyclableEntityFactory.Generated.cs">
+      <Link>Factories\RecyclableEntityFactory.Generated.cs</Link>
+      <DependentUpon>RecyclableEntityFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\ShapeEntityCreatedByOtherEntitiesFactory.Generated.cs">
+      <Link>Factories\ShapeEntityCreatedByOtherEntitiesFactory.Generated.cs</Link>
+      <DependentUpon>ShapeEntityCreatedByOtherEntitiesFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\TextInheritingEntityFactory.Generated.cs">
+      <Link>Factories\TextInheritingEntityFactory.Generated.cs</Link>
+      <DependentUpon>TextInheritingEntityFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Game1.cs">
+      <Link>Game1.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Game1.Custom.cs">
+      <Link>Game1.Custom.cs</Link>
+      <DependentUpon>Game1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GlobalContent.Generated.cs">
+      <Link>GlobalContent.Generated.cs</Link>
+      <DependentUpon>GlobalContent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\AnimationFrame.cs">
+      <Link>GumCore\AnimationFrame.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\BitmapCharacterInfo.cs">
+      <Link>GumCore\BitmapCharacterInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\BitmapFont.cs">
+      <Link>GumCore\BitmapFont.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\Blend.cs">
+      <Link>GumCore\Blend.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\BmfcSave.cs">
+      <Link>GumCore\BmfcSave.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\Camera.cs">
+      <Link>GumCore\Camera.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\ComponentSave.cs">
+      <Link>GumCore\ComponentSave.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\ContentManagerWrapper.cs">
+      <Link>GumCore\ContentManagerWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\CustomPropertySave.cs">
+      <Link>GumCore\CustomPropertySave.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\DimensionUnitType.cs">
+      <Link>GumCore\DimensionUnitType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\ElementReference.cs">
+      <Link>GumCore\ElementReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\ElementSave.cs">
+      <Link>GumCore\ElementSave.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\ElementSaveExtensionMethods.cs">
+      <Link>GumCore\ElementSaveExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\ElementSaveExtensions.GumRuntime.cs">
+      <Link>GumCore\ElementSaveExtensions.GumRuntime.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\ElementWithState.cs">
+      <Link>GumCore\ElementWithState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\EventSave.cs">
+      <Link>GumCore\EventSave.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\FileManager.cs">
+      <Link>GumCore\FileManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\GraphicalUiElement.cs">
+      <Link>GumCore\GraphicalUiElement.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\GraphicalUiElement.IWindow.cs">
+      <Link>GumCore\GraphicalUiElement.IWindow.cs</Link>
+      <DependentUpon>GraphicalUiElement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\GuideRectangle.cs">
+      <Link>GumCore\GuideRectangle.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\GumAnimation.cs">
+      <Link>GumCore\GumAnimation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\GumIdb.cs">
+      <Link>GumCore\GumIdb.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\GumProjectSave.cs">
+      <Link>GumCore\GumProjectSave.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\IAnimation.cs">
+      <Link>GumCore\IAnimation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\IContentLoader.cs">
+      <Link>GumCore\IContentLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\ImageData.cs">
+      <Link>GumCore\ImageData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\InstanceSave.cs">
+      <Link>GumCore\InstanceSave.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\InstanceSaveExtensionMethods.cs">
+      <Link>GumCore\InstanceSaveExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\InstanceSaveExtensionMethods.GumRuntime.cs">
+      <Link>GumCore\InstanceSaveExtensionMethods.GumRuntime.cs</Link>
+      <DependentUpon>InstanceSaveExtensionMethods.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\IPositionedSizedObject.cs">
+      <Link>GumCore\IPositionedSizedObject.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\IRenderable.cs">
+      <Link>GumCore\IRenderable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\IVariableFinder.cs">
+      <Link>GumCore\IVariableFinder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\IVisible.cs">
+      <Link>GumCore\IVisible.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\Layer.cs">
+      <Link>GumCore\Layer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\LayerCameraSettings.cs">
+      <Link>GumCore\LayerCameraSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\Line.cs">
+      <Link>GumCore\Line.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\LineCircle.cs">
+      <Link>GumCore\LineCircle.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\LineGrid.cs">
+      <Link>GumCore\LineGrid.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\LinePrimitive.cs">
+      <Link>GumCore\LinePrimitive.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\LineRectangle.cs">
+      <Link>GumCore\LineRectangle.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\LoaderManager.cs">
+      <Link>GumCore\LoaderManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\MathFunctions.cs">
+      <Link>GumCore\MathFunctions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\NamedRectangle.cs">
+      <Link>GumCore\NamedRectangle.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\NineSlice.cs">
+      <Link>GumCore\NineSlice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\ObjectFinder.cs">
+      <Link>GumCore\ObjectFinder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\PlatformCompatability.cs">
+      <Link>GumCore\PlatformCompatability.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\RecursiveVariableFinder.cs">
+      <Link>GumCore\RecursiveVariableFinder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\ReflectionManager.cs">
+      <Link>GumCore\ReflectionManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\Renderer.cs">
+      <Link>GumCore\Renderer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\ScreenSave.cs">
+      <Link>GumCore\ScreenSave.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\ShapeManager.cs">
+      <Link>GumCore\ShapeManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\SolidRectangle.cs">
+      <Link>GumCore\SolidRectangle.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\SortableLayer.cs">
+      <Link>GumCore\SortableLayer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\Sprite.cs">
+      <Link>GumCore\Sprite.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\SpriteBatchStack.cs">
+      <Link>GumCore\SpriteBatchStack.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\SpriteManager.cs">
+      <Link>GumCore\SpriteManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\StandardElementSave.cs">
+      <Link>GumCore\StandardElementSave.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\StandardElementsManager.cs">
+      <Link>GumCore\StandardElementsManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\StateSave.cs">
+      <Link>GumCore\StateSave.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\StateSaveCategory.cs">
+      <Link>GumCore\StateSaveCategory.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\StateSaveExtensionMethods.cs">
+      <Link>GumCore\StateSaveExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\StringFunctions.cs">
+      <Link>GumCore\StringFunctions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\SystemManagers.cs">
+      <Link>GumCore\SystemManagers.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\SystemManagers.FlatRedBall.cs">
+      <Link>GumCore\SystemManagers.FlatRedBall.cs</Link>
+      <DependentUpon>SystemManagers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\Text.cs">
+      <Link>GumCore\Text.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\TextManager.cs">
+      <Link>GumCore\TextManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\TextureFlipAnimation.cs">
+      <Link>GumCore\TextureFlipAnimation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\TimedSpriteSheetAnimation.cs">
+      <Link>GumCore\TimedSpriteSheetAnimation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\UnitConverter.cs">
+      <Link>GumCore\UnitConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\VariableListSave.cs">
+      <Link>GumCore\VariableListSave.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\VariableSave.cs">
+      <Link>GumCore\VariableSave.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\VariableSaveExtensionMethods.cs">
+      <Link>GumCore\VariableSaveExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\AlignmentObjectRuntime.Generated.cs">
+      <Link>GumRuntimes\AlignmentObjectRuntime.Generated.cs</Link>
+      <DependentUpon>AlignmentObjectRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\AnimatedComponentRuntime.Generated.cs">
+      <Link>GumRuntimes\AnimatedComponentRuntime.Generated.cs</Link>
+      <DependentUpon>AnimatedComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\ChildStateComponentRuntime.Generated.cs">
+      <Link>GumRuntimes\ChildStateComponentRuntime.Generated.cs</Link>
+      <DependentUpon>ChildStateComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\ColoredRectangleRuntime.Generated.cs">
+      <Link>GumRuntimes\ColoredRectangleRuntime.Generated.cs</Link>
+      <DependentUpon>ColoredRectangleRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\ComponentContainingSpriteRuntime.Generated.cs">
+      <Link>GumRuntimes\ComponentContainingSpriteRuntime.Generated.cs</Link>
+      <DependentUpon>ComponentContainingSpriteRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\ContainerRuntime.Generated.cs">
+      <Link>GumRuntimes\ContainerRuntime.Generated.cs</Link>
+      <DependentUpon>ContainerRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\GumIdb.Generated.cs">
+      <Link>GumRuntimes\GumIdb.Generated.cs</Link>
+      <DependentUpon>GumIdb.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\NineSliceButtonRuntime.cs">
+      <Link>GumRuntimes\NineSliceButtonRuntime.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\NineSliceButtonRuntime.Generated.cs">
+      <Link>GumRuntimes\NineSliceButtonRuntime.Generated.cs</Link>
+      <DependentUpon>NineSliceButtonRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\NineSliceRuntime.cs">
+      <Link>GumRuntimes\NineSliceRuntime.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\NineSliceRuntime.Generated.cs">
+      <Link>GumRuntimes\NineSliceRuntime.Generated.cs</Link>
+      <DependentUpon>NineSliceRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\ParentStateComponentRuntime.Generated.cs">
+      <Link>GumRuntimes\ParentStateComponentRuntime.Generated.cs</Link>
+      <DependentUpon>ParentStateComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\SpriteInheritingComponntRuntime.Generated.cs">
+      <Link>GumRuntimes\SpriteInheritingComponntRuntime.Generated.cs</Link>
+      <DependentUpon>SpriteInheritingComponntRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\SpriteRuntime.Generated.cs">
+      <Link>GumRuntimes\SpriteRuntime.Generated.cs</Link>
+      <DependentUpon>SpriteRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\StackingComponentRuntime.Generated.cs">
+      <Link>GumRuntimes\StackingComponentRuntime.Generated.cs</Link>
+      <DependentUpon>StackingComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\SwitchRuntime.Generated.cs">
+      <Link>GumRuntimes\SwitchRuntime.Generated.cs</Link>
+      <DependentUpon>SwitchRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\TestComponentRuntime.Generated.cs">
+      <Link>GumRuntimes\TestComponentRuntime.Generated.cs</Link>
+      <DependentUpon>TestComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\TestScreenRuntime.Generated.cs">
+      <Link>GumRuntimes\TestScreenRuntime.Generated.cs</Link>
+      <DependentUpon>TestScreenRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\TextRuntime.cs">
+      <Link>GumRuntimes\TextRuntime.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\TextRuntime.Generated.cs">
+      <Link>GumRuntimes\TextRuntime.Generated.cs</Link>
+      <DependentUpon>TextRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\TextureSettingInStateComponentRuntime.Generated.cs">
+      <Link>GumRuntimes\TextureSettingInStateComponentRuntime.Generated.cs</Link>
+      <DependentUpon>TextureSettingInStateComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\UsedToInheritFromTextComponentRuntime.Generated.cs">
+      <Link>GumRuntimes\UsedToInheritFromTextComponentRuntime.Generated.cs</Link>
+      <DependentUpon>UsedToInheritFromTextComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Performance\IEntityFactory.Generated.cs">
+      <Link>Performance\IEntityFactory.Generated.cs</Link>
+      <DependentUpon>IEntityFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Performance\IPoolable.Generated.cs">
+      <Link>Performance\IPoolable.Generated.cs</Link>
+      <DependentUpon>IPoolable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Performance\PoolList.Generated.cs">
+      <Link>Performance\PoolList.Generated.cs</Link>
+      <DependentUpon>PoolList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Program.cs">
+      <Link>Program.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Rendering\RenderableLayer.cs">
+      <Link>Rendering\RenderableLayer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Rendering\RenderTargetRenderer.cs">
+      <Link>Rendering\RenderTargetRenderer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\RuntimeTypes\LinesOfText.cs">
+      <Link>RuntimeTypes\LinesOfText.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\RuntimeTypes\TestRuntimeClass.cs">
+      <Link>RuntimeTypes\TestRuntimeClass.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\AudioScreen.cs">
+      <Link>Screens\AudioScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\AudioScreen.Generated.cs">
+      <Link>Screens\AudioScreen.Generated.cs</Link>
+      <DependentUpon>AudioScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\BaseScreen.cs">
+      <Link>Screens\BaseScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\BaseScreen.Generated.cs">
+      <Link>Screens\BaseScreen.Generated.cs</Link>
+      <DependentUpon>BaseScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CameraAttachScreen.cs">
+      <Link>Screens\CameraAttachScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CameraAttachScreen.Generated.cs">
+      <Link>Screens\CameraAttachScreen.Generated.cs</Link>
+      <DependentUpon>CameraAttachScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CompilationTestScreen.cs">
+      <Link>Screens\CompilationTestScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CompilationTestScreen.Event.cs">
+      <Link>Screens\CompilationTestScreen.Event.cs</Link>
+      <DependentUpon>CompilationTestScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CompilationTestScreen.Generated.cs">
+      <Link>Screens\CompilationTestScreen.Generated.cs</Link>
+      <DependentUpon>CompilationTestScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CompilationTestScreen.Generated.Event.cs">
+      <Link>Screens\CompilationTestScreen.Generated.Event.cs</Link>
+      <DependentUpon>CompilationTestScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CsvScreen.cs">
+      <Link>Screens\CsvScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CsvScreen.Event.cs">
+      <Link>Screens\CsvScreen.Event.cs</Link>
+      <DependentUpon>CsvScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CsvScreen.Generated.cs">
+      <Link>Screens\CsvScreen.Generated.cs</Link>
+      <DependentUpon>CsvScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CsvScreen.Generated.Event.cs">
+      <Link>Screens\CsvScreen.Generated.Event.cs</Link>
+      <DependentUpon>CsvScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CursorTestScreen.cs">
+      <Link>Screens\CursorTestScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CursorTestScreen.Generated.cs">
+      <Link>Screens\CursorTestScreen.Generated.cs</Link>
+      <DependentUpon>CursorTestScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CustomContentTypeScreen.cs">
+      <Link>Screens\CustomContentTypeScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CustomContentTypeScreen.Generated.cs">
+      <Link>Screens\CustomContentTypeScreen.Generated.cs</Link>
+      <DependentUpon>CustomContentTypeScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CustomVariableScreen.cs">
+      <Link>Screens\CustomVariableScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CustomVariableScreen.Generated.cs">
+      <Link>Screens\CustomVariableScreen.Generated.cs</Link>
+      <DependentUpon>CustomVariableScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\DerivedScreen.cs">
+      <Link>Screens\DerivedScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\DerivedScreen.Generated.cs">
+      <Link>Screens\DerivedScreen.Generated.cs</Link>
+      <DependentUpon>DerivedScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\EventScreen.cs">
+      <Link>Screens\EventScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\EventScreen.Event.cs">
+      <Link>Screens\EventScreen.Event.cs</Link>
+      <DependentUpon>EventScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\EventScreen.Generated.cs">
+      <Link>Screens\EventScreen.Generated.cs</Link>
+      <DependentUpon>EventScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\EventScreen.Generated.Event.cs">
+      <Link>Screens\EventScreen.Generated.Event.cs</Link>
+      <DependentUpon>EventScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\FactoryScreen.cs">
+      <Link>Screens\FactoryScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\FactoryScreen.Generated.cs">
+      <Link>Screens\FactoryScreen.Generated.cs</Link>
+      <DependentUpon>FactoryScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\FileScreen.cs">
+      <Link>Screens\FileScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\FileScreen.Generated.cs">
+      <Link>Screens\FileScreen.Generated.cs</Link>
+      <DependentUpon>FileScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\FirstScreen.cs">
+      <Link>Screens\FirstScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\FirstScreen.Generated.cs">
+      <Link>Screens\FirstScreen.Generated.cs</Link>
+      <DependentUpon>FirstScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\FlatRedBallTypeScreen.cs">
+      <Link>Screens\FlatRedBallTypeScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\FlatRedBallTypeScreen.Generated.cs">
+      <Link>Screens\FlatRedBallTypeScreen.Generated.cs</Link>
+      <DependentUpon>FlatRedBallTypeScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\GlobalContentScreen.cs">
+      <Link>Screens\GlobalContentScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\GlobalContentScreen.Generated.cs">
+      <Link>Screens\GlobalContentScreen.Generated.cs</Link>
+      <DependentUpon>GlobalContentScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\GumScreen.cs">
+      <Link>Screens\GumScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\GumScreen.Generated.cs">
+      <Link>Screens\GumScreen.Generated.cs</Link>
+      <DependentUpon>GumScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\InheritanceScreen.cs">
+      <Link>Screens\InheritanceScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\InheritanceScreen.Generated.cs">
+      <Link>Screens\InheritanceScreen.Generated.cs</Link>
+      <DependentUpon>InheritanceScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\InstructionScreen.cs">
+      <Link>Screens\InstructionScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\InstructionScreen.Generated.cs">
+      <Link>Screens\InstructionScreen.Generated.cs</Link>
+      <DependentUpon>InstructionScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\IWindowScreen.cs">
+      <Link>Screens\IWindowScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\IWindowScreen.Generated.cs">
+      <Link>Screens\IWindowScreen.Generated.cs</Link>
+      <DependentUpon>IWindowScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\LastScreen.cs">
+      <Link>Screens\LastScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\LastScreen.Generated.cs">
+      <Link>Screens\LastScreen.Generated.cs</Link>
+      <DependentUpon>LastScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\LayerScreen.cs">
+      <Link>Screens\LayerScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\LayerScreen.Generated.cs">
+      <Link>Screens\LayerScreen.Generated.cs</Link>
+      <DependentUpon>LayerScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\ListScreen.cs">
+      <Link>Screens\ListScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\ListScreen.Generated.cs">
+      <Link>Screens\ListScreen.Generated.cs</Link>
+      <DependentUpon>ListScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\LoadingScreen.cs">
+      <Link>Screens\LoadingScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\LoadingScreen.Generated.cs">
+      <Link>Screens\LoadingScreen.Generated.cs</Link>
+      <DependentUpon>LoadingScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\LocalizationScreen.cs">
+      <Link>Screens\LocalizationScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\LocalizationScreen.Generated.cs">
+      <Link>Screens\LocalizationScreen.Generated.cs</Link>
+      <DependentUpon>LocalizationScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\NodeNetworkScreen.cs">
+      <Link>Screens\NodeNetworkScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\NodeNetworkScreen.Generated.cs">
+      <Link>Screens\NodeNetworkScreen.Generated.cs</Link>
+      <DependentUpon>NodeNetworkScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\OptionallyCreatedObjectScreen.cs">
+      <Link>Screens\OptionallyCreatedObjectScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\OptionallyCreatedObjectScreen.Generated.cs">
+      <Link>Screens\OptionallyCreatedObjectScreen.Generated.cs</Link>
+      <DependentUpon>OptionallyCreatedObjectScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\PauseScreen.cs">
+      <Link>Screens\PauseScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\PauseScreen.Generated.cs">
+      <Link>Screens\PauseScreen.Generated.cs</Link>
+      <DependentUpon>PauseScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\PositioningScreen.cs">
+      <Link>Screens\PositioningScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\PositioningScreen.Generated.cs">
+      <Link>Screens\PositioningScreen.Generated.cs</Link>
+      <DependentUpon>PositioningScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\RepeatingScreen.cs">
+      <Link>Screens\RepeatingScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\RepeatingScreen.Generated.cs">
+      <Link>Screens\RepeatingScreen.Generated.cs</Link>
+      <DependentUpon>RepeatingScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\SaveClassScreen.cs">
+      <Link>Screens\SaveClassScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\SaveClassScreen.Generated.cs">
+      <Link>Screens\SaveClassScreen.Generated.cs</Link>
+      <DependentUpon>SaveClassScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\ScreenAfterAsyncScreen.cs">
+      <Link>Screens\ScreenAfterAsyncScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\ScreenAfterAsyncScreen.Generated.cs">
+      <Link>Screens\ScreenAfterAsyncScreen.Generated.cs</Link>
+      <DependentUpon>ScreenAfterAsyncScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\ScreenBeforeAsyncScreen.cs">
+      <Link>Screens\ScreenBeforeAsyncScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\ScreenBeforeAsyncScreen.Generated.cs">
+      <Link>Screens\ScreenBeforeAsyncScreen.Generated.cs</Link>
+      <DependentUpon>ScreenBeforeAsyncScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\ScreenToLoadAsync.cs">
+      <Link>Screens\ScreenToLoadAsync.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\ScreenToLoadAsync.Generated.cs">
+      <Link>Screens\ScreenToLoadAsync.Generated.cs</Link>
+      <DependentUpon>ScreenToLoadAsync.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\SizeScreen.cs">
+      <Link>Screens\SizeScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\SizeScreen.Generated.cs">
+      <Link>Screens\SizeScreen.Generated.cs</Link>
+      <DependentUpon>SizeScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\SlowLoadScreen.cs">
+      <Link>Screens\SlowLoadScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\SlowLoadScreen.Generated.cs">
+      <Link>Screens\SlowLoadScreen.Generated.cs</Link>
+      <DependentUpon>SlowLoadScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\SplashScreen.cs">
+      <Link>Screens\SplashScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\SplashScreen.Generated.cs">
+      <Link>Screens\SplashScreen.Generated.cs</Link>
+      <DependentUpon>SplashScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\StateScreen.cs">
+      <Link>Screens\StateScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\StateScreen.Generated.cs">
+      <Link>Screens\StateScreen.Generated.cs</Link>
+      <DependentUpon>StateScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\TiledLevelScreen.cs">
+      <Link>Screens\TiledLevelScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\TiledLevelScreen.Generated.cs">
+      <Link>Screens\TiledLevelScreen.Generated.cs</Link>
+      <DependentUpon>TiledLevelScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\TmxScreen.cs">
+      <Link>Screens\TmxScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\TmxScreen.Generated.cs">
+      <Link>Screens\TmxScreen.Generated.cs</Link>
+      <DependentUpon>TmxScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\TransparencyRenderingScreen.cs">
+      <Link>Screens\TransparencyRenderingScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\TransparencyRenderingScreen.Generated.cs">
+      <Link>Screens\TransparencyRenderingScreen.Generated.cs</Link>
+      <DependentUpon>TransparencyRenderingScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\TunneledVariableScreen.cs">
+      <Link>Screens\TunneledVariableScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\TunneledVariableScreen.Generated.cs">
+      <Link>Screens\TunneledVariableScreen.Generated.cs</Link>
+      <DependentUpon>TunneledVariableScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\XmlScreen.cs">
+      <Link>Screens\XmlScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\XmlScreen.Generated.cs">
+      <Link>Screens\XmlScreen.Generated.cs</Link>
+      <DependentUpon>XmlScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\ZBufferedScreen.cs">
+      <Link>Screens\ZBufferedScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\ZBufferedScreen.Generated.cs">
+      <Link>Screens\ZBufferedScreen.Generated.cs</Link>
+      <DependentUpon>ZBufferedScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Setup\CameraSetup.cs">
+      <Link>Setup\CameraSetup.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Back.cs">
+      <Link>StateInterpolation\Back.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Bounce.cs">
+      <Link>StateInterpolation\Bounce.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Circular.cs">
+      <Link>StateInterpolation\Circular.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Cubic.cs">
+      <Link>StateInterpolation\Cubic.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Elastic.cs">
+      <Link>StateInterpolation\Elastic.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Exponential.cs">
+      <Link>StateInterpolation\Exponential.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Linear.cs">
+      <Link>StateInterpolation\Linear.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Quadratic.cs">
+      <Link>StateInterpolation\Quadratic.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Quartic.cs">
+      <Link>StateInterpolation\Quartic.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Quintic.cs">
+      <Link>StateInterpolation\Quintic.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\ShakeTweener.cs">
+      <Link>StateInterpolation\ShakeTweener.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Sinusoidal.cs">
+      <Link>StateInterpolation\Sinusoidal.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Tweener.cs">
+      <Link>StateInterpolation\Tweener.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\TweenerManager.cs">
+      <Link>StateInterpolation\TweenerManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileCollisions\TileShapeCollection.cs">
+      <Link>TileCollisions\TileShapeCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileEntities\TileEntityInstantiator.cs">
+      <Link>TileEntities\TileEntityInstantiator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\AnimationChainContainer.cs">
+      <Link>TileGraphics\AnimationChainContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\LayeredTileMap.cs">
+      <Link>TileGraphics\LayeredTileMap.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\LayeredTileMapAnimation.cs">
+      <Link>TileGraphics\LayeredTileMapAnimation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\MapDrawableBatch.cs">
+      <Link>TileGraphics\MapDrawableBatch.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\ReducedTileMapInfo.cs">
+      <Link>TileGraphics\ReducedTileMapInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\TileAnimationFrame.cs">
+      <Link>TileGraphics\TileAnimationFrame.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\Tileset.cs">
+      <Link>TileGraphics\Tileset.cs</Link>
+    </Compile>
+    <Compile Include="Activity1.cs" />
+    <Compile Include="Code" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\content\spriteFont1.xnb" />
+    <None Include="Assets\AboutAssets.txt" />
+    <None Include="Properties\AndroidManifest.xml" />
+    <None Include="Libraries\Android\Debug\FlatRedBallAndroid.dll" />
+    <None Include="Libraries\Android\Debug\MonoGame.Framework.dll" />
+    <None Include="Libraries\Android\Debug\OpenTK.dll" />
+    <None Include="Resources\AboutResources.txt" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\emitterlistfile.emix">
+      <Name>EmitterListFile</Name>
+      <Link>Assets\content\emitterlistfile.emix</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\androidtests\myassets.png">
+      <Name>myassets</Name>
+      <Link>Assets\content\entities\androidtests\myassets.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\animationchainentity\animationchainlistfile.achx">
+      <Name>AnimationChainListFile</Name>
+      <Link>Assets\content\entities\animationchainentity\animationchainlistfile.achx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\animationchainentity\animationchainlistfile2.achx">
+      <Name>AnimationChainListFile2</Name>
+      <Link>Assets\content\entities\animationchainentity\animationchainlistfile2.achx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\animationchainentity\lttp_npcs.png">
+      <Name>lttp_NPCs</Name>
+      <Link>Assets\content\entities\animationchainentity\lttp_npcs.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\animationchainentity\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\entities\animationchainentity\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\baseentity\bobblebikerlogo.png">
+      <Name>BobbleBikerLogo</Name>
+      <Link>Assets\content\entities\baseentity\bobblebikerlogo.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\baseentity\staticfile1.png">
+      <Name>StaticFile1</Name>
+      <Link>Assets\content\entities\baseentity\staticfile1.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\csventity\csvforvariable.csv">
+      <Name>CsvForVariable</Name>
+      <Link>Assets\content\entities\csventity\csvforvariable.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\csventity\csvloadedtolist.csv">
+      <Name>CsvLoadedToList</Name>
+      <Link>Assets\content\entities\csventity\csvloadedtolist.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\csventity\csvwithcustomtypes.csv">
+      <Name>CsvWithCustomTypes</Name>
+      <Link>Assets\content\entities\csventity\csvwithcustomtypes.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\csventity\csvwithextracells.csv">
+      <Name>CsvWithExtraCells</Name>
+      <Link>Assets\content\entities\csventity\csvwithextracells.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\csventity\redball.bmp">
+      <Name>redball</Name>
+      <Link>Assets\content\entities\csventity\redball.bmp</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\csventity\sharedclassentitycsv.csv">
+      <Name>SharedClassEntityCsv</Name>
+      <Link>Assets\content\entities\csventity\sharedclassentitycsv.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\csventity\withfileatendfile.csv">
+      <Name>WithFileAtEndFile</Name>
+      <Link>Assets\content\entities\csventity\withfileatendfile.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\csventity\yellowball.bmp">
+      <Name>yellowball</Name>
+      <Link>Assets\content\entities\csventity\yellowball.bmp</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\customcontenttypeentity\lineoftextfile.lin">
+      <Name>LineOfTextFile</Name>
+      <Link>Assets\content\entities\customcontenttypeentity\lineoftextfile.lin</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\customcontenttypeentity\loadedonlywhenreferencedfile.xml">
+      <Name>LoadedOnlyWhenReferencedFile</Name>
+      <Link>Assets\content\entities\customcontenttypeentity\loadedonlywhenreferencedfile.xml</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\customcontenttypeentity\testruntimeclassfile.xml">
+      <Name>TestRuntimeClassFile</Name>
+      <Link>Assets\content\entities\customcontenttypeentity\testruntimeclassfile.xml</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\derivedentity\bear.png">
+      <Name>Bear</Name>
+      <Link>Assets\content\entities\derivedentity\bear.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\derivedentity\shapecollectionfile.shcx">
+      <Name>ShapeCollectionFile</Name>
+      <Link>Assets\content\entities\derivedentity\shapecollectionfile.shcx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\emitterentity\emitterlistfile1.emix">
+      <Name>EmitterListFile1</Name>
+      <Link>Assets\content\entities\emitterentity\emitterlistfile1.emix</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\emitterentity\emitterloadedonlywhenreferenced.emix">
+      <Name>EmitterLoadedOnlyWhenReferenced</Name>
+      <Link>Assets\content\entities\emitterentity\emitterloadedonlywhenreferenced.emix</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\emitterentity\redball.bmp">
+      <Name>redball</Name>
+      <Link>Assets\content\entities\emitterentity\redball.bmp</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\entityfortestplugin\spreadsheetfile.csv">
+      <Name>SpreadsheetFile</Name>
+      <Link>Assets\content\entities\entityfortestplugin\spreadsheetfile.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\factoryentity\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\entities\factoryentity\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\filereferencingentity\bear.png">
+      <Name>Bear</Name>
+      <Link>Assets\content\entities\filereferencingentity\bear.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\filereferencingentity\bearclaws_attack.png">
+      <Name>BearClaws_attack</Name>
+      <Link>Assets\content\entities\filereferencingentity\bearclaws_attack.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\filereferencingentity\folder1\book.png">
+      <Name>book</Name>
+      <Link>Assets\content\entities\filereferencingentity\folder1\book.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\filereferencingentity\folder1\emptytmx.scnx">
+      <Name>EmptyTmx</Name>
+      <Link>Assets\content\entities\filereferencingentity\folder1\emptytmx.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\filereferencingentity\folder1\slug.png">
+      <Name>Slug</Name>
+      <Link>Assets\content\entities\filereferencingentity\folder1\slug.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\filereferencingentity\folder2\slug.png">
+      <Name>Slug</Name>
+      <Link>Assets\content\entities\filereferencingentity\folder2\slug.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\filereferencingentity\projectspecificshcx.shcx">
+      <Name>ProjectSpecificShcx</Name>
+      <Link>Assets\content\entities\filereferencingentity\projectspecificshcx.shcx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\filereferencingentity\punchhit.png">
+      <Name>punchhit</Name>
+      <Link>Assets\content\entities\filereferencingentity\punchhit.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\filereferencingentity\regularscene.scnx">
+      <Name>RegularScene</Name>
+      <Link>Assets\content\entities\filereferencingentity\regularscene.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\filereferencingentity\sceneloadedonlywhenreferenced.scnx">
+      <Name>SceneLoadedOnlyWhenReferenced</Name>
+      <Link>Assets\content\entities\filereferencingentity\sceneloadedonlywhenreferenced.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\filereferencingentity\textfile.txt">
+      <Name>TextFile</Name>
+      <Link>Assets\content\entities\filereferencingentity\textfile.txt</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\flatredballtypeentity\scenefilewithsprite.scnx">
+      <Name>SceneFileWithSprite</Name>
+      <Link>Assets\content\entities\flatredballtypeentity\scenefilewithsprite.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\flatredballtypeentity\scenewithattachmentoffset.scnx">
+      <Name>SceneWithAttachmentOffset</Name>
+      <Link>Assets\content\entities\flatredballtypeentity\scenewithattachmentoffset.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\globalcontententity\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\entities\globalcontententity\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\incompletedefinitionentity\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\entities\incompletedefinitionentity\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\layerowner\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\entities\layerowner\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\layerowner\scenefile2.scnx">
+      <Name>SceneFile2</Name>
+      <Link>Assets\content\entities\layerowner\scenefile2.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\loadedonlywhenreferenced\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\entities\loadedonlywhenreferenced\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\loadedonlywhenreferenced\shapecollectionoption1.shcx">
+      <Name>ShapeCollectionOption1</Name>
+      <Link>Assets\content\entities\loadedonlywhenreferenced\shapecollectionoption1.shcx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\loadedonlywhenreferenced\shapecollectionoption2.shcx">
+      <Name>ShapeCollectionOption2</Name>
+      <Link>Assets\content\entities\loadedonlywhenreferenced\shapecollectionoption2.shcx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\manuallyupdatedentity\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\entities\manuallyupdatedentity\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\noiwindowbase\bear.png">
+      <Name>Bear</Name>
+      <Link>Assets\content\entities\noiwindowbase\bear.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\platformercharacterbase\animations.achx">
+      <Name>Animations</Name>
+      <Link>Assets\content\entities\platformercharacterbase\animations.achx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\platformercharacterbase\characters_7.png">
+      <Name>characters_7</Name>
+      <Link>Assets\content\entities\platformercharacterbase\characters_7.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\platformercharacterbase\movementvalues.csv">
+      <Name>MovementValues</Name>
+      <Link>Assets\content\entities\platformercharacterbase\movementvalues.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\positioningentity\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\entities\positioningentity\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\sceneentity\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\entities\sceneentity\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\scnxattachmenttest\attachmentscnx.scnx">
+      <Name>AttachmentScnx</Name>
+      <Link>Assets\content\entities\scnxattachmenttest\attachmentscnx.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\shapeentity\shapecollectionfile.shcx">
+      <Name>ShapeCollectionFile</Name>
+      <Link>Assets\content\entities\shapeentity\shapecollectionfile.shcx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\splineentity\splinelistfile.splx">
+      <Name>SplineListFile</Name>
+      <Link>Assets\content\entities\splineentity\splinelistfile.splx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\spriteentity\monster.png">
+      <Name>Monster</Name>
+      <Link>Assets\content\entities\spriteentity\monster.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\spriteinheritingentity\bear.png">
+      <Name>Bear</Name>
+      <Link>Assets\content\entities\spriteinheritingentity\bear.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\stateentity\animationchainlistfile.achx">
+      <Name>AnimationChainListFile</Name>
+      <Link>Assets\content\entities\stateentity\animationchainlistfile.achx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\stateentity\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\entities\stateentity\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\textentity\badfont.fnt">
+      <Name>BadFont</Name>
+      <Link>Assets\content\entities\textentity\badfont.fnt</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\textentity\bitmapfontfile.fnt">
+      <Name>BitmapFontFile</Name>
+      <Link>Assets\content\entities\textentity\bitmapfontfile.fnt</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\textentity\nesfonttexture.png">
+      <Name>nesfontTexture</Name>
+      <Link>Assets\content\entities\textentity\nesfonttexture.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\texturecontainer\pipejuiceblue.png">
+      <Name>pipeJuiceBlue</Name>
+      <Link>Assets\content\entities\texturecontainer\pipejuiceblue.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\texturecontainer\sharedlogo.png">
+      <Name>sharedlogo</Name>
+      <Link>Assets\content\entities\texturecontainer\sharedlogo.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\texturepixelentity\bear.png">
+      <Name>Bear</Name>
+      <Link>Assets\content\entities\texturepixelentity\bear.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tunneledvariableentity\animationchainlistfile.achx">
+      <Name>AnimationChainListFile</Name>
+      <Link>Assets\content\entities\tunneledvariableentity\animationchainlistfile.achx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\variableentity\scenefileforsourcefileset.scnx">
+      <Name>SceneFileForSourceFileSet</Name>
+      <Link>Assets\content\entities\variableentity\scenefileforsourcefileset.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\xmlentity\xmlfile.xml">
+      <Name>XMLFile</Name>
+      <Link>Assets\content\entities\xmlentity\xmlfile.xml</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\folderatcontentroot\otherredball.bmp">
+      <Name>OtherRedBall</Name>
+      <Link>Assets\content\folderatcontentroot\otherredball.bmp</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\arrow01.png">
+      <Name>arrow01</Name>
+      <Link>Assets\content\globalcontent\arrow01.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\bearcontentpipeline.png">
+      <Name>BearContentPipeline</Name>
+      <Link>Assets\content\globalcontent\bearcontentpipeline.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\book.png">
+      <Name>Book</Name>
+      <Link>Assets\content\globalcontent\book.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\createdbyexcel1.csv">
+      <Name>CreatedByExcel1</Name>
+      <Link>Assets\content\globalcontent\createdbyexcel1.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\csvfolder\csvfromtmx.csv">
+      <Name>CsvFromTmx</Name>
+      <Link>Assets\content\globalcontent\csvfolder\csvfromtmx.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\csvfolder\spreadsheetfile1.csv">
+      <Name>SpreadsheetFile1</Name>
+      <Link>Assets\content\globalcontent\csvfolder\spreadsheetfile1.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\csvfolder\spreadsheetfile2.csv">
+      <Name>SpreadsheetFile2</Name>
+      <Link>Assets\content\globalcontent\csvfolder\spreadsheetfile2.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\folderinglobalcontent\book.png">
+      <Name>book</Name>
+      <Link>Assets\content\globalcontent\folderinglobalcontent\book.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\folderinglobalcontent\emptytmx.scnx">
+      <Name>EmptyTmx</Name>
+      <Link>Assets\content\globalcontent\folderinglobalcontent\emptytmx.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\folderinglobalcontent\scenefileinfolder.scnx">
+      <Name>SceneFileInFolder</Name>
+      <Link>Assets\content\globalcontent\folderinglobalcontent\scenefileinfolder.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\globalcsv.csv">
+      <Name>GlobalCsv</Name>
+      <Link>Assets\content\globalcontent\globalcsv.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\hugecsv.csv">
+      <Name>HugeCsv</Name>
+      <Link>Assets\content\globalcontent\hugecsv.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\listcsv.csv">
+      <Name>ListCsv</Name>
+      <Link>Assets\content\globalcontent\listcsv.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\loadedatruntimefalsecsv.csv">
+      <Name>LoadedAtRuntimeFalseCsv</Name>
+      <Link>Assets\content\globalcontent\loadedatruntimefalsecsv.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\localizationdatabase.csv">
+      <Name>LocalizationDatabase</Name>
+      <Link>Assets\content\globalcontent\localizationdatabase.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\notloadedtextfile.txt">
+      <Name>NotLoadedTextFile</Name>
+      <Link>Assets\content\globalcontent\notloadedtextfile.txt</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\replacewiththis.csv">
+      <Name>ReplaceWithThis</Name>
+      <Link>Assets\content\globalcontent\replacewiththis.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\resources.csv">
+      <Name>Resources</Name>
+      <Link>Assets\content\globalcontent\resources.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\sharedclassglobalcsv.csv">
+      <Name>SharedClassGlobalCsv</Name>
+      <Link>Assets\content\globalcontent\sharedclassglobalcsv.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\spreadsheettoreplace.csv">
+      <Name>SpreadsheetToReplace</Name>
+      <Link>Assets\content\globalcontent\spreadsheettoreplace.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\texturesettingsinfo.csv">
+      <Name>TextureSettingsInfo</Name>
+      <Link>Assets\content\globalcontent\texturesettingsinfo.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\waves.csv">
+      <Name>Waves</Name>
+      <Link>Assets\content\globalcontent\waves.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\alignmentobject.gucx">
+      <Name>AlignmentObject</Name>
+      <Link>Assets\content\gumproject\components\alignmentobject.gucx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\animatedcomponent.gucx">
+      <Name>AnimatedComponent</Name>
+      <Link>Assets\content\gumproject\components\animatedcomponent.gucx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\childstatecomponent.gucx">
+      <Name>ChildStateComponent</Name>
+      <Link>Assets\content\gumproject\components\childstatecomponent.gucx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\componentcontainingsprite.gucx">
+      <Name>ComponentContainingSprite</Name>
+      <Link>Assets\content\gumproject\components\componentcontainingsprite.gucx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\nineslicebutton.gucx">
+      <Name>NineSliceButton</Name>
+      <Link>Assets\content\gumproject\components\nineslicebutton.gucx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\parentstatecomponent.gucx">
+      <Name>ParentStateComponent</Name>
+      <Link>Assets\content\gumproject\components\parentstatecomponent.gucx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\spriteinheritingcomponnt.gucx">
+      <Name>SpriteInheritingComponnt</Name>
+      <Link>Assets\content\gumproject\components\spriteinheritingcomponnt.gucx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\stackingcomponent.gucx">
+      <Name>StackingComponent</Name>
+      <Link>Assets\content\gumproject\components\stackingcomponent.gucx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\star_particle.png">
+      <Name>star_particle</Name>
+      <Link>Assets\content\gumproject\components\star_particle.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\switch.gucx">
+      <Name>Switch</Name>
+      <Link>Assets\content\gumproject\components\switch.gucx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\testcomponent.gucx">
+      <Name>TestComponent</Name>
+      <Link>Assets\content\gumproject\components\testcomponent.gucx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\texturesettinginstatecomponent.gucx">
+      <Name>TextureSettingInStateComponent</Name>
+      <Link>Assets\content\gumproject\components\texturesettinginstatecomponent.gucx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\usedtoinheritfromtextcomponent.gucx">
+      <Name>UsedToInheritFromTextComponent</Name>
+      <Link>Assets\content\gumproject\components\usedtoinheritfromtextcomponent.gucx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\fontcache\font18arial.fnt">
+      <Name>Font18Arial</Name>
+      <Link>Assets\content\gumproject\fontcache\font18arial.fnt</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\fontcache\font18arial_0.png">
+      <Name>Font18Arial_0</Name>
+      <Link>Assets\content\gumproject\fontcache\font18arial_0.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\fontcache\font22arial.fnt">
+      <Name>Font22Arial</Name>
+      <Link>Assets\content\gumproject\fontcache\font22arial.fnt</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\fontcache\font22arial_0.png">
+      <Name>Font22Arial_0</Name>
+      <Link>Assets\content\gumproject\fontcache\font22arial_0.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\gumproject.gumx">
+      <Name>GumProject</Name>
+      <Link>Assets\content\gumproject\gumproject.gumx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\screens\testscreen.gusx">
+      <Name>TestScreen</Name>
+      <Link>Assets\content\gumproject\screens\testscreen.gusx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\coloredrectangle.gutx">
+      <Name>ColoredRectangle</Name>
+      <Link>Assets\content\gumproject\standards\coloredrectangle.gutx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\component.gutx">
+      <Name>Component</Name>
+      <Link>Assets\content\gumproject\standards\component.gutx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\container.gutx">
+      <Name>Container</Name>
+      <Link>Assets\content\gumproject\standards\container.gutx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\nineslice.gutx">
+      <Name>NineSlice</Name>
+      <Link>Assets\content\gumproject\standards\nineslice.gutx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\sprite.gutx">
+      <Name>Sprite</Name>
+      <Link>Assets\content\gumproject\standards\sprite.gutx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\standardgraphics\red_bottomcenter.png">
+      <Name>Red_bottomCenter</Name>
+      <Link>Assets\content\gumproject\standards\standardgraphics\red_bottomcenter.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\standardgraphics\red_bottomleft.png">
+      <Name>Red_bottomLeft</Name>
+      <Link>Assets\content\gumproject\standards\standardgraphics\red_bottomleft.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\standardgraphics\red_bottomright.png">
+      <Name>Red_bottomRight</Name>
+      <Link>Assets\content\gumproject\standards\standardgraphics\red_bottomright.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\standardgraphics\red_center.png">
+      <Name>Red_center</Name>
+      <Link>Assets\content\gumproject\standards\standardgraphics\red_center.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\standardgraphics\red_left.png">
+      <Name>Red_left</Name>
+      <Link>Assets\content\gumproject\standards\standardgraphics\red_left.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\standardgraphics\red_right.png">
+      <Name>Red_right</Name>
+      <Link>Assets\content\gumproject\standards\standardgraphics\red_right.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\standardgraphics\red_topcenter.png">
+      <Name>Red_topCenter</Name>
+      <Link>Assets\content\gumproject\standards\standardgraphics\red_topcenter.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\standardgraphics\red_topleft.png">
+      <Name>Red_topLeft</Name>
+      <Link>Assets\content\gumproject\standards\standardgraphics\red_topleft.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\standardgraphics\red_topright.png">
+      <Name>Red_topRight</Name>
+      <Link>Assets\content\gumproject\standards\standardgraphics\red_topright.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\text.gutx">
+      <Name>Text</Name>
+      <Link>Assets\content\gumproject\standards\text.gutx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\loadedonlywhenreferencedscene.scnx">
+      <Name>LoadedOnlyWhenReferencedScene</Name>
+      <Link>Assets\content\loadedonlywhenreferencedscene.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\redball.bmp">
+      <Name>redball</Name>
+      <Link>Assets\content\redball.bmp</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\csvscreen\csvmanuallyloadedforpropertytest.csv">
+      <Name>CsvManuallyLoadedForPropertyTest</Name>
+      <Link>Assets\content\screens\csvscreen\csvmanuallyloadedforpropertytest.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\csvscreen\csvusingcustomdatafile.csv">
+      <Name>CsvUsingCustomDataFile</Name>
+      <Link>Assets\content\screens\csvscreen\csvusingcustomdatafile.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\csvscreen\csvwithanimationframesavebase.csv">
+      <Name>CsvWithAnimationFrameSaveBase</Name>
+      <Link>Assets\content\screens\csvscreen\csvwithanimationframesavebase.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\csvscreen\customcsvclassloadedonlywhenreferenced.csv">
+      <Name>CustomCsvClassLoadedOnlyWhenReferenced</Name>
+      <Link>Assets\content\screens\csvscreen\customcsvclassloadedonlywhenreferenced.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\csvscreen\sharedclassscreencsv.csv">
+      <Name>SharedClassScreenCsv</Name>
+      <Link>Assets\content\screens\csvscreen\sharedclassscreencsv.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\csvscreen\spreadsheetfile.csv">
+      <Name>SpreadsheetFile</Name>
+      <Link>Assets\content\screens\csvscreen\spreadsheetfile.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\customcontenttypescreen\lineoftextfile.lin">
+      <Name>LineOfTextFile</Name>
+      <Link>Assets\content\screens\customcontenttypescreen\lineoftextfile.lin</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\filescreen\book.png">
+      <Name>Book</Name>
+      <Link>Assets\content\screens\filescreen\book.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\filescreen\emitterfileloadedonlywhenreferenced.emix">
+      <Name>EmitterFileLoadedOnlyWhenReferenced</Name>
+      <Link>Assets\content\screens\filescreen\emitterfileloadedonlywhenreferenced.emix</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\filescreen\emitterlistfile1.emix">
+      <Name>EmitterListFile1</Name>
+      <Link>Assets\content\screens\filescreen\emitterlistfile1.emix</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\filescreen\notaddedtomanagers.scnx">
+      <Name>NotAddedToManagers</Name>
+      <Link>Assets\content\screens\filescreen\notaddedtomanagers.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\filescreen\redball.bmp">
+      <Name>redball</Name>
+      <Link>Assets\content\screens\filescreen\redball.bmp</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\filescreen\scenefile1.scnx">
+      <Name>SceneFile1</Name>
+      <Link>Assets\content\screens\filescreen\scenefile1.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\filescreen\scenefile2.scnx">
+      <Name>SceneFile2</Name>
+      <Link>Assets\content\screens\filescreen\scenefile2.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\filescreen\shapecollectionfile.shcx">
+      <Name>ShapeCollectionFile</Name>
+      <Link>Assets\content\screens\filescreen\shapecollectionfile.shcx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\filescreen\staticguy.png">
+      <Name>StaticGuy</Name>
+      <Link>Assets\content\screens\filescreen\staticguy.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\flatredballtypescreen\aura.png">
+      <Name>Aura</Name>
+      <Link>Assets\content\screens\flatredballtypescreen\aura.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\flatredballtypescreen\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\screens\flatredballtypescreen\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\flatredballtypescreen\sceneoption1.scnx">
+      <Name>SceneOption1</Name>
+      <Link>Assets\content\screens\flatredballtypescreen\sceneoption1.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\flatredballtypescreen\sceneoption2.scnx">
+      <Name>SceneOption2</Name>
+      <Link>Assets\content\screens\flatredballtypescreen\sceneoption2.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\flatredballtypescreen\shapecollectionfile.shcx">
+      <Name>ShapeCollectionFile</Name>
+      <Link>Assets\content\screens\flatredballtypescreen\shapecollectionfile.shcx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\globalcontentscreen\backgroundemitters.emix">
+      <Name>BackgroundEmitters</Name>
+      <Link>Assets\content\screens\globalcontentscreen\backgroundemitters.emix</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\globalcontentscreen\menusong.mp3">
+      <Name>MenuSong</Name>
+      <Link>Assets\content\screens\globalcontentscreen\menusong.mp3</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\globalcontentscreen\particle_bubble.png">
+      <Name>particle_bubble</Name>
+      <Link>Assets\content\screens\globalcontentscreen\particle_bubble.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\globalcontentscreen\particle_leaves.png">
+      <Name>particle_leaves</Name>
+      <Link>Assets\content\screens\globalcontentscreen\particle_leaves.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\globalcontentscreen\particle_smoke.png">
+      <Name>particle_smoke</Name>
+      <Link>Assets\content\screens\globalcontentscreen\particle_smoke.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\globalcontentscreen\particle_star.png">
+      <Name>particle_star</Name>
+      <Link>Assets\content\screens\globalcontentscreen\particle_star.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\globalcontentscreen\particle_wind.png">
+      <Name>particle_wind</Name>
+      <Link>Assets\content\screens\globalcontentscreen\particle_wind.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\globalcontentscreen\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\screens\globalcontentscreen\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\layerscreen\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\screens\layerscreen\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\localizationscreen\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\screens\localizationscreen\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\localizationscreen\sceneforobjects.scnx">
+      <Name>SceneForObjects</Name>
+      <Link>Assets\content\screens\localizationscreen\sceneforobjects.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\localizationscreen\scenefortextobjectonly.scnx">
+      <Name>SceneForTextObjectOnly</Name>
+      <Link>Assets\content\screens\localizationscreen\scenefortextobjectonly.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\nodenetworkscreen\layerednodenetwork.nntx">
+      <Name>LayeredNodeNetwork</Name>
+      <Link>Assets\content\screens\nodenetworkscreen\layerednodenetwork.nntx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\nodenetworkscreen\nodenetworkfile.nntx">
+      <Name>NodeNetworkFile</Name>
+      <Link>Assets\content\screens\nodenetworkscreen\nodenetworkfile.nntx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\repeatingscreen\emitterlistfile1.emix">
+      <Name>EmitterListFile1</Name>
+      <Link>Assets\content\screens\repeatingscreen\emitterlistfile1.emix</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\repeatingscreen\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\screens\repeatingscreen\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\saveclassscreen\scenesavefile.scnx">
+      <Name>SceneSaveFile</Name>
+      <Link>Assets\content\screens\saveclassscreen\scenesavefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\screentoloadasync\frb1024.png">
+      <Name>Frb1024</Name>
+      <Link>Assets\content\screens\screentoloadasync\frb1024.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\screentoloadasync\logo2.png">
+      <Name>Logo2</Name>
+      <Link>Assets\content\screens\screentoloadasync\logo2.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\screentoloadasync\logo3.png">
+      <Name>Logo3</Name>
+      <Link>Assets\content\screens\screentoloadasync\logo3.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\splashscreen\frblogo512.png">
+      <Name>frblogo512</Name>
+      <Link>Assets\content\screens\splashscreen\frblogo512.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\splashscreen\scenefile.scnx">
+      <Name>SceneFile</Name>
+      <Link>Assets\content\screens\splashscreen\scenefile.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tiledlevelscreen\levels\level1.tilb">
+      <Name>Level1</Name>
+      <Link>Assets\content\screens\tiledlevelscreen\levels\level1.tilb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tiledlevelscreen\tilesets\level1info.csv">
+      <Name>Level1Info</Name>
+      <Link>Assets\content\screens\tiledlevelscreen\tilesets\level1info.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tiledlevelscreen\tilesets\platformertiles.png">
+      <Name>platformertiles</Name>
+      <Link>Assets\content\screens\tiledlevelscreen\tilesets\platformertiles.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\barontown.png">
+      <Name>barontown</Name>
+      <Link>Assets\content\screens\tmxscreen\barontown.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\emptymap1.csv">
+      <Name>emptyMap1</Name>
+      <Link>Assets\content\screens\tmxscreen\emptymap1.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\finalfantasyscene.scnx">
+      <Name>FinalFantasyScene</Name>
+      <Link>Assets\content\screens\tmxscreen\finalfantasyscene.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\rotatedtiletmx.tilb">
+      <Name>RotatedTileTmx</Name>
+      <Link>Assets\content\screens\tmxscreen\rotatedtiletmx.tilb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\testlevel2.scnx">
+      <Name>TestLevel2</Name>
+      <Link>Assets\content\screens\tmxscreen\testlevel2.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\tilbtest.tilb">
+      <Name>TilbTest</Name>
+      <Link>Assets\content\screens\tmxscreen\tilbtest.tilb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\tmxwithemptylayers.tilb">
+      <Name>TmxWithEmptyLayers</Name>
+      <Link>Assets\content\screens\tmxscreen\tmxwithemptylayers.tilb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\tmxwithlayerswithproperties.csv">
+      <Name>TmxWithLayersWithProperties</Name>
+      <Link>Assets\content\screens\tmxscreen\tmxwithlayerswithproperties.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\tmxwithtileproperties.csv">
+      <Name>TmxWithTileProperties</Name>
+      <Link>Assets\content\screens\tmxscreen\tmxwithtileproperties.csv</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\transparencyrenderingscreen\colortest.png">
+      <Name>ColorTest</Name>
+      <Link>Assets\content\screens\transparencyrenderingscreen\colortest.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\xmlscreen\xmlfilewithnobackingobject.xml">
+      <Name>XmlFileWithNoBackingObject</Name>
+      <Link>Assets\content\screens\xmlscreen\xmlfilewithnobackingobject.xml</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\simplescene.scnx">
+      <Name>SimpleScene</Name>
+      <Link>Assets\content\simplescene.scnx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\simpleshapecollection.shcx">
+      <Name>SimpleShapeCollection</Name>
+      <Link>Assets\content\simpleshapecollection.shcx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestproject\copiedxnbs\content\entities\globalcontententity\burnorb.xnb">
+      <Name>burnOrb</Name>
+      <Link>Assets\content\entities\globalcontententity\burnorb.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestproject\copiedxnbs\content\entities\pausingentity\soundeffectfile.xnb">
+      <Name>SoundEffectFile</Name>
+      <Link>Assets\content\entities\pausingentity\soundeffectfile.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestproject\copiedxnbs\content\entities\soundeffectentity\dogbarksoundeffect.xnb">
+      <Name>DogBarkSoundEffect</Name>
+      <Link>Assets\content\entities\soundeffectentity\dogbarksoundeffect.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestproject\copiedxnbs\content\entities\soundeffectentity\dogbarksoundeffect2.xnb">
+      <Name>DogBarkSoundEffect2</Name>
+      <Link>Assets\content\entities\soundeffectentity\dogbarksoundeffect2.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestproject\copiedxnbs\content\entities\soundeffectentity\soundeffectinstancefile.xnb">
+      <Name>SoundEffectInstanceFile</Name>
+      <Link>Assets\content\entities\soundeffectentity\soundeffectinstancefile.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestproject\copiedxnbs\content\globalcontent\dogbarksoundeffect.xnb">
+      <Name>DogBarkSoundEffect</Name>
+      <Link>Assets\content\globalcontent\dogbarksoundeffect.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestproject\copiedxnbs\content\globalcontent\dogbarksoundeffect2.xnb">
+      <Name>DogBarkSoundEffect2</Name>
+      <Link>Assets\content\globalcontent\dogbarksoundeffect2.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestproject\copiedxnbs\content\screens\audioscreen\boom.xnb">
+      <Name>boom</Name>
+      <Link>Assets\content\screens\audioscreen\boom.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestproject\copiedxnbs\content\screens\pausescreen\soundeffectinstancefile.xnb">
+      <Name>SoundEffectInstanceFile</Name>
+      <Link>Assets\content\screens\pausescreen\soundeffectinstancefile.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="Assets\content\redball.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+     Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <AndroidResource Include="Resources\Drawable\Icon.png" />
+    <AndroidResource Include="Resources\Drawable\Splash.png" />
+    <AndroidResource Include="Resources\Values\Strings.xml" />
+    <AndroidResource Include="Resources\Values\Styles.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallAndroidv2.csproj">
+      <Project>{F842215C-BCE1-472D-A4A0-7BAB70B428B3}</Project>
+      <Name>FlatRedBallAndroidv2</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

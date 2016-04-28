@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlueTests", "GlueTests\GlueTests.csproj", "{24F3A239-227D-47D9-BD29-1EBF3054A697}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glue", "..\..\FRBDK\Glue\Glue\Glue.csproj", "{213357E3-F729-4FF3-9B99-E91C40D50E6E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+		UnitTests|Any CPU = UnitTests|Any CPU
+		UnitTests|x86 = UnitTests|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{24F3A239-227D-47D9-BD29-1EBF3054A697}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{24F3A239-227D-47D9-BD29-1EBF3054A697}.Debug|Any CPU.Build.0 = Debug|x86
+		{24F3A239-227D-47D9-BD29-1EBF3054A697}.Debug|x86.ActiveCfg = Debug|x86
+		{24F3A239-227D-47D9-BD29-1EBF3054A697}.Debug|x86.Build.0 = Debug|x86
+		{24F3A239-227D-47D9-BD29-1EBF3054A697}.Release|Any CPU.ActiveCfg = Release|x86
+		{24F3A239-227D-47D9-BD29-1EBF3054A697}.Release|x86.ActiveCfg = Release|x86
+		{24F3A239-227D-47D9-BD29-1EBF3054A697}.Release|x86.Build.0 = Release|x86
+		{24F3A239-227D-47D9-BD29-1EBF3054A697}.UnitTests|Any CPU.ActiveCfg = Release|x86
+		{24F3A239-227D-47D9-BD29-1EBF3054A697}.UnitTests|x86.ActiveCfg = Release|x86
+		{24F3A239-227D-47D9-BD29-1EBF3054A697}.UnitTests|x86.Build.0 = Release|x86
+		{213357E3-F729-4FF3-9B99-E91C40D50E6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{213357E3-F729-4FF3-9B99-E91C40D50E6E}.Debug|x86.ActiveCfg = Debug|x86
+		{213357E3-F729-4FF3-9B99-E91C40D50E6E}.Debug|x86.Build.0 = Debug|x86
+		{213357E3-F729-4FF3-9B99-E91C40D50E6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{213357E3-F729-4FF3-9B99-E91C40D50E6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{213357E3-F729-4FF3-9B99-E91C40D50E6E}.Release|x86.ActiveCfg = Release|x86
+		{213357E3-F729-4FF3-9B99-E91C40D50E6E}.Release|x86.Build.0 = Release|x86
+		{213357E3-F729-4FF3-9B99-E91C40D50E6E}.UnitTests|Any CPU.ActiveCfg = UnitTests|Any CPU
+		{213357E3-F729-4FF3-9B99-E91C40D50E6E}.UnitTests|Any CPU.Build.0 = UnitTests|Any CPU
+		{213357E3-F729-4FF3-9B99-E91C40D50E6E}.UnitTests|x86.ActiveCfg = UnitTests|x86
+		{213357E3-F729-4FF3-9B99-E91C40D50E6E}.UnitTests|x86.Build.0 = UnitTests|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

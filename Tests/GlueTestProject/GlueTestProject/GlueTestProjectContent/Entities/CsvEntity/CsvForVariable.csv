@@ -1,0 +1,5 @@
+"Name (string, required)",Health (float)
+Monster,100
+Alien,233
+Robot,400
+SeaCreature,222
