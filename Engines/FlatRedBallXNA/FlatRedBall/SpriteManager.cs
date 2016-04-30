@@ -796,12 +796,19 @@ namespace FlatRedBall
                 throw new InvalidOperationException("Objects can only be added on the primary thread");
             }
 #endif
-            layerToAddTo.Add(batchToAdd);
-
-
-            if (mDrawableBatches.Contains(batchToAdd))
+            if (layerToAddTo == null)
             {
-                mDrawableBatches.Remove(batchToAdd);
+                AddDrawableBatch(batchToAdd);
+            }
+            else
+            {
+                layerToAddTo.Add(batchToAdd);
+
+
+                if (mDrawableBatches.Contains(batchToAdd))
+                {
+                    mDrawableBatches.Remove(batchToAdd);
+                }
             }
         }
 
