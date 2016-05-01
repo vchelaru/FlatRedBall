@@ -11,6 +11,7 @@ using FlatRedBall.Performance.Measurement;
 using System.IO;
 using TMXGlueLib.DataTypes;
 using TMXGlueLib;
+using FlatRedBall.Graphics;
 
 namespace FlatRedBall.TileGraphics
 {
@@ -25,7 +26,7 @@ namespace FlatRedBall.TileGraphics
         }
     }
 
-    public class LayeredTileMap : PositionedObject
+    public class LayeredTileMap : PositionedObject, IVisible
     {
         #region Fields
 
@@ -93,13 +94,19 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
+        bool visible = true;
         public bool Visible
         {
+            get
+            {
+                return visible;
+            }
             set
             {
+                visible = value;
                 foreach (var item in this.mMapLists)
                 {
-                    item.Visible = value;
+                    item.Visible = visible;
                 }
             }
         }
@@ -141,6 +148,46 @@ namespace FlatRedBall.TileGraphics
         }
 
         public LayeredTileMapAnimation Animation { get; set; }
+
+
+        IVisible IVisible.Parent
+        {
+            get
+            {
+                return Parent as IVisible;
+            }
+        }
+
+        public bool AbsoluteVisible
+        {
+            get
+            {
+                if (this.Visible)
+                {
+                    var parentAsIVisible = this.Parent as IVisible;
+
+                    if (parentAsIVisible == null || IgnoresParentVisibility)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        // this is true, so return if the parent is visible:
+                        return parentAsIVisible.AbsoluteVisible;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        public bool IgnoresParentVisibility
+        {
+            get;
+            set;
+        }
 
 
         #endregion
@@ -297,7 +344,7 @@ namespace FlatRedBall.TileGraphics
             foreach (var layer in tms.Layers)
             {
                 var matchingLayer = toReturn.MapLayers.FirstOrDefault(item => item.Name == layer.Name);
-                
+
 
                 if (matchingLayer != null)
                 {
@@ -340,7 +387,7 @@ namespace FlatRedBall.TileGraphics
 
         public void AnimateSelf()
         {
-            if(Animation != null)
+            if (Animation != null)
             {
                 Animation.Activity(this);
             }
