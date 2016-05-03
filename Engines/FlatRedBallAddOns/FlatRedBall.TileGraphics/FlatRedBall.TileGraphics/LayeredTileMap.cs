@@ -86,6 +86,9 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
+        public List<FlatRedBall.Math.Geometry.ShapeCollection> ShapeCollections { get; } = new List<FlatRedBall.Math.Geometry.ShapeCollection>();
+
+
         public FlatRedBall.Math.PositionedObjectList<MapDrawableBatch> MapLayers
         {
             get
@@ -340,6 +343,17 @@ namespace FlatRedBall.TileGraphics
                 tms, 1, 0, directory, FileReferenceType.Absolute);
 
             var toReturn = FromReducedTileMapInfo(rtmi, contentManager, fileName);
+
+
+            foreach (var mapObjectgroup in tms.objectgroup)
+            {
+                var shapeCollection = tms.ToShapeCollection(mapObjectgroup.Name);
+                if (shapeCollection != null && shapeCollection.IsEmpty == false)
+                {
+                    shapeCollection.Name = mapObjectgroup.Name;
+                    toReturn.ShapeCollections.Add(shapeCollection);
+                }
+            }
 
             foreach (var layer in tms.Layers)
             {
