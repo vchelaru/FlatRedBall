@@ -1570,7 +1570,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 AddIfConditionalSymbolIfNecesssary(codeBlock, namedObject);
 
-                AppendAssignmentForAllCustomVariables(namedObject, codeBlock);
+                GenerateVariableAssignment(namedObject, codeBlock);
 
                 if (!namedObject.SetByDerived && !namedObject.SetByContainer)
                 {
@@ -1631,68 +1631,68 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
 
-        public static void AppendAssignmentForAllCustomVariables(NamedObjectSave namedObject, ICodeBlock codeBlock)
+        public static void GenerateVariableAssignment(NamedObjectSave namedObject, ICodeBlock codeBlock)
         {
 
-                IEnumerable<CustomVariableInNamedObject> enumerable = namedObject.InstructionSaves;
-                var ati = namedObject.GetAssetTypeInfo();
+            IEnumerable<CustomVariableInNamedObject> enumerable = namedObject.InstructionSaves;
+            var ati = namedObject.GetAssetTypeInfo();
 
-                string extraVariablePattern = null;
+            string extraVariablePattern = null;
 
-                if (ati != null)
+            if (ati != null)
+            {
+                extraVariablePattern = ati.ExtraVariablesPattern;
+            }
+            string[] extraVariables;
+
+            if (extraVariablePattern != null)
+            {
+
+                extraVariables = extraVariablePattern.Split(';');
+
+                for (int i = 0; i < extraVariables.Length; i++)
                 {
-                    extraVariablePattern = ati.ExtraVariablesPattern;
+                    extraVariables[i] = extraVariables[i].Trim().Substring(extraVariables[i].Trim().IndexOf(' ') + 1);
                 }
-                string[] extraVariables;
 
-                if (extraVariablePattern != null)
-                {
-
-                    extraVariables = extraVariablePattern.Split(';');
-
-                    for (int i = 0; i < extraVariables.Length; i++)
+                enumerable = enumerable.OrderBy(item =>
                     {
-                        extraVariables[i] = extraVariables[i].Trim().Substring(extraVariables[i].Trim().IndexOf(' ') + 1);
-                    }
-
-                    enumerable = enumerable.OrderBy(item =>
+                        if (extraVariables.Contains(item.Member))
                         {
-                            if (extraVariables.Contains(item.Member))
-                            {
-                                return namedObject.InstructionSaves.IndexOf(item) - namedObject.InstructionSaves.Count;
-                            }
-                            else
-                            {
-                                return namedObject.InstructionSaves.IndexOf(item);
-                            }
-                        });
+                            return namedObject.InstructionSaves.IndexOf(item) - namedObject.InstructionSaves.Count;
+                        }
+                        else
+                        {
+                            return namedObject.InstructionSaves.IndexOf(item);
+                        }
+                    });
 
-                }
-                else
+            }
+            else
+            {
+                extraVariables = new string[0];
+            }
+
+
+            foreach (var instructionSave in enumerable)
+            {
+                IElement element = null;
+
+                if (namedObject.SourceType == SourceType.Entity)
                 {
-                    extraVariables = new string[0];
+                    element = ObjectFinder.Self.GetIElement(namedObject.SourceClassType);
                 }
 
 
-                foreach (var instructionSave in enumerable)
+                if (ExposedVariableManager.IsExposedVariable(instructionSave.Member, namedObject) ||
+                    (element != null && element.GetCustomVariableRecursively(instructionSave.Member) != null) ||
+                    // Could be something set by container:
+                    (element != null && element.GetNamedObjectRecursively(instructionSave.Member) != null)
+                    )
                 {
-                    IElement element = null;
-
-                    if (namedObject.SourceType == SourceType.Entity)
-                    {
-                        element = ObjectFinder.Self.GetIElement(namedObject.SourceClassType);
-                    }
-
-
-                    if (ExposedVariableManager.IsExposedVariable(instructionSave.Member, namedObject) ||
-                        (element != null && element.GetCustomVariableRecursively(instructionSave.Member) != null) ||
-                        // Could be something set by container:
-                        (element != null && element.GetNamedObjectRecursively(instructionSave.Member) != null)
-                        )
-                    {
-                        CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInInstance(namedObject, codeBlock, instructionSave);
-                    }
+                    CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInInstance(namedObject, codeBlock, instructionSave);
                 }
+            }
         }
 
 
@@ -2008,7 +2008,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             // after the caller has added itself to managers
 
 
-            AppendAssignmentForAllCustomVariables(namedObject, codeBlock);
+            GenerateVariableAssignment(namedObject, codeBlock);
 
 
             #endregion

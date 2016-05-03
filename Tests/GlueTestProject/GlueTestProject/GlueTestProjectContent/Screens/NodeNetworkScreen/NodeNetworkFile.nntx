@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<NodeNetworkSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <PositionedNode>
+    <Name>1</Name>
+    <X>0</X>
+    <Y>0</Y>
+    <Z>0</Z>
+  </PositionedNode>
+</NodeNetworkSave>

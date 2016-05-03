@@ -57,6 +57,7 @@ namespace TileGraphicsPlugin
             toReturn.Extension = "scnx";
             toReturn.AddToManagersMethod = new List<string>();
             toReturn.AddToManagersMethod.Add("this.AddToManagers()");
+            toReturn.LayeredAddToManagersMethod.Add("this.AddToManagers(mLayer)");
             toReturn.CustomLoadMethod = "{THIS} = FlatRedBall.TileGraphics.LayeredTileMap.FromScene(\"{FILE_NAME}\", {CONTENT_MANAGER_NAME});";
             toReturn.DestroyMethod = "this.Destroy()";
             toReturn.ShouldBeDisposed = false;
@@ -89,6 +90,25 @@ namespace TileGraphicsPlugin
         private AssetTypeInfo GetAtiForRawTmx()
         {
             AssetTypeInfo toReturn = CreateAtiForLayeredTilemapScnx();
+
+            toReturn.VariableDefinitions.Add(new VariableDefinition
+            {
+                Name = "X",
+                Type = "float",
+                DefaultValue = "0",
+                Category = "Position"
+
+            });
+
+            toReturn.VariableDefinitions.Add(new VariableDefinition
+            {
+                Name = "Y",
+                Type = "float",
+                DefaultValue = "0",
+                Category = "Position"
+
+            });
+
             toReturn.FriendlyName = "LayeredTileMap (.tmx)";
             toReturn.QualifiedSaveTypeName = "";
             toReturn.Extension = "tmx";

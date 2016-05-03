@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ShapeCollectionSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <AxisAlignedRectangleSaves />
+  <AxisAlignedCubeSaves />
+  <PolygonSaves />
+  <CircleSaves>
+    <CircleSave>
+      <X>6.627419</X>
+      <Y>7.566303</Y>
+      <Z>0</Z>
+      <Radius>7.5665</Radius>
+      <Name>Circle1</Name>
+      <Alpha>1</Alpha>
+      <Red>1</Red>
+      <Green>0.647058845</Green>
+      <Blue>0</Blue>
+    </CircleSave>
+  </CircleSaves>
+  <SphereSaves />
+</ShapeCollectionSave>

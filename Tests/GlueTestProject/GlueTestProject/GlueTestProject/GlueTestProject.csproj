@@ -1,0 +1,1064 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{649DE040-99C6-4838-ADA3-533D0DBD4325}</ProjectGuid>
+    <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GlueTestProject</RootNamespace>
+    <AssemblyName>GlueTestProject</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
+    <XnaPlatform>Windows</XnaPlatform>
+    <XnaProfile>Reach</XnaProfile>
+    <XnaCrossPlatformGroupID>6e8472f3-363d-4b52-a484-aa934eebcf1f</XnaCrossPlatformGroupID>
+    <XnaOutputType>Game</XnaOutputType>
+    <ApplicationIcon>Game.ico</ApplicationIcon>
+    <Thumbnail>GameThumbnail.png</Thumbnail>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS;FRB_XNA; XNA4</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>false</XnaCompressContent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>true</XnaCompressContent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnitTests|x86'">
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;WINDOWS; XNA4; UNIT_TESTS; FRB_XNA</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.GamerServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Xact, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Video, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Avatar, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Storage, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="mscorlib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CustomDataTypes\CustomDataType.cs" />
+    <Compile Include="DataTypes\ClassWithNoAssociatedCsvs.Generated.cs" />
+    <Compile Include="DataTypes\CreatedByExcel1.Generated.cs" />
+    <Compile Include="DataTypes\CsvForVariable.Generated.cs" />
+    <Compile Include="DataTypes\CsvFromTmx.Generated.cs" />
+    <Compile Include="DataTypes\CsvLoadedToList.Generated.cs" />
+    <Compile Include="DataTypes\CsvManuallyLoadedForPropertyTest.Generated.cs" />
+    <Compile Include="DataTypes\CsvWithAnimationFrameSaveBase.Generated.cs" />
+    <Compile Include="DataTypes\CsvWithCustomTypes.Generated.cs" />
+    <Compile Include="DataTypes\CsvWithExtraCells.Generated.cs" />
+    <Compile Include="DataTypes\DataTypeForCsv.cs" />
+    <Compile Include="DataTypes\emptyMap1.Generated.cs" />
+    <Compile Include="DataTypes\GlobalCsv.Generated.cs" />
+    <Compile Include="DataTypes\HugeCsv.Generated.cs" />
+    <Compile Include="DataTypes\Level1Info.Generated.cs" />
+    <Compile Include="DataTypes\ListCsv.Generated.cs" />
+    <Compile Include="DataTypes\LoadedAtRuntimeFalseCsv.Generated.cs" />
+    <Compile Include="DataTypes\MovementValues.Generated.cs" />
+    <Compile Include="DataTypes\Resources.Generated.cs" />
+    <Compile Include="DataTypes\SharedClass1.Generated.cs" />
+    <Compile Include="DataTypes\Spreadsheet.Generated.cs" />
+    <Compile Include="DataTypes\SpreadsheetClass.Generated.cs" />
+    <Compile Include="DataTypes\SpreadsheetToReplace.Generated.cs" />
+    <Compile Include="DataTypes\TestSaveClass.cs" />
+    <Compile Include="DataTypes\TextureSettingsInfo.Generated.cs" />
+    <Compile Include="DataTypes\TileMapInfo.Generated.cs" />
+    <Compile Include="DataTypes\TmxWithLayersWithProperties.Generated.cs" />
+    <Compile Include="DataTypes\TmxWithTileProperties.Generated.cs" />
+    <Compile Include="DataTypes\Waves.Generated.cs" />
+    <Compile Include="DataTypes\WithFileAtEnd.Generated.cs" />
+    <Compile Include="Entities\AndroidTests.cs" />
+    <Compile Include="Entities\AndroidTests.Generated.cs">
+      <DependentUpon>AndroidTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\AnimationChainEntity.cs" />
+    <Compile Include="Entities\AnimationChainEntity.Generated.cs">
+      <DependentUpon>AnimationChainEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\AttachedToCamera.cs" />
+    <Compile Include="Entities\AttachedToCamera.Generated.cs">
+      <DependentUpon>AttachedToCamera.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\AttachedToCameraCopy.cs" />
+    <Compile Include="Entities\AttachedToCameraCopy.Generated.cs">
+      <DependentUpon>AttachedToCameraCopy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseEnityWithCategorizedStates.cs" />
+    <Compile Include="Entities\BaseEnityWithCategorizedStates.Generated.cs">
+      <DependentUpon>BaseEnityWithCategorizedStates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseEntity.cs" />
+    <Compile Include="Entities\BaseEntity.Event.cs">
+      <DependentUpon>BaseEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseEntity.Generated.cs">
+      <DependentUpon>BaseEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseEntity.Generated.Event.cs">
+      <DependentUpon>BaseEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseEntityWithNoStates.cs" />
+    <Compile Include="Entities\BaseEntityWithNoStates.Generated.cs">
+      <DependentUpon>BaseEntityWithNoStates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseNotPooled.cs" />
+    <Compile Include="Entities\BaseNotPooled.Generated.cs">
+      <DependentUpon>BaseNotPooled.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BasePositioningEntity.cs" />
+    <Compile Include="Entities\BasePositioningEntity.Generated.cs">
+      <DependentUpon>BasePositioningEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseStateEntityWithOnlyCategorized.cs" />
+    <Compile Include="Entities\BaseStateEntityWithOnlyCategorized.Generated.cs">
+      <DependentUpon>BaseStateEntityWithOnlyCategorized.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\BaseWithCollision.cs" />
+    <Compile Include="Entities\BaseWithCollision.Generated.cs">
+      <DependentUpon>BaseWithCollision.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CameraAttachedToThisEntity.cs" />
+    <Compile Include="Entities\CameraAttachedToThisEntity.Generated.cs">
+      <DependentUpon>CameraAttachedToThisEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CameraModifyingEntity.cs" />
+    <Compile Include="Entities\CameraModifyingEntity.Generated.cs">
+      <DependentUpon>CameraModifyingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ChildOfPositioningEntity.cs" />
+    <Compile Include="Entities\ChildOfPositioningEntity.Generated.cs">
+      <DependentUpon>ChildOfPositioningEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CircleContainer.cs" />
+    <Compile Include="Entities\CircleContainer.Generated.cs">
+      <DependentUpon>CircleContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CircleContainerSetCircleInCustomVariables.cs" />
+    <Compile Include="Entities\CircleContainerSetCircleInCustomVariables.Generated.cs">
+      <DependentUpon>CircleContainerSetCircleInCustomVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CollidableEntity.cs" />
+    <Compile Include="Entities\CollidableEntity.Generated.cs">
+      <DependentUpon>CollidableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CollisionEntity.cs" />
+    <Compile Include="Entities\CollisionEntity.Generated.cs">
+      <DependentUpon>CollisionEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ConditionalCompilationEntity.cs" />
+    <Compile Include="Entities\ConditionalCompilationEntity.Generated.cs">
+      <DependentUpon>ConditionalCompilationEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ContainerOfFactoryEntityList.cs" />
+    <Compile Include="Entities\ContainerOfFactoryEntityList.Generated.cs">
+      <DependentUpon>ContainerOfFactoryEntityList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CsvEntity.cs" />
+    <Compile Include="Entities\CsvEntity.Event.cs">
+      <DependentUpon>CsvEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CsvEntity.Generated.cs">
+      <DependentUpon>CsvEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CsvEntity.Generated.Event.cs">
+      <DependentUpon>CsvEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\CustomContentTypeEntity.cs" />
+    <Compile Include="Entities\CustomContentTypeEntity.Generated.cs">
+      <DependentUpon>CustomContentTypeEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DelayedInstantiationEntity.cs" />
+    <Compile Include="Entities\DelayedInstantiationEntity.Generated.cs">
+      <DependentUpon>DelayedInstantiationEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedCsvEntity.cs" />
+    <Compile Include="Entities\DerivedCsvEntity.Generated.cs">
+      <DependentUpon>DerivedCsvEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedEntity.cs" />
+    <Compile Include="Entities\DerivedEntity.Event.cs">
+      <DependentUpon>DerivedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedEntity.Generated.cs">
+      <DependentUpon>DerivedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedEntity.Generated.Event.cs">
+      <DependentUpon>DerivedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedEntityOutOfFolder.cs" />
+    <Compile Include="Entities\DerivedEntityOutOfFolder.Generated.cs">
+      <DependentUpon>DerivedEntityOutOfFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedEventEntity.cs" />
+    <Compile Include="Entities\DerivedEventEntity.Generated.cs">
+      <DependentUpon>DerivedEventEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedFromBaseWithCategorizedStates.cs" />
+    <Compile Include="Entities\DerivedFromBaseWithCategorizedStates.Generated.cs">
+      <DependentUpon>DerivedFromBaseWithCategorizedStates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedFromBaseWithNoStates.cs" />
+    <Compile Include="Entities\DerivedFromBaseWithNoStates.Generated.cs">
+      <DependentUpon>DerivedFromBaseWithNoStates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedICollidable.cs" />
+    <Compile Include="Entities\DerivedICollidable.Generated.cs">
+      <DependentUpon>DerivedICollidable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedPooledFromNotPooled.cs" />
+    <Compile Include="Entities\DerivedPooledFromNotPooled.Generated.cs">
+      <DependentUpon>DerivedPooledFromNotPooled.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedPositioningEntity.cs" />
+    <Compile Include="Entities\DerivedPositioningEntity.Generated.cs">
+      <DependentUpon>DerivedPositioningEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedStateEntity.cs" />
+    <Compile Include="Entities\DerivedStateEntity.Generated.cs">
+      <DependentUpon>DerivedStateEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DisabledObjectEntity.cs" />
+    <Compile Include="Entities\DisabledObjectEntity.Generated.cs">
+      <DependentUpon>DisabledObjectEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EmitterEntity.cs" />
+    <Compile Include="Entities\EmitterEntity.Generated.cs">
+      <DependentUpon>EmitterEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EmptyEntity.cs" />
+    <Compile Include="Entities\EmptyEntity.Generated.cs">
+      <DependentUpon>EmptyEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EntityFolder\BaseEntityInFolder.cs" />
+    <Compile Include="Entities\EntityFolder\BaseEntityInFolder.Generated.cs">
+      <DependentUpon>BaseEntityInFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EntityFolder\EntityInFolder.cs" />
+    <Compile Include="Entities\EntityFolder\EntityInFolder.Generated.cs">
+      <DependentUpon>EntityInFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EntityFolder\NewEntity.cs" />
+    <Compile Include="Entities\EntityFolder\NewEntity.Generated.cs">
+      <DependentUpon>NewEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EntityFolder\StateEntityInFolder.cs" />
+    <Compile Include="Entities\EntityFolder\StateEntityInFolder.Generated.cs">
+      <DependentUpon>StateEntityInFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EntityForTestPlugin.cs" />
+    <Compile Include="Entities\EntityForTestPlugin.Generated.cs">
+      <DependentUpon>EntityForTestPlugin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EventEntity.cs" />
+    <Compile Include="Entities\EventEntity.Event.cs">
+      <DependentUpon>EventEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EventEntity.Generated.cs">
+      <DependentUpon>EventEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EventEntity.Generated.Event.cs">
+      <DependentUpon>EventEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\FactoryEntity.cs" />
+    <Compile Include="Entities\FactoryEntity.Generated.cs">
+      <DependentUpon>FactoryEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\FactoryEntityDerived.cs" />
+    <Compile Include="Entities\FactoryEntityDerived.Generated.cs">
+      <DependentUpon>FactoryEntityDerived.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\FileReferencingEntity.cs" />
+    <Compile Include="Entities\FileReferencingEntity.Generated.cs">
+      <DependentUpon>FileReferencingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\FlatRedBallEntityContainer.cs" />
+    <Compile Include="Entities\FlatRedBallEntityContainer.Generated.cs">
+      <DependentUpon>FlatRedBallEntityContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\FlatRedBallTypeEntity.cs" />
+    <Compile Include="Entities\FlatRedBallTypeEntity.Generated.cs">
+      <DependentUpon>FlatRedBallTypeEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\GlobalContentEntity.cs" />
+    <Compile Include="Entities\GlobalContentEntity.Generated.cs">
+      <DependentUpon>GlobalContentEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\GumComponentContainer.cs" />
+    <Compile Include="Entities\GumComponentContainer.Generated.cs">
+      <DependentUpon>GumComponentContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\HasPublicPropertyEntity.cs" />
+    <Compile Include="Entities\HasPublicPropertyEntity.Generated.cs">
+      <DependentUpon>HasPublicPropertyEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ICollidableBase.cs" />
+    <Compile Include="Entities\ICollidableBase.Generated.cs">
+      <DependentUpon>ICollidableBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ICollidableDerived.cs" />
+    <Compile Include="Entities\ICollidableDerived.Generated.cs">
+      <DependentUpon>ICollidableDerived.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IDrawableBatchEntity.cs" />
+    <Compile Include="Entities\IDrawableBatchEntity.Generated.cs">
+      <DependentUpon>IDrawableBatchEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IncompleteDefinitionEntity.cs" />
+    <Compile Include="Entities\IncompleteDefinitionEntity.Generated.cs">
+      <DependentUpon>IncompleteDefinitionEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\InheritingFromSpriteInheritingEntity.cs" />
+    <Compile Include="Entities\InheritingFromSpriteInheritingEntity.Generated.cs">
+      <DependentUpon>InheritingFromSpriteInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\InListEntity.cs" />
+    <Compile Include="Entities\InListEntity.Generated.cs">
+      <DependentUpon>InListEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\InterpolationEntity.cs" />
+    <Compile Include="Entities\InterpolationEntity.Generated.cs">
+      <DependentUpon>InterpolationEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\InterpolationEntitySub.cs" />
+    <Compile Include="Entities\InterpolationEntitySub.Generated.cs">
+      <DependentUpon>InterpolationEntitySub.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IVisibleEntity.cs" />
+    <Compile Include="Entities\IVisibleEntity.Generated.cs">
+      <DependentUpon>IVisibleEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IVisibleFrbTypeInheritingEntity.cs" />
+    <Compile Include="Entities\IVisibleFrbTypeInheritingEntity.Generated.cs">
+      <DependentUpon>IVisibleFrbTypeInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowContainer.cs" />
+    <Compile Include="Entities\IWindowContainer.Generated.cs">
+      <DependentUpon>IWindowContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowDerivedFromNoIWindow.cs" />
+    <Compile Include="Entities\IWindowDerivedFromNoIWindow.Event.cs">
+      <DependentUpon>IWindowDerivedFromNoIWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowDerivedFromNoIWindow.Generated.cs">
+      <DependentUpon>IWindowDerivedFromNoIWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowDerivedFromNoIWindow.Generated.Event.cs">
+      <DependentUpon>IWindowDerivedFromNoIWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowDerivingEntity.cs" />
+    <Compile Include="Entities\IWindowDerivingEntity.Generated.cs">
+      <DependentUpon>IWindowDerivingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowEntity.cs" />
+    <Compile Include="Entities\IWindowEntity.Event.cs">
+      <DependentUpon>IWindowEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowEntity.Generated.cs">
+      <DependentUpon>IWindowEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowEntity.Generated.Event.cs">
+      <DependentUpon>IWindowEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowEntityWithExposedVariables.cs" />
+    <Compile Include="Entities\IWindowEntityWithExposedVariables.Event.cs">
+      <DependentUpon>IWindowEntityWithExposedVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowEntityWithExposedVariables.Generated.cs">
+      <DependentUpon>IWindowEntityWithExposedVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IWindowEntityWithExposedVariables.Generated.Event.cs">
+      <DependentUpon>IWindowEntityWithExposedVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\LayerOwner.cs" />
+    <Compile Include="Entities\LayerOwner.Generated.cs">
+      <DependentUpon>LayerOwner.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ListEntity.cs" />
+    <Compile Include="Entities\ListEntity.Generated.cs">
+      <DependentUpon>ListEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\LoadedOnlyWhenReferenced.cs" />
+    <Compile Include="Entities\LoadedOnlyWhenReferenced.Generated.cs">
+      <DependentUpon>LoadedOnlyWhenReferenced.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ManuallyUpdatedEntity.cs" />
+    <Compile Include="Entities\ManuallyUpdatedEntity.Generated.cs">
+      <DependentUpon>ManuallyUpdatedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\NewEntity2.cs" />
+    <Compile Include="Entities\NewEntity2.Event.cs">
+      <DependentUpon>NewEntity2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\NewEntity2.Generated.cs">
+      <DependentUpon>NewEntity2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\NewEntity2.Generated.Event.cs">
+      <DependentUpon>NewEntity2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\NoInstantiationObjectContainer.cs" />
+    <Compile Include="Entities\NoInstantiationObjectContainer.Generated.cs">
+      <DependentUpon>NoInstantiationObjectContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\NoIWindowBase.cs" />
+    <Compile Include="Entities\NoIWindowBase.Generated.cs">
+      <DependentUpon>NoIWindowBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\OptionallyAddedEntity.cs" />
+    <Compile Include="Entities\OptionallyAddedEntity.Generated.cs">
+      <DependentUpon>OptionallyAddedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PausingEntity.cs" />
+    <Compile Include="Entities\PausingEntity.Generated.cs">
+      <DependentUpon>PausingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PlatformerCharacterBase.cs" />
+    <Compile Include="Entities\PlatformerCharacterBase.Event.cs">
+      <DependentUpon>PlatformerCharacterBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PlatformerCharacterBase.Generated.cs">
+      <DependentUpon>PlatformerCharacterBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PlatformerCharacterBase.Generated.Event.cs">
+      <DependentUpon>PlatformerCharacterBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PolygonEntity.cs" />
+    <Compile Include="Entities\PolygonEntity.Generated.cs">
+      <DependentUpon>PolygonEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PooledDontInheritFromThis.cs" />
+    <Compile Include="Entities\PooledDontInheritFromThis.Generated.cs">
+      <DependentUpon>PooledDontInheritFromThis.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PositionedEntity.cs" />
+    <Compile Include="Entities\PositionedEntity.Generated.cs">
+      <DependentUpon>PositionedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PositioningEntity.cs" />
+    <Compile Include="Entities\PositioningEntity.Event.cs">
+      <DependentUpon>PositioningEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PositioningEntity.Generated.cs">
+      <DependentUpon>PositioningEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\RectangleContainer.cs" />
+    <Compile Include="Entities\RectangleContainer.Generated.cs">
+      <DependentUpon>RectangleContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\RecyclableEntity.cs" />
+    <Compile Include="Entities\RecyclableEntity.Generated.cs">
+      <DependentUpon>RecyclableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\RemoveObjectsWhenInvisibleEntity.cs" />
+    <Compile Include="Entities\RemoveObjectsWhenInvisibleEntity.Generated.cs">
+      <DependentUpon>RemoveObjectsWhenInvisibleEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ResetVariableEntity.cs" />
+    <Compile Include="Entities\ResetVariableEntity.Generated.cs">
+      <DependentUpon>ResetVariableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SceneEntity.cs" />
+    <Compile Include="Entities\SceneEntity.Generated.cs">
+      <DependentUpon>SceneEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ScnxAttachmentTest.cs" />
+    <Compile Include="Entities\ScnxAttachmentTest.Generated.cs">
+      <DependentUpon>ScnxAttachmentTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ScrollableEntity.cs" />
+    <Compile Include="Entities\ScrollableEntity.Generated.cs">
+      <DependentUpon>ScrollableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ScrollableListEntityNoItemType.cs" />
+    <Compile Include="Entities\ScrollableListEntityNoItemType.Generated.cs">
+      <DependentUpon>ScrollableListEntityNoItemType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SetByContainerEntity.cs" />
+    <Compile Include="Entities\SetByContainerEntity.Generated.cs">
+      <DependentUpon>SetByContainerEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ShapeEntity.cs" />
+    <Compile Include="Entities\ShapeEntity.Generated.cs">
+      <DependentUpon>ShapeEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ShapeEntityCreatedByOtherEntities.cs" />
+    <Compile Include="Entities\ShapeEntityCreatedByOtherEntities.Generated.cs">
+      <DependentUpon>ShapeEntityCreatedByOtherEntities.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SizingEntity.cs" />
+    <Compile Include="Entities\SizingEntity.Generated.cs">
+      <DependentUpon>SizingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SoundEffectEntity.cs" />
+    <Compile Include="Entities\SoundEffectEntity.Generated.cs">
+      <DependentUpon>SoundEffectEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SplineEntity.cs" />
+    <Compile Include="Entities\SplineEntity.Generated.cs">
+      <DependentUpon>SplineEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SpriteEntity.cs" />
+    <Compile Include="Entities\SpriteEntity.Generated.cs">
+      <DependentUpon>SpriteEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SpriteFrameInheritingEntity.cs" />
+    <Compile Include="Entities\SpriteFrameInheritingEntity.Generated.cs">
+      <DependentUpon>SpriteFrameInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SpriteFrameInheritingEntityZBuffered.cs" />
+    <Compile Include="Entities\SpriteFrameInheritingEntityZBuffered.Generated.cs">
+      <DependentUpon>SpriteFrameInheritingEntityZBuffered.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\SpriteInheritingEntity.cs" />
+    <Compile Include="Entities\SpriteInheritingEntity.Generated.cs">
+      <DependentUpon>SpriteInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StateEntity.cs" />
+    <Compile Include="Entities\StateEntity.Event.cs">
+      <DependentUpon>StateEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StateEntity.Generated.cs">
+      <DependentUpon>StateEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StateEntity.Generated.Event.cs">
+      <DependentUpon>StateEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StateEntityChild.cs" />
+    <Compile Include="Entities\StateEntityChild.Generated.cs">
+      <DependentUpon>StateEntityChild.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StateEntityContainer.cs" />
+    <Compile Include="Entities\StateEntityContainer.Generated.cs">
+      <DependentUpon>StateEntityContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StateEntityWithoutCurrentStateVariable.cs" />
+    <Compile Include="Entities\StateEntityWithoutCurrentStateVariable.Generated.cs">
+      <DependentUpon>StateEntityWithoutCurrentStateVariable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\StaticVariableEntity.cs" />
+    <Compile Include="Entities\StaticVariableEntity.Generated.cs">
+      <DependentUpon>StaticVariableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\TextEntity.cs" />
+    <Compile Include="Entities\TextEntity.Generated.cs">
+      <DependentUpon>TextEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\TextInheritingEntity.cs" />
+    <Compile Include="Entities\TextInheritingEntity.Generated.cs">
+      <DependentUpon>TextInheritingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\TextureContainer.cs" />
+    <Compile Include="Entities\TextureContainer.Generated.cs">
+      <DependentUpon>TextureContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\TexturePixelEntity.cs" />
+    <Compile Include="Entities\TexturePixelEntity.Generated.cs">
+      <DependentUpon>TexturePixelEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ToBeDeleted.cs" />
+    <Compile Include="Entities\ToBeDeleted.Generated.cs">
+      <DependentUpon>ToBeDeleted.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\TunneledVariableEntity.cs" />
+    <Compile Include="Entities\TunneledVariableEntity.Generated.cs">
+      <DependentUpon>TunneledVariableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\VariableEntity.cs" />
+    <Compile Include="Entities\VariableEntity.Generated.cs">
+      <DependentUpon>VariableEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\XmlEntity.cs" />
+    <Compile Include="Entities\XmlEntity.Generated.cs">
+      <DependentUpon>XmlEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ZBufferedEntity.cs" />
+    <Compile Include="Entities\ZBufferedEntity.Generated.cs">
+      <DependentUpon>ZBufferedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Factories\BaseNotPooledFactory.Generated.cs" />
+    <Compile Include="Factories\ChildOfPositioningEntityFactory.Generated.cs" />
+    <Compile Include="Factories\DerivedPooledFromNotPooledFactory.Generated.cs" />
+    <Compile Include="Factories\EntityInFolderFactory.Generated.cs" />
+    <Compile Include="Factories\FactoryEntityDerivedFactory.Generated.cs" />
+    <Compile Include="Factories\FactoryEntityFactory.Generated.cs" />
+    <Compile Include="Factories\IWindowDerivedFromNoIWindowFactory.Generated.cs" />
+    <Compile Include="Factories\PooledDontInheritFromThisFactory.Generated.cs" />
+    <Compile Include="Factories\PositioningEntityFactory.Generated.cs" />
+    <Compile Include="Factories\RecyclableEntityFactory.Generated.cs" />
+    <Compile Include="Factories\ShapeEntityCreatedByOtherEntitiesFactory.Generated.cs" />
+    <Compile Include="Factories\TextInheritingEntityFactory.Generated.cs" />
+    <Compile Include="Game1.Custom.cs">
+      <DependentUpon>Game1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GlobalContent.Generated.cs" />
+    <Compile Include="GumCore\AnimationFrame.cs" />
+    <Compile Include="GumCore\BitmapCharacterInfo.cs" />
+    <Compile Include="GumCore\BitmapFont.cs" />
+    <Compile Include="GumCore\Blend.cs" />
+    <Compile Include="GumCore\BmfcSave.cs" />
+    <Compile Include="GumCore\Camera.cs" />
+    <Compile Include="GumCore\ComponentSave.cs" />
+    <Compile Include="GumCore\ContentManagerWrapper.cs" />
+    <Compile Include="GumCore\CustomPropertySave.cs" />
+    <Compile Include="GumCore\DimensionUnitType.cs" />
+    <Compile Include="GumCore\ElementReference.cs" />
+    <Compile Include="GumCore\ElementSave.cs" />
+    <Compile Include="GumCore\ElementSaveExtensionMethods.cs" />
+    <Compile Include="GumCore\ElementSaveExtensions.GumRuntime.cs" />
+    <Compile Include="GumCore\ElementWithState.cs" />
+    <Compile Include="GumCore\EventSave.cs" />
+    <Compile Include="GumCore\FileManager.cs" />
+    <Compile Include="GumCore\GraphicalUiElement.cs" />
+    <Compile Include="GumCore\GraphicalUiElement.IWindow.cs">
+      <DependentUpon>GraphicalUiElement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumCore\GuideRectangle.cs" />
+    <Compile Include="GumCore\GumAnimation.cs" />
+    <Compile Include="GumCore\GumIdb.cs" />
+    <Compile Include="GumCore\GumProjectSave.cs" />
+    <Compile Include="GumCore\IAnimation.cs" />
+    <Compile Include="GumCore\IContentLoader.cs" />
+    <Compile Include="GumCore\ImageData.cs" />
+    <Compile Include="GumCore\InstanceSave.cs" />
+    <Compile Include="GumCore\InstanceSaveExtensionMethods.cs" />
+    <Compile Include="GumCore\InstanceSaveExtensionMethods.GumRuntime.cs">
+      <DependentUpon>InstanceSaveExtensionMethods.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumCore\IPositionedSizedObject.cs" />
+    <Compile Include="GumCore\IRenderable.cs" />
+    <Compile Include="GumCore\IVariableFinder.cs" />
+    <Compile Include="GumCore\IVisible.cs" />
+    <Compile Include="GumCore\Layer.cs" />
+    <Compile Include="GumCore\LayerCameraSettings.cs" />
+    <Compile Include="GumCore\Line.cs" />
+    <Compile Include="GumCore\LineCircle.cs" />
+    <Compile Include="GumCore\LineGrid.cs" />
+    <Compile Include="GumCore\LinePrimitive.cs" />
+    <Compile Include="GumCore\LineRectangle.cs" />
+    <Compile Include="GumCore\LoaderManager.cs" />
+    <Compile Include="GumCore\MathFunctions.cs" />
+    <Compile Include="GumCore\NamedRectangle.cs" />
+    <Compile Include="GumCore\NineSlice.cs" />
+    <Compile Include="GumCore\ObjectFinder.cs" />
+    <Compile Include="GumCore\PlatformCompatability.cs" />
+    <Compile Include="GumCore\RecursiveVariableFinder.cs" />
+    <Compile Include="GumCore\ReflectionManager.cs" />
+    <Compile Include="GumCore\Renderer.cs" />
+    <Compile Include="GumCore\ScreenSave.cs" />
+    <Compile Include="GumCore\ShapeManager.cs" />
+    <Compile Include="GumCore\SolidRectangle.cs" />
+    <Compile Include="GumCore\SortableLayer.cs" />
+    <Compile Include="GumCore\Sprite.cs" />
+    <Compile Include="GumCore\SpriteBatchStack.cs" />
+    <Compile Include="GumCore\SpriteManager.cs" />
+    <Compile Include="GumCore\StandardElementSave.cs" />
+    <Compile Include="GumCore\StandardElementsManager.cs" />
+    <Compile Include="GumCore\StateSave.cs" />
+    <Compile Include="GumCore\StateSaveCategory.cs" />
+    <Compile Include="GumCore\StateSaveExtensionMethods.cs" />
+    <Compile Include="GumCore\StringFunctions.cs" />
+    <Compile Include="GumCore\SystemManagers.cs" />
+    <Compile Include="GumCore\SystemManagers.FlatRedBall.cs">
+      <DependentUpon>SystemManagers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumCore\Text.cs" />
+    <Compile Include="GumCore\TextManager.cs" />
+    <Compile Include="GumCore\TextureFlipAnimation.cs" />
+    <Compile Include="GumCore\TimedSpriteSheetAnimation.cs" />
+    <Compile Include="GumCore\UnitConverter.cs" />
+    <Compile Include="GumCore\VariableListSave.cs" />
+    <Compile Include="GumCore\VariableSave.cs" />
+    <Compile Include="GumCore\VariableSaveExtensionMethods.cs" />
+    <Compile Include="GumRuntimes\AlignmentObjectRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\AnimatedComponentRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\ChildStateComponentRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\ColoredRectangleRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\ComponentContainingSpriteRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\ContainerRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\GumIdb.Generated.cs" />
+    <Compile Include="GumRuntimes\NineSliceButtonRuntime.cs" />
+    <Compile Include="GumRuntimes\NineSliceButtonRuntime.Generated.cs">
+      <DependentUpon>NineSliceButtonRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\NineSliceRuntime.cs" />
+    <Compile Include="GumRuntimes\NineSliceRuntime.Generated.cs">
+      <DependentUpon>NineSliceRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\ParentStateComponentRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\SpriteInheritingComponntRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\SpriteRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\StackingComponentRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\SwitchRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\TestComponentRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\TestScreenRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\TextRuntime.cs" />
+    <Compile Include="GumRuntimes\TextRuntime.Generated.cs">
+      <DependentUpon>TextRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\TextureSettingInStateComponentRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\UsedToInheritFromTextComponentRuntime.Generated.cs" />
+    <Compile Include="Performance\IEntityFactory.Generated.cs" />
+    <Compile Include="Performance\IPoolable.Generated.cs" />
+    <Compile Include="Performance\PoolList.Generated.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Game1.cs" />
+    <Compile Include="Rendering\RenderableLayer.cs" />
+    <Compile Include="Rendering\RenderTargetRenderer.cs" />
+    <Compile Include="RuntimeTypes\LinesOfText.cs" />
+    <Compile Include="RuntimeTypes\TestRuntimeClass.cs" />
+    <Compile Include="Screens\AudioScreen.cs" />
+    <Compile Include="Screens\AudioScreen.Generated.cs">
+      <DependentUpon>AudioScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\BaseScreen.cs" />
+    <Compile Include="Screens\BaseScreen.Generated.cs">
+      <DependentUpon>BaseScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CameraAttachScreen.cs" />
+    <Compile Include="Screens\CameraAttachScreen.Generated.cs">
+      <DependentUpon>CameraAttachScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CompilationTestScreen.cs" />
+    <Compile Include="Screens\CompilationTestScreen.Event.cs">
+      <DependentUpon>CompilationTestScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CompilationTestScreen.Generated.cs">
+      <DependentUpon>CompilationTestScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CompilationTestScreen.Generated.Event.cs">
+      <DependentUpon>CompilationTestScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CsvScreen.cs" />
+    <Compile Include="Screens\CsvScreen.Event.cs">
+      <DependentUpon>CsvScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CsvScreen.Generated.cs">
+      <DependentUpon>CsvScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CsvScreen.Generated.Event.cs">
+      <DependentUpon>CsvScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CursorTestScreen.cs" />
+    <Compile Include="Screens\CursorTestScreen.Generated.cs">
+      <DependentUpon>CursorTestScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CustomContentTypeScreen.cs" />
+    <Compile Include="Screens\CustomContentTypeScreen.Generated.cs">
+      <DependentUpon>CustomContentTypeScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\CustomVariableScreen.cs" />
+    <Compile Include="Screens\CustomVariableScreen.Generated.cs">
+      <DependentUpon>CustomVariableScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\DerivedScreen.cs" />
+    <Compile Include="Screens\DerivedScreen.Generated.cs">
+      <DependentUpon>DerivedScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\EventScreen.cs" />
+    <Compile Include="Screens\EventScreen.Event.cs">
+      <DependentUpon>EventScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\EventScreen.Generated.cs">
+      <DependentUpon>EventScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\EventScreen.Generated.Event.cs">
+      <DependentUpon>EventScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\FactoryScreen.cs" />
+    <Compile Include="Screens\FactoryScreen.Generated.cs">
+      <DependentUpon>FactoryScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\FileScreen.cs" />
+    <Compile Include="Screens\FileScreen.Generated.cs">
+      <DependentUpon>FileScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\FirstScreen.cs" />
+    <Compile Include="Screens\FirstScreen.Generated.cs">
+      <DependentUpon>FirstScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\FlatRedBallTypeScreen.cs" />
+    <Compile Include="Screens\FlatRedBallTypeScreen.Generated.cs">
+      <DependentUpon>FlatRedBallTypeScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\GlobalContentScreen.cs" />
+    <Compile Include="Screens\GlobalContentScreen.Generated.cs">
+      <DependentUpon>GlobalContentScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\GumScreen.cs" />
+    <Compile Include="Screens\GumScreen.Generated.cs">
+      <DependentUpon>GumScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\InheritanceScreen.cs" />
+    <Compile Include="Screens\InheritanceScreen.Generated.cs">
+      <DependentUpon>InheritanceScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\InstructionScreen.cs" />
+    <Compile Include="Screens\InstructionScreen.Generated.cs">
+      <DependentUpon>InstructionScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\IWindowScreen.cs" />
+    <Compile Include="Screens\IWindowScreen.Generated.cs">
+      <DependentUpon>IWindowScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\LastScreen.cs" />
+    <Compile Include="Screens\LastScreen.Generated.cs">
+      <DependentUpon>LastScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\LayerScreen.cs" />
+    <Compile Include="Screens\LayerScreen.Generated.cs">
+      <DependentUpon>LayerScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\ListScreen.cs" />
+    <Compile Include="Screens\ListScreen.Generated.cs">
+      <DependentUpon>ListScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\LoadingScreen.cs" />
+    <Compile Include="Screens\LoadingScreen.Generated.cs">
+      <DependentUpon>LoadingScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\LocalizationScreen.cs" />
+    <Compile Include="Screens\LocalizationScreen.Generated.cs">
+      <DependentUpon>LocalizationScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\NodeNetworkScreen.cs" />
+    <Compile Include="Screens\NodeNetworkScreen.Generated.cs">
+      <DependentUpon>NodeNetworkScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\OptionallyCreatedObjectScreen.cs" />
+    <Compile Include="Screens\OptionallyCreatedObjectScreen.Generated.cs">
+      <DependentUpon>OptionallyCreatedObjectScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\PauseScreen.cs" />
+    <Compile Include="Screens\PauseScreen.Generated.cs">
+      <DependentUpon>PauseScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\PositioningScreen.cs" />
+    <Compile Include="Screens\PositioningScreen.Generated.cs">
+      <DependentUpon>PositioningScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\RepeatingScreen.cs" />
+    <Compile Include="Screens\RepeatingScreen.Generated.cs">
+      <DependentUpon>RepeatingScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\SaveClassScreen.cs" />
+    <Compile Include="Screens\SaveClassScreen.Generated.cs">
+      <DependentUpon>SaveClassScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\ScreenAfterAsyncScreen.cs" />
+    <Compile Include="Screens\ScreenAfterAsyncScreen.Generated.cs">
+      <DependentUpon>ScreenAfterAsyncScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\ScreenBeforeAsyncScreen.cs" />
+    <Compile Include="Screens\ScreenBeforeAsyncScreen.Generated.cs">
+      <DependentUpon>ScreenBeforeAsyncScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\ScreenToLoadAsync.cs" />
+    <Compile Include="Screens\ScreenToLoadAsync.Generated.cs">
+      <DependentUpon>ScreenToLoadAsync.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\SizeScreen.cs" />
+    <Compile Include="Screens\SizeScreen.Generated.cs">
+      <DependentUpon>SizeScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\SlowLoadScreen.cs" />
+    <Compile Include="Screens\SlowLoadScreen.Generated.cs">
+      <DependentUpon>SlowLoadScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\SplashScreen.cs" />
+    <Compile Include="Screens\SplashScreen.Generated.cs">
+      <DependentUpon>SplashScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\StateScreen.cs" />
+    <Compile Include="Screens\StateScreen.Generated.cs">
+      <DependentUpon>StateScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\TiledLevelScreen.cs" />
+    <Compile Include="Screens\TiledLevelScreen.Generated.cs">
+      <DependentUpon>TiledLevelScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\TmxScreen.cs" />
+    <Compile Include="Screens\TmxScreen.Generated.cs">
+      <DependentUpon>TmxScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\TransparencyRenderingScreen.cs" />
+    <Compile Include="Screens\TransparencyRenderingScreen.Generated.cs">
+      <DependentUpon>TransparencyRenderingScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\TunneledVariableScreen.cs" />
+    <Compile Include="Screens\TunneledVariableScreen.Generated.cs">
+      <DependentUpon>TunneledVariableScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\XmlScreen.cs" />
+    <Compile Include="Screens\XmlScreen.Generated.cs">
+      <DependentUpon>XmlScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\ZBufferedScreen.cs" />
+    <Compile Include="Screens\ZBufferedScreen.Generated.cs">
+      <DependentUpon>ZBufferedScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Setup\CameraSetup.cs" />
+    <Compile Include="StateInterpolation\Back.cs" />
+    <Compile Include="StateInterpolation\Bounce.cs" />
+    <Compile Include="StateInterpolation\Circular.cs" />
+    <Compile Include="StateInterpolation\Cubic.cs" />
+    <Compile Include="StateInterpolation\Elastic.cs" />
+    <Compile Include="StateInterpolation\Exponential.cs" />
+    <Compile Include="StateInterpolation\Linear.cs" />
+    <Compile Include="StateInterpolation\Quadratic.cs" />
+    <Compile Include="StateInterpolation\Quartic.cs" />
+    <Compile Include="StateInterpolation\Quintic.cs" />
+    <Compile Include="StateInterpolation\ShakeTweener.cs" />
+    <Compile Include="StateInterpolation\Sinusoidal.cs" />
+    <Compile Include="StateInterpolation\Tweener.cs" />
+    <Compile Include="StateInterpolation\TweenerManager.cs" />
+    <Compile Include="TileCollisions\TileShapeCollection.cs" />
+    <Compile Include="TileEntities\TileEntityInstantiator.cs" />
+    <Compile Include="TileGraphics\AnimationChainContainer.cs" />
+    <Compile Include="TileGraphics\LayeredTileMap.cs" />
+    <Compile Include="TileGraphics\LayeredTileMapAnimation.cs" />
+    <Compile Include="TileGraphics\MapDrawableBatch.cs" />
+    <Compile Include="TileGraphics\ReducedTileMapInfo.cs" />
+    <Compile Include="TileGraphics\TileAnimationFrame.cs" />
+    <Compile Include="TileGraphics\Tileset.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Game.ico" />
+    <Content Include="GameThumbnail.png" />
+    <Content Include="Libraries\Xna4Pc\FlatRedBall.Content.dll" />
+    <None Include="redball.BMP">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Libraries\Xna4Pc\FlatRedBall.dll" />
+    <None Include="Libraries\Xna4Pc\FlatRedBall.XML">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 Client Profile %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Xna.Framework.4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft XNA Framework Redistributable 4.0</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
+      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
+      <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GlueTestProjectContent\GlueTestProjectContent.contentproj">
+      <Project>{64B23BEF-DD26-4B81-AAA6-D9F46B0140B4}</Project>
+      <Name>GlueTestProjectContent %28Content%29</Name>
+      <XnaReferenceType>Content</XnaReferenceType>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
+  <!--
+      To modify your build process, add your task inside one of the targets below and uncomment it. 
+      Other similar extension points exist, see Microsoft.Common.targets.
+      <Target Name="BeforeBuild">
+      </Target>
+      <Target Name="AfterBuild">
+      </Target>
+    -->
+</Project>

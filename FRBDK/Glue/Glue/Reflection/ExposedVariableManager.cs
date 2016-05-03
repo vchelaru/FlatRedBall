@@ -730,6 +730,12 @@ namespace FlatRedBall.Glue.Reflection
                             FillListWithAvailableVariablesInType(type, returnValue);
 
                         }
+
+                        var assetTypeInfo = namedObjectSave.GetAssetTypeInfo();
+                        if (assetTypeInfo != null)
+                        {
+                            FillFromVariableDefinitions(returnValue, assetTypeInfo);
+                        }
                         break;
                     case SourceType.FlatRedBallType:
                         type = FillWithExposableMembersForFlatRedBallType(namedObjectSave, returnValue, type);
@@ -811,32 +817,7 @@ namespace FlatRedBall.Glue.Reflection
                     AddSpecialCasePropertiesFor(type, returnValue);
                 }
 
-                foreach (var variable in assetTypeInfo.VariableDefinitions)
-                {
-                    bool isAlreadyHandled = returnValue.Any(item => item.Member == variable.Name);
-
-                    if(!isAlreadyHandled)
-                    {
-                        returnValue.Add(new MemberWithType
-                        {
-                            Member = variable.Name,
-                            Type = variable.Type
-
-                        });
-                    }
-
-                    bool needsCustomType = isAlreadyHandled && 
-                        !string.IsNullOrEmpty(variable.Type) && 
-                        returnValue.Any(item => item.Member == variable.Name && AreTypesEquivalent(item.Type,  variable.Type) == false);
-
-                    if(needsCustomType)
-                    {
-                        var existing = returnValue.FirstOrDefault(item => item.Member == variable.Name);
-
-                        existing.Type = variable.Type;
-                    }
-                }
-
+                FillFromVariableDefinitions(returnValue, assetTypeInfo);
 
             }
             else if (namedObjectSave.IsList && !string.IsNullOrEmpty(namedObjectSave.SourceClassGenericType))
@@ -863,6 +844,35 @@ namespace FlatRedBall.Glue.Reflection
             // it causes any problems.
             //returnValue.Sort();
             return type;
+        }
+
+        private static void FillFromVariableDefinitions(List<MemberWithType> returnValue, AssetTypeInfo assetTypeInfo)
+        {
+            foreach (var variable in assetTypeInfo.VariableDefinitions)
+            {
+                bool isAlreadyHandled = returnValue.Any(item => item.Member == variable.Name);
+
+                if (!isAlreadyHandled)
+                {
+                    returnValue.Add(new MemberWithType
+                    {
+                        Member = variable.Name,
+                        Type = variable.Type
+
+                    });
+                }
+
+                bool needsCustomType = isAlreadyHandled &&
+                    !string.IsNullOrEmpty(variable.Type) &&
+                    returnValue.Any(item => item.Member == variable.Name && AreTypesEquivalent(item.Type, variable.Type) == false);
+
+                if (needsCustomType)
+                {
+                    var existing = returnValue.FirstOrDefault(item => item.Member == variable.Name);
+
+                    existing.Type = variable.Type;
+                }
+            }
         }
 
         static bool AreTypesEquivalent(string type1, string type2)

@@ -1,0 +1,5 @@
+"Name (string, required)",X (float),StringProperty (string),StringListField (List<string>),StringListProperty (List<string>),ComplexCustomTypeListField (GlueTestProject.CustomDataTypes.CustomSubtype),ComplexCustomTypeListProperty (List<GlueTestProject.CustomDataTypes.CustomSubtype>)
+First,100,Test1,StringListField1,StringListProperty1,IntValue=1,"IntValue=3, CustomEnumType=Enum1"
+,,,StringListField2,StringListProperty2,IntValue=2,"IntValue=4, CustomEnumType=Enum2"
+,,,StringListField3,StringListProperty3,,"IntValue=5, CustomEnumType=Enum1"
+,,,,StringListProperty4,,

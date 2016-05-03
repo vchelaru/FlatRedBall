@@ -61,6 +61,25 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
             return codeBlock;
         }
 
+        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, IElement element)
+        {
+            TryGenerateRemoveShapeCollectionFromManagers(codeBlock, element);
+        }
+
+        private static void TryGenerateRemoveShapeCollectionFromManagers(ICodeBlock codeBlock, IElement element)
+        {
+            if (element.IsICollidable())
+            {
+                codeBlock.Line("mGeneratedCollision.RemoveFromManagers(clearThis: false);");
+            }
+        }
+
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        {
+            TryGenerateRemoveShapeCollectionFromManagers(codeBlock, element);
+
+            return codeBlock;
+        }
 
         public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
         {

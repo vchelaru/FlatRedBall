@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnimationChainArraySave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <FileRelativeTextures>false</FileRelativeTextures>
+  <TimeMeasurementUnit>Undefined</TimeMeasurementUnit>
+  <AnimationChain>
+    <Name>asdf</Name>
+    <ColorKey>0</ColorKey>
+  </AnimationChain>
+  <FileName>C:/FlatRedBallProjects/FrbTests/GlueTestProject/GlueTestProject/GlueTestProjectContent/Entities/TunneledVariableEntity/AnimationChainListFile.achx</FileName>
+</AnimationChainArraySave>

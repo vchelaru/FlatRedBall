@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="sheet_9" tilewidth="16" tileheight="16">
+  <image source="sheet_9.png" width="272" height="128"/>
+  <tile id="7">
+   <properties>
+    <property name="Animation (string)" value="Anim1"/>
+   </properties>
+  </tile>
+  <tile id="8">
+   <properties>
+    <property name="Animation2 (float)" value="33"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Tile Layer 1" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt10EOgCAMRFGWev8Lmy6IhIWJpNDpdF7CWr5BkNYkg2sad+x03FTpqtpZsZmlU0RE8tG5rOadraff364ulnVgWFrUgUUdWLJ3sJ3B1sHQNM79z7+U59CZ/lIHFnXEG/eIzB2G4czoekfUnu9pdT5onbued7oTbX2sUgeWTB1f31WmDhN9P0CAcldCwNzH1GLYemYPA6AHUA==
+  </data>
+ </layer>
+ <layer name="Layer2" width="50" height="50">
+  <properties>
+   <property name="Property1 (float)" value="333"/>
+   <property name="Property2 (bool)" value="false"/>
+   <property name="Property3 (int)" value="22"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztz7EJACAMAMGUuv/CaVKIIFgnd/ADfAQAwCyr2kcd3E9d3l5fPwEAAAAAAACzJAnaAOc=
+  </data>
+ </layer>
+</map>

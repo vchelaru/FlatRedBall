@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AndroidProject", "AndroidProject\AndroidProject.csproj", "{F46A8B17-6B24-4D23-832E-36EE3C679DCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallAndroidv2", "..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallAndroidv2.csproj", "{F842215C-BCE1-472D-A4A0-7BAB70B428B3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F46A8B17-6B24-4D23-832E-36EE3C679DCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F46A8B17-6B24-4D23-832E-36EE3C679DCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F46A8B17-6B24-4D23-832E-36EE3C679DCF}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F46A8B17-6B24-4D23-832E-36EE3C679DCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F46A8B17-6B24-4D23-832E-36EE3C679DCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F46A8B17-6B24-4D23-832E-36EE3C679DCF}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F842215C-BCE1-472D-A4A0-7BAB70B428B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F842215C-BCE1-472D-A4A0-7BAB70B428B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F842215C-BCE1-472D-A4A0-7BAB70B428B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F842215C-BCE1-472D-A4A0-7BAB70B428B3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

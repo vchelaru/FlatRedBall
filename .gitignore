@@ -7,3 +7,5 @@ bin/
 *.user
 *.cachefile
 Thumbs.db
+*.aeproperties
+*.csvSettings

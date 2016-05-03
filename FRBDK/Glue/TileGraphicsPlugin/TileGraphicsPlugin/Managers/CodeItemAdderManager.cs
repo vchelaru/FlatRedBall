@@ -31,6 +31,7 @@ namespace TileGraphicsPlugin.Managers
 
             
 
+            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/AbstractMapLayer.cs");
             mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TiledMapSave.Conversion.cs");
             mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TiledMapSave.Serialization.cs");
             mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TileAnimation.cs");

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnimationChainArraySave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <FileRelativeTextures>true</FileRelativeTextures>
+  <TimeMeasurementUnit>Undefined</TimeMeasurementUnit>
+  <CoordinateType>Pixel</CoordinateType>
+  <AnimationChain>
+    <Name>SomeFrame1</Name>
+    <ColorKey>0</ColorKey>
+    <Frame>
+      <FrameLength>0.1</FrameLength>
+      <LeftCoordinate>0</LeftCoordinate>
+      <RightCoordinate>1</RightCoordinate>
+      <TopCoordinate>0</TopCoordinate>
+      <BottomCoordinate>1</BottomCoordinate>
+    </Frame>
+  </AnimationChain>
+</AnimationChainArraySave>
