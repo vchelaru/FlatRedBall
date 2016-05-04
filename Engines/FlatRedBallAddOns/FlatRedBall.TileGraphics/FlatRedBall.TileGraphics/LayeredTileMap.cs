@@ -1,4 +1,4 @@
-﻿using $PROJECT_NAMESPACE$.DataTypes;
+﻿using TileAdventure.DataTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +12,7 @@ using System.IO;
 using TMXGlueLib.DataTypes;
 using TMXGlueLib;
 using FlatRedBall.Graphics;
+using FlatRedBall.Graphics.Animation;
 
 namespace FlatRedBall.TileGraphics
 {
@@ -395,6 +396,71 @@ namespace FlatRedBall.TileGraphics
                     }
                 }
             }
+
+            var tmxDirectory = FileManager.GetDirectory(fileName);
+
+            var animationDictionary = new Dictionary<string, AnimationChain>();
+
+            // add animations
+            foreach (var tileset in tms.Tilesets)
+            {
+
+                string tilesetImageFile = tmxDirectory + tileset.Images[0].Source;
+
+                if (tileset.SourceDirectory != ".")
+                {
+                    tilesetImageFile = tmxDirectory + tileset.SourceDirectory + tileset.Images[0].Source;
+                }
+
+                var texture = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(tilesetImageFile);
+
+                foreach (var tile in tileset.Tiles.Where(item => item.Animation != null && item.Animation.Frames.Count != 0))
+                {
+                    var animation = tile.Animation;
+
+                    var animationChain = new AnimationChain();
+                    foreach (var frame in animation.Frames)
+                    {
+                        var animationFrame = new AnimationFrame();
+                        animationFrame.FrameLength = frame.Duration / 1000.0f;
+                        animationFrame.Texture = texture;
+
+                        int tileIdRelative = frame.TileId;
+                        int globalTileId = (int)(tileIdRelative + tileset.Firstgid);
+
+                        int leftPixel;
+                        int rightPixel;
+                        int topPixel;
+                        int bottomPixel;
+                        TiledMapSave.GetPixelCoordinatesFromGid((uint)globalTileId, tileset, out leftPixel, out topPixel, out rightPixel, out bottomPixel);
+
+                        animationFrame.LeftCoordinate = MapDrawableBatch.CoordinateAdjustment + leftPixel / (float)texture.Width;
+                        animationFrame.RightCoordinate = -MapDrawableBatch.CoordinateAdjustment + rightPixel / (float)texture.Width;
+
+                        animationFrame.TopCoordinate = MapDrawableBatch.CoordinateAdjustment + topPixel / (float)texture.Height;
+                        animationFrame.BottomCoordinate = -MapDrawableBatch.CoordinateAdjustment + bottomPixel / (float)texture.Height;
+
+
+                        animationChain.Add(animationFrame);
+                    }
+
+                    var property = tile.properties.FirstOrDefault(item => item.StrippedNameLower == "name");
+
+                    if (property == null)
+                    {
+                        throw new InvalidOperationException(
+                            $"The tile with ID {tile.id} has an animation, but it doesn't have a Name property, which is required for animation.");
+                    }
+                    else
+                    {
+                        animationDictionary.Add(property.value, animationChain);
+                    }
+
+                }
+
+            }
+
+            toReturn.Animation = new LayeredTileMapAnimation(animationDictionary);
 
             return toReturn;
         }

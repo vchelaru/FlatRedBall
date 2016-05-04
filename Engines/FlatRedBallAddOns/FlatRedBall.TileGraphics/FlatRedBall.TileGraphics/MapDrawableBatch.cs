@@ -386,6 +386,10 @@ namespace FlatRedBall.TileGraphics
             return mMapBatch;
         }
 
+
+        // Bring the texture coordinates in to adjust for rendering issues on dx9/ogl
+        public const float CoordinateAdjustment = .00002f;
+
         internal static MapDrawableBatch FromReducedLayer(TMXGlueLib.DataTypes.ReducedLayerInfo reducedLayerInfo, TMXGlueLib.DataTypes.ReducedTileMapInfo rtmi, string contentManagerName)
         {
             int tileDimensionWidth = rtmi.CellWidthInPixels;
@@ -434,14 +438,12 @@ namespace FlatRedBall.TileGraphics
                 // A multi-layer map will offset the individual layer Z values, the quads should have a Z of 0.
                 // position.Z = reducedLayerInfo.Z;
 
-                // Bring the texture coordinates in to adjust for rendering issues on dx9/ogl
-                const float adjustment = .00002f;
 
                 var textureValues = new Vector4();
-                textureValues.X = adjustment + (float)quad.LeftTexturePixel / (float)texture.Width; // Left
-                textureValues.Y = -adjustment + (float)(quad.LeftTexturePixel + tileDimensionWidth) / (float)texture.Width; // Right
-                textureValues.Z = adjustment + (float)quad.TopTexturePixel / (float)texture.Height; // Top
-                textureValues.W = -adjustment + (float)(quad.TopTexturePixel + tileDimensionHeight) / (float)texture.Height; // Bottom
+                textureValues.X = CoordinateAdjustment + (float)quad.LeftTexturePixel / (float)texture.Width; // Left
+                textureValues.Y = -CoordinateAdjustment + (float)(quad.LeftTexturePixel + tileDimensionWidth) / (float)texture.Width; // Right
+                textureValues.Z = CoordinateAdjustment + (float)quad.TopTexturePixel / (float)texture.Height; // Top
+                textureValues.W = -CoordinateAdjustment + (float)(quad.TopTexturePixel + tileDimensionHeight) / (float)texture.Height; // Bottom
 
                 // pad before doing any rotations/flipping
                 const bool pad = true;
@@ -931,10 +933,13 @@ namespace FlatRedBall.TileGraphics
                 if (midItem > xGreaterThan)
                 {
                     // Is this the last one?
-                    if (mid * 4 + 4 >= list.Length)
-                    {
-                        return mid * 4;
-                    }
+                    // Not sure why this is here, because if we have just 2 items,
+                    // this will always return a value of 1 instead 
+                    //if (mid * 4 + 4 >= list.Length)
+                    //{
+                    //    return mid * 4;
+                    //}
+
                     // did we find it?
                     if (mid > 0 && list[(mid - 1) * 4].Position.X <= xGreaterThan)
                     {
@@ -987,10 +992,12 @@ namespace FlatRedBall.TileGraphics
                 if (midItem > yGreaterThan)
                 {
                     // Is this the last one?
-                    if (mid * 4 + 4 >= list.Length)
-                    {
-                        return mid * 4;
-                    }
+                    // See comment in GetFirstAfterX
+                    //if (mid * 4 + 4 >= list.Length)
+                    //{
+                    //    return mid * 4;
+                    //}
+
                     // did we find it?
                     if (mid > 0 && list[(mid - 1) * 4].Position.Y <= yGreaterThan)
                     {

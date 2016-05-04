@@ -28,14 +28,10 @@ namespace FlatRedBall.TileGraphics
                 AnimationChainContainer container = kvp.Value;
 
 
-                int index = container.CurrentFrameIndex;
+                int indexBefore = container.CurrentFrameIndex;
                 container.Activity(TimeManager.SecondDifference);
-                if (container.CurrentFrameIndex != index)
+                if (container.CurrentFrameIndex != indexBefore)
                 {
-                    if (container.AnimationChain.Name.StartsWith("Rain"))
-                    {
-                        int m = 3;
-                    }
                     ReactToChangedAnimationFrame(kvp.Key, kvp.Value, layeredTileMap);
 
                 }
@@ -53,15 +49,12 @@ namespace FlatRedBall.TileGraphics
 
                 if (nameDictionary.ContainsKey(spriteName))
                 {
-                        var indexes = nameDictionary[spriteName];
+                    var indexes = nameDictionary[spriteName];
 
-                        foreach (int value in indexes)
-                        {
-                            mapLayer.PaintTileTextureCoordinates(value, animationFrame.LeftCoordinate, animationFrame.TopCoordinate);
-
-
-                        }
-
+                    foreach (int value in indexes)
+                    {
+                        mapLayer.PaintTileTextureCoordinates(value, animationFrame.LeftCoordinate, animationFrame.TopCoordinate);
+                    }
                 }
             }
         }

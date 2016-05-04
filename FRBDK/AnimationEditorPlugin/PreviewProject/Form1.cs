@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using FlatRedBall.AnimationEditorForms;
 using FlatRedBall.IO;
 using PreviewProject.IO;
+using FlatRedBall.AnimationEditor;
 
 namespace PreviewProject
 {
@@ -64,6 +65,16 @@ namespace PreviewProject
             mMainControl.AddToolStripMenuItem(loadToolStripItem, "File");
             mMainControl.AddToolStripMenuItem(saveToolStripItem, "File");
             mMainControl.AddToolStripMenuItem(saveAsToolStripItem, "File");
+
+
+            var about = new ToolStripMenuItem("About", null, HandleAboutClicked);
+            mMainControl.AddToolStripMenuItem(about, "Help");
+        }
+
+        private void HandleAboutClicked(object sender, EventArgs e)
+        {
+            AboutWindow window = new AboutWindow();
+            window.Show();
         }
 
         private void HandleNewClick(object sender, EventArgs e)
