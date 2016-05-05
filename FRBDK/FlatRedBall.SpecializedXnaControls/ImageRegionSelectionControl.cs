@@ -350,49 +350,52 @@ namespace FlatRedBall.SpecializedXnaControls
 
         public void CustomInitialize()
         {
-            mTimeManager = new TimeManager();
+            if (!DesignMode)
+            {
+                mTimeManager = new TimeManager();
 
 
-            mManagers = new SystemManagers();
-            mManagers.Initialize(GraphicsDevice);
-            mManagers.Name = "Image Region Selection";
-            Assembly assembly = Assembly.GetAssembly(typeof(GraphicsDeviceControl));// Assembly.GetCallingAssembly();
+                mManagers = new SystemManagers();
+                mManagers.Initialize(GraphicsDevice);
+                mManagers.Name = "Image Region Selection";
+                Assembly assembly = Assembly.GetAssembly(typeof(GraphicsDeviceControl));// Assembly.GetCallingAssembly();
 
-            string targetFntFileName = FileManager.UserApplicationDataForThisApplication + "Font18Arial.fnt";
-            string targetPngFileName = FileManager.UserApplicationDataForThisApplication + "Font18Arial_0.png";
-            FileManager.SaveEmbeddedResource(
-                assembly,
-                "XnaAndWinforms.Content.Font18Arial.fnt",
-                targetFntFileName);
+                string targetFntFileName = FileManager.UserApplicationDataForThisApplication + "Font18Arial.fnt";
+                string targetPngFileName = FileManager.UserApplicationDataForThisApplication + "Font18Arial_0.png";
+                FileManager.SaveEmbeddedResource(
+                    assembly,
+                    "XnaAndWinforms.Content.Font18Arial.fnt",
+                    targetFntFileName);
 
-            FileManager.SaveEmbeddedResource(
-                assembly,
-                "XnaAndWinforms.Content.Font18Arial_0.png",
-                targetPngFileName);
-
-
-
-            var contentLoader = new ContentLoader();
-            contentLoader.SystemManagers = mManagers;
-
-            LoaderManager.Self.ContentLoader = contentLoader;
-            LoaderManager.Self.Initialize("Content/InvalidTexture.png", targetFntFileName, Services, mManagers);
-
-            CreateNewSelector();
-
-            mCursor = new InputLibrary.Cursor();
-            mCursor.Initialize(this);
-
-            mKeyboard = new InputLibrary.Keyboard();
-            mKeyboard.Initialize(this);
-
-            mCameraPanningLogic = new CameraPanningLogic(this, mManagers, mCursor, mKeyboard);
-            mCameraPanningLogic.Panning += HandlePanning;
+                FileManager.SaveEmbeddedResource(
+                    assembly,
+                    "XnaAndWinforms.Content.Font18Arial_0.png",
+                    targetPngFileName);
 
 
 
-            MouseWheel += new MouseEventHandler(MouseWheelRegion);
-            ZoomNumbers = new Zooming.ZoomNumbers();
+                var contentLoader = new ContentLoader();
+                contentLoader.SystemManagers = mManagers;
+
+                LoaderManager.Self.ContentLoader = contentLoader;
+                LoaderManager.Self.Initialize("Content/InvalidTexture.png", targetFntFileName, Services, mManagers);
+
+                CreateNewSelector();
+
+                mCursor = new InputLibrary.Cursor();
+                mCursor.Initialize(this);
+
+                mKeyboard = new InputLibrary.Keyboard();
+                mKeyboard.Initialize(this);
+
+                mCameraPanningLogic = new CameraPanningLogic(this, mManagers, mCursor, mKeyboard);
+                mCameraPanningLogic.Panning += HandlePanning;
+
+
+
+                MouseWheel += new MouseEventHandler(MouseWheelRegion);
+                ZoomNumbers = new Zooming.ZoomNumbers();
+            }
         }
 
         private RegionSelection.RectangleSelector CreateNewSelector()
