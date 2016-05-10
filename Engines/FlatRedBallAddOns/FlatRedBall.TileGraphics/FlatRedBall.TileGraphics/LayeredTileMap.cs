@@ -321,7 +321,7 @@ namespace FlatRedBall.TileGraphics
             {
                 var reducedLayer = rtmi.Layers[i];
 
-                mdb = MapDrawableBatch.FromReducedLayer(reducedLayer, rtmi, contentManagerName);
+                mdb = MapDrawableBatch.FromReducedLayer(reducedLayer, toReturn, rtmi, contentManagerName);
 
                 mdb.AttachTo(toReturn, false);
                 mdb.RelativeZ = reducedLayer.Z;
@@ -356,20 +356,27 @@ namespace FlatRedBall.TileGraphics
                 }
             }
 
-            foreach (var layer in tms.Layers)
+            foreach (var layer in tms.MapLayers)
             {
                 var matchingLayer = toReturn.MapLayers.FirstOrDefault(item => item.Name == layer.Name);
 
 
                 if (matchingLayer != null)
                 {
-                    foreach (var propertyValues in layer.properties)
+                    if (layer is MapLayer)
                     {
-                        matchingLayer.Properties.Add(new NamedValue { Name = propertyValues.StrippedName, Value = propertyValues.value });
+                        var mapLayer = layer as MapLayer;
+                        foreach (var propertyValues in mapLayer.properties)
+                        {
+                            matchingLayer.Properties.Add(new NamedValue
+                            {
+                                Name = propertyValues.StrippedName,
+                                Value = propertyValues.value
+                            });
+                        }
+
+                        matchingLayer.Visible = mapLayer.visible == 1;
                     }
-
-                    matchingLayer.Visible = layer.visible == 1;
-
                 }
             }
 

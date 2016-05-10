@@ -390,12 +390,12 @@ namespace FlatRedBall.TileGraphics
         // Bring the texture coordinates in to adjust for rendering issues on dx9/ogl
         public const float CoordinateAdjustment = .00002f;
 
-        internal static MapDrawableBatch FromReducedLayer(TMXGlueLib.DataTypes.ReducedLayerInfo reducedLayerInfo, TMXGlueLib.DataTypes.ReducedTileMapInfo rtmi, string contentManagerName)
+        internal static MapDrawableBatch FromReducedLayer(TMXGlueLib.DataTypes.ReducedLayerInfo reducedLayerInfo, LayeredTileMap owner, TMXGlueLib.DataTypes.ReducedTileMapInfo rtmi, string contentManagerName)
         {
-            int tileDimensionWidth = rtmi.CellWidthInPixels;
-            int tileDimensionHeight = rtmi.CellHeightInPixels;
-            float quadWidth = rtmi.QuadWidth;
-            float quadHeight = rtmi.QuadHeight;
+            int tileDimensionWidth = reducedLayerInfo.TileWidth;
+            int tileDimensionHeight = reducedLayerInfo.TileHeight;
+            float quadWidth = reducedLayerInfo.TileWidth;
+            float quadHeight = reducedLayerInfo.TileHeight;
 
             string textureName = reducedLayerInfo.Texture;
 
@@ -477,6 +477,13 @@ namespace FlatRedBall.TileGraphics
                 if ((quad.FlipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedDiagonallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedDiagonallyFlag)
                 {
                     toReturn.ApplyDiagonalFlip(tileIndex);
+                }
+
+                if (quad.QuadSpecificProperties != null)
+                {
+                    var listToAdd = quad.QuadSpecificProperties.ToList();
+                    listToAdd.Add(new NamedValue { Name = "Name", Value = quad.Name });
+                    owner.Properties.Add(quad.Name, listToAdd);
                 }
 
                 toReturn.RegisterName(quad.Name, tileIndex);
