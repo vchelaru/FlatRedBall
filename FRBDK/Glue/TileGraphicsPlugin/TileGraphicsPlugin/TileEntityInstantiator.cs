@@ -6,6 +6,7 @@ using System.Linq;
 using $PROJECT_NAMESPACE$.Performance;
 using FlatRedBall.Graphics;
 using System.Reflection;
+using TMXGlueLib.DataTypes;
 
 
 namespace FlatRedBall.TileEntities

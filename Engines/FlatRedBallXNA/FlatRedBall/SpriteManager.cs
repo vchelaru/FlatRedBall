@@ -2406,7 +2406,11 @@ namespace FlatRedBall
             mLayers.Remove(layerToRemove);
         }
 
-
+        /// <summary>
+        /// Removes the argument objectToRemove from all SpriteManager lists (for rendering and automatic updates) as well as
+        /// from any two-way lists that the object may belong to (such as PositionedObjectLists in custom code and lists in Glue).
+        /// </summary>
+        /// <param name="objectToRemove">The object to remove.</param>
         public static void RemovePositionedObject(PositionedObject objectToRemove)
         {
             objectToRemove.RemoveSelfFromListsBelongingTo();

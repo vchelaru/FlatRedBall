@@ -12,6 +12,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Input;
 using FlatRedBall.Debugging;
 using FlatRedBall.Math;
+using TMXGlueLib.DataTypes;
 
 namespace FlatRedBall.TileGraphics
 {
@@ -164,6 +165,12 @@ namespace FlatRedBall.TileGraphics
         #endregion
 
         #region Constructor / Initialization
+
+        // this exists purely for Clone
+        public MapDrawableBatch()
+        {
+
+        }
 
         public MapDrawableBatch(int numberOfTiles, Texture2D texture)
             : base()
@@ -386,6 +393,10 @@ namespace FlatRedBall.TileGraphics
             return mMapBatch;
         }
 
+        public MapDrawableBatch Clone()
+        {
+            return base.Clone<MapDrawableBatch>();
+        }
 
         // Bring the texture coordinates in to adjust for rendering issues on dx9/ogl
         public const float CoordinateAdjustment = .00002f;

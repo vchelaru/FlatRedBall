@@ -1,4 +1,4 @@
-﻿using TileAdventure.DataTypes;
+﻿using $PROJECT_NAMESPACE$.DataTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,16 +16,7 @@ using FlatRedBall.Graphics.Animation;
 
 namespace FlatRedBall.TileGraphics
 {
-    public struct NamedValue
-    {
-        public string Name;
-        public object Value;
 
-        public override string ToString()
-        {
-            return $"{Name}={Value}";
-        }
-    }
 
     public class LayeredTileMap : PositionedObject, IVisible
     {
@@ -87,7 +78,7 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        public List<FlatRedBall.Math.Geometry.ShapeCollection> ShapeCollections { get; } = new List<FlatRedBall.Math.Geometry.ShapeCollection>();
+        public List<FlatRedBall.Math.Geometry.ShapeCollection> ShapeCollections { get; private set; } = new List<FlatRedBall.Math.Geometry.ShapeCollection>();
 
 
         public FlatRedBall.Math.PositionedObjectList<MapDrawableBatch> MapLayers
@@ -482,14 +473,12 @@ namespace FlatRedBall.TileGraphics
 
         public void AddToManagers()
         {
-            foreach (var item in this.mMapLists)
-            {
-                item.AddToManagers();
-            }
+            AddToManagers(null);
         }
 
         public void AddToManagers(FlatRedBall.Graphics.Layer layer)
         {
+            SpriteManager.AddPositionedObject(this);
             foreach (var item in this.mMapLists)
             {
                 item.AddToManagers(layer);
@@ -522,6 +511,30 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
+        public LayeredTileMap Clone()
+        {
+            var toReturn = base.Clone<LayeredTileMap>();
+
+            toReturn.mMapLists = new Math.PositionedObjectList<MapDrawableBatch>();
+
+            foreach (var item in this.MapLayers)
+            {
+                var clonedLayer = item.Clone();
+                if (item.Parent == this)
+                {
+                    clonedLayer.AttachTo(Parent, false);
+                }
+                toReturn.mMapLists.Add(clonedLayer);
+            }
+
+            toReturn.ShapeCollections = new List<Math.Geometry.ShapeCollection>();
+            foreach (var shapeCollection in this.ShapeCollections)
+            {
+                toReturn.ShapeCollections.Add(shapeCollection.Clone());
+            }
+
+            return toReturn;
+        }
 
         public void RemoveFromManagersOneWay()
         {

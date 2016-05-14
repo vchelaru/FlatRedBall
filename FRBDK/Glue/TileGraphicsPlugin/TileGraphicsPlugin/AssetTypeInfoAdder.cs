@@ -62,8 +62,9 @@ namespace TileGraphicsPlugin
             toReturn.DestroyMethod = "this.Destroy()";
             toReturn.ShouldBeDisposed = false;
             toReturn.ShouldAttach = true;
+            // I believe this means it will call Clone() 
+            toReturn.CanBeCloned = true;
             toReturn.MustBeAddedToContentPipeline = false;
-            toReturn.CanBeCloned = false;
             toReturn.HasCursorIsOn = false;
             toReturn.HasVisibleProperty = false;
             toReturn.CanIgnorePausing = false;
