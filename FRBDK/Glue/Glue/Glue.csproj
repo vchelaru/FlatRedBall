@@ -366,14 +366,19 @@
       <DependentUpon>MainControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\MainPlugin.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\PluginView.xaml.cs">
+      <DependentUpon>PluginView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\ViewModels\BrowseGlueVaultViewModel.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\ViewModels\FeedItemViewModel.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\ViewModels\PluginViewModel.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\ExclusionControl.xaml.cs">
       <DependentUpon>ExclusionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\FileExclusionViewModel.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\IndividualProjectSetting.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\MainPlugin.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\ProjectMembershipManager.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\BuildItemViewModel.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\Controls\ToolbarControl.xaml.cs">
       <DependentUpon>ToolbarControl.xaml</DependentUpon>
@@ -1260,6 +1265,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Plugins\EmbeddedPlugins\ManagePlugins\GlueVaultBrowser.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Plugins\EmbeddedPlugins\ManagePlugins\PluginView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

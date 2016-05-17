@@ -55,7 +55,11 @@ namespace FlatRedBall.Glue.SaveClasses
         #endregion
 
 
-
+        public GluxPluginData PluginData
+        {
+            get;
+            set;
+        } = new GluxPluginData();
 
 
         public List<PropertySave> Properties = new List<PropertySave>();

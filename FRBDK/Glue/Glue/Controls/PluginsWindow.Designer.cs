@@ -35,8 +35,9 @@
             this.RemoteActionButton2 = new System.Windows.Forms.Button();
             this.LastUpdatedValueLabel = new System.Windows.Forms.Label();
             this.LastUpdatedTitleLabel = new System.Windows.Forms.Label();
+            this.PluginView = new System.Windows.Forms.Integration.ElementHost();
+            this.pluginView1 = new FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.PluginView();
             this.DetailsTextBox = new System.Windows.Forms.RichTextBox();
-            this.LoadOnStartupCheckbox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -94,7 +95,7 @@
             // RightSideSplitContainer.Panel2
             // 
             this.RightSideSplitContainer.Panel2.Controls.Add(this.DetailsTextBox);
-            this.RightSideSplitContainer.Panel2.Controls.Add(this.LoadOnStartupCheckbox);
+            this.RightSideSplitContainer.Panel2.Controls.Add(this.PluginView);
             this.RightSideSplitContainer.Size = new System.Drawing.Size(288, 273);
             this.RightSideSplitContainer.SplitterDistance = 79;
             this.RightSideSplitContainer.TabIndex = 1;
@@ -138,38 +139,33 @@
             this.LastUpdatedTitleLabel.TabIndex = 0;
             this.LastUpdatedTitleLabel.Text = "Last Updated:";
             // 
+            // PluginView
+            // 
+            this.PluginView.Dock = System.Windows.Forms.DockStyle.Top;
+            this.PluginView.Location = new System.Drawing.Point(0, 0);
+            this.PluginView.Name = "PluginView";
+            this.PluginView.Size = new System.Drawing.Size(284, 33);
+            this.PluginView.TabIndex = 2;
+            this.PluginView.Text = "elementHost1";
+            this.PluginView.Child = this.pluginView1;
+            // 
             // DetailsTextBox
             // 
             this.DetailsTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.DetailsTextBox.Location = new System.Drawing.Point(0, 17);
+            this.DetailsTextBox.Location = new System.Drawing.Point(0, 33);
             this.DetailsTextBox.Name = "DetailsTextBox";
             this.DetailsTextBox.ReadOnly = true;
-            this.DetailsTextBox.Size = new System.Drawing.Size(284, 169);
+            this.DetailsTextBox.Size = new System.Drawing.Size(284, 153);
             this.DetailsTextBox.TabIndex = 0;
             this.DetailsTextBox.Text = "";
-            // 
-            // LoadOnStartupCheckbox
-            // 
-            this.LoadOnStartupCheckbox.AutoSize = true;
-            this.LoadOnStartupCheckbox.Checked = true;
-            this.LoadOnStartupCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.LoadOnStartupCheckbox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.LoadOnStartupCheckbox.Location = new System.Drawing.Point(0, 0);
-            this.LoadOnStartupCheckbox.Name = "LoadOnStartupCheckbox";
-            this.LoadOnStartupCheckbox.Size = new System.Drawing.Size(284, 17);
-            this.LoadOnStartupCheckbox.TabIndex = 1;
-            this.LoadOnStartupCheckbox.Text = "Load on startup";
-            this.LoadOnStartupCheckbox.UseVisualStyleBackColor = true;
-            this.LoadOnStartupCheckbox.CheckedChanged += new System.EventHandler(this.LoadOnStartupCheckbox_CheckedChanged);
             // 
             // PluginsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(425, 273);
             this.Controls.Add(this.splitContainer1);
             this.Name = "PluginsWindow";
-            this.Text = "Plugins";
+            this.Size = new System.Drawing.Size(425, 273);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -177,7 +173,6 @@
             this.RightSideSplitContainer.Panel1.ResumeLayout(false);
             this.RightSideSplitContainer.Panel1.PerformLayout();
             this.RightSideSplitContainer.Panel2.ResumeLayout(false);
-            this.RightSideSplitContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RightSideSplitContainer)).EndInit();
             this.RightSideSplitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -193,7 +188,8 @@
         private System.Windows.Forms.Button RemoteActionButton;
         private System.Windows.Forms.Label LastUpdatedValueLabel;
         private System.Windows.Forms.Label LastUpdatedTitleLabel;
-        private System.Windows.Forms.CheckBox LoadOnStartupCheckbox;
         private System.Windows.Forms.Button RemoteActionButton2;
+        private System.Windows.Forms.Integration.ElementHost PluginView;
+        private Plugins.EmbeddedPlugins.ManagePlugins.PluginView pluginView1;
     }
 }

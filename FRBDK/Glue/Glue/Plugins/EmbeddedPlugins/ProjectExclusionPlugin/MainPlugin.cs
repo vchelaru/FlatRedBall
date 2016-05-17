@@ -17,6 +17,25 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
         public override void StartUp()
         {
             this.ReactToItemSelectHandler += HandleItemSelected;
+            this.ReactToLoadedGlux += HandleLoadedGlux;
+        }
+
+        private void HandleLoadedGlux()
+        {
+            var glueProject = GlueState.Self.CurrentGlueProject;
+
+            var ideProjects = GlueState.Self.GetProjects();
+
+            bool wasAnythingRemoved = false;
+            foreach (var ideProject in ideProjects)
+            {
+                wasAnythingRemoved |= ProjectMembershipManager.Self.RemoveAllExcludedFiles(ideProject, glueProject);
+            }
+
+            if(wasAnythingRemoved)
+            {
+                GlueCommands.Self.ProjectCommands.SaveProjects();
+            }
         }
 
         private void HandleItemSelected(System.Windows.Forms.TreeNode selectedTreeNode)

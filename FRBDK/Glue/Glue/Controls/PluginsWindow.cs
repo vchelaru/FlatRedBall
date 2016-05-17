@@ -10,6 +10,9 @@ using FlatRedBall.Glue.Plugins;
 using System.Reflection;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins.Rss;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels;
+using System.ComponentModel;
+using FlatRedBall.Glue.Managers;
 
 #if GLUE_VIEW
 using PluginManager = GlueView.Plugin.PluginManager;
@@ -70,6 +73,35 @@ namespace FlatRedBall.Glue.Controls
             get
             {
                 return ListBox.SelectedItem as PluginContainer;
+            }
+        }
+
+        PluginViewModel lastPluginViewModel;
+        PluginViewModel SelectedPluginViewModel
+        {
+            get
+            {
+                PluginViewModel toReturn = null;
+
+                if(lastPluginViewModel != null)
+                {
+                    lastPluginViewModel.PropertyChanged -= HandlePluginPropertyChanged;
+                }
+
+                if (SelectedPlugin != null)
+                {
+                    toReturn = new PluginViewModel();
+
+                    toReturn.LoadOnStartup = IsLoadedOnStartup(SelectedPlugin);
+                    toReturn.RequiredByProject = IsRequiredByProject(SelectedPlugin);
+
+                    toReturn.PropertyChanged += HandlePluginPropertyChanged;
+
+                    
+                    toReturn.BackingData = SelectedPlugin;
+                }
+
+                return toReturn;
             }
         }
 
@@ -197,13 +229,14 @@ namespace FlatRedBall.Glue.Controls
                 string text = GetInfoForContainer(container);
 
                 DetailsTextBox.Text = text;
-                LoadOnStartupCheckbox.Visible = true;
-                LoadOnStartupCheckbox.Checked = IsLoadedOnStartup(container);
+                PluginView.Visible = true;
+                (PluginView.Child as System.Windows.Controls.UserControl).DataContext =
+                    SelectedPluginViewModel;
             }
             else
             {
                 DetailsTextBox.Text = null;
-                LoadOnStartupCheckbox.Visible = false;
+                PluginView.Visible = false;
             }
 
             ShowSelectedPluginInformation();
@@ -443,7 +476,6 @@ namespace FlatRedBall.Glue.Controls
         {
             if (SelectedPlugin.DownloadState == DownloadState.InformationDownloaded)
             {
-                int m = 3;
                 if (SelectedPlugin != null)
                 {
                     System.Diagnostics.Process.Start(SelectedPlugin.RemoteLocation);
@@ -463,39 +495,48 @@ namespace FlatRedBall.Glue.Controls
 
         }
 
-        private void LoadOnStartupCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void HandlePluginPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var plugin = SelectedPlugin;
+            var propertyName = e.PropertyName;
 
+            if(propertyName == nameof(SelectedPluginViewModel.LoadOnStartup))
+            {
+                var vm = sender as PluginViewModel;
+                RespondToLoadOnStartupChange(vm.BackingData, vm.LoadOnStartup);
+            }
+            else if(propertyName == nameof(SelectedPluginViewModel.RequiredByProject))
+            {
+                var vm = sender as PluginViewModel;
+
+                RespondToRequiredByProject(vm.BackingData, vm.RequiredByProject);
+            }
+        }
+
+        private void RespondToLoadOnStartupChange(PluginContainer pluginContainer, bool shouldBeLoaded)
+        {
             string pluginFolder = FileManager.GetDirectory(SelectedPlugin.AssemblyLocation);
 
-            bool shouldBeLoaded = true;
-
 #if GLUE
-
             var pluginSettings = GlueState.Self.CurrentPluginSettings;
-
-            shouldBeLoaded = LoadOnStartupCheckbox.Checked;
-
             bool shouldSave = false;
-            if (shouldBeLoaded && !IsLoadedOnStartup(plugin))
+            if (shouldBeLoaded && !IsLoadedOnStartup(pluginContainer))
             {
                 pluginSettings.PluginsToIgnore.Remove(pluginFolder);
 
-                if(plugin.Plugin is NotLoadedPlugin)
+                if (pluginContainer.Plugin is NotLoadedPlugin)
                 {
-                    (plugin.Plugin as NotLoadedPlugin).LoadedState = LoadedState.LoadedNextTime;
+                    (pluginContainer.Plugin as NotLoadedPlugin).LoadedState = LoadedState.LoadedNextTime;
                 }
 
                 shouldSave = true;
             }
-            else if (!shouldBeLoaded && IsLoadedOnStartup(plugin))
+            else if (!shouldBeLoaded && IsLoadedOnStartup(pluginContainer))
             {
                 pluginSettings.PluginsToIgnore.Add(pluginFolder);
 
-                if (plugin.Plugin is NotLoadedPlugin)
+                if (pluginContainer.Plugin is NotLoadedPlugin)
                 {
-                    (plugin.Plugin as NotLoadedPlugin).LoadedState = LoadedState.NotLoaded;
+                    (pluginContainer.Plugin as NotLoadedPlugin).LoadedState = LoadedState.NotLoaded;
                 }
 
                 shouldSave = true;
@@ -506,6 +547,35 @@ namespace FlatRedBall.Glue.Controls
             }
 #endif
         }
+
+
+        private void RespondToRequiredByProject(PluginContainer pluginContainer, bool requiredByProject)
+        {
+            var name = pluginContainer.Name;
+
+            var requiredPlugins = GlueState.Self.CurrentGlueProject.PluginData.RequiredPlugins;
+
+            bool shouldSave = false;
+
+            if(requiredByProject && requiredPlugins.Contains(name) == false)
+            {
+                requiredPlugins.Add(name);
+                shouldSave = true;
+            }
+            else if(requiredByProject == false && requiredPlugins.Contains(name))
+            {
+                requiredPlugins.Remove(name);
+                shouldSave = true;
+            }
+
+            if(shouldSave)
+            {
+                TaskManager.Self.AddAsyncTask(
+                    ()=>GlueCommands.Self.GluxCommands.SaveGlux(),
+                    "Saving project after changing plugin requirements");
+            }
+        }
+
 
         private bool IsLoadedOnStartup(PluginContainer container)
         {
@@ -537,6 +607,17 @@ namespace FlatRedBall.Glue.Controls
             return true;
             #endif
         }
+
+        private bool IsRequiredByProject(PluginContainer selectedPlugin)
+        {
+            string nameToSearchFor = selectedPlugin.Name;
+
+            return GlueState.Self.CurrentGlueProject.PluginData.RequiredPlugins.Contains(nameToSearchFor);
+        }
+
+
+
+
 
         #endregion
 

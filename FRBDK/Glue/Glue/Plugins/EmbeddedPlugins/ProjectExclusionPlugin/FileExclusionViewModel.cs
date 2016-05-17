@@ -61,12 +61,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
 
                     if (isProjectEnabled && rfs.ProjectsToExcludeFrom.Contains(projectName))
                     {
-                        IncludeFileInProject(projectName, rfs);
+                        ProjectMembershipManager.Self.IncludeFileInProject(projectName, rfs);
                         shouldSave = true;
                     }
                     else if (!isProjectEnabled && !rfs.ProjectsToExcludeFrom.Contains(projectName))
                     {
-                        ExcludeFileFromProject(projectName, rfs);
+                        ProjectMembershipManager.Self.ExcludeFileFromProject(projectName, rfs);
                         shouldSave = true;
                     }
 
@@ -98,57 +98,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
                 NotifyPropertyChanged(e.PropertyName);
             //}
 
-        }
-
-        private void IncludeFileInProject(string projectName, ReferencedFileSave rfs)
-        {
-            foreach(var toChange in AllMatching(rfs))
-            {
-                toChange.ProjectsToExcludeFrom.RemoveAll(item=>item == projectName);
-            }
-
-            //It's a little less efficient but we'll just perform a full sync to reuse code:
-
-            var syncedProject = GlueState.Self.GetProjects().FirstOrDefault(item => item.Name == projectName);
-
-            if (syncedProject != null)
-            {
-                syncedProject.SyncTo(GlueState.Self.CurrentMainProject, false);
-            }
-        }
-
-        private static void ExcludeFileFromProject(string projectName, ReferencedFileSave rfs)
-        {
-            foreach (var toChange in AllMatching(rfs))
-            {
-                if (!toChange.ProjectsToExcludeFrom.Contains(projectName))
-                {
-                    toChange.ProjectsToExcludeFrom.Add(projectName);
-                }
-            }
-
-            var syncedProject = GlueState.Self.GetProjects().FirstOrDefault(item => item.Name == projectName);
-
-            if(syncedProject != null)
-            {
-                string absolute = GlueCommands.Self.GetAbsoluteFileName(rfs);
-                syncedProject.RemoveItem(absolute);
-                if (syncedProject.ContentProject != null)
-                {
-                    syncedProject.ContentProject.RemoveItem(absolute);
-                }
-            }
-            
-        }
-
-        private static IEnumerable<ReferencedFileSave> AllMatching(ReferencedFileSave rfs)
-        {
-            yield return rfs;
-            var matching = Elements.ObjectFinder.Self.GetMatchingReferencedFiles(rfs);
-            foreach (var match in matching)
-            {
-                yield return match;
-            }
         }
     }
 }

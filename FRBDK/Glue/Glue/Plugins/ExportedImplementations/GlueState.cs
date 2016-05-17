@@ -225,6 +225,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
+        /// <summary>
+        /// Returns all loaded IDE projects, including the main project and all synced projects.
+        /// </summary>
+        /// <returns></returns>
         public List<ProjectBase> GetProjects()
         {
             var list = new List<ProjectBase>();

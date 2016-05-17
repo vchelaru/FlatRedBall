@@ -522,7 +522,7 @@ namespace FlatRedBall.TileGraphics
                 var clonedLayer = item.Clone();
                 if (item.Parent == this)
                 {
-                    clonedLayer.AttachTo(Parent, false);
+                    clonedLayer.AttachTo(toReturn, false);
                 }
                 toReturn.mMapLists.Add(clonedLayer);
             }

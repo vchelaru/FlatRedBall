@@ -91,6 +91,8 @@ namespace FlatRedBall.Glue.IO
             
             ProjectManager.ProjectBase = ProjectCreator.CreateProject(projectFileName);
 
+            bool shouldLoad = true;
+
             if (ProjectManager.ProjectBase == null)
             {
                 DialogResult result = MessageBox.Show(
@@ -102,8 +104,53 @@ namespace FlatRedBall.Glue.IO
                     System.Diagnostics.Process.Start("http://www.flatredball.com/frb/docs/index.php?title=Glue:Reference:Projects:csproj_File");
 
                 }
+                shouldLoad = false;
             }
-            else
+
+            // see if this project references any plugins that aren't installed:
+            var glueFileName = FileManager.RemoveExtension(projectFileName) + ".glux";
+            if(System.IO.File.Exists(glueFileName))
+            {
+                try
+                {
+                    var tempGlux = GlueProjectSaveExtensions.Load(glueFileName);
+
+                    var requiredPlugins = tempGlux.PluginData.RequiredPlugins;
+
+                    List<string> missingPlugins = new List<string>();
+                    foreach(var requiredPlugin in requiredPlugins)
+                    {
+                        if(PluginManager.AllPluginContainers.Any(item=>item.Name == requiredPlugin) == false)
+                        {
+                            missingPlugins.Add(requiredPlugin);
+                        }
+                    }
+
+                    if(missingPlugins.Count != 0)
+                    {
+                        var message = $"The project {glueFileName} requires the following plugins:";
+
+                        foreach(var item in missingPlugins)
+                        {
+                            message += "\n" + item;
+                        }
+
+                        message += "\nWould you like to load the project anyway? It may not run, or may run incorrectly until all plugins are installed.";
+
+                        var result = MessageBox.Show(message, "Missing Plugins", MessageBoxButtons.YesNo);
+
+                        shouldLoad = result == DialogResult.Yes;
+                    }
+
+                }
+                catch(Exception e)
+                {
+                    GlueGui.ShowMessageBox($"Could not load .glux file {glueFileName}. Error:\n\n{e.ToString()}");
+                    shouldLoad = false;
+                }
+            }
+
+            if (shouldLoad)
             {
 
                 ProjectManager.ProjectBase.Load(projectFileName);
