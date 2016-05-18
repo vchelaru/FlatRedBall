@@ -76,7 +76,7 @@ namespace Gum.Wireframe
         {
             // Always remove it - if it's not a part of it, no big deal, FRB can handle that
             //if (IsComponentOrInstanceOfComponent())
-                GuiManager.RemoveWindow(this);
+            GuiManager.RemoveWindow(this);
         }
 
         #region IWindow implementation
@@ -104,7 +104,7 @@ namespace Gum.Wireframe
 
         public void CallRollOver()
         {
-            if(this.RollOver != null)
+            if (this.RollOver != null)
             {
                 RollOver(this);
             }
@@ -287,7 +287,7 @@ namespace Gum.Wireframe
             }
         }
 
-        
+
         /// <summary>
         /// Tries to handle cursor activity. If this returns true, then either this element or one of its
         /// children handled the activity. 
@@ -311,7 +311,7 @@ namespace Gum.Wireframe
                 #region Try handling by children
 
                 // Let's see if any children have the cursor over:
-                for(int i = this.Children.Count -1; i > -1; i--)
+                for (int i = this.Children.Count - 1; i > -1; i--)
                 {
                     var child = this.Children[i];
                     if (child is GraphicalUiElement)
@@ -321,10 +321,10 @@ namespace Gum.Wireframe
                         // even if they are not components, because they may contain components as their children
                         //if (asGue.IsComponentOrInstanceOfComponent() && asGue.HasCursorOver(cursor))
                         if (asGue.HasCursorOver(cursor))
-                            {
+                        {
                             handledByChild = asGue.TryHandleCursorActivity(cursor);
 
-                            if(handledByChild)
+                            if (handledByChild)
                             {
                                 break;
                             }
@@ -442,7 +442,7 @@ namespace Gum.Wireframe
                 throw new NotImplementedException();
             }
         }
-        
+
         public bool HasCursorOver(Cursor cursor)
         {
             if (((IWindow)this).AbsoluteVisible)
@@ -469,9 +469,10 @@ namespace Gum.Wireframe
             }
         }
 
+        FlatRedBall.Graphics.Layer frbLayer;
         FlatRedBall.Graphics.Layer FlatRedBall.Graphics.ILayered.Layer
         {
-            get { return null; }
+            get { return frbLayer; }
         }
 
         #endregion
@@ -492,22 +493,31 @@ namespace Gum.Wireframe
             set;
         }
 
+        public void MoveToFrbLayer(FlatRedBall.Graphics.Layer frbLayer, global::RenderingLibrary.Graphics.Layer gumLayer)
+        {
+            this.frbLayer = frbLayer;
+            if (gumLayer != null)
+            {
+                this.MoveToLayer(gumLayer);
+            }
+
+        }
 
         public void MoveToFrbLayer(FlatRedBall.Graphics.Layer layer, FlatRedBall.Gum.GumIdb containingScreen)
         {
             var gumLayer = containingScreen.GumLayersOnFrbLayer(layer).FirstOrDefault();
 
-            if (gumLayer != null)
-            {
-                this.MoveToLayer(gumLayer);
-            }
+
 #if DEBUG
-            else
+            if(gumLayer == null)
             {
-                throw new Exception("There is no associated Gum layer for the FRB Layer " + layer);
+                    throw new Exception("There is no associated Gum layer for the FRB Layer " + layer);
             }
 #endif
+
+            MoveToFrbLayer(layer, gumLayer);
         }
+
 
         public void Destroy()
         {

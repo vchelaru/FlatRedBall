@@ -1568,7 +1568,7 @@ namespace FlatRedBall.Glue.FormHelpers
             // search:  addentity, add entity
             if (ProjectManager.GlueProjectSave == null)
             {
-                System.Windows.Forms.MessageBox.Show("You need to load a project first.");
+                System.Windows.Forms.MessageBox.Show("You need to create or load a project first.");
             }
             else
             {
@@ -2570,7 +2570,7 @@ namespace FlatRedBall.Glue.FormHelpers
             // AddScreen, add screen, addnewscreen, add new screen
             if (ProjectManager.GlueProjectSave == null)
             {
-                System.Windows.Forms.MessageBox.Show("You need to load a project first.");
+                System.Windows.Forms.MessageBox.Show("You need to create or load a project first.");
             }
             else
             {

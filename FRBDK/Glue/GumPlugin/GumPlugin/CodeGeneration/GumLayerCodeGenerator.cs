@@ -72,13 +72,21 @@ namespace GumPlugin.CodeGeneration
                         codeBlock.Line(rfs.GetInstanceName() + ".AddGumLayerToFrbLayer(" + layer.InstanceName + "Gum, " + layer.InstanceName + ");");
                     }
                 }
+                bool wasAnythingMovedToALayer = false;
                 // todo:  Need to register the layer here
                 foreach (var item in element.AllNamedObjects.Where(item =>
                     GumPluginCodeGenerator.IsGue(item) &&
                     !string.IsNullOrEmpty(item.LayerOn) &&
                     NamedObjectSaveCodeGenerator.GetFieldCodeGenerationType(item) == CodeGenerationType.Full))
                 {
-                    codeBlock.Line(item.FieldName + ".MoveToLayer(" + item.LayerOn + "Gum);");
+
+                    codeBlock.Line($"{item.FieldName}.MoveToFrbLayer({item.LayerOn}, {item.LayerOn}Gum);");
+                    wasAnythingMovedToALayer = true;
+                }
+
+                if(wasAnythingMovedToALayer && element is FlatRedBall.Glue.SaveClasses.ScreenSave)
+                {
+                    codeBlock.Line("FlatRedBall.Gui.GuiManager.SortZAndLayerBased();");
                 }
             }
             return base.GenerateAddToManagers(codeBlock, element);
