@@ -521,6 +521,8 @@ namespace Gum.Wireframe
 
         public void Destroy()
         {
+            this.Parent = null;
+            this.ParentGue = null;
             this.RemoveFromManagers();
             StopAnimations();
         }
