@@ -1167,6 +1167,23 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
 
                 #endregion
+
+                #region Code
+
+                else if(selectedNode.IsCodeNode())
+                {
+                    var fileName = selectedNode.Text;
+
+                    var absolute = GlueState.Self.CurrentGlueProjectDirectory + fileName;
+
+                    if(System.IO.File.Exists(absolute))
+                    {
+                        System.Diagnostics.Process.Start(absolute);
+                    }
+
+                }
+
+                #endregion
             }
 
         }

@@ -2251,11 +2251,13 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        static List<string> mOldRelativeDirectories = new List<string>();
+
+        static System.Collections.Concurrent.ConcurrentStack<string> mOldRelativeDirectories = new System.Collections.Concurrent.ConcurrentStack<string>();
 
         static void SaveRelativeDirectory()
         {
-            mOldRelativeDirectories.Add(FileManager.RelativeDirectory);
+
+            mOldRelativeDirectories.Push(FileManager.RelativeDirectory);
         }
 
         static void ResumeRelativeDirectory(string function)
@@ -2271,7 +2273,11 @@ namespace FlatRedBall.Glue.Plugins
 
                 try
                 {
-                    differs = FileManager.RelativeDirectory != mOldRelativeDirectories.Last();
+                    string top = null;
+                    if(mOldRelativeDirectories.TryPeek(out top))
+                    {
+                        differs = FileManager.RelativeDirectory != top;
+                    }
                 }
                 catch
                 {
@@ -2280,12 +2286,19 @@ namespace FlatRedBall.Glue.Plugins
                 if (differs)
                 {
                     ReceiveError("The relativeDirectory wasn't set properly in " + function);
-                    FileManager.RelativeDirectory = mOldRelativeDirectories.Last();
+
+                    string top = null;
+                    if (mOldRelativeDirectories.TryPeek(out top))
+                    {
+                        FileManager.RelativeDirectory = top;
+                    }
+
                 }
 
                 try
                 {
-                    mOldRelativeDirectories.RemoveAt(mOldRelativeDirectories.Count - 1);
+                    string throwaway;
+                    mOldRelativeDirectories.TryPop(out throwaway);
                 }
                 catch(ArgumentOutOfRangeException)
                 {
