@@ -12,10 +12,18 @@ namespace NonGraphicalTests.Gui
 
     public class IWindowImplementation : IWindow, IVisible
     {
-        public WindowEvent RollOn;
-        public WindowEvent RollOff;
-        public WindowEvent RollOver;
+        public event WindowEvent Click;
+        public event WindowEvent ClickNoSlide;
+        public event WindowEvent SlideOnClick;
+        public event WindowEvent Push;
+        public event WindowEvent DragOver;
+        public event WindowEvent EnabledChange;
 
+        public event WindowEvent RollOn;
+
+        public event WindowEvent RollOff;
+
+        public event WindowEvent RollOver;
         public System.Collections.ObjectModel.ReadOnlyCollection<IWindow> Children
         {
             get { throw new NotImplementedException(); }
@@ -210,6 +218,8 @@ namespace NonGraphicalTests.Gui
                 throw new NotImplementedException();
             }
         }
+
+
 
         public void Activity(FlatRedBall.Camera camera)
         {
