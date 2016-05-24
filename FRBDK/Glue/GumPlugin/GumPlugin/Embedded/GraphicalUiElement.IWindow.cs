@@ -18,6 +18,7 @@ namespace Gum.Wireframe
         public event WindowEvent RollOn;
         public event WindowEvent RollOff;
         public event WindowEvent RollOver;
+        public event WindowEvent EnabledChange;
 
         public event WindowEvent LosePush;
 
@@ -146,7 +147,11 @@ namespace Gum.Wireframe
             }
             set
             {
-                mEnabled = value;
+                if(value != mEnabled)
+                {
+                    mEnabled = value;
+                    EnabledChange?.Invoke(this);
+                }
             }
         }
 

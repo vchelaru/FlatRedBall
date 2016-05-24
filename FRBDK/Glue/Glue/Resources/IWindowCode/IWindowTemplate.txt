@@ -13,6 +13,7 @@
 		public event FlatRedBall.Gui.WindowEvent RollOff;
 		public event FlatRedBall.Gui.WindowEvent RollOver;
 		public event FlatRedBall.Gui.WindowEvent LosePush;
+		public event FlatRedBall.Gui.WindowEvent EnabledChange;
 
         System.Collections.ObjectModel.ReadOnlyCollection<FlatRedBall.Gui.IWindow> FlatRedBall.Gui.IWindow.Children
         {

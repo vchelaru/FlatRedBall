@@ -35,22 +35,33 @@ namespace GumPlugin.Managers
                     {
                         string instanceName = namedObject.SourceNameWithoutParenthesis;
 
+                        // Click
+                        // RollOver
+                        // RollOn
+                        // RollOff
+
+                        bool shouldAddEvents = false;
+
                         if (instanceName == "this")
                         {
-                            foreach (var exposedEvent in element.Events.Where(item => 
-                                item.Enabled && string.IsNullOrEmpty(item.GetSourceObject())))
-                            {
-                                listToFill.Add(new ExposableEvent(exposedEvent.Name));
-                            }
+                            shouldAddEvents = element is ComponentSave;
                         }
                         else
                         {
-                            foreach (var exposedEvent in element.Events.Where(item => 
-                                item.Enabled && item.GetSourceObject() == instanceName))
-                            {
-                                listToFill.Add(new ExposableEvent(exposedEvent.GetRootName()));
 
-                            }
+                            var instance = element.Instances.FirstOrDefault(item => item.Name == instanceName);
+
+                            var instanceElement = Gum.Managers.ObjectFinder.Self.GetElementSave(instance);
+
+                            shouldAddEvents = instanceElement != null && instanceElement is ComponentSave;
+                        }
+
+                        if(shouldAddEvents)
+                        {
+                            listToFill.Add(new ExposableEvent("Click"));
+                            listToFill.Add(new ExposableEvent("RollOver"));
+                            listToFill.Add(new ExposableEvent("RollOn"));
+                            listToFill.Add(new ExposableEvent("RollOff"));
                         }
                     }
                 }

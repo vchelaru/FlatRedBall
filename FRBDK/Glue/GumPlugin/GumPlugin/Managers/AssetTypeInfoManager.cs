@@ -270,51 +270,55 @@ namespace GumPlugin.Managers
             {
                 if (GueDerivingClassCodeGenerator.Self.ShouldGenerateRuntimeFor(element))
                 {
-                    AssetTypeInfo newAti = FlatRedBall.IO.FileManager.CloneObject<AssetTypeInfo>(GraphicalUiElementAti);
-
-                    
-                    newAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
-                    {
-                        QualifiedType = GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(element)
-                    };
-
-                    if(element is ComponentSave)
-                    {
-                        newAti.Extension = GumProjectSave.ComponentExtension;
-                        newAti.CustomLoadMethod = ComponentAti.CustomLoadMethod + " as " + GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(element);
-                    }
-                    string unqualifiedName = element.Name + "Runtime";
-                    newAti.FriendlyName = unqualifiedName;
-
-
-
-                    newAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\") as " +
-                        newAti.QualifiedRuntimeTypeName.QualifiedType ;
-
+                    AssetTypeInfo newAti = GetAtiFor(element);
                     assetTypeInfos.Add(newAti);
-
-                    if (newAti.ExtraVariablesPattern.EndsWith(";") == false)
-                    {
-                        newAti.ExtraVariablesPattern += ";";
-                    }
-
-                    // 9/24/2014
-                    // Jesse was getting
-                    // the plugin to crash
-                    // on this line of code
-                    // with a NullReferenceException.
-                    // I'm going to wrap this in if-s to be sure it's safe.
-                    if (element != null && element.DefaultState != null && element.DefaultState.Variables != null)
-                    {
-                        foreach (var variable in element.DefaultState.Variables.Where(item => !string.IsNullOrEmpty(item.ExposedAsName)))
-                        {
-                            newAti.ExtraVariablesPattern += variable.Type + " " + variable.ExposedAsName + ";";
-                        }
-                    }
                 }
             }
 
             return assetTypeInfos;
+        }
+
+        private AssetTypeInfo GetAtiFor(ElementSave element)
+        {
+            AssetTypeInfo newAti = FlatRedBall.IO.FileManager.CloneObject<AssetTypeInfo>(GraphicalUiElementAti);
+
+
+            newAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
+            {
+                QualifiedType = GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(element)
+            };
+
+            if (element is ComponentSave)
+            {
+                newAti.Extension = GumProjectSave.ComponentExtension;
+                newAti.CustomLoadMethod = ComponentAti.CustomLoadMethod + " as " + GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(element);
+            }
+            string unqualifiedName = element.Name + "Runtime";
+            newAti.FriendlyName = unqualifiedName;
+
+            newAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\") as " +
+                newAti.QualifiedRuntimeTypeName.QualifiedType;
+
+            if (newAti.ExtraVariablesPattern.EndsWith(";") == false)
+            {
+                newAti.ExtraVariablesPattern += ";";
+            }
+
+            // 9/24/2014
+            // Jesse was getting
+            // the plugin to crash
+            // on this line of code
+            // with a NullReferenceException.
+            // I'm going to wrap this in if-s to be sure it's safe.
+            if (element != null && element.DefaultState != null && element.DefaultState.Variables != null)
+            {
+                foreach (var variable in element.DefaultState.Variables.Where(item => !string.IsNullOrEmpty(item.ExposedAsName)))
+                {
+                    newAti.ExtraVariablesPattern += variable.Type + " " + variable.ExposedAsName + ";";
+                }
+            }
+
+            return newAti;
         }
 
         public void UnloadProjectSpecificAtis()

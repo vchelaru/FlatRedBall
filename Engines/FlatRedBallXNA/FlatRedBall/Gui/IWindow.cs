@@ -13,6 +13,20 @@ namespace FlatRedBall.Gui
     public interface IWindow : INameable, IClickable, ILayered, IVisible
     {
 
+        #region Events
+
+        event WindowEvent Click;
+        event WindowEvent ClickNoSlide;
+        event WindowEvent SlideOnClick;
+        event WindowEvent Push;
+        event WindowEvent DragOver;
+        event WindowEvent RollOn;
+        event WindowEvent RollOff;
+        event WindowEvent RollOver;
+        event WindowEvent EnabledChange;
+
+        #endregion
+
         ReadOnlyCollection<IWindow> Children
         {
             get;
@@ -107,14 +121,7 @@ namespace FlatRedBall.Gui
             get;
         }
 
-        // Don't think we ned this because of IVisible
-        //bool Visible
-        //{
-        //    get;
-        //    set;
-        //}
-
-        IWindow Parent
+        new IWindow Parent
         {
             get;
             set;

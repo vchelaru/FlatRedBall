@@ -2226,7 +2226,11 @@ namespace FlatRedBall
         public virtual void UpdateDependencies(double currentTime)
         {
             // Why are we locking?
-            lock (this)
+            // Victor Chelaru
+            // May 20, 2016 
+            // Still don't know 
+            // why we're locking here, so taking it out:
+            //lock (this)
             {
                 if (mLastDependencyUpdate == currentTime)
                 {
