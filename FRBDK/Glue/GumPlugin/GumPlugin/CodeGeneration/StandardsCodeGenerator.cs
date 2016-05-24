@@ -76,6 +76,8 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("Visible");
             mVariableNamesToSkipForProperties.Add("OutlineThickness");
 
+            mVariableNamesToSkipForProperties.Add("HasEvents");
+
             // What may be supported at some point in the future:
             mVariableNamesToSkipForProperties.Add("Texture Height");
             mVariableNamesToSkipForProperties.Add("Texture Width");

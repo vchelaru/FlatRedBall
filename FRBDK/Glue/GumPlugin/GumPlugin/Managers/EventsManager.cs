@@ -44,16 +44,25 @@ namespace GumPlugin.Managers
 
                         if (instanceName == "this")
                         {
-                            shouldAddEvents = element is ComponentSave;
+                            var asObject = element.GetValueFromThisOrBase("HasEvents");
+
+                            if(asObject != null && asObject is bool)
+                            {
+                                shouldAddEvents = (bool)asObject;
+                            }
                         }
                         else
                         {
 
                             var instance = element.Instances.FirstOrDefault(item => item.Name == instanceName);
 
-                            var instanceElement = Gum.Managers.ObjectFinder.Self.GetElementSave(instance);
+                            var asObject = instance.GetValueFromThisOrBase(element, "HasEvents");
 
-                            shouldAddEvents = instanceElement != null && instanceElement is ComponentSave;
+                            if(asObject != null && asObject is bool)
+                            {
+                                shouldAddEvents = (bool)asObject;
+                            }
+                            
                         }
 
                         if(shouldAddEvents)

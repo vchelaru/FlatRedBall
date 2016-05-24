@@ -203,8 +203,10 @@ namespace GumPlugin.CodeGeneration
             // Get all exposed variables and make properties otu of them.
             if (elementSave.DefaultState != null)
             {
+                var allVariablesToProcess =
+                    elementSave.DefaultState.Variables.Where(item => !string.IsNullOrEmpty(item.ExposedAsName));
 
-                foreach (var variable in elementSave.DefaultState.Variables.Where(item => !string.IsNullOrEmpty(item.ExposedAsName)))
+                foreach (var variable in allVariablesToProcess)
                 {
 
                     string variableType = variable.Type;
