@@ -171,14 +171,6 @@
     <Compile Include="..\..\..\Glue\Glue\Controls\DownloadPluginProgressWindow.Designer.cs">
       <Link>Forms\DownloadPluginProgressWindow.Designer.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\Glue\Glue\Controls\PluginsWindow.cs">
-      <Link>Forms\PluginsWindow.cs</Link>
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="..\..\..\Glue\Glue\Controls\PluginsWindow.designer.cs">
-      <Link>Forms\PluginsWindow.designer.cs</Link>
-      <DependentUpon>PluginsWindow.cs</DependentUpon>
-    </Compile>
     <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Back.cs">
       <Link>States\Back.cs</Link>
     </Compile>
@@ -454,10 +446,6 @@
   <ItemGroup>
     <EmbeddedResource Include="..\..\..\Glue\Glue\Controls\DownloadPluginProgressWindow.resx">
       <Link>Forms\DownloadPluginProgressWindow.resx</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\Glue\Glue\Controls\PluginsWindow.resx">
-      <Link>Forms\PluginsWindow.resx</Link>
-      <DependentUpon>PluginsWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="..\GlueViewOfficialPlugins\Scripting\ScriptingControl.resx">
       <Link>Scripting\ScriptingControl.resx</Link>

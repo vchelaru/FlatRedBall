@@ -10,14 +10,14 @@ using FlatRedBall.Glue.Plugins;
 using System.Reflection;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins.Rss;
-using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels;
 using System.ComponentModel;
-using FlatRedBall.Glue.Managers;
 
 #if GLUE_VIEW
 using PluginManager = GlueView.Plugin.PluginManager;
 using GlueView.Plugin;
 #else
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels;
+using FlatRedBall.Glue.Managers;
 using Glue;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.Rss;
@@ -76,6 +76,7 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
+#if !GLUE_VIEW
         PluginViewModel lastPluginViewModel;
         PluginViewModel SelectedPluginViewModel
         {
@@ -104,6 +105,7 @@ namespace FlatRedBall.Glue.Controls
                 return toReturn;
             }
         }
+#endif
 
         RssItem SelectedRssItem
         {
@@ -111,9 +113,9 @@ namespace FlatRedBall.Glue.Controls
             set;
         }
 
-        #endregion
+#endregion
 
-        #region Constructor
+#region Constructor
 
         public PluginsWindow()
         {
@@ -126,9 +128,9 @@ namespace FlatRedBall.Glue.Controls
 
 
 
-        #endregion
+#endregion
 
-        #region Methods
+#region Methods
 
 
         private void RefreshCheckBoxes()
@@ -579,7 +581,7 @@ namespace FlatRedBall.Glue.Controls
 
         private bool IsLoadedOnStartup(PluginContainer container)
         {
-            #if GLUE
+#if GLUE
 
 
             var plugin = SelectedPlugin.Plugin;
@@ -603,9 +605,9 @@ namespace FlatRedBall.Glue.Controls
 
                 return GlueState.Self.CurrentPluginSettings.PluginsToIgnore.Contains(pluginFolder) == false;
             }
-            #else
+#else
             return true;
-            #endif
+#endif
         }
 
         private bool IsRequiredByProject(PluginContainer selectedPlugin)
@@ -619,7 +621,7 @@ namespace FlatRedBall.Glue.Controls
 
 
 
-        #endregion
+#endregion
 
 
         private void RemoteActionButton2_Click(object sender, EventArgs e)
