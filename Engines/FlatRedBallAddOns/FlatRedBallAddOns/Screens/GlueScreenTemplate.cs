@@ -1,8 +1,9 @@
-﻿#region Usings
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+
 using FlatRedBall;
 using FlatRedBall.Input;
 using FlatRedBall.Instructions;
@@ -17,12 +18,9 @@ using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
 using FlatRedBall.Localization;
 
-#if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
-#endif
-#endregion
 
 namespace FlatRedBallAddOns.Screens
 {

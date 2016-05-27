@@ -1,10 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace FlatRedBall.Gui
 {
-    class IAutomaticallyPositionedChildWindows
+    public interface IToggleable
     {
+        bool IsOn { get; set; }
     }
 }

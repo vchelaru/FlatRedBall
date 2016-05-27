@@ -19,10 +19,10 @@ namespace FlatRedBall.TileCollisions
         float mBottomSeedY = 0;
         float mGridSize;
         bool mVisible = true;
-	
+
 
         bool mFirstTimeSortAxisSet = true;
-		
+
         #endregion
 
         #region Properties
@@ -49,14 +49,14 @@ namespace FlatRedBall.TileCollisions
             get { return mGridSize; }
             set
             {
-				#if DEBUG
+#if DEBUG
                 if (value < 0)
                 {
                     throw new Exception("GridSize needs to be positive");
                 }
-				#endif
-			
-			
+#endif
+
+
                 mGridSize = value;
                 mShapes.MaxAxisAlignedRectanglesScale = mGridSize;
             }
@@ -66,7 +66,7 @@ namespace FlatRedBall.TileCollisions
         {
             get { return mShapes.AxisAlignedRectangles; }
         }
-        
+
         public string Name { get; set; }
 
         public bool Visible
@@ -108,7 +108,7 @@ namespace FlatRedBall.TileCollisions
             return toReturn;
         }
 
-        
+
         public bool CollideAgainstSolid(Polygon movableObject)
         {
             bool toReturn = false;
@@ -128,11 +128,17 @@ namespace FlatRedBall.TileCollisions
         {
             return mShapes.CollideAgainst(circle, true, mSortAxis);
         }
-		
+
+        public bool CollideAgainst(ICollidable collidable)
+        {
+            return mShapes.CollideAgainst(collidable.Collision, true, mSortAxis);
+        }
+
         public bool CollideAgainstSolid(ICollidable collidable)
         {
             bool toReturn = false;
 
+            // does this not support partitioning?
             toReturn = mShapes.CollideAgainstBounce(collidable.Collision, 1, 0, 0);
 
             return toReturn;
@@ -142,8 +148,8 @@ namespace FlatRedBall.TileCollisions
 
         public AxisAlignedRectangle GetTileAt(float x, float y)
         {
-            float roundedX = MathFunctions.RoundFloat(x, GridSize, mLeftSeedX + GridSize/2.0f);
-            float roundedY = MathFunctions.RoundFloat(y, GridSize, mBottomSeedY + GridSize/2.0f);
+            float roundedX = MathFunctions.RoundFloat(x, GridSize, mLeftSeedX + GridSize / 2.0f);
+            float roundedY = MathFunctions.RoundFloat(y, GridSize, mBottomSeedY + GridSize / 2.0f);
             float keyValue = GetKeyValue(roundedX, roundedY);
 
             float keyValueBefore = keyValue - GridSize / 2.0f;
@@ -218,7 +224,7 @@ namespace FlatRedBall.TileCollisions
         public void RemoveCollisionAtWorld(float x, float y)
         {
             AxisAlignedRectangle existing = GetTileAt(x, y);
-            if(existing != null)
+            if (existing != null)
             {
                 ShapeManager.Remove(existing);
 
@@ -254,7 +260,7 @@ namespace FlatRedBall.TileCollisions
                 {
                     below.RepositionDirections |= RepositionDirections.Up;
                 }
-                
+
 
             }
 

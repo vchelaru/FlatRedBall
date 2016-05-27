@@ -15,7 +15,6 @@ using Vector3 = Microsoft.Xna.Framework.Vector3;
 using Color = Microsoft.Xna.Framework.Color;
 #endif
 
-using System.IO.IsolatedStorage;
 using Microsoft.Xna.Framework;
 
 namespace FlatRedBall.AI.LineOfSight

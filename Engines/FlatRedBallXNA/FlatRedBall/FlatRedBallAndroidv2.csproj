@@ -55,7 +55,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\Content\" />
     <Folder Include="Resources\Drawable\" />
     <Folder Include="Resources\Layout\" />
     <Folder Include="Resources\Values\" />
@@ -64,21 +63,6 @@
     <Content Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AI\LineOfSight\IViewer.cs" />
-    <Compile Include="AI\LineOfSight\ViewerInformation.cs" />
-    <Compile Include="AI\LineOfSight\VisibilityGrid.cs" />
-    <Compile Include="AI\Pathfinding\OccupiedTile.cs" />
-    <Compile Include="AI\Pathfinding\PathfindingFunctions.cs" />
-    <Compile Include="AI\Pathfinding\Link.cs" />
-    <Compile Include="AI\Pathfinding\NodeNetwork.cs" />
-    <Compile Include="AI\Pathfinding\PositionedNode.cs" />
-    <Compile Include="AI\Pathfinding\TileNodeNetwork.cs" />
-    <Compile Include="Attributes\ContentSorting.cs" />
-    <Compile Include="Attributes\ExternalInstance.cs" />
-    <Compile Include="Attributes\ExternalInstanceList.cs" />
-    <Compile Include="Attributes\InstanceListMember.cs" />
-    <Compile Include="Audio\AudioManager.cs" />
-    <Compile Include="Audio\SoundEffectPlayInfo.cs" />
     <Compile Include="Content\AI\Pathfinding\LinkSave.cs" />
     <Compile Include="Content\AI\Pathfinding\NodeNetworkSave.cs" />
     <Compile Include="Content\AI\Pathfinding\PositionedNodeSave.cs" />
@@ -92,7 +76,6 @@
     <Compile Include="Content\ContentManager.cs" />
     <Compile Include="Content\CsvReader.cs" />
     <Compile Include="Content\Input\KeyboardRecordSave.cs" />
-    <Compile Include="Attributes\InstanceMember.cs" />
     <Compile Include="Content\Instructions\AnimationSequenceSave.cs" />
     <Compile Include="Content\Instructions\InstructionSave.cs" />
     <Compile Include="Content\Instructions\InstructionSetSave.cs" />
@@ -138,15 +121,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Content\Xml\XmlCleaner.cs" />
-    <Compile Include="Debugging\AutomaticDebuggingBehavior.cs" />
-    <Compile Include="Debugging\Debugger.cs" />
-    <Compile Include="Debugging\PropertyDisplayer.cs" />
-    <Compile Include="Feedback\VibrateMotor.cs" />
-    <Compile Include="Graphics\Animation\AnimationChain.cs" />
     <Compile Include="Graphics\Animation\AnimationChain.Gif.cs" />
-    <Compile Include="Graphics\Animation\AnimationChainList.cs" />
-    <Compile Include="Graphics\Animation\AnimationFrame.cs" />
-    <Compile Include="Graphics\Animation\IAnimationChainAnimatable.cs" />
     <Compile Include="Graphics\BatchForwardVectorSorter.cs" />
     <Compile Include="Graphics\BitmapCharacterInfo.cs" />
     <Compile Include="Graphics\BitmapFont.cs" />
@@ -179,14 +154,6 @@
     <Compile Include="Graphics\TextManager.cs" />
     <Compile Include="Graphics\Tile\GridRelativeState.cs" />
     <Compile Include="Graphics\Tile\IStateGrid.cs" />
-    <Compile Include="Gui\Cursor.cs" />
-    <Compile Include="Gui\Cursor.TouchScreen.cs" />
-    <Compile Include="Gui\GuiManager.cs" />
-    <Compile Include="Gui\IAutomaticallyPositionedChildWindows.cs" />
-    <Compile Include="Gui\IClickable.cs" />
-    <Compile Include="Gui\IInputReceiver.cs" />
-    <Compile Include="Gui\IObjectDisplayer.cs" />
-    <Compile Include="Gui\IWindow.cs" />
     <Compile Include="Input\AnalogButton.cs" />
     <Compile Include="Input\AnalogStick.cs" />
     <Compile Include="Input\ButtonMap.cs" />
@@ -354,7 +321,6 @@
     <Compile Include="Utilities\StringBuilderExtensions.cs" />
     <Compile Include="Utilities\StringEnum.cs" />
     <Compile Include="Utilities\StringFunctions.cs" />
-    <Compile Include="Gui\WindowArray.cs" />
     <Compile Include="IO\FileManager.IsolatedStorage.cs" />
     <Compile Include="Content\DefaultFontDataColors.cs" />
     <Compile Include="Managers\IManager.cs" />

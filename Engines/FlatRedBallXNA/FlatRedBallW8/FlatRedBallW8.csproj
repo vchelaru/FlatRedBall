@@ -102,45 +102,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\FlatRedBall\AI\Pathfinding\Link.cs">
-      <Link>AI\Pathfinding\Link.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\AI\Pathfinding\NodeNetwork.cs">
-      <Link>AI\Pathfinding\NodeNetwork.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\AI\Pathfinding\OccupiedTile.cs">
-      <Link>AI\Pathfinding\OccupiedTile.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\AI\Pathfinding\PathfindingFunctions.cs">
-      <Link>AI\Pathfinding\PathfindingFunctions.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\AI\Pathfinding\PositionedNode.cs">
-      <Link>AI\Pathfinding\PositionedNode.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\AI\Pathfinding\TileNodeNetwork.cs">
-      <Link>AI\Pathfinding\TileNodeNetwork.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Attributes\ContentSorting.cs">
-      <Link>Attributes\ContentSorting.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Attributes\ExternalInstance.cs">
-      <Link>Attributes\ExternalInstance.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Attributes\ExternalInstanceList.cs">
-      <Link>Attributes\ExternalInstanceList.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Attributes\InstanceListMember.cs">
-      <Link>Attributes\InstanceListMember.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Attributes\InstanceMember.cs">
-      <Link>Attributes\InstanceMember.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Audio\AudioManager.cs">
-      <Link>Audio\AudioManager.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Audio\SoundEffectPlayInfo.cs">
-      <Link>Audio\SoundEffectPlayInfo.cs</Link>
-    </Compile>
     <Compile Include="..\FlatRedBall\Compatability\System\ComponentModel\CategoryAttribute.cs">
       <Link>Compatability\CategoryAttribute.cs</Link>
     </Compile>
@@ -306,27 +267,6 @@
     <Compile Include="..\FlatRedBall\Content\SpriteGrid\SpriteGridSaveBase.cs">
       <Link>Content\SpriteGrid\SpriteGridSaveBase.cs</Link>
     </Compile>
-    <Compile Include="..\FlatRedBall\Debugging\AutomaticDebuggingBehavior.cs">
-      <Link>Debugging\AutomaticDebuggingBehavior.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Debugging\Debugger.cs">
-      <Link>Debugging\Debugger.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Feedback\VibrateMotor.cs">
-      <Link>Feedback\VibrateMotor.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Graphics\Animation\AnimationChain.cs">
-      <Link>Graphics\Animation\AnimationChain.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Graphics\Animation\AnimationChainList.cs">
-      <Link>Graphics\Animation\AnimationChainList.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Graphics\Animation\AnimationFrame.cs">
-      <Link>Graphics\Animation\AnimationFrame.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Graphics\Animation\IAnimationChainAnimatable.cs">
-      <Link>Graphics\Animation\IAnimationChainAnimatable.cs</Link>
-    </Compile>
     <Compile Include="..\FlatRedBall\Graphics\BatchForwardVectorSorter.cs">
       <Link>Graphics\BatchForwardVectorSorter.cs</Link>
     </Compile>
@@ -404,30 +344,6 @@
     </Compile>
     <Compile Include="..\FlatRedBall\Graphics\Tile\IStateGrid.cs">
       <Link>Graphics\Tile\IStateGrid.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Gui\Cursor.cs">
-      <Link>Gui\Cursor.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Gui\Cursor.TouchScreen.cs">
-      <Link>Gui\Cursor.TouchScreen.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Gui\GuiManager.cs">
-      <Link>Gui\GuiManager.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Gui\IClickable.cs">
-      <Link>Gui\IClickable.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Gui\IInputReceiver.cs">
-      <Link>Gui\IInputReceiver.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Gui\IObjectDisplayer.cs">
-      <Link>Gui\IObjectDisplayer.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Gui\IWindow.cs">
-      <Link>Gui\IWindow.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Gui\WindowArray.cs">
-      <Link>Gui\WindowArray.cs</Link>
     </Compile>
     <Compile Include="..\FlatRedBall\Input\AnalogButton.cs">
       <Link>Input\AnalogButton.cs</Link>

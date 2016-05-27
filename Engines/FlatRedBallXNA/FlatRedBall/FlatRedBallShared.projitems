@@ -9,16 +9,44 @@
     <Import_RootNamespace>FlatRedBallShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Graphics\" />
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AI\LineOfSight\IViewer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AI\LineOfSight\ViewerInformation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AI\LineOfSight\VisibilityGrid.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AI\Pathfinding\Link.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AI\Pathfinding\NodeNetwork.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AI\Pathfinding\OccupiedTile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AI\Pathfinding\PathfindingFunctions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AI\Pathfinding\PositionedNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AI\Pathfinding\TileNodeNetwork.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\ContentSorting.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\ExternalInstance.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\ExternalInstanceList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\InstanceListMember.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\InstanceMember.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audio\AudioManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audio\SoundEffectPlayInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Camera.Common.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentLoaders\SongLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentLoaders\TextureContentLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\IContentLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Debugging\AutomaticDebuggingBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debugging\CrossPlatform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Debugging\Debugger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Feedback\VibrateMotor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FlatRedBallServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationChain.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationChainList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\IAnimationChainAnimatable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\Cursor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\Cursor.TouchScreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\GuiManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\IClickable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\IInputReceiver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\IToggleable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\IWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\WindowArray.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\ICollidable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputManager.Common.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\IPressableInput.cs" />
