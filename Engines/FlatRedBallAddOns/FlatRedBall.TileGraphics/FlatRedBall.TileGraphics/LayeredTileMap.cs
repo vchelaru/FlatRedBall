@@ -558,6 +558,8 @@ namespace FlatRedBall.TileGraphics
                 SpriteManager.RemoveDrawableBatch(mMapLists[i]);
             }
 
+            SpriteManager.RemovePositionedObject(this);
+
             mMapLists.MakeTwoWay();
         }
     }

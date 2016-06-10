@@ -470,20 +470,39 @@ namespace FlatRedBall
         #region XmlDocs
         /// <summary>
         /// Supplied sprites are billboarded using the camera's RotationMatrix.
+        /// Only the main Camera can billboard sprites.
         /// </summary>
         #endregion
         public void AddSpriteToBillboard(Sprite sprite)
         {
+            // This only works on the main camera. Multi-camera games must implement their
+            // own solutions:
+#if DEBUG
+            if(this != Camera.Main)
+            {
+                throw new InvalidOperationException("Sprites can only be billboarded on the main camera");
+            }
+
+#endif
             this.mSpritesToBillBoard.Add(sprite);
         }
 
-        #region XmlDocs
+
         /// <summary>
         /// Supplied Sprites are billboarded using the camera's RotationMatrix.
+        /// Only the main Camera can billboard sprites.
         /// </summary>
-        #endregion
         public void AddSpriteToBillboard(IEnumerable<Sprite> sprites)
         {
+            // This only works on the main camera. Multi-camera games must implement their
+            // own solutions:
+#if DEBUG
+            if (this != Camera.Main)
+            {
+                throw new InvalidOperationException("Sprites can only be billboarded on the main camera");
+            }
+
+#endif
             this.mSpritesToBillBoard.AddRange(sprites);
         }
 
@@ -1296,24 +1315,6 @@ namespace FlatRedBall
         {
             base.UpdateDependencies(currentTime);
 
-            // FRB_XNA support rotation after billboarding, so we're going to
-            // to apply billboarding in the rendering.
-#if !FRB_XNA
-            //Billboard the sprites that have been added for billboarding.
-            for (int i = 0; i < this.mSpritesToBillBoard.Count; i++)
-            {
-                Sprite s = mSpritesToBillBoard[i];
-
-                if (s.Parent == null)
-                {
-                    s.RotationMatrix = this.RotationMatrix;
-                }
-                else
-                {
-                    s.RelativeRotationMatrix = this.RotationMatrix;
-                }
-            }
-#endif
             // This will be done both in TimedUpdate as well as here
             X = System.Math.Min(X, mMaximumX);
             X = System.Math.Max(X, mMinimumX);

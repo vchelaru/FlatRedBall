@@ -513,10 +513,14 @@ namespace Gum.Wireframe
             var gumLayer = containingScreen.GumLayersOnFrbLayer(layer).FirstOrDefault();
 
 
+
 #if DEBUG
             if(gumLayer == null)
             {
-                    throw new Exception("There is no associated Gum layer for the FRB Layer " + layer);
+                string message = "There is no associated Gum layer for the FRB Layer " + layer + ".\n" +
+                    "To fix this, either add the Layer to Glue, or call AddGumLayerToFrbLayer on the GumIdb with " +
+                    "a new instance of a Gum layer. To see an example of how to use AddGumLayerToFrbLayer, add a FRB Layer to Glue and look at generated code." ;
+                    throw new Exception(message);
             }
 #endif
 

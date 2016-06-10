@@ -471,6 +471,20 @@ namespace FlatRedBall.Gum
         public void Destroy()
         {
             element.RemoveFromManagers();
+
+            foreach (var kvp in mFrbToGumLayers)
+            {
+                var listOfGumLayers = kvp.Value;
+                foreach (var gumLayer in listOfGumLayers)
+                {
+                    mManagers.Renderer.RemoveLayer(gumLayer);
+                }
+            }
+
+            // Not sure if we need to do some work to only clear layers for the instance rather than all,
+            // in case we're async loading
+            mFrbToGumLayers.Clear();
+
         }
         #endregion
 

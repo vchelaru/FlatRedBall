@@ -101,8 +101,8 @@ namespace GumPlugin.Managers
                         // I have time to dig into the UpdateLayout to see why it's properly positioning all children.
                         "Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = false; {THIS}.Element.UpdateLayout(); {THIS}.Element.UpdateLayout();";
 
-
-                    mScreenAti.DestroyMethod = "this.Element.RemoveFromManagers()";
+                    
+                    mScreenAti.DestroyMethod = "FlatRedBall.SpriteManager.RemoveDrawableBatch(this)";
                     mScreenAti.SupportsMakeOneWay = false;
                     mScreenAti.ShouldAttach = false;
                     mScreenAti.MustBeAddedToContentPipeline = false;
