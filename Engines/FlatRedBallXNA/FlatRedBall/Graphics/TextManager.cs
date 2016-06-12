@@ -618,19 +618,12 @@ namespace FlatRedBall.Graphics
             return GetWidth(text, spacing, mDefaultFont);
         }
 
-#if SILVERLIGHT
-        public static float GetWidth(string text, float spacing, SpriteFont font)
-        {
-            if (text == null)   return 0;
-            else                return GetWidth(text, spacing, font, 0, text.Length, null);
-        }
-#else
         public static float GetWidth(string text, float spacing, BitmapFont font)
         {
             if (text == null)   return 0;
             else                return GetWidth(text, spacing, font, 0, text.Length, WidthList);
         }
-#endif
+
         public static float GetWidth(string text, float spacing, BitmapFont font, int startIndex, int count)
         {
             
@@ -705,60 +698,11 @@ namespace FlatRedBall.Graphics
             }
             else // using bitmap text
             {
-#if SILVERLIGHT
-                return GetWidth(text.DisplayText, text.Spacing, DefaultSpriteFont);
-
-#else
                 return GetWidth(text.mAdjustedText, text.Spacing, text.Font);
-#endif
             }
         }
 
 
-#if SILVERLIGHT
-        public static string InsertNewLines(string text, float spacing, float maxWidth, SpriteFont font)
-        {
-            // if the text is null or empty, just return the text as is
-            if (text == null || text == "") return text;
-
-            int letterOn = 0;
-            int lineOn = -1;
-            int asciiNumber;
-            int lastWhitespace = -1;
-
-            float currentHeight = -1;
-            int startIndex = 0;
-
-            maxWidth *= (float)(font.FontSize / spacing);
-
-            for (int i = 0; i < text.Length; i++)
-            {
-                char charAtIndex = text[i];
-
-                Vector2 newDimensions = font.MeasureString(text.Substring(startIndex, i + 1 - startIndex), maxWidth);
-                if (charAtIndex == ' ' || charAtIndex == '\n' || charAtIndex == '\t' || charAtIndex == '\r')
-                {
-                    lastWhitespace = i;
-                }
-                if (newDimensions.X > maxWidth)
-                {
-                    lineOn++;
-
-                    if (lastWhitespace != -1)
-                    {
-                        text = text.Remove(lastWhitespace, 1).Insert(lastWhitespace, "\n");
-                        startIndex = lastWhitespace + 1;
-                        i = startIndex;
-                    }
-                }
-
-
-            }
-
-
-            return text;
-        }
-#else
         public static string InsertNewLines(string text, float spacing, float maxWidth, BitmapFont font)
 
         {
@@ -786,7 +730,6 @@ namespace FlatRedBall.Graphics
 
             return text;
         }
-#endif
 
 
         internal static bool InsertOneNewLine(ref string text, ref int letterOn, ref int lineOn, BitmapFont font, float spacing, float maxWidth)
