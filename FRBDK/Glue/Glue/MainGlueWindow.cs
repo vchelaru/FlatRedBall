@@ -710,8 +710,7 @@ namespace Glue
 
         private void addObjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NamedObjectSaveExtensionMethodsGlue.ShowCreateNamedObjectUi();
-
+            GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
         }
 
         private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)

@@ -194,7 +194,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #endregion
 
-            #region IsScreenObjectContainerNode
+            #region IsRootObjectNode
 
             else if (targetNode.IsRootObjectNode())
             {

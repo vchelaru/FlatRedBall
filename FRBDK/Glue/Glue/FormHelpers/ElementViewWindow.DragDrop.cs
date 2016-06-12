@@ -19,6 +19,7 @@ using EditorObjects.Parsing;
 using System.IO;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.ViewModels;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -432,6 +433,13 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
                 MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
+            }
+            else if(targetNode.IsRootNamedObjectNode())
+            {
+                AddObjectViewModel viewModel = new AddObjectViewModel();
+                viewModel.SourceType = SourceType.File;
+                viewModel.SourceFile = (treeNodeMoving.Tag as ReferencedFileSave).Name;
+                GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
             }
             else if (!targetNode.IsFilesContainerNode() &&
                 !targetNode.IsFolderInFilesContainerNode() &&

@@ -74,6 +74,23 @@ namespace FlatRedBall.Glue.Controls
                     return SaveClasses.SourceType.Entity;
                 }
             }
+            set
+            {
+                switch(value)
+                {
+                    case SourceType.FlatRedBallType:
+                        FlatRedBallTypeRadioButton.Checked = true;
+                        break;
+                    case SourceType.File:
+                        FromFileRadioButton.Checked = true;
+                        break;
+                    case SourceType.Entity:
+                        this.EntityRadioButton.Checked = true;
+                        break;
+                    default:
+                        throw new NotImplementedException($"Selection type {value} not supported.");
+                }
+            }
         }
 
         public string SourceFile
@@ -88,6 +105,10 @@ namespace FlatRedBall.Glue.Controls
                     }
                 }
                 return "";
+            }
+            set
+            {
+                FilesTreeView.SelectedNode = FilesTreeView.Nodes.FirstOrDefault(item => item.Text == value);
             }
 
         }
