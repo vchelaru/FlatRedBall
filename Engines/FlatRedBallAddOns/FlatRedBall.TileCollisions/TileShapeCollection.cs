@@ -138,8 +138,7 @@ namespace FlatRedBall.TileCollisions
         {
             bool toReturn = false;
 
-            // does this not support partitioning?
-            toReturn = mShapes.CollideAgainstBounce(collidable.Collision, 1, 0, 0);
+            toReturn = mShapes.CollideAgainstBounce(collidable.Collision, true, mSortAxis, 1, 0, 0);
 
             return toReturn;
         }

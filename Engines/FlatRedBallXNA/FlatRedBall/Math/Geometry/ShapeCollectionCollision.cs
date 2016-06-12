@@ -2910,49 +2910,49 @@ namespace FlatRedBall.Math.Geometry
 			{
                 AxisAlignedRectangle shape = shapeToCollideAgainstThis.AxisAlignedRectangles[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, false, Axis.X);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Circles.Count; i++)
 			{
                 Circle shape = shapeToCollideAgainstThis.Circles[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, false, Axis.X);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Polygons.Count; i++)
 			{
                 Polygon shape = shapeToCollideAgainstThis.Polygons[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, false, Axis.X);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Lines.Count; i++)
 			{
                 Line shape = shapeToCollideAgainstThis.Lines[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, false, Axis.X);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Capsule2Ds.Count; i++)
 			{
                 Capsule2D shape = shapeToCollideAgainstThis.Capsule2Ds[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, false, Axis.X);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Spheres.Count; i++)
 			{
                 Sphere shape = shapeToCollideAgainstThis.Spheres[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, false, Axis.X);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.AxisAlignedCubes.Count; i++)
 			{
                 AxisAlignedCube shape = shapeToCollideAgainstThis.AxisAlignedCubes[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, false, Axis.X);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThis(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse);
             }
 
 			thisShapeCollection.mSuppressLastCollisionClear = false;
@@ -2968,49 +2968,49 @@ namespace FlatRedBall.Math.Geometry
 			{
                 AxisAlignedRectangle shape = shapeToCollideAgainstThis.AxisAlignedRectangles[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, false, Axis.X, shapeMass, collectionMass);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Circles.Count; i++)
 			{
                 Circle shape = shapeToCollideAgainstThis.Circles[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, false, Axis.X, shapeMass, collectionMass);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Polygons.Count; i++)
 			{
                 Polygon shape = shapeToCollideAgainstThis.Polygons[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, false, Axis.X, shapeMass, collectionMass);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Lines.Count; i++)
 			{
                 Line shape = shapeToCollideAgainstThis.Lines[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, false, Axis.X, shapeMass, collectionMass);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Capsule2Ds.Count; i++)
 			{
                 Capsule2D shape = shapeToCollideAgainstThis.Capsule2Ds[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, false, Axis.X, shapeMass, collectionMass);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Spheres.Count; i++)
 			{
                 Sphere shape = shapeToCollideAgainstThis.Spheres[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, false, Axis.X, shapeMass, collectionMass);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.AxisAlignedCubes.Count; i++)
 			{
                 AxisAlignedCube shape = shapeToCollideAgainstThis.AxisAlignedCubes[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, false, Axis.X, shapeMass, collectionMass);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass);
             }
 
 			thisShapeCollection.mSuppressLastCollisionClear = false;
@@ -3026,49 +3026,49 @@ namespace FlatRedBall.Math.Geometry
 			{
                 AxisAlignedRectangle shape = shapeToCollideAgainstThis.AxisAlignedRectangles[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, false, Axis.X, shapeMass, collectionMass, elasticity);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass, elasticity);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Circles.Count; i++)
 			{
                 Circle shape = shapeToCollideAgainstThis.Circles[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, false, Axis.X, shapeMass, collectionMass, elasticity);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass, elasticity);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Polygons.Count; i++)
 			{
                 Polygon shape = shapeToCollideAgainstThis.Polygons[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, false, Axis.X, shapeMass, collectionMass, elasticity);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass, elasticity);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Lines.Count; i++)
 			{
                 Line shape = shapeToCollideAgainstThis.Lines[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, false, Axis.X, shapeMass, collectionMass, elasticity);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass, elasticity);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Capsule2Ds.Count; i++)
 			{
                 Capsule2D shape = shapeToCollideAgainstThis.Capsule2Ds[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, false, Axis.X, shapeMass, collectionMass, elasticity);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass, elasticity);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.Spheres.Count; i++)
 			{
                 Sphere shape = shapeToCollideAgainstThis.Spheres[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, false, Axis.X, shapeMass, collectionMass, elasticity);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass, elasticity);
             }
 
             for (int i = 0; i < shapeToCollideAgainstThis.AxisAlignedCubes.Count; i++)
 			{
                 AxisAlignedCube shape = shapeToCollideAgainstThis.AxisAlignedCubes[i];
 
-                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, false, Axis.X, shapeMass, collectionMass, elasticity);
+                returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass, elasticity);
             }
 
 			thisShapeCollection.mSuppressLastCollisionClear = false;
