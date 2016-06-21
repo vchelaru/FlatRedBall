@@ -555,14 +555,12 @@ namespace FlatRedBall
                 mTypesThatCanBeLoaded.Add(typeof(Texture2D));
                 mTypesThatCanBeLoaded.Add(typeof(Scene));
                 mTypesThatCanBeLoaded.Add(typeof(EmitterList));
-#if !XBOX360 && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
                 mTypesThatCanBeLoaded.Add(typeof(System.Drawing.Image));
                 mTypesThatCanBeLoaded.Add(typeof(BitmapList));
 #endif
 
-#if SUPPORTS_FRB_DRAWN_GUI
-                mTypesThatCanBeLoaded.Add(typeof(GuiSkin));
-#endif
+
                 mTypesThatCanBeLoaded.Add(typeof(Effect));
                 mTypesThatCanBeLoaded.Add(typeof(NodeNetwork));
                 mTypesThatCanBeLoaded.Add(typeof(ShapeCollection));

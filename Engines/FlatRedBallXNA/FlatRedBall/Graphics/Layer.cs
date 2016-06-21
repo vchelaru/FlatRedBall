@@ -31,6 +31,7 @@ using Rectangle = System.Drawing.Rectangle;
 using Matrix = Microsoft.Xna.Framework.Matrix;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 #endif
 
@@ -541,7 +542,11 @@ namespace FlatRedBall.Graphics
             set { mVisible = value; }
         }
 
-
+        public RenderTarget2D RenderTarget
+        {
+            get;
+            set;
+        }
 
         #endregion
 

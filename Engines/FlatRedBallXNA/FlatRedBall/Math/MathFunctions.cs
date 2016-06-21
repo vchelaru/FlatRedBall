@@ -963,6 +963,21 @@ namespace FlatRedBall.Math
             }
         }
 
+        public static float MaxAbs(float value1, float value2)
+        {
+            var absValue1 = System.Math.Abs(value1);
+            var absValue2 = System.Math.Abs(value2);
+
+            if(absValue1 > absValue2)
+            {
+                return value1;
+            }
+            else
+            {
+                return value2;
+            }
+        }
+
         public static int NextPowerOfTwo(int startingValue)
         {
             int nextPowerOf2 = 1;

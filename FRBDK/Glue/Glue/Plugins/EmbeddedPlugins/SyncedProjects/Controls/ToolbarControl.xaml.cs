@@ -28,7 +28,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects.Controls
 
         private void VisualStudioButtonClick(object sender, RoutedEventArgs e)
         {
-            ProjectListEntry.OpenInVisualStudio(GlueState.Self.CurrentMainProject);
+            if(GlueState.Self.CurrentMainProject != null)
+            {
+                ProjectListEntry.OpenInVisualStudio(GlueState.Self.CurrentMainProject);
+            }
+            else
+            {
+                MessageBox.Show("No Glue project loaded");
+            }
         }
     }
 }

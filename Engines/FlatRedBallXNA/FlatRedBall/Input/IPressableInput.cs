@@ -39,8 +39,21 @@ namespace FlatRedBall.Input
         }
     }
 
+    /// <summary>
+    /// An IPressableInput interface which can contain multiple IPressableInputs. This is useful if a particular action can be
+    /// performed with multiple inputs, such as both the space bar and a game pad's A button being used to make a character jump.
+    /// </summary>
     public class MultiplePressableInputs : IPressableInput
     {
+        /// <summary>
+        /// The list of inputs to be used for an action.
+        /// </summary>
+        /// <example>
+        /// // The following shows how to add the space bar and the enter key:
+        /// var jumpInput = new MultiplePressableInputs();
+        /// jumpInput.Inputs.Add(InputManager.Keyboard.GetKey(Keys.Space));
+        /// jumpInput.Inputs.Add(InputManager.Keyboard.GetKey(Keys.Enter));
+        /// </example>
         public List<IPressableInput> Inputs
         {
             get;

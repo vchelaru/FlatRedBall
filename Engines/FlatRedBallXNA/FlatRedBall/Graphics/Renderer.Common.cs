@@ -101,7 +101,7 @@ namespace FlatRedBall.Graphics
             set { mDrawableBatchComparer = value; }
         }
 
-        private static void DrawIndividualLayer(Camera camera, RenderMode renderMode, Layer layer, Section section)
+        private static void DrawIndividualLayer(Camera camera, RenderMode renderMode, Layer layer, Section section, ref RenderTarget2D lastRenderTarget)
         {
             bool hasLayerModifiedCamera = false;
 
@@ -118,7 +118,27 @@ namespace FlatRedBall.Graphics
                     }
                     Section.GetAndStartContextAndTime("Layer: " + layerName);
                 }
-                ClearBackgroundForLayer(camera);
+
+                bool didSetRenderTarget = layer.RenderTarget != lastRenderTarget;
+                if(didSetRenderTarget)
+                {
+                    lastRenderTarget = layer.RenderTarget;
+                    GraphicsDevice.SetRenderTarget(layer.RenderTarget);
+
+                    if(layer.RenderTarget != null)
+                    {
+                        mGraphics.GraphicsDevice.Clear(ClearOptions.Target,
+                            Color.Transparent,
+                            1, 0);
+
+                    }
+                }
+
+                // No need to clear depth buffer if it's a render target
+                if(!didSetRenderTarget)
+                {
+                    ClearBackgroundForLayer(camera);
+                }
 
 
                 #region Set View and Projection
@@ -177,6 +197,8 @@ namespace FlatRedBall.Graphics
                     mOldCameraLayerSettings.ApplyValuesToCamera(camera, SetCameraOptions.ApplyMatrix, layer.LayerCameraSettings);
                     camera.Position = oldPosition;
                 }
+
+
                 if (section != null)
                 {
                     Section.EndContextAndTime();
@@ -867,9 +889,10 @@ namespace FlatRedBall.Graphics
         static LayerCameraSettings mOldCameraLayerSettings = new LayerCameraSettings();
         private static void DrawLayers(Camera camera, RenderMode renderMode, Section section)
         {
-            
+
             //TimeManager.SumTimeSection("Set device settings");
 
+            RenderTarget2D lastRenderTarget = null;
 
             #region Draw World Layers
             // Draw layers that belong to the World "SpriteEditor"
@@ -881,7 +904,7 @@ namespace FlatRedBall.Graphics
                 {
                     Layer layer = SpriteManager.LayersWriteable[i];
 
-                    DrawIndividualLayer(camera, renderMode, layer, section);
+                    DrawIndividualLayer(camera, renderMode, layer, section, ref lastRenderTarget);
 
                 }
             }
@@ -896,7 +919,7 @@ namespace FlatRedBall.Graphics
                 for (int i = 0; i < layerCount; i++)
                 {
                     Layer layer = camera.Layers[i];
-                    DrawIndividualLayer(camera, renderMode, layer, section);
+                    DrawIndividualLayer(camera, renderMode, layer, section, ref lastRenderTarget);
                 }
             }
             #endregion
@@ -909,10 +932,15 @@ namespace FlatRedBall.Graphics
             {
                 Layer layer = SpriteManager.TopLayer;
 
-                DrawIndividualLayer(camera, renderMode, layer, section);
+                DrawIndividualLayer(camera, renderMode, layer, section, ref lastRenderTarget);
 
             }
             #endregion
+
+            if(lastRenderTarget != null)
+            {
+                mGraphics.GraphicsDevice.SetRenderTarget(null);
+            }
 
             //TimeManager.SumTimeSection("Last, draw the top layer");
         }
@@ -1057,9 +1085,14 @@ namespace FlatRedBall.Graphics
             if (camera.DrawsWorld && !SpriteManager.UnderAllDrawnLayer.IsEmpty)
             {
                 Layer layer = SpriteManager.UnderAllDrawnLayer;
-                
-                DrawIndividualLayer(camera, RenderMode.Default, layer, section);
 
+                RenderTarget2D lastRenderTarget = null;
+                DrawIndividualLayer(camera, RenderMode.Default, layer, section, ref lastRenderTarget);
+
+                if(lastRenderTarget != null)
+                {
+                    GraphicsDevice.SetRenderTarget(null);
+                }
             }
 
             if (section != null)

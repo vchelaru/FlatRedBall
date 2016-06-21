@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace FlatRedBall.Input
 {
@@ -32,6 +33,42 @@ namespace FlatRedBall.Input
             get
             {
                 return velocity();
+            }
+        }
+    }
+
+    public class Multiple1DInputs : I1DInput
+    {
+        public List<I1DInput> Inputs
+        {
+            get;
+            private set;
+        }
+
+        public float Value
+        {
+            get
+            {
+                float toReturn = 0;
+                foreach(var item in Inputs)
+                {
+                    toReturn = Math.MathFunctions.MaxAbs(toReturn, item.Value);
+                }
+                return toReturn;
+            }
+        }
+
+        public float Velocity
+        {
+            get
+            {
+                float toReturn = 0;
+
+                foreach (var item in Inputs)
+                {
+                    toReturn = Math.MathFunctions.MaxAbs(toReturn, item.Velocity);
+                }
+                return toReturn;
             }
         }
     }
