@@ -261,6 +261,19 @@ namespace FlatRedBall.Glue.SaveClasses
             return ImplementsIWindow == true;
         }
 
+        [CategoryAttribute("Inheritance and Interfaces")]
+        public bool ImplementsIDrawableBatch
+        {
+            get
+            {
+                return Properties.GetValue<bool>(nameof(ImplementsIDrawableBatch)   );
+            }
+            set
+            {
+                Properties.SetValue(nameof(ImplementsIDrawableBatch), value);
+            }
+        }
+
         [Browsable(false)]
         public string Name
         {

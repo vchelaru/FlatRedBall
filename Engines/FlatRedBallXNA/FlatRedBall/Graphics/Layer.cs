@@ -1,39 +1,16 @@
-#if false
-#define SUPPORTS_MODELS
-#endif
-
-#if false
-#define SUPPORTS_LIGHTS
-#endif
-
+using FlatRedBall.Instructions;
+using FlatRedBall.ManagedSpriteGroups;
+using FlatRedBall.Math;
+using FlatRedBall.Math.Geometry;
+using FlatRedBall.Utilities;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
-using FlatRedBall.ManagedSpriteGroups;
-
-#if SUPPORTS_MODELS
-using FlatRedBall.Graphics.Model;
-#endif
-
-using FlatRedBall.Math;
-using FlatRedBall.Instructions;
-using FlatRedBall.Utilities;
-
-using FlatRedBall.Math.Geometry;
-
-
-#if FRB_MDX
-using Matrix = Microsoft.DirectX.Matrix;
-using Vector3 = Microsoft.DirectX.Vector3;
-using Rectangle = System.Drawing.Rectangle;
-#else
 using Matrix = Microsoft.Xna.Framework.Matrix;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-#endif
 
 namespace FlatRedBall.Graphics
 {
@@ -113,10 +90,8 @@ namespace FlatRedBall.Graphics
 
         public void ApplyValuesToCamera(Camera camera, SetCameraOptions options, LayerCameraSettings lastToModify)
         {
-#if !FRB_MDX
             var viewport = camera.GetViewport(this);
             Renderer.GraphicsDevice.Viewport = viewport;
-#endif
 
             camera.Orthogonal = Orthogonal;
             camera.OrthogonalHeight = OrthogonalHeight;
@@ -184,16 +159,12 @@ namespace FlatRedBall.Graphics
             }
             else
             {
-                #if !FRB_MDX
-
                 if (ExtraRotationZ != 0)
                 {
                     camera.RotationMatrix *= Matrix.CreateFromAxisAngle(camera.RotationMatrix.Backward, ExtraRotationZ);
 
                 }
                 camera.UpVector = camera.RotationMatrix.Up;
-#endif
-
             }
 
             if(this.OffsetParent != null)
@@ -366,9 +337,6 @@ namespace FlatRedBall.Graphics
             {
 
                 return mSprites.Count == 0 &&
-#if SUPPORTS_MODELS
-                    mModels.Count == 0 &&
-#endif
 
                     mTexts.Count == 0 &&
                     mBatches.Count == 0 &&
@@ -396,9 +364,6 @@ namespace FlatRedBall.Graphics
                 mSprites.Name = value + " Sprites";
                 mTexts.Name = value + " Texts";
 
-#if SUPPORTS_MODELS
-                mModels.Name = value + " Models";
-#endif
             }
         }
 
@@ -542,6 +507,19 @@ namespace FlatRedBall.Graphics
             set { mVisible = value; }
         }
 
+        /// <summary>
+        /// The render target to render to. If this is null (default), then the layer
+        /// will render to whatever render target has been set before FlatRedBall's drawing
+        /// code starts. If this is non-null, then the layer will render to the RenderTarget.
+        /// If multiple layers use the same RenderTarget, they will all render to it without clearing
+        /// it.
+        /// </summary>
+        /// <remarks>
+        /// If a Layer uses a RenderTarge, it will clear the render target if:
+        /// - It is the UnderAll layer
+        /// - It is the first Layer on a camera
+        /// - It uses a different RenderTarget than the previous Layer.
+        /// </remarks>
         public RenderTarget2D RenderTarget
         {
             get;
@@ -565,17 +543,10 @@ namespace FlatRedBall.Graphics
             mZBufferedSprites.Name = "Layered ZBuffered SpriteList";
 
             mTexts.Name = "Layer Text PositionedObjectList";
-#if SUPPORTS_MODELS
-            mModels.Name = "Layer PositionedModel PositionedObjectList";
-#endif
 
             mSpritesReadOnlyCollection = new ReadOnlyCollection<Sprite>(mSprites);
             mZBufferedSpritesReadOnly = new ReadOnlyCollection<Sprite>(mZBufferedSprites);
             mTextsReadOnlyCollection = new ReadOnlyCollection<Text>(mTexts);
-
-#if SUPPORTS_LIGHTS
-            InitializeLights();
-#endif
 
             mBatchesReadOnlyCollection = new ReadOnlyCollection<IDrawableBatch>(mBatches);
 
@@ -693,15 +664,7 @@ namespace FlatRedBall.Graphics
                 SpriteGrid spriteGrid = scene.SpriteGrids[i];
                 spriteGrid.Layer = null;
             }
-
-            #if SUPPORTS_MODELS
-            for (int i = scene.PositionedModels.Count - 1; i > -1; i--)
-            {
-                Remove(scene.PositionedModels[i]);
-            }
-
-            #endif
-
+            
             for (int i = scene.SpriteFrames.Count - 1; i > -1; i--)
             {
                 Remove(scene.SpriteFrames[i]);
