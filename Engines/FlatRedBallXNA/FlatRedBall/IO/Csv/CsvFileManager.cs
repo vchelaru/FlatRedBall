@@ -64,6 +64,13 @@ namespace FlatRedBall.IO.Csv
             rcr.CreateObjectDictionary<KeyType, ValueType>(dictionaryToPopulate, ContentManagerName);
         }
 
+        public static void UpdateDictionaryValuesFromCsv<KeyType, ValueType>(Dictionary<KeyType, ValueType> dictionaryToUpdate, string fileName)
+        {
+            var rcr = CsvDeserializeToRuntime(fileName);
+
+            rcr.UpdateValues(dictionaryToUpdate, ContentManagerName);
+        }
+
         public static void CsvDeserializeDictionary<KeyType, ValueType>(Stream stream, Dictionary<KeyType, ValueType> dictionaryToPopulate)
         {
             var rcr = CsvDeserializeToRuntime<RuntimeCsvRepresentation>(stream);

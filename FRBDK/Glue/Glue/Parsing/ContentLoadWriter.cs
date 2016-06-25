@@ -174,9 +174,9 @@ namespace FlatRedBall.Glue.Parsing
 
             // Don't use foreach to make this tolerate changes to the collection while it generates
             //foreach (ReferencedFileSave rfs in ProjectManager.GlueProjectSave.GlobalFiles)
-            for (int i = 0; i < ProjectManager.GlueProjectSave.GlobalFiles.Count; i++ )
-            { 
-                ReferencedFileSave rfs  = ProjectManager.GlueProjectSave.GlobalFiles[i];
+            for (int i = 0; i < ProjectManager.GlueProjectSave.GlobalFiles.Count; i++)
+            {
+                ReferencedFileSave rfs = ProjectManager.GlueProjectSave.GlobalFiles[i];
 
                 ReferencedFileSaveCodeGenerator.AppendFieldOrPropertyForReferencedFile(currentBlock, rfs, GlobalContentContainerName, null);
             }
@@ -198,9 +198,13 @@ namespace FlatRedBall.Glue.Parsing
 
             currentBlock.Line("const string ContentManagerName = \"Global\";");
 
-            currentBlock = currentBlock
-                .Function("public static void", "Initialize", "")
+            var initializeFunction =
+                currentBlock.Function("public static void", "Initialize", "");
+
+            currentBlock = initializeFunction
                     ._();
+
+            
 
             //stringBuilder.AppendLine("\t\t\tstring ContentManagerName = \"Global\";");
 
@@ -220,38 +224,79 @@ namespace FlatRedBall.Glue.Parsing
                 }
             }
 
+            bool loadAsync = GenerateLoadAsyncCode(ref currentBlock);
+
+            if (ContentLoadWriter.SuppressGlobalContentDictionaryRefresh == false)
+            {
+                ReferencedFileSaveCodeGenerator.RefreshGlobalContentDictionary();
+            }
+
+            if (loadAsync)
+            {
+                currentBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
+            }
+
+            foreach (ReferencedFileSave rfs in ProjectManager.GlueProjectSave.GlobalFiles)
+            {
+                if (!IsRfsHighPriority(rfs) && rfs.LoadedAtRuntime)
+                {
+
+                    if (loadAsync)
+                    {
+                        currentBlock = currentBlock
+                            .Function("static void", "Load" + rfs.Name.Replace("/", "_").Replace(".", "_"), "");
+                    }
+
+
+                    ReferencedFileSaveCodeGenerator.GetInitializationForReferencedFile(rfs, null, currentBlock, true, LoadType.CompleteLoad);
+
+                    if (loadAsync)
+                    {
+                        currentBlock.Line("m" + rfs.GetInstanceName() + "Mre.Set();");
+                        currentBlock = currentBlock.End();
+                    }
+
+                }
+            }
+
+            if (loadAsync)
+            {
+                currentBlock.Line("#endif");
+            }
+
+            if (!loadAsync)
+            {
+                currentBlock = currentBlock
+                        .Line("\t\t\tIsInitialized = true;")
+                    .End();
+            }
+
+
+            GenerateReloadFileMethod(currentBlock);
+
+            
+
+            foreach (var generator in CodeWriter.GlobalContentCodeGenerators)
+            {
+                generator.GenerateInitializeEnd(initializeFunction);
+                generator.GenerateAdditionalMethods(codeBlock);
+            }
+
+            return codeBlock;
+        }
+
+        private static bool GenerateLoadAsyncCode(ref ICodeBlock currentBlock)
+        {
             bool loadAsync = ProjectManager.GlueProjectSave.GlobalContentSettingsSave.LoadAsynchronously;
 
             if (loadAsync)
             {
+                GenerateInitializeAsync(currentBlock);
+            }
 
-                currentBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
-                    currentBlock.Line("NamedDelegate namedDelegate = new NamedDelegate();");
-
-                    foreach (ReferencedFileSave rfs in ProjectManager.GlueProjectSave.GlobalFiles)
-                    {
-                        if (!IsRfsHighPriority(rfs) && !rfs.LoadedOnlyWhenReferenced && rfs.LoadedAtRuntime)
-                        {
-                            currentBlock.Line("namedDelegate.Name = \"" + rfs.Name + "\";");
-                            currentBlock.Line("namedDelegate.LoadMethod = Load" + rfs.Name.Replace("/", "_").Replace(".", "_") + ";");
-                            currentBlock.Line("LoadMethodList.Add( namedDelegate );");
-                        }
-                    }
-
-                    currentBlock._();
-
-                    currentBlock.Line("#if WINDOWS_8");
-                        currentBlock.Line("System.Threading.Tasks.Task.Run((System.Action)AsyncInitialize);");
-                    currentBlock.Line("#else");
-
-                        currentBlock.Line("ThreadStart threadStart = new ThreadStart(AsyncInitialize);");
-                        currentBlock.Line("Thread thread = new Thread(threadStart);");
-                        currentBlock.Line("thread.Name = \"GlobalContent Async load\";");
-                        currentBlock.Line("thread.Start();");
-                    currentBlock.Line("#endif");
-                currentBlock.Line("#endif");
-
-                currentBlock = currentBlock.End();
+            loadAsync = ProjectManager.GlueProjectSave.GlobalContentSettingsSave.LoadAsynchronously;
+            if (loadAsync)
+            { 
 
                 currentBlock._();
 
@@ -311,55 +356,36 @@ namespace FlatRedBall.Glue.Parsing
 
             }
 
-            if (ContentLoadWriter.SuppressGlobalContentDictionaryRefresh == false)
-            {
-                ReferencedFileSaveCodeGenerator.RefreshGlobalContentDictionary();
-            }
+            return loadAsync;
+        }
 
-            if (loadAsync)
-            {
-                currentBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
-            }
+        private static void GenerateInitializeAsync(ICodeBlock currentBlock)
+        {
+            currentBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
+            currentBlock.Line("NamedDelegate namedDelegate = new NamedDelegate();");
 
             foreach (ReferencedFileSave rfs in ProjectManager.GlueProjectSave.GlobalFiles)
             {
-                if (!IsRfsHighPriority(rfs) && rfs.LoadedAtRuntime)
+                if (!IsRfsHighPriority(rfs) && !rfs.LoadedOnlyWhenReferenced && rfs.LoadedAtRuntime)
                 {
-
-                    if (loadAsync)
-                    {
-                        currentBlock = currentBlock
-                            .Function("static void", "Load" + rfs.Name.Replace("/", "_").Replace(".", "_"), "");
-                    }
-
-
-                    ReferencedFileSaveCodeGenerator.GetInitializationForReferencedFile(rfs, null, currentBlock, true, LoadType.CompleteLoad);
-
-                    if (loadAsync)
-                    {
-                        currentBlock.Line("m" + rfs.GetInstanceName() + "Mre.Set();");
-                        currentBlock = currentBlock.End();
-                    }
-
+                    currentBlock.Line("namedDelegate.Name = \"" + rfs.Name + "\";");
+                    currentBlock.Line("namedDelegate.LoadMethod = Load" + rfs.Name.Replace("/", "_").Replace(".", "_") + ";");
+                    currentBlock.Line("LoadMethodList.Add( namedDelegate );");
                 }
             }
 
-            if (loadAsync)
-            {
-                currentBlock.Line("#endif");
-            }
+            currentBlock._();
 
-            if (!loadAsync)
-            {
-                currentBlock = currentBlock
-                        .Line("\t\t\tIsInitialized = true;")
-                    .End();
-            }
+            currentBlock.Line("#if WINDOWS_8");
+            currentBlock.Line("System.Threading.Tasks.Task.Run((System.Action)AsyncInitialize);");
+            currentBlock.Line("#else");
 
-
-            GenerateReloadFileMethod(currentBlock);
-
-            return codeBlock;
+            currentBlock.Line("ThreadStart threadStart = new ThreadStart(AsyncInitialize);");
+            currentBlock.Line("Thread thread = new Thread(threadStart);");
+            currentBlock.Line("thread.Name = \"GlobalContent Async load\";");
+            currentBlock.Line("thread.Start();");
+            currentBlock.Line("#endif");
+            currentBlock.Line("#endif");
         }
 
         private static void GenerateReloadFileMethod(ICodeBlock currentBlock)
@@ -375,7 +401,7 @@ namespace FlatRedBall.Glue.Parsing
             {
                 var ifInReload = reloadFunction.If("whatToReload == " + rfs.GetInstanceName());
                 {
-                    ReferencedFileSaveCodeGenerator.GetInitializationForReferencedFile(rfs, null, ifInReload, true, LoadType.MaintainInstance);
+                    ReferencedFileSaveCodeGenerator.GetReload(rfs, null, ifInReload, true, LoadType.MaintainInstance);
 
                 }
 

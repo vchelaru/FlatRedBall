@@ -729,22 +729,37 @@ namespace FlatRedBall.Glue.CodeGeneration
             ifBlock.Line("mRegisteredUnloads.Add(ContentManagerName);");
         }
 
+        public static void GetReload(ReferencedFileSave referencedFile, IElement container,
+            ICodeBlock codeBlock, bool loadsUsingGlobalContentManager, LoadType loadType)
+        {
+            bool shouldGenerateInitialize = GetIfShouldGenerateInitialize(referencedFile);
+
+            if(shouldGenerateInitialize)
+            {
+                if(referencedFile.IsCsvOrTreatedAsCsv && referencedFile.CreatesDictionary)
+                {
+                    var fileName = ProjectBase.AccessContentDirectory + referencedFile.Name.ToLower().Replace("\\", "/");
+                    var instanceName = referencedFile.GetInstanceName();
+                    string line =
+                        $"FlatRedBall.IO.Csv.CsvFileManager.UpdateDictionaryValuesFromCsv({instanceName}, \"{fileName}\");";
+                    codeBlock.Line(line);
+                }
+                else
+                {
+                    GetInitializationForReferencedFile(referencedFile, container, codeBlock, loadsUsingGlobalContentManager, loadType);
+                }
+
+            }
+        }
+
         public static void GetInitializationForReferencedFile(ReferencedFileSave referencedFile, IElement container, 
             ICodeBlock codeBlock,  bool loadsUsingGlobalContentManager, LoadType loadType)
         {
             #region early-outs (not loaded at runtime, loaded only when referenced)
 
-            if (referencedFile.LoadedOnlyWhenReferenced)
-            {
-                return;// "";
-            }
-            
-            if (referencedFile.IsDatabaseForLocalizing == false && !referencedFile.GetGeneratesMember())
-            {
-                return; // There is no qualified type to load to, so let's not generate code to load it
-            }
+            bool shouldGenerateInitialize = GetIfShouldGenerateInitialize(referencedFile);
 
-            if(referencedFile.IsDatabaseForLocalizing && !referencedFile.LoadedAtRuntime)
+            if (!shouldGenerateInitialize)
             {
                 return;
             }
@@ -797,7 +812,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     containerName = container.Name;
                 }
-                AddCodeforFileLoad(referencedFile, ref codeBlock, loadsUsingGlobalContentManager, 
+                AddCodeforFileLoad(referencedFile, ref codeBlock, loadsUsingGlobalContentManager,
                     ref directives, isProjectSpecific, ref fileName, project, loadType, containerName);
             }
 
@@ -813,6 +828,28 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 PerformancePluginCodeGenerator.GenerateEnd(container, codeBlock, "LoadStaticContent" + FileManager.RemovePath(referencedFile.Name));
             }
+        }
+
+        private static bool GetIfShouldGenerateInitialize(ReferencedFileSave referencedFile)
+        {
+            bool shouldGenerateInitialize = true;
+
+            if (referencedFile.LoadedOnlyWhenReferenced)
+            {
+                shouldGenerateInitialize = false;
+            }
+
+            if (referencedFile.IsDatabaseForLocalizing == false && !referencedFile.GetGeneratesMember())
+            {
+                shouldGenerateInitialize = false; // There is no qualified type to load to, so let's not generate code to load it
+            }
+
+            if (referencedFile.IsDatabaseForLocalizing && !referencedFile.LoadedAtRuntime)
+            {
+                shouldGenerateInitialize = false;
+            }
+
+            return shouldGenerateInitialize;
         }
 
         private static void AddCodeforFileLoad(ReferencedFileSave referencedFile, ref ICodeBlock codeBlock, 

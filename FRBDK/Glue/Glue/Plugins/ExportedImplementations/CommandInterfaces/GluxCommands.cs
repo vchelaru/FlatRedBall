@@ -591,6 +591,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             PluginManager.ReactToChangedProperty(memberName, oldValue);
         }
 
+        public void SaveSettings()
+        {
+            ProjectManager.GlueSettingsSave.Save();
+        }
+
         #endregion
 
     }

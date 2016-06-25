@@ -657,6 +657,7 @@ namespace FlatRedBall.IO.Csv
 
         public void CreateObjectDictionary<KeyType, ValueType>(Dictionary<KeyType, ValueType> dictionaryToPopulate, string contentManagerName)
         {
+#if DEBUG
             Type typeOfElement = typeof(ValueType);
 #if WINDOWS_8
             bool isPrimitive = typeOfElement.IsPrimitive();
@@ -668,102 +669,141 @@ namespace FlatRedBall.IO.Csv
             {
                 throw new InvalidOperationException("Can't create dictionaries of primitives or strings because they don't have a key");
             }
-            else
+#endif   
+
+            MemberTypeIndexPair[] memberTypeIndexPairs;
+            IEnumerable<PropertyInfo> propertyInfosEnumerable;
+            IEnumerable<FieldInfo> fieldInfosEnumerable;
+            GetReflectionInformation(typeOfElement, out memberTypeIndexPairs, out propertyInfosEnumerable, out fieldInfosEnumerable);
+
+            List<PropertyInfo> propertyInfos = new List<PropertyInfo>(propertyInfosEnumerable);
+            List<FieldInfo> fieldInfos = new List<FieldInfo>(fieldInfosEnumerable);
+
+            #region Get the required header which we'll use for the key
+
+            CsvHeader csvHeaderForKey = CsvHeader.Empty;
+
+            int headerIndex = 0;
+
+            foreach (CsvHeader header in Headers)
             {
-                MemberTypeIndexPair[] memberTypeIndexPairs;
-                IEnumerable<PropertyInfo> propertyInfosEnumerable;
-                IEnumerable<FieldInfo> fieldInfosEnumerable;
-                GetReflectionInformation(typeOfElement, out memberTypeIndexPairs, out propertyInfosEnumerable, out fieldInfosEnumerable);
-
-                List<PropertyInfo> propertyInfos = new List<PropertyInfo>(propertyInfosEnumerable);
-                List<FieldInfo> fieldInfos = new List<FieldInfo>(fieldInfosEnumerable);
-
-                #region Get the required header which we'll use for the key
-
-                CsvHeader csvHeaderForKey = CsvHeader.Empty;
-
-                int headerIndex = 0;
-
-                foreach (CsvHeader header in Headers)
+                if (header.IsRequired)
                 {
-                    if (header.IsRequired)
-                    {
-                        csvHeaderForKey = header;
-                        break;
-                    }
-                    headerIndex++;
+                    csvHeaderForKey = header;
+                    break;
                 }
-
-                if (csvHeaderForKey == CsvHeader.Empty)
-                {
-                    throw new InvalidOperationException("Could not find a property to use as the key.  You need to put (required) after one of the headers to identify it as required.");
-                }
-
-                #endregion
-
-                int numberOfColumns = Headers.Length;
-
-                object lastElement = null;
-                bool wasRequiredMissing = false;
-
-
-                for (int row = 0; row < Records.Count; row++)
-                {
-                    object newElement;
-                    bool newElementFailed;
-
-                    wasRequiredMissing = TryCreateNewObjectFromRow(
-                        typeOfElement,
-
-                        contentManagerName,
-                        memberTypeIndexPairs,
-                        propertyInfos,
-                        fieldInfos,
-                        numberOfColumns,
-                        lastElement,
-                        wasRequiredMissing,
-                        row,
-                        out newElement,
-                        out newElementFailed);
-
-                    if (!newElementFailed && !wasRequiredMissing)
-                    {
-                        KeyType keyToUse = default(KeyType);
-                        
-                        if (typeOfElement == typeof(string[]))
-                        {
-                            keyToUse = (KeyType)(((string[])newElement)[headerIndex] as object);
-                        }
-                        else
-                        {
-
-                            if (csvHeaderForKey.MemberTypes == MemberTypes.Property)
-                            {
-                                keyToUse = LateBinder<ValueType>.Instance.GetProperty<KeyType>((ValueType)newElement, csvHeaderForKey.Name);
-                            }
-                            else
-                            {
-                                keyToUse = LateBinder<ValueType>.Instance.GetField<KeyType>((ValueType)newElement, csvHeaderForKey.Name);
-                            }
-                        }
-                        if (dictionaryToPopulate.ContainsKey(keyToUse))
-                        {
-                            throw new InvalidOperationException("The key " + keyToUse +
-                                " is already part of the dictionary.");
-                        }
-                        else
-                        {
-                            dictionaryToPopulate.Add(keyToUse, (ValueType)newElement);
-                        }
-
-                        lastElement = newElement;
-                    }
-                }
-
-
+                headerIndex++;
             }
 
+            if (csvHeaderForKey == CsvHeader.Empty)
+            {
+                throw new InvalidOperationException("Could not find a property to use as the key.  You need to put (required) after one of the headers to identify it as required.");
+            }
 
+            #endregion
+
+            int numberOfColumns = Headers.Length;
+
+            object lastElement = null;
+            bool wasRequiredMissing = false;
+
+
+            for (int row = 0; row < Records.Count; row++)
+            {
+                object newElement;
+                bool newElementFailed;
+
+                wasRequiredMissing = TryCreateNewObjectFromRow(
+                    typeOfElement,
+
+                    contentManagerName,
+                    memberTypeIndexPairs,
+                    propertyInfos,
+                    fieldInfos,
+                    numberOfColumns,
+                    lastElement,
+                    wasRequiredMissing,
+                    row,
+                    out newElement,
+                    out newElementFailed);
+
+                if (!newElementFailed && !wasRequiredMissing)
+                {
+                    KeyType keyToUse = GetKeyToUse<KeyType, ValueType>(typeOfElement, csvHeaderForKey, headerIndex, newElement);
+
+                    if (dictionaryToPopulate.ContainsKey(keyToUse))
+                    {
+                        throw new InvalidOperationException("The key " + keyToUse +
+                            " is already part of the dictionary.");
+                    }
+                    else
+                    {
+                        dictionaryToPopulate.Add(keyToUse, (ValueType)newElement);
+                    }
+
+                    lastElement = newElement;
+                }
+            }
+
+                
+
+        }
+
+        public void UpdateValues<KeyType, ValueType>(Dictionary<KeyType, ValueType> dictionaryToUpdate, string contentManagerName)
+        {
+            var newDictionary = new Dictionary<KeyType, ValueType>(dictionaryToUpdate.Count);
+
+            CreateObjectDictionary(newDictionary, contentManagerName);
+
+            var type = typeof(ValueType);
+
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach(var newKvp in newDictionary)
+            {
+                var key = newKvp.Key;
+
+                var newItem = newKvp.Value;
+
+                var oldItem = dictionaryToUpdate[key];
+
+                foreach(var field in fields)
+                {
+                    var valueOnNew = field.GetValue(newItem);
+                    field.SetValue(oldItem, valueOnNew);
+                }
+
+                foreach(var property in properties)
+                {
+                    var valueOnNew = property.GetValue(newItem, null);
+                    property.SetValue(oldItem, valueOnNew, null);
+                }
+            }
+        }
+
+        private static KeyType GetKeyToUse<KeyType, ValueType>(Type typeOfElement, CsvHeader csvHeaderForKey, int headerIndex, object newElement)
+        {
+            KeyType keyToUse = default(KeyType);
+
+            if (typeOfElement == typeof(string[]))
+            {
+                keyToUse = (KeyType)(((string[])newElement)[headerIndex] as object);
+            }
+            else
+            {
+
+                if (csvHeaderForKey.MemberTypes == MemberTypes.Property)
+                {
+                    keyToUse = LateBinder<ValueType>.Instance.GetProperty<KeyType>((ValueType)newElement, csvHeaderForKey.Name);
+                }
+                else
+                {
+                    keyToUse = LateBinder<ValueType>.Instance.GetField<KeyType>((ValueType)newElement, csvHeaderForKey.Name);
+                }
+            }
+
+            return keyToUse;
         }
 
         private void CreateNonPrimitiveList(Type typeOfElement, IList listToPopulate, string contentManagerName)
@@ -869,161 +909,176 @@ namespace FlatRedBall.IO.Csv
                 {
 
                     newElement = Activator.CreateInstance(typeOfElement);
-
-                    for (int column = 0; column < numberOfColumns; column++)
-                    {
-                        if (memberTypeIndexPairs[column].Index != -1)
-                        {
-
-                            object objectToSetValueOn = newElement;
-                            if (wasRequiredMissing)
-                            {
-                                objectToSetValueOn = lastElement;
-                            }
-                            int columnIndex = memberTypeIndexPairs[column].Index;
-
-                            bool isRequired = Headers[column].IsRequired;
-
-                            if (isRequired && string.IsNullOrEmpty(Records[row][column]))
-                            {
-                                wasRequiredMissing = true;
-                                continue;
-                            }
-
-                            #region If the member is a Property, so set the value obtained from converting the string.
-                            if (memberTypeIndexPairs[column].MemberType == MemberTypes.Property)
-                            {
-                                PropertyInfo propertyInfo = propertyInfos[memberTypeIndexPairs[column].Index];
-
-                                var propertyType = propertyInfo.PropertyType;
-
-                                bool isList = propertyInfo.PropertyType.Name == "List`1";
-                                if (isList)
-                                {
-                                    propertyType = propertyType.GetGenericArguments()[0];
-                                }
-
-                                string valueAtRowColumn = Records[row][column];
-
-                                object valueToSet = null;
-
-                                string cellValue = Records[row][column];
-                                if (string.IsNullOrEmpty(cellValue))
-                                {
-                                    valueToSet = null;
-                                }
-                                else
-                                {
-                                    try
-                                    {
-
-
-                                        valueToSet = PropertyValuePair.ConvertStringToType(
-                                        Records[row][column],
-                                        propertyType,
-                                        contentManagerName);
-                                    }
-                                    catch (ArgumentException e)
-                                    {
-                                        throw new Exception("Could not set variable " + propertyInfo.Name + " to " + cellValue + "\n\n" + e, e);
-                                    }
-                                    catch (FormatException)
-                                    {
-                                        throw new Exception("Error parsing the value " + cellValue + " for the property " + propertyInfo.Name);
-                                    }
-                                }
-
-                                if (isList)
-                                {
-                                    // todo - need to support adding to property lists
-                                    object objectToCallOn = propertyInfo.GetValue(objectToSetValueOn, null);
-                                    if (objectToCallOn == null)
-                                    {
-                                        objectToCallOn = Activator.CreateInstance(propertyInfo.PropertyType);
-
-                                        propertyInfo.SetValue(objectToSetValueOn, objectToCallOn, null);
-                                    }
-
-                                    if (valueToSet != null)
-                                    {
-                                        MethodInfo methodInfo = propertyInfo.PropertyType.GetMethod("Add");
-
-                                        methodInfo.Invoke(objectToCallOn, new object[] { valueToSet });
-                                    }
-                                }
-                                else if (!wasRequiredMissing)
-                                {
-                                    propertyInfo.SetValue(
-                                        objectToSetValueOn,
-                                        valueToSet,
-                                        null);
-                                }
-
-                            }
-                            #endregion
-
-                            #region Else, it's a Field, so set the value obtained from converting the string.
-                            else if (memberTypeIndexPairs[column].MemberType == MemberTypes.Field)
-                            {
-                                //try
-                                {
-                                    FieldInfo fieldInfo;
-                                    bool isList;
-                                    object valueToSet;
-                                    GetFieldValueToSet(contentManagerName, fieldInfos, row, column, columnIndex, out fieldInfo, out isList, out valueToSet);
-
-                                    if (isList)
-                                    {
-                                        // Check to see if the list is null.
-                                        // If so, create it. We want to make the
-                                        // list even if we're not going to add anything
-                                        // to it.  Maybe we'll change this in the future
-                                        // to improve memory usage?
-                                        object objectToCallOn = fieldInfo.GetValue(objectToSetValueOn);
-                                        if (objectToCallOn == null)
-                                        {
-                                            objectToCallOn = Activator.CreateInstance(fieldInfo.FieldType);
-
-                                            fieldInfo.SetValue(objectToSetValueOn, objectToCallOn);
-                                        }
-
-                                        if (valueToSet != null)
-                                        {
-                                            MethodInfo methodInfo = fieldInfo.FieldType.GetMethod("Add");
-
-                                            methodInfo.Invoke(objectToCallOn, new object[] { valueToSet });
-                                        }
-                                    }
-                                    else if (!wasRequiredMissing)
-                                    {
-                                        fieldInfo.SetValue(objectToSetValueOn, valueToSet);
-                                    }
-                                }
-                                // May 5, 2011:
-                                // This code used
-                                // to try/catch and
-                                // just throw away failed
-                                // attempts to instantiate
-                                // a new object.  This caused
-                                // debugging problems.  I think
-                                // we should be stricter with this
-                                // and let the exception occur so that
-                                // developers can fix any problems related
-                                // to CSV deseiralization.  Silent bugs could
-                                // be difficult/annoying to track down.
-                                //catch
-                                //{
-                                //    // don't worry, just skip for now.  May want to log errors in the future if this
-                                //    // throw-away of exceptions causes difficult debugging.
-                                //    newElementFailed = true;
-                                //    break;
-                                //}
-                            }
-                            #endregion
-                        }
-                    }
+                    wasRequiredMissing = AsssignValuesOnElement(
+                        contentManagerName, 
+                        memberTypeIndexPairs, 
+                        propertyInfos, 
+                        fieldInfos, 
+                        numberOfColumns, 
+                        lastElement, 
+                        wasRequiredMissing, 
+                        row, 
+                        newElement);
                 }
             }
+            return wasRequiredMissing;
+        }
+
+        private bool AsssignValuesOnElement(string contentManagerName, MemberTypeIndexPair[] memberTypeIndexPairs, List<PropertyInfo> propertyInfos, List<FieldInfo> fieldInfos, int numberOfColumns, object lastElement, bool wasRequiredMissing, int row, object newElement)
+        {
+            for (int column = 0; column < numberOfColumns; column++)
+            {
+                if (memberTypeIndexPairs[column].Index != -1)
+                {
+
+                    object objectToSetValueOn = newElement;
+                    if (wasRequiredMissing)
+                    {
+                        objectToSetValueOn = lastElement;
+                    }
+                    int columnIndex = memberTypeIndexPairs[column].Index;
+
+                    bool isRequired = Headers[column].IsRequired;
+
+                    if (isRequired && string.IsNullOrEmpty(Records[row][column]))
+                    {
+                        wasRequiredMissing = true;
+                        continue;
+                    }
+
+                    #region If the member is a Property, so set the value obtained from converting the string.
+                    if (memberTypeIndexPairs[column].MemberType == MemberTypes.Property)
+                    {
+                        PropertyInfo propertyInfo = propertyInfos[memberTypeIndexPairs[column].Index];
+
+                        var propertyType = propertyInfo.PropertyType;
+
+                        bool isList = propertyInfo.PropertyType.Name == "List`1";
+                        if (isList)
+                        {
+                            propertyType = propertyType.GetGenericArguments()[0];
+                        }
+
+                        string valueAtRowColumn = Records[row][column];
+
+                        object valueToSet = null;
+
+                        string cellValue = Records[row][column];
+                        if (string.IsNullOrEmpty(cellValue))
+                        {
+                            valueToSet = null;
+                        }
+                        else
+                        {
+                            try
+                            {
+
+
+                                valueToSet = PropertyValuePair.ConvertStringToType(
+                                Records[row][column],
+                                propertyType,
+                                contentManagerName);
+                            }
+                            catch (ArgumentException e)
+                            {
+                                throw new Exception("Could not set variable " + propertyInfo.Name + " to " + cellValue + "\n\n" + e, e);
+                            }
+                            catch (FormatException)
+                            {
+                                throw new Exception("Error parsing the value " + cellValue + " for the property " + propertyInfo.Name);
+                            }
+                        }
+
+                        if (isList)
+                        {
+                            // todo - need to support adding to property lists
+                            object objectToCallOn = propertyInfo.GetValue(objectToSetValueOn, null);
+                            if (objectToCallOn == null)
+                            {
+                                objectToCallOn = Activator.CreateInstance(propertyInfo.PropertyType);
+
+                                propertyInfo.SetValue(objectToSetValueOn, objectToCallOn, null);
+                            }
+
+                            if (valueToSet != null)
+                            {
+                                MethodInfo methodInfo = propertyInfo.PropertyType.GetMethod("Add");
+
+                                methodInfo.Invoke(objectToCallOn, new object[] { valueToSet });
+                            }
+                        }
+                        else if (!wasRequiredMissing)
+                        {
+                            propertyInfo.SetValue(
+                                objectToSetValueOn,
+                                valueToSet,
+                                null);
+                        }
+
+                    }
+                    #endregion
+
+                    #region Else, it's a Field, so set the value obtained from converting the string.
+                    else if (memberTypeIndexPairs[column].MemberType == MemberTypes.Field)
+                    {
+                        //try
+                        {
+                            FieldInfo fieldInfo;
+                            bool isList;
+                            object valueToSet;
+                            GetFieldValueToSet(contentManagerName, fieldInfos, row, column, columnIndex, out fieldInfo, out isList, out valueToSet);
+
+                            if (isList)
+                            {
+                                // Check to see if the list is null.
+                                // If so, create it. We want to make the
+                                // list even if we're not going to add anything
+                                // to it.  Maybe we'll change this in the future
+                                // to improve memory usage?
+                                object objectToCallOn = fieldInfo.GetValue(objectToSetValueOn);
+                                if (objectToCallOn == null)
+                                {
+                                    objectToCallOn = Activator.CreateInstance(fieldInfo.FieldType);
+
+                                    fieldInfo.SetValue(objectToSetValueOn, objectToCallOn);
+                                }
+
+                                if (valueToSet != null)
+                                {
+                                    MethodInfo methodInfo = fieldInfo.FieldType.GetMethod("Add");
+
+                                    methodInfo.Invoke(objectToCallOn, new object[] { valueToSet });
+                                }
+                            }
+                            else if (!wasRequiredMissing)
+                            {
+                                fieldInfo.SetValue(objectToSetValueOn, valueToSet);
+                            }
+                        }
+                        // May 5, 2011:
+                        // This code used
+                        // to try/catch and
+                        // just throw away failed
+                        // attempts to instantiate
+                        // a new object.  This caused
+                        // debugging problems.  I think
+                        // we should be stricter with this
+                        // and let the exception occur so that
+                        // developers can fix any problems related
+                        // to CSV deseiralization.  Silent bugs could
+                        // be difficult/annoying to track down.
+                        //catch
+                        //{
+                        //    // don't worry, just skip for now.  May want to log errors in the future if this
+                        //    // throw-away of exceptions causes difficult debugging.
+                        //    newElementFailed = true;
+                        //    break;
+                        //}
+                    }
+                    #endregion
+                }
+            }
+
             return wasRequiredMissing;
         }
 

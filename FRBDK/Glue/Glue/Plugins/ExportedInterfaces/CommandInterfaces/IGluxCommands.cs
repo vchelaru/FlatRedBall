@@ -30,5 +30,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             AddObjectViewModel addObjectViewModel);
 
         void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value);
+        void SaveSettings();
     }
 }

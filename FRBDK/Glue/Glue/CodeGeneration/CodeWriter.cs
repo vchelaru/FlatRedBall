@@ -78,6 +78,8 @@ namespace FlatRedBall.Glue.Parsing
 
         #endregion
 
+        #region Methods
+
         static CodeWriter()
 
         {
@@ -127,6 +129,12 @@ namespace FlatRedBall.Glue.Parsing
             get;
             set;
         }
+
+        public static List<GlobalContentCodeGeneratorBase> GlobalContentCodeGenerators
+        {
+            get;
+            private set;
+        } = new List<GlobalContentCodeGeneratorBase>();
 
         public static void GenerateCode(IElement element)
         {
@@ -2478,5 +2486,7 @@ namespace FlatRedBall.Glue.Parsing
             }
             return false;
         }
+
+        #endregion
     }
 }
