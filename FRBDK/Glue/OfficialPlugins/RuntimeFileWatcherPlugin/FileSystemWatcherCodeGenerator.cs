@@ -36,20 +36,25 @@ namespace OfficialPlugins.RuntimeFileWatcherPlugin
         {
             var method = codeBlock.Function("private static void", "HandleFileChanged", "object sender, System.IO.FileSystemEventArgs e");
             {
-                method.Line("var fullFileName = e.FullPath;");
-                method.Line("var relativeFileName = FlatRedBall.IO.FileManager.MakeRelative(FlatRedBall.IO.FileManager.Standardize(fullFileName));");
+                var tryBlock = method.Try();
+
+                tryBlock.Line("System.Threading.Thread.Sleep(500);");
+
+                tryBlock.Line("var fullFileName = e.FullPath;");
+                tryBlock.Line("var relativeFileName = FlatRedBall.IO.FileManager.MakeRelative(FlatRedBall.IO.FileManager.Standardize(fullFileName));");
 
                 foreach(var rfs in GlueState.Self.CurrentGlueProject.GlobalFiles)
                 {
                     var fileName = ProjectBase.AccessContentDirectory + rfs.Name.ToLower().Replace("\\", "/");
                     var instanceName = rfs.GetInstanceName();
 
-                    var ifStatement = method.If($"relativeFileName == \"{fileName}\"");
+                    var ifStatement = tryBlock.If($"relativeFileName == \"{fileName}\"");
                     {
                         ifStatement.Line($"Reload({instanceName});");
                     }
 
                 }
+                var catchBlock = tryBlock.End().Line("catch{}");
             }
         }
 
