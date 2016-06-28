@@ -430,12 +430,8 @@ namespace Glue
         private void LoadProjectConsideringSettingsAndArgs(InitializationWindow initializationWindow)
         {
             // This must be called after setting the GlueSettingsSave
-
-
             string csprojToLoad;
-            var settingsSave = ProjectManager.GlueSettingsSave;
-
-            GetCsprojToLoad(out csprojToLoad);
+            ProjectLoader.Self.GetCsprojToLoad(out csprojToLoad);
 
             if (!string.IsNullOrEmpty(csprojToLoad))
             {
@@ -446,20 +442,6 @@ namespace Glue
                 LoadProject(csprojToLoad, initializationWindow);
             }
         }
-
-        private static void GetCsprojToLoad(out string csprojToLoad)
-        {
-            csprojToLoad = CommandLineManager.Self.ProjectToLoad;
-            var settingsSave = ProjectManager.GlueSettingsSave;
-
-
-            if (string.IsNullOrEmpty(csprojToLoad) &&
-                (Control.ModifierKeys & Keys.Shift) == 0)
-            {
-                csprojToLoad = settingsSave.LastProjectFile;
-            }
-        }
-
 
         private void ShareUiReferences(PluginCategories pluginCategories)
         {
@@ -514,7 +496,7 @@ namespace Glue
 
 
                     string csprojToLoad;
-                    GetCsprojToLoad(out csprojToLoad);
+                    ProjectLoader.Self.GetCsprojToLoad(out csprojToLoad);
 
 
                     // Load the plugins settings if it exists
@@ -590,14 +572,28 @@ namespace Glue
         {
             GlueSettingsSave save = ProjectManager.GlueSettingsSave;
 
+            string lastFileName = null;
+
             if (ProjectManager.ProjectBase != null)
             {
-                save.LastProjectFile = ProjectManager.ProjectBase.FullFileName;
+                lastFileName = ProjectManager.ProjectBase.FullFileName;
             }
-            else
+
+            save.LastProjectFile = lastFileName;
+
+            var glueExeFileName = ProjectLoader.GetGlueExeLocation();
+            var foundItem = save.GlueLocationSpecificLastProjectFiles
+                .FirstOrDefault(item => item.GlueFileName == glueExeFileName);
+
+            var alreadyIsListed = foundItem != null;
+
+            if(!alreadyIsListed)
             {
-                save.LastProjectFile = null;
+                foundItem = new ProjectFileGlueFilePair();
+                save.GlueLocationSpecificLastProjectFiles.Add(foundItem);
             }
+            foundItem.GlueFileName = glueExeFileName;
+            foundItem.GameProjectFileName = lastFileName;
             
             // set up the positions of the window
             save.WindowLeft = this.Left;

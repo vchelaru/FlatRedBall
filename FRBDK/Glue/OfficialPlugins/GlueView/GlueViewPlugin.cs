@@ -13,7 +13,6 @@ namespace OfficialPlugins.GlueView
     public partial class GlueViewPlugin : EmbeddedPlugin
     {
         GlueViewRemotingSelectionInterfaceManager _selectionInterface;
-        GlueViewRemotingInteractiveInterfaceManager _interactiveInterface;
         
         static GlueViewPlugin mSelf;
 
@@ -34,8 +33,6 @@ namespace OfficialPlugins.GlueView
         {
             mSelf = this;
             _selectionInterface = new GlueViewRemotingSelectionInterfaceManager();
-            _interactiveInterface = new GlueViewRemotingInteractiveInterfaceManager(
-                GlueCommands.Self, GlueState.Self);
 
             var toolbar = new GlueViewToolbar();
             toolbar.SelectionInterface = _selectionInterface;

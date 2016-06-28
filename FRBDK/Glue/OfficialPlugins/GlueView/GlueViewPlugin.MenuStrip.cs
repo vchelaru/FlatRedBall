@@ -32,7 +32,6 @@ namespace OfficialPlugins.GlueView
         void ConnectItemClick(object sender, EventArgs e)
         {
             _selectionInterface.AttemptConnection();
-            _interactiveInterface.AttemptConnection();
             _selectionInterface.SetGlueProjectFile(ProjectManager.GlueProjectFileName, true);
         }
         

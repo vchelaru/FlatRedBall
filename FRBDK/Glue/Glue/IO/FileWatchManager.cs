@@ -274,6 +274,7 @@ namespace FlatRedBall.Glue.IO
 
         private static bool IsFileIgnored(string fileName, out IgnoreReason reason)
         {
+            bool isIgnored = false;
             reason = IgnoreReason.NotIgnored;
 
             fileName = FlatRedBall.IO.FileManager.Standardize(fileName, "", false);
@@ -291,25 +292,32 @@ namespace FlatRedBall.Glue.IO
                         !FileManager.IsRelativeTo(fileName, ProjectManager.ContentProject.Directory))
                     {
                         reason = IgnoreReason.OutsideOfProject;
-                        return true;
+                        isIgnored = true;
                     }
 
                 }
                 fileName = FileManager.MakeRelative(fileName);
             }
 
-            if (IsBuiltFile(fileName))
+            if(!isIgnored && fileName.StartsWith("obj/"))
             {
                 reason = IgnoreReason.BuiltFile;
-                return true;
-            }
-            else if (fileName.ToLower().EndsWith(".generated.cs"))
-            {
-                reason = IgnoreReason.GeneratedCodeFile;
-                return true;
+                isIgnored = true;
             }
 
-            return false;                
+            if (!isIgnored && IsBuiltFile(fileName))
+            {
+                reason = IgnoreReason.BuiltFile;
+                isIgnored = true;
+            }
+
+            if (!isIgnored && fileName.ToLower().EndsWith(".generated.cs"))
+            {
+                reason = IgnoreReason.GeneratedCodeFile;
+                isIgnored = true;
+            }
+
+            return isIgnored;                
         }
 
         private static bool IsBuiltFile(string fileName)

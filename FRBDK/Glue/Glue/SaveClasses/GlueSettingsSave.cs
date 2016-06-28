@@ -23,6 +23,12 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
 
+    public class ProjectFileGlueFilePair
+    {
+        public string GlueFileName { get; set; }
+        public string GameProjectFileName { get; set; }
+    }
+
     public class GlueSettingsSave
     {
         #region Fields
@@ -42,6 +48,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #endregion
 
+        #region Properties
 
         public static string SettingsFileName
         {
@@ -55,14 +62,17 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-
-
-
 		public string LastProjectFile
 		{
 			get;
 			set;
 		}
+
+        public List<ProjectFileGlueFilePair> GlueLocationSpecificLastProjectFiles
+        {
+            get;
+            set;
+        } = new List<ProjectFileGlueFilePair>();
 
         public int WindowLeft { get; set; }
         public int WindowTop { get; set; }
@@ -77,6 +87,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
         [XmlIgnore]
         public static bool StopSavesAndLoads { get; set; }
+
+        #endregion
 
         public void Save()
         {
@@ -106,8 +118,5 @@ namespace FlatRedBall.Glue.SaveClasses
 
             BuildToolAssociations.AddExternalRange(externals);
         }
-
-
-
 	}
 }

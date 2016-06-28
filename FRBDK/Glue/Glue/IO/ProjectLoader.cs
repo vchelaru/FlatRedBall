@@ -25,6 +25,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Data;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System.Reflection;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -245,6 +246,38 @@ namespace FlatRedBall.Glue.IO
             Section.EndContextAndTime();
             // If we ever want to make things go faster, turn this back on and let's see what's going on.
             //topSection.Save("Sections.xml");
+        }
+
+
+        public void GetCsprojToLoad(out string csprojToLoad)
+        {
+            csprojToLoad = CommandLineManager.Self.ProjectToLoad;
+            var settingsSave = ProjectManager.GlueSettingsSave;
+
+            bool shouldTryLoadingFromSettings = string.IsNullOrEmpty(csprojToLoad) &&
+                (Control.ModifierKeys & Keys.Shift) == 0;
+
+            if (shouldTryLoadingFromSettings)
+            {
+                string glueExeFileName = GetGlueExeLocation();
+
+                var foundGlueExeProjectLocationPair = settingsSave.GlueLocationSpecificLastProjectFiles
+                    .FirstOrDefault(item => item.GlueFileName == glueExeFileName);
+
+                if (foundGlueExeProjectLocationPair != null)
+                {
+                    csprojToLoad = foundGlueExeProjectLocationPair.GameProjectFileName;
+                }
+                else
+                {
+                    csprojToLoad = settingsSave.LastProjectFile;
+                }
+            }
+        }
+
+        public static string GetGlueExeLocation()
+        {
+            return FileManager.Standardize(Assembly.GetAssembly(typeof(MainGlueWindow)).Location.ToLowerInvariant());
         }
 
         private void PerformGluxLoad(string projectFileName, string glueProjectFile)

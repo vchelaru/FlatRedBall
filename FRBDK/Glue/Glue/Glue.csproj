@@ -208,9 +208,6 @@
     <Compile Include="..\OfficialPlugins\GlueView\GlueViewPlugin.TreeItemSelect.cs">
       <Link>GlueView\GlueViewPlugin.TreeItemSelect.cs</Link>
     </Compile>
-    <Compile Include="..\OfficialPlugins\GlueView\GlueViewRemotingInteractiveInterfaceManager.cs">
-      <Link>GlueView\GlueViewRemotingInteractiveInterfaceManager.cs</Link>
-    </Compile>
     <Compile Include="..\OfficialPlugins\GlueView\GlueViewRemotingSelectionInterfaceManager.cs">
       <Link>GlueView\GlueViewRemotingSelectionInterfaceManager.cs</Link>
     </Compile>
