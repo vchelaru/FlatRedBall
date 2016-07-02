@@ -39,22 +39,28 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void CopyToBuildFolder(ReferencedFileSave rfs)
         {
+            string source = ProjectManager.ContentDirectory + rfs.Name;
+
+            CopyToBuildFolder(rfs);
+        }
+
+        public void CopyToBuildFolder(string absoluteSource)
+        {
             string projectName = FileManager.RemovePath(FileManager.RemoveExtension(GlueState.Self.CurrentGlueProjectFileName));
             string buildFolder = FileManager.GetDirectory(GlueState.Self.CurrentGlueProjectFileName) + "bin/x86/debug/Content/";
 
-            string destination = buildFolder + rfs.Name;
-            string source = ProjectManager.ContentDirectory + rfs.Name;
+            string destination = buildFolder +  FileManager.MakeRelative(absoluteSource, ProjectManager.ContentDirectory);
 
             try
             {
-                System.IO.File.Copy(source, destination, true);
+                System.IO.File.Copy(absoluteSource, destination, true);
 
-                PluginManager.ReceiveOutput("Copied " + source + " ==> " + destination);
+                PluginManager.ReceiveOutput("Copied " + absoluteSource + " ==> " + destination);
             }
             catch (Exception e)
             {
-                System.Windows.Forms.MessageBox.Show("Error copying file:\n\n" + e.ToString());
-
+                // this could really overwhelm the user with popups, so let's just show output:
+                PluginManager.ReceiveOutput("Error copying file:\n\n" + e.ToString());
             }
         }
 

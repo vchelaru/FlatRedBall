@@ -80,7 +80,6 @@
             this.newContentCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewNewFileTemplateFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
-            this.copyCSVsToBuildFolderOnChangeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileAssociationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileBuildToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -507,8 +506,7 @@
             // 
             this.contentToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.viewAdditionalContentTypesToolStripMenuItem,
-            this.toolStripSeparator8,
-            this.copyCSVsToBuildFolderOnChangeToolStripMenuItem});
+            this.toolStripSeparator8});
             this.contentToolStripMenuItem.Name = "contentToolStripMenuItem";
             this.contentToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
             this.contentToolStripMenuItem.Text = "Content";
@@ -564,14 +562,6 @@
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
             this.toolStripSeparator8.Size = new System.Drawing.Size(265, 6);
-            // 
-            // copyCSVsToBuildFolderOnChangeToolStripMenuItem
-            // 
-            this.copyCSVsToBuildFolderOnChangeToolStripMenuItem.CheckOnClick = true;
-            this.copyCSVsToBuildFolderOnChangeToolStripMenuItem.Name = "copyCSVsToBuildFolderOnChangeToolStripMenuItem";
-            this.copyCSVsToBuildFolderOnChangeToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
-            this.copyCSVsToBuildFolderOnChangeToolStripMenuItem.Text = "Copy CSVs to build folder on change";
-            this.copyCSVsToBuildFolderOnChangeToolStripMenuItem.Click += new System.EventHandler(this.copyCSVsToBuildFolderOnChangeToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
@@ -1287,7 +1277,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button NavigateForwardButton;
         private System.Windows.Forms.Button NavigateBackButton;
-        private System.Windows.Forms.ToolStripMenuItem copyCSVsToBuildFolderOnChangeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewNewFileTemplateFolderToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;

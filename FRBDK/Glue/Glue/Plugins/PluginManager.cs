@@ -352,11 +352,12 @@ namespace FlatRedBall.Glue.Plugins
             string installedDirectory = FileManager.UserApplicationDataForThisApplication + "InstalledPlugins\\";
             string pluginDirectory = FileManager.UserApplicationData + @"FRBDK\Plugins\";
 
-            PluginManager.ReceiveOutput("Looking to copy plugins from " + installedDirectory);
+            // Making Glue startup not so verbose:
+            //PluginManager.ReceiveOutput("Looking to copy plugins from " + installedDirectory);
 
             if (Directory.Exists(installedDirectory))
             {
-                PluginManager.ReceiveOutput("Install directory found");
+                //PluginManager.ReceiveOutput("Install directory found");
                 var directories = Directory.GetDirectories(installedDirectory);
 
                 foreach (var directory in directories)
@@ -382,7 +383,7 @@ namespace FlatRedBall.Glue.Plugins
             }
             else
             {
-                PluginManager.ReceiveOutput("Install directory not found, so not going to do any copying");
+                //PluginManager.ReceiveOutput("Plugin install directory not found, so not installing any plugins");
 
             }
         }

@@ -68,10 +68,7 @@ namespace FlatRedBall.Glue.IO
                         try
                         {
                             CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
-                            if (GlueState.Self.GlueSettingsSave.AutoCopyFilesOnChange)
-                            {
-                                GlueCommands.Self.ProjectCommands.CopyToBuildFolder(rfs);
-                            }
+
                             shouldSave = true;
                         }
                         catch(Exception e)

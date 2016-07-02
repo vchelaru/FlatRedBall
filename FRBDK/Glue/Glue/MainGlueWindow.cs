@@ -492,9 +492,6 @@ namespace Glue
                 {
                     ProjectManager.GlueSettingsSave = settingsSave;
 
-                    copyCSVsToBuildFolderOnChangeToolStripMenuItem.Checked = GlueState.Self.GlueSettingsSave.AutoCopyFilesOnChange;
-
-
                     string csprojToLoad;
                     ProjectLoader.Self.GetCsprojToLoad(out csprojToLoad);
 
@@ -1795,12 +1792,6 @@ namespace Glue
         private void NavigateForwardButton_Click(object sender, EventArgs e)
         {
             TreeNodeStackManager.Self.GoForward();
-        }
-
-        private void copyCSVsToBuildFolderOnChangeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GlueState.Self.GlueSettingsSave.AutoCopyFilesOnChange = copyCSVsToBuildFolderOnChangeToolStripMenuItem.Checked;
-            GlueCommands.Self.GluxCommands.SaveSettings();
         }
 
         private void viewNewFileTemplateFolderToolStripMenuItem_Click(object sender, EventArgs e)

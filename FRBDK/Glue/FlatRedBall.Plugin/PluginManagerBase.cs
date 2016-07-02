@@ -345,18 +345,18 @@ namespace FlatRedBall.Glue.Plugins
                                              FileManager.GetDirectory(Application.ExecutablePath) + "Plugins",
                                              FileManager.UserApplicationData + folderInAppData
                                          };
-                foreach (string path in paths)
-                {
-                    CompilePluginOutput("Looking for plugins in " + path);
-                }
+                // Glue startup is super verbose, we can quite it down now that plugins seem to be working fine:
+                //foreach (string path in paths)
+                //{
+                //    CompilePluginOutput("Looking for plugins in " + path);
+                //}
 
                 pluginDirectories.AddRange(paths.Where(Directory.Exists).SelectMany(Directory.GetDirectories).Select(item=>item + "/"));
 
-                foreach (string path in pluginDirectories)
-                {
-                    CompilePluginOutput("Found path for plugins " + path);
-
-                }
+                //foreach (string path in pluginDirectories)
+                //{
+                //    CompilePluginOutput("Found path for plugins " + path);
+                //}
             }
             else
             {
@@ -379,7 +379,6 @@ namespace FlatRedBall.Glue.Plugins
 
                 if (shouldProcessPlugin)
                 {
-                    CompileOutput.Add("Compiling " + plugin);
                     var compileResult = CompilePlugin(plugin);
 
                     // We had a && false here, so I don't think we use this ignored check, do we?
@@ -421,7 +420,9 @@ namespace FlatRedBall.Glue.Plugins
                 {
                     if (IsAssemblyAlreadyReferenced(assemblyName))
                     {
-                        CompileOutput.Add(string.Format("Warning: Skipping over assembly {0} because it is already loaded by a different plugin", assemblyName));
+                        string message = $"Warning: {pluginDirectory} - Skipping over assembly {assemblyName} because it is already loaded by a different plugin";
+
+                        CompileOutput.Add(message);
                     }
                     else
                     {

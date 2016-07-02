@@ -932,9 +932,6 @@
     <None Include="Plugins\FRBDKUpdater\FRBDKUpdater.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Plugins\FRBDKUpdater\Ionic.Zip.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\VsIcon.png" />
     <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\XamarinIcon.png" />
     <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\OpenFolder.png" />
