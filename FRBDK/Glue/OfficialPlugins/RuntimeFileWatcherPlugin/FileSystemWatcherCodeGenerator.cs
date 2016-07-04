@@ -62,12 +62,16 @@ namespace OfficialPlugins.RuntimeFileWatcherPlugin
         {
             var initializeMethod = codeBlock.Function("private static void", "InitializeFileWatch", "");
             {
-                initializeMethod.Line("watcher = new System.IO.FileSystemWatcher();");
-                initializeMethod.Line("watcher.Path = FlatRedBall.IO.FileManager.RelativeDirectory + \"content/globalcontent/\";");
-                initializeMethod.Line("watcher.NotifyFilter = System.IO.NotifyFilters.LastWrite;");
-                initializeMethod.Line("watcher.Filter = \"*.*\";");
-                initializeMethod.Line("watcher.Changed += HandleFileChanged;");
-                initializeMethod.Line("watcher.EnableRaisingEvents = true;");
+                initializeMethod.Line("string globalContent = FlatRedBall.IO.FileManager.RelativeDirectory + \"content/globalcontent/\";");
+                var ifBlock = initializeMethod.If("System.IO.Directory.Exists(globalContent)");
+                {
+                    ifBlock.Line("watcher = new System.IO.FileSystemWatcher();");
+                    ifBlock.Line("watcher.Path = globalContent;");
+                    ifBlock.Line("watcher.NotifyFilter = System.IO.NotifyFilters.LastWrite;");
+                    ifBlock.Line("watcher.Filter = \"*.*\";");
+                    ifBlock.Line("watcher.Changed += HandleFileChanged;");
+                    ifBlock.Line("watcher.EnableRaisingEvents = true;");
+                }
             }
         }
 
