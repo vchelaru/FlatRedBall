@@ -386,9 +386,7 @@ namespace FlatRedBall
         #endregion
 
         #region Events
-
-        public static event EventHandler CornerGrabbingResize;
-
+        
         public static event EventHandler Suspending;
         public static event EventHandler Unsuspending;
 
@@ -447,10 +445,10 @@ namespace FlatRedBall
 #if !WINDOWS_8
                     mGraphicsOptions.ResumeDeviceReset();
 
-                    if (CornerGrabbingResize != null)
-                    {
-                        CornerGrabbingResize(sender, e);
-                    }
+#if WINDOWS
+                    FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
+#endif
+
                     mGraphicsOptions.ResetDevice();
 #endif
                 }
@@ -474,10 +472,9 @@ namespace FlatRedBall
 
             mGraphicsOptions.ResumeDeviceReset();
 
-            if (CornerGrabbingResize != null)
-            {
-                CornerGrabbingResize(sender, e);
-            }
+#if WINDOWS
+            FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
+#endif
             //mGraphicsOptions.ResumeDeviceReset();
 
 #endif

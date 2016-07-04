@@ -163,6 +163,15 @@ namespace FlatRedBall.Graphics
         #endregion
 
 
+        /// <summary>
+        /// Event raised when the resolution or orientation changes.
+        /// </summary>
+        // Implementation note: Prior to 2016, FlatRedBall included
+        // both SizeOrOrientationChanged and FlatRedBallServices.CornerGrabbingResize.
+        // SizeOrOrientationChanged worked fine on all platforms (I think) except for PC.
+        // SizeOrOrinetationChanged didn't get raised when clicking the maximize/minimize button.
+        // To address this, custom code in FlatRedBallServices will be raising SizeOrOrientationChanged
+        // on PC, and all other platforms will use the regular implementation.
         public event EventHandler SizeOrOrientationChanged;
 
 #if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
@@ -443,12 +452,16 @@ namespace FlatRedBall.Graphics
 
         }
 
+        internal void CallSizeOrOrientationChanged()
+        {
+            SizeOrOrientationChanged?.Invoke(this, null);
+        }
+
         void HandleClientSizeOrOrientationChange(object sender, EventArgs e)
         {
-            if (SizeOrOrientationChanged != null)
-            {
-                SizeOrOrientationChanged(this, null);
-            }
+#if !WINDOWS
+            SizeOrOrientationChanged?.Invoke(this, null);
+#endif
         }
 
         #endregion
@@ -521,13 +534,13 @@ namespace FlatRedBall.Graphics
             mResolutionHeight = height;
             ResetDevice();
 
-            
+
             // Not sure why but the GameWindow's resolution change doesn't fire
             // That's okay, we now have a custom event for it.  Glue will generate against this:
-            if (SizeOrOrientationChanged != null)
-            {
-                SizeOrOrientationChanged(this, null);
-            }
+#if !WINDOWS
+
+            SizeOrOrientationChanged?.Invoke(this, null);
+#endif
         }
 
         public void SetResolution(int width, int height, bool isFullscreen)
@@ -536,20 +549,19 @@ namespace FlatRedBall.Graphics
             mResolutionWidth = width;
             mResolutionHeight = height;
             ResetDevice();
+#if !WINDOWS
 
-            if (SizeOrOrientationChanged != null)
-            {
-                SizeOrOrientationChanged(this, null);
-            }
+            SizeOrOrientationChanged?.Invoke(this, null);
+#endif
         }
 
-        #region XML Docs
+            #region XML Docs
         /// <summary>
         /// Sets the display mode to full-screen and sets the resolution
         /// </summary>
         /// <param name="width">The new width</param>
         /// <param name="height">The new height</param>
-        #endregion
+            #endregion
         public void SetFullScreen(int width, int height)
         {
             SetResolution(width, height, isFullscreen: true);
@@ -572,17 +584,17 @@ namespace FlatRedBall.Graphics
         //    ResetDevice();
         //}
 
-        #endregion
+#endregion
 
-        #region Reset Operations
+            #region Reset Operations
 
 #if !SILVERLIGHT && !XNA4 && !WINDOWS_8
 
-        #region XML Docs
+            #region XML Docs
         /// <summary>
         /// Resets the texture filtering mode on the graphics device
         /// </summary>
-        #endregion
+            #endregion
         public void ResetTextureFilter()
         {
 
@@ -595,31 +607,31 @@ namespace FlatRedBall.Graphics
         }
 #endif
 
-        #region XML Docs
+            #region XML Docs
         /// <summary>
         /// Suspends the device reset when options are changed
         /// </summary>
-        #endregion
+            #endregion
         public void SuspendDeviceReset()
         {
             mSuspendDeviceReset = true;
         }
 
-        #region XML Docs
+            #region XML Docs
         /// <summary>
         /// Resumes the device reset when options are changed
         /// </summary>
-        #endregion
+            #endregion
         public void ResumeDeviceReset()
         {
             mSuspendDeviceReset = false;
         }
 
-        #region XML Docs
+            #region XML Docs
         /// <summary>
         /// Resets the device
         /// </summary>
-        #endregion
+            #endregion
         public void ResetDevice()
         {
             if (mIsInAReset)
@@ -753,12 +765,12 @@ namespace FlatRedBall.Graphics
             #endregion
         }
 
-        #region XML Docs
+            #region XML Docs
         /// <summary>
         /// Sets the presentation parameters
         /// </summary>
         /// <param name="presentationParameters">The structure to set parameters in</param>
-        #endregion
+            #endregion
         public void SetPresentationParameters(ref PresentationParameters presentationParameters)
         {
 #if !SILVERLIGHT
@@ -779,27 +791,27 @@ namespace FlatRedBall.Graphics
 #endif
         }
 
-        #endregion
+            #endregion
 
-        #region File Operations
+            #region File Operations
 
-        #region XML Docs
+            #region XML Docs
         /// <summary>
         /// Save the graphics options to a file
         /// </summary>
         /// <param name="fileName">The file name of the graphics options file</param>
-        #endregion
+            #endregion
         public void Save(string fileName)
         {
             FileManager.XmlSerialize<GraphicsOptions>(this, fileName);
         }
 
-        #region XML Docs
+            #region XML Docs
         /// <summary>
         /// Load the graphics options from file
         /// </summary>
         /// <param name="fileName">The file name of the graphics options file</param>
-        #endregion
+            #endregion
         public static GraphicsOptions FromFile(string fileName)
         {
             GraphicsOptions options;
@@ -820,18 +832,18 @@ namespace FlatRedBall.Graphics
             return options;
         }
 
-        #endregion
+            #endregion
 
-        #endregion
+#endregion
 
 #elif FRB_MDX
-        #region Fields
+            #region Fields
 
         public UInt32 TextureLoadingColorKey = 0xff000000;
 
-        #endregion
+            #endregion
 
-        #region Properties
+            #region Properties
 
         public static bool UseXnaColors
         {
@@ -842,15 +854,15 @@ namespace FlatRedBall.Graphics
 
         public bool FullScreen { get; set; }
 
-        #endregion
+            #endregion
 
-        #region Public Methods
+            #region Public Methods
 
-        #region XML Docs
+            #region XML Docs
         /// <summary>
         /// Resets the texture filtering mode on the graphics device
         /// </summary>
-        #endregion
+            #endregion
         public void ResetTextureFilter()
         {
 #if SILVERLIGHT
@@ -864,9 +876,9 @@ namespace FlatRedBall.Graphics
 
 
 
-        #endregion
-        #endif
+            #endregion
+#endif
+
+        }
 
     }
-
-}
