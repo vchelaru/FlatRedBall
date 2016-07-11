@@ -10,3 +10,6 @@ Thumbs.db
 *.aeproperties
 *.csvSettings
 FRBDK/Glue/.vs/
+Tests/GlueTestProject/GlueTestProject/GlueTestProject/CopiedXnbs/
+*.Generated.cs
+*.Generated.Event.cs

@@ -20,6 +20,8 @@ namespace FlatRedBall.Glue.Parsing
         public bool HasAutomaticGetter;
         public bool HasAutomaticSetter;
 
+        public List<string> Attributes { get; internal set; } = new List<string>();
+
         public override string ToString()
         {
             return Scope + " " + Type + " " + Name + ";";

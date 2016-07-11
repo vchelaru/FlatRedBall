@@ -7,19 +7,28 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace RenderingLibrary.Graphics
 {
-    public class SolidRectangle : IPositionedSizedObject, IRenderable, IVisible
+    public class SolidRectangle : IRenderableIpso, IVisible
     {
         #region Fields
         
         Vector2 Position;
-        IPositionedSizedObject mParent;
+        IRenderableIpso mParent;
 
-        List<IPositionedSizedObject> mChildren;
+        List<IRenderableIpso> mChildren;
+        private static Texture2D mTexture;
+        private static Rectangle mSourceRect;
+
         public Color Color;
 
         #endregion
 
         #region Properties
+        public static string AtlasedTextureName { get; set; }
+
+        public static Texture2D Texture
+        {
+            get { return mTexture; }
+        }
 
         public bool Wrap
         {
@@ -61,7 +70,15 @@ namespace RenderingLibrary.Graphics
             set;
         }
 
-        public IPositionedSizedObject Parent
+
+        bool IRenderableIpso.ClipsChildren
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public IRenderableIpso Parent
         {
             get { return mParent; }
             set
@@ -83,17 +100,14 @@ namespace RenderingLibrary.Graphics
 
         public float Rotation { get; set; }
 
-        public List<IPositionedSizedObject> Children
+        public List<IRenderableIpso> Children
         {
             get { return mChildren; }
         }
 
         public object Tag { get; set; }
 
-        public BlendState BlendState
-        {
-            get { return BlendState.NonPremultiplied; }
-        }
+        public BlendState BlendState { get; set; }
 
 
         public int Alpha
@@ -149,13 +163,44 @@ namespace RenderingLibrary.Graphics
 
         public SolidRectangle()
         {
-            mChildren = new List<IPositionedSizedObject>();
+            mChildren = new List<IRenderableIpso>();
             Color = Color.White;
             Visible = true;
+
+            if (mTexture == null && !string.IsNullOrEmpty(AtlasedTextureName)) mTexture = GetAtlasedTexture();
         }
 
+        /// <summary>
+        /// Checks if the Colored Rectangle texture is located in a loaded atlas.
+        /// </summary>
+        /// <returns>Returns atlased texture if it exists.</returns>
+        private Texture2D GetAtlasedTexture()
+        {
+            Texture2D texture = null;
 
-        void IRenderable.Render(SpriteBatch spriteBatch, SystemManagers managers)
+            if (ToolsUtilities.FileManager.IsRelative(AtlasedTextureName))
+            {
+                AtlasedTextureName = ToolsUtilities.FileManager.RelativeDirectory + AtlasedTextureName;
+
+                AtlasedTextureName = ToolsUtilities.FileManager.RemoveDotDotSlash(AtlasedTextureName);
+            }
+
+            // see if an atlas exists:
+            var atlasedTexture =
+                global::RenderingLibrary.Content.LoaderManager.Self.TryLoadContent<AtlasedTexture>(AtlasedTextureName);
+
+            if (atlasedTexture != null)
+            {
+                mSourceRect = new Rectangle(atlasedTexture.SourceRectangle.Left + 1,
+                    atlasedTexture.SourceRectangle.Top + 1, 1, 1);
+
+                texture = atlasedTexture.Texture;
+            }
+
+            return texture;
+        }
+
+        void IRenderable.Render(SpriteRenderer spriteRenderer, SystemManagers managers)
         {
             if (this.AbsoluteVisible && this.Width > 0 && this.Height > 0)
             {
@@ -169,10 +214,15 @@ namespace RenderingLibrary.Graphics
                     renderer = managers.Renderer;
                 }
 
-                Sprite.Render(managers, spriteBatch, this,
-                    renderer.SinglePixelTexture,
-                    this.Color, null, false, false, Rotation);
+                var texture = renderer.SinglePixelTexture;
+                Rectangle? sourceRect = null;
+                if (mTexture != null)
+                {
+                    texture = mTexture;
+                    sourceRect = mSourceRect;
+                }
 
+                Sprite.Render(managers, spriteRenderer, this, texture, Color, sourceRect, false, false, Rotation);
             }
         }
 
@@ -196,19 +246,26 @@ namespace RenderingLibrary.Graphics
         {
             get
             {
-                return ((IPositionedSizedObject)this).Parent as IVisible;
+                return ((IRenderableIpso)this).Parent as IVisible;
             }
         }
 
-        void IPositionedSizedObject.SetParentDirect(IPositionedSizedObject parent)
+        void IRenderableIpso.SetParentDirect(IRenderableIpso parent)
         {
             mParent = parent;
         }
+
+        void IRenderable.PreRender() { }
 
         public bool Visible
         {
             get;
             set;
+        }
+
+        public override string ToString()
+        {
+            return Name + " (SolidRectangle)";
         }
     }
 }

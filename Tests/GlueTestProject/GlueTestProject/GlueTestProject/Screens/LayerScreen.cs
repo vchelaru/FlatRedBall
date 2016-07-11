@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using FlatRedBall;
@@ -97,6 +98,12 @@ namespace GlueTestProject.Screens
             if (numberFound > 1)
             {
                 throw new Exception("Sprites which are on Layers in Entities, which come from Scenes which are not on Layers, and have their Entity put on a Layer are being rendered twice.");
+            }
+
+            MoveToLayerEntityInstance.MoveToLayer(Layer2D);
+            if (Layer2D.Circles.Contains(MoveToLayerEntityInstance.CircleInstance) == false)
+            {
+                throw new Exception("Circles on entities are not moved to a layer when calling MoveToLayer");
             }
 		}
 

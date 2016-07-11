@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="21" tilewidth="16" tileheight="16" backgroundcolor="#4688ba">
- <tileset firstgid="1" name="PlatformerTiles" tilewidth="16" tileheight="16">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="21" tilewidth="16" tileheight="16" backgroundcolor="#4688ba" nextobjectid="1">
+ <tileset firstgid="1" name="PlatformerTiles" tilewidth="16" tileheight="16" tilecount="512" columns="32">
   <image source="../Tilesets/PlatformerTiles.png" width="512" height="256"/>
   <tile id="0">
+   <properties>
+    <property name="Name" value="Animated1"/>
+   </properties>
    <animation>
     <frame tileid="0" duration="100"/>
     <frame tileid="32" duration="100"/>

@@ -712,6 +712,13 @@
       <Link>Entities\ManuallyUpdatedEntity.Generated.cs</Link>
       <DependentUpon>ManuallyUpdatedEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\MoveToLayerEntity.cs">
+      <Link>Entities\MoveToLayerEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\MoveToLayerEntity.Generated.cs">
+      <Link>Entities\MoveToLayerEntity.Generated.cs</Link>
+      <DependentUpon>MoveToLayerEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\NewEntity2.cs">
       <Link>Entities\NewEntity2.cs</Link>
     </Compile>
@@ -1096,6 +1103,12 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\AnimationFrame.cs">
       <Link>GumCore\AnimationFrame.cs</Link>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\Atlas.cs">
+      <Link>GumCore\Atlas.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\AtlasedTexture.cs">
+      <Link>GumCore\AtlasedTexture.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\BitmapCharacterInfo.cs">
       <Link>GumCore\BitmapCharacterInfo.cs</Link>
     </Compile>
@@ -1188,6 +1201,9 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\IRenderable.cs">
       <Link>GumCore\IRenderable.cs</Link>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\IRenderableIpso.cs">
+      <Link>GumCore\IRenderableIpso.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\IVariableFinder.cs">
       <Link>GumCore\IVariableFinder.cs</Link>
     </Compile>
@@ -1262,6 +1278,9 @@
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\SpriteManager.cs">
       <Link>GumCore\SpriteManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\SpriteRenderer.cs">
+      <Link>GumCore\SpriteRenderer.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\StandardElementSave.cs">
       <Link>GumCore\StandardElementSave.cs</Link>
@@ -1800,8 +1819,14 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TileEntities\TileEntityInstantiator.cs">
       <Link>TileEntities\TileEntityInstantiator.cs</Link>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\AbstractMapLayer.cs">
+      <Link>TileGraphics\AbstractMapLayer.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\AnimationChainContainer.cs">
       <Link>TileGraphics\AnimationChainContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\ExternalTileset.cs">
+      <Link>TileGraphics\ExternalTileset.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\LayeredTileMap.cs">
       <Link>TileGraphics\LayeredTileMap.cs</Link>
@@ -1812,14 +1837,45 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\MapDrawableBatch.cs">
       <Link>TileGraphics\MapDrawableBatch.cs</Link>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\MapLayer.cs">
+      <Link>TileGraphics\MapLayer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\MapTileset.cs">
+      <Link>TileGraphics\MapTileset.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\MapTilesetTile.cs">
+      <Link>TileGraphics\MapTilesetTile.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\NamedValue.cs">
+      <Link>TileGraphics\NamedValue.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\ReducedTileMapInfo.cs">
       <Link>TileGraphics\ReducedTileMapInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\ReducedTileMapInfo.TiledMapSave.cs">
+      <Link>TileGraphics\ReducedTileMapInfo.TiledMapSave.cs</Link>
+      <DependentUpon>ReducedTileMapInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\TileAnimation.cs">
+      <Link>TileGraphics\TileAnimation.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\TileAnimationFrame.cs">
       <Link>TileGraphics\TileAnimationFrame.cs</Link>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\TiledMapSave.Conversion.cs">
+      <Link>TileGraphics\TiledMapSave.Conversion.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\TiledMapSave.Serialization.cs">
+      <Link>TileGraphics\TiledMapSave.Serialization.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\TiledMapToShapeCollectionConverter.cs">
+      <Link>TileGraphics\TiledMapToShapeCollectionConverter.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\Tileset.cs">
       <Link>TileGraphics\Tileset.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\TilesetExtensionMethods.cs">
+      <Link>TileGraphics\TilesetExtensionMethods.cs</Link>
     </Compile>
     <Compile Include="Activity1.cs" />
     <Compile Include="Code" />
@@ -2524,6 +2580,10 @@
       <Name>Level1</Name>
       <Link>Assets\content\screens\tiledlevelscreen\levels\level1.tilb</Link>
     </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tiledlevelscreen\levels\level1.tmx">
+      <Name>Level1</Name>
+      <Link>Assets\content\screens\tiledlevelscreen\levels\level1.tmx</Link>
+    </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tiledlevelscreen\tilesets\level1info.csv">
       <Name>Level1Info</Name>
       <Link>Assets\content\screens\tiledlevelscreen\tilesets\level1info.csv</Link>
@@ -2548,6 +2608,10 @@
       <Name>RotatedTileTmx</Name>
       <Link>Assets\content\screens\tmxscreen\rotatedtiletmx.tilb</Link>
     </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\rotatedtiletmx.tmx">
+      <Name>RotatedTileTmx</Name>
+      <Link>Assets\content\screens\tmxscreen\rotatedtiletmx.tmx</Link>
+    </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\testlevel2.scnx">
       <Name>TestLevel2</Name>
       <Link>Assets\content\screens\tmxscreen\testlevel2.scnx</Link>
@@ -2556,9 +2620,17 @@
       <Name>TilbTest</Name>
       <Link>Assets\content\screens\tmxscreen\tilbtest.tilb</Link>
     </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\tilbtest.tmx">
+      <Name>TilbTest</Name>
+      <Link>Assets\content\screens\tmxscreen\tilbtest.tmx</Link>
+    </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\tmxwithemptylayers.tilb">
       <Name>TmxWithEmptyLayers</Name>
       <Link>Assets\content\screens\tmxscreen\tmxwithemptylayers.tilb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\tmxwithemptylayers.tmx">
+      <Name>TmxWithEmptyLayers</Name>
+      <Link>Assets\content\screens\tmxscreen\tmxwithemptylayers.tmx</Link>
     </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\tmxwithlayerswithproperties.csv">
       <Name>TmxWithLayersWithProperties</Name>

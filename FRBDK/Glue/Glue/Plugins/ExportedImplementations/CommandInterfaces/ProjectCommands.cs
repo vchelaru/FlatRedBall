@@ -47,12 +47,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void CopyToBuildFolder(string absoluteSource)
         {
             string buildFolder = FileManager.GetDirectory(GlueState.Self.CurrentGlueProjectFileName) + "bin/x86/debug/Content/";
+            string destination = buildFolder +  FileManager.MakeRelative(absoluteSource, ProjectManager.ContentDirectory);
 
-            if(System.IO.Directory.Exists(buildFolder))
+            string destinationFolder = FileManager.GetDirectory(destination);
+
+            // We used to only check the bin folder, but we want to check the specific
+            // destination folder. If this is a new entity or a new folder in an entity, 
+            // there's no reason to copy this over yet - it means the game hasn't been built
+            // with this file:
+            if(System.IO.Directory.Exists(destinationFolder))
             {
                 string projectName = FileManager.RemovePath(FileManager.RemoveExtension(GlueState.Self.CurrentGlueProjectFileName));
-
-                string destination = buildFolder +  FileManager.MakeRelative(absoluteSource, ProjectManager.ContentDirectory);
 
                 try
                 {

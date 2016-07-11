@@ -676,6 +676,59 @@ namespace FlatRedBall.Graphics
             }
         }
 
+        public void Remove(Circle circle)
+        {
+            this.mCircles.Remove(circle);
+            circle.mLayerBelongingTo = null;
+        }
+
+        public void Remove(AxisAlignedRectangle rectangle)
+        {
+            this.mRectangles.Remove(rectangle);
+            rectangle.mLayerBelongingTo = null;
+        }
+
+        public void Remove(Polygon polygon)
+        {
+            this.mPolygons.Remove(polygon);
+            polygon.mLayerBelongingTo = null;
+        }
+
+        public void Remove(Line line)
+        {
+            this.mLines.Remove(line);
+            line.mLayerBelongingTo = null;
+        }
+
+        public void Remove(Sphere sphere)
+        {
+            this.mSpheres.Remove(sphere);
+            sphere.mLayerBelongingTo = null;
+        }
+
+        public void Remove(AxisAlignedCube cube)
+        {
+            this.mCubes.Remove(cube);
+            cube.mLayerBelongingTo = null;
+        }
+
+        public void Remove(Capsule2D capsule2D)
+        {
+            this.mCapsule2Ds.Remove(capsule2D);
+            capsule2D.mLayerBelongingTo = null;
+        }
+
+        public void Remove(ShapeCollection shapeCollection)
+        {
+            foreach (var item in shapeCollection.AxisAlignedCubes) Remove(item);
+            foreach (var item in shapeCollection.AxisAlignedRectangles) Remove(item);
+            foreach (var item in shapeCollection.Capsule2Ds) Remove(item);
+            foreach (var item in shapeCollection.Circles) Remove(item);
+            foreach (var item in shapeCollection.Lines) Remove(item);
+            foreach (var item in shapeCollection.Polygons) Remove(item);
+            foreach (var item in shapeCollection.Spheres) Remove(item);
+        }
+
         public void Remove(IDrawableBatch batchToRemove)
         {
             mBatches.Remove(batchToRemove);

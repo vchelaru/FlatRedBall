@@ -369,8 +369,33 @@ namespace FlatRedBall.Glue.IO
 
             #endregion
 
+            string directory = FileManager.GetDirectory(newElement.Name);
+
+            AddAdditionalCodeFilesToProject(codeFiles, directory);
+
 
             return targetCs;
+        }
+
+        private static void AddAdditionalCodeFilesToProject(List<string> codeFiles, string directory)
+        {
+            var project = GlueState.Self.CurrentMainProject;
+            foreach (var relativeCodeFile in codeFiles)
+            {
+                var codeFile = directory + relativeCodeFile;
+                bool isAlreadyAdded = project.IsFilePartOfProject(codeFile);
+
+                if(!isAlreadyAdded)
+                {
+                    project.AddCodeBuildItem(codeFile);
+
+                }
+            }
+
+            if(project.IsDirty)
+            {
+                GlueCommands.Self.ProjectCommands.SaveProjects();
+            }
         }
 
         private static void ResolveElementReferences(IElement newElement)

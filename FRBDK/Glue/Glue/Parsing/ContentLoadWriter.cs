@@ -169,6 +169,7 @@ namespace FlatRedBall.Glue.Parsing
         {
             ICodeBlock codeBlock = new CodeDocument();
             var currentBlock = codeBlock;
+            var classLevelBlock = currentBlock;
 
             codeBlock._();
 
@@ -220,11 +221,11 @@ namespace FlatRedBall.Glue.Parsing
             {
                 if (IsRfsHighPriority(rfs))
                 {
-                    ReferencedFileSaveCodeGenerator.GetInitializationForReferencedFile(rfs, null, currentBlock, true, LoadType.CompleteLoad);
+                    ReferencedFileSaveCodeGenerator.GetInitializationForReferencedFile(rfs, null, initializeFunction, true, LoadType.CompleteLoad);
                 }
             }
 
-            bool loadAsync = GenerateLoadAsyncCode(ref currentBlock);
+            bool loadAsync = GenerateLoadAsyncCode(classLevelBlock, initializeFunction);
 
             if (ContentLoadWriter.SuppressGlobalContentDictionaryRefresh == false)
             {
@@ -240,20 +241,21 @@ namespace FlatRedBall.Glue.Parsing
             {
                 if (!IsRfsHighPriority(rfs) && rfs.LoadedAtRuntime)
                 {
+                    var blockToUse = initializeFunction;
 
                     if (loadAsync)
                     {
-                        currentBlock = currentBlock
+                        blockToUse = classLevelBlock
                             .Function("static void", "Load" + rfs.Name.Replace("/", "_").Replace(".", "_"), "");
                     }
 
 
-                    ReferencedFileSaveCodeGenerator.GetInitializationForReferencedFile(rfs, null, currentBlock, true, LoadType.CompleteLoad);
+                    ReferencedFileSaveCodeGenerator.GetInitializationForReferencedFile(rfs, null, blockToUse, true, LoadType.CompleteLoad);
 
                     if (loadAsync)
                     {
-                        currentBlock.Line("m" + rfs.GetInstanceName() + "Mre.Set();");
-                        currentBlock = currentBlock.End();
+                        blockToUse.Line("m" + rfs.GetInstanceName() + "Mre.Set();");
+                        blockToUse.End();
                     }
 
                 }
@@ -272,38 +274,38 @@ namespace FlatRedBall.Glue.Parsing
             }
 
 
-            GenerateReloadFileMethod(currentBlock);
+            GenerateReloadFileMethod(classLevelBlock);
 
             
 
             foreach (var generator in CodeWriter.GlobalContentCodeGenerators)
             {
                 generator.GenerateInitializeEnd(initializeFunction);
-                generator.GenerateAdditionalMethods(codeBlock);
+                generator.GenerateAdditionalMethods(classLevelBlock);
             }
 
             return codeBlock;
         }
 
-        private static bool GenerateLoadAsyncCode(ref ICodeBlock currentBlock)
+        private static bool GenerateLoadAsyncCode(ICodeBlock classLevelBlock, ICodeBlock initializeBlock)
         {
             bool loadAsync = ProjectManager.GlueProjectSave.GlobalContentSettingsSave.LoadAsynchronously;
 
             if (loadAsync)
             {
-                GenerateInitializeAsync(currentBlock);
+                GenerateInitializeAsync(initializeBlock);
             }
 
             loadAsync = ProjectManager.GlueProjectSave.GlobalContentSettingsSave.LoadAsynchronously;
             if (loadAsync)
-            { 
+            {
 
-                currentBlock._();
+                classLevelBlock._();
 
 
-                currentBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
+                classLevelBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
 
-                currentBlock
+                classLevelBlock
                     .Function("static void", "RequestContentLoad", "string contentName")
                         .Lock("LoadMethodList")
                             .Line("int index = -1;")
@@ -320,12 +322,12 @@ namespace FlatRedBall.Glue.Parsing
                             .End()
                         .End()
                     .End();
-                currentBlock.Line("#endif");
+                classLevelBlock.Line("#endif");
 
-                currentBlock._();
+                classLevelBlock._();
 
-                currentBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
-                currentBlock
+                classLevelBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
+                classLevelBlock
                     .Function("static void", "AsyncInitialize", "")
 
                         .Line("#if XBOX360")
@@ -350,7 +352,7 @@ namespace FlatRedBall.Glue.Parsing
                         .Line("IsInitialized = true;")
                         ._()
                     .End();
-                currentBlock.Line("#endif");
+                classLevelBlock.Line("#endif");
 
                 //stringBuilder.AppendLine("\t\t\tstring ContentManagerName = \"Global\";");
 

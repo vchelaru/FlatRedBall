@@ -261,7 +261,14 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             {
                 var availableTools = new AvailableBuildTools();
                 availableTools.ShowNewApplication = false;
+
                 ReferencedFileSave instance = ((ReferencedFileSave)Instance);
+                var extension = FileManager.GetExtension(instance.Name);
+
+                availableTools.ShowNoneOption = Elements.AvailableAssetTypes.Self.AllAssetTypes
+                    .Any(item => item.Extension == extension && string.IsNullOrEmpty(item.CustomBuildToolName));
+
+
                 if (instance != null && !string.IsNullOrEmpty(instance.SourceFile))
                 {
 

@@ -12,8 +12,11 @@ namespace RenderingLibrary.Graphics
 
         bool Wrap { get; }
 
-        void Render(SpriteBatch spriteBatch, SystemManagers managers);
+        void Render(SpriteRenderer spriteRenderer, SystemManagers managers);
 
-        float Z { get; set; }
+        /// <summary>
+        /// Perform logic which needs to occur before a SpriteBatch has been started
+        /// </summary>
+        void PreRender();
     }
 }

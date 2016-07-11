@@ -199,7 +199,13 @@ namespace FlatRedBall.Glue.SetVariable
             bool didErrorOccur = false;
             if (customVariable.SetByDerived && customVariable.IsShared)
             {
-                MessageBox.Show("Variables which are SetByDerived cannot be IsShared");
+                MessageBox.Show("Variables which are SetByDerived cannot set IsShared to true");
+                didErrorOccur = true;
+            }
+
+            if(customVariable.GetIsExposingVariable(GlueState.Self.CurrentElement) && customVariable.IsShared)
+            {
+                MessageBox.Show("Exposed variables cannot set IsShared to true");
                 didErrorOccur = true;
             }
 

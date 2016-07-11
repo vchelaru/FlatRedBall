@@ -729,7 +729,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>SceneFile</Name>
     </None>
-    <None Include="Screens\TiledLevelScreen\Levels\Level1.tilb">
+    <None Include="Screens\TiledLevelScreen\Levels\Level1.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Level1</Name>
     </None>
@@ -753,7 +753,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>FinalFantasyScene</Name>
     </None>
-    <None Include="Screens\TmxScreen\RotatedTileTmx.tilb">
+    <None Include="Screens\TmxScreen\RotatedTileTmx.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>RotatedTileTmx</Name>
     </None>
@@ -761,11 +761,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TestLevel2</Name>
     </None>
-    <None Include="Screens\TmxScreen\TilbTest.tilb">
+    <None Include="Screens\TmxScreen\TilbTest.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TilbTest</Name>
     </None>
-    <None Include="Screens\TmxScreen\TmxWithEmptyLayers.tilb">
+    <None Include="Screens\TmxScreen\TmxWithEmptyLayers.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TmxWithEmptyLayers</Name>
     </None>

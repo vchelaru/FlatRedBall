@@ -10,14 +10,14 @@ using System.Collections.ObjectModel;
 
 namespace RenderingLibrary.Graphics
 {
-    public class Sprite : IPositionedSizedObject, IRenderable, IVisible
+    public class Sprite : IRenderableIpso, IVisible
     {
         #region Fields
 
         Vector2 Position;
-        IPositionedSizedObject mParent;
+        IRenderableIpso mParent;
 
-        List<IPositionedSizedObject> mChildren;
+        List<IRenderableIpso> mChildren;
 
         public Color Color = Color.White;
 
@@ -84,7 +84,15 @@ namespace RenderingLibrary.Graphics
             set;
         }
 
-        public IPositionedSizedObject Parent
+
+        bool IRenderableIpso.ClipsChildren
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public IRenderableIpso Parent
         {
             get { return mParent; }
             set
@@ -137,6 +145,12 @@ namespace RenderingLibrary.Graphics
             }
         }
 
+        public AtlasedTexture AtlasedTexture
+        {
+            get;
+            set;
+        }
+
         public IAnimation Animation
         {
             get;
@@ -151,7 +165,7 @@ namespace RenderingLibrary.Graphics
             set;
         }
 
-        public List<IPositionedSizedObject> Children
+        public List<IRenderableIpso> Children
         {
             get { return mChildren; }
         }
@@ -242,6 +256,35 @@ namespace RenderingLibrary.Graphics
             }
         }
 
+        public Rectangle? EffectiveRectangle
+        {
+            get
+            {
+                Rectangle? sourceRectangle = SourceRectangle;
+
+                if (AtlasedTexture != null)
+                {
+                    sourceRectangle = AtlasedTexture.SourceRectangle;
+
+                    // Consider this.SourceRectangle to support rendering parts of a texture from a texture atlas:
+                    if (this.SourceRectangle != null)
+                    {
+                        var toModify = sourceRectangle.Value;
+                        toModify.X += this.SourceRectangle.Value.Left;
+                        toModify.Y += this.SourceRectangle.Value.Top;
+
+                        // We won't support wrapping (yet)
+                        toModify.Width = System.Math.Min(toModify.Width, this.SourceRectangle.Value.Width);
+                        toModify.Height = System.Math.Min(toModify.Height, this.SourceRectangle.Value.Height);
+
+                        sourceRectangle = toModify;
+
+                    }
+                }
+
+                return sourceRectangle;
+            }
+        }
 
         #endregion
 
@@ -251,7 +294,7 @@ namespace RenderingLibrary.Graphics
         {
             this.Visible = true;
             BlendState = BlendState.NonPremultiplied;
-            mChildren = new List<IPositionedSizedObject>();
+            mChildren = new List<IRenderableIpso>();
 
             Texture = texture;
         }
@@ -276,38 +319,63 @@ namespace RenderingLibrary.Graphics
             }
         }
 
-        void IRenderable.Render(SpriteBatch spriteBatch, SystemManagers managers)
+        void IRenderable.Render(SpriteRenderer spriteRenderer, SystemManagers managers)
         {
             if (this.AbsoluteVisible && Width > 0 && Height > 0)
             {
                 bool shouldTileByMultipleCalls = this.Wrap && (this as IRenderable).Wrap == false;
-                if (shouldTileByMultipleCalls && this.Texture != null)
+                if (shouldTileByMultipleCalls && (this.Texture != null || this.AtlasedTexture != null))
                 {
-                    RenderTiledSprite(spriteBatch, managers);
+                    RenderTiledSprite(spriteRenderer, managers);
                 }
                 else
                 {
-                    Render(managers, spriteBatch, this, Texture, Color, SourceRectangle, FlipHorizontal, FlipVertical, Rotation);
+                    Rectangle? sourceRectangle = EffectiveRectangle;
+                    Texture2D texture = Texture;
+                    if (AtlasedTexture != null)
+                    {
+                        texture = AtlasedTexture.Texture;
+                    }
+
+                    Render(managers, spriteRenderer, this, texture, Color, sourceRectangle, FlipHorizontal, FlipVertical, Rotation);
                 }
             }
         }
 
-        private void RenderTiledSprite(SpriteBatch spriteBatch, SystemManagers managers)
+        private void RenderTiledSprite(SpriteRenderer spriteRenderer, SystemManagers managers)
         {
-            float texelsWide = this.Texture.Width;
+            float texelsWide = 0;
+            float texelsTall = 0;
+
+            int fullTexelsWide = 0;
+            int fullTexelsTall = 0;
+
+            if (this.AtlasedTexture != null)
+            {
+                fullTexelsWide = this.AtlasedTexture.SourceRectangle.Width;
+                fullTexelsTall = this.AtlasedTexture.SourceRectangle.Height;
+            }
+            else
+            {
+                fullTexelsWide = this.Texture.Width;
+                fullTexelsTall = this.Texture.Height;
+            }
+
+            texelsWide = fullTexelsWide;
             if (SourceRectangle.HasValue)
             {
                 texelsWide = SourceRectangle.Value.Width;
             }
-
-            float texelsTall = this.Texture.Height;
+            texelsTall = fullTexelsTall;
             if (SourceRectangle.HasValue)
             {
                 texelsTall = SourceRectangle.Value.Height;
             }
 
-            float xRepetitions = texelsWide / (float)Texture.Width;
-            float yRepetitions = texelsTall / (float)Texture.Height;
+
+            float xRepetitions = texelsWide / (float)fullTexelsWide;
+            float yRepetitions = texelsTall / (float)fullTexelsTall;
+
 
             if (xRepetitions > 0 && yRepetitions > 0)
             {
@@ -317,6 +385,9 @@ namespace RenderingLibrary.Graphics
                 float oldEffectiveWidth = this.EffectiveWidth;
                 float oldEffectiveHeight = this.EffectiveHeight;
 
+                // We're going to change the width, height, X, and Y of "this" to make rendering code work
+                // by simply passing in the object. At the end of the drawing, we'll revert the values back
+                // to what they were before rendering started.
                 float oldWidth = this.Width;
                 float oldHeight = this.Height;
 
@@ -326,28 +397,41 @@ namespace RenderingLibrary.Graphics
                 var oldSource = this.SourceRectangle.Value;
 
 
-                float texelsPerWorldUnitX = (float)Texture.Width / eachWidth;
-                float texelsPerWorldUnitY = (float)Texture.Height / eachHeight;
+                float texelsPerWorldUnitX = (float)fullTexelsWide / eachWidth;
+                float texelsPerWorldUnitY = (float)fullTexelsTall / eachHeight;
 
                 int oldSourceY = oldSource.Y;
 
                 if (oldSourceY < 0)
                 {
-                    int amountToAdd = 1 - (oldSourceY / Texture.Height);
+                    int amountToAdd = 1 - (oldSourceY / fullTexelsTall);
 
                     oldSourceY += amountToAdd * Texture.Height;
                 }
 
                 if (oldSourceY > 0)
                 {
-                    int amountToAdd = System.Math.Abs(oldSourceY) / Texture.Height;
+                    int amountToAdd = System.Math.Abs(oldSourceY) / fullTexelsTall;
                     oldSourceY -= amountToAdd * Texture.Height;
                 }
-                float startingY = -oldSourceY * (1 / texelsPerWorldUnitY);
-                while (startingY < (int)oldEffectiveHeight)
+                float currentY = -oldSourceY * (1 / texelsPerWorldUnitY);
+
+                var matrix = this.GetRotationMatrix();
+
+                for (int y = 0; y < yRepetitions; y++)
                 {
-                    float worldUnitsChoppedOffTop = System.Math.Max(0, -startingY);
-                    float worldUnitsChoppedOffBottom = System.Math.Max(0, startingY + eachHeight - (int)oldEffectiveHeight);
+                    float worldUnitsChoppedOffTop = System.Math.Max(0, oldSourceY * (1 / texelsPerWorldUnitY));
+                    //float worldUnitsChoppedOffBottom = System.Math.Max(0, currentY + eachHeight - (int)oldEffectiveHeight);
+
+                    float worldUnitsChoppedOffBottom = 0;
+
+                    float extraY = yRepetitions - y;
+                    if (extraY < 1)
+                    {
+                        worldUnitsChoppedOffBottom = System.Math.Max(0, (1 - extraY) * eachWidth);
+                    }
+
+
 
                     int texelsChoppedOffTop = 0;
                     if (worldUnitsChoppedOffTop > 0)
@@ -358,11 +442,9 @@ namespace RenderingLibrary.Graphics
                     int texelsChoppedOffBottom =
                         RenderingLibrary.Math.MathFunctions.RoundToInt(worldUnitsChoppedOffBottom * texelsPerWorldUnitY);
 
-                    this.Y = oldY + startingY + worldUnitsChoppedOffTop;
+                    int sourceHeight = (int)(fullTexelsTall - texelsChoppedOffTop - texelsChoppedOffBottom);
 
-                    int sourceHeight = (int)(Texture.Height - texelsChoppedOffTop - texelsChoppedOffBottom);
-
-                    if(sourceHeight == 0)
+                    if (sourceHeight == 0)
                     {
                         break;
                     }
@@ -375,22 +457,29 @@ namespace RenderingLibrary.Graphics
                     {
                         int amountToAdd = 1 - (oldSourceX / Texture.Width);
 
-                        oldSourceX += amountToAdd * Texture.Width;
+                        oldSourceX += amountToAdd * fullTexelsWide;
                     }
 
                     if (oldSourceX > 0)
                     {
                         int amountToAdd = System.Math.Abs(oldSourceX) / Texture.Width;
 
-                        oldSourceX -= amountToAdd * Texture.Width;
+                        oldSourceX -= amountToAdd * fullTexelsWide;
                     }
 
-                    float startingX = -oldSourceX * (1 / texelsPerWorldUnitX);
+                    float currentX = -oldSourceX * (1 / texelsPerWorldUnitX) + y * eachHeight * matrix.Up.X;
+                    currentY = y * eachHeight * matrix.Up.Y;
 
-                    while (startingX < (int)oldEffectiveWidth)
+                    for (int x = 0; x < xRepetitions; x++)
                     {
-                        float worldUnitsChoppedOffLeft = System.Math.Max(0, -startingX);
-                        float worldUnitsChoppedOffRight = System.Math.Max(0, startingX + eachWidth - (int)oldEffectiveWidth);
+                        float worldUnitsChoppedOffLeft = System.Math.Max(0, oldSourceX * (1 / texelsPerWorldUnitX));
+                        float worldUnitsChoppedOffRight = 0;
+
+                        float extra = xRepetitions - x;
+                        if (extra < 1)
+                        {
+                            worldUnitsChoppedOffRight = System.Math.Max(0, (1 - extra) * eachWidth);
+                        }
 
                         int texelsChoppedOffLeft = 0;
                         if (worldUnitsChoppedOffLeft > 0)
@@ -399,12 +488,13 @@ namespace RenderingLibrary.Graphics
                             //texelsChoppedOffLeft = worldUnitsChoppedOffLeft * texelsPerWorldUnit;
                             texelsChoppedOffLeft = oldSourceX;
                         }
-                        int texelsChoppedOffRight = 
+                        int texelsChoppedOffRight =
                             RenderingLibrary.Math.MathFunctions.RoundToInt(worldUnitsChoppedOffRight * texelsPerWorldUnitX);
 
-                        this.X = oldX + startingX + worldUnitsChoppedOffLeft;
+                        this.X = oldX + currentX + worldUnitsChoppedOffLeft;
+                        this.Y = oldY + currentY + worldUnitsChoppedOffTop;
 
-                        int sourceWidth = (int)(Texture.Width - texelsChoppedOffLeft - texelsChoppedOffRight);
+                        int sourceWidth = (int)(fullTexelsWide - texelsChoppedOffLeft - texelsChoppedOffRight);
 
                         if (sourceWidth == 0)
                         {
@@ -414,19 +504,33 @@ namespace RenderingLibrary.Graphics
                         this.Width = sourceWidth * 1 / texelsPerWorldUnitX;
 
 
-                        this.SourceRectangle = new Rectangle(
-                            RenderingLibrary.Math.MathFunctions.RoundToInt(texelsChoppedOffLeft), 
-                            RenderingLibrary.Math.MathFunctions.RoundToInt(texelsChoppedOffTop), 
-                            sourceWidth,
-                            sourceHeight);
-                        //this.Width = thisWidth ;
-                        Render(managers, spriteBatch, this, Texture, Color, SourceRectangle, FlipHorizontal, FlipVertical);
-                        startingX = System.Math.Max(0, startingX);
-                        startingX += this.Width;
+
+
+                        if (AtlasedTexture != null)
+                        {
+                            var rectangle = new Rectangle(
+                                AtlasedTexture.SourceRectangle.X + RenderingLibrary.Math.MathFunctions.RoundToInt(texelsChoppedOffLeft),
+                                AtlasedTexture.SourceRectangle.Y + RenderingLibrary.Math.MathFunctions.RoundToInt(texelsChoppedOffTop),
+                                sourceWidth,
+                                sourceHeight);
+
+                            Render(managers, spriteRenderer, this, AtlasedTexture.Texture, Color, rectangle, FlipHorizontal, FlipVertical, rotationInDegrees: Rotation);
+                        }
+                        else
+                        {
+                            this.SourceRectangle = new Rectangle(
+                                RenderingLibrary.Math.MathFunctions.RoundToInt(texelsChoppedOffLeft),
+                                RenderingLibrary.Math.MathFunctions.RoundToInt(texelsChoppedOffTop),
+                                sourceWidth,
+                                sourceHeight);
+
+                            Render(managers, spriteRenderer, this, Texture, Color, SourceRectangle, FlipHorizontal, FlipVertical, rotationInDegrees: Rotation);
+                        }
+                        currentX = System.Math.Max(0, currentX);
+                        currentX += this.Width * matrix.Right.X;
+                        currentY += this.Width * matrix.Right.Y;
 
                     }
-                    startingY = System.Math.Max(0, startingY);
-                    startingY += this.Height;
                 }
 
                 this.Width = oldWidth;
@@ -439,23 +543,32 @@ namespace RenderingLibrary.Graphics
             }
         }
 
-        public static void Render(SystemManagers managers, SpriteBatch spriteBatch, IPositionedSizedObject ipso, Texture2D texture)
+
+
+        public static void Render(SystemManagers managers, SpriteRenderer spriteRenderer, IRenderableIpso ipso, Texture2D texture)
         {
             Color color = new Color(1.0f, 1.0f, 1.0f, 1.0f); // White
 
-            Render(managers, spriteBatch, ipso, texture, color);
+            Render(managers, spriteRenderer, ipso, texture, color);
         }
 
 
-        public static void Render(SystemManagers managers, SpriteBatch spriteBatch,
-            IPositionedSizedObject ipso, Texture2D texture, Color color,
+        public static void Render(SystemManagers managers, SpriteRenderer spriteRenderer,
+            IRenderableIpso ipso, Texture2D texture, Color color,
             Rectangle? sourceRectangle = null,
             bool flipHorizontal = false,
             bool flipVertical = false,
             float rotationInDegrees = 0,
-            bool treat0AsFullDimensions = false
+            bool treat0AsFullDimensions = false,
+            // In the case of Text objects, we send in a line rectangle, but we want the Text object to be the owner of any resulting render states
+            object objectCausingRenering = null
             )
         {
+            if (objectCausingRenering == null)
+            {
+                objectCausingRenering = ipso;
+            }
+
             Renderer renderer = null;
             if (managers == null)
             {
@@ -488,6 +601,18 @@ namespace RenderingLibrary.Graphics
                 effects |= SpriteEffects.FlipVertically;
             }
 
+            var modifiedColor = color;
+
+            if (Renderer.NormalBlendState == BlendState.AlphaBlend)
+            {
+                // we are using premult textures, so we need to premult the color:
+                var alphaRatio = color.A / 255.0f;
+
+                modifiedColor.R = (byte)(color.R * alphaRatio);
+                modifiedColor.G = (byte)(color.G * alphaRatio);
+                modifiedColor.B = (byte)(color.B * alphaRatio);
+            }
+
             if ((ipso.Width > 0 && ipso.Height > 0) || treat0AsFullDimensions == false)
             {
                 Vector2 scale = Vector2.One;
@@ -515,15 +640,16 @@ namespace RenderingLibrary.Graphics
                     throw new ObjectDisposedException("Texture is disposed.  Texture name: " + textureToUse.Name + ", sprite scale: " + scale);
                 }
 
-                spriteBatch.Draw(textureToUse,
+                spriteRenderer.Draw(textureToUse,
                     new Vector2(ipso.GetAbsoluteX(), ipso.GetAbsoluteY()),
                     sourceRectangle,
-                    color,
-                    Microsoft.Xna.Framework.MathHelper.TwoPi * -rotationInDegrees/360.0f,
+                    modifiedColor,
+                    Microsoft.Xna.Framework.MathHelper.TwoPi * -rotationInDegrees / 360.0f,
                     Vector2.Zero,
                     scale,
                     effects,
-                    0);
+                    0,
+                    objectCausingRenering);
             }
             else
             {
@@ -543,29 +669,32 @@ namespace RenderingLibrary.Graphics
                     height);
 
 
-                spriteBatch.Draw(textureToUse,
+                spriteRenderer.Draw(textureToUse,
                     destinationRectangle,
                     sourceRectangle,
-                    color,
-                    rotationInDegrees/360.0f,
+                    modifiedColor,
+                    rotationInDegrees / 360.0f,
                     Vector2.Zero,
                     effects,
-                    0
+                    0,
+                    objectCausingRenering
                     );
             }
         }
 
         public override string ToString()
         {
-            return Name;
+            return Name + " (Sprite)";
         }
 
         #endregion
 
-        void IPositionedSizedObject.SetParentDirect(IPositionedSizedObject parent)
+        void IRenderableIpso.SetParentDirect(IRenderableIpso parent)
         {
             mParent = parent;
         }
+
+        void IRenderable.PreRender() { }
 
         #region IVisible Implementation
 
@@ -594,10 +723,11 @@ namespace RenderingLibrary.Graphics
         {
             get
             {
-                return ((IPositionedSizedObject)this).Parent as IVisible;
+                return ((IRenderableIpso)this).Parent as IVisible;
             }
         }
 
         #endregion
+
     }
 }

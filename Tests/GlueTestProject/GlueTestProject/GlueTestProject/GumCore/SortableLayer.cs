@@ -17,7 +17,7 @@ namespace RenderingLibrary.Graphics
             get { return false; }
         }
 
-        public void Render(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch, SystemManagers managers)
+        public void Render(SpriteRenderer spriteRenderer, SystemManagers managers)
         {
             if (managers == null)
             {
@@ -31,6 +31,9 @@ namespace RenderingLibrary.Graphics
             get;
             set;
         }
+
+        void IRenderable.PreRender() { }
+
 
     }
 }

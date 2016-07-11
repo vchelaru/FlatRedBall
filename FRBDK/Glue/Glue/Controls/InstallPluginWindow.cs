@@ -153,7 +153,7 @@ namespace FlatRedBall.Glue.Controls
 
                             Plugins.PluginManager.ReceiveOutput("Installed to " + installPath);
 
-                            MessageBox.Show(@"Successfully installed.  Restart Glue in order to use the new plugin.");
+                            MessageBox.Show(@"Successfully installed.  Restart Glue to use the new plugin.");
                         }
                         else
                         {

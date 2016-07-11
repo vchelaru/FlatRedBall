@@ -25,7 +25,7 @@ namespace FlatRedBall.Gum
         //The project file can be common across multiple instances of the IDB.
         static string mProjectFileName;
 
-        static Dictionary<FlatRedBall.Graphics.Layer, List<RenderingLibrary.Graphics.Layer>> mFrbToGumLayers = 
+        static Dictionary<FlatRedBall.Graphics.Layer, List<RenderingLibrary.Graphics.Layer>> mFrbToGumLayers =
             new Dictionary<FlatRedBall.Graphics.Layer, List<RenderingLibrary.Graphics.Layer>>();
 
         GraphicalUiElement element;
@@ -103,7 +103,7 @@ namespace FlatRedBall.Gum
         #endregion
 
         #region Public Functions
-        
+
         public GumIdb()
         {
 
@@ -149,6 +149,8 @@ namespace FlatRedBall.Gum
                 FlatRedBallServices.AddManager(RenderingLibrary.SystemManagers.Default);
 
                 RenderingLibrary.Graphics.Text.RenderBoundaryDefault = false;
+                // FlatRedBall uses premult alpha.
+                RenderingLibrary.Graphics.Renderer.NormalBlendState = Microsoft.Xna.Framework.Graphics.BlendState.AlphaBlend;
 
 
                 var idb = new GumIdb();
@@ -191,12 +193,12 @@ namespace FlatRedBall.Gum
 
             GumLoadResult result;
 
-            ObjectFinder.Self.GumProjectSave = GumProjectSave.Load(projectFileName, out result);
+            ObjectFinder.Self.GumProjectSave = GumProjectSave.Load(mProjectFileName, out result);
 
 #if DEBUG
             if(ObjectFinder.Self.GumProjectSave == null)
             {
-                throw new Exception("Could not find Gum project at " + projectFileName);
+                throw new Exception("Could not find Gum project at " + mProjectFileName);
             }
 
             if(!string.IsNullOrEmpty(result.ErrorMessage))
@@ -240,6 +242,9 @@ namespace FlatRedBall.Gum
                 {
                     item.Initialize(item.DefaultState);
                 }
+                //for atlased colored rectangles
+                if (item.Name == "ColoredRectangle")
+                    RenderingLibrary.Graphics.SolidRectangle.AtlasedTextureName = "..\\Graphics\\Misc\\ColoredRectangle.png";
             }
 
             StandardElementsManager.Self.Initialize();
@@ -399,8 +404,9 @@ namespace FlatRedBall.Gum
             mManagers.Activity(TimeManager.CurrentTime);
         }
 
-        // Currently we only want one Gum call per frame, so we should
-        // make sure that this doesn't happen multiple times
+        /// <summary>
+        /// Variable that stores the last draw call. It is used to determine if drawing a new frame.
+        /// </summary>
         double mLastDrawCall = double.NaN;
 
         public void Draw(FlatRedBall.Camera camera)
@@ -414,6 +420,10 @@ namespace FlatRedBall.Gum
 
             //////////////////////End Early Out/////////////////////////////
 
+
+            // This is the first call of the frame, so reset this value:
+            SystemManagers.Default.Renderer.ClearPerformanceRecordingVariables();
+
             if (FlatRedBall.Graphics.Renderer.CurrentLayer == null)
             {
                 mManagers.TextManager.RenderTextTextures();
@@ -423,11 +433,58 @@ namespace FlatRedBall.Gum
             {
                 mManagers.Draw(mFrbToGumLayers[FlatRedBall.Graphics.Renderer.CurrentLayer]);
             }
+
+            var renderBreaks = FlatRedBall.Graphics.Renderer.LastFrameRenderBreakList;
+
+            if (renderBreaks != null)
+            {
+                // This object handles its own render breaks
+                if (renderBreaks.Count != 0)
+                {
+                    var last = renderBreaks.Last();
+                    if (last.ObjectCausingBreak == this)
+                    {
+                        renderBreaks.RemoveAt(renderBreaks.Count - 1);
+                    }
+                }
+
+                foreach (var item in mManagers.Renderer.SpriteRenderer.LastFrameDrawStates)
+                {
+                    foreach (var changeRecord in item.ChangeRecord)
+                    {
+                        var renderBreak = new RenderBreak(0,
+                            changeRecord.Texture,
+                            ColorOperation.Texture,
+                            BlendOperation.Regular,
+                            TextureAddressMode.Clamp);
+
+#if DEBUG
+                        renderBreak.ObjectCausingBreak = changeRecord.ObjectRequestingChange;
+#endif
+                        renderBreaks.Add(renderBreak);
+                    }
+                }
+            }
+            mManagers.Renderer.ForceEnd();
         }
 
         public void Destroy()
         {
             element.RemoveFromManagers();
+
+            foreach (var kvp in mFrbToGumLayers)
+            {
+                var listOfGumLayers = kvp.Value;
+                foreach (var gumLayer in listOfGumLayers)
+                {
+                    mManagers.Renderer.RemoveLayer(gumLayer);
+                }
+            }
+
+            // Not sure if we need to do some work to only clear layers for the instance rather than all,
+            // in case we're async loading
+            mFrbToGumLayers.Clear();
+
         }
         #endregion
 

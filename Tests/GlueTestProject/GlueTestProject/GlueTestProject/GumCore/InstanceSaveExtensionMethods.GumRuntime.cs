@@ -34,7 +34,7 @@ namespace GumRuntime
 
 
 
-                foreach (var variable in state.Variables.Where(item => item.SourceObject == instanceSave.Name))
+                foreach (var variable in state.Variables.Where(item => item.SetsValue && item.SourceObject == instanceSave.Name))
                 {
                     string propertyOnInstance = variable.Name.Substring(variable.Name.LastIndexOf('.') + 1);
 
@@ -66,12 +66,12 @@ namespace GumRuntime
                     break;
 
                 case "Rectangle":
-                    LineRectangle rectangle = new LineRectangle();
+                    LineRectangle rectangle = new LineRectangle(systemManagers);
                     rectangle.IsDotted = false;
                     containedObject = rectangle;
                     break;
                 case "Circle":
-                    LineCircle circle = new LineCircle();
+                    LineCircle circle = new LineCircle(systemManagers);
                     circle.CircleOrigin = CircleOrigin.TopLeft;
                     containedObject = circle;
                     break;

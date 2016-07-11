@@ -132,6 +132,8 @@ namespace Gum.DataTypes
         public GumProjectSave()
         {
             ShowOutlines = true;
+            // I think people want this on by default:
+            RestrictToUnitValues = true;
 
             Guides = new List<GuideRectangle>();
 
@@ -294,7 +296,37 @@ namespace Gum.DataTypes
         {
             foreach (var standardElement in StandardElements)
             {
-                standardElement.Save(directory + ElementReference.StandardSubfolder + "/" + standardElement.Name + "." + StandardExtension);
+
+
+                const int maxNumberOfTries = 6;
+                const int msBetweenSaves = 100;
+                int numberOfTimesTried = 0;
+
+                bool succeeded = false;
+                Exception exception = null;
+
+                while (numberOfTimesTried < maxNumberOfTries)
+                {
+                    try
+                    {
+                        standardElement.Save(directory + ElementReference.StandardSubfolder + "/" + standardElement.Name + "." + StandardExtension);
+
+                        succeeded = true;
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        exception = e;
+                        System.Threading.Thread.Sleep(msBetweenSaves);
+                        numberOfTimesTried++;
+                    }
+                }
+
+                if(!succeeded)
+                {
+                    throw exception;
+                }
+
             }
         }
 

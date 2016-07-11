@@ -12,8 +12,10 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
 
+
 namespace TMXGlueLib.DataTypes
 {
+
     #region ReducedQuadInfo
 
     public partial class ReducedQuadInfo
@@ -31,6 +33,12 @@ namespace TMXGlueLib.DataTypes
         public byte FlipFlags;
 
         public string Name;
+
+        public List<NamedValue> QuadSpecificProperties
+        {
+            get;
+            set;
+        }
 
         public static ReducedQuadInfo ReadFrom(BinaryReader reader)
         {
@@ -80,6 +88,12 @@ namespace TMXGlueLib.DataTypes
         public uint NumberOfQuads;
 
         public float Z;
+
+        // Each tileset can have different widths and heights.
+        // Currently we only allow one tileset per layer, so we
+        // can store that width and height here
+        public int TileWidth;
+        public int TileHeight;
 
         public List<ReducedQuadInfo> Quads = new List<ReducedQuadInfo>();
 

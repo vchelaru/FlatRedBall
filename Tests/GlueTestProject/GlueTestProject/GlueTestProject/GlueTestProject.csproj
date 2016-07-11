@@ -13,7 +13,7 @@
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
     <XnaPlatform>Windows</XnaPlatform>
-    <XnaProfile>Reach</XnaProfile>
+    <XnaProfile>HiDef</XnaProfile>
     <XnaCrossPlatformGroupID>6e8472f3-363d-4b52-a484-aa934eebcf1f</XnaCrossPlatformGroupID>
     <XnaOutputType>Game</XnaOutputType>
     <ApplicationIcon>Game.ico</ApplicationIcon>
@@ -130,7 +130,6 @@
     <Compile Include="DataTypes\emptyMap1.Generated.cs" />
     <Compile Include="DataTypes\GlobalCsv.Generated.cs" />
     <Compile Include="DataTypes\HugeCsv.Generated.cs" />
-    <Compile Include="DataTypes\Level1Info.Generated.cs" />
     <Compile Include="DataTypes\ListCsv.Generated.cs" />
     <Compile Include="DataTypes\LoadedAtRuntimeFalseCsv.Generated.cs" />
     <Compile Include="DataTypes\MovementValues.Generated.cs" />
@@ -464,6 +463,10 @@
     <Compile Include="Entities\ManuallyUpdatedEntity.Generated.cs">
       <DependentUpon>ManuallyUpdatedEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\MoveToLayerEntity.cs" />
+    <Compile Include="Entities\MoveToLayerEntity.Generated.cs">
+      <DependentUpon>MoveToLayerEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\NewEntity2.cs" />
     <Compile Include="Entities\NewEntity2.Event.cs">
       <DependentUpon>NewEntity2.cs</DependentUpon>
@@ -670,6 +673,8 @@
     </Compile>
     <Compile Include="GlobalContent.Generated.cs" />
     <Compile Include="GumCore\AnimationFrame.cs" />
+    <Compile Include="GumCore\Atlas.cs" />
+    <Compile Include="GumCore\AtlasedTexture.cs" />
     <Compile Include="GumCore\BitmapCharacterInfo.cs" />
     <Compile Include="GumCore\BitmapFont.cs" />
     <Compile Include="GumCore\Blend.cs" />
@@ -704,6 +709,7 @@
     </Compile>
     <Compile Include="GumCore\IPositionedSizedObject.cs" />
     <Compile Include="GumCore\IRenderable.cs" />
+    <Compile Include="GumCore\IRenderableIpso.cs" />
     <Compile Include="GumCore\IVariableFinder.cs" />
     <Compile Include="GumCore\IVisible.cs" />
     <Compile Include="GumCore\Layer.cs" />
@@ -729,6 +735,7 @@
     <Compile Include="GumCore\Sprite.cs" />
     <Compile Include="GumCore\SpriteBatchStack.cs" />
     <Compile Include="GumCore\SpriteManager.cs" />
+    <Compile Include="GumCore\SpriteRenderer.cs" />
     <Compile Include="GumCore\StandardElementSave.cs" />
     <Compile Include="GumCore\StandardElementsManager.cs" />
     <Compile Include="GumCore\StateSave.cs" />
@@ -776,7 +783,6 @@
     <Compile Include="GumRuntimes\TextureSettingInStateComponentRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\UsedToInheritFromTextComponentRuntime.Generated.cs" />
     <Compile Include="Performance\IEntityFactory.Generated.cs" />
-    <Compile Include="Performance\IPoolable.Generated.cs" />
     <Compile Include="Performance\PoolList.Generated.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
@@ -992,13 +998,27 @@
     <Compile Include="StateInterpolation\TweenerManager.cs" />
     <Compile Include="TileCollisions\TileShapeCollection.cs" />
     <Compile Include="TileEntities\TileEntityInstantiator.cs" />
+    <Compile Include="TileGraphics\AbstractMapLayer.cs" />
     <Compile Include="TileGraphics\AnimationChainContainer.cs" />
+    <Compile Include="TileGraphics\ExternalTileset.cs" />
     <Compile Include="TileGraphics\LayeredTileMap.cs" />
     <Compile Include="TileGraphics\LayeredTileMapAnimation.cs" />
     <Compile Include="TileGraphics\MapDrawableBatch.cs" />
+    <Compile Include="TileGraphics\MapLayer.cs" />
+    <Compile Include="TileGraphics\MapTileset.cs" />
+    <Compile Include="TileGraphics\MapTilesetTile.cs" />
+    <Compile Include="TileGraphics\NamedValue.cs" />
     <Compile Include="TileGraphics\ReducedTileMapInfo.cs" />
+    <Compile Include="TileGraphics\ReducedTileMapInfo.TiledMapSave.cs">
+      <DependentUpon>ReducedTileMapInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TileGraphics\TileAnimation.cs" />
     <Compile Include="TileGraphics\TileAnimationFrame.cs" />
+    <Compile Include="TileGraphics\TiledMapSave.Conversion.cs" />
+    <Compile Include="TileGraphics\TiledMapSave.Serialization.cs" />
+    <Compile Include="TileGraphics\TiledMapToShapeCollectionConverter.cs" />
     <Compile Include="TileGraphics\Tileset.cs" />
+    <Compile Include="TileGraphics\TilesetExtensionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

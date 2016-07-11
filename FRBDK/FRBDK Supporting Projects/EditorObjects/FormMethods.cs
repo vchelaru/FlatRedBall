@@ -39,7 +39,7 @@ namespace EditorObjects
             mLeftBorder = leftBorder;
             mRightBorder = rightBorder;
             
-            FlatRedBallServices.CornerGrabbingResize += new EventHandler(ReactToResizing);
+            FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += new EventHandler(ReactToResizing);
             FlatRedBallServices.Game.Window.AllowUserResizing = true;
 
 

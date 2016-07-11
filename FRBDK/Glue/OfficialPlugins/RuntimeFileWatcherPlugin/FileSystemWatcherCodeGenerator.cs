@@ -45,14 +45,18 @@ namespace OfficialPlugins.RuntimeFileWatcherPlugin
 
                 foreach(var rfs in GlueState.Self.CurrentGlueProject.GlobalFiles)
                 {
-                    var fileName = ProjectBase.AccessContentDirectory + rfs.Name.ToLower().Replace("\\", "/");
-                    var instanceName = rfs.GetInstanceName();
+                    bool shouldGenerate = rfs.LoadedAtRuntime && rfs.IsDatabaseForLocalizing == false;
 
-                    var ifStatement = tryBlock.If($"relativeFileName == \"{fileName}\"");
+                    if(shouldGenerate)
                     {
-                        ifStatement.Line($"Reload({instanceName});");
-                    }
+                        var fileName = ProjectBase.AccessContentDirectory + rfs.Name.ToLower().Replace("\\", "/");
+                        var instanceName = rfs.GetInstanceName();
 
+                        var ifStatement = tryBlock.If($"relativeFileName == \"{fileName}\"");
+                        {
+                            ifStatement.Line($"Reload({instanceName});");
+                        }
+                    }
                 }
                 var catchBlock = tryBlock.End().Line("catch{}");
             }

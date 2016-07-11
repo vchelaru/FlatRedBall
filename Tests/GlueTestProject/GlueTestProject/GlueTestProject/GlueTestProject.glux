@@ -49,6 +49,7 @@
           <SourceName>Entire File (SoundEffectInstance)</SourceName>
           <InstanceName>BoomInstance2</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -57,6 +58,7 @@
           <SourceName>&lt;NONE&gt;</SourceName>
           <InstanceName>BoomInstanceIncomplete</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -78,6 +80,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -95,6 +98,7 @@
           <SourceClassType>Entities\CameraAttachedToThisEntity</SourceClassType>
           <InstanceName>CameraAttachedToThisEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -134,6 +138,7 @@
           <SourceClassType>Entities\ConditionalCompilationEntity</SourceClassType>
           <InstanceName>ConditionalCompilationEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -141,6 +146,7 @@
           <SourceClassType>Entities\IncompleteDefinitionEntity</SourceClassType>
           <InstanceName>IncompleteDefinitionEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -155,6 +161,7 @@
           <InstanceName>ConditionalIWindow</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <ConditionalCompilationSymbols>SOME_CONDITION</ConditionalCompilationSymbols>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -277,6 +284,7 @@
           <SourceClassType>Entities\CsvEntity</SourceClassType>
           <InstanceName>CsvEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -296,6 +304,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>FullScreenLayer2D</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>true</Is2D>
         </NamedObjectSave>
@@ -317,6 +326,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>LeftHalfLayer</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>true</Is2D>
         </NamedObjectSave>
@@ -338,6 +348,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>TopHalfLayer</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>true</Is2D>
         </NamedObjectSave>
@@ -348,6 +359,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>ZoomedLayer</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>true</Is2D>
         </NamedObjectSave>
@@ -418,6 +430,7 @@
           <SourceClassType>Entities\VariableEntity</SourceClassType>
           <InstanceName>VariableEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -458,6 +471,7 @@
           <SourceClassType>Entities\EventEntity</SourceClassType>
           <InstanceName>EventEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -476,6 +490,7 @@
           <SourceClassGenericType>Entities\FactoryEntity</SourceClassGenericType>
           <InstanceName>FactoryEntityList</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -483,6 +498,7 @@
           <SourceClassType>Entities\ContainerOfFactoryEntityList</SourceClassType>
           <InstanceName>ContainerOfFactoryEntityListInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -490,6 +506,7 @@
           <SourceClassType>Entities\FactoryEntityDerived</SourceClassType>
           <InstanceName>FactoryEntityDerivedInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -497,6 +514,7 @@
           <SourceClassType>Entities\PooledDontInheritFromThis</SourceClassType>
           <InstanceName>PooledDontInheritFromThisInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -610,6 +628,7 @@
           <SourceClassType>Entities\GlobalContentEntity</SourceClassType>
           <InstanceName>GlobalContentEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -617,6 +636,7 @@
           <SourceClassType>Scene</SourceClassType>
           <InstanceName>SceneInstanceThatIsAssigned</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -626,6 +646,7 @@
           <SourceClassType>Entities\AnimationChainEntity</SourceClassType>
           <InstanceName>AnimationChainEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -726,6 +747,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>LayerInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>true</Is2D>
         </NamedObjectSave>
@@ -735,6 +757,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>LayerInstance2</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>true</Is2D>
         </NamedObjectSave>
@@ -749,6 +772,7 @@
           <SourceName>AxisAlignedRectangle1 (AxisAlignedRectangle)</SourceName>
           <InstanceName>InvisibleRectangle</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -758,6 +782,7 @@
           <InstanceName>PngObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <AddToManagers>false</AddToManagers>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -765,6 +790,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>TextObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -777,6 +803,7 @@
           <SourceClassType>Entities\FlatRedBallTypeEntity</SourceClassType>
           <InstanceName>FlatRedBallTypeEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -794,6 +821,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -801,6 +829,7 @@
           <SourceClassType>Entities\EmitterEntity</SourceClassType>
           <InstanceName>EmitterEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -808,6 +837,7 @@
           <SourceClassType>Entities\NoInstantiationObjectContainer</SourceClassType>
           <InstanceName>NoInstantiationObjectContainerInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -820,6 +850,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteWithInstructions</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -827,6 +858,7 @@
           <SourceClassType>Scene</SourceClassType>
           <InstanceName>SceneInstanceSetFromFileAtRuntime</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -839,6 +871,7 @@
           <SourceClassType>Entities\ScnxAttachmentTest</SourceClassType>
           <InstanceName>ScnxAttachmentTestInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -846,6 +879,7 @@
           <SourceClassType>Entities\InterpolationEntity</SourceClassType>
           <InstanceName>InterpolationEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -853,6 +887,7 @@
           <SourceClassType>Scene</SourceClassType>
           <InstanceName>DynamicallyAssignedScene</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -860,6 +895,7 @@
           <SourceClassType>Entities\CameraModifyingEntity</SourceClassType>
           <InstanceName>CameraModifyingEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -873,6 +909,7 @@
           <InstanceName>CircleInstanceAttachedToCamera</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <AttachToCamera>true</AttachToCamera>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -880,6 +917,7 @@
           <SourceClassType>Entities\ManuallyUpdatedEntity</SourceClassType>
           <InstanceName>ManuallyUpdatedEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -887,6 +925,7 @@
           <SourceClassType>Entities\InterpolationEntity</SourceClassType>
           <InstanceName>TestingTextInterpolationInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -909,6 +948,7 @@
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
           <InstanceName>AARectSettingBottom</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -916,6 +956,7 @@
           <SourceClassType>Entities\TextEntity</SourceClassType>
           <InstanceName>TextEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -923,6 +964,7 @@
           <SourceClassType>Entities\TexturePixelEntity</SourceClassType>
           <InstanceName>TexturePixelEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -931,6 +973,7 @@
           <SourceClassGenericType>Entities\IVisibleEntity</SourceClassGenericType>
           <InstanceName>IVisibleEntityList</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -939,6 +982,7 @@
           <SourceClassType>Entities\CollisionEntity</SourceClassType>
           <InstanceName>CollisionEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -947,6 +991,7 @@
           <SourceClassType>Entities\CollisionEntity</SourceClassType>
           <InstanceName>CollisionEntityInstance2</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -955,6 +1000,7 @@
           <SourceClassType>Entities\SpriteInheritingEntity</SourceClassType>
           <InstanceName>SpriteInheritingEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -963,6 +1009,7 @@
           <SourceClassType>Entities\SpriteInheritingEntity</SourceClassType>
           <InstanceName>SpriteInheritingEntityInstanceLayered</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>LayerInstance</LayerOn>
         </NamedObjectSave>
@@ -972,6 +1019,7 @@
           <SourceClassType>Entities\SpriteFrameInheritingEntity</SourceClassType>
           <InstanceName>SpriteFrameInheritingEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -980,6 +1028,7 @@
           <SourceClassType>Entities\SpriteFrameInheritingEntity</SourceClassType>
           <InstanceName>SpriteFrameInheritingEntityInstanceLayered</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>LayerInstance</LayerOn>
         </NamedObjectSave>
@@ -989,6 +1038,7 @@
           <SourceClassType>Entities\TextInheritingEntity</SourceClassType>
           <InstanceName>TextInheritingEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -997,6 +1047,7 @@
           <SourceClassType>Entities\TextInheritingEntity</SourceClassType>
           <InstanceName>TextInheritingEntityInstanceLayered</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>LayerInstance</LayerOn>
         </NamedObjectSave>
@@ -1005,6 +1056,7 @@
           <SourceClassType>Entities\SetByContainerEntity</SourceClassType>
           <InstanceName>SetByContainerEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1013,6 +1065,7 @@
           <SourceClassType>Entities\IVisibleFrbTypeInheritingEntity</SourceClassType>
           <InstanceName>SetToInvisibleTestTextVisibility</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1020,6 +1073,7 @@
           <SourceClassType>Entities\SpriteFrameInheritingEntityZBuffered</SourceClassType>
           <InstanceName>SpriteFrameInheritingEntityZBufferedInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1027,6 +1081,7 @@
           <SourceClassType>Entities\RemoveObjectsWhenInvisibleEntity</SourceClassType>
           <InstanceName>RemoveObjectsWhenInvisibleEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1036,6 +1091,7 @@
           <SourceClassType>Entities\PolygonEntity</SourceClassType>
           <InstanceName>PolygonEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1055,6 +1111,7 @@
           <SourceClassType>SpriteFrame</SourceClassType>
           <InstanceName>SpriteFrameInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1074,6 +1131,7 @@
           <SourceClassType>SpriteFrame</SourceClassType>
           <InstanceName>UnlayeredSpriteFrameNotAllSides</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1093,6 +1151,7 @@
           <SourceClassType>SpriteFrame</SourceClassType>
           <InstanceName>UnlayeredSpriteFrameNotAllSidesMoveToLayer</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1112,6 +1171,7 @@
           <SourceClassType>SpriteFrame</SourceClassType>
           <InstanceName>LayeredSpriteFrameNotAllSides</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>LayerInstance</LayerOn>
         </NamedObjectSave>
@@ -1122,6 +1182,7 @@
           <SourceClassType>Entities\IDrawableBatchEntity</SourceClassType>
           <InstanceName>IDrawableBatchEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1131,6 +1192,7 @@
           <SourceClassType>Entities\SpriteEntity</SourceClassType>
           <InstanceName>SpriteEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1140,6 +1202,7 @@
           <SourceClassType>Entities\SpriteEntity</SourceClassType>
           <InstanceName>LayeredSpriteEntityInstance2</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>LayerInstance</LayerOn>
         </NamedObjectSave>
@@ -1150,6 +1213,7 @@
           <SourceClassType>Entities\ICollidableDerived</SourceClassType>
           <InstanceName>ICollidableDerivedInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1159,6 +1223,7 @@
           <SourceClassType>Entities\NoInstantiationObjectContainer</SourceClassType>
           <InstanceName>NoInstantiationForMoveToLayer</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1168,6 +1233,7 @@
           <SourceClassType>Entities\EmitterEntity</SourceClassType>
           <InstanceName>EmitterEntityInstance1</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1178,11 +1244,13 @@
           <SourceClassGenericType>FlatRedBall.Math.Geometry.Line</SourceClassGenericType>
           <InstanceName>PositionedObjectListInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <ContainedObjects>
             <NamedObjectSave>
               <SourceType>File</SourceType>
               <InstanceName>Line1</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
           </ContainedObjects>
@@ -1248,6 +1316,7 @@
           <SourceName>UntexturedSprite (Sprite)</SourceName>
           <InstanceName>SpriteFromFile</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1256,6 +1325,7 @@
           <SourceName>Water (Emitter)</SourceName>
           <InstanceName>EmitterGuy</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -1283,6 +1353,7 @@
           <SourceName>NineSliceInstance (GlueTestProject.GumRuntimes.NineSliceRuntime)</SourceName>
           <InstanceName>NineSliceInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1292,6 +1363,7 @@
           <SourceClassType>Entities\GumComponentContainer</SourceClassType>
           <InstanceName>GumComponentContainerInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1300,6 +1372,7 @@
           <SourceName>TopButton (GlueTestProject.GumRuntimes.NineSliceButtonRuntime)</SourceName>
           <InstanceName>TopButton</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1309,6 +1382,7 @@
           <InstanceName>PublicReference</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1317,6 +1391,7 @@
           <SourceName>this (GlueTestProject.GumRuntimes.TestScreenRuntime)</SourceName>
           <InstanceName>EntireGumScreen</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -1335,6 +1410,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>LayerInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>true</Is2D>
         </NamedObjectSave>
@@ -1343,6 +1419,7 @@
           <SourceClassType>Entities\DerivedEntity</SourceClassType>
           <InstanceName>DerivedEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1350,6 +1427,7 @@
           <SourceClassType>Entities\BaseEntity</SourceClassType>
           <InstanceName>BaseEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1357,6 +1435,7 @@
           <SourceClassType>Entities\DerivedEntity</SourceClassType>
           <InstanceName>NewDerived</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1365,6 +1444,7 @@
           <SourceClassGenericType>Entities\SpriteInheritingEntity</SourceClassGenericType>
           <InstanceName>SpriteInheritingEntityList</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -1390,6 +1470,7 @@
           <SourceClassType>Entities\IWindowContainer</SourceClassType>
           <InstanceName>IWindowContainerInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1399,6 +1480,7 @@
           <SourceClassGenericType>Entities\NoIWindowBase</SourceClassGenericType>
           <InstanceName>ListOfNoIWindowBases</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -1454,6 +1536,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>Layer2DPercentage</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>true</Is2D>
           <LayerCoordinateUnit>Percent</LayerCoordinateUnit>
@@ -1463,6 +1546,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>Layer2D</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>false</Is2D>
         </NamedObjectSave>
@@ -1471,6 +1555,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>Layer3DIndependentOfCamera</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>false</Is2D>
         </NamedObjectSave>
@@ -1479,6 +1564,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>Layer2DIndependentOfCamera</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>true</Is2D>
         </NamedObjectSave>
@@ -1487,6 +1573,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>LayerThatMatchesCamera</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>false</IndependentOfCamera>
           <Is2D>false</Is2D>
         </NamedObjectSave>
@@ -1496,6 +1583,7 @@
           <SourceName>Entire File (Scene)</SourceName>
           <InstanceName>EntireScene</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>Layer2D</LayerOn>
         </NamedObjectSave>
@@ -1504,6 +1592,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>TextObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>Layer2D</LayerOn>
         </NamedObjectSave>
@@ -1512,6 +1601,7 @@
           <SourceClassType>Entities\LayerOwner</SourceClassType>
           <InstanceName>LayerOwnerInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <Summary>This is unlayered, but it contains a Layer.  Its Layer should be below the Screen's Layer2D</Summary>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -1520,6 +1610,7 @@
           <SourceClassType>Entities\LayerOwner</SourceClassType>
           <InstanceName>LayerOwnerInstanceOnLayer</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <Summary>This is unlayered, but it contains a Layer.  Its Layer should be below the Screen's Layer2D</Summary>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>Layer2D</LayerOn>
@@ -1541,8 +1632,19 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>LayerWithDecimalPixelDestinationRectangle</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>true</Is2D>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>Entity</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>Entities\MoveToLayerEntity</SourceClassType>
+          <InstanceName>MoveToLayerEntityInstance</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
     </ScreenSave>
@@ -1559,6 +1661,7 @@
           <SourceClassType>Entities\ListEntity</SourceClassType>
           <InstanceName>ListEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1567,6 +1670,7 @@
           <SourceClassGenericType>Entities\TextInheritingEntity</SourceClassGenericType>
           <InstanceName>TextInheritingEntityList</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -1629,6 +1733,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>Layer2D</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>true</Is2D>
         </NamedObjectSave>
@@ -1638,6 +1743,7 @@
           <SourceName>Entire File (Scene)</SourceName>
           <InstanceName>SceneObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>Layer2D</LayerOn>
         </NamedObjectSave>
@@ -1647,6 +1753,7 @@
           <SourceName>Text (Text)</SourceName>
           <InstanceName>TextObjectFromSceneObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>Layer2D</LayerOn>
         </NamedObjectSave>
@@ -1656,6 +1763,7 @@
           <SourceName>Text (Text)</SourceName>
           <InstanceName>TextObject2</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1663,6 +1771,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>TextObjectNotFromFile</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -1695,6 +1804,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>LayerInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>true</Is2D>
         </NamedObjectSave>
@@ -1709,6 +1819,7 @@
           <SourceName>Entire File (NodeNetwork)</SourceName>
           <InstanceName>LayeredNodeNetworkObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>LayerInstance</LayerOn>
         </NamedObjectSave>
@@ -1735,6 +1846,7 @@
           <HasPublicProperty>true</HasPublicProperty>
           <SetByContainer>true</SetByContainer>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1742,6 +1854,7 @@
           <SourceClassType>Entities\OptionallyAddedEntity</SourceClassType>
           <InstanceName>OptionallyAddedEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1750,6 +1863,7 @@
           <InstanceName>NotInstantiatedScene</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <Instantiate>false</Instantiate>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1759,6 +1873,7 @@
           <InstanceName>BaseEntitySetByContainerInvalid</InstanceName>
           <SetByContainer>true</SetByContainer>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -1806,6 +1921,7 @@
           <SourceClassType>Entities\InterpolationEntity</SourceClassType>
           <InstanceName>InterpolationEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IgnoresPausing>true</IgnoresPausing>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -1819,6 +1935,7 @@
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>CircleInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1836,6 +1953,7 @@
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
           <InstanceName>AxisAlignedRectangleInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1848,6 +1966,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1855,6 +1974,7 @@
           <SourceClassType>Entities\PausingEntity</SourceClassType>
           <InstanceName>PausingEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -1885,6 +2005,7 @@
           <SourceClassType>Entities\PositionedEntity</SourceClassType>
           <InstanceName>PositionedEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1908,6 +2029,7 @@
           <InstanceName>ZSetAttachedToCamera</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <AttachToCamera>true</AttachToCamera>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1916,6 +2038,7 @@
           <SourceClassGenericType>Entities\PositioningEntity</SourceClassGenericType>
           <InstanceName>EntityList</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1924,6 +2047,7 @@
           <InstanceName>AttachedToCameraInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <AttachToCamera>true</AttachToCamera>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1932,6 +2056,7 @@
           <InstanceName>AttachedToCameraCopyInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <AttachToCamera>true</AttachToCamera>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1940,6 +2065,7 @@
           <SourceClassType>Entities\DerivedPositioningEntity</SourceClassType>
           <InstanceName>DerivedPositioningEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -1972,6 +2098,7 @@
           <SourceName>FirstEmitter (Emitter)</SourceName>
           <InstanceName>EmitterFromFile</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -1980,6 +2107,7 @@
           <SourceName>UntexturedSprite (Sprite)</SourceName>
           <InstanceName>SpriteFromFile</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -2021,6 +2149,7 @@
           <SourceClassType>Entities\TextureContainer</SourceClassType>
           <InstanceName>TextureContainerInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -2058,6 +2187,7 @@
           <SourceClassType>Entities\ShapeEntity</SourceClassType>
           <InstanceName>ShapeEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -2065,6 +2195,7 @@
           <SourceClassType>Entities\TextureContainer</SourceClassType>
           <InstanceName>TextureContainerInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -2082,6 +2213,7 @@
           <SourceClassType>Entities\SizingEntity</SourceClassType>
           <InstanceName>SizingEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -2153,6 +2285,7 @@
           <InstanceName>SpriteObject</InstanceName>
           <AttachToContainer>false</AttachToContainer>
           <AddToManagers>false</AddToManagers>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -2281,6 +2414,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>LayerInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>false</Is2D>
         </NamedObjectSave>
@@ -2294,6 +2428,7 @@
           <SourceClassType>Entities\StateEntityWithoutCurrentStateVariable</SourceClassType>
           <InstanceName>StateEntityWithoutCurrentStateVariableInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <Summary>We set the CurrentState to Left, but then override the X value through a variable</Summary>
           <CurrentState>Left</CurrentState>
           <IndependentOfCamera>true</IndependentOfCamera>
@@ -2318,6 +2453,7 @@
           <SourceClassType>Entities\StateEntity</SourceClassType>
           <InstanceName>StateVariablesSetInEntity</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -2345,6 +2481,7 @@
           <SourceClassType>Entities\StateEntity</SourceClassType>
           <InstanceName>StateVariablesSetOnInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -2372,6 +2509,7 @@
           <SourceClassType>Entities\StateEntity</SourceClassType>
           <InstanceName>StateVariablesSetThroughTunneling</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -2379,6 +2517,7 @@
           <SourceClassType>Entities\StateEntityChild</SourceClassType>
           <InstanceName>ChildEntity</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -2386,6 +2525,7 @@
           <SourceClassType>Entities\StateEntityContainer</SourceClassType>
           <InstanceName>StateEntityContainerInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -2393,6 +2533,7 @@
           <SourceClassType>Entities\StateEntity</SourceClassType>
           <InstanceName>InstanceTestingVelocity</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -2405,6 +2546,7 @@
           <SourceClassType>Entities\StateEntity</SourceClassType>
           <InstanceName>OverridingVariableStateEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>LayerInstance</LayerOn>
         </NamedObjectSave>
@@ -2413,6 +2555,7 @@
           <SourceClassType>Entities\InterpolationEntity</SourceClassType>
           <InstanceName>InterpolationEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -2439,12 +2582,10 @@
       <Name>Screens\TiledLevelScreen</Name>
       <ReferencedFiles>
         <ReferencedFileSave>
-          <Name>Screens/TiledLevelScreen/Levels/Level1.tilb</Name>
+          <Name>Screens/TiledLevelScreen/Levels/Level1.tmx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
-          <SourceFile>Screens/TiledLevelScreen/Levels/Level1.tmx</SourceFile>
-          <BuildTool>*.tmx -&gt; TmxToScnx.exe -&gt; *.tilb</BuildTool>
-          <AdditionalArguments>copyimages=false</AdditionalArguments>
+          <BuildTool>&lt;None&gt;</BuildTool>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
@@ -2463,6 +2604,7 @@
           <SourceClassType>TileShapeCollection</SourceClassType>
           <InstanceName>SolidCollisions</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -2501,18 +2643,16 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
-          <Name>Screens/TmxScreen/TilbTest.tilb</Name>
+          <Name>Screens/TmxScreen/TilbTest.tmx</Name>
           <IsSharedStatic>true</IsSharedStatic>
-          <SourceFile>Screens/TmxScreen/TilbTest.tmx</SourceFile>
-          <BuildTool>*.tmx -&gt; TmxToScnx.exe -&gt; *.tilb</BuildTool>
+          <BuildTool>&lt;None&gt;</BuildTool>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
-          <Name>Screens/TmxScreen/TmxWithEmptyLayers.tilb</Name>
+          <Name>Screens/TmxScreen/TmxWithEmptyLayers.tmx</Name>
           <IsSharedStatic>true</IsSharedStatic>
-          <SourceFile>Screens/TmxScreen/TmxWithEmptyLayers.tmx</SourceFile>
-          <BuildTool>*.tmx -&gt; TmxToScnx.exe -&gt; *.tilb</BuildTool>
+          <BuildTool>&lt;None&gt;</BuildTool>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
@@ -2531,10 +2671,9 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
-          <Name>Screens/TmxScreen/RotatedTileTmx.tilb</Name>
+          <Name>Screens/TmxScreen/RotatedTileTmx.tmx</Name>
           <IsSharedStatic>true</IsSharedStatic>
-          <SourceFile>Screens/TmxScreen/RotatedTileTmx.tmx</SourceFile>
-          <BuildTool>*.tmx -&gt; TmxToScnx.exe -&gt; *.tilb</BuildTool>
+          <BuildTool>&lt;None&gt;</BuildTool>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
@@ -2573,6 +2712,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SolidColorTransparencyTestSprite</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -2605,6 +2745,7 @@
           <SourceClassType>Entities\TunneledVariableEntity</SourceClassType>
           <InstanceName>TunneledVariableEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -2637,6 +2778,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>ZBufferedSprite</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IsZBuffered>true</IsZBuffered>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -2645,6 +2787,7 @@
           <SourceClassType>Entities\ZBufferedEntity</SourceClassType>
           <InstanceName>ZBufferedEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -2688,6 +2831,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\AndroidTests</Name>
       <ReferencedFiles>
         <ReferencedFileSave>
@@ -2788,6 +2932,7 @@
           <SourceObjectProperty>CurrentChainName</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\AnimationChainEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -2795,6 +2940,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -2818,6 +2964,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>CurrentChainNameFirst</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -2835,6 +2982,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteObjectUsingUntexturedAnimationChain</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -2849,6 +2997,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -2935,6 +3084,7 @@
           <DefaultValue xsi:type="xsd:float">0</DefaultValue>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\AttachedToCamera</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -2942,6 +3092,7 @@
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>Circle</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -2987,6 +3138,7 @@
           <SourceObjectProperty>Radius</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\AttachedToCameraCopy</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -2994,6 +3146,7 @@
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>Circle</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -3079,6 +3232,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\BaseEnityWithCategorizedStates</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -3219,6 +3373,7 @@
           <SetByDerived>true</SetByDerived>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\BaseEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -3227,6 +3382,7 @@
           <InstanceName>Collision</InstanceName>
           <SetByDerived>true</SetByDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -3240,6 +3396,7 @@
           <InstanceName>CircleObject</InstanceName>
           <SetByDerived>true</SetByDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -3248,6 +3405,7 @@
           <InstanceName>BaseUndefined</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -3255,6 +3413,7 @@
           <SourceClassType>Entities\StateEntity</SourceClassType>
           <InstanceName>StateEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -3264,6 +3423,7 @@
           <InstanceName>ExposedListOfEntities</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -3272,6 +3432,7 @@
           <InstanceName>IWindowEntityInstance</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -3285,6 +3446,7 @@
           <InstanceName>CircleInstanceExposedInDerived</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -3298,6 +3460,7 @@
           <InstanceName>SpriteInstance</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -3312,6 +3475,7 @@
           <InstanceName>SpriteSetByDerived</InstanceName>
           <SetByDerived>true</SetByDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -3359,6 +3523,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\BaseEntityWithNoStates</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -3399,6 +3564,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\BaseNotPooled</Name>
       <CreatedByOtherEntities>true</CreatedByOtherEntities>
       <Is2D>true</Is2D>
@@ -3440,6 +3606,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\BasePositioningEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -3453,6 +3620,7 @@
           <InstanceName>CircleContainerInstance</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -3475,6 +3643,7 @@
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
       </StateCategoryList>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\BaseStateEntityWithOnlyCategorized</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -3515,6 +3684,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\BaseWithCollision</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -3536,6 +3706,7 @@
           <HasPublicProperty>true</HasPublicProperty>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -3546,6 +3717,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\CameraAttachedToThisEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -3554,6 +3726,7 @@
           <SourceClassType>Camera</SourceClassType>
           <InstanceName>CameraInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -3564,6 +3737,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\CameraModifyingEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -3594,6 +3768,7 @@
           <DefaultValue xsi:type="xsd:float">0</DefaultValue>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ChildOfPositioningEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -3602,6 +3777,7 @@
           <InstanceName>Rectangle</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <VariablesToReset>
             <string>X</string>
             <string>Y</string>
@@ -3650,6 +3826,7 @@
           <DefaultValue xsi:type="xsd:float">0</DefaultValue>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\CircleContainer</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -3662,6 +3839,7 @@
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>CircleInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -3718,6 +3896,7 @@
         </CustomVariable>
       </CustomVariables>
       <ImplementsIVisible>true</ImplementsIVisible>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\CircleContainerSetCircleInCustomVariables</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -3732,6 +3911,7 @@
           <InstanceName>CircleInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -3780,6 +3960,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\CollidableEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -3795,6 +3976,7 @@
           <InstanceName>CircleInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -3843,6 +4025,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\CollisionEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -3862,6 +4045,7 @@
           <InstanceName>AxisAlignedRectangleInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -3876,6 +4060,7 @@
           <InstanceName>CircleInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -3886,6 +4071,7 @@
           <SourceClassGenericType>Circle</SourceClassGenericType>
           <InstanceName>ListOfCircles</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <ContainedObjects>
             <NamedObjectSave>
               <CustomProperty>
@@ -3898,6 +4084,7 @@
               <InstanceName>Circle1</InstanceName>
               <HasPublicProperty>true</HasPublicProperty>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -3911,6 +4098,7 @@
               <InstanceName>Circle2</InstanceName>
               <HasPublicProperty>true</HasPublicProperty>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -3924,6 +4112,7 @@
               <InstanceName>Circle3</InstanceName>
               <HasPublicProperty>true</HasPublicProperty>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -3937,6 +4126,7 @@
               <InstanceName>Circle4</InstanceName>
               <HasPublicProperty>true</HasPublicProperty>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -3950,6 +4140,7 @@
               <InstanceName>Circle5</InstanceName>
               <HasPublicProperty>true</HasPublicProperty>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
           </ContainedObjects>
@@ -3961,12 +4152,14 @@
           <SourceClassGenericType>Entities\CollidableEntity</SourceClassGenericType>
           <InstanceName>CollidableEntityList</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <ContainedObjects>
             <NamedObjectSave>
               <SourceType>Entity</SourceType>
               <SourceClassType>Entities\CollidableEntity</SourceClassType>
               <InstanceName>Collidable1</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -3974,6 +4167,7 @@
               <SourceClassType>Entities\CollidableEntity</SourceClassType>
               <InstanceName>Collidable2</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -3981,6 +4175,7 @@
               <SourceClassType>Entities\CollidableEntity</SourceClassType>
               <InstanceName>Collidable3</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -3988,6 +4183,7 @@
               <SourceClassType>Entities\CollidableEntity</SourceClassType>
               <InstanceName>Collidable4</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -3995,6 +4191,7 @@
               <SourceClassType>Entities\CollidableEntity</SourceClassType>
               <InstanceName>Collidable5</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -4002,6 +4199,7 @@
               <SourceClassType>Entities\CollidableEntity</SourceClassType>
               <InstanceName>Collidable6</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -4009,6 +4207,7 @@
               <SourceClassType>Entities\CollidableEntity</SourceClassType>
               <InstanceName>Collidable7</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
           </ContainedObjects>
@@ -4020,12 +4219,14 @@
           <SourceClassGenericType>Entities\CollidableEntity</SourceClassGenericType>
           <InstanceName>SingleInstanceList</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <ContainedObjects>
             <NamedObjectSave>
               <SourceType>Entity</SourceType>
               <SourceClassType>Entities\CollidableEntity</SourceClassType>
               <InstanceName>SingleInstance1</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
           </ContainedObjects>
@@ -4108,6 +4309,7 @@
           <SourceObjectProperty>Visible</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ConditionalCompilationEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -4123,6 +4325,7 @@
           <InstanceName>EntireShapeCollection</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <ConditionalCompilationSymbols>SOME_CONDITION</ConditionalCompilationSymbols>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -4137,6 +4340,7 @@
           <InstanceName>AnimationChainEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <ConditionalCompilationSymbols>SOME_CONDITION</ConditionalCompilationSymbols>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -4152,6 +4356,7 @@
           <InstanceName>BaseEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <ConditionalCompilationSymbols>GlueView</ConditionalCompilationSymbols>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -4160,6 +4365,7 @@
           <SourceClassGenericType>Entities\BaseEntity</SourceClassGenericType>
           <InstanceName>BaseEntityList</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <ContainedObjects>
             <NamedObjectSave>
               <Properties>
@@ -4173,6 +4379,7 @@
               <InstanceName>ConditionalCompilationInList</InstanceName>
               <AttachToContainer>true</AttachToContainer>
               <ConditionalCompilationSymbols>GlueView</ConditionalCompilationSymbols>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
           </ContainedObjects>
@@ -4198,6 +4405,7 @@
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
           <ConditionalCompilationSymbols>DONT_INCLUDE_ME</ConditionalCompilationSymbols>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -4225,6 +4433,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ContainerOfFactoryEntityList</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -4233,6 +4442,7 @@
           <SourceClassGenericType>Entities\FactoryEntity</SourceClassGenericType>
           <InstanceName>FactoryEntityList</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -4378,6 +4588,7 @@
           <DefaultValue xsi:type="xsd:string">First in CsvWithCustomTypes.csv</DefaultValue>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\CsvEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -4395,6 +4606,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -4476,6 +4688,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\CustomContentTypeEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -4484,6 +4697,7 @@
           <SourceName>Entire File (TestRuntimeClass)</SourceName>
           <InstanceName>RuntimeObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -4525,6 +4739,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\DelayedInstantiationEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -4558,6 +4773,7 @@
         </CustomVariable>
       </CustomVariables>
       <BaseEntity>Entities\CsvEntity</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\DerivedCsvEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -4637,6 +4853,7 @@
         </CustomVariable>
       </CustomVariables>
       <BaseEntity>Entities\BaseEntity</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\DerivedEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -4644,6 +4861,7 @@
           <SourceClassType>ShapeCollection</SourceClassType>
           <InstanceName>Collision</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -4657,6 +4875,7 @@
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>CircleObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -4666,6 +4885,7 @@
           <InstanceName>BaseUndefined</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <InstantiatedByBase>true</InstantiatedByBase>
           <IndependentOfCamera>true</IndependentOfCamera>
@@ -4677,6 +4897,7 @@
           <InstanceName>ExposedListOfEntities</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <InstantiatedByBase>true</InstantiatedByBase>
           <IndependentOfCamera>true</IndependentOfCamera>
@@ -4687,6 +4908,7 @@
           <InstanceName>IWindowEntityInstance</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <InstantiatedByBase>true</InstantiatedByBase>
           <IndependentOfCamera>true</IndependentOfCamera>
@@ -4702,6 +4924,7 @@
           <InstanceName>CircleInstanceExposedInDerived</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <InstantiatedByBase>true</InstantiatedByBase>
           <IndependentOfCamera>true</IndependentOfCamera>
@@ -4717,6 +4940,7 @@
           <InstanceName>SpriteInstance</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <InstantiatedByBase>true</InstantiatedByBase>
           <IndependentOfCamera>true</IndependentOfCamera>
@@ -4757,6 +4981,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteSetByDerived</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -4776,6 +5001,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteReferencingTextureInBase</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -4795,6 +5021,7 @@
           <InstanceName>CircleCreatedInDerived</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -4864,6 +5091,7 @@
         </CustomVariable>
       </CustomVariables>
       <BaseEntity>Entities\EntityFolder\BaseEntityInFolder</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\DerivedEntityOutOfFolder</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -4917,6 +5145,7 @@
         </CustomVariable>
       </CustomVariables>
       <BaseEntity>Entities\EventEntity</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\DerivedEventEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -4947,6 +5176,7 @@
         </StateSaveCategory>
       </StateCategoryList>
       <BaseEntity>Entities\BaseEnityWithCategorizedStates</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\DerivedFromBaseWithCategorizedStates</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -4993,6 +5223,7 @@
         </StateSaveCategory>
       </StateCategoryList>
       <BaseEntity>Entities\BaseEntityWithNoStates</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\DerivedFromBaseWithNoStates</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -5040,6 +5271,7 @@
         </CustomVariable>
       </CustomVariables>
       <BaseEntity>Entities\BaseWithCollision</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\DerivedICollidable</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -5061,6 +5293,7 @@
           <HasPublicProperty>true</HasPublicProperty>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <InstantiatedByBase>true</InstantiatedByBase>
           <IndependentOfCamera>true</IndependentOfCamera>
@@ -5106,6 +5339,7 @@
         </CustomVariable>
       </CustomVariables>
       <BaseEntity>Entities\BaseNotPooled</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\DerivedPooledFromNotPooled</Name>
       <CreatedByOtherEntities>true</CreatedByOtherEntities>
       <PooledByFactory>true</PooledByFactory>
@@ -5149,6 +5383,7 @@
         </CustomVariable>
       </CustomVariables>
       <BaseEntity>Entities\BasePositioningEntity</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\DerivedPositioningEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -5162,6 +5397,7 @@
           <InstanceName>CircleContainerInstance</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <InstantiatedByBase>true</InstantiatedByBase>
           <IndependentOfCamera>true</IndependentOfCamera>
@@ -5177,6 +5413,7 @@
           <SourceClassType>Entities\CircleContainer</SourceClassType>
           <InstanceName>CircleContainerInstanceInDerived</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -5194,6 +5431,7 @@
         </StateSave>
       </States>
       <BaseEntity>Entities\BaseStateEntityWithOnlyCategorized</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\DerivedStateEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -5283,6 +5521,7 @@
           <SourceObjectProperty>Alpha</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\DisabledObjectEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -5290,6 +5529,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>DisabledTextObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IsDisabled>true</IsDisabled>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -5303,6 +5543,7 @@
           <SourceClassType>Entities\StateEntity</SourceClassType>
           <InstanceName>StateEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IsDisabled>true</IsDisabled>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -5316,6 +5557,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>DisabledSprite</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IsDisabled>true</IsDisabled>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -5324,6 +5566,7 @@
           <SourceClassType>Entities\AnimationChainEntity</SourceClassType>
           <InstanceName>AnimationChainEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IsDisabled>true</IsDisabled>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -5335,6 +5578,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\EmitterEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -5343,6 +5587,7 @@
           <SourceName>Emitter0 (Emitter)</SourceName>
           <InstanceName>EmitterObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -5377,6 +5622,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\EmptyEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -5417,6 +5663,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\EntityFolder\BaseEntityInFolder</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -5434,6 +5681,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\EntityFolder\EntityInFolder</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -5441,6 +5689,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <VariablesToReset>
             <string>X</string>
             <string>Y</string>
@@ -5476,6 +5725,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\EntityFolder\NewEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -5562,6 +5812,7 @@
           <Type>VariableState</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\EntityFolder\StateEntityInFolder</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -5579,6 +5830,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\EntityForTestPlugin</Name>
       <ReferencedFiles>
         <ReferencedFileSave>
@@ -5686,6 +5938,7 @@
           <CreatesEvent>true</CreatesEvent>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\EventEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -5694,6 +5947,7 @@
           <InstanceName>Circle</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -5702,12 +5956,14 @@
           <SourceClassGenericType>Sprite</SourceClassGenericType>
           <InstanceName>ListObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <ContainedObjects>
             <NamedObjectSave>
               <SourceType>FlatRedBallType</SourceType>
               <SourceClassType>Sprite</SourceClassType>
               <InstanceName>Sprite1</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
           </ContainedObjects>
@@ -5718,6 +5974,7 @@
           <SourceClassType>PositionedObjectList&lt;T&gt;</SourceClassType>
           <InstanceName>IncompleteDefinitionList</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -5740,6 +5997,7 @@
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
           <InstanceName>TopRect</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -5762,6 +6020,7 @@
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
           <InstanceName>BottomRect</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -5784,6 +6043,7 @@
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
           <InstanceName>LeftRect</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -5806,6 +6066,7 @@
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
           <InstanceName>RightRect</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -5898,12 +6159,14 @@
         </CustomVariable>
       </CustomVariables>
       <ImplementsIVisible>true</ImplementsIVisible>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\FactoryEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
           <SourceType>File</SourceType>
           <InstanceName>Circle</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -5913,6 +6176,7 @@
           <InstanceName>EntireScene</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -5932,6 +6196,7 @@
           <HasPublicProperty>true</HasPublicProperty>
           <SetByDerived>true</SetByDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -5962,6 +6227,7 @@
       </Tags>
       <Source>GLUE</Source>
       <BaseEntity>Entities\FactoryEntity</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\FactoryEntityDerived</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -5971,6 +6237,7 @@
           <InstanceName>EntireScene</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <InstantiatedByBase>true</InstantiatedByBase>
           <IndependentOfCamera>true</IndependentOfCamera>
@@ -5996,6 +6263,7 @@
           <InstanceName>AxisAlignedRectangleInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <VariablesToReset>
             <string>X</string>
@@ -6047,6 +6315,7 @@
           <SourceObjectProperty>Texture</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\FileReferencingEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -6059,6 +6328,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6067,6 +6337,7 @@
           <SourceName>Entire File (ShapeCollection)</SourceName>
           <InstanceName>EntireShapeCollection</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6079,6 +6350,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>ObjectForTunneling</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -6204,6 +6476,7 @@
           <SourceObjectProperty>TextInstanceRed</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\FlatRedBallEntityContainer</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -6216,6 +6489,7 @@
           <SourceClassType>Entities\FlatRedBallTypeEntity</SourceClassType>
           <InstanceName>FlatRedBallTypeEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -6273,6 +6547,7 @@
           <SourceObjectProperty>DisplayText</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\FlatRedBallTypeEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -6286,6 +6561,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>ShouldHaveAName</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6308,6 +6584,7 @@
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
           <InstanceName>RectangleSettingBottom</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6325,6 +6602,7 @@
           <SourceClassType>SpriteFrame</SourceClassType>
           <InstanceName>SpriteFrameInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6333,6 +6611,7 @@
           <SourceName>Sprite ( with !@#$%^ ) (Sprite)</SourceName>
           <InstanceName>SpriteFromFile</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6340,6 +6619,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6347,6 +6627,7 @@
           <SourceClassType>SpriteFrame</SourceClassType>
           <InstanceName>SpriteFrameObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6355,6 +6636,7 @@
           <InstanceName>EmitterNotInstantiated</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <Instantiate>false</Instantiate>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6362,6 +6644,7 @@
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>CircleInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6369,6 +6652,7 @@
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
           <InstanceName>AARecctInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6376,6 +6660,7 @@
           <SourceClassType>Emitter</SourceClassType>
           <InstanceName>EmitterInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6388,6 +6673,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6395,6 +6681,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>TextInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6403,6 +6690,7 @@
           <SourceName>Say "Hello" (Sprite)</SourceName>
           <InstanceName>SpriteWithQuotes</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6411,6 +6699,7 @@
           <SourceName>Entire File (Scene)</SourceName>
           <InstanceName>OffsetScene</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -6450,6 +6739,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\GlobalContentEntity</Name>
       <ReferencedFiles>
         <ReferencedFileSave>
@@ -6512,6 +6802,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\GumComponentContainer</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -6520,6 +6811,7 @@
           <SourceName>Entire File (NineSliceButtonRuntime)</SourceName>
           <InstanceName>EntireButton</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6528,6 +6820,7 @@
           <SourceName>Background (GlueTestProject.GumRuntimes.NineSliceRuntime)</SourceName>
           <InstanceName>ButtonBackground</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -6578,6 +6871,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\HasPublicPropertyEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -6592,6 +6886,7 @@
           <InstanceName>SpriteInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -6634,6 +6929,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ICollidableBase</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -6655,6 +6951,7 @@
           <HasPublicProperty>true</HasPublicProperty>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -6704,6 +7001,7 @@
         </CustomVariable>
       </CustomVariables>
       <BaseEntity>Entities\ICollidableBase</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ICollidableDerived</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -6725,6 +7023,7 @@
           <HasPublicProperty>true</HasPublicProperty>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <InstantiatedByBase>true</InstantiatedByBase>
           <IndependentOfCamera>true</IndependentOfCamera>
@@ -6769,6 +7068,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\IDrawableBatchEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -6786,12 +7086,14 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\IncompleteDefinitionEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
           <SourceType>Entity</SourceType>
           <InstanceName>EntityObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6801,6 +7103,7 @@
           <InstanceName>BaseEntitySetByContainer</InstanceName>
           <SetByContainer>true</SetByContainer>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6816,12 +7119,14 @@
           <HasPublicProperty>true</HasPublicProperty>
           <SetByContainer>true</SetByContainer>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
           <SourceType>File</SourceType>
           <InstanceName>FileObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6830,6 +7135,7 @@
           <SourceName>&lt;NONE&gt;</SourceName>
           <InstanceName>FileObject2</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -6837,12 +7143,14 @@
           <SourceClassType>PositionedObjectList&lt;T&gt;</SourceClassType>
           <InstanceName>ListObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
           <SourceType>FlatRedBallType</SourceType>
           <InstanceName>FrbTypeObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -6893,6 +7201,7 @@
         </CustomVariable>
       </CustomVariables>
       <BaseEntity>Entities\SpriteInheritingEntity</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\InheritingFromSpriteInheritingEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -6934,6 +7243,7 @@
           <DefaultValue xsi:type="xsd:float">0</DefaultValue>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\InListEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -7079,6 +7389,7 @@
           <SourceObjectProperty>CurrentState</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\InterpolationEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -7091,6 +7402,7 @@
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>CircleInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -7098,6 +7410,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>TextInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -7105,6 +7418,7 @@
           <SourceClassType>Entities\InterpolationEntitySub</SourceClassType>
           <InstanceName>InterpolationEntitySubInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -7198,6 +7512,7 @@
           <Type>VariableState</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\InterpolationEntitySub</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -7213,6 +7528,7 @@
           <InstanceName>CircleInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -7247,6 +7563,7 @@
         </CustomVariable>
       </CustomVariables>
       <ImplementsIVisible>true</ImplementsIVisible>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\IVisibleEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -7254,6 +7571,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>TextObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -7308,6 +7626,7 @@
       </CustomVariables>
       <BaseEntity>Text</BaseEntity>
       <ImplementsIVisible>true</ImplementsIVisible>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\IVisibleFrbTypeInheritingEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -7323,6 +7642,7 @@
           <InstanceName>TextInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -7343,6 +7663,7 @@
       </Tags>
       <Source>GLUE</Source>
       <ImplementsIVisible>true</ImplementsIVisible>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\IWindowContainer</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -7351,6 +7672,7 @@
           <InstanceName>IWindowEntityInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -7364,6 +7686,7 @@
       <BaseEntity>Entities\NoIWindowBase</BaseEntity>
       <ImplementsIVisible>true</ImplementsIVisible>
       <ImplementsIWindow>true</ImplementsIWindow>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\IWindowDerivedFromNoIWindow</Name>
       <CreatedByOtherEntities>true</CreatedByOtherEntities>
       <Events>
@@ -7392,6 +7715,7 @@
       <BaseEntity>Entities\IWindowEntity</BaseEntity>
       <ImplementsIVisible>true</ImplementsIVisible>
       <ImplementsIWindow>true</ImplementsIWindow>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\IWindowDerivingEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -7411,6 +7735,7 @@
       <Source>GLUE</Source>
       <ImplementsIVisible>true</ImplementsIVisible>
       <ImplementsIWindow>true</ImplementsIWindow>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\IWindowEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -7423,6 +7748,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -7430,6 +7756,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>TextInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -7442,6 +7769,7 @@
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>CircleInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -7459,6 +7787,7 @@
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
           <InstanceName>AxisAlignedRectangleInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -7512,6 +7841,7 @@
       </CustomVariables>
       <ImplementsIVisible>true</ImplementsIVisible>
       <ImplementsIWindow>true</ImplementsIWindow>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\IWindowEntityWithExposedVariables</Name>
       <Events>
         <EventResponseSave>
@@ -7536,6 +7866,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\LayerOwner</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -7544,6 +7875,7 @@
           <InstanceName>InternalLayer</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>false</Is2D>
         </NamedObjectSave>
@@ -7553,6 +7885,7 @@
           <SourceName>Entire File (Scene)</SourceName>
           <InstanceName>EntireScene</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -7562,6 +7895,7 @@
           <InstanceName>LayeredBear</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>InternalLayer</LayerOn>
         </NamedObjectSave>
@@ -7571,6 +7905,7 @@
           <SourceName>Entire File (Scene)</SourceName>
           <InstanceName>EntireScene2</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>InternalLayer</LayerOn>
         </NamedObjectSave>
@@ -7581,6 +7916,7 @@
           <InstanceName>BearFromLayeredScene</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>InternalLayer</LayerOn>
         </NamedObjectSave>
@@ -7615,6 +7951,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ListEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -7623,12 +7960,14 @@
           <SourceClassGenericType>Circle</SourceClassGenericType>
           <InstanceName>CircleList</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <ContainedObjects>
             <NamedObjectSave>
               <SourceType>FlatRedBallType</SourceType>
               <SourceClassType>Circle</SourceClassType>
               <InstanceName>Circle1</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -7636,6 +7975,7 @@
               <SourceClassType>Circle</SourceClassType>
               <InstanceName>Circle2</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -7643,6 +7983,7 @@
               <SourceClassType>Circle</SourceClassType>
               <InstanceName>Circle3</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -7662,6 +8003,7 @@
               <InstanceName>CircleWithIfDef</InstanceName>
               <AttachToContainer>true</AttachToContainer>
               <ConditionalCompilationSymbols>SomeIfDef</ConditionalCompilationSymbols>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
           </ContainedObjects>
@@ -7673,12 +8015,14 @@
           <SourceClassGenericType>Entities\InListEntity</SourceClassGenericType>
           <InstanceName>EntityList</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <ContainedObjects>
             <NamedObjectSave>
               <SourceType>Entity</SourceType>
               <SourceClassType>Entities\InListEntity</SourceClassType>
               <InstanceName>EntityInstance1</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
           </ContainedObjects>
@@ -7690,12 +8034,14 @@
           <SourceClassGenericType>Entities\BaseEntity</SourceClassGenericType>
           <InstanceName>BaseEntityList</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <ContainedObjects>
             <NamedObjectSave>
               <SourceType>Entity</SourceType>
               <SourceClassType>Entities\DerivedEntity</SourceClassType>
               <InstanceName>DerivedInstance</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
           </ContainedObjects>
@@ -7732,12 +8078,14 @@
           <SourceObjectProperty>SourceFile</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\LoadedOnlyWhenReferenced</Name>
       <NamedObjects>
         <NamedObjectSave>
           <SourceType>FlatRedBallType</SourceType>
           <InstanceName>SceneObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -7745,6 +8093,7 @@
           <SourceClassType>ShapeCollection</SourceClassType>
           <InstanceName>ShapeCollectionInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -7776,6 +8125,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ManuallyUpdatedEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -7784,6 +8134,7 @@
           <SourceName>Entire File (Scene)</SourceName>
           <InstanceName>EntireScene</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -7792,6 +8143,7 @@
           <SourceName>UntexturedSprite (Sprite)</SourceName>
           <InstanceName>SpriteFromScnx</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -7800,6 +8152,7 @@
           <SourceClassGenericType>Sprite</SourceClassGenericType>
           <InstanceName>ListOfSprites</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <ContainedObjects>
             <NamedObjectSave>
               <SourceType>File</SourceType>
@@ -7807,6 +8160,7 @@
               <SourceName>UntexturedSprite1 (Sprite)</SourceName>
               <InstanceName>SpriteInList</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
           </ContainedObjects>
@@ -7838,10 +8192,70 @@
           </Properties>
           <Name>X</Name>
           <Type>float</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>Y</Name>
+          <Type>float</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>Z</Name>
+          <Type>float</Type>
+        </CustomVariable>
+      </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
+      <Name>Entities\MoveToLayerEntity</Name>
+      <NamedObjects>
+        <NamedObjectSave>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>Radius</Member>
+            <ValueAsFloat>16</ValueAsFloat>
+          </CustomProperty>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>Circle</SourceClassType>
+          <InstanceName>CircleInstance</InstanceName>
+          <HasPublicProperty>true</HasPublicProperty>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+      </NamedObjects>
+      <Is2D>true</Is2D>
+    </EntitySave>
+    <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
+      <CustomVariables>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>X</Name>
+          <Type>float</Type>
           <DefaultValue xsi:type="xsd:float">0</DefaultValue>
           <CreatesEvent>true</CreatesEvent>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\NewEntity2</Name>
       <Events>
         <EventResponseSave>
@@ -7867,6 +8281,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\NoInstantiationObjectContainer</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -7875,6 +8290,7 @@
           <InstanceName>ShapeCollectionInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <Instantiate>false</Instantiate>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -7893,6 +8309,7 @@
           <InstanceName>AxisAlignedRectangleInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <Instantiate>false</Instantiate>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -7906,12 +8323,14 @@
           <InstanceName>SpriteInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <Instantiate>false</Instantiate>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
           <SourceType>File</SourceType>
           <InstanceName>AxisAlignedRectangleInstance1</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -7922,6 +8341,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\NoIWindowBase</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -7940,6 +8360,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -7967,6 +8388,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\OptionallyAddedEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -7974,6 +8396,7 @@
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>RegularCircle</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -7982,6 +8405,7 @@
           <InstanceName>NotAddedToManagers</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <AddToManagers>false</AddToManagers>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -7990,6 +8414,7 @@
           <InstanceName>NotInstantiated</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <Instantiate>false</Instantiate>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -7998,6 +8423,7 @@
           <InstanceName>DelayedInstantiationEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <Instantiate>false</Instantiate>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -8017,6 +8443,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\PausingEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -8024,6 +8451,7 @@
           <SourceClassType>EmitterList</SourceClassType>
           <InstanceName>EmitterListInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -8032,6 +8460,7 @@
           <SourceName>Entire File (SoundEffectInstance)</SourceName>
           <InstanceName>SoundEffectFileInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -8106,6 +8535,7 @@
           <CreatesEvent>true</CreatesEvent>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\PlatformerCharacterBase</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -8130,6 +8560,7 @@
           <HasPublicProperty>true</HasPublicProperty>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -8145,6 +8576,7 @@
           <InstanceName>MainSprite</InstanceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -8221,6 +8653,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\PolygonEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -8252,6 +8685,7 @@
           <InstanceName>PolygonInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -8262,6 +8696,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\PooledDontInheritFromThis</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -8285,6 +8720,7 @@
           <InstanceName>AxisAlignedRectangleInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <VariablesToReset>
             <string>X</string>
             <string>Y</string>
@@ -8311,6 +8747,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <VariablesToReset>
             <string>X</string>
             <string>Y</string>
@@ -8350,6 +8787,7 @@
           <DefaultValue xsi:type="xsd:float">50</DefaultValue>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\PositionedEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -8383,6 +8821,7 @@
           <CreatesEvent>true</CreatesEvent>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\PositioningEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -8397,6 +8836,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteFromFileWithSetVariables</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <VariablesToReset>
             <string>X</string>
             <string>Y</string>
@@ -8422,6 +8862,7 @@
           <InstanceName>EmitterInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <VariablesToReset>
             <string>X</string>
             <string>Y</string>
@@ -8444,6 +8885,7 @@
           <InstanceName>Circle</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <VariablesToReset>
             <string>X</string>
             <string>Y</string>
@@ -8471,6 +8913,7 @@
           <InstanceName>ChildOfPositioningEntityInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <VariablesToReset>
             <string>X</string>
             <string>Y</string>
@@ -8504,6 +8947,7 @@
           <InstanceName>AxisAlignedRectangleInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -8578,6 +9022,7 @@
           <SourceObjectProperty>ScaleY</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\RectangleContainer</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -8605,6 +9050,7 @@
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
           <InstanceName>RectangleObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -8647,6 +9093,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\RecyclableEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -8666,6 +9113,7 @@
           <InstanceName>AxisAlignedRectangleInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -8680,6 +9128,7 @@
           <InstanceName>CircleInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -8693,6 +9142,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -8701,6 +9151,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>TextInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -8845,6 +9296,7 @@
           <SourceObjectProperty>Visible</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\RemoveObjectsWhenInvisibleEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -8874,6 +9326,7 @@
           <InstanceName>StartingInvisible</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -8888,6 +9341,7 @@
           <InstanceName>SetInvisibleOnlyByTunneledVariable</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -8912,6 +9366,7 @@
           <InstanceName>StartingVisible</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -8941,6 +9396,7 @@
           <InstanceName>StartingInvisibleMadeVisible</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -8960,6 +9416,7 @@
           <InstanceName>TextInstanceStartingInvisible</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -8969,6 +9426,7 @@
           <InstanceName>TextInstanceSetInvisibleInCustomCode</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -8978,6 +9436,7 @@
           <InstanceName>TextInheritingEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -8997,6 +9456,7 @@
           <InstanceName>TextInheritingEntityInstanceStartingInvisibleCustomRadius</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9011,6 +9471,7 @@
           <InstanceName>TextInheritingEntityInstanceStartingInvisible</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9025,6 +9486,7 @@
           <InstanceName>SetVisibleInCustomCode</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9034,6 +9496,7 @@
           <InstanceName>InstanceContainingOtherEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -9044,6 +9507,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ResetVariableEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -9056,6 +9520,7 @@
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>CircleInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <VariablesToReset>
             <string>X</string>
             <string>Y</string>
@@ -9070,6 +9535,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\SceneEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -9078,6 +9544,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>LayerInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>false</Is2D>
         </NamedObjectSave>
@@ -9087,6 +9554,7 @@
           <SourceName>Entire File (Scene)</SourceName>
           <InstanceName>LayeredEntireScene</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>LayerInstance</LayerOn>
         </NamedObjectSave>
@@ -9096,6 +9564,7 @@
           <SourceName>pipejuiceblue1 (Sprite)</SourceName>
           <InstanceName>LayeredSprite1</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>LayerInstance</LayerOn>
         </NamedObjectSave>
@@ -9128,6 +9597,7 @@
           <DefaultValue xsi:type="xsd:float">0</DefaultValue>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ScnxAttachmentTest</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -9136,6 +9606,7 @@
           <SourceName>Entire File (Scene)</SourceName>
           <InstanceName>EntireScene</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9149,6 +9620,7 @@
           <SourceName>MainSprite (Sprite)</SourceName>
           <InstanceName>MainSprite</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9157,6 +9629,7 @@
           <SourceName>UntexturedSprite1 (Sprite)</SourceName>
           <InstanceName>YellowChild</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -9217,6 +9690,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ScrollableEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -9263,6 +9737,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ScrollableListEntityNoItemType</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -9303,6 +9778,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\SetByContainerEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -9313,6 +9789,7 @@
           <InstanceName>ListThatNeverGetsSet</InstanceName>
           <SetByContainer>true</SetByContainer>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -9332,6 +9809,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ShapeEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -9344,6 +9822,7 @@
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>CircleObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9351,6 +9830,7 @@
           <SourceClassType>Polygon</SourceClassType>
           <InstanceName>PolygonObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9359,6 +9839,7 @@
           <SourceName>Entire File (ShapeCollection)</SourceName>
           <InstanceName>EntireShapeCollection</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9367,6 +9848,7 @@
           <SourceClassType>ShapeCollection</SourceClassType>
           <InstanceName>AnotherShapeCollection</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9376,6 +9858,7 @@
           <SourceClassGenericType>AxisAlignedRectangle</SourceClassGenericType>
           <InstanceName>Rectangles</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <ContainedObjects>
             <NamedObjectSave>
               <CustomProperty>
@@ -9402,6 +9885,7 @@
               <SourceClassType>AxisAlignedRectangle</SourceClassType>
               <InstanceName>Rectangle1</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -9434,6 +9918,7 @@
               <SourceClassType>AxisAlignedRectangle</SourceClassType>
               <InstanceName>Rectangle2</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
           </ContainedObjects>
@@ -9456,6 +9941,7 @@
           <InstanceName>AxisAlignedRectangleInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -9483,6 +9969,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ShapeEntityCreatedByOtherEntities</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -9495,6 +9982,7 @@
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>CircleObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <VariablesToReset>
             <string>X</string>
             <string>Y</string>
@@ -9516,6 +10004,7 @@
           <SourceClassType>Polygon</SourceClassType>
           <InstanceName>PolygonObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <VariablesToReset>
             <string>X</string>
             <string>Y</string>
@@ -9538,6 +10027,7 @@
           <SourceName>Entire File (ShapeCollection)</SourceName>
           <InstanceName>EntireShapeCollection</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9546,6 +10036,7 @@
           <SourceClassType>ShapeCollection</SourceClassType>
           <InstanceName>AnotherShapeCollection</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9555,6 +10046,7 @@
           <SourceClassGenericType>AxisAlignedRectangle</SourceClassGenericType>
           <InstanceName>Rectangles</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <ContainedObjects>
             <NamedObjectSave>
               <CustomProperty>
@@ -9581,6 +10073,7 @@
               <SourceClassType>AxisAlignedRectangle</SourceClassType>
               <InstanceName>Rectangle1</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
@@ -9613,6 +10106,7 @@
               <SourceClassType>AxisAlignedRectangle</SourceClassType>
               <InstanceName>Rectangle2</InstanceName>
               <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
           </ContainedObjects>
@@ -9635,6 +10129,7 @@
           <InstanceName>AxisAlignedRectangleInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <VariablesToReset>
             <string>X</string>
             <string>Y</string>
@@ -9678,6 +10173,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\SizingEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -9686,6 +10182,7 @@
           <InstanceName>TextObject</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -9696,6 +10193,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\SoundEffectEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -9704,6 +10202,7 @@
           <SourceName>Entire File (SoundEffectInstance)</SourceName>
           <InstanceName>SoundEffectInstanceObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9711,6 +10210,7 @@
           <SourceFile>Entities/SoundEffectEntity/SoundEffectInstanceFile.wav</SourceFile>
           <InstanceName>ObjectInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -9759,6 +10259,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\SplineEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -9772,6 +10273,7 @@
           <SourceName>Spline (Spline)</SourceName>
           <InstanceName>ObjectInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -9822,6 +10324,7 @@
           <Type>float</Type>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\SpriteEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -9837,6 +10340,7 @@
           <InstanceName>AddToManagersFalse</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <AddToManagers>false</AddToManagers>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9851,6 +10355,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>AddToManagersFalseManagedInvisible</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9860,6 +10365,7 @@
           <SourceClassType>Layer</SourceClassType>
           <InstanceName>LayerInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <Is2D>true</Is2D>
         </NamedObjectSave>
@@ -9890,6 +10396,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>ModulateSprite</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9924,6 +10431,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>ModulateSprite2</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -9958,6 +10466,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>NonPreMultipliedAlphaSprite</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -10011,6 +10520,7 @@
       <BaseEntity>SpriteFrame</BaseEntity>
       <ImplementsIVisible>true</ImplementsIVisible>
       <ImplementsIWindow>true</ImplementsIWindow>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\SpriteFrameInheritingEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -10052,6 +10562,7 @@
         </CustomVariable>
       </CustomVariables>
       <BaseEntity>SpriteFrame</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\SpriteFrameInheritingEntityZBuffered</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -10071,6 +10582,7 @@
           <SourceClassType>SpriteFrame</SourceClassType>
           <InstanceName>SpriteFrameInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IsZBuffered>true</IsZBuffered>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -10115,6 +10627,7 @@
         </CustomVariable>
       </CustomVariables>
       <BaseEntity>Sprite</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\SpriteInheritingEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -10140,6 +10653,7 @@
           <InstanceName>SpriteInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -10154,6 +10668,7 @@
           <InstanceName>CircleInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -10515,6 +11030,7 @@
           <DefaultValue xsi:type="xsd:string">TypeState1</DefaultValue>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\StateEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -10527,6 +11043,7 @@
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>CircleObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -10535,6 +11052,7 @@
           <SourceName>Untextured1 (Sprite)</SourceName>
           <InstanceName>SpriteFromScnx</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -10617,6 +11135,7 @@
         </StateSaveCategory>
       </StateCategoryList>
       <BaseEntity>Entities\StateEntity</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\StateEntityChild</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -10688,6 +11207,7 @@
           <SourceObjectProperty>CurrentCategory1State</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\StateEntityContainer</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -10696,6 +11216,7 @@
           <InstanceName>StateEntityInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -10734,6 +11255,7 @@
           <InstanceName>StateEntityInstance2</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -10753,6 +11275,7 @@
           <SourceClassType>Entities\EntityFolder\StateEntityInFolder</SourceClassType>
           <InstanceName>StateEntityInFolderInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -10807,6 +11330,7 @@
           <DefaultValue xsi:type="xsd:float">0</DefaultValue>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\StateEntityWithoutCurrentStateVariable</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -10850,6 +11374,7 @@
           <IsShared>true</IsShared>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\StaticVariableEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -10865,6 +11390,7 @@
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
       </StateCategoryList>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\TextEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -10903,6 +11429,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>TextInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <Summary>This uses a font that has bad data.  Center aligned, prints "0".  This caused a crash before.</Summary>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -10917,6 +11444,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>TextWithNoFont</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -10940,6 +11468,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>WrappingText</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -11073,6 +11602,7 @@
       </CustomVariables>
       <BaseEntity>Text</BaseEntity>
       <ImplementsIVisible>true</ImplementsIVisible>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\TextInheritingEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -11092,6 +11622,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>ThisAsText</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -11100,6 +11631,7 @@
           <InstanceName>CircleContainerSetCircleInCustomVariablesInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -11111,6 +11643,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\TextureContainer</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -11123,6 +11656,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -11149,6 +11683,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\TexturePixelEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -11159,6 +11694,11 @@
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
+            <Member>TopTexturePixel</Member>
+            <ValueAsFloat>1</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
             <Member>BottomTexturePixel</Member>
             <ValueAsFloat>14</ValueAsFloat>
           </CustomProperty>
@@ -11166,11 +11706,6 @@
             <Type>float</Type>
             <Member>LeftTexturePixel</Member>
             <ValueAsFloat>2</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TopTexturePixel</Member>
-            <ValueAsFloat>1</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
@@ -11187,6 +11722,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -11205,6 +11741,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ToBeDeleted</Name>
       <Is2D>true</Is2D>
     </EntitySave>
@@ -11438,6 +11975,7 @@
           <SourceObjectProperty>Name</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\TunneledVariableEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -11450,6 +11988,7 @@
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>CircleObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -11457,6 +11996,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -11464,6 +12004,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>TextObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -11471,6 +12012,7 @@
           <SourceClassType>Entities\StateEntity</SourceClassType>
           <InstanceName>StateEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -11478,6 +12020,7 @@
           <SourceClassType>SpriteFrame</SourceClassType>
           <InstanceName>SpriteFrameObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -11485,6 +12028,7 @@
           <SourceClassType>Entities\StateEntityWithoutCurrentStateVariable</SourceClassType>
           <InstanceName>StateEntityWithoutCurrentStateVariableInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -11667,6 +12211,7 @@
           <SourceObjectProperty>CircleRadius</SourceObjectProperty>
         </CustomVariable>
       </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\VariableEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -11675,6 +12220,7 @@
           <SourceClassType>Scene</SourceClassType>
           <InstanceName>SceneInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -11682,6 +12228,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>TextInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -11689,6 +12236,7 @@
           <SourceClassType>Text</SourceClassType>
           <InstanceName>TimeTextInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -11696,6 +12244,7 @@
           <SourceClassType>Entities\TextInheritingEntity</SourceClassType>
           <InstanceName>TextInheritingEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -11708,6 +12257,7 @@
           <SourceClassType>Entities\TextInheritingEntity</SourceClassType>
           <InstanceName>TextInheritingEntityInstance2</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -11727,6 +12277,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\XmlEntity</Name>
       <ReferencedFiles>
         <ReferencedFileSave>
@@ -11751,6 +12302,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ZBufferedEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
@@ -11758,6 +12310,7 @@
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteObject</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IsZBuffered>true</IsZBuffered>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -11772,6 +12325,7 @@
           <SourceClassType>SpriteFrame</SourceClassType>
           <InstanceName>SpriteFrameInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
           <IsZBuffered>true</IsZBuffered>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -11973,7 +12527,6 @@
   </GlobalContentSettingsSave>
   <SyncedProjects>
     <string>../../GlueTestProjectW8Sync/GlueTestProjectW8Sync/GlueTestProjectW8Sync.csproj</string>
-    <string>../../iOSProject5/iOSProject5/iOSProject5.csproj</string>
     <string>../../AndroidProject/AndroidProject/AndroidProject.csproj</string>
   </SyncedProjects>
   <StartUpScreen>Screens\FirstScreen</StartUpScreen>
@@ -12131,4 +12684,7 @@
   </TranslatedFiles>
   <ApplyToFixedResolutionPlatforms>false</ApplyToFixedResolutionPlatforms>
   <ExternallyBuiltFileDirectory>../../</ExternallyBuiltFileDirectory>
+  <PluginData>
+    <RequiredPlugins />
+  </PluginData>
 </GlueProjectSave>

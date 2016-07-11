@@ -7,29 +7,32 @@ using RenderingLibrary.Math.Geometry;
 using Microsoft.Xna.Framework;
 using System.IO;
 using System.Collections.ObjectModel;
+using RenderingLibrary.Math;
+using RenderingLibrary;
 
 namespace RenderingLibrary.Graphics
 {
-    class RenderStateVariables
+    public class RenderStateVariables
     {
         public BlendState BlendState;
         public bool Filtering;
         public bool Wrap;
+
+        public Rectangle? ClipRectangle;
     }
 
     public class Renderer
     {
+        public static bool RenderUsingHierarchy = true;
+
         #region Fields
 
-        RasterizerState scissorTestEnabled;
-        RasterizerState scissorTestDisabled;
-
-        int mDrawCallsPerFrame = 0;
 
         List<Layer> mLayers = new List<Layer>();
         ReadOnlyCollection<Layer> mLayersReadOnly;
 
-        protected SpriteBatchStack mSpriteBatch;
+        SpriteRenderer spriteRenderer = new SpriteRenderer();
+
         RenderStateVariables mRenderStateVariables = new RenderStateVariables();
 
         GraphicsDevice mGraphicsDevice;
@@ -49,8 +52,11 @@ namespace RenderingLibrary.Graphics
 
         internal float CurrentZoom
         {
-            get;
-            private set;
+            get
+            {
+                return spriteRenderer.CurrentZoom;
+            }
+            //private set;
         }
 
         public Layer MainLayer
@@ -82,7 +88,7 @@ namespace RenderingLibrary.Graphics
                 // This should always be available
                 if (mSinglePixelTexture == null)
                 {
-                    throw new InvalidOperationException("The single pixel texture is not set yet.  You must call Renderer.Initialize before accessing this property." + 
+                    throw new InvalidOperationException("The single pixel texture is not set yet.  You must call Renderer.Initialize before accessing this property." +
                         "If running unit tests, be sure to run in UnitTest configuration");
                 }
 #endif
@@ -98,7 +104,7 @@ namespace RenderingLibrary.Graphics
                 // This should always be available
                 if (mDottedLineTexture == null)
                 {
-                    throw new InvalidOperationException("The dotted line texture is not set yet.  You must call Renderer.Initialize before accessing this property." + 
+                    throw new InvalidOperationException("The dotted line texture is not set yet.  You must call Renderer.Initialize before accessing this property." +
                         "If running unit tests, be sure to run in UnitTest configuration");
                 }
 #endif
@@ -122,8 +128,8 @@ namespace RenderingLibrary.Graphics
                 {
                     mSelf = new Renderer();
                 }
-                return mSelf; 
-            
+                return mSelf;
+
             }
         }
 
@@ -141,21 +147,26 @@ namespace RenderingLibrary.Graphics
             set;
         }
 
-        public int DrawCalls
+        internal SpriteRenderer SpriteRenderer
         {
             get
             {
-                return mDrawCallsPerFrame;
+                return spriteRenderer;
             }
         }
 
-        internal SpriteBatch SpriteBatch
+        /// <summary>
+        /// Controls which XNA BlendState is used for the Rendering Library's Blend.Normal value.
+        /// </summary>
+        /// <remarks>
+        /// This should be either NonPremultiplied (if textures do not use premultiplied alpha), or
+        /// AlphaBlend if using premultiplied alpha textures.
+        /// </remarks>
+        public static BlendState NormalBlendState
         {
-            get
-            {
-                return mSpriteBatch.SpriteBatch;
-            }
-        }
+            get;
+            set;
+        } = BlendState.NonPremultiplied;
 
         #endregion
 
@@ -172,11 +183,12 @@ namespace RenderingLibrary.Graphics
 
             mGraphicsDevice = graphicsDevice;
 
-            mSpriteBatch = new SpriteBatchStack(mGraphicsDevice);
+            spriteRenderer.Initialize(graphicsDevice);
 
             mSinglePixelTexture = new Texture2D(mGraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             Color[] pixels = new Color[1];
             pixels[0] = Color.White;
+            mSinglePixelTexture.Name = "Rendering Library Single Pixel Texture";
             mSinglePixelTexture.SetData<Color>(pixels);
 
             mDottedLineTexture = new Texture2D(mGraphicsDevice, 2, 1, false, SurfaceFormat.Color);
@@ -185,21 +197,10 @@ namespace RenderingLibrary.Graphics
             pixels[1] = Color.Transparent;
             mDottedLineTexture.SetData<Color>(pixels);
 
-            CreateRasterizerStates();
-
             mCamera.UpdateClient();
         }
 
-        private void CreateRasterizerStates()
-        {
-            scissorTestEnabled = new RasterizerState();
-            scissorTestDisabled = new RasterizerState();
 
-            scissorTestEnabled.CullMode = CullMode.None;
-
-            scissorTestEnabled.ScissorTestEnable = true;
-            scissorTestDisabled.ScissorTestEnable = false;
-        }
 
         public Layer AddLayer()
         {
@@ -209,28 +210,28 @@ namespace RenderingLibrary.Graphics
         }
 
 
-        public void AddLayer(SortableLayer sortableLayer, Layer masterLayer)
-        {
-            if (masterLayer == null)
-            {
-                masterLayer = LayersWritable[0];
-            }
+        //public void AddLayer(SortableLayer sortableLayer, Layer masterLayer)
+        //{
+        //    if (masterLayer == null)
+        //    {
+        //        masterLayer = LayersWritable[0];
+        //    }
 
-            masterLayer.Add(sortableLayer);
-        }
+        //    masterLayer.Add(sortableLayer);
+        //}
 
         public void Draw(SystemManagers managers)
         {
-            mDrawCallsPerFrame = 0;
+            ClearPerformanceRecordingVariables();
 
-            if(managers == null)
+            if (managers == null)
             {
                 managers = SystemManagers.Default;
             }
-            // Before we draw, make sure all Text objects have their text updated
-            managers.TextManager.RenderTextTextures();
 
             Draw(managers, mLayers);
+
+            ForceEnd();
         }
 
         public void Draw(SystemManagers managers, Layer layer)
@@ -265,37 +266,141 @@ namespace RenderingLibrary.Graphics
                 mRenderStateVariables.BlendState = BlendState.NonPremultiplied;
                 mRenderStateVariables.Wrap = false;
 
+                foreach (Layer layer in layers)
+                {
+                    PreRender(layer.Renderables);
+                }
 
                 foreach (Layer layer in layers)
                 {
-                    RenderLayer(managers, layer);
+                    RenderLayer(managers, layer, prerender:false);
                 }
             }
         }
 
-        internal void RenderLayer(SystemManagers managers, Layer layer)
+        internal void RenderLayer(SystemManagers managers, Layer layer, bool prerender = true)
         {
-            // If the Layer's clip region has no width or height, then let's
-            // skip over rendering it, otherwise XNA crashes:
-            var clipRegion = layer.GetScissorRectangleFor(managers.Renderer.Camera);
-
-            if(clipRegion.Width != 0 && clipRegion.Height != 0)
+            //////////////////Early Out////////////////////////////////
+            if (layer.Renderables.Count == 0)
             {
-                BeginSpriteBatch(mRenderStateVariables, layer, BeginType.Push);
+                return;
+            }
+            ///////////////End Early Out///////////////////////////////
 
-                layer.SortRenderables();
+            if (prerender)
+            {
+                PreRender(layer.Renderables);
+            }
 
-                foreach (IRenderable renderable in layer.RenderablesWriteable)
-                {
-                    AdjustRenderStates(mRenderStateVariables, layer, renderable);
-                    renderable.Render(mSpriteBatch.SpriteBatch, managers);
-                }
+            spriteRenderer.BeginSpriteBatch(mRenderStateVariables, layer, BeginType.Push, mCamera);
 
-                mSpriteBatch.Pop();
+            layer.SortRenderables();
+
+            Render(layer.Renderables, managers, layer);
+
+            spriteRenderer.EndSpriteBatch();
+        }
+
+        private void PreRender(IEnumerable<IRenderableIpso> renderables)
+        {
+            if(renderables == null)
+            {
+                throw new ArgumentNullException("renderables");
+            }
+
+            foreach(var renderable in renderables)
+            {
+                renderable.PreRender();
+                PreRender(renderable.Children);
             }
         }
 
-        private void AdjustRenderStates(RenderStateVariables renderState, Layer layer, IRenderable renderable)
+        private void Render(IEnumerable<IRenderableIpso> whatToRender, SystemManagers managers, Layer layer)
+        {
+            foreach(var renderable in whatToRender)
+            {
+                var oldClip = mRenderStateVariables.ClipRectangle;
+                AdjustRenderStates(mRenderStateVariables, layer, renderable);
+                bool didClipChange = oldClip != mRenderStateVariables.ClipRectangle;
+
+                renderable.Render(spriteRenderer, managers);
+
+
+                if (RenderUsingHierarchy)
+                {
+                    Render(renderable.Children, managers, layer);
+                }
+
+                if(didClipChange)
+                {
+                    mRenderStateVariables.ClipRectangle = oldClip;
+                    spriteRenderer.BeginSpriteBatch(mRenderStateVariables, layer, BeginType.Begin, mCamera);
+                }
+            }
+        }
+
+        internal Microsoft.Xna.Framework.Rectangle GetScissorRectangleFor(Camera camera, IRenderableIpso ipso)
+        {
+            if (ipso == null)
+            {
+                return new Microsoft.Xna.Framework.Rectangle(
+                    0, 0,
+                    camera.ClientWidth,
+                    camera.ClientHeight
+
+                    );
+            }
+            else
+            {
+
+                float worldX = ipso.GetAbsoluteLeft();
+                float worldY = ipso.GetAbsoluteTop();
+
+                float screenX;
+                float screenY;
+                camera.WorldToScreen(worldX, worldY, out screenX, out screenY);
+
+                int left = global::RenderingLibrary.Math.MathFunctions.RoundToInt(screenX);
+                int top = global::RenderingLibrary.Math.MathFunctions.RoundToInt(screenY);
+
+                worldX = ipso.GetAbsoluteRight();
+                worldY = ipso.GetAbsoluteBottom();
+                camera.WorldToScreen(worldX, worldY, out screenX, out screenY);
+
+                int right = global::RenderingLibrary.Math.MathFunctions.RoundToInt(screenX);
+                int bottom = global::RenderingLibrary.Math.MathFunctions.RoundToInt(screenY);
+
+
+
+                left = System.Math.Max(0, left);
+                top = System.Math.Max(0, top);
+                right = System.Math.Max(0, right);
+                bottom = System.Math.Max(0, bottom);
+
+                left = System.Math.Min(left, camera.ClientWidth);
+                right = System.Math.Min(right, camera.ClientWidth);
+
+                top = System.Math.Min(top, camera.ClientHeight);
+                bottom = System.Math.Min(bottom, camera.ClientHeight);
+
+
+                int width = System.Math.Max(0, right - left);
+                int height = System.Math.Max(0, bottom - top);
+
+
+                Microsoft.Xna.Framework.Rectangle thisRectangle = new Microsoft.Xna.Framework.Rectangle(
+                    left,
+                    top,
+                    width,
+                    height);
+
+                return thisRectangle;
+            }
+
+        }
+
+
+        private void AdjustRenderStates(RenderStateVariables renderState, Layer layer, IRenderableIpso renderable)
         {
             BlendState renderBlendState = renderable.BlendState;
             bool wrap = renderable.Wrap;
@@ -318,148 +423,79 @@ namespace RenderingLibrary.Graphics
                 shouldResetStates = true;
             }
 
+            if (renderable.ClipsChildren)
+            {
+                Rectangle clipRectangle = GetScissorRectangleFor(Camera, renderable);
+
+                if (renderState.ClipRectangle == null || clipRectangle != renderState.ClipRectangle.Value)
+                {
+                    //todo: Don't just overwrite it, constrain this rect to the existing one, if it's not null: 
+
+                    var adjustedRectangle = clipRectangle;
+                    if (renderState.ClipRectangle != null)
+                    {
+                        adjustedRectangle = ConstrainRectangle(clipRectangle, renderState.ClipRectangle.Value);
+                    }
+
+
+                    renderState.ClipRectangle = adjustedRectangle;
+                    shouldResetStates = true;
+                }
+
+            }
+
 
             if (shouldResetStates)
             {
-                BeginSpriteBatch(renderState, layer, BeginType.Begin);
+                spriteRenderer.BeginSpriteBatch(renderState, layer, BeginType.Begin, mCamera);
             }
         }
 
-        private void BeginSpriteBatch(RenderStateVariables renderStates, Layer layer, BeginType beginType)
+        private Rectangle ConstrainRectangle(Rectangle childRectangle, Rectangle parentRectangle)
         {
+            int x = System.Math.Max(childRectangle.X, parentRectangle.X);
+            int y = System.Math.Max(childRectangle.Y, parentRectangle.Y);
 
-            Matrix matrix = GetZoomAndMatrix(layer);
+            int right = System.Math.Min(childRectangle.Right, parentRectangle.Right);
+            int bottom = System.Math.Min(childRectangle.Bottom, parentRectangle.Bottom);
 
-            SamplerState samplerState = GetSamplerState(renderStates);
-
-            RasterizerState rasterizerState = GetRasterizerState(renderStates, layer);
-
-
-            Rectangle scissorRectangle = new Rectangle();
-            if(rasterizerState.ScissorTestEnable)
-            {
-                scissorRectangle = layer.GetScissorRectangleFor(mCamera);
-            }
-
-
-            DepthStencilState depthStencilState = DepthStencilState.DepthRead;
-
-            if (beginType == BeginType.Begin)
-            {
-                mSpriteBatch.Begin(SpriteSortMode.Immediate, renderStates.BlendState,
-                    samplerState,
-                    depthStencilState,
-                    rasterizerState,
-                    null, matrix, 
-                    scissorRectangle);
-            }
-            else 
-            {
-                mSpriteBatch.Push(SpriteSortMode.Immediate, renderStates.BlendState,
-                    samplerState,
-                    depthStencilState,
-                    rasterizerState,
-                    null, matrix,
-                    scissorRectangle);
-            }
-            mDrawCallsPerFrame++;
-        }
-        private RasterizerState GetRasterizerState(RenderStateVariables renderStates, Layer layer)
-        {
-            bool isFullscreen = layer.ScissorIpso == null;
-
-            if (isFullscreen)
-            {
-                return scissorTestDisabled;
-            }
-            else
-            {
-                return scissorTestEnabled;
-            }
-        }
-        private Microsoft.Xna.Framework.Graphics.SamplerState GetSamplerState(RenderStateVariables renderStates)
-        {
-            SamplerState samplerState;
-
-            if (renderStates.Wrap)
-            {
-                if (renderStates.Filtering)
-                {
-                    samplerState = SamplerState.LinearWrap;
-                }
-                else
-                {
-                    samplerState = SamplerState.PointWrap;
-                }
-            }
-            else
-            {
-                if (renderStates.Filtering)
-                {
-                    samplerState = SamplerState.LinearClamp;
-                }
-                else
-                {
-                    samplerState = SamplerState.PointClamp;
-                }
-            }
-            return samplerState;
+            return new Rectangle(x, y, right - x, bottom - y);
         }
 
-        private Matrix GetZoomAndMatrix(Layer layer)
-        {
-            Matrix matrix;
-
-            if (layer.LayerCameraSettings != null)
-            {
-                if (layer.LayerCameraSettings.IsInScreenSpace)
-                {
-                    float zoom = 1;
-                    if (layer.LayerCameraSettings.Zoom.HasValue)
-                    {
-                        zoom = layer.LayerCameraSettings.Zoom.Value;
-                    }
-                    matrix = Matrix.CreateScale(zoom);
-                    CurrentZoom = zoom;
-                }
-                else
-                {
-                    float zoom = Camera.Zoom;
-                    if (layer.LayerCameraSettings.Zoom.HasValue)
-                    {
-                        zoom = layer.LayerCameraSettings.Zoom.Value;
-                    }
-                    matrix = Camera.GetTransformationMatirx(Camera.X, Camera.Y, zoom, Camera.ClientWidth, Camera.ClientHeight);
-                    CurrentZoom = zoom;
-                }
-            }
-            else
-            {
-                matrix = Camera.GetTransformationMatrix();
-                CurrentZoom = Camera.Zoom;
-            }
-            return matrix;
-        }
-
-        internal void RemoveRenderable(IRenderable renderable)
+        internal void RemoveRenderable(IRenderableIpso renderable)
         {
             foreach (Layer layer in this.Layers)
             {
                 if (layer.Renderables.Contains(renderable))
                 {
-                    layer.RenderablesWriteable.Remove(renderable);
+                    layer.Remove(renderable);
                 }
             }
         }
 
-        public void RemoveLayer(SortableLayer sortableLayer)
-        {
-            RemoveRenderable(sortableLayer);
-        }
+        //public void RemoveLayer(SortableLayer sortableLayer)
+        //{
+        //    RemoveRenderable(sortableLayer);
+        //}
 
         public void RemoveLayer(Layer layer)
         {
             mLayers.Remove(layer);
+        }
+
+        public void ClearPerformanceRecordingVariables()
+        {
+            spriteRenderer.ClearPerformanceRecordingVariables();
+        }
+
+        /// <summary>
+        /// Ends the current SpriteBatchif it hasn't yet been ended. This is needed for projects which may need the
+        /// rendering to end itself so that they can start sprite batch.
+        /// </summary>
+        public void ForceEnd()
+        {
+            this.spriteRenderer.End();
+
         }
 
         #endregion

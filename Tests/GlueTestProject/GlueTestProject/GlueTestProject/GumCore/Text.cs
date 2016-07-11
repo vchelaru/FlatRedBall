@@ -32,7 +32,7 @@ namespace RenderingLibrary.Graphics
 
     #endregion
 
-    public class Text : IPositionedSizedObject, IRenderable, IVisible
+    public class Text : IRenderableIpso, IVisible
     {
         #region Fields
 
@@ -66,9 +66,9 @@ namespace RenderingLibrary.Graphics
         BitmapFont mBitmapFont;
         Texture2D mTextureToRender;
 
-        IPositionedSizedObject mParent;
+        IRenderableIpso mParent;
 
-        List<IPositionedSizedObject> mChildren;
+        List<IRenderableIpso> mChildren;
 
         int mAlpha = 255;
         int mRed = 255;
@@ -81,7 +81,7 @@ namespace RenderingLibrary.Graphics
 
         SystemManagers mManagers;
 
-        bool mNeedsBitmapFontRefresh = false;
+        bool mNeedsBitmapFontRefresh = true;
 
         #endregion
 
@@ -107,11 +107,13 @@ namespace RenderingLibrary.Graphics
             }
             set
             {
-                mRawText = value;
-                UpdateWrappedText();
-                mNeedsBitmapFontRefresh = true;
+                if (mRawText != value)
+                {
+                    mRawText = value;
+                    UpdateWrappedText();
 
-                //UpdateTextureToRender();
+                    UpdatePreRenderDimensions();
+                }
             }
         }
 
@@ -186,6 +188,14 @@ namespace RenderingLibrary.Graphics
                 {
                     return Width;
                 }
+                // If there is a prerendered width/height, then that means that
+                // the width/height has updated but it hasn't yet made its way to the
+                // texture. This could happen when the text already has a texture, so give
+                // priority to the prerendered values as they may be more up-to-date.
+                else if (mPreRenderWidth.HasValue)
+                {
+                    return mPreRenderWidth.Value;
+                }
                 else if (mTextureToRender != null)
                 {
                     if (mTextureToRender.Width == 0)
@@ -196,10 +206,6 @@ namespace RenderingLibrary.Graphics
                     {
                         return mTextureToRender.Width * mFontScale;
                     }
-                }
-                else if (mPreRenderWidth.HasValue)
-                {
-                    return mPreRenderWidth.Value;
                 }
                 else
                 {
@@ -217,6 +223,11 @@ namespace RenderingLibrary.Graphics
                 {
                     return Height;
                 }
+                // See EffectiveWidth for an explanation of why the prerendered values need to come first
+                else if (mPreRenderHeight.HasValue)
+                {
+                    return mPreRenderHeight.Value;
+                }
                 else if (mTextureToRender != null)
                 {
                     if (mTextureToRender.Height == 0)
@@ -228,14 +239,19 @@ namespace RenderingLibrary.Graphics
                         return mTextureToRender.Height * mFontScale;
                     }
                 }
-                else if (mPreRenderHeight.HasValue)
-                {
-                    return mPreRenderHeight.Value;
-                }
                 else
                 {
                     return 32;
                 }
+            }
+        }
+
+
+        bool IRenderableIpso.ClipsChildren
+        {
+            get
+            {
+                return false;
             }
         }
 
@@ -251,7 +267,7 @@ namespace RenderingLibrary.Graphics
             set;
         }
 
-        public IPositionedSizedObject Parent
+        public IRenderableIpso Parent
         {
             get { return mParent; }
             set
@@ -294,7 +310,7 @@ namespace RenderingLibrary.Graphics
             }
         }
 
-        public List<IPositionedSizedObject> Children
+        public List<IRenderableIpso> Children
         {
             get { return mChildren; }
         }
@@ -336,10 +352,7 @@ namespace RenderingLibrary.Graphics
 
         public object Tag { get; set; }
 
-        public BlendState BlendState
-        {
-            get { return BlendState.NonPremultiplied; }
-        }
+        public BlendState BlendState { get; set; }
 
         Renderer Renderer
         {
@@ -406,7 +419,7 @@ namespace RenderingLibrary.Graphics
             RenderBoundary = RenderBoundaryDefault;
 
             mManagers = managers;
-            mChildren = new List<IPositionedSizedObject>();
+            mChildren = new List<IRenderableIpso>();
 
             mRawText = text;
             mNeedsBitmapFontRefresh = true;
@@ -528,7 +541,7 @@ namespace RenderingLibrary.Graphics
             //}
             //else
             {
-                mNeedsBitmapFontRefresh = true;
+               mNeedsBitmapFontRefresh = true;
             }
         }
 
@@ -558,8 +571,13 @@ namespace RenderingLibrary.Graphics
         {
             if (mNeedsBitmapFontRefresh)
             {
-                UpdateTextureToRender();
+               UpdateTextureToRender();
             }
+        }
+
+        void IRenderable.PreRender()
+        {
+            TryUpdateTextureToRender();
         }
 
         public void UpdateTextureToRender()
@@ -581,7 +599,8 @@ namespace RenderingLibrary.Graphics
                     //    mTextureToRender = null;
                     //}
 
-                    var returnedRenderTarget = fontToUse.RenderToTexture2D(WrappedText, this.HorizontalAlignment, mManagers, mTextureToRender);
+                    var returnedRenderTarget = fontToUse.RenderToTexture2D(WrappedText, this.HorizontalAlignment,
+                        mManagers, mTextureToRender, this);
                     bool isNewInstance = returnedRenderTarget != mTextureToRender;
 
                     if (isNewInstance && mTextureToRender != null)
@@ -599,6 +618,8 @@ namespace RenderingLibrary.Graphics
                     if (isNewInstance && mTextureToRender is RenderTarget2D)
                     {
                         (mTextureToRender as RenderTarget2D).ContentLost += SetNeedsRefresh;
+                        mTextureToRender.Name = "Render Target for Text " + this.Name;
+
                     }
                 }
                 else if (mBitmapFont == null)
@@ -629,7 +650,7 @@ namespace RenderingLibrary.Graphics
         }
 
 
-        public void Render(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch, SystemManagers managers)
+        public void Render(SpriteRenderer spriteRenderer, SystemManagers managers)
         {
             if (AbsoluteVisible)
             {
@@ -642,21 +663,21 @@ namespace RenderingLibrary.Graphics
                 //}
                 if (RenderBoundary)
                 {
-                    LineRectangle.RenderLinePrimitive(mBounds, spriteBatch, this, managers, false);
+                    LineRectangle.RenderLinePrimitive(mBounds, spriteRenderer, this, managers, false);
                 }
 
                 if (mTextureToRender == null)
                 {
-                    RenderUsingSpriteFont(spriteBatch);
+                    RenderUsingSpriteFont(spriteRenderer);
                 }
                 else
                 {
-                    RenderUsingBitmapFont(spriteBatch, managers);
+                    RenderUsingBitmapFont(spriteRenderer, managers);
                 }
             }
         }
 
-        private void RenderUsingBitmapFont(SpriteBatch spriteBatch, SystemManagers managers)
+        private void RenderUsingBitmapFont(SpriteRenderer spriteRenderer, SystemManagers managers)
         {
             if (mTempForRendering == null)
             {
@@ -667,7 +688,8 @@ namespace RenderingLibrary.Graphics
             mTempForRendering.Y = this.Y;
             mTempForRendering.Width = this.mTextureToRender.Width * mFontScale;
             mTempForRendering.Height = this.mTextureToRender.Height * mFontScale;
-            mTempForRendering.Parent = this.Parent;
+
+            //mTempForRendering.Parent = this.Parent;
 
             float widthDifference = this.EffectiveWidth - mTempForRendering.Width;
 
@@ -689,13 +711,30 @@ namespace RenderingLibrary.Graphics
                 mTempForRendering.Y += this.EffectiveHeight - mTempForRendering.Height;
             }
 
-            Sprite.Render(managers, spriteBatch, mTempForRendering, mTextureToRender,
-                new Color(mRed, mGreen, mBlue, mAlpha), null, false, false, Rotation, treat0AsFullDimensions: false);
+            if(this.Parent != null)
+            {
+                mTempForRendering.X += Parent.GetAbsoluteX();
+                mTempForRendering.Y += Parent.GetAbsoluteY();
+
+            }
+
+            if (mBitmapFont?.AtlasedTexture != null)
+            {
+                mBitmapFont.RenderAtlasedTextureToScreen(mWrappedText, this.HorizontalAlignment, mTextureToRender.Height,
+                    new Color(mRed, mGreen, mBlue, mAlpha), Rotation, mFontScale, managers,spriteRenderer, this);
+            }
+            else
+            {
+                Sprite.Render(managers, spriteRenderer, mTempForRendering, mTextureToRender,
+                    new Color(mRed, mGreen, mBlue, mAlpha), null, false, false, Rotation, treat0AsFullDimensions: false,
+                    objectCausingRenering: this);
+                
+            }
         }
 
-        IPositionedSizedObject mTempForRendering;
+        IRenderableIpso mTempForRendering;
 
-        private void RenderUsingSpriteFont(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
+        private void RenderUsingSpriteFont(SpriteRenderer spriteRenderer)
         {
 
             Vector2 offset = new Vector2(this.Renderer.Camera.RenderingXOffset, Renderer.Camera.RenderingYOffset);
@@ -751,7 +790,7 @@ namespace RenderingLibrary.Graphics
 
                     offset.X = (int)offset.X; // so we don't have half-pixels that render weird
 
-                    spriteBatch.DrawString(font, line, offset, Color);
+                    spriteRenderer.DrawString(font, line, offset, Color, this);
                     offsetY += LoaderManager.Self.DefaultFont.LineSpacing;
                 }
             }
@@ -800,7 +839,7 @@ namespace RenderingLibrary.Graphics
         }
         #endregion
 
-        void IPositionedSizedObject.SetParentDirect(IPositionedSizedObject parent)
+        void IRenderableIpso.SetParentDirect(IRenderableIpso parent)
         {
             mParent = parent;
         }
@@ -832,7 +871,7 @@ namespace RenderingLibrary.Graphics
         {
             get
             {
-                return ((IPositionedSizedObject)this).Parent as IVisible;
+                return ((IRenderableIpso)this).Parent as IVisible;
             }
         }
 

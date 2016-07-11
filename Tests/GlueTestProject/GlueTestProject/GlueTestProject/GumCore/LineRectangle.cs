@@ -10,21 +10,24 @@ using System.Collections.ObjectModel;
 
 namespace RenderingLibrary.Math.Geometry
 {
-    public class LineRectangle : IVisible, IPositionedSizedObject, IRenderable
+    public class LineRectangle : IVisible, IRenderableIpso
     {
         #region Fields
 
         float mWidth = 32;
         float mHeight = 32;
 
+        // Does position not update points? Is this a bug?
         public Vector2 Position;
+
+        float mRotation;
 
         LinePrimitive mLinePrimitive;
 
-        List<IPositionedSizedObject> mChildren;
+        List<IRenderableIpso> mChildren;
 
 
-        IPositionedSizedObject mParent;
+        IRenderableIpso mParent;
 
 
         SystemManagers mManagers;
@@ -82,7 +85,24 @@ namespace RenderingLibrary.Math.Geometry
         }
 
 
-        public float Rotation { get; set; }
+        public bool ClipsChildren
+        {
+            get;
+            set;
+        }
+
+        public float Rotation
+        {
+            get
+            {
+                return mRotation;
+            }
+            set
+            {
+                mRotation = value;
+                UpdatePoints();
+            }
+        }
 
         public float Width
         {
@@ -94,7 +114,7 @@ namespace RenderingLibrary.Math.Geometry
             }
         }
 
-        public IPositionedSizedObject Parent
+        public IRenderableIpso Parent
         {
             get { return mParent; }
             set
@@ -143,7 +163,7 @@ namespace RenderingLibrary.Math.Geometry
             }
         }
 
-        public List<IPositionedSizedObject> Children
+        public List<IRenderableIpso> Children
         {
             get { return mChildren; }
         }
@@ -197,7 +217,7 @@ namespace RenderingLibrary.Math.Geometry
 
             mManagers = managers;
 
-            mChildren = new List<IPositionedSizedObject>();
+            mChildren = new List<IRenderableIpso>();
 
             Visible = true;
             Renderer renderer = null;
@@ -229,26 +249,31 @@ namespace RenderingLibrary.Math.Geometry
 
         public static void UpdateLinePrimitive(LinePrimitive linePrimitive, IPositionedSizedObject ipso)
         {
+            Matrix matrix = Matrix.CreateRotationZ(-MathHelper.ToRadians(ipso.Rotation));
+
+            
+
             linePrimitive.Replace(0, Vector2.Zero);
-            linePrimitive.Replace(1, new Vector2(ipso.Width, 0));
-            linePrimitive.Replace(2, new Vector2(ipso.Width, ipso.Height));
-            linePrimitive.Replace(3, new Vector2(0, ipso.Height));
+            linePrimitive.Replace(1, Vector2.Transform(new Vector2(ipso.Width, 0), matrix) );
+            linePrimitive.Replace(2, Vector2.Transform(new Vector2(ipso.Width, ipso.Height), matrix) );
+            linePrimitive.Replace(3, Vector2.Transform(new Vector2(0, ipso.Height), matrix) );
             linePrimitive.Replace(4, Vector2.Zero); // close back on itself
 
         }
 
 
-        void IRenderable.Render(SpriteBatch spriteBatch, SystemManagers managers)
+        void IRenderable.Render(SpriteRenderer spriteRenderer, SystemManagers managers)
         {
             if (AbsoluteVisible && LocalVisible)
             {
                 // todo - add rotation
-                RenderLinePrimitive(mLinePrimitive, spriteBatch, this, managers, IsDotted);
+                RenderLinePrimitive(mLinePrimitive, spriteRenderer, this, managers, IsDotted);
+
             }
         }
 
 
-        public static void RenderLinePrimitive(LinePrimitive linePrimitive, SpriteBatch spriteBatch, IPositionedSizedObject ipso, SystemManagers managers, bool isDotted)
+        public static void RenderLinePrimitive(LinePrimitive linePrimitive, SpriteRenderer spriteRenderer, IRenderableIpso ipso, SystemManagers managers, bool isDotted)
         {
             linePrimitive.Position.X = ipso.GetAbsoluteX();
             linePrimitive.Position.Y = ipso.GetAbsoluteY();
@@ -270,15 +295,17 @@ namespace RenderingLibrary.Math.Geometry
                 textureToUse = renderer.DottedLineTexture;
             }
 
-            linePrimitive.Render(spriteBatch, managers, textureToUse, .2f * renderer.Camera.Zoom);
+            linePrimitive.Render(spriteRenderer, managers, textureToUse, .2f * renderer.Camera.Zoom);
         }
 
         #endregion
 
-        void IPositionedSizedObject.SetParentDirect(IPositionedSizedObject parent)
+        void IRenderableIpso.SetParentDirect(IRenderableIpso parent)
         {
             mParent = parent;
         }
+
+        void IRenderable.PreRender() { }
 
         #region IVisible Members
 
@@ -302,10 +329,15 @@ namespace RenderingLibrary.Math.Geometry
         {
             get
             {
-                return ((IPositionedSizedObject)this).Parent as IVisible;
+                return ((IRenderableIpso)this).Parent as IVisible;
             }
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            return Name + " (LineRectangle)";
+        }
     }
 }

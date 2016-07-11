@@ -18,8 +18,10 @@ namespace GlueTestProject
 			}
 			internal static void SetupCamera (Camera cameraToSetUp, GraphicsDeviceManager graphicsDeviceManager, int width, int height)
 			{
-				#if !WINDOWS_PHONE && !WINDOWS_8 && !IOS && !ANDROID
+				#if WINDOWS
 				FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(width, height);
+				#elif IOS || ANDROID
+				FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight);
 				#endif
 				#if WINDOWS_PHONE || WINDOWS_8 || IOS || ANDROID
 				if (height > width)
@@ -39,6 +41,7 @@ namespace GlueTestProject
 				cameraToReset.Y = 0;
 				cameraToReset.XVelocity = 0;
 				cameraToReset.YVelocity = 0;
+				// Glue does not generate a detach call because the camera may be attached by this point
 			}
 
 	}

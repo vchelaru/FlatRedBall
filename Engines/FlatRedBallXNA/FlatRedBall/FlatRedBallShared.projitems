@@ -66,5 +66,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PositionedObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\ExcludeFromDesignerAttribute.cs" />
   </ItemGroup>
 </Project>

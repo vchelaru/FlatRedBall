@@ -117,6 +117,7 @@ namespace FlatRedBall.Glue.Parsing
             get;
             set;
         }
+        public List<string> CurrentAttributes { get; private set; } = new List<string>();
 
         #endregion
 
@@ -471,7 +472,9 @@ namespace FlatRedBall.Glue.Parsing
 
                 #region If it's a field
 
-                else if (bracketsDeep == 1 && line.EndsWith(";"))
+                else if (bracketsDeep == 1 && line.EndsWith(";") && 
+                    // C# 6 introduces assigning values like public float Something { get; set; } = 3;
+                    !line.Contains("{"))
                 {
                     if (line.Contains('(') && line.EndsWith(");") && !line.Contains("="))
                     {
@@ -491,6 +494,15 @@ namespace FlatRedBall.Glue.Parsing
                     {
                         ParseField(line);
                     }
+                }
+
+                #endregion
+
+                #region Attributes
+
+                else if(bracketsDeep == 1 && line.StartsWith("[") && line.EndsWith("]"))
+                {
+                    AddAttribute(line);
                 }
 
                 #endregion
@@ -610,6 +622,11 @@ namespace FlatRedBall.Glue.Parsing
                 }
             }
 
+        }
+
+        private void AddAttribute(string line)
+        {
+            CurrentAttributes.Add(line);
         }
 
         private void AddToCurrentBlock(string line, int index)
@@ -735,6 +752,7 @@ namespace FlatRedBall.Glue.Parsing
 
 
             mCurrentBlock.Clear();
+            CurrentAttributes.Clear();
             // Finally, clear the block
         }
 
@@ -820,6 +838,8 @@ namespace FlatRedBall.Glue.Parsing
             {
                 parsedProperty.SetContents = null;
             }
+
+            parsedProperty.Attributes.AddRange(CurrentAttributes);
 
             mParsedProperties.Add(parsedProperty);
         }
@@ -1022,7 +1042,9 @@ namespace FlatRedBall.Glue.Parsing
             // the same line.  Eventually we may want to combine
             // all lines before the opening bracket
 
-            
+
+            // todo: add attributes:
+            CurrentAttributes.Clear();
 
 
             #region Get header information
@@ -1078,7 +1100,8 @@ namespace FlatRedBall.Glue.Parsing
         private void ParseField(string line)
         {
             ParsedField parsedField = GetParsedField(line);
-
+            // todo: parsedField add attributes
+            this.CurrentAttributes.Clear();
             mParsedFields.Add(parsedField);
         }
 
@@ -1106,6 +1129,7 @@ namespace FlatRedBall.Glue.Parsing
             parsedField.IsConst = isConst;
             parsedField.IsStatic = isStatic;
             parsedField.ValueToAssignTo = valueToAssignTo;
+
             return parsedField;
         }
 

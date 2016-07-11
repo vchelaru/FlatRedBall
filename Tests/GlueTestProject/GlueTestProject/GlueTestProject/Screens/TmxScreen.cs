@@ -41,7 +41,7 @@ namespace GlueTestProject.Screens
 			SpriteEditorScene ses = SceneSave.FromFile("Content/Screens/TmxScreen/FinalFantasyScene.scnx".ToLowerInvariant());
 
             scene = new Scene();
-            ses.SetScene<Sprite>(ContentManagerName, scene, SceneSettingOptions.ConvertZSeparatedSpritesIntoSpriteGrids, null);
+            ses.SetScene<Sprite>(ContentManagerName, scene, SceneSettingOptions.ConvertZSeparatedSpritesIntoSpriteGrids);
             scene.Shift(new Vector3(0, 0, 0));
             scene.AddToManagers();
 
