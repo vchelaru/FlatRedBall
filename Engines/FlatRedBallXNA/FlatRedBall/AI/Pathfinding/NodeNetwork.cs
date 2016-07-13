@@ -497,7 +497,11 @@ namespace FlatRedBall.AI.Pathfinding
 
         public virtual void GetPath(PositionedNode start, PositionedNode end, List<PositionedNode> listToFill)
         {
-            if (start == end)
+            if(start.Active == false || end.Active == false)
+            {
+                return;
+            }
+            else if (start == end)
             {
                 listToFill.Add(start);
                 return;
@@ -1068,7 +1072,7 @@ namespace FlatRedBall.AI.Pathfinding
                 }
                 PositionedNode nodeLinkingTo = currentLink.NodeLinkingTo; //currentNode.Links[i].NodeLinkingTo;
 
-                if (nodeLinkingTo.AStarState != AStarState.Closed)
+                if (nodeLinkingTo.AStarState != AStarState.Closed && nodeLinkingTo.Active)
                 {
                     float cost = currentNode.mCostToGetHere + currentLink.Cost;
 

@@ -1321,8 +1321,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         public static void GetActivityForNamedObject(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
         {
             ///////////////////////////EARLY OUT/////////////////////////////////////////////////
-            if (namedObjectSave.SetByDerived 
-                || 
+            if (
                 (namedObjectSave.SetByContainer && namedObjectSave.GetContainer() is EntitySave)
                 ||
                 namedObjectSave.IsDisabled || namedObjectSave.CallActivity == false ||
@@ -1332,48 +1331,56 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             /////////////////////////END EARLY OUT///////////////////////////////////////////////
 
-
+            bool setByDerived = namedObjectSave.SetByDerived;
 
             AddIfConditionalSymbolIfNecesssary(codeBlock, namedObjectSave);
 
-            if (namedObjectSave.Instantiate == false)
+            if (!setByDerived)
             {
-                // This may be null or it may be instantiated later by the user, so we should
-                // handle both cases:
-                codeBlock = codeBlock.If(namedObjectSave.InstanceName + " != null");
-            }
-
-            if (namedObjectSave.SourceType == SourceType.Entity)
-            {
-                // Entities need activity!
-                codeBlock.Line(namedObjectSave.InstanceName + ".Activity();");
-            }
-            else if (namedObjectSave.SourceType == SourceType.FlatRedBallType &&
-                namedObjectSave.ClassType != null &&
-                namedObjectSave.ClassType.Contains("PositionedObjectList<"))
-            {
-                // Now let's see if the object in the list is an entity
-                string genericType = namedObjectSave.SourceClassGenericType;
-
-
-                if (genericType.Contains("Entities\\"))
+                if (namedObjectSave.Instantiate == false)
                 {
-                    codeBlock.For("int i = " + namedObjectSave.InstanceName + ".Count - 1; i > -1; i--")
-                                .If("i < " + namedObjectSave.InstanceName + ".Count")
-                                    .Line("// We do the extra if-check because activity could destroy any number of entities")
-                                    .Line(namedObjectSave.InstanceName + "[i].Activity();");
+                    // This may be null or it may be instantiated later by the user, so we should
+                    // handle both cases:
+                    codeBlock = codeBlock.If(namedObjectSave.InstanceName + " != null");
                 }
 
+                if (namedObjectSave.SourceType == SourceType.Entity)
+                {
+                    // Entities need activity!
+                    codeBlock.Line(namedObjectSave.InstanceName + ".Activity();");
+                }
+                else if (namedObjectSave.SourceType == SourceType.FlatRedBallType &&
+                    namedObjectSave.ClassType != null &&
+                    namedObjectSave.ClassType.Contains("PositionedObjectList<"))
+                {
+                    // Now let's see if the object in the list is an entity
+                    string genericType = namedObjectSave.SourceClassGenericType;
+
+
+                    if (genericType.Contains("Entities\\"))
+                    {
+                        codeBlock.For("int i = " + namedObjectSave.InstanceName + ".Count - 1; i > -1; i--")
+                                    .If("i < " + namedObjectSave.InstanceName + ".Count")
+                                        .Line("// We do the extra if-check because activity could destroy any number of entities")
+                                        .Line(namedObjectSave.InstanceName + "[i].Activity();");
+                    }
+
+
+                }
 
             }
 
             // If it's an emitter, call TimedEmit:
             ParticleCodeGenerator.GenerateTimedEmit(codeBlock, namedObjectSave);
 
-            if (namedObjectSave.Instantiate == false)
+            if (!setByDerived)
             {
-                // end the if-statement we started above.
-                codeBlock = codeBlock.End();
+
+                if (namedObjectSave.Instantiate == false)
+                {
+                    // end the if-statement we started above.
+                    codeBlock = codeBlock.End();
+                }
             }
 
             AddEndIfIfNecessary(codeBlock, namedObjectSave);

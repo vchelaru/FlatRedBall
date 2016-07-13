@@ -25,9 +25,17 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Particle
         public static void GenerateTimedEmit(ICodeBlock codeBlock, NamedObjectSave nos)
         {
 
-            if (!nos.IsDisabled && nos.AddToManagers && !nos.DefinedByBase && nos.IsEmitter() && nos.GenerateTimedEmit)
+            if (!nos.IsDisabled && nos.AddToManagers && nos.IsEmitter() && nos.GenerateTimedEmit)
             {
-                codeBlock.Line(nos.InstanceName + ".TimedEmit();");
+
+                var timedEmitBlock = codeBlock;
+
+                if(nos.SetByDerived)
+                {
+                    // this may be null
+                    timedEmitBlock = timedEmitBlock.If($"{nos.InstanceName} != null");
+                }
+                timedEmitBlock.Line(nos.InstanceName + ".TimedEmit();");
             }
         }
 

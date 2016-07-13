@@ -250,6 +250,13 @@
       <Link>Entities\AttachedToCameraCopy.Generated.cs</Link>
       <DependentUpon>AttachedToCameraCopy.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseEmitterEntity.cs">
+      <Link>Entities\BaseEmitterEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseEmitterEntity.Generated.cs">
+      <Link>Entities\BaseEmitterEntity.Generated.cs</Link>
+      <DependentUpon>BaseEmitterEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\BaseEnityWithCategorizedStates.cs">
       <Link>Entities\BaseEnityWithCategorizedStates.cs</Link>
     </Compile>
@@ -405,6 +412,13 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedCsvEntity.Generated.cs">
       <Link>Entities\DerivedCsvEntity.Generated.cs</Link>
       <DependentUpon>DerivedCsvEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedEmitterEntity.cs">
+      <Link>Entities\DerivedEmitterEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedEmitterEntity.Generated.cs">
+      <Link>Entities\DerivedEmitterEntity.Generated.cs</Link>
+      <DependentUpon>DerivedEmitterEntity.cs</DependentUpon>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DerivedEntity.cs">
       <Link>Entities\DerivedEntity.cs</Link>

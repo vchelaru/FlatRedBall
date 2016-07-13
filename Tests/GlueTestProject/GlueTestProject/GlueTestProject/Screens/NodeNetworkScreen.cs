@@ -35,7 +35,27 @@ namespace GlueTestProject.Screens
             {
                 throw new Exception("Setting LayerToDrawOn after a NodeNetwork is visible does not move it to a Layer");
             }
-		}
+
+            var node2 = NodeNetworkFile.Nodes.FirstOrDefault(item=>item.Name == "2");
+            if(node2 == null)
+            {
+                throw new Exception("Could not find a node with the name 2");
+            }
+
+            node2.Active = false;
+            var path = NodeNetworkFile.GetPath(NodeNetworkFile.Nodes.First(item => item.Name == "1"), NodeNetworkFile.Nodes.First(item => item.Name == "3"));
+            if(path != null && path.Count != 0)
+            {
+                throw new Exception("No path should be found between nodes 1 and 3 because node 2 is not active.");
+            }
+
+            node2.Active = true;
+            path = NodeNetworkFile.GetPath(NodeNetworkFile.Nodes.First(item => item.Name == "1"), NodeNetworkFile.Nodes.First(item => item.Name == "3"));
+            if (path.Count == 0)
+            {
+                throw new Exception("Path should be found between nodes 1 and 3 now that node 2 is active.");
+            }
+        }
 
 		void CustomActivity(bool firstTimeCalled)
 		{

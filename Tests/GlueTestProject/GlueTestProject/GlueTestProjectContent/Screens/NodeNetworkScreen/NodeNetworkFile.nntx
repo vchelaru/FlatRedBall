@@ -2,8 +2,36 @@
 <NodeNetworkSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <PositionedNode>
     <Name>1</Name>
-    <X>0</X>
-    <Y>0</Y>
+    <X>85.50002</X>
+    <Y>161.099945</Y>
     <Z>0</Z>
+    <Link>
+      <Cost>162.969574</Cost>
+      <NodeLinkingTo>2</NodeLinkingTo>
+    </Link>
+  </PositionedNode>
+  <PositionedNode>
+    <Name>2</Name>
+    <X>-64.79999</X>
+    <Y>98.1000443</Y>
+    <Z>0</Z>
+    <Link>
+      <Cost>162.969574</Cost>
+      <NodeLinkingTo>1</NodeLinkingTo>
+    </Link>
+    <Link>
+      <Cost>172.4434</Cost>
+      <NodeLinkingTo>3</NodeLinkingTo>
+    </Link>
+  </PositionedNode>
+  <PositionedNode>
+    <Name>3</Name>
+    <X>37.8</X>
+    <Y>-40.5</Y>
+    <Z>0</Z>
+    <Link>
+      <Cost>172.4434</Cost>
+      <NodeLinkingTo>2</NodeLinkingTo>
+    </Link>
   </PositionedNode>
 </NodeNetworkSave>

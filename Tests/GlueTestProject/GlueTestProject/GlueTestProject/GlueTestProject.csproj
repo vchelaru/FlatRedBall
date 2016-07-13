@@ -161,6 +161,10 @@
     <Compile Include="Entities\AttachedToCameraCopy.Generated.cs">
       <DependentUpon>AttachedToCameraCopy.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\BaseEmitterEntity.cs" />
+    <Compile Include="Entities\BaseEmitterEntity.Generated.cs">
+      <DependentUpon>BaseEmitterEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\BaseEnityWithCategorizedStates.cs" />
     <Compile Include="Entities\BaseEnityWithCategorizedStates.Generated.cs">
       <DependentUpon>BaseEnityWithCategorizedStates.cs</DependentUpon>
@@ -252,6 +256,10 @@
     <Compile Include="Entities\DerivedCsvEntity.cs" />
     <Compile Include="Entities\DerivedCsvEntity.Generated.cs">
       <DependentUpon>DerivedCsvEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedEmitterEntity.cs" />
+    <Compile Include="Entities\DerivedEmitterEntity.Generated.cs">
+      <DependentUpon>DerivedEmitterEntity.cs</DependentUpon>
     </Compile>
     <Compile Include="Entities\DerivedEntity.cs" />
     <Compile Include="Entities\DerivedEntity.Event.cs">
