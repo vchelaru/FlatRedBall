@@ -715,46 +715,7 @@ namespace FlatRedBall.ManagedSpriteGroups
             return listToReturn;
         }
 
-
-        public bool IsGridPatternAt(float x, float y, GridPattern<Texture2D> pattern)
-        {
-            foreach (GridRelativeTexture include in pattern.mIncludePattern)
-            {
-                if (mTextureGrid.GetTextureAt(x + mGridSpacingX * include.X, y + mGridSpacingY * include.Y) != include.State)
-                    return false;
-            }
-
-            foreach (GridRelativeStateList<Texture2D> orInclude in pattern.mOrIncludePattern)
-            {
-                Texture2D textureAtLocation = mTextureGrid.GetTextureAt(
-                    x + mGridSpacingX * orInclude.X,
-                    y + mGridSpacingY * orInclude.Y);
-
-                foreach (Texture2D texture in orInclude.StateList)
-                {
-                    if (texture == textureAtLocation)
-                        continue;
-                }
-
-                // If execution gets here then that means
-                // a texture didn't match one of the textures
-                // in the orinclude.
-                return false;
-
-            }
-
-            foreach (GridRelativeTexture exclude in pattern.mExcludePattern)
-            {
-                if (mTextureGrid.GetTextureAt(x + mGridSpacingX * exclude.X, y + mGridSpacingY * exclude.Y) == exclude.State)
-                    return false;
-
-            }
-
-            // If the function hasn't returned yet that means
-            // that all textures matched.
-            return true;
-        }
-
+        
 
         public void InitializeTextureGrid()
         {

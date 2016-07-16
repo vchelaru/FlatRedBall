@@ -657,8 +657,8 @@ namespace FlatRedBall.IO.Csv
 
         public void CreateObjectDictionary<KeyType, ValueType>(Dictionary<KeyType, ValueType> dictionaryToPopulate, string contentManagerName)
         {
-#if DEBUG
             Type typeOfElement = typeof(ValueType);
+#if DEBUG
 #if WINDOWS_8
             bool isPrimitive = typeOfElement.IsPrimitive();
 #else
@@ -757,6 +757,7 @@ namespace FlatRedBall.IO.Csv
 
             var type = typeof(ValueType);
 
+#if !WINDOWS_8
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
             var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
@@ -780,6 +781,7 @@ namespace FlatRedBall.IO.Csv
                     property.SetValue(oldItem, valueOnNew, null);
                 }
             }
+#endif
         }
 
         private static KeyType GetKeyToUse<KeyType, ValueType>(Type typeOfElement, CsvHeader csvHeaderForKey, int headerIndex, object newElement)
@@ -858,7 +860,7 @@ namespace FlatRedBall.IO.Csv
 
 
 
-            #region Special-case handle string[].  We use these for localization
+#region Special-case handle string[].  We use these for localization
             if (typeOfElement == typeof(string[]))
             {
                 int requiredColumn = -1;
@@ -892,7 +894,7 @@ namespace FlatRedBall.IO.Csv
                 }
             }
 
-            #endregion
+#endregion
 
             else
             {
@@ -946,7 +948,7 @@ namespace FlatRedBall.IO.Csv
                         continue;
                     }
 
-                    #region If the member is a Property, so set the value obtained from converting the string.
+#region If the member is a Property, so set the value obtained from converting the string.
                     if (memberTypeIndexPairs[column].MemberType == MemberTypes.Property)
                     {
                         PropertyInfo propertyInfo = propertyInfos[memberTypeIndexPairs[column].Index];
@@ -1016,9 +1018,9 @@ namespace FlatRedBall.IO.Csv
                         }
 
                     }
-                    #endregion
+#endregion
 
-                    #region Else, it's a Field, so set the value obtained from converting the string.
+#region Else, it's a Field, so set the value obtained from converting the string.
                     else if (memberTypeIndexPairs[column].MemberType == MemberTypes.Field)
                     {
                         //try
@@ -1075,7 +1077,7 @@ namespace FlatRedBall.IO.Csv
                         //    break;
                         //}
                     }
-                    #endregion
+#endregion
                 }
             }
 
@@ -1139,7 +1141,7 @@ namespace FlatRedBall.IO.Csv
 
         public void RemoveHeaderWhitespaceAndDetermineIfRequired()
         {
-            #region Remove whitespace and commas, identify if the types are required.
+#region Remove whitespace and commas, identify if the types are required.
             // The headers may be include spaces to be more "human readable".
             // Of course members can't have spaces.  Therefore "Max HP" is acceptable
             // as a header, but the member might be MaxHP.  Therefore, we need to remove
@@ -1156,7 +1158,7 @@ namespace FlatRedBall.IO.Csv
                 Headers[i].Name = nameWithoutParentheses;
                 Headers[i].IsRequired = isRequired;
             }
-            #endregion
+#endregion
         }
 
 
@@ -1203,7 +1205,7 @@ namespace FlatRedBall.IO.Csv
             {
                 memberTypeIndexPairs[i].Index = -1;
 
-                #region See if the header at index i is a field
+#region See if the header at index i is a field
                 int j = 0;
                 foreach(FieldInfo fieldInfo in fieldInfos)
                 {
@@ -1223,9 +1225,9 @@ namespace FlatRedBall.IO.Csv
                 {
                     continue;
                 }
-                #endregion
+#endregion
 
-                #region If we got this far, then it's not a field, so check if it's a property
+#region If we got this far, then it's not a field, so check if it's a property
 
                 j = 0;
                 foreach(PropertyInfo propertyInfo in propertyInfos)
@@ -1246,7 +1248,7 @@ namespace FlatRedBall.IO.Csv
                 {
                     continue;
                 }
-                #endregion
+#endregion
 
                 // Is this needed:
                 memberTypeIndexPairs[i].Index = -1;

@@ -308,9 +308,7 @@ namespace FlatRedBall.Graphics
 
         public static Dictionary<int, SurfaceFormat> RenderModeFormats;
 
-#if !WINDOWS_PHONE && !MONOGAME
-        internal static Dictionary<int, RenderTargetPair> mRenderTargets;
-#endif
+
 
         static RenderMode mCurrentRenderMode = RenderMode.Default;
 
@@ -652,19 +650,7 @@ namespace FlatRedBall.Graphics
         #endregion
 
         #region Internal Properties
-
-#if !WINDOWS_PHONE && !MONOGAME
-        // Render targets
-        static public Dictionary<int, RenderTargetPair> PostProcessRenderTargets
-        {
-            get { return mRenderTargets; }
-        }
-
-        static internal RenderTargetPair PostProcessRenderTargetsColor
-        {
-            get { return mRenderTargets[(int)SurfaceFormat.Color]; }
-        }
-#endif
+        
 
         static internal ColorOperation ColorOperation
         {
@@ -788,13 +774,7 @@ namespace FlatRedBall.Graphics
             // Vertex Arrays
             mVertexArray = new VertexPositionColorTexture[6000];
             mShapeDrawingVertexArray = new VertexPositionColor[6000];
-
-#if WINDOWS_PHONE || MONOGAME
-
-#else
-            // Render targets
-            mRenderTargets = new Dictionary<int, RenderTargetPair>(10);
-#endif
+            
 
             #region pre-create strings that will greatly reduce memory allocation
 
@@ -1076,27 +1056,7 @@ namespace FlatRedBall.Graphics
 
             // Make sure the current render target (if it exists) is large enough, and/or create
             // a large enough render target
-
-#if WINDOWS_PHONE || MONOGAME
-            // do nothing?
-#else
-
-            if (mRenderTargets.ContainsKey((int)surfaceFormat))
-            {
-                RenderTargetPair targetpair = mRenderTargets[(int)surfaceFormat];
-
-                if (targetpair.Width != screenwidth || targetpair.Height != screenheight)
-                {
-                    targetpair.SetSize(screenwidth, screenheight);
-                }
-            }
-            else
-            {
-                mRenderTargets.Add(
-                        (int)surfaceFormat, new RenderTargetPair(
-                            surfaceFormat, screenwidth, screenheight));
-            }
-#endif
+            
             // OLD CODE
             //for (int i = 0; i < Cameras.Count; i++)
             //{
