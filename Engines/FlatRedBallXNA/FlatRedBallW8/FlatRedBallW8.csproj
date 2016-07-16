@@ -105,9 +105,6 @@
     <Compile Include="..\FlatRedBall\Compatability\System\ComponentModel\CategoryAttribute.cs">
       <Link>Compatability\CategoryAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\FlatRedBall\Compatability\System\ComponentModel\ListSortDirection.cs">
-      <Link>Compatability\ListSortDirection.cs</Link>
-    </Compile>
     <Compile Include="..\FlatRedBall\Compatability\System\Reflection\MemberTypes.cs">
       <Link>Compatability\MemberTypes.cs</Link>
     </Compile>
@@ -116,156 +113,6 @@
     </Compile>
     <Compile Include="..\FlatRedBall\Compatability\System\TypeExtensionMethods.cs">
       <Link>Compatability\TypeExtensionMethods.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\AI\Pathfinding\LinkSave.cs">
-      <Link>Content\AI\Pathfinding\LinkSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\AI\Pathfinding\NodeNetworkSave.cs">
-      <Link>Content\AI\Pathfinding\NodeNetworkSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\AI\Pathfinding\PositionedNodeSave.cs">
-      <Link>Content\AI\Pathfinding\PositionedNodeSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\AnimationChain\AnimationChainListSave.cs">
-      <Link>Content\AnimationChain\AnimationChainListSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\AnimationChain\AnimationChainListSaveBase.cs">
-      <Link>Content\AnimationChain\AnimationChainListSaveBase.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\AnimationChain\AnimationChainSave.cs">
-      <Link>Content\AnimationChain\AnimationChainSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\AnimationChain\AnimationChainSaveBase.cs">
-      <Link>Content\AnimationChain\AnimationChainSaveBase.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\AnimationChain\AnimationFrameSave.cs">
-      <Link>Content\AnimationChain\AnimationFrameSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\AnimationChain\AnimationFrameSaveBase.cs">
-      <Link>Content\AnimationChain\AnimationFrameSaveBase.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\ContentManager.cs">
-      <Link>Content\ContentManager.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\DefaultFontDataColors.cs">
-      <Link>Content\DefaultFontDataColors.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Instructions\AnimationSequenceSave.cs">
-      <Link>Content\Instruction\AnimationSequenceSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Instructions\InstructionBlueprintListSave.cs">
-      <Link>Content\Instruction\InstructionBlueprintListSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Instructions\InstructionSave.cs">
-      <Link>Content\Instruction\InstructionSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Instructions\InstructionSetSave.cs">
-      <Link>Content\Instruction\InstructionSetSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Instructions\InstructionSetSaveList.cs">
-      <Link>Content\Instruction\InstructionSetSaveList.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Instructions\KeyframeListSave.cs">
-      <Link>Content\Instruction\KeyframeListSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Instructions\KeyframeSave.cs">
-      <Link>Content\Instruction\KeyframeSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Instructions\TimedKeyframeListSave.cs">
-      <Link>Content\Instruction\TimedKeyframeListSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\ISaveableContent.cs">
-      <Link>Content\ISaveableContent.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Math\Geometry\AxisAlignedCubeSave.cs">
-      <Link>Content\Math\Geometry\AxisAlignedCubeSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Math\Geometry\AxisAlignedRectangleSave.cs">
-      <Link>Content\Math\Geometry\AxisAlignedRectangleSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Math\Geometry\CircleSave.cs">
-      <Link>Content\Math\Geometry\CircleSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Math\Geometry\ShapeCollectionSave.cs">
-      <Link>Content\Math\Geometry\ShapeCollectionSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Math\Geometry\SphereSave.cs">
-      <Link>Content\Math\Geometry\SphereSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Math\Splines\SplinePointSave.cs">
-      <Link>Content\Math\Splines\SplinePointSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Math\Splines\SplineSave.cs">
-      <Link>Content\Math\Splines\SplineSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Math\Splines\SplineSaveList.cs">
-      <Link>Content\Math\Splines\SplineSaveList.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Particle\EmissionSettingsSave.cs">
-      <Link>Content\Particle\EmissionSettingsSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Particle\EmitterSave.cs">
-      <Link>Content\Particle\EmitterSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Particle\EmitterSaveBase.cs">
-      <Link>Content\Particle\EmitterSaveBase.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Particle\EmitterSaveList.cs">
-      <Link>Content\Particle\EmitterSaveList.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Polygon\PolygonSave.cs">
-      <Link>Content\Polygon\PolygonSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Polygon\PolygonSaveList.cs">
-      <Link>Content\Polygon\PolygonSaveList.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Saves\BitmapFontSave.cs">
-      <Link>Content\Saves\BitmapFontSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Saves\TextSave.cs">
-      <Link>Content\Saves\TextSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Saves\TextSaveBase.cs">
-      <Link>Content\Saves\TextSaveBase.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Scene\CameraSave.cs">
-      <Link>Content\Scene\CameraSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Scene\SceneSave.cs">
-      <Link>Content\Scene\SceneSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Scene\SpriteSave.cs">
-      <Link>Content\Scene\SpriteSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\Scene\SpriteSaveBase.cs">
-      <Link>Content\Scene\SpriteSaveBase.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\SourceReferencingFile.cs">
-      <Link>Content\SourceReferencingFile.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\SpriteEditorScene.cs">
-      <Link>Content\SpriteEditorScene.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\SpriteEditorSceneBase.cs">
-      <Link>Content\SpriteEditorSceneBase.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\SpriteFrame\SpriteFrameSave.cs">
-      <Link>Content\SpriteFrame\SpriteFrameSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\SpriteFrame\SpriteFrameSaveBase.cs">
-      <Link>Content\SpriteFrame\SpriteFrameSaveBase.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\SpriteGrid\AnimationChainGridSave.cs">
-      <Link>Content\SpriteGrid\AnimationChainGridSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\SpriteGrid\DisplayRegionGridSave.cs">
-      <Link>Content\SpriteGrid\DisplayRegionGridSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\SpriteGrid\SpriteGridSave.cs">
-      <Link>Content\SpriteGrid\SpriteGridSave.cs</Link>
-    </Compile>
-    <Compile Include="..\FlatRedBall\Content\SpriteGrid\SpriteGridSaveBase.cs">
-      <Link>Content\SpriteGrid\SpriteGridSaveBase.cs</Link>
     </Compile>
     <Compile Include="..\FlatRedBall\IO\FileManager.IsolatedStorage.cs">
       <Link>IO\FileManager.IsolatedStorage.cs</Link>
@@ -276,6 +123,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Content\" />
     <Folder Include="Input\" />
     <Folder Include="Resources\" />
   </ItemGroup>
