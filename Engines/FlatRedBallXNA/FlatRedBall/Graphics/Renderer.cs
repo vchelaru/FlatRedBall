@@ -36,7 +36,6 @@ using FlatRedBall.Performance.Measurement;
 using Windows.System.Threading;
 #else
 
-using FlatRedBall.Graphics.Renderers;
 #endif
 
 #endregion

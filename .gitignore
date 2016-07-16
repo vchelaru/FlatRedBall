@@ -13,3 +13,4 @@ FRBDK/Glue/.vs/
 Tests/GlueTestProject/GlueTestProject/GlueTestProject/CopiedXnbs/
 *.Generated.cs
 *.Generated.Event.cs
+Tests/

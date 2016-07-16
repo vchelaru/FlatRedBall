@@ -115,37 +115,7 @@
     <Compile Include="Graphics\Animation\AnimationChain.Gif.cs" />
     <Compile Include="Graphics\EffectCache.cs" />
     <Compile Include="Graphics\EffectContainer.cs" />
-    <Compile Include="Graphics\Renderers\ImageDataRenderer.cs" />
-    <Compile Include="Graphics\Renderers\IRenderer.cs" />
     <Compile Include="Content\Instructions\InstructionBlueprintListSave.cs" />
-    <Compile Include="IO\BmpLoader.cs" />
-    <Compile Include="IO\Csv\CsvFileManager.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\Csv\CsvReader.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\Csv\CsvReader.DataReaderValidations.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\Csv\CsvReader.RecordEnumerator.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\Csv\Events\ParseErrorEventArgs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\Csv\MemberTypeIndexPair.cs" />
-    <Compile Include="IO\Csv\MissingFieldAction.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\Csv\ParseErrorAction.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\Csv\Resources\ExceptionMessage.Designer.cs" />
-    <Compile Include="IO\Csv\RuntimeCsvRepresentation.cs" />
-    <Compile Include="IO\FileManager.cs" />
-    <Compile Include="IO\GifLoader.cs" />
-    <Compile Include="IO\Gif\ImageDataList.cs" />
     <Compile Include="IO\ICSharpCode.SharpZLib\Checksums\Adler32.cs" />
     <Compile Include="IO\ICSharpCode.SharpZLib\Checksums\IChecksum.cs" />
     <Compile Include="IO\ICSharpCode.SharpZLib\SharpZipBaseException.cs" />
@@ -164,76 +134,11 @@
     <Compile Include="IO\ICSharpCode.SharpZLib\Zip\ZipException.cs" />
     <Compile Include="IO\PngLoader.cs" />
     <Compile Include="IO\Remote\FtpManager.cs" />
-    <Compile Include="IO\StateManager.cs" />
-    <Compile Include="Localization\LocalizationManager.cs" />
-    <Compile Include="ManagedSpriteGroups\GridRelativeTextureList.cs" />
-    <Compile Include="ManagedSpriteGroups\SpriteChain.cs" />
-    <Compile Include="ManagedSpriteGroups\SpriteFrame.cs" />
-    <Compile Include="ManagedSpriteGroups\SpriteGrid\DBSpriteGrid.cs" />
-    <Compile Include="ManagedSpriteGroups\SpriteGrid\DoubleKeyDictionary.cs" />
-    <Compile Include="ManagedSpriteGroups\SpriteGrid\SpriteGrid.cs" />
-    <Compile Include="ManagedSpriteGroups\TextureGrid.cs" />
-    <Compile Include="ManagedSpriteGroups\TextureLocation.cs" />
-    <Compile Include="Math\AttachableList.cs" />
-    <Compile Include="Math\Attachment.cs" />
-    <Compile Include="Math\Collision\CollisionEnumerations.cs" />
-    <Compile Include="Math\Geometry\AxisAlignedCube.cs" />
-    <Compile Include="Math\Geometry\AxisAlignedRectangle.cs" />
-    <Compile Include="Math\Geometry\Capsule2D.cs" />
-    <Compile Include="Math\Geometry\Circle.cs" />
-    <Compile Include="Math\Geometry\FloatRectangle.cs" />
-    <Compile Include="Math\Geometry\Frustum.cs" />
-    <Compile Include="Math\Geometry\IReadOnlyScalable.cs" />
-    <Compile Include="Math\Geometry\IScalable.cs" />
-    <Compile Include="Math\Geometry\IScalable3D.cs" />
-    <Compile Include="Math\Geometry\Line.cs" />
-    <Compile Include="Math\Geometry\Point.cs" />
-    <Compile Include="Math\Geometry\Point3D.cs" />
-    <Compile Include="Math\Geometry\Polygon.cs" />
-    <Compile Include="Math\Geometry\Segment.cs" />
-    <Compile Include="Math\Geometry\ShapeCollection.cs" />
-    <Compile Include="Math\Geometry\ShapeCollectionCollision.cs" />
-    <Compile Include="Math\Geometry\ShapeManager.cs" />
-    <Compile Include="Math\Geometry\ShapeMerger.cs" />
-    <Compile Include="Math\Geometry\Sphere.cs" />
-    <Compile Include="Math\IAttachable.cs" />
-    <Compile Include="Math\IAttachableRemovable.cs" />
-    <Compile Include="Math\IPositionable.cs" />
-    <Compile Include="Math\IRotatable.cs" />
-    <Compile Include="Math\IStaticPositionable.cs" />
-    <Compile Include="Math\MathFunctions.cs" />
-    <Compile Include="Math\NaNException.cs" />
-    <Compile Include="Math\PositionedObjectList.cs" />
-    <Compile Include="Math\RollingAverage.cs" />
-    <Compile Include="Math\Splines\Spline.cs" />
-    <Compile Include="Math\Splines\SplineList.cs" />
-    <Compile Include="Math\Splines\SplinePoint.cs" />
-    <Compile Include="Math\Statistics\LinearRegression.cs" />
-    <Compile Include="Math\Statistics\RandomExtensions.cs" />
-    <Compile Include="Performance\IPoolable.cs" />
-    <Compile Include="Performance\Measurement\Section.cs" />
-    <Compile Include="Performance\PoolList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Screens\Screen.cs" />
-    <Compile Include="Screens\ScreenManager.cs" />
-    <Compile Include="Sprite.Common.cs" />
-    <Compile Include="Sprite.cs" />
-    <Compile Include="SpriteList.cs" />
-    <Compile Include="SpriteManager.cs" />
-    <Compile Include="TimeManager.cs" />
-    <Compile Include="Utilities\CustomBehaviorFunctions.cs" />
     <Compile Include="Utilities\DebuggingFunctions.cs" />
     <Compile Include="Utilities\EnumFunctions.cs" />
-    <Compile Include="Utilities\INameable.cs" />
-    <Compile Include="Utilities\ITimed.cs" />
-    <Compile Include="Utilities\SpriteSelectionOptions.cs" />
-    <Compile Include="Utilities\StringBuilderExtensions.cs" />
-    <Compile Include="Utilities\StringEnum.cs" />
-    <Compile Include="Utilities\StringFunctions.cs" />
     <Compile Include="IO\FileManager.IsolatedStorage.cs" />
     <Compile Include="Content\DefaultFontDataColors.cs" />
-    <Compile Include="Managers\IManager.cs" />
-    <Compile Include="Utilities\ExportOrderAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FlatRedBalliOS\Libraries\Lidgren.Network.dll" />

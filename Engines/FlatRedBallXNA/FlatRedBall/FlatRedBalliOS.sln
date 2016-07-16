@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBalliOS", "FlatRedBalliOS.csproj", "{1E89BEA4-2188-47DB-A277-845F83C9D6BB}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBalliOS", "FlatRedBalliOS.csproj", "{1E89BEA4-2188-47DB-A277-845F83C9D6BB}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -32,6 +32,7 @@ Global
 		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Release|iPhone.ActiveCfg = Release|Any CPU
 		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Release|iPhone.Build.0 = Release|Any CPU
 		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

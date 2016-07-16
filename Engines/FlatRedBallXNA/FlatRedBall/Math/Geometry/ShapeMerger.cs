@@ -73,7 +73,7 @@ namespace FlatRedBall.Math.Geometry
             Segment[] secondSegments;
             List<ContactPoint> contactPoints = GetContactPoints(polygon, otherPolygon, out firstSegments, out secondSegments);
 
-#if !SILVERLIGHT && !WINDOWS_PHONE && !XBOX360 && !IOS && !MONODROID
+#if !MONOGAME
 
             if (shouldDebug)
             {

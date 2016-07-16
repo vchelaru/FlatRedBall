@@ -63,7 +63,7 @@ namespace FlatRedBall.Content.ContentLoaders
 
                     if (useFrbPngLoader)
                     {
-#if WINDOWS_8
+#if WINDOWS_8 || MONOGAME
 						throw new NotImplementedException();
 #else
                         ImageData png = FlatRedBall.IO.PngLoader.GetPixelData(assetName);
