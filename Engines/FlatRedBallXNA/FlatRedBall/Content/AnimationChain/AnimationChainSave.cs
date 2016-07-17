@@ -22,7 +22,7 @@ using System.Globalization;
 namespace FlatRedBall.Content.AnimationChain
 {
     [XmlRoot("AnimationChain")]
-#if !XBOX && !WINDOWS_PHONE && !WINDOWS_8
+#if !UWP && !WINDOWS_8
     [Serializable]
 #endif
     public class AnimationChainSave : AnimationChainSaveBase<AnimationFrameSave>
@@ -92,7 +92,7 @@ namespace FlatRedBall.Content.AnimationChain
         {
             if (!string.IsNullOrEmpty(ParentFile))
             {
-#if !WINDOWS_8
+#if !WINDOWS_8 && !UWP
                 FlatRedBall.Graphics.Animation.AnimationChain animationChain =
                     FlatRedBall.Graphics.Animation.AnimationChain.FromGif(
                         ParentFile, contentManagerName);

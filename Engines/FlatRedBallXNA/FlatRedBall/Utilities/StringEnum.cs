@@ -25,7 +25,7 @@ namespace FlatRedBall.Utilities
 		public StringEnum(Type enumType)
 		{
 #if DEBUG
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             bool isEnum = enumType.GetTypeInfo().IsEnum;
 #else
             bool isEnum = enumType.IsEnum;
@@ -199,7 +199,7 @@ namespace FlatRedBall.Utilities
 			object output = null;
 			string enumStringValue = null;
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
 			if (!type.GetTypeInfo().IsEnum)
 #else
             if (!type.IsEnum)

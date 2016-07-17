@@ -1,8 +1,8 @@
-#if WINDOWS_PHONE  || (XBOX360 && XNA4) || WINDOWS_8 || SILVERLIGHT || MONODROID
+#if WINDOWS_8 || SILVERLIGHT || MONODROID || UWP
 #define USE_ISOLATED_STORAGE
 #endif
 
-#if XBOX360 || SILVERLIGHT || WINDOWS_PHONE || MONODROID || WINDOWS_8 || IOS
+#if  MONODROID || WINDOWS_8 || IOS || UWP
 #define USES_DOT_SLASH_ABOLUTE_FILES
 #endif
 
@@ -51,12 +51,7 @@ using System.Collections;
 
 using System.Reflection;
 
-#if !WINDOWS_PHONE
-using System.Net;
-
-#endif
-
-#if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !WINDOWS_8
+#if !WINDOWS_8 && !UWP
 using FlatRedBall.IO.Remote;
 using System.Runtime.Serialization.Formatters.Binary;
 #endif
@@ -97,7 +92,7 @@ namespace FlatRedBall.IO
         static StorageContainer mLastStorageContainer = null;
 #endif
 
-#if SILVERLIGHT || WINDOWS_PHONE || (XBOX360 && XNA4) || MONOGAME
+#if MONOGAME
         public static string DefaultRelativeDirectory = "./";
 #elif FRB_RAW
         public static string DefaultRelativeDirectory = 
@@ -168,7 +163,7 @@ namespace FlatRedBall.IO
         {
             get
             {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 int threadID = Environment.CurrentManagedThreadId;
 #else
                 int threadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
@@ -220,7 +215,7 @@ namespace FlatRedBall.IO
 
 
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 int threadID = Environment.CurrentManagedThreadId;
 #else
 
@@ -251,7 +246,7 @@ namespace FlatRedBall.IO
             }
         }
 
-#if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !MONODROID && !WINDOWS_8
+#if !UWP && !MONODROID && !WINDOWS_8
 
 
         public static string StartupPath
@@ -378,7 +373,7 @@ namespace FlatRedBall.IO
 
             return (T)serializer.Deserialize(new StringReader(container));
         }
-#if !SILVERLIGHT && !WINDOWS_8
+#if !WINDOWS_8
         public static void CopyDirectory(string sourceDirectory, string destDirectory, bool deletePrevious, List<string> excludeFiles, List<string> excludeDirectories)
         {
             if (excludeDirectories != null)
@@ -582,7 +577,7 @@ namespace FlatRedBall.IO
         }
         
 
-#if !XBOX360 && !SILVERLIGHT && !WINDOWS_8
+#if !WINDOWS_8
         #region XML Docs
         /// <summary>
         /// Searches the passed directory and all subdirectories for the passed file.
@@ -816,7 +811,7 @@ namespace FlatRedBall.IO
             {
                 bool isFtp = false;
 
-#if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
                 isFtp = FtpManager.IsFtp(fileName);
 #endif
 
@@ -1098,9 +1093,9 @@ namespace FlatRedBall.IO
 #else
         public static void InitializeUserFolder(string userName)
         {
-#if SILVERLIGHT || USE_ISOLATED_STORAGE
+#if USE_ISOLATED_STORAGE
 
-    #if WINDOWS_8 || IOS
+    #if WINDOWS_8 || IOS || UWP
             // I don't know if we need to get anything here
     #else
             mIsolatedStorageFile = IsolatedStorageFile.GetUserStoreForApplication();
@@ -1421,7 +1416,7 @@ namespace FlatRedBall.IO
             {
 
 
-#if SILVERLIGHT || WINDOWS_8
+#if WINDOWS_8
                 throw new FileNotFoundException("Could not find the file " + fileName);
 #else
 
@@ -1448,7 +1443,7 @@ namespace FlatRedBall.IO
                     }
                     else
                     {
-	#if XBOX360 || SILVERLIGHT || WINDOWS_PHONE || MONODROID
+	#if MONODROID
 
                         FileNotFoundException fnfe = new FileNotFoundException("Could not find the " +
                             "file " + fileName + " but found the directory " + directory +
@@ -1464,7 +1459,7 @@ namespace FlatRedBall.IO
                 }
                 else
                 {
-	#if XBOX360 || SILVERLIGHT || WINDOWS_PHONE || MONODROID
+	#if MONODROID
 
                     throw new FileNotFoundException("Could not find the " +
                         "file " + fileName + " or the directory " + directory);
@@ -1502,7 +1497,7 @@ namespace FlatRedBall.IO
         {
             if (succeeded)
             {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 throw new NotImplementedException();
 #else
                 using (FileStream fs = new FileStream(targetFileName, FileMode.Create))
@@ -1527,7 +1522,7 @@ namespace FlatRedBall.IO
 
             BinaryWriter writer = null;
             bool handled = false;
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME
 
 
             SaveGarbageIsolatedStorage(garbageBytes, fileName);
@@ -1602,7 +1597,7 @@ namespace FlatRedBall.IO
 
             StreamWriter writer = null;
 
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME
 
 
             if (!fileName.Contains(IsolatedStoragePrefix))
@@ -1612,7 +1607,7 @@ namespace FlatRedBall.IO
 
             fileName = FileManager.GetIsolatedStorageFileName(fileName);
 
-#if WINDOWS_8 || IOS
+#if WINDOWS_8 || IOS || UWP
             throw new NotImplementedException();
 #else
             IsolatedStorageFileStream isfs = null;
@@ -1667,7 +1662,7 @@ namespace FlatRedBall.IO
                 Close(writer);
             }
 
-#if WINDOWS_PHONE || MONODROID
+#if MONODROID
             isfs.Close();
             isfs.Dispose();
 #endif
@@ -1978,7 +1973,7 @@ namespace FlatRedBall.IO
                 stream = storageContainer.OpenFile(fileName, mode);
 #else
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 throw new NotImplementedException();
 #else
                 IsolatedStorageFileStream isfs = new IsolatedStorageFileStream(fileName, mode, mIsolatedStorageFile);
@@ -1991,7 +1986,7 @@ namespace FlatRedBall.IO
             {
 
 
-#if WINDOWS_PHONE || (XBOX360 && XNA4) || MONODROID || WINDOWS_8 || IOS
+#if MONODROID || WINDOWS_8 || IOS || UWP
                 stream = TitleContainer.OpenStream(fileName);
 #else
 
@@ -2042,13 +2037,9 @@ namespace FlatRedBall.IO
 
             using (var stream = GetStreamForFile(fileName))
             {
-#if SILVERLIGHT
-                objectToReturn = SilverlightSerializer.Deserialize(stream);
-#else
                 throw new NotImplementedException();
-#endif
             }
-#elif WINDOWS_8
+#elif WINDOWS_8 || UWP
             throw new NotImplementedException();
 #else
             using (FileStream stream = System.IO.File.OpenRead(fileName))
@@ -2153,15 +2144,13 @@ namespace FlatRedBall.IO
                 throw new NotImplementedException();
 #endif
 
-#elif WINDOWS_8
+#elif WINDOWS_8 || UWP
                 throw new NotImplementedException();
 #else
-#if !SILVERLIGHT && !XBOX360
 
                 fs = new FileStream(fileName, System.IO.FileMode.Create);
                 BinaryFormatter formatter = new BinaryFormatter();
                 formatter.Serialize(fs, objectToSerialize);
-#endif
 #endif
             }
             finally
@@ -2281,7 +2270,7 @@ namespace FlatRedBall.IO
 
 #if USE_ISOLATED_STORAGE && !XBOX360 && !IOS
 
-#if WINDOWS_8 
+#if WINDOWS_8  || UWP
                 throw new NotImplementedException();
 #else
 
@@ -2509,7 +2498,7 @@ namespace FlatRedBall.IO
         
         public static void Close(Stream stream)
         {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             // Close was removed - no need to do anything
 #else
             stream.Close();
@@ -2518,7 +2507,7 @@ namespace FlatRedBall.IO
 
         public static void Close(StreamReader streamReader)
         {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             // Close was removed - no need to do anything
 #else
             streamReader.Close();
@@ -2527,7 +2516,7 @@ namespace FlatRedBall.IO
 
         private static void Close(BinaryWriter writer)
         {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             // Close was removed - no need to do anything
 #else
             writer.Close();
@@ -2536,7 +2525,7 @@ namespace FlatRedBall.IO
 
         private static void Close(StreamWriter writer)
         {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             // Close was removed - no need to do anything
 #else
             writer.Close();
@@ -2545,7 +2534,7 @@ namespace FlatRedBall.IO
 
         public static void Close(TextReader writer)
         {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             // Close was removed - no need to do anything
 #else
             writer.Close();

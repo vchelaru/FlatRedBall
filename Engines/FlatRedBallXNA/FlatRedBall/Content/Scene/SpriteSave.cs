@@ -26,14 +26,11 @@ using Microsoft.Xna.Framework.Graphics;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.IO;
 using System.Globalization;
-
-#if !FRB_MDX
 using System.Xml.Linq;
-#endif
 
 namespace FlatRedBall.Content.Scene
 {
-#if !XBOX && !WINDOWS_PHONE && !WINDOWS_8
+#if !UWP && !WINDOWS_8
 
     [Serializable]
 #endif

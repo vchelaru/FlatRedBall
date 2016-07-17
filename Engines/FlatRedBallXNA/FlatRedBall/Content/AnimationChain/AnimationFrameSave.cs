@@ -17,7 +17,7 @@ using FlatRedBall.Content.Scene;
 
 namespace FlatRedBall.Content.AnimationChain
 {
-#if !XBOX && !WINDOWS_PHONE && !WINDOWS_8
+#if !UWP && !WINDOWS_8
     [Serializable]
 #endif
     public class AnimationFrameSave : AnimationFrameSaveBase
@@ -26,7 +26,7 @@ namespace FlatRedBall.Content.AnimationChain
 #if !FRB_MDX
         [XmlIgnore]
         [ExternalInstance]
-#if !XBOX && !SILVERLIGHT  && !WINDOWS_PHONE && !WINDOWS_8
+#if !WINDOWS_PHONE && !WINDOWS_8 && !UWP
         [NonSerialized]
 #endif
         internal Texture2D mTextureInstance;

@@ -4,13 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.Xml.Serialization;
-
-
-#if FRB_MDX
-using TextureAddressMode = Microsoft.DirectX.Direct3D.TextureAddress;
-#elif FRB_XNA || SILVERLIGHT
 using Microsoft.Xna.Framework.Graphics;
-#endif
 
 namespace FlatRedBall.Content.Scene
 {

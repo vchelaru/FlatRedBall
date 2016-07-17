@@ -31,7 +31,7 @@ namespace FlatRedBall.Instructions.Reflection
 
         static Dictionary<string, Type> mUnqualifiedTypeDictionary = new Dictionary<string, Type>();
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
 
         /// <summary>
         /// Stores a reference to the current assembly. This is the
@@ -169,7 +169,7 @@ namespace FlatRedBall.Instructions.Reflection
                     ConvertTypeToString(v.W);
             }
         #endif
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             if (typeToConvertTo.IsEnum())
 #else
             if (typeToConvertTo.IsEnum)
@@ -615,7 +615,7 @@ namespace FlatRedBall.Instructions.Reflection
 
                 else if (desiredType == typeof(Color).FullName)
                 {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                     PropertyInfo info = typeof(Color).GetProperty(value);
 #else
                     PropertyInfo info = typeof(Color).GetProperty(value, BindingFlags.GetField | BindingFlags.Public | BindingFlags.Static);
@@ -675,7 +675,7 @@ namespace FlatRedBall.Instructions.Reflection
             }
 
             return foundType != null &&
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 foundType.IsEnum();
 #else
                 foundType.IsEnum;
@@ -823,7 +823,7 @@ namespace FlatRedBall.Instructions.Reflection
             Type foundType = null;
 
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             foundType = TryToGetTypeFromAssembly(typeAfterNewString, FlatRedBallServices.Game.GetType().GetTypeInfo().Assembly);
 
             if (foundType == null)
@@ -999,7 +999,7 @@ namespace FlatRedBall.Instructions.Reflection
         public static bool IsGenericList(Type type)
         {
             bool isGenericList = false;
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             // Not sure why we check the declaring type.  I think declaring
             // type is for when a class is inside of another class
             //if (type.DeclaringType.IsGenericParameter && (type.GetGenericTypeDefinition() == typeof(List<>)))

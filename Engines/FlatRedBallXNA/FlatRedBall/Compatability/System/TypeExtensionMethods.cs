@@ -4,6 +4,7 @@ namespace System
 {
     public static class TypeExtensionMethods
     {
+#if !UWP
         public static PropertyInfo GetProperty(this Type type, string name)
         {
             return type.GetRuntimeProperty(name);
@@ -21,6 +22,7 @@ namespace System
             return type.GetRuntimeFields();
 
         }
+#endif
 
         public static bool IsPrimitive(this Type type)
         {
@@ -36,6 +38,7 @@ namespace System
         {
             return type.GetTypeInfo().IsEnum;
         }
+#if !UWP
         public static ConstructorInfo GetConstructor(this Type type, Type[] types)
         {
             foreach(var constructor in type.GetTypeInfo().DeclaredConstructors)
@@ -63,7 +66,6 @@ namespace System
             }
             return null;
         }
-
         public static MethodInfo GetMethod(this Type type, string name)
         {
             foreach (var method in type.GetRuntimeMethods())
@@ -80,6 +82,7 @@ namespace System
         {
             return type.GetRuntimeMethod(name, parameters);
         }
+
         public static MemberInfo[] GetMember(this Type type, string name)
         {
             throw new NotImplementedException();
@@ -91,5 +94,6 @@ namespace System
             //throw new NotImplementedException();
 
         }
+#endif
     }
 }

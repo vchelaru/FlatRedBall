@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-#if !WINDOWS_8
+#if !WINDOWS_8 && !UWP
 using System.IO.IsolatedStorage;
 #else
 using Windows.Storage;
@@ -19,19 +19,16 @@ namespace FlatRedBall.IO
 {
 	public static partial class FileManager
 	{
-#if !WINDOWS_8
+#if !WINDOWS_8 && !UWP
         static IsolatedStorageFile mIsolatedStorageFile;
 #endif
 
         const string IsolatedStoragePrefix = "$ISOLATEDSTORAGE";
 
-#if XBOX360
-        static string mAssemblyName;
-#endif
         static string mLastUserName;
 
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
         // All FRB calls are expected to be synchronous.  File IO that is to be done async is usually
         // handled in LoadStaticContents or between Screens.  So we have this:
         public static TResult Await<TResult>(this IAsyncOperation<TResult> operation)
@@ -80,20 +77,7 @@ namespace FlatRedBall.IO
             }
             fileName = FileManager.GetIsolatedStorageFileName(fileName);
 
-#if XBOX_360
-            throw new NotImplementedException();
-            //if (!string.IsNullOrEmpty(FileManager.GetDirectory(fileName)) &&
-            //    !Directory.Exists(FileManager.GetDirectory(fileName)))
-            //{
-            //    Directory.CreateDirectory(FileManager.GetDirectory(fileName));
-            //}
-            //FileInfo fileInfo = new FileInfo(fileName);
-            //if (System.IO.File.Exists(fileName))
-            //{
-            //    System.IO.File.Delete(fileName);
-            //}
-            //writer = fileInfo.CreateText();
-#elif WINDOWS_8
+#if WINDOWS_8 || UWP
 
             // Why did we do the original name?  We're in iso storage so we should use the modified name:
             //var storageFile = ApplicationData.Current.LocalFolder.GetFileAsync(original).Await();
@@ -144,7 +128,7 @@ namespace FlatRedBall.IO
 
 
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
 
 	        try
 	        {
@@ -192,7 +176,7 @@ namespace FlatRedBall.IO
         {
             if (directory.Contains(IsolatedStoragePrefix))
             {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 List<string> toReturn = new List<string>();
 
                 StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
@@ -233,7 +217,7 @@ namespace FlatRedBall.IO
                 throw new ArgumentException("You must use isolated storage.  Use FileManager.GetUserFolder.");
             }
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             throw new NotImplementedException();
 
 #else
@@ -294,7 +278,7 @@ namespace FlatRedBall.IO
             return fileName.StartsWith(IsolatedStoragePrefix);
         }
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
         private static void XmlSerializeWindows8(Type type, object objectToSerialize, string fileName)
         {
             string asString;

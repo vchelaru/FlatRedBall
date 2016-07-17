@@ -414,7 +414,7 @@ namespace FlatRedBall.Gui
             }
             catch(Exception e)
             {
-#if XBOX360 || SILVERLIGHT || WINDOWS_PHONE || MONODROID || WINDOWS_8 || IOS
+#if XBOX360 || SILVERLIGHT || WINDOWS_PHONE || MONODROID || WINDOWS_8 || IOS || UWP
                 throw e;
 #else
                 System.Windows.Forms.MessageBox.Show("Error setting GuiManager textures." +

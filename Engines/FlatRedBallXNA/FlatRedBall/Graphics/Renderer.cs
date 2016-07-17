@@ -13,13 +13,7 @@ using ShapeManager = FlatRedBall.Math.Geometry.ShapeManager;
 using FlatRedBall.Math;
 using FlatRedBall.Graphics;
 using FlatRedBall.Utilities;
-#if !XBOX360 && !XNA4 && !MONOGAME
-using FlatRedBall.Graphics.HardwareInstancing;
-#endif
 
-#if !WINDOWS_PHONE && !MONOGAME && !XNA4
-using PostProcessingManager = FlatRedBall.Graphics.PostProcessing.PostProcessingManager;
-#endif
 
 #if WINDOWS_PHONE || MONOGAME
 using Effect = FlatRedBall.Graphics.GenericEffect;
@@ -32,7 +26,7 @@ using Microsoft.Xna.Framework.Content;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Performance.Measurement;
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
 using Windows.System.Threading;
 #else
 
@@ -70,7 +64,7 @@ namespace FlatRedBall.Graphics
         public void FillVertexList()
         {
             Reset();
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             ThreadPool.RunAsync(FillVertexListInternal);
 #else
             ThreadPool.QueueUserWorkItem(FillVertexListInternal);

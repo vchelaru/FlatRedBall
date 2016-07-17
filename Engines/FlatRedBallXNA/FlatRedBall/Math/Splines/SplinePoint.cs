@@ -16,7 +16,7 @@ namespace FlatRedBall.Math.Splines
     /// A point in a Spline storing position, velocity, acceleration, and time information.
     /// </summary>
     #endregion
-    public class SplinePoint : ICloneable
+    public class SplinePoint
     {
         #region Fields
 

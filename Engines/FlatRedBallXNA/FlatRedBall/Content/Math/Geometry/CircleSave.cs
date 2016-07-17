@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework;
 
 namespace FlatRedBall.Content.Math.Geometry
 {
-#if !XBOX && !WINDOWS_PHONE && !WINDOWS_8
+#if !UWP && !WINDOWS_8
 
     [Serializable]
 #endif

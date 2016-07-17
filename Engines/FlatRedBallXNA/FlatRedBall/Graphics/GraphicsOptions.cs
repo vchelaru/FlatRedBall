@@ -744,7 +744,7 @@ namespace FlatRedBall.Graphics
 #endif
                 }
 
-#if WINDOWS_8 || IOS || ANDROID
+#if WINDOWS_8 || IOS || ANDROID || UWP
                 // Resetting crashes monogame currently, but we can still react as if a reset happened
                 FlatRedBallServices.graphics_DeviceReset(null, null);
 #else

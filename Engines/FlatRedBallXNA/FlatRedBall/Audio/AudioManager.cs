@@ -8,7 +8,7 @@ using System.Reflection;
 using FlatRedBall.IO;
 using FlatRedBall.Instructions;
 
-#if !WINDOWS_8 && !IOS && !ANDROID
+#if !WINDOWS_8 && !IOS && !ANDROID && !UWP
 using Microsoft.Xna.Framework.GamerServices;
 #endif
 
@@ -217,20 +217,6 @@ namespace FlatRedBall.Audio
                 }
             }
             return false;
-        }
-
-
-        public static Song LoadSong(String songName, String filename, int millisecondDuration)
-        {
-#if WINDOWS_8
-            ConstructorInfo construct = typeof(Song).GetConstructor(new Type[3] { typeof(string), typeof(string), typeof(Int32) });
-#else
-            ConstructorInfo construct = typeof(Song).GetConstructor(BindingFlags.CreateInstance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance, null, new Type[3] { typeof(string), typeof(string), typeof(Int32) }, null);
-#endif
-            Song s = (Song)construct.Invoke(new object[3] { songName, filename, millisecondDuration });
-
-            return s;
-
         }
 
 
@@ -485,7 +471,7 @@ namespace FlatRedBall.Audio
             {
                 PlaySong(toPlay, false, songUsesGlobalContent);
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 MethodInfo playMethod = typeof(AudioManager).GetMethod("PlaySong", new Type[1] { typeof(Song) });
 #else
                 MethodInfo playMethod = typeof(AudioManager).GetMethod("PlaySong", BindingFlags.Public | BindingFlags.Static, null, new Type[1] { typeof(Song) }, null);

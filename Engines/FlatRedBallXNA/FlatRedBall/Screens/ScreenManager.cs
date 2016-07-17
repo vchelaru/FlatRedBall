@@ -307,7 +307,7 @@ namespace FlatRedBall.Screens
         public static void Start(Type screenToStartWithType)
         {
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             MainAssembly =
                 screenToStartWithType.GetTypeInfo().Assembly;
 #else

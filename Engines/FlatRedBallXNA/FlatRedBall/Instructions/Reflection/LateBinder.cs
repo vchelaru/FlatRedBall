@@ -180,7 +180,7 @@ namespace FlatRedBall.Instructions.Reflection
             }
             else
             {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 if (mType.GetField(name) != null)
 #else
                 if (mType.GetField(name, mGetFieldBindingFlags) != null)
@@ -258,7 +258,7 @@ namespace FlatRedBall.Instructions.Reflection
             }
             else
             {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 if (mType.GetField(name) != null)
 #else
                 if (mType.GetField(name, mGetFieldBindingFlags) != null)
@@ -296,7 +296,7 @@ namespace FlatRedBall.Instructions.Reflection
             }
             else
             {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 if (mType.GetField(name) != null)
 #else
                 if (mType.GetField(name, mGetFieldBindingFlags) != null)
@@ -334,7 +334,7 @@ namespace FlatRedBall.Instructions.Reflection
             FieldInfo fieldInfo = target.GetType().GetField(
                 name);
 
-	#if DEBUG && !IOS && !ANDROID && !WINDOWS_8
+	#if DEBUG && !IOS && !ANDROID && !WINDOWS_8 && !UWP
             if (value.GetType().IsValueType && 
                 value.GetType().IsPrimitive == false)
             {
@@ -457,7 +457,7 @@ namespace FlatRedBall.Instructions.Reflection
 #endif
         }
 
-#if !WINDOWS_8
+#if !WINDOWS_8 && !UWP
         static BindingFlags mGetFieldBindingFlags = BindingFlags.GetField | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 #endif
 
@@ -467,7 +467,7 @@ namespace FlatRedBall.Instructions.Reflection
 
             if (target == null)
             {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 FieldInfo fieldInfo = mType.GetField(fieldName);
 #else
                 FieldInfo fieldInfo = mType.GetField(fieldName, mGetFieldBindingFlags);
@@ -477,7 +477,7 @@ namespace FlatRedBall.Instructions.Reflection
             }
             else
             {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 return mType.GetField(fieldName).GetValue(target);
 #else
 
@@ -552,7 +552,7 @@ namespace FlatRedBall.Instructions.Reflection
 
         private static object GetPropertyThroughReflection(object target, string propertyName)
         {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             PropertyInfo pi = typeof(T).GetProperty(propertyName);
 #else
             PropertyInfo pi = typeof(T).GetProperty(propertyName, mGetterBindingFlags);
@@ -561,7 +561,7 @@ namespace FlatRedBall.Instructions.Reflection
             if (pi == null)
             {
                 string message = "Could not find the property " + propertyName + "\n\nAvailableProperties:\n\n";
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 IEnumerable<PropertyInfo> properties = typeof(T).GetProperties();
 #else
                 PropertyInfo[] properties = typeof(T).GetProperties(mGetterBindingFlags);
@@ -593,7 +593,7 @@ namespace FlatRedBall.Instructions.Reflection
         {
             if (!mPropertySet.ContainsKey(propertyName))
             {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 PropertyInfo propertyInfo = mType.GetProperty(propertyName);
 #else
                 BindingFlags bindingFlags =
@@ -608,7 +608,7 @@ namespace FlatRedBall.Instructions.Reflection
             }
         }
 
-#if !WINDOWS_8
+#if !WINDOWS_8 && !UWP
         static BindingFlags mGetterBindingFlags = 
             BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.Static;                
 #endif
@@ -618,7 +618,7 @@ namespace FlatRedBall.Instructions.Reflection
             if (!mPropertyGet.ContainsKey(propertyName))
             {
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 PropertyInfo propertyInfo = mType.GetProperty(propertyName);
 #else
                 PropertyInfo propertyInfo = mType.GetProperty(propertyName, mGetterBindingFlags);

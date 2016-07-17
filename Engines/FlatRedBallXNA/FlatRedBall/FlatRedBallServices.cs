@@ -512,7 +512,7 @@ namespace FlatRedBall
 
                 mRandom = new Random();
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 mPrimaryThreadId = Environment.CurrentManagedThreadId;
 #else
                 mPrimaryThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
@@ -576,7 +576,7 @@ namespace FlatRedBall
         #endregion
         public static void InitializeCommandLine(Game game)
         {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                 mPrimaryThreadId = Environment.CurrentManagedThreadId;
 #else
             mPrimaryThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
@@ -1211,7 +1211,7 @@ namespace FlatRedBall
 
         public static bool IsThreadPrimary()
         {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             int threadId = Environment.CurrentManagedThreadId;
 #else
             int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;

@@ -80,7 +80,7 @@ namespace FlatRedBall.Instructions
             // user know that something is wrong before
             // the instruction fires and throws an error.
             //  that makes the bug easier to fix.
-#if DEBUG && !FRB_MDX && !WINDOWS_8
+#if DEBUG && !FRB_MDX && !WINDOWS_8 && !UWP
             var fields = typeof(T).GetFields();
             var properties = typeof(T).GetProperties();
             string memberToSet = this.MemberToSet;

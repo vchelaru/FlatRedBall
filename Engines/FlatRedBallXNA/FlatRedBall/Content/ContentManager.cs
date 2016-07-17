@@ -643,7 +643,7 @@ namespace FlatRedBall.Content
 
 					if (assetName.EndsWith("gif"))
 					{
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                         throw new NotImplementedException();
 #else
 						AnimationChainList acl = new AnimationChainList();

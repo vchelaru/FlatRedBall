@@ -31,7 +31,7 @@ using System.Diagnostics;
 using FlatRedBall.Instructions;
 using FlatRedBall.Performance.Measurement;
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
 using Windows.System.Threading;
 using Windows.Foundation;
 #endif
@@ -54,7 +54,7 @@ namespace FlatRedBall
 
 
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
         IAsyncAction mAction = null;
 #else
         ManualResetEvent mManualResetEvent;
@@ -63,7 +63,7 @@ namespace FlatRedBall
 
         public Updater()
         {
-#if !WINDOWS_8
+#if !WINDOWS_8 && !UWP
             mManualResetEvent = new ManualResetEvent(false);
 #endif
         }
@@ -71,7 +71,7 @@ namespace FlatRedBall
         public void Reset()
         {
             
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             mAction = null;
 #else
             mManualResetEvent.Reset();
@@ -81,7 +81,7 @@ namespace FlatRedBall
 
         public void Wait()
         {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             mAction.AsTask().Wait();
 #else
             mManualResetEvent.WaitOne();
@@ -91,7 +91,7 @@ namespace FlatRedBall
         internal void TimedActivity()
         {
             Reset();
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             mAction = ThreadPool.RunAsync(TimedActivityInternal);
 #else
             ThreadPool.QueueUserWorkItem(TimedActivityInternal);
@@ -114,7 +114,7 @@ namespace FlatRedBall
                     secondDifferenceSquaredDividedByTwo,
                     lastSecondDifference);
             }
-#if !WINDOWS_8
+#if !WINDOWS_8 && !UWP
             mManualResetEvent.Set();
 #endif
         }
@@ -122,7 +122,7 @@ namespace FlatRedBall
         internal void AnimateSelf()
         {
             Reset();
-#if WINDOWS_8
+#if WINDOWS_8  || UWP
             mAction = ThreadPool.RunAsync(AnimateSelfInternal);
 #else
             ThreadPool.QueueUserWorkItem(AnimateSelfInternal);
@@ -142,7 +142,7 @@ namespace FlatRedBall
                 Sprite s = AutomaticallyUpdatedSprites[i];
                 s.AnimateSelf(currentTime);
             }
-#if !WINDOWS_8
+#if !WINDOWS_8 && !UWP
             mManualResetEvent.Set();
 #endif
         }
@@ -150,7 +150,7 @@ namespace FlatRedBall
         internal void ExecuteInstructions()
         {
             Reset();
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             mAction = ThreadPool.RunAsync(ExecuteInstructionsInternal);
 #else
             ThreadPool.QueueUserWorkItem(ExecuteInstructionsInternal);
@@ -169,7 +169,7 @@ namespace FlatRedBall
                     AutomaticallyUpdatedSprites[i].ExecuteInstructions(currentTime);
                 }
             }
-#if !WINDOWS_8
+#if !WINDOWS_8 && !UWP
             mManualResetEvent.Set();
 #endif
         }
@@ -177,7 +177,7 @@ namespace FlatRedBall
         internal void UpdateDependencies()
         {
             Reset();
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             mAction = ThreadPool.RunAsync(UpdateDependenciesInternal);
 #else
             ThreadPool.QueueUserWorkItem(UpdateDependenciesInternal);
@@ -199,7 +199,7 @@ namespace FlatRedBall
 #endif
 
             }
-#if !WINDOWS_8
+#if !WINDOWS_8 && !UWP
             mManualResetEvent.Set();
 #endif
         }

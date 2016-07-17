@@ -242,7 +242,7 @@ namespace FlatRedBall.Content.Instructions
                 target.GetType(),
                 typeOfMember);
 
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             ConstructorInfo ctor = t.GetConstructor(
                 new Type[] { target.GetType(), typeof(string), typeOfMember, typeof(double) });
 #else

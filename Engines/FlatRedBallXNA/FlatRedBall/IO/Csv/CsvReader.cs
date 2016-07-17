@@ -341,7 +341,7 @@ namespace FlatRedBall.IO.Csv
 		/// </exception>
 		public CsvReader(TextReader reader, bool hasHeaders, char delimiter, char quote, char escape, char comment, bool trimSpaces, int bufferSize)
 		{
-#if DEBUG && !XBOX360 && !WINDOWS_8
+#if DEBUG && !WINDOWS_8 && !UWP
 			_allocStack = new System.Diagnostics.StackTrace();
 #endif
 

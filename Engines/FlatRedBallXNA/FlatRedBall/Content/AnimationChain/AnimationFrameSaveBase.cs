@@ -10,7 +10,7 @@ namespace FlatRedBall.Content.AnimationChain
     /// The base class for AnimationFrameSave and AnimationFrameSaveContent.
     /// </summary>
     #endregion
-#if !XBOX && !WINDOWS_PHONE && !WINDOWS_8
+#if !UWP && !WINDOWS_8
     [Serializable]
 #endif
     public class AnimationFrameSaveBase
