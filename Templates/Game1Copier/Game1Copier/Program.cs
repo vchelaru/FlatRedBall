@@ -9,6 +9,14 @@ namespace Game1Copier
 {
     class Program
     {
+        static List<string> targetFiles = new List<string>
+        {
+            "FlatRedBallAndroidTemplate/FlatRedBallAndroidTemplate/Game1.cs",
+            "FlatRedBalliOSTemplate/FlatRedBalliOSTemplate/Game1.cs",
+            "FlatRedBallXna4Template/FlatRedBallXna4Template/FlatRedBallXna4Template/Game1.cs",
+            "Windows8Template/Windows8Template/Game1.cs",
+            "FlatRedBallUwpTemplate/FlatRedBallUwpTemplate/Game1.cs"
+        };
         static void Main(string[] args)
         {
 
@@ -16,14 +24,6 @@ namespace Game1Copier
 
             var game1String = System.IO.File.ReadAllText("MasterGame.cs");
 
-            List<string> targetFiles = new List<string>
-            {
-                "FlatRedBallAndroidTemplate/FlatRedBallAndroidTemplate/Game1.cs",
-                "FlatRedBalliOSTemplate/FlatRedBalliOSTemplate/Game1.cs",
-                "FlatRedBallXna4_360Template/FlatRedBallXna4Template/FlatRedBallXna4Template/Game1.cs",
-                "FlatRedBallXna4Template/FlatRedBallXna4Template/FlatRedBallXna4Template/Game1.cs",
-                "Windows8Template/Windows8Template/Game1.cs"
-            };
 
             foreach (var file in targetFiles)
             {
