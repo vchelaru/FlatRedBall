@@ -398,6 +398,9 @@ namespace NewProjectCreator
             filesToReplace.AddRange(FileManager.GetAllFilesInDirectory(
                 unpackDirectory, "glux"));
 
+            filesToReplace.AddRange(FileManager.GetAllFilesInDirectory(
+                unpackDirectory, "pfx"));
+
 
             foreach (string fileName in filesToReplace)
             {

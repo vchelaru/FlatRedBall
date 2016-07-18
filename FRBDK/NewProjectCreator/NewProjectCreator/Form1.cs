@@ -48,6 +48,7 @@ namespace NewProjectCreator
             DataLoader.LoadAvailableProjectsFromCsv();
 
             viewModel = new NewProjectViewModel();
+            viewModel.OpenSlnFolderAfterCreation = true;
 
             SetInitialProjectLocation();
             //RemoteFileManager.Initialize();
@@ -79,6 +80,12 @@ namespace NewProjectCreator
             }
 
             viewModel.EmptyProjectsOnly = CommandLineManager.Self.EmptyProjectsOnly;
+
+            if(!string.IsNullOrEmpty(CommandLineManager.Self.OpenedBy))
+            {
+                // If this was opened by a different app, don't show the .sln
+                viewModel.OpenSlnFolderAfterCreation = false;
+            }
         }
 
         private void SetInitialProjectLocation()

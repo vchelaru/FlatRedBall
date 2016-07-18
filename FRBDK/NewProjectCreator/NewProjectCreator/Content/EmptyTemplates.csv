@@ -3,5 +3,5 @@ Windows Desktop,FlatRedBallXna4Template,FlatRedBallXna4Template.zip,http://files
 Android,FlatRedBallAndroidTemplate,FlatRedBallAndroidTemplate.zip,http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallAndroidTemplate.zip,TRUE
 "iOS (iPhone, iPad, iPod Touch)",FlatRedBalliOSTemplate,FlatRedBalliOSTemplate.zip,http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBalliOSTemplate.zip,TRUE
 Windows RT,Windows8Template,Windows8Template.zip,http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/Windows8Template.zip,TRUE
-Xbox 360,FlatRedBallXna4Template,FlatRedBallXna4_360Template.zip,http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallXna4_360Template.zip,TRUE
+Winows UWP,FlatRedBallUwpTemplate,FlatRedBallUwpTemplate.zip,http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallUwpTemplate.zip,
 Glue Plugin Template,GluePluginTemplate,GluePluginTemplate.zip,http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/GluePluginTemplate.zip,FALSE
