@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.VSHelpers.Projects;
-using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
 {
@@ -55,22 +55,22 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
 
                 int referencesCopied = 0;
 
-                foreach (BuildItem item in from.EvaluatedItems)
+                foreach (var item in from.EvaluatedItems)
                 {
-                    bool shouldCopy = item.Name == "Compile" && 
-                        FlatRedBall.IO.FileManager.GetExtension(item.Include) == "cs" &&
+                    bool shouldCopy = item.ItemType == "Compile" && 
+                        FlatRedBall.IO.FileManager.GetExtension(item.UnevaluatedInclude) == "cs" &&
                         // Make sure we don't already have the file there:
-                        to.IsFilePartOfProject(item.Include, BuildItemMembershipType.Any) == false;
+                        to.IsFilePartOfProject(item.UnevaluatedInclude, BuildItemMembershipType.Any) == false;
 
 
 
                     if (shouldCopy)
                     {
 
-                        var fullFileName = from.MakeAbsolute(item.Include);
+                        var fullFileName = from.MakeAbsolute(item.UnevaluatedInclude);
 
-                        to.AddCodeBuildItem(fullFileName, addAsLink: true, fileRelativeToThis: item.Include);
-                        PluginManager.ReceiveOutput($"Added {item.Include} to {ToFile}");
+                        to.AddCodeBuildItem(fullFileName, true, fileRelativeToThis: item.UnevaluatedInclude);
+                        PluginManager.ReceiveOutput($"Added {item.UnevaluatedInclude} to {ToFile}");
                         referencesCopied++;
                     }
                 }
@@ -95,9 +95,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
 
         ClassLibraryProject Load(string fileName)
         {
-            Project coreProject = new Project();
-
-            coreProject.Load(fileName, ProjectLoadSettings.IgnoreMissingImports);
+            var coreProject = new Project(fileName);
 
             ClassLibraryProject toReturn = new ClassLibraryProject(coreProject);
 

@@ -98,15 +98,15 @@ namespace FlatRedBall.Glue.Managers
             bool errorFound = false;
 
             #region  Loop through every .Generated.cs file to see if it has an associated object
-            foreach (BuildItem buildItem in ProjectManager.ProjectBase)
+            foreach (var buildItem in ProjectManager.ProjectBase)
             {
-                if (buildItem.Include.ToLower().Contains(".generated.cs"))
+                if (buildItem.UnevaluatedInclude.ToLower().Contains(".generated.cs"))
                 {
                     #region Prepare the "name" for checking
 
                     // See if there is an item for this
                     string name =
-                        FileManager.RemoveExtension(FileManager.RemoveExtension(buildItem.Include));
+                        FileManager.RemoveExtension(FileManager.RemoveExtension(buildItem.UnevaluatedInclude));
                     name = name.Replace(".", "/");
 
                     #endregion
@@ -131,7 +131,7 @@ namespace FlatRedBall.Glue.Managers
                         continue;
                     }
 
-                    if (buildItem.Include.EndsWith("Factory.Generated.cs"))
+                    if (buildItem.UnevaluatedInclude.EndsWith("Factory.Generated.cs"))
                     {
                         // See if there is an Entity with this name without the Factory
                         string nameOfEntityReferencedByFactory =
@@ -162,7 +162,7 @@ namespace FlatRedBall.Glue.Managers
                         continue;
                     }
 
-                    string error = "Could not find matching Glue element for\n\n" + buildItem.Include;
+                    string error = "Could not find matching Glue element for\n\n" + buildItem.UnevaluatedInclude;
 
                     errorFound = true;
                     // If we got here, then that means that the .Generated.cs file really isn't referenced, so let's show a error

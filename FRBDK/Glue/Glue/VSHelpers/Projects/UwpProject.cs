@@ -3,12 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
-    public class Windows8MonoGameProject : CombinedEmbeddedContentProject
+    public class UwpProject : CombinedEmbeddedContentProject
     {
-        public Windows8MonoGameProject(Project project)
+        public UwpProject(Project project)
             : base(project)
         {
             // This is temporary - eventually we need a better solution for this:
@@ -24,6 +25,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         }
 
+
         public override bool AllowContentCompile
         {
             get { return false; }
@@ -31,41 +33,33 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override string ProjectId
         {
-            get { return "Windows8 MonoGame"; }
+            get { return "UWP MonoGame"; }
         }
 
         public override List<string> LibraryDlls
         {
-            get 
+            get
             {
                 return new List<string>
                 {
-                    "FlatRedBallWindows8.dll",
-                    "MonoGame.Framework.Windows8.dll"
+                    "FlatRedBallUwp.dll"
                 };
-
-            
             }
         }
 
         public override string FolderName
         {
-            get 
+            get
             {
-                return "Windows8";
+                return "UWP";
             }
         }
 
-        public override string PrecompilerDirective { get { return "WINDOWS_8"; } }
-
-
+        public override string PrecompilerDirective { get { return "UWP"; } }
 
         public override string NeededVisualStudioVersion
         {
-            get { return "11.0"; }
+            get { return "14.0"; }
         }
-
-
-
     }
 }

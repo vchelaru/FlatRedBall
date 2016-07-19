@@ -6,13 +6,13 @@ using System.Windows.Forms;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
-using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
 
 namespace FlatRedBall.Glue.Controls.ProjectSync
 {
     public class BuildItemViewModel
     {
-        public BuildItem BuildItem { get; set; }
+        public ProjectItem BuildItem { get; set; }
         public ProjectBase Owner { get; set; }
 
         public string DisplayString
@@ -21,16 +21,16 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
             {
                 if (BuildItem != null)
                 {
-                    string originalForwardSlash = BuildItem.Include.Replace('\\', '/');
+                    string originalForwardSlash = BuildItem.UnevaluatedInclude.Replace('\\', '/');
                     string removeDotDotSlash = FileManager.RemoveDotDotSlash(originalForwardSlash);
 
                     if (originalForwardSlash != removeDotDotSlash)
                     {
-                        return "Include name may not work on all IDEs: " + BuildItem.Include;
+                        return "Include name may not work on all IDEs: " + BuildItem.UnevaluatedInclude;
                     }
                     else
                     {
-                        return BuildItem.Include;
+                        return BuildItem.UnevaluatedInclude;
                     }
                 }
                 else
@@ -48,9 +48,9 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
             }
         }
 
-        public static bool IsOrphaned(BuildItem buildItem, ProjectBase owner)
+        public static bool IsOrphaned(ProjectItem buildItem, ProjectBase owner)
         {
-            bool considerBuildItem = (buildItem.Name == "Compile" || buildItem.Name == "Content" || buildItem.Name == "None");
+            bool considerBuildItem = (buildItem.ItemType == "Compile" || buildItem.ItemType == "Content" || buildItem.ItemType == "None");
 
             if(!considerBuildItem)
             {
@@ -58,7 +58,7 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
                 {
                     var asVisualStudioProject = owner as VisualStudioProject;
 
-                    if (!considerBuildItem && buildItem.Name == asVisualStudioProject.DefaultContentAction)
+                    if (!considerBuildItem && buildItem.ItemType == asVisualStudioProject.DefaultContentAction)
                     {
                         considerBuildItem = true;
                     }
@@ -68,9 +68,9 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
             if (considerBuildItem)
             {
                 // characters like '%' are encoded, so we have to decode them:
-                string relativeName = System.Web.HttpUtility.UrlDecode( buildItem.Include);
+                string relativeName = System.Web.HttpUtility.UrlDecode( buildItem.UnevaluatedInclude);
                 string fullName = owner.MakeAbsolute(relativeName);
-                return !FileManager.FileExists(fullName) && buildItem.Name != "ProjectReference";
+                return !FileManager.FileExists(fullName) && buildItem.ItemType != "ProjectReference";
             }
             return false;
         }

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Microsoft.Build.BuildEngine;
+﻿using Microsoft.Build.Evaluation;
+using System.Collections.Generic;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -100,7 +100,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 if(link != null && link.Contains("..\\"))
                 {
-                    toReturn.Add("The item " + buildItem.Include + " has a link " + link + ".  Android projects do not support ..\\ in the link.");
+                    toReturn.Add("The item " + buildItem.UnevaluatedInclude + " has a link " + link + ".  Android projects do not support ..\\ in the link.");
                 }
             }
             return toReturn;

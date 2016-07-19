@@ -15,11 +15,11 @@ namespace FlatRedBall.Glue.Projects
         {
             // Currently unit tests don't deal with projects
 #if !TEST
-            BuildItem existingItem = ProjectManager.ProjectBase.GetItem(generatedFileName);
+            var existingItem = ProjectManager.ProjectBase.GetItem(generatedFileName);
 
             if (existingItem == null)
             {
-                BuildItem item = ProjectManager.ProjectBase.AddCodeBuildItem(generatedFileName);
+                var item = ProjectManager.ProjectBase.AddCodeBuildItem(generatedFileName);
                 string withoutPath = FileManager.RemovePath(generatedFileName);
 
                 int firstPeriod = withoutPath.IndexOf('.');

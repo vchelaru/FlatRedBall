@@ -99,7 +99,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             var vsProjectBase = GlueState.Self.CurrentMainProject;
 
-            BuildItem item = vsProjectBase.AddCodeBuildItem(fileName);
+            var item = vsProjectBase.AddCodeBuildItem(fileName);
 
             string projectNamespace = GlueState.Self.ProjectNamespace;
 

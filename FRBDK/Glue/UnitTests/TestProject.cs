@@ -28,27 +28,12 @@ namespace UnitTests
                 // do nothing (for now?)
             }
         }
-
-        public override Microsoft.Build.BuildEngine.BuildItemGroup EvaluatedItems
-        {
-            get { throw new NotImplementedException(); }
-        }
-
+        
         public override List<string> LibraryDlls
         {
             get { throw new NotImplementedException(); }
         }
-
-        public override BuildItem AddContentBuildItem(string absoluteFile)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override BuildItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType, bool forceToContentPipeline)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public override void UpdateContentFile(string sourceFileName)
         {
             throw new NotImplementedException();
@@ -78,18 +63,33 @@ namespace UnitTests
         {
             throw new NotImplementedException();
         }
-
-        public override void MakeBuildItemNested(Microsoft.Build.BuildEngine.BuildItem item, string parent)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public override void SyncTo(ProjectBase projectBase, bool performTranslation)
         {
             throw new NotImplementedException();
         }
 
-        protected override Microsoft.Build.BuildEngine.BuildItem AddCodeBuildItem(string fileName, bool isSyncedProject, string directoryToCreate)
+        public override Microsoft.Build.Evaluation.ProjectItem AddContentBuildItem(string absoluteFile)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Microsoft.Build.Evaluation.ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType, bool forceToContentPipeline)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void MakeBuildItemNested(Microsoft.Build.Evaluation.ProjectItem item, string parent)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Microsoft.Build.Evaluation.ProjectItem AddCodeBuildItem(string fileName, bool isSyncedProject, string directoryToCreate)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void RemoveItem(string itemName, Microsoft.Build.Evaluation.ProjectItem item)
         {
             throw new NotImplementedException();
         }
@@ -104,9 +104,12 @@ namespace UnitTests
             get { throw new NotImplementedException(); }
         }
 
-        protected override void RemoveItem(string itemName, Microsoft.Build.BuildEngine.BuildItem item)
+        public override IEnumerable<Microsoft.Build.Evaluation.ProjectItem> EvaluatedItems
         {
-            throw new NotImplementedException();
+            get
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

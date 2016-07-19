@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Build.BuildEngine;
 using FlatRedBall.IO;
 #if GLUE
 using FlatRedBall.Glue.Elements;
@@ -16,7 +15,7 @@ using FlatRedBall.Glue.Utilities;
 #endif
 using System.Linq;
 using FlatRedBall.Glue.Managers;
-
+using Microsoft.Build.Evaluation;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -52,18 +51,20 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             get { return mExtensionsToIgnore; }
         }
 
-        public override BuildItemGroup EvaluatedItems
+        public override IEnumerable<ProjectItem> EvaluatedItems
         {
             get 
-            { 
-                // make this thread-safe
-                return mProject.EvaluatedItems.Clone(false);
+            {
+                // This makes it thread safe:
+                var clone = new List<ProjectItem>();
+                clone.AddRange(mProject.AllEvaluatedItems);
+                return clone;
             }
         }
 
         public override string FullFileName
         {
-            get { return mProject.FullFileName; }
+            get { return mProject.ProjectFileLocation.File; }
         }
 
         public override bool IsDirty
@@ -73,7 +74,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 if (value)
                 {
-                    mProject.MarkProjectAsDirty();
+                    mProject.MarkDirty();
                 }
             }
         }
@@ -89,7 +90,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 if (string.IsNullOrEmpty(mName))
                 {
-                    mName = FileManager.RemoveExtension(FileManager.RemovePath(Project.FullFileName));
+                    mName = FileManager.RemoveExtension(FileManager.RemovePath(Project.ProjectFileLocation.File));
                 }
 
                 return mName;
@@ -138,18 +139,18 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
 #if GLUE
 
-        public override BuildItem AddContentBuildItem(string absoluteFile)
+        public override ProjectItem AddContentBuildItem(string absoluteFile)
         {
             return AddContentBuildItem(absoluteFile, SyncedProjectRelativeType.Contained, false);
         }
 
-        public override BuildItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Linked, bool forceToContentPipeline = false)
+        public override ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Linked, bool forceToContentPipeline = false)
         {
             lock (this)
             {
                 string relativeFileName = FileManager.MakeRelative(absoluteFile, this.Directory);
 
-                BuildItem buildItem = null;
+                ProjectItem buildItem = null;
 
                 bool addToContentPipeline = false;
                 string extension = FileManager.GetExtension(absoluteFile);
@@ -187,7 +188,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 if (addToContentPipeline && AllowContentCompile)
                 {
-                    buildItem = mProject.AddNewItem("Compile", ProcessInclude(itemInclude));
+                    buildItem = mProject.AddItem("Compile", ProcessInclude(itemInclude)).First();
 
                     if (string.IsNullOrEmpty(assetTypeInfo.ContentImporter) ||
                         string.IsNullOrEmpty(assetTypeInfo.ContentProcessor))
@@ -196,8 +197,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                     }
 
-                    buildItem.SetMetadata("Importer", assetTypeInfo.ContentImporter);
-                    buildItem.SetMetadata("Processor", assetTypeInfo.ContentProcessor);
+                    buildItem.SetMetadataValue("Importer", assetTypeInfo.ContentImporter);
+                    buildItem.SetMetadataValue("Processor", assetTypeInfo.ContentProcessor);
 
                 }
 
@@ -207,9 +208,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 else
                 {
-                    buildItem = mProject.AddNewItem(DefaultContentAction, ProcessInclude(itemInclude));
+                    buildItem = mProject.AddItem(DefaultContentAction, ProcessInclude(itemInclude)).FirstOrDefault();
                     if (ContentCopiedToOutput)
-                        buildItem.SetMetadata("CopyToOutputDirectory", "PreserveNewest");
+                        buildItem.SetMetadataValue("CopyToOutputDirectory", "PreserveNewest");
                 }
 
                 #endregion
@@ -226,7 +227,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 }
                 string name = FileManager.RemovePath(FileManager.RemoveExtension(relativeFileName));
 
-                buildItem.SetMetadata("Name", name);
+                buildItem.SetMetadataValue("Name", name);
 
                 if (relativityType == SyncedProjectRelativeType.Linked)
                 {
@@ -255,7 +256,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
 
 
-                    buildItem.SetMetadata("Link", linkValue);
+                    buildItem.SetMetadataValue("Link", linkValue);
                 }
 
                 return buildItem;
@@ -263,9 +264,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         }
 #endif
 
-        public bool IsCodeItem(BuildItem buildItem)
+        public bool IsCodeItem(ProjectItem buildItem)
         {
-            if (buildItem.Name == "Compile")
+            if (buildItem.ItemType == "Compile")
             {
                 return true;
             }
@@ -283,7 +284,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override bool IsFilePartOfProject(string fileToUpdate, BuildItemMembershipType membershipType, bool relativeItem)
         {
-            BuildItem buildItem;
+            ProjectItem buildItem;
             if (relativeItem)
             {
                 buildItem = GetItem(fileToUpdate);
@@ -298,7 +299,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 if (membershipType == BuildItemMembershipType.Content)
                 {
                     buildItem = GetItem("Content\\" + fileToUpdate);
-                    if (buildItem != null && buildItem.Name == "Content")
+                    if (buildItem != null && buildItem.ItemType == "Content")
                     {
                         return true;
                     }
@@ -313,14 +314,14 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 if (membershipType == BuildItemMembershipType.CompileOrContentPipeline)
                 {
-                    if (!AllowContentCompile || buildItem.Name == "Compile" || buildItem.Name == "Content")
+                    if (!AllowContentCompile || buildItem.ItemType == "Compile" || buildItem.ItemType == "Content")
                     {
                         return true;
                     }
                 }
                 else if (membershipType == BuildItemMembershipType.Content)
                 {
-                    if (!AllowContentCompile || buildItem.Name == "Compile" || buildItem.Name == "Content")
+                    if (!AllowContentCompile || buildItem.ItemType == "Compile" || buildItem.ItemType == "Content")
                     {
                         return true;
                     }
@@ -334,7 +335,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     bool compile = FileManager.GetExtension(fileToUpdate) == "x";
                     if (compile)
                     {
-                        if (!AllowContentCompile || buildItem.Name == "Compile")
+                        if (!AllowContentCompile || buildItem.ItemType == "Compile")
                         {
                             return true;
                         }
@@ -351,7 +352,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 {
                     return true;
                 }
-                else if(membershipType.ToString() == buildItem.Name)
+                else if(membershipType.ToString() == buildItem.ItemType)
                 {
                     return true;
                 }
@@ -428,11 +429,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             bool wasChanged = false;
 
             #region Build the mBuildItemDictionary to make accessing items faster
-            for (int i = mProject.EvaluatedItems.Count - 1; i > -1; i--)
+            for (int i = mProject.AllEvaluatedItems.Count - 1; i > -1; i--)
             {
-                BuildItem buildItem = mProject.EvaluatedItems[i];
+                ProjectItem buildItem = mProject.AllEvaluatedItems.ElementAt(i);
 
-                string includeToLower = buildItem.Include.ToLower();
+                string includeToLower = buildItem.EvaluatedInclude.ToLower();
 
                 if (buildItem.IsImported)
                 {
@@ -451,7 +452,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 else
                 {
                     mBuildItemDictionaries.Add(
-                        buildItem.Include.ToLower(),
+                        buildItem.UnevaluatedInclude.ToLower(),
                         buildItem);
                 }
             }
@@ -463,19 +464,19 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             if (wasChanged)
             {
-                mProject.Save(mProject.FullFileName);
+                mProject.Save(mProject.ProjectFileLocation.File);
             }
 
             LoadContentProject();
         }
 
-        private bool ResolveDuplicateProjectEntry(bool wasChanged, BuildItem buildItem)
+        private bool ResolveDuplicateProjectEntry(bool wasChanged, ProjectItem buildItem)
         {
 #if GLUE
 
             MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
 
-            mbmb.MessageText = "The item " + buildItem.Include + " is part of " +
+            mbmb.MessageText = "The item " + buildItem.UnevaluatedInclude + " is part of " +
                 "the project twice.  Glue does not support double-entries in a project.  What would you like to do?";
 
             mbmb.AddButton("Remove the duplicate entry and continue", System.Windows.Forms.DialogResult.OK);
@@ -493,9 +494,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                         break;
                     case DialogResult.No:
                         StringBuilder stringBuilder = new StringBuilder();
-                        foreach (BuildItem item in mProject.EvaluatedItems)
+                        foreach (var item in mProject.AllEvaluatedItems)
                         {
-                            stringBuilder.AppendLine(item.Name + " " + item.Include);
+                            stringBuilder.AppendLine(item.ItemType + " " + item.UnevaluatedInclude);
                         }
                         string whereToSave = FileManager.UserApplicationDataForThisApplication + "ProjectFileOutput.txt";
                         FileManager.SaveText(stringBuilder.ToString(), whereToSave);
@@ -505,7 +506,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                         mProject.RemoveItem(buildItem);
                         break;
                     case DialogResult.Cancel:
-                        throw new Exception("Duplicate entries found: " + buildItem.Name + " " + buildItem.Include);
+                        throw new Exception("Duplicate entries found: " + buildItem.ItemType + " " + buildItem.UnevaluatedInclude);
                 }
 
             }
@@ -566,9 +567,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         }
 #endif
 
-        public override void MakeBuildItemNested(BuildItem item, string parent)
+        public override void MakeBuildItemNested(ProjectItem item, string parent)
         {
-            string fullPathParent = item.Include;
+            string fullPathParent = item.EvaluatedInclude;
 
             // this first index should usually work, but leaving the else in just in case it doesn't.
             if (fullPathParent.Contains("\\"))
@@ -583,9 +584,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             if (IsFilePartOfProject(fullPathParent + parent, BuildItemMembershipType.CompileOrContentPipeline))
             {
 
-                //if (!item.HasMetadata("DependentUpon"))
+                if (!item.Metadata.Any(metadata=>metadata.ItemType == "DependentUpon"))
                 {
-                    item.SetMetadata("DependentUpon", parent);
+                    item.SetMetadataValue("DependentUpon", parent);
                 }
             }
         }
@@ -651,14 +652,14 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         private void AddContentFileItemsFrom(ProjectBase projectBase)
         {
-            foreach (BuildItem bi in projectBase.ContentProject.EvaluatedItems)
+            foreach (var bi in projectBase.ContentProject.EvaluatedItems)
             {
                 if (SkipContentBuildItem(bi, projectBase.ContentProject))
                 {
                     continue;
                 }
 
-                string absoluteFileName = projectBase.ContentProject.MakeAbsolute(bi.Include);
+                string absoluteFileName = projectBase.ContentProject.MakeAbsolute(bi.UnevaluatedInclude);
 
                 bool forceToContent = false;
                 if (projectBase.ContentCopiedToOutput)
@@ -694,15 +695,15 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 // if we add additional restrictions at some point in Glue
                 if (biOnThis != null)
                 {
-                    string includeBefore = biOnThis.Include;
-                    string includeAfter = ProcessInclude(biOnThis.Include);
+                    string includeBefore = biOnThis.UnevaluatedInclude;
+                    string includeAfter = ProcessInclude(biOnThis.UnevaluatedInclude);
                     if (includeBefore != includeAfter)
                     {
                         // simply changing the Include doesn't make a project
                         // dirty, and we only want to make it dirty if we really
                         // did change something so that we don't unnecessarily save
                         // projects.
-                        biOnThis.Include = includeAfter;
+                        biOnThis.UnevaluatedInclude = includeAfter;
                         this.IsDirty = true;
                     }
 
@@ -744,11 +745,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
-        private bool SkipContentBuildItem(BuildItem bi, ProjectBase containingProject)
+        private bool SkipContentBuildItem(ProjectItem bi, ProjectBase containingProject)
         {
             bool shouldSkipContent = false;
 
-            if (bi.Name == "Folder" || bi.Name == "_DebugSymbolsOutputPath" || bi.Name == "Reference")
+            if (bi.ItemType == "Folder" || bi.ItemType == "_DebugSymbolsOutputPath" || bi.ItemType == "Reference")
             {
                 // Skip trying to add the folder.  We don't need to do this because if it
                 // contains anything, then the contained objects will automatically put themselves in a folder
@@ -758,11 +759,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             if (!shouldSkipContent)
             {
-                if (bi.Name != "Compile" && bi.Name != "None")
+                if (bi.ItemType != "Compile" && bi.ItemType != "None")
                 {
                     // but wait, the containing project may embed its content, so if so we need to check that
                     if (containingProject is CombinedEmbeddedContentProject &&
-                        ((CombinedEmbeddedContentProject)containingProject).DefaultContentAction == bi.Name)
+                        ((CombinedEmbeddedContentProject)containingProject).DefaultContentAction == bi.ItemType)
                     {
                         // Looks like it really is content
                         shouldSkipContent = false;
@@ -776,7 +777,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             if (!shouldSkipContent)
             {
-                string extension = FileManager.GetExtension(bi.Include);
+                string extension = FileManager.GetExtension(bi.UnevaluatedInclude);
 
                 if (ExtensionsToIgnore.Contains(extension))
                 {
@@ -788,7 +789,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             // Now that we have checked if we should process this, we want to check if we should exclude it
             if(!shouldSkipContent)
             {
-                var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(bi.Include);
+                var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(bi.UnevaluatedInclude);
 
                 if(rfs != null && rfs.ProjectsToExcludeFrom.Contains(this.Name))
                 {
@@ -801,7 +802,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             return shouldSkipContent;
         }
 
-        protected override BuildItem AddCodeBuildItem(string fileName, bool isSyncedProject, string nameRelativeToThisProject)
+        protected override ProjectItem AddCodeBuildItem(string fileName, bool isSyncedProject, string nameRelativeToThisProject)
         {
             lock (this)
             {
@@ -827,18 +828,18 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 }
 
                 fileName = fileName.Replace('/', '\\');
-                BuildItem item;
+                ProjectItem item;
                 if (!isSyncedProject)
                 {
 
-                    item = ((VisualStudioProject)this).Project.AddNewItem("Compile", fileName);
-                    item.Include = fileName;
+                    item = ((VisualStudioProject)this).Project.AddItem("Compile", fileName).First();
+                    item.UnevaluatedInclude = fileName;
                 }
                 else
                 {
-                    item = ((VisualStudioProject)this).Project.AddNewItem("Compile", fileName);
-                    item.Include = fileName;
-                    item.SetMetadata("Link", nameRelativeToThisProject);
+                    item = ((VisualStudioProject)this).Project.AddItem("Compile", fileName).First();
+                    item.UnevaluatedInclude = fileName;
+                    item.SetMetadataValue("Link", nameRelativeToThisProject);
 
                     if (nameRelativeToThisProject.Contains("Generated"))
                     {
@@ -867,7 +868,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
-        protected override void RemoveItem(string itemName, BuildItem item)
+        protected override void RemoveItem(string itemName, ProjectItem item)
         {
             lock (this)
             {
@@ -887,15 +888,12 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             mRootNamespace = base.RootNamespace;
             if (mProject != null)
             {
-                foreach (BuildPropertyGroup bpg in mProject.PropertyGroups)
+                foreach (var bp in mProject.Properties)
                 {
-                    foreach (BuildProperty bp in bpg)
+                    if (bp.Name == "RootNamespace")
                     {
-                        if (bp.Name == "RootNamespace")
-                        {
-                            mRootNamespace = bp.Value;
-                            break;
-                        }
+                        mRootNamespace = bp.EvaluatedValue;
+                        break;
                     }
                 }
             }

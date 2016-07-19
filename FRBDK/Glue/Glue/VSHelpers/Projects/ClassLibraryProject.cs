@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Build.Evaluation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Build.BuildEngine;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -38,7 +38,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         }
 
-        public BuildItem AddCodeBuildItem(string fileName, bool addAsLink, string fileRelativeToThis)
+        public ProjectItem AddCodeBuildItem(string fileName, bool addAsLink, string fileRelativeToThis)
         {
             return base.AddCodeBuildItem(fileName, addAsLink, fileRelativeToThis);
         }

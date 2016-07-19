@@ -9,6 +9,7 @@ using FlatRedBall.Glue.VSHelpers.Projects;
 using Microsoft.Build.BuildEngine;
 using FlatRedBall.IO;
 using System.IO;
+using Microsoft.Build.Evaluation;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
 {
@@ -74,9 +75,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
             // We need to loop through all of the items in the 
             // base project, see if they are audio files (this is all
             // we look at for now) then add them.
-            IEnumerable<BuildItem> items = ProjectManager.ProjectBase.ContentProject.EvaluatedItems.Cast<BuildItem>();
-            foreach (BuildItem buildItem in items.Where((item)=>
-                ShouldAssociatedXnbBeCopied(item.Include, project)))
+            IEnumerable<ProjectItem> items = ProjectManager.ProjectBase.ContentProject.EvaluatedItems;
+            foreach (var buildItem in items.Where((item)=>
+                ShouldAssociatedXnbBeCopied(item.UnevaluatedInclude, project)))
             {
                 wasAnythingChanged |= AddAudioBuildItemToProject(project, buildItem);
 
@@ -107,14 +108,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
             }
         }
 
-        private static bool AddAudioBuildItemToProject(ProjectBase project, BuildItem buildItem)
+        private static bool AddAudioBuildItemToProject(ProjectBase project, ProjectItem buildItem)
         {
             bool wasAnythingChanged = false;
             // This item needs an associated entry in the project
             // The item will be relative to the main project as opposed
             // to the content project, inside the CopiedXnbs directory:
             string copiedXnb = ProjectManager.ProjectBase.Directory + "CopiedXnbs\\content\\" +
-                buildItem.Include;
+                buildItem.UnevaluatedInclude;
 
             var link = buildItem.GetLink();
             if(!string.IsNullOrEmpty( link ))
@@ -125,7 +126,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
 
             copiedXnb = FileManager.RemoveDotDotSlash(copiedXnb);
 
-            string extension = FileManager.GetExtension(buildItem.Include);
+            string extension = FileManager.GetExtension(buildItem.UnevaluatedInclude);
 
             bool isIos = project is IosMonogameProject;
             bool isAndroid = project is AndroidProject;
@@ -133,7 +134,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
             string whatToAddToProject = null;
 
             // 
-            bool copyOriginalFile = (isIos || isAndroid) && FileManager.GetExtension(buildItem.Include) != "wav";
+            bool copyOriginalFile = (isIos || isAndroid) && FileManager.GetExtension(buildItem.UnevaluatedInclude) != "wav";
 
             if (copyOriginalFile)
             {
@@ -147,7 +148,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
                 // projects so the file needs to be
                 // made absolute according to that project.
                 //whatToAddToProject = project.MakeAbsolute("content/" + buildItem.Include);
-                whatToAddToProject = ProjectManager.MakeAbsolute("content/" + buildItem.Include, true);
+                whatToAddToProject = ProjectManager.MakeAbsolute("content/" + buildItem.UnevaluatedInclude, true);
             }
             else
             {
@@ -171,18 +172,18 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
                 }
                 else
                 {
-                    linkToSet = "Content\\" + FileManager.RemoveExtension(buildItem.Include) + ".xnb";
+                    linkToSet = "Content\\" + FileManager.RemoveExtension(buildItem.UnevaluatedInclude) + ".xnb";
                 }
 
                 if(project is AndroidProject)
                 {
                     linkToSet = "Assets\\" + linkToSet;
                 }
+                
+                item.SetMetadataValue("Link", linkToSet);
 
-                item.SetMetadata("Link", linkToSet);
 
-
-                PluginManager.ReceiveOutput("Added " + buildItem.Include + " through the file " + whatToAddToProject);
+                PluginManager.ReceiveOutput("Added " + buildItem.EvaluatedInclude + " through the file " + whatToAddToProject);
                 wasAnythingChanged = true;
             }
 
@@ -212,7 +213,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
             {
                 if (isIos)
                 {
-                    whatToAddToProject = "Content\\" + buildItem.Include;
+                    whatToAddToProject = "Content\\" + buildItem.UnevaluatedInclude;
                 }
                 else
                 {
@@ -224,9 +225,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
                 if (item2 == null)
                 {
                     item2 = project.AddContentBuildItem(whatToAddToProject, SyncedProjectRelativeType.Linked, false);
-                    item2.SetMetadata("Link", "Content\\" + FileManager.RemoveExtension(buildItem.Include) + "." + FileManager.GetExtension(whatToAddToProject));
+                    item2.SetMetadataValue("Link", "Content\\" + FileManager.RemoveExtension(buildItem.UnevaluatedInclude) + "." + FileManager.GetExtension(whatToAddToProject));
 
-                    PluginManager.ReceiveOutput("Added " + buildItem.Include + " through the file " + whatToAddToProject);
+                    PluginManager.ReceiveOutput("Added " + buildItem.EvaluatedInclude + " through the file " + whatToAddToProject);
                     wasAnythingChanged = true;
                 }
 
@@ -235,7 +236,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
             return wasAnythingChanged;
         }
 
-        private static bool FixLink(BuildItem item, ProjectBase project)
+        private static bool FixLink(ProjectItem item, ProjectBase project)
         {
             bool didFix = false;
 

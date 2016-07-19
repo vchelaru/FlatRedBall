@@ -962,7 +962,7 @@ namespace FlatRedBall.Glue.IO
             {
                 foreach (ReferencedFileSave rfs in rfsList)
                 {
-                    BuildItem item = contentProjectBase.GetItem(rfs.Name);
+                    var item = contentProjectBase.GetItem(rfs.Name);
 
 
                     if (item != null)
@@ -970,7 +970,7 @@ namespace FlatRedBall.Glue.IO
                         if (rfs.UseContentPipeline)
                         {
                             if (rfs.TextureFormat == Microsoft.Xna.Framework.Content.Pipeline.Processors.TextureProcessorOutputFormat.DxtCompressed &&
-                                !ProjectManager.CollectionContains(item.MetadataNames, "ProcessorParameters_TextureProcessorOutputFormat"))
+                                !item.HasMetadata("ProcessorParameters_TextureProcessorOutputFormat"))
                             {
                                 hasMadeChanges = true;
                                 // Gotta make this thing use the DxtCompression
@@ -1125,25 +1125,25 @@ namespace FlatRedBall.Glue.IO
         {
             SetInitWindowText("Nesting generated items");
 
-            foreach (BuildItem bi in ProjectManager.ProjectBase.EvaluatedItems)
+            foreach (var bi in ProjectManager.ProjectBase.EvaluatedItems)
             {
 
-                string biInclude = bi.Include;
+                string biInclude = bi.UnevaluatedInclude;
 
                 if (biInclude.EndsWith(".cs") && FileManager.RemovePath(biInclude).IndexOf('.') != FileManager.RemovePath(biInclude).Length - 3)
                 {
                     // Don't do it for factories!
-                    if (bi.Include.StartsWith("Factories\\") || bi.Include.StartsWith("Factories/"))
+                    if (bi.UnevaluatedInclude.StartsWith("Factories\\") || bi.UnevaluatedInclude.StartsWith("Factories/"))
                     {
                         continue;
                     }
                     else
                     {
-                        string whatToNestUnder = FileManager.RemovePath(bi.Include);
+                        string whatToNestUnder = FileManager.RemovePath(bi.UnevaluatedInclude);
                         whatToNestUnder = whatToNestUnder.Substring(0, whatToNestUnder.IndexOf('.')) + ".cs";
 
                         // make sure there is an object to nest under in this directory
-                        string whatToNextUnderWithPath = FileManager.GetDirectory(bi.Include, RelativeType.Relative) + whatToNestUnder;
+                        string whatToNextUnderWithPath = FileManager.GetDirectory(bi.UnevaluatedInclude, RelativeType.Relative) + whatToNestUnder;
 
                         if (ProjectManager.ProjectBase.GetItem(whatToNextUnderWithPath) != null)
                         {
@@ -1151,7 +1151,7 @@ namespace FlatRedBall.Glue.IO
 
                             foreach (ProjectBase project in ProjectManager.SyncedProjects)
                             {
-                                BuildItem associatedBuildItem = project.GetItem(ProjectManager.MakeAbsolute(biInclude));
+                                var associatedBuildItem = project.GetItem(ProjectManager.MakeAbsolute(biInclude));
                                 if (associatedBuildItem != null)
                                 {
                                     project.MakeBuildItemNested(associatedBuildItem, whatToNestUnder);

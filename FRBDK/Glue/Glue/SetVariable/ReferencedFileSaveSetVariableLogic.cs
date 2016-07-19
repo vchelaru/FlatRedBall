@@ -447,7 +447,7 @@ namespace FlatRedBall.Glue.SetVariable
         {
             if (ProjectManager.ContentProject != null)
             {
-                BuildItem item = ProjectManager.ContentProject.GetItem(oldName);
+                var item = ProjectManager.ContentProject.GetItem(oldName);
 
                 // The item could be null if this file is excluded from the project
                 if (item != null)
@@ -457,11 +457,11 @@ namespace FlatRedBall.Glue.SetVariable
                         newName = newName.Substring("content\\".Length);
                     }
 
-                    item.Include = newName.Replace("/", "\\");
+                    item.UnevaluatedInclude = newName.Replace("/", "\\");
 
                     string nameWithoutExtensions = FileManager.RemovePath(FileManager.RemoveExtension(newName));
 
-                    item.SetMetadata("Name", nameWithoutExtensions);
+                    item.SetMetadataValue("Name", nameWithoutExtensions);
 
                     ProjectManager.ContentProject.RenameInDictionary(oldName, newName, item);
                 }

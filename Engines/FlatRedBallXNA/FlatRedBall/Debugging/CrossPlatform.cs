@@ -11,7 +11,8 @@ namespace FlatRedBall.Debugging
         WindowsRt,
         iOS,
         Android,
-        Xbox360
+        Xbox360,
+        Uwp
     }
 
 

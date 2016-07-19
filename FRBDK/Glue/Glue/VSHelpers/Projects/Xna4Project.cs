@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FlatRedBall.IO;
-using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {

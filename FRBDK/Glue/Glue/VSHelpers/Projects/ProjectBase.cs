@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Build.BuildEngine;
 using FlatRedBall.IO;
 using System.IO;
+using System.Linq;
+using Microsoft.Build.Evaluation;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -36,7 +37,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
     public delegate void SaveDelegate(string fileName);
 
-    public abstract class ProjectBase : IEnumerable<BuildItem>
+    public abstract class ProjectBase : IEnumerable<ProjectItem>
     {
         public static string AccessContentDirectory = "content/";
 
@@ -53,8 +54,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         #region Fields
 
-        protected Dictionary<string, BuildItem> mBuildItemDictionaries =
-            new Dictionary<string, BuildItem>();
+        protected Dictionary<string, ProjectItem> mBuildItemDictionaries =
+            new Dictionary<string, ProjectItem>();
 
         #endregion
 
@@ -111,7 +112,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             set;
         }
 
-        public abstract BuildItemGroup EvaluatedItems
+        public abstract IEnumerable<ProjectItem> EvaluatedItems
         {
             get;
         }
@@ -162,10 +163,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// checking if the file is already part of the project.
         /// </summary>
         /// <param name="absoluteFile">The absolute file name to add.</param>
-        /// <returns>The BuildItem which was created and added to the project.</returns>
-        public abstract BuildItem AddContentBuildItem(string absoluteFile);
+        /// <returns>The ProjectItem which was created and added to the project.</returns>
+        public abstract ProjectItem AddContentBuildItem(string absoluteFile);
 
-        public abstract BuildItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType, bool forceToContentPipeline);
+        public abstract ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType, bool forceToContentPipeline);
         public abstract void UpdateContentFile(string sourceFileName);
 #endif
         public abstract string FolderName { get; }
@@ -201,9 +202,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         protected abstract void ForceSave(string fileName);
 
         public abstract void Load(string fileName);
-        public abstract void MakeBuildItemNested(BuildItem item, string parent);
+        public abstract void MakeBuildItemNested(ProjectItem item, string parent);
         public abstract void SyncTo(ProjectBase projectBase, bool performTranslation);
-        protected abstract BuildItem AddCodeBuildItem(string fileName, bool isSyncedProject, string directoryToCreate);
+        protected abstract ProjectItem AddCodeBuildItem(string fileName, bool isSyncedProject, string directoryToCreate);
         /// <summary>
         /// A string which is intended to uniquely identify the project type.
         /// For example, XNA 4 projets might return "Xna4".  This is not tied to
@@ -213,12 +214,12 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public abstract string PrecompilerDirective { get; }
         
 
-        public BuildItem GetItem(string itemName)
+        public ProjectItem GetItem(string itemName)
         {
             return GetItem(itemName, true);
         }
 
-        public BuildItem GetItem(string itemName, bool standardizeItemName)
+        public ProjectItem GetItem(string itemName, bool standardizeItemName)
         {
             if (standardizeItemName)
             {
@@ -233,11 +234,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 foreach (var item in mBuildItemDictionaries.Values)
                 {
                     // This may be a link
-                    var foundLink = (string)item.GetEvaluatedMetadata("Link");
-                    if (item.Include.Contains("Anim"))
-                    {
-                        int m = 3;
-                    }
+                    var foundLink = (string)item.Metadata.FirstOrDefault(metadata=>metadata.ItemType == "Link")?.EvaluatedValue;
+
                     if (!string.IsNullOrEmpty(foundLink) && foundLink.Equals(itemName, System.StringComparison.InvariantCultureIgnoreCase))
                     {
                         return item;
@@ -251,7 +249,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
-        public virtual BuildItem AddCodeBuildItem(string fileName)
+        public virtual ProjectItem AddCodeBuildItem(string fileName)
         {
             return AddCodeBuildItem(fileName, false, "");
         }
@@ -291,7 +289,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             itemName = StandardizeItemName(itemName);
 
-            BuildItem itemToRemove = null;
+            ProjectItem itemToRemove = null;
 
             itemName = itemName.Replace("/", "\\").ToLower();
             bool removed = false;
@@ -305,14 +303,14 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             return removed;
         }
 
-        public bool RemoveItem(BuildItem buildItem)
+        public bool RemoveItem(ProjectItem buildItem)
         {
-            string itemName = buildItem.Include.Replace("/", "\\").ToLower();
+            string itemName = buildItem.EvaluatedInclude.Replace("/", "\\").ToLower();
 
             return RemoveItem(itemName);
         }
 
-        protected abstract void RemoveItem(string itemName, BuildItem item);
+        protected abstract void RemoveItem(string itemName, ProjectItem item);
 
         public void RenameItem(string oldName, string newName)
         {
@@ -321,11 +319,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             oldName = StandardizeItemName(oldName);
             newName = StandardizeItemName(newName);
 
-            BuildItem item = GetItem(oldName);
+            ProjectItem item = GetItem(oldName);
 
             mBuildItemDictionaries.Remove(oldName);
 
-            item.Include = unmodifiedNewName.Replace("/", "\\");
+            item.UnevaluatedInclude = unmodifiedNewName.Replace("/", "\\");
 
             mBuildItemDictionaries.Add(newName, item);
 
@@ -336,7 +334,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         }
 
-        public void RenameInDictionary(string oldName, string newName, BuildItem item)
+        public void RenameInDictionary(string oldName, string newName, ProjectItem item)
         {
             mBuildItemDictionaries.Remove(oldName.Replace("/", "\\").ToLower());
 
@@ -399,41 +397,41 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         protected virtual void AddCodeBuildItems(ProjectBase sourceProjectBase)
         {
 #if GLUE
-            foreach (BuildItem bi in sourceProjectBase.EvaluatedItems)
+            foreach (var bi in sourceProjectBase.EvaluatedItems)
             {
-                if (bi.Include.EndsWith(".cs"))
+                if (bi.UnevaluatedInclude.EndsWith(".cs"))
                 {
                     string fileName;
 
                     if (SaveAsAbsoluteSyncedProject)
                     {
-                        fileName = FileManager.GetDirectory(sourceProjectBase.FullFileName) + bi.Include;
+                        fileName = FileManager.GetDirectory(sourceProjectBase.FullFileName) + bi.UnevaluatedInclude;
                     }
                     else if (SaveAsRelativeSyncedProject)
                     {
-                        fileName = FileManager.MakeRelative(FileManager.GetDirectory(sourceProjectBase.FullFileName), FileManager.GetDirectory(FullFileName)) + bi.Include;
+                        fileName = FileManager.MakeRelative(FileManager.GetDirectory(sourceProjectBase.FullFileName), FileManager.GetDirectory(FullFileName)) + bi.UnevaluatedInclude;
                     }
                     else
                     {
-                        fileName = bi.Include;
+                        fileName = bi.UnevaluatedInclude;
                     }
 
 
                     if (!IsFilePartOfProject(fileName, BuildItemMembershipType.CompileOrContentPipeline) && 
-                        !IsFilePartOfProject(bi.Include, BuildItemMembershipType.CompileOrContentPipeline) &&
-                        !ShouldIgnoreFile(bi.Include))
+                        !IsFilePartOfProject(bi.UnevaluatedInclude, BuildItemMembershipType.CompileOrContentPipeline) &&
+                        !ShouldIgnoreFile(bi.UnevaluatedInclude))
                     {
                         if (SaveAsAbsoluteSyncedProject)
                         {
-                            AddCodeBuildItem(fileName, true, bi.Include);
+                            AddCodeBuildItem(fileName, true, bi.UnevaluatedInclude);
                         }
                         else if (SaveAsRelativeSyncedProject)
                         {
-                            AddCodeBuildItem(fileName, true, bi.Include);
+                            AddCodeBuildItem(fileName, true, bi.UnevaluatedInclude);
                         }
                         else
                         {
-                            AddCodeBuildItem(bi.Include);
+                            AddCodeBuildItem(bi.UnevaluatedInclude);
                         }
                     }
                 }
@@ -466,9 +464,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         #region IEnumerable<BuildItem> Members
 
-        public IEnumerator<BuildItem> GetEnumerator()
+        public IEnumerator<ProjectItem> GetEnumerator()
         {
-            foreach (BuildItem buildItem in mBuildItemDictionaries.Values)
+            foreach (var buildItem in mBuildItemDictionaries.Values)
             {
                 yield return buildItem;
             }
@@ -489,13 +487,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
     public static class BuildItemExtensionMethods
     {
-        public static string GetLink(this BuildItem buildItem)
+        public static string GetLink(this ProjectItem buildItem)
         {
-            return (string)buildItem.GetEvaluatedMetadata("Link");
+            return (string)buildItem.Metadata.FirstOrDefault(item=>item.ItemType == "Link")?.EvaluatedValue;
         }
-        public static void SetLink(this BuildItem buildItem, string value)
+        public static void SetLink(this ProjectItem buildItem, string value)
         {
-            buildItem.SetMetadata("Link",value);
+            buildItem.SetMetadataValue("Link", value);
         }
     }
 

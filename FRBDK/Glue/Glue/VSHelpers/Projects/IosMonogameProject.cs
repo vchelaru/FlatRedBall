@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Build.Evaluation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Build.BuildEngine;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -106,13 +106,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 if (link != null && link.Contains("..\\"))
                 {
-                    toReturn.Add("The item " + buildItem.Include + " has a link " + link + ".  Android projects do not support ..\\ in the link.");
+                    toReturn.Add("The item " + buildItem.UnevaluatedInclude + " has a link " + link + ".  Android projects do not support ..\\ in the link.");
                 }
 
-                if(buildItem.Include.StartsWith("Content\\"))
+                if(buildItem.UnevaluatedInclude.StartsWith("Content\\"))
                 {
                     string message = 
-                        "The item " + buildItem.Include + " has its \"include\" value starting with " + 
+                        "The item " + buildItem.UnevaluatedInclude + " has its \"include\" value starting with " + 
                         "\"Content\" (upper-case C). Other content files will be added with a lower-case " +
                         "\"content\", and this can confuse Xamarin Studio.";
                     toReturn.Add(message);

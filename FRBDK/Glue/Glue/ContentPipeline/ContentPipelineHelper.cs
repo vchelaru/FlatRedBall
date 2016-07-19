@@ -11,10 +11,10 @@ using FlatRedBall.IO;
 using System.IO;
 using System.Windows.Forms;
 using Glue;
-using Microsoft.Build.BuildEngine;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using Microsoft.Build.Evaluation;
 
 namespace FlatRedBall.Glue.ContentPipeline
 {
@@ -379,7 +379,7 @@ namespace FlatRedBall.Glue.ContentPipeline
 
             #endregion
 
-            BuildItem item = projectBase.GetItem(absoluteName);
+            ProjectItem item = projectBase.GetItem(absoluteName);
 
 
             // The item may not be here.  Why wouldn't it be here?  Who knows,
@@ -389,7 +389,7 @@ namespace FlatRedBall.Glue.ContentPipeline
             // the project.
             if (item != null)
             {
-                item.SetMetadata(parameterTag, valueToSet);
+                item.SetMetadataValue(parameterTag, valueToSet);
             }
 
             foreach (ProjectBase syncedProject in ProjectManager.SyncedProjects)
@@ -405,7 +405,7 @@ namespace FlatRedBall.Glue.ContentPipeline
                 item = syncedProjectBaseToUse.GetItem(absoluteName);
                 if (item != null)
                 {
-                    item.SetMetadata(parameterTag, valueToSet);
+                    item.SetMetadataValue(parameterTag, valueToSet);
                 }
             }
         }

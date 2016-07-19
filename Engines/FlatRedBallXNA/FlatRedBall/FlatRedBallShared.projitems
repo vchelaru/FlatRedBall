@@ -163,7 +163,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Instructions\Pause\TextUnpauseInstruction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Instructions\Pause\TimedRemovalUnpause.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Instructions\Pause\UnpauseInstruction.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Instructions\Reflection\HashSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Instructions\Reflection\LateBinder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Instructions\Reflection\MemberCondition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Instructions\Reflection\PropertyCollection.cs" />

@@ -1082,7 +1082,7 @@ namespace FlatRedBall.Glue
 
                 if (!isFileAlreadyPartOfProject)
                 {
-                    BuildItem buildItem = project.ContentProject.GetItem(fileRelativeToContent);
+                    var buildItem = project.ContentProject.GetItem(fileRelativeToContent);
                     if (buildItem != null)
                     {
                         // The item is here but it's using the wrong build types.  Let's
@@ -1279,7 +1279,7 @@ namespace FlatRedBall.Glue
             #region Create the Screen code (not the generated version)
 
 
-            BuildItem item = mProjectBase.AddCodeBuildItem(fileName);
+            var item = mProjectBase.AddCodeBuildItem(fileName);
 
 
             string projectNamespace = ProjectNamespace;
@@ -1354,29 +1354,29 @@ namespace FlatRedBall.Glue
 
         internal static string FindGameClass(ProjectBase projectBase)
         {
-            foreach (BuildItem bi in projectBase.EvaluatedItems)
+            foreach (var bi in projectBase.EvaluatedItems)
             {
-                if (bi.Name == "Compile" && bi.Include.EndsWith(".cs") && !bi.Include.EndsWith("Generated.cs") &&
-                        !bi.Include.StartsWith("Entities\\") &&
-                            !bi.Include.StartsWith("Screens\\")
+                if (bi.ItemType == "Compile" && bi.UnevaluatedInclude.EndsWith(".cs") && !bi.UnevaluatedInclude.EndsWith("Generated.cs") &&
+                        !bi.UnevaluatedInclude.StartsWith("Entities\\") &&
+                            !bi.UnevaluatedInclude.StartsWith("Screens\\")
 
 
                     )
                 {
-                    if (FileManager.FileExists(bi.Include))
+                    if (FileManager.FileExists(bi.UnevaluatedInclude))
                     {
 
-                        if ((CodeParser.InheritsFrom(bi.Include, "Game") ||
-                        CodeParser.InheritsFrom(bi.Include, "Microsoft.Xna.Framework.Game")))
+                        if ((CodeParser.InheritsFrom(bi.UnevaluatedInclude, "Game") ||
+                        CodeParser.InheritsFrom(bi.UnevaluatedInclude, "Microsoft.Xna.Framework.Game")))
                         {
-                            return bi.Include;
+                            return bi.UnevaluatedInclude;
                         }
 
                         if (GlueProjectSave != null &&
                             !string.IsNullOrEmpty(GlueProjectSave.CustomGameClass) &&
-                            CodeParser.InheritsFrom(bi.Include, GlueProjectSave.CustomGameClass))
+                            CodeParser.InheritsFrom(bi.UnevaluatedInclude, GlueProjectSave.CustomGameClass))
                         {
-                            return bi.Include;
+                            return bi.UnevaluatedInclude;
                         }
                     }
                 }

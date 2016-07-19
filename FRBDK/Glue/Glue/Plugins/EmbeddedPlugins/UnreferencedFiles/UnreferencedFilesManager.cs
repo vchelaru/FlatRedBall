@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Build.BuildEngine;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.SaveClasses;
@@ -14,6 +13,7 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.AutomatedGlue;
 using System.Threading;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using Microsoft.Build.Evaluation;
 
 namespace FlatRedBall.Glue.Managers
 {
@@ -154,7 +154,7 @@ namespace FlatRedBall.Glue.Managers
                             referencedFiles[i] = referencedFiles[i].ToLower().Replace('\\', '/');
                         }
 
-                        foreach (BuildItem evaluatedItem in ProjectManager.ProjectBase.ContentProject.EvaluatedItems)
+                        foreach (var evaluatedItem in ProjectManager.ProjectBase.ContentProject.EvaluatedItems)
                         {
                             AddIfUnreferenced(evaluatedItem, ProjectManager.ProjectBase, referencedFiles, mUnreferencedFiles);
                         }
@@ -172,7 +172,7 @@ namespace FlatRedBall.Glue.Managers
                         foreach (var syncedProject in syncedProjectCopy)
                         {
                             var cloned = syncedProject.ContentProject.EvaluatedItems;
-                            foreach (BuildItem evaluatedItem in cloned)
+                            foreach (var evaluatedItem in cloned)
                             {
                                 AddIfUnreferenced(evaluatedItem, syncedProject, referencedFiles, mUnreferencedFiles);
                                 // Since we're in a lock, maybe we shouldn't
@@ -186,12 +186,12 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        static bool GetIfIsUnreferenced(BuildItem item, ProjectBase project, List<string> referencedFiles, out string nameToInclude)
+        static bool GetIfIsUnreferenced(ProjectItem item, ProjectBase project, List<string> referencedFiles, out string nameToInclude)
         {
             bool isUnreferenced = false;
 
-            string itemName = item.Include.ToLower().Replace(@"\", @"/");
-            nameToInclude = item.Include;
+            string itemName = item.UnevaluatedInclude.ToLower().Replace(@"\", @"/");
+            nameToInclude = item.UnevaluatedInclude;
 
             // no extensions are unsupported.  What do we do with the content pipeline?
             if (!string.IsNullOrEmpty(FileManager.GetExtension(itemName)))
@@ -199,11 +199,11 @@ namespace FlatRedBall.Glue.Managers
 
                 if (itemName.StartsWith(".."))
                 {
-                    itemName = FileManager.Standardize(item.Include, project.ContentProject.Directory).ToLower();
+                    itemName = FileManager.Standardize(item.UnevaluatedInclude, project.ContentProject.Directory).ToLower();
                     if (itemName.ToLower().StartsWith(ProjectManager.ContentProject.Directory.ToLower() + ProjectManager.ContentProject.ContentDirectory.ToLower()))
                         itemName = itemName.Replace(ProjectManager.ContentProject.Directory.ToLower() + ProjectManager.ContentProject.ContentDirectory.ToLower(), "");
 
-                    nameToInclude = FileManager.Standardize(item.Include, project.ContentProject.Directory);
+                    nameToInclude = FileManager.Standardize(item.UnevaluatedInclude, project.ContentProject.Directory);
                     if (nameToInclude.ToLower().StartsWith(ProjectManager.ContentProject.Directory.ToLower() + ProjectManager.ContentProject.ContentDirectory.ToLower()))
                         nameToInclude = nameToInclude.Substring((ProjectManager.ContentProject.Directory + ProjectManager.ContentProject.ContentDirectory).Length);
                 }
@@ -223,7 +223,7 @@ namespace FlatRedBall.Glue.Managers
             return isUnreferenced;
         }
 
-        private static void AddIfUnreferenced(BuildItem item, ProjectBase project, List<string> referencedFiles, List<ProjectSpecificFile> unreferencedFiles)
+        private static void AddIfUnreferenced(ProjectItem item, ProjectBase project, List<string> referencedFiles, List<ProjectSpecificFile> unreferencedFiles)
         {
             string nameToInclude;
             bool isUnreferenced = GetIfIsUnreferenced(item, project, referencedFiles, out nameToInclude);

@@ -2,8 +2,7 @@
 using System.Linq;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.IO;
-using Microsoft.Build.BuildEngine;
-
+using Microsoft.Build.Evaluation;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -35,9 +34,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         // be clearer
         public static ProjectBase CreateProject(string fileName)
         {
-            Project coreVisualStudioProject = new Project();
-
-            coreVisualStudioProject.Load(fileName, ProjectLoadSettings.IgnoreMissingImports);
+            Project coreVisualStudioProject = new Project(fileName);
 
             ProjectBase toReturn = CreatePlatformSpecificProject(coreVisualStudioProject, fileName);
 
@@ -78,31 +75,22 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 #region Backup Method for detecting project type off of FlatRedBall
 
-                foreach (BuildItem buildItem in coreVisualStudioProject.EvaluatedItems.Cast<BuildItem>().Where(buildItem => buildItem.Include.Contains("FlatRedBall")))
+                foreach (ProjectItem buildItem in coreVisualStudioProject.AllEvaluatedItems.Where(buildItem => buildItem.EvaluatedInclude.Contains("FlatRedBall")))
                 {
-                    if (buildItem.Include.Contains("Mdx"))
+                    if (buildItem.EvaluatedInclude.Contains("Mdx"))
                     {
                         toReturn = new MdxProject(coreVisualStudioProject);
                         break;
                     }
 
-                    if (buildItem.Include.Contains("FlatRedBall"))
+                    if (buildItem.EvaluatedInclude.Contains("FlatRedBall"))
                     {
-                        if (buildItem.Include.Contains("x86"))
+                        if (buildItem.EvaluatedInclude.Contains("x86"))
                         {
                             toReturn = new XnaProject(coreVisualStudioProject);
                             break;
                         }
-
-                        if (buildItem.Include.Contains("MSIL"))
-                        {
-                            if (coreVisualStudioProject.FullFileName.Contains("FlatSilverBallTemplate"))
-                            {
-                                return new FsbProject(coreVisualStudioProject);
-                            }
-                            toReturn = new Xna360Project(coreVisualStudioProject);
-                            break;
-                        }
+                        
                     }
 
                     break;
@@ -113,7 +101,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             if (toReturn == null)
             {
 
-                foreach (BuildItem buildItem in coreVisualStudioProject.EvaluatedItems.Cast<BuildItem>().Where(buildItem => buildItem.Include.Contains("Microsoft.Phone")))
+                foreach (ProjectItem buildItem in coreVisualStudioProject.AllEvaluatedItems.Where(buildItem => buildItem.EvaluatedInclude.Contains("Microsoft.Phone")))
                 {
                     toReturn = new WindowsPhoneProject(coreVisualStudioProject);
                     break;
@@ -155,14 +143,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             else if (preProcessorConstants.Contains("XNA4"))
             {
-                if (preProcessorConstants.Contains("XBOX360"))
-                {
-                    toReturn = new Xna4_360Project(coreVisualStudioProject);
-                }
-                else
-                {
-                    toReturn = new Xna4Project(coreVisualStudioProject);
-                }
+                toReturn = new Xna4Project(coreVisualStudioProject);
             }
 
             else if (preProcessorConstants.Contains("FRB_XNA"))
@@ -179,11 +160,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 toReturn = new MdxProject(coreVisualStudioProject);
             }
-
-            else if (preProcessorConstants.Contains("XBOX360"))
-            {
-                toReturn = new Xna360Project(coreVisualStudioProject);
-            }
+            
             return toReturn;
         }
 
@@ -195,14 +172,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             // We used to just look at the XML and had a broad way of determining the 
             // patterns.  I decided it was time to clean this up and make it more precise
             // so now we use the PropertyGroups from the project.
-            foreach (BuildPropertyGroup propertyGroup in coreVisualStudioProject.PropertyGroups)
+            foreach (var property in coreVisualStudioProject.Properties)
             {
-                foreach (BuildProperty property in propertyGroup)
+                if (property.Name == "DefineConstants")
                 {
-                    if (property.Name == "DefineConstants")
-                    {
-                        preProcessorConstants += ";" + property.Value;
-                    }
+                    preProcessorConstants += ";" + property.EvaluatedValue;
                 }
             }
             return preProcessorConstants;
