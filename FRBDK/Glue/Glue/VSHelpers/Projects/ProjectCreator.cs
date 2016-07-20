@@ -23,15 +23,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         }
 
 
-
-
-        // April 10, 2012
-        // I think this was
-        // here to handle Eclipse
-        // projects.  We no longer
-        // support eclipse projects,
-        // so I'm pulling this out to 
-        // be clearer
         public static ProjectBase CreateProject(string fileName)
         {
             Project coreVisualStudioProject = new Project(fileName);

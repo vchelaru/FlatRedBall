@@ -6,13 +6,13 @@ using FlatRedBall.IO;
 using FlatRedBall.Utilities;
 using Gum.DataTypes;
 using Gum.Managers;
-using Microsoft.Build.BuildEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Plugins;
+using Microsoft.Build.Evaluation;
 
 namespace GumPlugin.Managers
 {
@@ -553,7 +553,7 @@ namespace GumPlugin.Managers
 
         private static bool RemoveUnreferencedFilesFromProjects(GumProjectSave gumProject, ProjectBase codeProject, ProjectBase contentProject)
         {
-            List<BuildItem> toRemove = new List<BuildItem>();
+            List<ProjectItem> toRemove = new List<ProjectItem>();
 
             FillWithContentBuildItemsToRemove(gumProject, toRemove, contentProject);
             bool wasAnythingChanged = false;
@@ -582,23 +582,23 @@ namespace GumPlugin.Managers
             return wasAnythingChanged;
         }
         
-        private static void FillWithCodeBuildItemsToRemove(GumProjectSave gumProject, List<BuildItem> toRemove, ProjectBase project)
+        private static void FillWithCodeBuildItemsToRemove(GumProjectSave gumProject, List<ProjectItem> toRemove, ProjectBase project)
         {
 
             IEnumerable<ElementSave> allElements = gumProject.Components.OfType<ElementSave>().Concat(
                 gumProject.StandardElements.OfType<ElementSave>()).Concat(
                 gumProject.Screens.OfType<ElementSave>());
 
-            foreach (BuildItem buildItem in project)
+            foreach (var buildItem in project)
             {
-                if (buildItem.Include != null && buildItem.Include.ToLower().EndsWith("runtime.generated.cs") &&
-                    FileManager.GetDirectory(buildItem.Include, RelativeType.Relative) == "GumRuntimes/")
+                if (buildItem.UnevaluatedInclude != null && buildItem.UnevaluatedInclude.ToLower().EndsWith("runtime.generated.cs") &&
+                    FileManager.GetDirectory(buildItem.UnevaluatedInclude, RelativeType.Relative) == "GumRuntimes/")
                 {
                     // is there an element with this name?
 
 
                     var elementName = FileManager.RemoveExtension( FileManager.RemoveExtension( 
-                        FileManager.RemovePath(buildItem.Include)));
+                        FileManager.RemovePath(buildItem.UnevaluatedInclude)));
 
                     // "elementName" will end with "Runtime"
                     elementName = elementName.Substring(0, elementName.Length - "Runtime".Length);
@@ -624,11 +624,11 @@ namespace GumPlugin.Managers
         /// <param name="gumProject">The Gum project to check.</param>
         /// <param name="toRemove">A list of which files to remove. The method populates this.</param>
         /// <param name="contentProject">The content project to check inside of for orphan references.</param>
-        private static void FillWithContentBuildItemsToRemove(GumProjectSave gumProject, List<BuildItem> toRemove, ProjectBase contentProject)
+        private static void FillWithContentBuildItemsToRemove(GumProjectSave gumProject, List<ProjectItem> toRemove, ProjectBase contentProject)
         {
-            foreach (BuildItem buildItem in contentProject)
+            foreach (var buildItem in contentProject)
             {
-                string extension = FileManager.GetExtension(buildItem.Include);
+                string extension = FileManager.GetExtension(buildItem.UnevaluatedInclude);
 
 
                 var gumProjectFolder = FileManager.GetDirectory(gumProject.FullFileName);
@@ -640,7 +640,7 @@ namespace GumPlugin.Managers
                 {
                     var standardFolder = gumFolderRelative + ElementReference.StandardSubfolder + "/";
 
-                    string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.Include, standardFolder))
+                    string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, standardFolder))
                         .Replace("/", "\\");
 
                     bool exists = gumProject.StandardElements.Any(item => item.Name.ToLowerInvariant() == elementName.ToLowerInvariant());
@@ -655,7 +655,7 @@ namespace GumPlugin.Managers
                 {
                     var componentFolder = gumFolderRelative + ElementReference.ComponentSubfolder + "/";
 
-                    string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.Include, componentFolder))
+                    string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, componentFolder))
                         .Replace("/", "\\");
 
                     bool exists = gumProject.Components.Any(item => item.Name.ToLowerInvariant() == elementName.ToLowerInvariant());
@@ -670,7 +670,7 @@ namespace GumPlugin.Managers
                 {
                     var screenFolder = gumFolderRelative + ElementReference.ScreenSubfolder + "/";
 
-                    string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.Include, screenFolder))
+                    string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, screenFolder))
                         .Replace("/", "\\");
 
                     bool exists = gumProject.Screens.Any(item => item.Name.ToLowerInvariant() == elementName.ToLowerInvariant());
