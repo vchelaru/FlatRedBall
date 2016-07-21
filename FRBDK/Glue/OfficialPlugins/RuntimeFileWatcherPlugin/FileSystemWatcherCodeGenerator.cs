@@ -15,14 +15,14 @@ namespace OfficialPlugins.RuntimeFileWatcherPlugin
     {
         public override void GenerateInitializeEnd(ICodeBlock codeBlock)
         {
-            codeBlock.Line("#if DEBUG");
+            codeBlock.Line("#if DEBUG && WINDOWS");
             codeBlock.Line("InitializeFileWatch();");
             codeBlock.Line("#endif");
 
         }
         public override void GenerateAdditionalMethods(ICodeBlock codeBlock)
         {
-            codeBlock.Line("#if DEBUG");
+            codeBlock.Line("#if DEBUG && WINDOWS");
 
             codeBlock.Line("static System.IO.FileSystemWatcher watcher;");
             GenerateInitialize(codeBlock);

@@ -384,7 +384,7 @@ namespace FlatRedBall.Glue.StateInterpolation
 
         public override string ToString()
         {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
             return String.Format("Tween {0} -> {1} in {2}s. Elapsed {3:##0.##}s",
                 from, 
                 from + change, 

@@ -11,7 +11,6 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Controls;
 using Glue;
 using System.IO;
-using Microsoft.Build.BuildEngine;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;

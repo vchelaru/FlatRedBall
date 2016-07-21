@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateInterpolationPlugin", "StateInterpolationPlugin\StateInterpolationPlugin.csproj", "{D73086FC-957E-4E3F-97FA-742CBBF02EA6}"
 EndProject
@@ -14,8 +14,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Glue", "Glue", "{891DE5A2-514C-4ECB-9A70-4FEA857BCC68}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glue", "..\Glue\Glue.csproj", "{213357E3-F729-4FF3-9B99-E91C40D50E6E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolsUtilities", "..\..\..\Gum\ToolsUtilities\ToolsUtilities.csproj", "{B941A93F-6093-4DC6-AD11-91A058B6C2CC}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -218,46 +216,6 @@ Global
 		{213357E3-F729-4FF3-9B99-E91C40D50E6E}.UnitTests|Mixed Platforms.Build.0 = UnitTests|x86
 		{213357E3-F729-4FF3-9B99-E91C40D50E6E}.UnitTests|x86.ActiveCfg = UnitTests|x86
 		{213357E3-F729-4FF3-9B99-E91C40D50E6E}.UnitTests|x86.Build.0 = UnitTests|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Debug Docs|Any CPU.ActiveCfg = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Debug Docs|Mixed Platforms.ActiveCfg = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Debug Docs|Mixed Platforms.Build.0 = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Debug Docs|x86.ActiveCfg = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Debug Docs|x86.Build.0 = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Debug|x86.ActiveCfg = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Debug|x86.Build.0 = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.DebugProfile|Any CPU.ActiveCfg = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.DebugProfile|Mixed Platforms.ActiveCfg = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.DebugProfile|Mixed Platforms.Build.0 = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.DebugProfile|x86.ActiveCfg = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.DebugProfile|x86.Build.0 = Debug|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Profile|Any CPU.ActiveCfg = AutomatedBuild|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Profile|Mixed Platforms.ActiveCfg = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Profile|Mixed Platforms.Build.0 = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Profile|x86.ActiveCfg = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Profile|x86.Build.0 = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Release|Any CPU.ActiveCfg = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Release|Mixed Platforms.Build.0 = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Release|x86.ActiveCfg = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Release|x86.Build.0 = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Submission Phone|Any CPU.ActiveCfg = AutomatedBuild|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Submission Phone|Mixed Platforms.ActiveCfg = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Submission Phone|Mixed Platforms.Build.0 = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Submission Phone|x86.ActiveCfg = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Submission Phone|x86.Build.0 = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Submission|Any CPU.ActiveCfg = AutomatedBuild|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Submission|Mixed Platforms.ActiveCfg = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Submission|Mixed Platforms.Build.0 = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Submission|x86.ActiveCfg = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.Submission|x86.Build.0 = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.UnitTests|Any CPU.ActiveCfg = AutomatedBuild|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.UnitTests|Mixed Platforms.ActiveCfg = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.UnitTests|Mixed Platforms.Build.0 = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.UnitTests|x86.ActiveCfg = Release|x86
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC}.UnitTests|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -266,6 +224,5 @@ Global
 		{D73086FC-957E-4E3F-97FA-742CBBF02EA6} = {1B7EFC18-1827-4EC7-BDE2-507FAD2783C5}
 		{1F85AEF5-2AE4-49B6-B0DB-623ED2A3A63C} = {1B7EFC18-1827-4EC7-BDE2-507FAD2783C5}
 		{213357E3-F729-4FF3-9B99-E91C40D50E6E} = {891DE5A2-514C-4ECB-9A70-4FEA857BCC68}
-		{B941A93F-6093-4DC6-AD11-91A058B6C2CC} = {891DE5A2-514C-4ECB-9A70-4FEA857BCC68}
 	EndGlobalSection
 EndGlobal

@@ -478,7 +478,14 @@ namespace FlatRedBall.TileGraphics
 
         public void AddToManagers(FlatRedBall.Graphics.Layer layer)
         {
-            SpriteManager.AddPositionedObject(this);
+            bool isAlreadyManaged = SpriteManager.ManagedPositionedObjects
+                .Contains(this);
+
+            // This allows AddToManagers to be called multiple times, so it can be added to multiple layers
+            if (!isAlreadyManaged)
+            {
+                SpriteManager.AddPositionedObject(this);
+            }
             foreach (var item in this.mMapLists)
             {
                 item.AddToManagers(layer);

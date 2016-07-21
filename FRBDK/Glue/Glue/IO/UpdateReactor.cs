@@ -10,7 +10,6 @@ using FlatRedBall.Glue.FormHelpers;
 using Glue;
 using FlatRedBall.Glue.Controls;
 using EditorObjects.Parsing;
-using Microsoft.Build.BuildEngine;
 using FlatRedBall.Glue.VSHelpers;
 using KellermanSoftware.CompareNetObjects;
 using System.Text.RegularExpressions;

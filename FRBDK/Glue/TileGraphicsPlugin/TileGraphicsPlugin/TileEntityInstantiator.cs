@@ -121,7 +121,7 @@ namespace FlatRedBall.TileEntities
 
         private static IEntityFactory GetFactory(string entityType)
         {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                     var assembly = typeof(TileEntityInstantiator).GetTypeInfo().Assembly;
                     var types = assembly.DefinedTypes;
 
@@ -140,7 +140,7 @@ namespace FlatRedBall.TileEntities
                 .Select(
                     t =>
                     {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                                 var propertyInfo = t.DeclaredProperties.First(item => item.Name == "Self");
 #else
                         var propertyInfo = t.GetProperty("Self");

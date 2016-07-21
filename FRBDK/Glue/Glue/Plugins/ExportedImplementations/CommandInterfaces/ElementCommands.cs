@@ -13,7 +13,6 @@ using FlatRedBall.Glue.StandardTypes;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Errors;
 using EditorObjects.SaveClasses;
-using Microsoft.Build.BuildEngine;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Utilities;
 using FlatRedBall.Glue.Projects;

@@ -7,7 +7,6 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
-using Microsoft.Build.BuildEngine;
 
 namespace FlatRedBall.Glue.Managers
 {

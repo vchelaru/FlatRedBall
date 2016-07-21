@@ -7,7 +7,6 @@ using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.StandardTypes;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
-using Microsoft.Build.BuildEngine;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Parsing;
 using Glue;

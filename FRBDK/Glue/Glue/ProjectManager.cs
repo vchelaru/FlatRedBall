@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.VSHelpers.Projects;
-using Microsoft.Build.BuildEngine;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.FormHelpers;
 using Glue;

@@ -110,7 +110,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             //string sasfd = ProjectManager.LibrariesPath;
 
-            // Check for XBOX360 and WINDOWS_PHONE before checking for FRB_XNA because those projects
+            // Check for other platforms before checking for FRB_XNA because those projects
             // include FRB_XNA in them
 
             ProjectBase toReturn = null;
@@ -126,6 +126,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             else if(preProcessorConstants.Contains("IOS"))
             {
                 toReturn = new IosMonogameProject(coreVisualStudioProject);
+            }
+            else if(preProcessorConstants.Contains("UWP"))
+            {
+                toReturn = new UwpProject(coreVisualStudioProject);
             }
             else if (preProcessorConstants.Contains("WINDOWS_PHONE"))
             {

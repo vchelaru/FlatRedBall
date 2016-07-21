@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using FlatRedBall.Glue.FormHelpers;
 using System.ComponentModel.Composition;
 using FlatRedBall.Glue.VSHelpers.Projects;
-using Microsoft.Build.BuildEngine;
 using FlatRedBall.IO;
 using System.IO;
 using Microsoft.Build.Evaluation;
@@ -48,7 +47,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
         {
             return project is IosMonogameProject || 
                 project is Windows8MonoGameProject ||
-                project is AndroidProject;
+                project is AndroidProject |
+                project is UwpProject
+                ;
 
         }
 
@@ -130,7 +131,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
 
             bool isIos = project is IosMonogameProject;
             bool isAndroid = project is AndroidProject;
-
+            
             string whatToAddToProject = null;
 
             // 

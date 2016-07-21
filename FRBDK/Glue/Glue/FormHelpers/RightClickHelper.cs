@@ -15,7 +15,6 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.VSHelpers;
 using FlatRedBall.Glue.Elements;
-using Microsoft.Build.BuildEngine;
 using EditorObjects.SaveClasses;
 using FlatRedBall.Utilities;
 using FlatRedBall.Content;

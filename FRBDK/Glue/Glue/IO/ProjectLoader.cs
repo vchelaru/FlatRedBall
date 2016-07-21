@@ -13,7 +13,6 @@ using System.Windows.Forms;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.CodeGeneration;
-using Microsoft.Build.BuildEngine;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.ContentPipeline;
