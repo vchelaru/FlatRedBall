@@ -792,7 +792,8 @@ namespace FlatRedBall.Glue.SaveClasses
         public static bool CanBeInList(this NamedObjectSave instance, NamedObjectSave listNos )
         {
             if (listNos.SourceClassGenericType == instance.SourceClassType ||
-                listNos.SourceClassGenericType == instance.InstanceType)
+                listNos.SourceClassGenericType == instance.InstanceType ||
+                listNos.SourceClassGenericType == instance.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType)
             {
                 return true;
             }

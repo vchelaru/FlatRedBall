@@ -148,6 +148,7 @@ namespace FlatRedBall.Graphics
                 mOldCameraLayerSettings.SetFromCamera(camera);
 
                 Vector3 oldPosition = camera.Position;
+                var oldUpVector = camera.UpVector;
 
                 if (layer.LayerCameraSettings != null)
                 {
@@ -196,6 +197,7 @@ namespace FlatRedBall.Graphics
                 {
                     mOldCameraLayerSettings.ApplyValuesToCamera(camera, SetCameraOptions.ApplyMatrix, layer.LayerCameraSettings);
                     camera.Position = oldPosition;
+                    camera.UpVector = oldUpVector;
                 }
 
 

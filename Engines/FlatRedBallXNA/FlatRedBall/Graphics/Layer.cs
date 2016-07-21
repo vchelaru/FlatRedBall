@@ -53,10 +53,17 @@ namespace FlatRedBall.Graphics
         // the issue is, but setting the
         // individual rotation values seems
         // to fix it.
-        public float RotationX;
-        public float RotationY;
-        public float RotationZ;
-
+        // Update July 20, 2016
+        // In the current game I'm working on,
+        // saving and resetting the individual rotation
+        // components was resulting in a rotation matrix
+        // that wasn't quite right. To fix this, we're going
+        // to save and set both sets of values to make sure it
+        // works perfectly.
+        float storedRotationX;
+        float storedRotationY;
+        float storedRotationZ;
+        Matrix storedRotationMatrix;
 
 
         public LayerCameraSettings Clone()
@@ -76,9 +83,10 @@ namespace FlatRedBall.Graphics
 
             FieldOfView = camera.FieldOfView;
 
-            RotationX = camera.RotationX;
-            RotationY = camera.RotationY;
-            RotationZ = camera.RotationZ;
+            storedRotationX = camera.RotationX;
+            storedRotationY = camera.RotationY;
+            storedRotationZ = camera.RotationZ;
+            storedRotationMatrix = camera.RotationMatrix;
         }
 
         //public void SetCamera(Camera camera, SetCameraOptions options)
@@ -147,15 +155,15 @@ namespace FlatRedBall.Graphics
 
             if (options == SetCameraOptions.ApplyMatrix)
             {
-                float rotationZBefore = camera.RotationZ;
+                // This will set the matrix and individual values...
+                camera.RotationMatrix = storedRotationMatrix;
+                // ...now set individual values to make sure they dont change:
+                camera.mRotationX = storedRotationX;
+                camera.mRotationY = storedRotationY;
+                camera.mRotationZ = storedRotationZ;
 
-                camera.mRotationX = RotationX;
-                camera.mRotationY = RotationY;
-                camera.RotationZ = RotationZ;
 
-                float rotationZAfter = camera.RotationZ;
-
-                camera.UpVector = mOldUpVector;
+                    camera.UpVector = mOldUpVector;
             }
             else
             {
@@ -167,7 +175,7 @@ namespace FlatRedBall.Graphics
                 camera.UpVector = camera.RotationMatrix.Up;
             }
 
-            if(this.OffsetParent != null)
+            if (this.OffsetParent != null)
             {
                 camera.Position -= this.OffsetParent.Position;
             }
