@@ -382,36 +382,28 @@ namespace FlatRedBall.Graphics
             //mMultiSampleQuality = 0;
 #endif
 
-#if !WINDOWS_PHONE && !MONODROID
+#if !MONODROID
             #region Get Resolution
 
             SuspendDeviceReset();
-#if XBOX360
-            if (graphics != null)
-            {
-                mIsFullScreen = true;
-                graphics.IsFullScreen = true;
-                ResolutionWidth = graphics.GraphicsDevice.DisplayMode.Width;//graphics.PreferredBackBufferWidth;
-                ResolutionHeight = graphics.GraphicsDevice.DisplayMode.Height;//graphics.PreferredBackBufferHeight;
-            }
-#else
+
             //graphicsOptions.ResolutionWidth = graphics.GraphicsDevice.DisplayMode.Width;// game.Window.ClientBounds.Width;
             //graphicsOptions.ResolutionHeight = graphics.GraphicsDevice.DisplayMode.Height;//game.Window.ClientBounds.Height;
 
             if (game != null)
             {
 
-#if SILVERLIGHT
-
-#elif WINDOWS_8
+#if WINDOWS_8
                 // For some reason the W8 window reports the wrong
                 // width/height if the game is started when in portrait
                 // mode but the user wants to be in landscape.  But the GraphicsDevice
                 // is right.  Go figure.
                 ResolutionWidth = graphics.GraphicsDevice.Viewport.Width ;
                 ResolutionHeight = graphics.GraphicsDevice.Viewport.Height;
-#elif IOS
-				ResolutionWidth = graphics.PreferredBackBufferWidth;
+#elif IOS || UWP
+                // For UWP the game.Window.ClientBounds is not accurate until after initialize, as explained here:
+                // http://community.monogame.net/t/graphicsdevice-viewport-doesnt-return-the-real-size-of-uwp-game-window/7314/5
+                ResolutionWidth = graphics.PreferredBackBufferWidth;
 				ResolutionHeight = graphics.PreferredBackBufferHeight;
 
 #else
@@ -423,7 +415,7 @@ namespace FlatRedBall.Graphics
 
             if (graphics != null)
             {
-#if !SILVERLIGHT && !XNA4 && !WINDOWS_8
+#if !XNA4 && !WINDOWS_8
                 if (!graphics.GraphicsDevice.CreationParameters.Adapter.CheckDeviceMultiSampleType(
                     DeviceType.Hardware, SurfaceFormat.Color, IsFullScreen, MultiSampleType))
                 {
@@ -433,7 +425,6 @@ namespace FlatRedBall.Graphics
 #endif
             }
 
-#endif
             ResumeDeviceReset();
 
             #endregion
