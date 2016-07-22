@@ -892,9 +892,19 @@ namespace FlatRedBall.Glue
                 PluginManager.ReactToGluxClose();
             }
 
+            if(mProjectBase != null)
+            {
+                mProjectBase.Unload();
+            }
             mProjectBase = null;
 
             GlueProjectSave = null;
+
+
+            foreach(var syncedProject in mSyncedProjects)
+            {
+                syncedProject.Unload();
+            }
 
             mSyncedProjects.Clear();
 

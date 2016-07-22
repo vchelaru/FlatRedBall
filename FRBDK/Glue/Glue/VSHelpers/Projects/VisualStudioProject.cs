@@ -421,7 +421,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
              */
         }
 
-
         public override void Load(string fileName)
         {
             mBuildItemDictionaries.Clear();
@@ -468,6 +467,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
 
             LoadContentProject();
+        }
+
+        public override void Unload()
+        {
+            Project.ProjectCollection.UnloadProject(Project);
         }
 
         private bool ResolveDuplicateProjectEntry(bool wasChanged, ProjectItem buildItem)

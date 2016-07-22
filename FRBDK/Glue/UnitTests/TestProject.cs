@@ -20,6 +20,8 @@ namespace UnitTests
             get { return "Name"; }
         }
 
+        
+
         public override bool IsDirty
         {
             get { throw new NotImplementedException(); }
@@ -90,6 +92,11 @@ namespace UnitTests
         }
 
         protected override void RemoveItem(string itemName, Microsoft.Build.Evaluation.ProjectItem item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Unload()
         {
             throw new NotImplementedException();
         }

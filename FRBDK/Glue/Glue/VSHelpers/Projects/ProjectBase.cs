@@ -3,6 +3,7 @@ using FlatRedBall.IO;
 using System.IO;
 using System.Linq;
 using Microsoft.Build.Evaluation;
+using System;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -462,6 +463,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             return path;
         }
 
+        public abstract void Unload();
         #region IEnumerable<BuildItem> Members
 
         public IEnumerator<ProjectItem> GetEnumerator()
@@ -480,6 +482,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             return mBuildItemDictionaries.Values.GetEnumerator();
         }
+
 
         #endregion
     }
