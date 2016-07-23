@@ -139,6 +139,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\AllData.cs" />
+    <Compile Include="Data\EngineData.cs" />
+    <Compile Include="Data\EngineFileData.cs" />
     <Compile Include="Processes\TraceResults.cs" />
     <Compile Include="Processes\ZipTemplates.cs" />
     <Compile Include="Processes\CopyBuiltEnginesToTemplateFolder.cs" />

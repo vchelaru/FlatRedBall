@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using System.ComponentModel.Composition;
+using OfficialPlugins.Compiler.ViewModels;
 
 namespace OfficialPlugins.Compiler
 {
@@ -16,6 +17,7 @@ namespace OfficialPlugins.Compiler
 
         Compiler compiler;
         Runner runner;
+        CompilerViewModel viewModel;
 
         public override string FriendlyName
         {
@@ -29,7 +31,7 @@ namespace OfficialPlugins.Compiler
         {
             get
             {
-                return new Version(0, 2);
+                return new Version(0, 3);
             }
         }
 
@@ -77,6 +79,9 @@ namespace OfficialPlugins.Compiler
         private void CreateControl()
         {
             control = new MainControl();
+            viewModel = new CompilerViewModel();
+            viewModel.Configuration = "Debug";
+            control.DataContext = viewModel;
 
             base.AddToTab(
                 PluginManager.BottomTab, control, "Build");
@@ -95,7 +100,7 @@ namespace OfficialPlugins.Compiler
 
         private void Compile(Action<bool> afterCompile = null)
         {
-            compiler.Compile(control.PrintOutput, control.PrintOutput, afterCompile);
+            compiler.Compile(control.PrintOutput, control.PrintOutput, afterCompile, viewModel.Configuration);
         }
     }
 }

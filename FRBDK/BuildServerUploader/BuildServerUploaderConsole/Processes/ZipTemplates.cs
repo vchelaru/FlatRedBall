@@ -1,4 +1,5 @@
-﻿using FlatRedBall.IO;
+﻿using BuildServerUploaderConsole.Data;
+using FlatRedBall.IO;
 using System.Collections.Generic;
 
 namespace BuildServerUploaderConsole.Processes
@@ -27,71 +28,24 @@ namespace BuildServerUploaderConsole.Processes
                 System.IO.Directory.CreateDirectory(ZipDirectory);
             }
 
-            var zips = new List<ZipProcess>
-                                        {
-                                            //new ZipProcess
-                                            //    {
-                                            //        ZipDirectory = "FlatRedBall XNA Template",
-                                            //        ZipFileName = "FlatRedBallXNATemplate"
-                                            //    }
+            var zips = new List<ZipProcess>();
 
-                                            new ZipProcess
-                                                 {
-                                                    ZipDirectory = "FlatRedBallXna4Template",
-                                                    ZipFileName = "FlatRedBallXna4Template"
-                                                 }
+            foreach(var engine in AllData.Engines)
+            {
+                var zipProcess = new ZipProcess
+                {
+                    ZipDirectory = engine.TemplateName,
+                    ZipFileName = engine.TemplateName
+                };
 
-                                            //,new ZipProcess
-                                            //     {
-                                            //        ZipDirectory = "FlatRedBall MDX Template",
-                                            //        ZipFileName = "FlatRedBallMDXTemplate"
-                                            //     }
+                zips.Add(zipProcess);
+            }
 
-                                            //,new ZipProcess
-                                            //     {
-                                            //        ZipDirectory = "FlatRedBallPhoneTemplate",
-                                            //        ZipFileName = "FlatRedBallPhoneTemplate"
-                                            //     }
-
-                                            //,new ZipProcess
-                                            //     {
-                                            //        ZipDirectory = "FlatRedBallXna4_360Template",
-                                            //        ZipFileName = "FlatRedBallXna4_360Template"
-                                            //     }
-
-                                            // FSB discontinued
-                                            //,new ZipProcess
-                                            //     {
-                                            //        ZipDirectory = "FlatSilverBallTemplate",
-                                            //        ZipFileName = "FlatSilverBallTemplate"
-                                            //     }
-
-                                           ,new ZipProcess
-                                                 {
-                                                    ZipDirectory = "Windows8Template",
-                                                    ZipFileName = "Windows8Template"
-                                                 }
-
-                                           ,new ZipProcess
-                                                 {
-                                                    ZipDirectory = "FlatRedBallAndroidTemplate",
-                                                    ZipFileName = "FlatRedBallAndroidTemplate"
-                                                 }
-                                                 
-                                           ,new ZipProcess
-                                                 {
-                                                    ZipDirectory = "FlatRedBalliOSTemplate",
-                                                    ZipFileName = "FlatRedBalliOSTemplate"
-                                                 }
-
-                                            ,new ZipProcess
-                                                 {
-                                                    ZipDirectory = "GluePluginTemplate",
-                                                    ZipFileName = "GluePluginTemplate"
-                                                 }
-                                        };
-
-
+            zips.Add(new ZipProcess
+            {
+                ZipDirectory = "GluePluginTemplate",
+                ZipFileName = "GluePluginTemplate"
+            });
 
 
             foreach (var zipProcess in zips)

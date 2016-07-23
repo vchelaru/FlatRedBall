@@ -11,13 +11,14 @@ namespace OfficialPlugins.Compiler
 {
     class Compiler
     {
-        internal void Compile(Action<string> printOutput, Action<string> printError, Action<bool> afterBuilt = null)
+        internal void Compile(Action<string> printOutput, Action<string> printError, Action<bool> afterBuilt = null, 
+            string configuration = "Debug")
         {
             TaskManager.Self.AddAsyncTask(() =>
             {
                 var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
                 string executable = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
-                string arguments = $"\"{projectFileName}\" /p:Configuration=\"Debug\"";
+                string arguments = $"\"{projectFileName}\" /p:Configuration=\"{configuration}\"";
 
                 Process process = CreateProcess("\"" + executable + "\"", arguments);
 

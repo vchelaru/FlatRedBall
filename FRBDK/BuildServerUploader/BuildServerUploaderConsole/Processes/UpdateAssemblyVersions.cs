@@ -23,8 +23,6 @@ namespace BuildServerUploaderConsole.Processes
             folders.Add(engineDirectory + @"\FlatRedBallXNA\");
             folders.Add(engineDirectory + @"\FlatRedBallMDX\");
             
-            // FSB discontinued
-            //folders.Add(engineDirectory + @"\FlatSilverBall\");
 
 
             foreach (string folder in folders)
