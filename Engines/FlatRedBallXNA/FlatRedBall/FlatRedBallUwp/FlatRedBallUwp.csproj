@@ -125,7 +125,7 @@
   <ItemGroup>
     <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Templates\FlatRedBallUwpTemplate\FlatRedBallUwpTemplate\Libraries\UWP\Debug\MonoGame.Framework.dll</HintPath>
+      <HintPath>Libraries\UWP\Debug\MonoGame.Framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
