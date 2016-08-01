@@ -75,6 +75,18 @@
     <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\IRenderableIpso.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\IRenderableIpso.cs</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\Behaviors\BehaviorReference.cs">
+      <Link>Embedded\LibraryFiles\GumDataTypes\BehaviorReference.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\Behaviors\BehaviorSave.cs">
+      <Link>Embedded\LibraryFiles\GumDataTypes\BehaviorSave.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\Behaviors\ElementBehaviorReference.cs">
+      <Link>Embedded\LibraryFiles\GumDataTypes\ElementBehaviorReference.cs</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\IStateContainer.cs">
+      <Link>Embedded\LibraryFiles\GumDataTypes\IStateContainer.cs</Link>
+    </EmbeddedResource>
     <Compile Include="Managers\GumxPropertiesManager.cs" />
     <Compile Include="Resource1.Designer.cs">
       <AutoGen>True</AutoGen>

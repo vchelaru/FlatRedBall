@@ -472,6 +472,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public override void Unload()
         {
             Project.ProjectCollection.UnloadProject(Project);
+
         }
 
         private bool ResolveDuplicateProjectEntry(bool wasChanged, ProjectItem buildItem)

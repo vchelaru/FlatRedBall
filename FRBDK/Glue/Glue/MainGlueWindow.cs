@@ -82,7 +82,14 @@ namespace Glue
         {
             this.Invoke((MethodInvoker)delegate
             {
-                action();
+                try
+                {
+                    action();
+                }
+                catch(Exception e)
+                {
+                    throw e;
+                }
             });
 
         }
