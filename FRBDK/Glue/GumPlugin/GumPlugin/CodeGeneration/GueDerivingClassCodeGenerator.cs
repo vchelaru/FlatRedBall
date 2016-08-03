@@ -160,6 +160,16 @@ namespace GumPlugin.CodeGeneration
                 inheritance = GueRuntimeNamespace + "." + elementSave.BaseType + "Runtime";
             }
 
+            var asComponentSave = elementSave as ComponentSave;
+
+            if(asComponentSave != null)
+            {
+                foreach (var behavior in asComponentSave.Behaviors)
+                {
+                    inheritance += $", {GueRuntimeNamespace}.I{behavior.BehaviorName}";
+                }
+            }
+
             // If it's not public then exposing an instance in a public class makes the project not compile
             //ICodeBlock currentBlock = codeBlock.Class("partial", runtimeClassName, " : " + inheritance);
             ICodeBlock currentBlock = codeBlock.Class("public partial", runtimeClassName, " : " + inheritance);

@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Managers;
 using Gum.DataTypes;
+using Gum.DataTypes.Behaviors;
 using Gum.DataTypes.Variables;
 using System;
 using System.Collections.Generic;
@@ -95,18 +96,23 @@ namespace GumPlugin.CodeGeneration
             GenerateGetCurrentValuesOnState(elementSave, currentBlock);
         }
 
-        private void GenerateStateEnums(ElementSave elementSave, ICodeBlock currentBlock)
+        public void GenerateStateEnums(IStateContainer stateContainer, ICodeBlock currentBlock, string enumNamePrefix = null)
         {
-            currentBlock.Line("#region State Enums");
-            string categoryName = "VariableState";
-            var states = elementSave.States;
-            GenerateEnumsForCategory(currentBlock, categoryName, states);
+            bool hasUncategorized = (stateContainer is BehaviorSave) == false;
 
-            // loop through categories:
-            foreach (var category in elementSave.Categories)
+            currentBlock.Line("#region State Enums");
+
+            if (hasUncategorized)
             {
-                categoryName = category.Name;
-                states = category.States;
+                string categoryName = "VariableState";
+                var states = stateContainer.UncategorizedStates;
+                GenerateEnumsForCategory(currentBlock, categoryName, states);
+            }
+            // loop through categories:
+            foreach (var category in stateContainer.Categories)
+            {
+                string categoryName = enumNamePrefix + category.Name;
+                var states = category.States;
                 GenerateEnumsForCategory(currentBlock, categoryName, states);
 
             }
@@ -114,7 +120,7 @@ namespace GumPlugin.CodeGeneration
             currentBlock.Line("#endregion");
         }
 
-        private void GenerateEnumsForCategory(ICodeBlock codeBlock, string categoryName, List<Gum.DataTypes.Variables.StateSave> states)
+        public void GenerateEnumsForCategory(ICodeBlock codeBlock, string categoryName, IEnumerable<StateSave> states)
         {
             var enumBlock = codeBlock.Enum("public", categoryName);
 
@@ -282,8 +288,42 @@ namespace GumPlugin.CodeGeneration
                 GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave);
             }
 
+            GenerateBehaviorStateProperties(currentBlock, elementSave);
+
             currentBlock.Line("#endregion");
 
+        }
+
+        private void GenerateBehaviorStateProperties(ICodeBlock currentBlock, ElementSave elementSave)
+        {
+            var asComponentSave = elementSave as ComponentSave;
+
+            if(asComponentSave != null)
+            {
+                foreach(var elementBehavior in asComponentSave.Behaviors)
+                {
+                    var behavior = Managers.AppState.Self.GumProjectSave.Behaviors
+                        .FirstOrDefault(item => item.Name == elementBehavior.BehaviorName);
+
+                    string interfaceType = $"I{behavior.Name}";
+
+                    foreach(var behaviorCategory in behavior.Categories)
+                    {
+                        string propertyType = $"{behavior.Name}{behaviorCategory.Name}";
+
+                        var propertyBlock = currentBlock.Property($"{propertyType}", $"{interfaceType}.Current{propertyType}State");
+                        var setBlock = propertyBlock.Set();
+                        var switchBlock = setBlock.Switch("value");
+                        foreach(var behaviorState in behaviorCategory.States)
+                        {
+                            var caseBlock = switchBlock.Case($"{behavior.Name}{behaviorCategory.Name}.{behaviorState.Name}");
+
+                            caseBlock.Line($"this.Current{behaviorCategory.Name}State = {behaviorCategory.Name}.{behaviorState.Name};");
+
+                        }
+                    }
+                }
+            }
         }
 
         private void GeneratePropertyForCurrentState(ICodeBlock currentBlock, string propertyType, string propertyName, List<Gum.DataTypes.Variables.StateSave> states, ElementSave container)
@@ -350,7 +390,7 @@ namespace GumPlugin.CodeGeneration
             currentBlock.Line("#endregion");
         }
 
-        private void GenerateGetCurrentValuesOnStateForCategory(ICodeBlock currentBlock, ElementSave container, string categoryName, List<StateSave> states, bool addValues = false)
+        private void GenerateGetCurrentValuesOnStateForCategory(ICodeBlock currentBlock, ElementSave container, string categoryName, List<Gum.DataTypes.Variables.StateSave> states, bool addValues = false)
         {
             string methodName = "GetCurrentValuesOnState";
 

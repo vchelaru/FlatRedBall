@@ -21,6 +21,7 @@ using System.ComponentModel;
 using EditorObjects.Parsing;
 using Gum.Managers;
 using System.Drawing;
+using Gum.DataTypes.Behaviors;
 
 namespace GumPlugin
 {
@@ -89,7 +90,7 @@ namespace GumPlugin
 
             this.ReactToNewScreenCreated += HandleNewScreen;
 
-            CodeGeneratorManager.Self.CreateCodeGenerators();
+            CodeGeneratorManager.Self.CreateElementComponentCodeGenerators();
 
             Gum.Managers.StandardElementsManager.Self.Initialize();
             
@@ -227,7 +228,7 @@ namespace GumPlugin
             {
                 // November 1, 2015
                 // Why do we reload the
-                // entire project nad not
+                // entire project and not
                 // just the object that changed?
                 GumProjectManager.Self.ReloadProject();
 
@@ -245,6 +246,11 @@ namespace GumPlugin
                 EventsManager.Self.RefreshEvents();
 
                 FileReferenceTracker.Self.RemoveUnreferencedMissingFilesFromVsProject();
+            }
+            else if(extension == BehaviorReference.Extension)
+            {
+                // todo: make this take just 1 behavior for speed
+                CodeGeneratorManager.Self.GenerateAllBehaviors();
             }
             else if (extension == "ganx")
             {
@@ -287,6 +293,8 @@ namespace GumPlugin
             EmbeddedResourceManager.Self.UpdateCodeInProjectPresence();
 
             CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
+
+            CodeGeneratorManager.Self.GenerateAllBehaviors();
 
             FileReferenceTracker.Self.RemoveUnreferencedMissingFilesFromVsProject();
 

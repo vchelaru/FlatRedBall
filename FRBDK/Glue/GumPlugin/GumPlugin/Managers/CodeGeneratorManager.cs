@@ -9,6 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Gum.DataTypes.Behaviors;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace GumPlugin.Managers
 {
@@ -27,6 +29,7 @@ namespace GumPlugin.Managers
         GumPluginCodeGenerator mGumPluginCodeGenerator;
         GueDerivingClassCodeGenerator mGueDerivingClassCodeGenerator;
         GumLayerCodeGenerator mGumLayerCodeGenerator;
+        BehaviorCodeGenerator behaviorCodeGenerator;
 
         #endregion
 
@@ -38,9 +41,18 @@ namespace GumPlugin.Managers
             }
         }
 
+        string GumBehaviorsFolder
+        {
+            get
+            {
+                return GumRuntimesFolder + @"Behaviors\";
+            }
+        }
+
         public CodeGeneratorManager()
         {
             mGueDerivingClassCodeGenerator = new GueDerivingClassCodeGenerator();
+            behaviorCodeGenerator = new BehaviorCodeGenerator();
         }
 
         public void GenerateDueToFileChange(string file)
@@ -226,31 +238,7 @@ namespace GumPlugin.Managers
 
             if (!string.IsNullOrEmpty(generatedCode) && shouldSave)
             {
-                var directory = FileManager.GetDirectory(saveLocation);
-                Directory.CreateDirectory(directory);
-                const int timesToTry = 4;
-                int timesTried = 0;
-                while (true)
-                {
-                    try
-                    {
-                        System.IO.File.WriteAllText(saveLocation, generatedCode);
-                        wasSaved = true;
-                        break;
-                    }
-                    catch (Exception exception)
-                    {
-                        timesTried++;
-
-                        if (timesTried >= timesToTry)
-                        {
-                            FlatRedBall.Glue.Plugins.PluginManager.ReceiveError("Error trying to save generated file:\n" +
-                                exception.ToString());
-                            break;
-                        }
-                    }
-                }
-
+                wasSaved = TrySaveMultipleTimes(saveLocation, generatedCode);
             }
 
             return wasSaved;
@@ -264,7 +252,7 @@ namespace GumPlugin.Managers
 
             string whereToSave = GumRuntimesFolder + "GumIdb.Generated.cs";
 
-            System.IO.File.WriteAllText(whereToSave, contents);
+            TrySaveMultipleTimes(whereToSave, contents);
 
             wasAdded |=
                 FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
@@ -273,7 +261,7 @@ namespace GumPlugin.Managers
             return wasAdded;
         }
 
-        public void CreateCodeGenerators()
+        public void CreateElementComponentCodeGenerators()
         {
             mIWindowCodeGenerator = new CodeGeneration.IWindowCodeGenerator();
             FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Add(mIWindowCodeGenerator);
@@ -302,6 +290,72 @@ namespace GumPlugin.Managers
                 FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Remove(mGumLayerCodeGenerator);
             }
 
+        }
+
+        public void GenerateAllBehaviors()
+        {
+            var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
+
+            foreach (var behavior in  gumProject.Behaviors)
+            {
+                GenerateCodeFor(behavior);
+            }
+        }
+
+        private void GenerateCodeFor(BehaviorSave behavior)
+        {
+            string directoryToSave = GumBehaviorsFolder;
+
+            string generatedCode = behaviorCodeGenerator.GenerateInterfaceCodeFor(behavior);
+
+            string saveLocation = directoryToSave + "I" + behavior.Name + ".Generated.cs";
+
+            bool didSave = false;
+
+            if(!string.IsNullOrEmpty(generatedCode))
+            {
+                didSave = TrySaveMultipleTimes(saveLocation, generatedCode);
+            }
+
+            if(didSave)
+            {
+                // add the file to the project:
+                FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
+                    FlatRedBall.Glue.ProjectManager.ProjectBase, saveLocation);
+
+            }
+        }
+
+        private bool TrySaveMultipleTimes(string fileName, string fileContents)
+        {
+            bool wasSaved = false;
+
+            var directory = FileManager.GetDirectory(fileName);
+            Directory.CreateDirectory(directory);
+            const int timesToTry = 4;
+            int timesTried = 0;
+            while (true)
+            {
+                try
+                {
+                    System.IO.File.WriteAllText(fileName, fileContents);
+                    wasSaved = true;
+                    break;
+                }
+                catch (Exception exception)
+                {
+                    timesTried++;
+
+                    if (timesTried >= timesToTry)
+                    {
+                        FlatRedBall.Glue.Plugins.PluginManager.ReceiveError("Error trying to save generated file:\n" +
+                            exception.ToString());
+                        break;
+                    }
+                }
+            }
+
+            return wasSaved;
         }
     }
 }
