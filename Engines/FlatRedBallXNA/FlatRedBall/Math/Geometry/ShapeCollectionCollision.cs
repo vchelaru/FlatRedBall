@@ -5,9 +5,15 @@ namespace FlatRedBall.Math.Geometry
 {	
 	internal static class ShapeCollectionCollision
 	{
+        // The CollideShapeAgainstThis method needs to update dependencies on the shape being passed in to the method.
+        // The reason is because deep collision performs an update dependencies so that a a shape will be positioned relative
+        // to its parent, but these methods perform partitioning, which may prevent deep collision from happening at all. The partitioning
+        // depends on the position of the shape to collide against, so we need that to be up to date before performing partitioning.
+
 		internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, AxisAlignedRectangle shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -168,6 +174,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, Circle shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -328,6 +335,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, Polygon shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -488,6 +496,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, Line shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -648,6 +657,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, Capsule2D shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -808,6 +818,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, Sphere shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -890,6 +901,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, AxisAlignedCube shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -973,6 +985,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, AxisAlignedRectangle shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -1133,6 +1146,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, Circle shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -1293,6 +1307,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, Polygon shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -1453,6 +1468,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, Line shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -1613,6 +1629,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, Capsule2D shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -1773,6 +1790,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, Sphere shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -1855,6 +1873,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, AxisAlignedCube shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -1938,6 +1957,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThisBounce(ShapeCollection thisShapeCollection, AxisAlignedRectangle shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass, float elasticity)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -2098,6 +2118,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThisBounce(ShapeCollection thisShapeCollection, Circle shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass, float elasticity)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -2258,6 +2279,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThisBounce(ShapeCollection thisShapeCollection, Polygon shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass, float elasticity)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -2418,6 +2440,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThisBounce(ShapeCollection thisShapeCollection, Line shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass, float elasticity)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -2578,6 +2601,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThisBounce(ShapeCollection thisShapeCollection, Capsule2D shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass, float elasticity)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -2738,6 +2762,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThisBounce(ShapeCollection thisShapeCollection, Sphere shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass, float elasticity)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
@@ -2820,6 +2845,7 @@ namespace FlatRedBall.Math.Geometry
 		internal static bool CollideShapeAgainstThisBounce(ShapeCollection thisShapeCollection, AxisAlignedCube shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass, float elasticity)
 		{
             thisShapeCollection.ClearCollisionLists();
+            shapeToCollideAgainstThis.UpdateDependencies(TimeManager.CurrentTime);
             #region Declare variables used for this method
             bool returnValue = false;
 
