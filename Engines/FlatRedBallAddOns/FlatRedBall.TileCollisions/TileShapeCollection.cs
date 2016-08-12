@@ -366,8 +366,14 @@ namespace FlatRedBall.TileCollisions
 
     public static class TileShapeCollectionLayeredTileMapExtensions
     {
-        // This was not originally public but made public for situations where users want to 
-        // manually specify which tiles to use rather than relying on the HasCollision methods.
+        public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
+            LayeredTileMap layeredTileMap, string nameToUse)
+        {
+            AddCollisionFrom(tileShapeCollection, layeredTileMap,
+                new List<string> { nameToUse });
+        }
+
+
         public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
             LayeredTileMap layeredTileMap, IEnumerable<string> namesToUse)
         {

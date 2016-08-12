@@ -28,16 +28,17 @@ namespace TileGraphicsPlugin.Managers
                 
 
 
+            // Tiled levels was a nice idea, but it tied the developer's hands
+            // too much. 
+            //if (shouldShowMenu)
+            //{
+            //    var menuToAdd = new ToolStripMenuItem("Add Tiled Level");
 
-            if (shouldShowMenu)
-            {
-                var menuToAdd = new ToolStripMenuItem("Add Tiled Level");
+            //    menuToModify.Items.Add(menuToAdd);
 
-                menuToModify.Items.Add(menuToAdd);
+            //    menuToAdd.Click += HandleAddTiledLevelClick;
 
-                menuToAdd.Click += HandleAddTiledLevelClick;
-
-            }
+            //}
         }
 
         void HandleAddTiledLevelClick(object sender, EventArgs e)

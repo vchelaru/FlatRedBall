@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Gum.Wireframe
 {
-    public partial class GraphicalUiElement : IWindow
+    public partial class GraphicalUiElement : FlatRedBall.Gui.Controls.IControl
     {
 
         public event WindowEvent Click;
@@ -550,5 +550,9 @@ namespace Gum.Wireframe
             return tweener;
         }
 
+        void FlatRedBall.Gui.Controls.IControl.SetState(string stateName)
+        {
+            this.ApplyState(stateName);
+        }
     }
 }

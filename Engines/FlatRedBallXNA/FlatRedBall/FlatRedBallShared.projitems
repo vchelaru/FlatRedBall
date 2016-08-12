@@ -6,7 +6,7 @@
     <SharedGUID>{0BB8CBE3-8503-46C1-9272-D98E153A230E}</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>FlatRedBallShared</Import_RootNamespace>
+    <Import_RootNamespace>FlatRedBall</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AI\LineOfSight\IViewer.cs" />
@@ -116,6 +116,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Text.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Text.PreRendered.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\TextManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\BehaviorBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\ButtonBehavior.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\ToggleBehavior.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\Controls\IButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\Controls\IControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\Controls\IToggle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Cursor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Cursor.TouchScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\GuiManager.cs" />

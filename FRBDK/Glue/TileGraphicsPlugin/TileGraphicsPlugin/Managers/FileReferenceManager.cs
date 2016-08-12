@@ -88,17 +88,29 @@ namespace TileGraphicsPlugin.Managers
 
         private void GetTmxFileReferences(string fileName, List<string> listToFill)
         {
-            TiledMapSave tms = TiledMapSave.FromFile(fileName);
+            TiledMapSave tms = null;
 
-            var referencedFiles = tms.GetReferencedFiles();
-
-            string directory = FileManager.GetDirectory(fileName);
-            for (int i = 0; i < referencedFiles.Count; i++)
+            try
             {
-                referencedFiles[i] = directory + referencedFiles[i];
+                tms = TiledMapSave.FromFile(fileName);
+            }
+            catch (Exception e)
+            {
+                PluginManager.ReceiveError($"Error loading file {fileName}\n{e.ToString()}");
             }
 
-            listToFill.AddRange(referencedFiles);
+            if(tms != null)
+            {
+                var referencedFiles = tms.GetReferencedFiles();
+
+                string directory = FileManager.GetDirectory(fileName);
+                for (int i = 0; i < referencedFiles.Count; i++)
+                {
+                    referencedFiles[i] = directory + referencedFiles[i];
+                }
+
+                listToFill.AddRange(referencedFiles);
+            }
         }
 
         private static void GetTilbFileReferences(string fileName, List<string> listToFill)

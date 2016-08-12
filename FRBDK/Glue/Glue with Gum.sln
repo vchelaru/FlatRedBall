@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glue", "Glue\Glue.csproj", "{213357E3-F729-4FF3-9B99-E91C40D50E6E}"
 EndProject
@@ -77,8 +77,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlasPlugin", "AtlasPlugin\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameScriptingPlugin", "GameScriptingPlugin\GameScriptingPlugin\GameScriptingPlugin.csproj", "{D73086FC-957E-4E3F-97FA-742CBBF02EA6}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2473,5 +2476,6 @@ Global
 		{47241002-7EB5-433B-B931-A530BB6B84EE} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
 		{648E314B-8192-4A1E-B8DF-3B8F58DC15D5} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
 		{D73086FC-957E-4E3F-97FA-742CBBF02EA6} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
+		{0BB8CBE3-8503-46C1-9272-D98E153A230E} = {4532DFDF-D042-4AEE-9FBE-92A1A7BC5F5D}
 	EndGlobalSection
 EndGlobal

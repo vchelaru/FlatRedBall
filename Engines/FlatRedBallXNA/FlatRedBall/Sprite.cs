@@ -436,7 +436,9 @@ namespace FlatRedBall
         #endregion
 
         #region Texture and PixelSize
-
+        /// <summary>
+        /// The texture to be displayed by the Sprite.
+        /// </summary>
         [ExportOrder(0)]
         public Texture2D Texture
         {

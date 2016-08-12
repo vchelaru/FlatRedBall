@@ -328,6 +328,11 @@ namespace FlatRedBall.TileGraphics
         {
             TiledMapSave tms = TiledMapSave.FromFile(fileName);
 
+            // Ultimately properties are tied to tiles by the tile name.
+            // If a tile has no name but it has properties, those properties
+            // will be lost in the conversion. Therefore, we have to add name properties.
+            tms.NameUnnamedTilesetTiles();
+
 
             string directory = FlatRedBall.IO.FileManager.GetDirectory(fileName);
 
@@ -550,6 +555,8 @@ namespace FlatRedBall.TileGraphics
             {
                 SpriteManager.RemoveDrawableBatch(this.mMapLists[i]);
             }
+
+            SpriteManager.RemovePositionedObject(this);
 
             this.mMapLists.MakeTwoWay();
         }
