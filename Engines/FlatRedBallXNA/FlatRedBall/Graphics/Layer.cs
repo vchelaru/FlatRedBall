@@ -35,9 +35,45 @@ namespace FlatRedBall.Graphics
 
         public float ExtraRotationZ = 0;
 
+        /// <summary>
+        /// Sets the top destination for this Layer. 
+        /// </summary>
+        /// <remarks>
+        /// By default, this value is set to -1, 
+        /// which means that the Layer will use its parent Camera's destination. All four destination
+        /// values must be greater than or equal to 0 to be applied. If any are less than -1, then the Camera's
+        /// destination values are used.
+        /// </remarks>
         public float TopDestination = -1;
+        /// <summary>
+        /// Sets the bottom destination for this Layer. Destination Y values increase when moving down the screen, so this value should be greater than TopDestination (if it is not -1).
+        /// </summary>
+        /// <remarks>
+        /// By default, this value is set to -1, 
+        /// which means that the Layer will use its parent Camera's destination. All four destination
+        /// values must be greater than or equal to 0 to be applied. If any are less than -1, then the Camera's
+        /// destination values are used.
+        /// </remarks>
         public float BottomDestination = -1;
+        /// <summary>
+        /// Sets the left destination for this Layer. 
+        /// </summary>
+        /// <remarks>
+        /// By default, this value is set to -1, 
+        /// which means that the Layer will use its parent Camera's destination. All four destination
+        /// values must be greater than or equal to 0 to be applied. If any are less than -1, then the Camera's
+        /// destination values are used.
+        /// </remarks>
         public float LeftDestination = -1;
+        /// <summary>
+        /// Sets the right destination for this Layer. 
+        /// </summary>
+        /// <remarks>
+        /// By default, this value is set to -1, 
+        /// which means that the Layer will use its parent Camera's destination. All four destination
+        /// values must be greater than or equal to 0 to be applied. If any are less than -1, then the Camera's
+        /// destination values are used.
+        /// </remarks>
         public float RightDestination = -1;
 
         public PositionedObject OffsetParent { get; set; }

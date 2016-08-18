@@ -155,6 +155,15 @@ namespace FlatRedBall
 
         #region Properties
 
+        /// <summary>
+        /// Sets whether the Camera will prevent viewports from being larger than the resolution. This value defaults to true.
+        /// </summary>
+        /// <remarks>
+        /// The purpose of this value is to prevent cameras from attempting to draw outside of the window's client bounds. A camera
+        /// which has a viewport larger than the window client bounds will throw an exception. However, cameras (and layers) which render
+        /// to a render target which is larger than the current window should be able to render to the full render target even if it is larger
+        /// than the current window. Therefore, this value should be set to false if rendering to large render targets.
+        /// </remarks>
         public bool ShouldRestrictViewportToResolution
         {
             get;
