@@ -296,9 +296,12 @@ namespace GumPlugin.Managers
         {
             var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
 
-            foreach (var behavior in  gumProject.Behaviors)
+            if(gumProject?.Behaviors != null)
             {
-                GenerateCodeFor(behavior);
+                foreach (var behavior in  gumProject.Behaviors)
+                {
+                    GenerateCodeFor(behavior);
+                }
             }
         }
 
