@@ -4,3 +4,8 @@ The error reads:
 "System.IO.FileNotFoundException : Cannot Load the file or assembly 'Microsoft.DirectX,Version = 1.0.2902.0 , Culture = neutral,PublicKeyToken = 31bf3856ad364e35' or its certain dependency
   at SpriteEditor.GameForm..ctor()
   at SpriteEditor.GameForm.Main(String[] args)"
+  
+I used the install package from your website to install the FRB.
+My Platform is Windows 10.
+I've install each of the components.
+I suppose that maybe you forgot something in the code.
