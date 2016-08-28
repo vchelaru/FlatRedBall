@@ -20,11 +20,9 @@ namespace FlatRedBall.Math.Geometry
 
         static Point mPoint;// for speeding up reference calls
 
-        #region XML Docs
         /// <summary>
         /// The first point of the segment.  
         /// </summary>
-        #endregion
         public Point Point1;
 
         #region XML Docs
@@ -86,8 +84,8 @@ namespace FlatRedBall.Math.Geometry
         /// <summary>
         /// Creates a new Segment with the argument points as the endpoints.
         /// </summary>
-        /// <param name="p1">The first Point.</param>
-        /// <param name="p2">The second Point.</param>
+        /// <param name="point1">The first Point.</param>
+        /// <param name="point2">The second Point.</param>
         #endregion
         public Segment(Point point1, Point point2)
         {

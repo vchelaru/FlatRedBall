@@ -649,6 +649,7 @@
     <Compile Include="Plugins\EmbeddedPlugins\UnreferencedFiles\UnreferencedFilesPlugin.cs" />
     <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\FileCommands.cs" />
     <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\SelectCommands.cs" />
+    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\ValidationResponse.cs" />
     <Compile Include="Plugins\ExportedImplementations\States\Clipboard.cs" />
     <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\IFileCommands.cs" />
     <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\ISelectCommands.cs" />

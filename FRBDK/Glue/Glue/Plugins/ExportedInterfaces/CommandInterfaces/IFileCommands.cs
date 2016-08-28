@@ -21,5 +21,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         List<string> GetAllReferencedFileNames(TopLevelOrRecursive topLevelOrRecursive);
 
         void ClearFileCache(string absoluteName);
+
+        string GetContentFolder(IElement element);
     }
 }

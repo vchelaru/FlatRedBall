@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
@@ -30,13 +31,13 @@ namespace FlatRedBall.Glue.CreatedClass
 
 
 
-        public bool SetCsvRfsToUseCustomClass(ReferencedFileSave currentReferencedFile, CustomClassSave classToUse)
+        public bool SetCsvRfsToUseCustomClass(ReferencedFileSave currentReferencedFile, CustomClassSave classToUse, bool force)
         {
             bool succeeded = false;
 
             if (classToUse != null)
             {
-                succeeded = SetRfsToUseNonNullClass(currentReferencedFile, classToUse, succeeded);
+                succeeded = SetRfsToUseNonNullClass(currentReferencedFile, classToUse, force);
             }
             else
             {
@@ -74,8 +75,9 @@ namespace FlatRedBall.Glue.CreatedClass
             return succeeded;
         }
 
-        private bool SetRfsToUseNonNullClass(ReferencedFileSave currentReferencedFile, CustomClassSave classToUse, bool succeeded)
+        private bool SetRfsToUseNonNullClass(ReferencedFileSave currentReferencedFile, CustomClassSave classToUse, bool force)
         {
+            bool succeeded = false;
             // See if this file is already using one Custom class, and if so, change it
             CustomClassSave customClassAlreadyBeingUsed = GetCustomClassSaveIncludingThis(
                 currentReferencedFile.Name);
@@ -100,9 +102,17 @@ namespace FlatRedBall.Glue.CreatedClass
 
                 if (ProjectManager.ProjectBase.IsFilePartOfProject(file, BuildItemMembershipType.CompileOrContentPipeline))
                 {
-                    DialogResult result = MessageBox.Show("The CSV\n\n" + currentReferencedFile.Name + "\n\nwas using the file\n\n" +
-                        file + "\n\nThis file is no associated with this CSV file.  Would you like to remove this file?", "Remove unused file?", MessageBoxButtons.YesNo);
+                    DialogResult result;
 
+                    if (force)
+                    {
+                        result = DialogResult.Yes;
+                    }
+                    else
+                    {
+                        result = MessageBox.Show("The CSV\n\n" + currentReferencedFile.Name + "\n\nwas using the file\n\n" +
+                            file + "\n\nThis file is no associated with this CSV file.  Would you like to remove this file?", "Remove unused file?", MessageBoxButtons.YesNo);
+                    }
                     if (result == System.Windows.Forms.DialogResult.Yes)
                     {
                         ProjectManager.ProjectBase.RemoveItem(file);
@@ -112,7 +122,7 @@ namespace FlatRedBall.Glue.CreatedClass
                         }
                         catch
                         {
-                            MessageBox.Show("Could not delete file " + file);
+                            PluginManager.ReceiveError("Could not delete file " + file);
                             // Even though the file couldn't be removed, we're going to succeed - the
                             // old file will remain there, and the CSV will use the new one.
                         }

@@ -50,8 +50,6 @@ namespace FlatRedBall.Screens
 
         protected Layer mLayer;
 
-        protected List<Screen> mPopups = new List<Screen>();
-
         private string mContentManagerName;
 
         protected Scene mLastLoadedScene;
@@ -212,7 +210,6 @@ namespace FlatRedBall.Screens
 
             mLayer = ScreenManager.NextScreenLayer;
 
-#if !FRB_MDX
             ActivatingAction = new Action(Activating);
             DeactivatingAction = new Action(OnDeactivating);
 
@@ -223,7 +220,6 @@ namespace FlatRedBall.Screens
             {
                 Activating();
             }
-#endif
         }
 
         #endregion
@@ -269,28 +265,6 @@ namespace FlatRedBall.Screens
                 mAccumulatedPausedTime += TimeManager.SecondDifference;
             }
 
-            for (int i = mPopups.Count - 1; i > -1; i--)
-            {
-                Screen popup = mPopups[i];
-
-                popup.Activity(false);
-                popup.ActivityCallCount++;
-
-                if (popup.IsActivityFinished)
-                {
-                    string nextPopup = popup.NextScreen;
-
-                    popup.Destroy();
-                    mPopups.RemoveAt(i);
-
-                    if (nextPopup != "" && nextPopup != null)
-                    {
-                        LoadPopup(nextPopup, false);
-                    }
-                }
-            }
-
-#if !MONOGAME && !FRB_MDX && !SILVERLIGHT
             // This needs to happen after popup activity
             // in case the Screen creates a popup - we don't
             // want 2 activity calls for one frame.  We also want
@@ -300,7 +274,6 @@ namespace FlatRedBall.Screens
             {
                 this.HandleBackNavigation();
             }
-#endif
         }
 
         Type asyncScreenTypeToLoad = null;
@@ -381,16 +354,10 @@ namespace FlatRedBall.Screens
 
         private void PerformAsyncLoad()
         {
-#if XBOX360
-            
-            // We can not use threads 0 or 2  
-            Thread.CurrentThread.SetProcessorAffinity(4);
-            mNextScreenToLoadAsync = (Screen)Activator.CreateInstance(asyncScreenTypeToLoad);
-#else
             mNextScreenToLoadAsync = (Screen)Activator.CreateInstance(asyncScreenTypeToLoad, new object[0]);
-#endif
+
             // Don't add it to the manager!
-            mNextScreenToLoadAsync.Initialize(false);
+            mNextScreenToLoadAsync.Initialize(addToManagers:false);
 
             AsyncLoadingState = AsyncLoadingState.Done;
         }
@@ -423,10 +390,6 @@ namespace FlatRedBall.Screens
 
 
             FlatRedBall.Debugging.Debugger.DestroyText();
-
-            // All of the popups should be destroyed as well
-            foreach (Screen s in mPopups)
-                s.Destroy();
 
             // It's common for users to forget to add Particle Sprites
             // to the mSprites SpriteList.  This will either create leftover
@@ -512,32 +475,6 @@ namespace FlatRedBall.Screens
         #endregion
 
         #region Protected Methods
-
-        public T LoadPopup<T>(Layer layerToLoadPopupOn) where T : Screen
-        {
-            T loadedScreen = ScreenManager.LoadScreen<T>(layerToLoadPopupOn);
-            mPopups.Add(loadedScreen);
-            return loadedScreen;
-        }
-
-        public Screen LoadPopup(string popupToLoad, Layer layerToLoadPopupOn)
-        {
-            return LoadPopup(popupToLoad, layerToLoadPopupOn, true);
-        }
-
-        public Screen LoadPopup(string popupToLoad, Layer layerToLoadPopupOn, bool addToManagers)
-        {
-            Screen loadedScreen = ScreenManager.LoadScreen(popupToLoad, layerToLoadPopupOn, addToManagers, false);
-            mPopups.Add(loadedScreen);
-            return loadedScreen;
-        }
-
-        public Screen LoadPopup(string popupToLoad, bool useNewLayer)
-        {
-            Screen loadedScreen = ScreenManager.LoadScreen(popupToLoad, useNewLayer);
-            mPopups.Add(loadedScreen);
-            return loadedScreen;
-        }
 
         /// <param name="state">This should be a valid enum value of the concrete screen type.</param>
         public virtual void MoveToState(int state)

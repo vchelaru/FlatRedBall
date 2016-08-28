@@ -697,7 +697,8 @@ namespace FlatRedBall.IO.Csv
 
             if (csvHeaderForKey == CsvHeader.Empty)
             {
-                throw new InvalidOperationException("Could not find a property to use as the key.  You need to put (required) after one of the headers to identify it as required.");
+                throw new InvalidOperationException("Could not find a property to use as the key.  One of the columns needs to be marked as required. " + 
+                    "For example \"Name (string, required)\"");
             }
 
             #endregion

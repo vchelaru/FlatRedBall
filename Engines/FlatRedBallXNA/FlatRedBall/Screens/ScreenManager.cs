@@ -51,6 +51,8 @@ namespace FlatRedBall.Screens
 
         private static List<IDrawableBatch> mPersistentDrawableBatches = new List<IDrawableBatch>();
 
+        private static Action<Screen> nextCallback;
+
         #endregion
 
         #region Properties
@@ -139,17 +141,18 @@ namespace FlatRedBall.Screens
 
             if (mCurrentScreen.IsActivityFinished)
             {
-#if !FRB_MDX
+                string type = mCurrentScreen.NextScreen;
+                Screen asyncLoadedScreen = mCurrentScreen.mNextScreenToLoadAsync;
+
+
+
                 mWasFixedTimeStep = FlatRedBallServices.Game.IsFixedTimeStep;
                 mLastTimeFactor = TimeManager.TimeFactor;
 
                 FlatRedBallServices.Game.IsFixedTimeStep = false;
                 TimeManager.TimeFactor = 0;
-#endif
 
-                GuiManager.Cursor.IgnoreNextClick = true;
-                string type = mCurrentScreen.NextScreen;
-                Screen asyncLoadedScreen = mCurrentScreen.mNextScreenToLoadAsync;
+                GuiManager.Cursor.IgnoreInputThisFrame = true;
 
                 mCurrentScreen.Destroy();
 
@@ -178,14 +181,14 @@ namespace FlatRedBall.Screens
                     // No need to assign mCurrentScreen - this is done by the 4th argument "true"
                     //mCurrentScreen = 
                     LoadScreen(type, null, true, true);
-
-                    mNumberOfFramesSinceLastScreenLoad = 0;
-
                 }
                 else
                 {
 
                     mCurrentScreen = asyncLoadedScreen;
+
+                    nextCallback?.Invoke(mCurrentScreen);
+                    nextCallback = null;
 
                     mCurrentScreen.AddToManagers();
 
@@ -193,8 +196,8 @@ namespace FlatRedBall.Screens
 
 
                     mCurrentScreen.ActivityCallCount++;
-                    mNumberOfFramesSinceLastScreenLoad = 0;
                 }
+                mNumberOfFramesSinceLastScreenLoad = 0;
             }
             else
             {
@@ -203,107 +206,51 @@ namespace FlatRedBall.Screens
         }
 
 
-        public static Screen LoadScreen(string screen, bool createNewLayer)
+        public static void Start<T>() where T : Screen, new()
         {
-            if (createNewLayer)
+            var type = typeof(T);
+            Start(type);
+        }
+
+        /// <summary>
+        /// Ends the current screen and moves to the next screen.
+        /// </summary>
+        /// <param name="screenType">The screen to move to.</param>
+        /// <param name="screenCreatedCallback">An event to call after the screen has been created.</param>
+        /// <remarks>
+        /// This method provides an alternative to the screen managing its own flow through its MoveMoveToScreen method.
+        /// This method can be used by objects outside of screens managing flow.
+        /// </remarks>
+        public static void MoveToScreen(Type screenType, Action<Screen> screenCreatedCallback = null)
+        {
+            if(mCurrentScreen != null)
             {
-                return LoadScreen(screen, SpriteManager.AddLayer());
+                mCurrentScreen.MoveToScreen(screenType);
+                nextCallback = screenCreatedCallback;
             }
             else
             {
-                return LoadScreen(screen, (Layer)null);
+                throw new Exception("There is no current screen to move from. Call Start to create the first screen.");
             }
         }
 
-
-        public static T LoadScreen<T>(Layer layerToLoadScreenOn) where T : Screen
+        public static void MoveToScreen(string screenType, Action<Screen> screenCreatedCallback = null)
         {
-            mNextScreenLayer = layerToLoadScreenOn;
-
-#if XBOX360
-            T newScreen = (T)Activator.CreateInstance(typeof(T));
-#else
-            T newScreen = (T)Activator.CreateInstance(typeof(T), new object[0]);
-#endif
-
-            FlatRedBall.Input.InputManager.CurrentFrameInputSuspended = true;
-
-            newScreen.Initialize(true);
-
-            newScreen.Activity(true);
-
-            newScreen.ActivityCallCount++;
-
-            return newScreen;
-        }
-
-
-        public static Screen LoadScreen(string screen, Layer layerToLoadScreenOn)
-        {
-            return LoadScreen(screen, layerToLoadScreenOn, true, false);
-        }
-
-        public static Screen LoadScreen(string screen, Layer layerToLoadScreenOn, bool addToManagers, bool makeCurrentScreen)
-        {
-            mNextScreenLayer = layerToLoadScreenOn;
-
-            Screen newScreen = null;
-
-            Type typeOfScreen = MainAssembly.GetType(screen);
-
-            if (typeOfScreen == null)
+            if (mCurrentScreen != null)
             {
-                throw new System.ArgumentException("There is no " + screen + " class defined in your project or linked assemblies.");
+                mCurrentScreen.MoveToScreen(screenType);
+                nextCallback = screenCreatedCallback;
             }
-
-            if (screen != null && screen != "")
+            else
             {
-#if XBOX360
-                newScreen = (Screen)Activator.CreateInstance(typeOfScreen);
-#else
-                newScreen = (Screen)Activator.CreateInstance(typeOfScreen, new object[0]);
-#endif
+                throw new Exception("There is no current screen to move from. Call Start to create the first screen.");
             }
-
-            if (newScreen != null)
-            {
-                FlatRedBall.Input.InputManager.CurrentFrameInputSuspended = true;
-
-                if (addToManagers)
-                {
-                    // We do this so that new Screens are the CurrentScreen in Activity.
-                    // This is useful in custom logic.
-                    if (makeCurrentScreen)
-                    {
-                        mCurrentScreen = newScreen;
-                    }
-                    newScreen.Initialize(addToManagers);
-                }
-                mSuppressStatePush = false;
-
-                if (addToManagers)
-                {					
-                    newScreen.Activity(true);
-
-
-                    newScreen.ActivityCallCount++;
-                }
-            }
-
-            return newScreen;
         }
 
-        public static void Start<T>() where T : Screen, new()
-        {
-            mCurrentScreen = LoadScreen<T>(null);
-        }
-
-        #region XML Docs
         /// <summary>
         /// Loads a screen.  Should only be called once during initialization.
         /// </summary>
-        /// <param name="screenToStartWith">Qualified name of the class to load.</param>
-        #endregion
+        /// <param name="screenToStartWithType">Qualified name of the class to load.</param>
         public static void Start(Type screenToStartWithType)
         {
 
@@ -365,6 +312,102 @@ namespace FlatRedBall.Screens
         #endregion
 
         #region Private Methods
+
+        private static Screen LoadScreen(string screen, bool createNewLayer)
+        {
+            if (createNewLayer)
+            {
+                return LoadScreen(screen, SpriteManager.AddLayer());
+            }
+            else
+            {
+                return LoadScreen(screen, (Layer)null);
+            }
+        }
+
+
+        private static T LoadScreen<T>(Layer layerToLoadScreenOn) where T : Screen
+        {
+            mNextScreenLayer = layerToLoadScreenOn;
+
+#if XBOX360
+            T newScreen = (T)Activator.CreateInstance(typeof(T));
+#else
+            T newScreen = (T)Activator.CreateInstance(typeof(T), new object[0]);
+#endif
+
+            FlatRedBall.Input.InputManager.CurrentFrameInputSuspended = true;
+
+            newScreen.Initialize(true);
+
+            newScreen.Activity(true);
+
+            newScreen.ActivityCallCount++;
+
+            return newScreen;
+        }
+
+
+        private static Screen LoadScreen(string screen, Layer layerToLoadScreenOn)
+        {
+            return LoadScreen(screen, layerToLoadScreenOn, true, false);
+        }
+
+        private static Screen LoadScreen(string screen, Layer layerToLoadScreenOn, bool addToManagers, bool makeCurrentScreen)
+        {
+            mNextScreenLayer = layerToLoadScreenOn;
+
+            Screen newScreen = null;
+
+            Type typeOfScreen = MainAssembly.GetType(screen);
+
+            if (typeOfScreen == null)
+            {
+                throw new System.ArgumentException("There is no " + screen + " class defined in your project or linked assemblies.");
+            }
+
+            if (screen != null && screen != "")
+            {
+#if XBOX360
+                newScreen = (Screen)Activator.CreateInstance(typeOfScreen);
+#else
+                newScreen = (Screen)Activator.CreateInstance(typeOfScreen, new object[0]);
+#endif
+            }
+
+            if (newScreen != null)
+            {
+                FlatRedBall.Input.InputManager.CurrentFrameInputSuspended = true;
+
+                if (addToManagers)
+                {
+                    // We do this so that new Screens are the CurrentScreen in Activity.
+                    // This is useful in custom logic.
+                    if (makeCurrentScreen)
+                    {
+                        mCurrentScreen = newScreen;
+                    }
+                    newScreen.Initialize(addToManagers);
+                }
+                mSuppressStatePush = false;
+
+                nextCallback?.Invoke(newScreen);
+                nextCallback = null;
+
+
+                if (addToManagers)
+                {
+                    newScreen.Activity(true);
+
+
+                    newScreen.ActivityCallCount++;
+                }
+            }
+
+            return newScreen;
+        }
+
+
         public static void CheckAndWarnIfNotEmpty()
         {
 

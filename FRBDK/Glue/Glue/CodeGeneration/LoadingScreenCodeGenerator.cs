@@ -35,6 +35,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             if (IsLoadingScreen(element))
             {
                 codeBlock.Line("double mSavedTargetElapedTime;");
+
+                codeBlock.Line("private static System.Action<FlatRedBall.Screens.Screen> nextCallback;");
             }
             return codeBlock;
         }
@@ -78,19 +80,20 @@ namespace FlatRedBall.Glue.CodeGeneration
                     FileManager.RemovePath(element.Name);
 
                 
-
+                
                 codeBlock
-                    .Function("public static void", "TransitionToScreen", "System.Type screenType")
-                        .Line("TransitionToScreen(screenType.FullName);")
+                    .Function("public static void", "TransitionToScreen", "System.Type screenType, System.Action<FlatRedBall.Screens.Screen> screenCreatedCallback = null")
+                        .Line("TransitionToScreen(screenType.FullName, screenCreatedCallback);")
                     .End();
 
 
                 codeBlock
-                    .Function("public static void", "TransitionToScreen", "string screenName")
+                    .Function("public static void", "TransitionToScreen", "string screenName, System.Action<FlatRedBall.Screens.Screen> screenCreatedCallback = null")
                         .Line("Screen currentScreen = ScreenManager.CurrentScreen;")
                         .Line("currentScreen.IsActivityFinished = true;")
                         .Line("currentScreen.NextScreen = typeof(" + screenName + ").FullName;")
                         .Line("mNextScreenToLoad = screenName;")
+                        .Line("nextCallback = screenCreatedCallback;")
                     .End();
 
 
@@ -112,8 +115,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                             .End()
                             .Case("FlatRedBall.Screens.AsyncLoadingState.Done")
                     // The loading screen can be used to rehydrate.  
-                                .Line("ScreenManager.ShouldActivateScreen = false;")
-                                .Line("IsActivityFinished = true;")
+                                .Line("FlatRedBall.Screens.ScreenManager.ShouldActivateScreen = false;")
+                                
+                                .Line("FlatRedBall.Screens.ScreenManager.MoveToScreen(mNextScreenToLoad, nextCallback);")
                             .End()
                         .End()
                     .End();

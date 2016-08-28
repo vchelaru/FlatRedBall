@@ -447,7 +447,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         }
 
-        public void SetPropertyValue(string propertyName, object valueToSet)
+        public void SetCustomVariable(string propertyName, object valueToSet)
         {
             for (int i = 0; i < CustomVariables.Count; i++)
             {

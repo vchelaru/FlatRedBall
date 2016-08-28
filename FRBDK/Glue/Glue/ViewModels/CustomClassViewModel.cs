@@ -18,7 +18,7 @@ namespace FlatRedBall.Glue.ViewModels
             {
                 if (classToUse != null)
                 {
-                    CustomClassController.Self.SetCsvRfsToUseCustomClass(currentReferencedFile, classToUse);
+                    CustomClassController.Self.SetCsvRfsToUseCustomClass(currentReferencedFile, classToUse, force:false);
                 }
 
             }

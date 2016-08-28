@@ -149,6 +149,36 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        public ValidationResponse AddNewCustomClass(string className, out CustomClassSave customClassSave)
+        {
+            ValidationResponse validationResponse = new ValidationResponse();
+            customClassSave = null;
+            string whyIsntValid;
+            if (!NameVerifier.IsCustomClassNameValid(className, out whyIsntValid))
+            {
+                validationResponse.OperationResult = OperationResult.Failure;
+                validationResponse.Message = whyIsntValid;
+            }
+            else if (ProjectManager.GlueProjectSave.GetCustomClass(className) != null)
+            {
+                validationResponse.OperationResult = OperationResult.Failure;
+                validationResponse.Message = $"The custom class {className} already exists";
+            }
+            else
+            {
+                validationResponse.OperationResult = OperationResult.Success;
+                customClassSave = new CustomClassSave();
+                customClassSave.Name = className;
+                ProjectManager.GlueProjectSave.CustomClasses.Add(customClassSave);
+
+                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GenerateCodeCommands.GenerateCustomClassesCode();
+
+            }
+
+            return validationResponse;
+        }
+
         public ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool useFullPathAsName)
         {
             return Glue.Plugins.ExportedImplementations.CommandInterfaces.ElementCommands.Self.AddReferencedFileToGlobalContent(fileToAdd, useFullPathAsName);
@@ -595,6 +625,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             ProjectManager.GlueSettingsSave.Save();
         }
+
+
+
 
         #endregion
 

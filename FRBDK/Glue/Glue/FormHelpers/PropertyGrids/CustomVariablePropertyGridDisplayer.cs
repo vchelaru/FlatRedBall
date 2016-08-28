@@ -214,20 +214,17 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             if (GetShouldCustomVariableBeConvertedToType(args, variable))
             {
                 var variableRuntimeType = variable.GetRuntimeType();
-                if (variableRuntimeType == typeof(Type))
-                {
-                    int m = 3;
-                }
+
                 value = PropertyValuePair.ConvertStringToType((string)args.Value, variableRuntimeType);
             }
 
             if (EditorLogic.CurrentEntitySave != null)
             {
-                EditorLogic.CurrentEntitySave.SetPropertyValue(EditorLogic.CurrentCustomVariable.Name, value);
+                EditorLogic.CurrentEntitySave.SetCustomVariable(EditorLogic.CurrentCustomVariable.Name, value);
             }
             else
             {
-                EditorLogic.CurrentScreenSave.SetPropertyValue(EditorLogic.CurrentCustomVariable.Name, value);
+                EditorLogic.CurrentScreenSave.SetCustomVariable(EditorLogic.CurrentCustomVariable.Name, value);
 
             }
         }

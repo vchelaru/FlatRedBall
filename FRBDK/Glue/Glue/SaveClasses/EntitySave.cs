@@ -639,11 +639,11 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
         
-        public void SetPropertyValue(string propertyName, object valueToSet)
+        public void SetCustomVariable(string customVariableName, object valueToSet)
         {
             for (int i = 0; i < CustomVariables.Count; i++)
             {
-                if (CustomVariables[i].Name == propertyName)
+                if (CustomVariables[i].Name == customVariableName)
                 {
                     CustomVariable cv = CustomVariables[i];
                     cv.DefaultValue = valueToSet;

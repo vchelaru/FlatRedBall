@@ -82,22 +82,17 @@ namespace FlatRedBall.Glue.Controls
             {
                 string newClassName = tiw.Result;
 
-                string whyIsntValid;
+                CustomClassSave newClass;
 
-                if (!NameVerifier.IsScreenNameValid(tiw.Result, null, out whyIsntValid))
+                var response = GlueCommands.Self.GluxCommands.AddNewCustomClass(newClassName, out newClass);
+
+                if(response.OperationResult == Plugins.ExportedInterfaces.CommandInterfaces.OperationResult.Failure)
                 {
-                    MessageBox.Show(whyIsntValid);
+                    MessageBox.Show(response.Message);
                 }
                 else
                 {
-                    if (ProjectManager.GlueProjectSave.GetCustomClass(newClassName) == null)
-                    {
-                        CustomClassSave ccs = new CustomClassSave();
-                        ccs.Name = newClassName;
-                        ProjectManager.GlueProjectSave.CustomClasses.Add(ccs);
-
-                        UpdateTreeView();
-                    }
+                    UpdateTreeView();
                 }
             }
         }
@@ -195,7 +190,7 @@ namespace FlatRedBall.Glue.Controls
                         // This thing is a CSV file that is using this class
 
                         shouldRemoveCurrent = CustomClassController.Self.SetCsvRfsToUseCustomClass(
-                            ObjectFinder.Self.GetReferencedFileSaveFromFile(node.Text), null);
+                            ObjectFinder.Self.GetReferencedFileSaveFromFile(node.Text), null, force:false);
                     }
 
                     if (shouldRemoveCurrent)

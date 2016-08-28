@@ -221,6 +221,36 @@ namespace FlatRedBall.Glue.SaveClasses
             return returnValue;
         }
 
+        internal static bool IsCustomClassNameValid(string name, out string whyItIsntValid)
+        {
+            whyItIsntValid = "";
+
+            CheckForCommonImproperNames(name, ref whyItIsntValid);
+
+            if (ObjectFinder.Self.GetScreenSave("Screens\\" + name) != null)
+            {
+                whyItIsntValid = "There is already an Screen named " + name;
+            }
+            else if (ObjectFinder.Self.GetReferencedFileSaveFromFile("Screens\\" + name) != null)
+            {
+                whyItIsntValid = "There is already a file named " + name;
+            }
+            else if (mReservedClassNames.Contains(name))
+            {
+                whyItIsntValid = "The name " + name + " is a reserved class name, so it can't be used for a Screen";
+            }
+            else if (ObjectFinder.Self.GetEntitySaveUnqualified(name) != null)
+            {
+                whyItIsntValid = "There is already an Entity named " + name + ".\n\n" +
+                    "Glue recommends naming the Class something different than existing Entities.";
+            }
+            else if (name == ProjectManager.ProjectNamespace)
+            {
+                whyItIsntValid = "The class cannot be named the same as the root namespace (which is usually the same name as the project)";
+            }
+            return string.IsNullOrEmpty(whyItIsntValid);
+        }
+
         private static void CheckForRfsWithMatchingFileName(IElement container, string name, ReferencedFileSave rfsToSkip, ref string whyItIsntValid)
         {
 

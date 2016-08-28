@@ -179,7 +179,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        public string GetContentFolder(IElement element)
+        {
+            string contentFolder = ProjectManager.ContentDirectory;
 
+            string relativeElementFolder = element.Name + "/";
+
+            return contentFolder + relativeElementFolder;
+        }
 
     }
 
