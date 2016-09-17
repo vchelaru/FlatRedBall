@@ -83,7 +83,8 @@ namespace OfficialPlugins.VariableDisplay
 
                 instanceMember.CustomGetEvent += (instance) =>
                     {
-                        return element.GetCustomVariableRecursively(name).DefaultValue;
+                        var foundVariable = element.GetCustomVariableRecursively(name);
+                        return foundVariable?.DefaultValue;
                     };
 
                 instanceMember.IsDefaultSet += (owner, args) =>

@@ -143,7 +143,14 @@ namespace FlatRedBall.TileCollisions
             return toReturn;
         }
 
+        public bool CollideAgainstBounce(ICollidable collidable, float elasticity)
+        {
+            bool toReturn = false;
 
+            toReturn = mShapes.CollideAgainstBounce(collidable.Collision, true, mSortAxis, 1, 0, elasticity);
+
+            return toReturn;
+        }
 
         public AxisAlignedRectangle GetTileAt(float x, float y)
         {

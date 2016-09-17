@@ -1883,13 +1883,12 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-        #region XML Docs
         /// <summary>
-        /// Returns a vector from the argument vector to the closest point on this.
+        /// Returns a vector from the argument vector to the closest point on the Polygon's edges. This method considers
+        /// only the perimeter, so an argument point inside the polygon will still return a non-zero-length vector.
         /// </summary>
         /// <param name="vector">The point to start from.</param>
         /// <returns>A vector representing the distance from the argument vector to this.</returns>
-        #endregion
         public Point3D VectorFrom(Point3D vector)
         {
 
@@ -1929,7 +1928,8 @@ namespace FlatRedBall.Math.Geometry
 
         private static int sThrowAwayInt;
         /// <summary>
-        /// Returns a vector from the argument point to the closest point on this Polygon.
+        /// Returns a vector from the argument vector to the closest point on the Polygon's edges. This method considers
+        /// only the perimeter, so an argument point inside the polygon will still return a non-zero-length vector.
         /// </summary>
         /// <param name="x">The absolute X to check against the polygon.</param>
         /// <param name="y">The absolute Y to check against the polygon.</param>
@@ -1940,7 +1940,8 @@ namespace FlatRedBall.Math.Geometry
         }
 
         /// <summary>
-        /// Returns a value representing the vector from teh argument to the closest point on the Polygon.
+        /// Returns a vector from the argument vector to the closest point on the Polygon's edges. This method considers
+        /// only the perimeter, so an argument point inside the polygon will still return a non-zero-length vector.
         /// </summary>
         /// <param name="x">The absolute X to check against the polygon.</param>
         /// <param name="y">The absolute Y to check against the polygon.</param>

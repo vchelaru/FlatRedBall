@@ -33,15 +33,13 @@ namespace FlatRedBall.Math.Splines
     }
     #endregion
 
+    /// <summary>
+    /// A curved line which can be used to move objects, direct AI, or create special effects.
+    /// </summary>
     public class Spline : IList<SplinePoint>, INameable//, ICloneable
     {
         #region Fields
 
-        public float PointFrequency
-        {
-            get;
-            set;
-        }
 
         List<SplinePoint> mSplinePoints = new List<SplinePoint>();
 
@@ -59,6 +57,18 @@ namespace FlatRedBall.Math.Splines
 
         #region Properties
 
+        /// <summary>
+        /// The frequency (in time) to create shapes when Visible is set to true.
+        /// </summary>
+        public float PointFrequency
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// The duration of the spline in time, calculated as the amount of time between the first spline point and the last.
+        /// </summary>
         public double Duration
         {
             get
@@ -75,6 +85,11 @@ namespace FlatRedBall.Math.Splines
             }
         }
 
+        /// <summary>
+        /// The estimated length of the spline, as determined by calling CalculateDistanceTimeRelationships. This value
+        /// is not available until CalculateDistanceTimeRelationships is called. CalculateDistanceTimeRelationships must be
+        /// called if the spline changes or else this value may not be accurate.
+        /// </summary>
         public double Length
         {
             get
@@ -161,6 +176,9 @@ namespace FlatRedBall.Math.Splines
 
         #region Constructor
 
+        /// <summary>
+        /// Constructs a Spline with no points. Points can be added by calling the Add method.
+        /// </summary>
         public Spline()
         {
             PointColor = Color.White;
@@ -170,7 +188,12 @@ namespace FlatRedBall.Math.Splines
             SplinePointRadiusInPixels = 8;
         }
 
-
+        /// <summary>
+        /// Creates a spline given a set of points and a time to take. The time assigned to each point is evenly spaced.
+        /// The first point will have a Time of 0, the last will have a time of timeToTake.
+        /// </summary>
+        /// <param name="points">The points, evenly distributed over timeToTake.</param>
+        /// <param name="timeToTake">The duration in time of the entire spline.</param>
         public Spline(IList<Vector3> points, double timeToTake)
         {
             SplinePointRadiusInPixels = 8;
@@ -221,6 +244,7 @@ namespace FlatRedBall.Math.Splines
             mAccelerationsCalculated = true;
 #endif
         }
+
 
         public void CalculateVelocities()
         {
@@ -357,6 +381,15 @@ namespace FlatRedBall.Math.Splines
 
         public Vector3 GetPositionAtTime(double time)
         {
+            SplinePoint before;
+            SplinePoint after;
+            return GetPositionAtTime(time, out before, out after);
+        }
+
+        private Vector3 GetPositionAtTime(double time, out SplinePoint before, out SplinePoint after)
+        {
+            before = null;
+            after = null;
             #region Special-case for a count of 0 or 1
             if (mSplinePoints.Count == 0)
                 return new Vector3();
@@ -376,57 +409,77 @@ namespace FlatRedBall.Math.Splines
                 {
                     return splinePoint.Position;
                 }
+                else if(splinePoint.Time > time)
+                {
+                    break;
+                }
+
             }
 
             #endregion
 
             #region If we get here that means we're between SplinePoints
 
-            SplinePoint start = GetSplinePointBefore(time);
-            SplinePoint end = GetSplinePointAfter(time);
+            before = GetSplinePointBefore(time);
+            after = GetSplinePointAfter(time);
 
+            Vector3 toReturn = GetPositionBetweenSplinePoints(before, after, time);
+
+
+            #endregion
+
+            return toReturn;
+        }
+
+
+        private Vector3 GetPositionBetweenSplinePoints(SplinePoint start, SplinePoint end, double time)
+        {
+            Vector3 toReturn;
             if (end == null)
             {
                 // There's nothing after this time, so just return the end position
-                return mSplinePoints[mSplinePoints.Count - 1].Position;
+                toReturn = mSplinePoints[mSplinePoints.Count - 1].Position;
             }
 
-            if (start == null)
+            else if (start == null)
             {
                 // there's nothing before this time, so just return the start position
-                return mSplinePoints[0].Position;
-            }
-
-            // If we get here that means that there are at least 2 SplinePoints in this Spline
-            // and that the time is between these two points.  We can do our average calculations
-            // to see where the points lie.
-            double timeBetweenPoints = end.Time - start.Time;
-
-            Vector3 midpointVelocity = (2 / (float)timeBetweenPoints) * (end.Position - start.Position) -
-                (start.Velocity + end.Velocity) * (1 / 2.0f);
-
-            double midpointTime = start.Time + timeBetweenPoints / 2.0;
-
-            if (time < midpointTime)
-            {
-
-                return MathFunctions.GetPositionAfterTime(
-                    ref start.Position, ref start.Velocity, ref start.Acceleration, time - start.Time);
-
+                toReturn = mSplinePoints[0].Position;
             }
             else
             {
-                Vector3 midPosition = MathFunctions.GetPositionAfterTime(
-                    ref start.Position, ref start.Velocity, ref start.Acceleration, midpointTime - start.Time);
 
-                Vector3 midpointAcceleration = (end.Velocity - midpointVelocity) * (1 / (float)(timeBetweenPoints * .5f));
+                // If we get here that means that there are at least 2 SplinePoints in this Spline
+                // and that the time is between these two points.  We can do our average calculations
+                // to see where the points lie.
+                double timeBetweenPoints = end.Time - start.Time;
 
-                return MathFunctions.GetPositionAfterTime(
-                    ref midPosition, ref midpointVelocity, ref midpointAcceleration,
-                    time - midpointTime);
+                Vector3 midpointVelocity = (2 / (float)timeBetweenPoints) * (end.Position - start.Position) -
+                    (start.Velocity + end.Velocity) * (1 / 2.0f);
+
+                double midpointTime = start.Time + timeBetweenPoints / 2.0;
+
+                if (time < midpointTime)
+                {
+
+                    toReturn = MathFunctions.GetPositionAfterTime(
+                        ref start.Position, ref start.Velocity, ref start.Acceleration, time - start.Time);
+
+                }
+                else
+                {
+                    Vector3 midPosition = MathFunctions.GetPositionAfterTime(
+                        ref start.Position, ref start.Velocity, ref start.Acceleration, midpointTime - start.Time);
+
+                    Vector3 midpointAcceleration = (end.Velocity - midpointVelocity) * (1 / (float)(timeBetweenPoints * .5f));
+
+                    toReturn = MathFunctions.GetPositionAfterTime(
+                        ref midPosition, ref midpointVelocity, ref midpointAcceleration,
+                        time - midpointTime);
+                }
             }
 
-            #endregion
+            return toReturn;
         }
 
         public Vector3 GetVectorAtTime(double time)
@@ -539,15 +592,40 @@ namespace FlatRedBall.Math.Splines
             float shortestDistSquared = float.MaxValue;
             int shortestIndex = -1;
 
-            for (int i = 0; i < mDistanceToTimes.Count; ++i)
-            {
-                DistanceToTimeRelationship currentItem = mDistanceToTimes[i];
-#if FRB_MDX
-                float currentDistSquared = (testPoint - GetPositionAtTime(currentItem.Time)).LengthSq();
-#else
+            SplinePoint before = null;
+            SplinePoint after = null;
 
-                float currentDistSquared = Vector3.DistanceSquared(testPoint, GetPositionAtTime(currentItem.Time));
-#endif
+
+            Vector3 positionAtTime = Vector3.Zero;
+            bool handled = false;
+            bool isInRange = false;
+            float currentDistSquared;
+            DistanceToTimeRelationship currentItem;
+
+            var count = mDistanceToTimes.Count;
+
+            for (int i = 0; i < count; ++i)
+            {
+                currentItem = mDistanceToTimes[i];
+                handled = false;
+                if (before != null && after != null)
+                {
+                    isInRange = currentItem.Time > before.Time && currentItem.Time < after.Time;
+
+                    if(isInRange)
+                    {
+                        positionAtTime = GetPositionBetweenSplinePoints(before, after, currentItem.Time);
+                        handled = true;
+                    }
+                }
+
+                if (!handled)
+                {
+                    positionAtTime = GetPositionAtTime(currentItem.Time, out before, out after);
+                }
+
+                currentDistSquared = Vector3.DistanceSquared(testPoint, positionAtTime);
+
                 if (currentDistSquared < shortestDistSquared)
                 {
                     shortestDistSquared = currentDistSquared;

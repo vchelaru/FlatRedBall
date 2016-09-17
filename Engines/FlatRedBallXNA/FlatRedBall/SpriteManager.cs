@@ -472,6 +472,10 @@ namespace FlatRedBall
             get { return mSpriteFramesReadOnly; }
         }
 
+        /// <summary>
+        /// A read-only, ordered list of layers. This does not contain camera-specific layers.
+        /// Layers with a higher index will be drawn on top of layers with a lower index.
+        /// </summary>
         public static ReadOnlyCollection<Layer> Layers
         {
             get { return mLayersReadOnly; }
@@ -2204,6 +2208,11 @@ namespace FlatRedBall
 
         #region MoveToFront/Back (Layer reordering)
 
+        /// <summary>
+        /// Moves the argument layer to the back (to index 0), so that all other layers
+        /// draw on top of the argument layer.
+        /// </summary>
+        /// <param name="layer"></param>
         public static void MoveToBack(Layer layer)
         {
             mLayers.Remove(layer);

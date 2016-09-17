@@ -60,6 +60,8 @@ namespace GumPlugin.CodeGeneration
         {
             if (ShouldGenerate)
             {
+                // Creates Gum layers for every FRB layer, so that objects can be moved between layers at runtime, and so code gen
+                // can use these for objects that are placed on layers in Glue.
                 foreach (var layer in GetObjectsForGumLayers(element))
                 {
                     var rfs = GetScreenRfsIn(element);

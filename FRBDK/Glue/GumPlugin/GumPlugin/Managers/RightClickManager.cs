@@ -17,8 +17,31 @@ namespace GumPlugin.Managers
         
         public void HandleTreeViewRightClick(System.Windows.Forms.TreeNode rightClickedTreeNode, System.Windows.Forms.ContextMenuStrip menuToModify)
         {
-            bool shouldContinue = true;
+            TryAddAddGumScreenItem(rightClickedTreeNode, menuToModify);
 
+            TryAddRegenerateGumElement(rightClickedTreeNode, menuToModify);
+        }
+
+        private void TryAddRegenerateGumElement(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        {
+            var file = rightClickedTreeNode.Tag as ReferencedFileSave;
+            if(file != null)
+            {
+
+                var newMenu = new ToolStripMenuItem("Regenerate Code");
+                menuToModify.Items.Add(newMenu);
+                newMenu.Click += delegate
+                {
+                    var fileName = GlueCommands.Self.GetAbsoluteFileName(file);
+                    CodeGeneratorManager.Self.GenerateDueToFileChange(fileName);
+
+                };
+            }
+        }
+
+        private bool TryAddAddGumScreenItem(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        {
+            bool shouldContinue = true;
             if (!rightClickedTreeNode.IsFilesContainerNode() || !rightClickedTreeNode.Parent.IsScreenNode())
             {
                 shouldContinue = false;
@@ -34,7 +57,7 @@ namespace GumPlugin.Managers
 
             }
 
-            if(shouldContinue)
+            if (shouldContinue)
             {
                 string fullFileName = GlueCommands.Self.GetAbsoluteFileName(gumxRfs);
 
@@ -62,6 +85,8 @@ namespace GumPlugin.Managers
                     }
                 }
             }
+
+            return shouldContinue;
         }
 
         private void HandleScreenToAddClick(object sender, EventArgs e)

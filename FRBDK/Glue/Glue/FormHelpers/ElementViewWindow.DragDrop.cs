@@ -1336,6 +1336,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 GluxCommands.Self.SaveGlux();
                 ProjectManager.SaveProjects();
+
+                GlueState.Self.CurrentElement = treeNodeMoving.SaveObjectAsElement;
             }
         }
 
@@ -1346,12 +1348,19 @@ namespace FlatRedBall.Glue.FormHelpers
 
             foreach (string file in allFiles)
             {
-                string contents = FileManager.FromFileText(file);
+                bool doesFileExist = System.IO.File.Exists(file);
+                bool isFactory = GetIfFileIsFactory(entitySave, file);
+
+                if(doesFileExist && !isFactory)
+                {
+                    string contents = FileManager.FromFileText(file);
                 
-                contents = CodeWriter.ReplaceNamespace(contents, newNamespace);
+                    contents = CodeWriter.ReplaceNamespace(contents, newNamespace);
 
-                FileManager.SaveText(contents, file);
+                    FileManager.SaveText(contents, file);
 
+
+                }
             }
 
             return true;
@@ -1364,12 +1373,14 @@ namespace FlatRedBall.Glue.FormHelpers
             var allFiles = CodeWriter.GetAllCodeFilesFor(entitySave);
             foreach (string file in allFiles)
             {
+                bool isFactory = GetIfFileIsFactory(entitySave, file);
+
                 if (!succeeded)
                 {
                     break;
                 }
 
-                if (File.Exists(file))
+                if (File.Exists(file) && !isFactory)
                 {
                     string relative = FileManager.MakeRelative(file);
                     succeeded = MoveSingleCodeFileToDirectory(relative, targetDirectory);
@@ -1377,6 +1388,11 @@ namespace FlatRedBall.Glue.FormHelpers
             }
 
             return succeeded;
+        }
+
+        private static bool GetIfFileIsFactory(EntitySave entitySave, string file)
+        {
+            return file.EndsWith("Factories/" + entitySave.ClassName + "Factory.Generated.cs");
         }
 
         static bool MoveSingleCodeFileToDirectory(string relativeCodeFile, string directory)

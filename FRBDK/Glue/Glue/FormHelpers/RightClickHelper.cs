@@ -1733,8 +1733,28 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 string locationToShow = ProjectManager.MakeAbsolute(EditorLogic.CurrentTreeNode.GetRelativePath(), true);
 
-                locationToShow = locationToShow.Replace("/", "\\");
-                Process.Start("explorer.exe", "/select," + locationToShow);
+                if(System.IO.Directory.Exists(locationToShow))
+                {
+                    locationToShow = locationToShow.Replace("/", "\\");
+                    Process.Start("explorer.exe", "/select," + locationToShow);
+                }
+                else
+                {
+                    if(GlueState.Self.CurrentElement != null)
+                    {
+                        string screenOrEntity = "screen";
+                        if(GlueState.Self.CurrentEntitySave != null)
+                        {
+                            screenOrEntity = "entity";
+                        }
+                        MessageBox.Show($"This {screenOrEntity} does not have a content folder. It will be created when a file is added to this {screenOrEntity}.");
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Glue has not created this content folder yet since it doesn't contain any files.");
+
+                    }
+                }
             }
         }
 
