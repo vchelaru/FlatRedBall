@@ -97,7 +97,8 @@ namespace FlatRedBall.TileEntities
                 entity.Z = layer.Z;
             }
 
-            var lateBinder = Instructions.Reflection.LateBinder.GetInstance(entity.GetType());
+            var entityType = entity.GetType();
+            var lateBinder = Instructions.Reflection.LateBinder.GetInstance(entityType);
 
             foreach (var property in propertiesToAssign)
             {
