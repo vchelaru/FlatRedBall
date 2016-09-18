@@ -11,6 +11,14 @@ using FlatRedBall.Glue.SaveClasses;
 
 namespace GumPlugin.CodeGeneration
 {
+    public class StateCodeGeneratorContext
+    {
+        public ElementSave Element { get; set; }
+        
+    }
+
+
+
     public partial class StateCodeGenerator
     {
         
@@ -20,61 +28,12 @@ namespace GumPlugin.CodeGeneration
             Relative
         }
 
-        ElementSave mElementSaveContext;
-
-        private void GenerateAnimateForCategory(ICodeBlock currentBlock, string categoryName, List<Gum.DataTypes.Variables.StateSave> states)
-        {
-            string propertyToAssign;
-            if (categoryName == "VariableState")
-            {
-                propertyToAssign = "this.CurrentVariableState";
-            }
-            else
-            {
-                propertyToAssign = "this.Current" + categoryName + "State";
-            }
-            currentBlock = currentBlock.Function("public void", "Animate",
-                "System.Collections.Generic.IEnumerable<FlatRedBall.Gum.Keyframe<" + categoryName + ">> keyframes");
-            {
-                currentBlock.Line("bool isFirst = true;");
-                currentBlock.Line("FlatRedBall.Gum.Keyframe<" + categoryName + "> lastKeyframe = null;");
-
-                var foreachBlock = currentBlock.ForEach("var frame in keyframes");
-                {
-                    var ifBlock = foreachBlock.If("isFirst");
-                    {
-                        ifBlock.Line("isFirst = false;");
-                        ifBlock.Line(propertyToAssign + " = frame.State;");
-
-                    }
-                    var elseBlock = ifBlock.End().Else();
-                    {
-                        elseBlock.Line("float timeToTake = frame.Time - lastKeyframe.Time;");
-                        elseBlock.Line("var fromState = lastKeyframe.State;");
-                        elseBlock.Line("var toState = frame.State;");
-                        elseBlock.Line("var interpolationType = lastKeyframe.InterpolationType;");
-                        elseBlock.Line("var easing = lastKeyframe.Easing;");
-
-                        elseBlock.Line(
-                            "System.Action action = () => this.InterpolateTo(fromState, toState, timeToTake, interpolationType, easing, {});");
-
-                        elseBlock.Line(
-                            "FlatRedBall.Instructions.DelegateInstruction instruction = new FlatRedBall.Instructions.DelegateInstruction(action);");
-                        elseBlock.Line("instruction.Target = this;");
-                        elseBlock.Line("instruction.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + lastKeyframe.Time;");
-
-                        elseBlock.Line("FlatRedBall.Instructions.InstructionManager.Instructions.Add(instruction);");
-                    }
-
-                    foreachBlock.Line("lastKeyframe = frame;");
-                }
-            }
-        }
-
         private void GenerateAnimationEnumerables(ElementSave elementSave, ICodeBlock currentBlock)
         {
             currentBlock.Line("#region State Animations");
 
+            StateCodeGeneratorContext context = new StateCodeGeneratorContext();
+            context.Element = elementSave;
 
             ElementAnimationsSave animations = GetAnimationsFor(elementSave);
 
@@ -82,11 +41,11 @@ namespace GumPlugin.CodeGeneration
             {
                 foreach(var animation in animations.Animations)
                 {
-                    GenerateEnumerableFor(elementSave, currentBlock, animation, AbsoluteOrRelative.Absolute);
-                    GenerateEnumerableFor(elementSave, currentBlock, animation, AbsoluteOrRelative.Relative);
+                    GenerateEnumerableFor(context, currentBlock, animation, AbsoluteOrRelative.Absolute);
+                    GenerateEnumerableFor(context, currentBlock, animation, AbsoluteOrRelative.Relative);
 
-                    GenerateAnimationMember(elementSave, currentBlock, animation, AbsoluteOrRelative.Absolute);
-                    GenerateAnimationMember(elementSave, currentBlock, animation, AbsoluteOrRelative.Relative);
+                    GenerateAnimationMember(context, currentBlock, animation, AbsoluteOrRelative.Absolute);
+                    GenerateAnimationMember(context, currentBlock, animation, AbsoluteOrRelative.Relative);
                 }
             }
 
@@ -109,7 +68,7 @@ namespace GumPlugin.CodeGeneration
             return animations;
         }
 
-        private void GenerateAnimationMember(ElementSave elementSave, ICodeBlock currentBlock, AnimationSave animation, AbsoluteOrRelative absoluteOrRelative)
+        private void GenerateAnimationMember(StateCodeGeneratorContext context, ICodeBlock currentBlock, AnimationSave animation, AbsoluteOrRelative absoluteOrRelative)
         {
             string propertyName = animation.PropertyNameInCode();
             if (absoluteOrRelative == AbsoluteOrRelative.Relative)
@@ -146,7 +105,7 @@ namespace GumPlugin.CodeGeneration
 
 
 
-            float length = GetAnimationLength(elementSave, animation);
+            float length = GetAnimationLength(context.Element, animation);
 
             string lengthAsString = ToFloatString(length);
 
@@ -173,7 +132,7 @@ namespace GumPlugin.CodeGeneration
             currentBlock.Line($"return {fieldName};");
         }
 
-        private float GetAnimationLength(ElementSave elementSave, AnimationSave animation)
+        private float GetAnimationLength(ElementSave element, AnimationSave animation)
         {
             float max = 0;
 
@@ -194,7 +153,7 @@ namespace GumPlugin.CodeGeneration
 
                 if(!string.IsNullOrEmpty( item.SourceObject))
                 {
-                    var instance = elementSave.GetInstance(item.SourceObject);
+                    var instance = element.GetInstance(item.SourceObject);
 
                     // This may refer to an instance that was deleted at some point:
                     if (instance != null)
@@ -209,8 +168,8 @@ namespace GumPlugin.CodeGeneration
                 }
                 else
                 {
-                    subElement = elementSave;
-                    subAnimation = GetAnimationsFor(elementSave).Animations.FirstOrDefault(candidate => candidate.Name == item.RootName);
+                    subElement = element;
+                    subAnimation = GetAnimationsFor(element).Animations.FirstOrDefault(candidate => candidate.Name == item.RootName);
                 }
 
                 if (subElement != null && subAnimation != null)
@@ -222,10 +181,8 @@ namespace GumPlugin.CodeGeneration
             return max;
         }
 
-        private void GenerateEnumerableFor(ElementSave elementSave, ICodeBlock currentBlock, AnimationSave animation, AbsoluteOrRelative absoluteOrRelative)
+        private void GenerateEnumerableFor(StateCodeGeneratorContext context, ICodeBlock currentBlock, AnimationSave animation, AbsoluteOrRelative absoluteOrRelative)
         {
-            mElementSaveContext = elementSave;
-
             string animationType = "VariableState";
 
             string animationName = animation.PropertyNameInCode();
@@ -258,9 +215,9 @@ namespace GumPlugin.CodeGeneration
             {
                 if (animation.States.Count != 0)
                 {
-                    var firstState = elementSave.AllStates.FirstOrDefault(item => item.Name == animation.States.First().StateName);
+                    var firstState = context.Element.AllStates.FirstOrDefault(item => item.Name == animation.States.First().StateName);
 
-                    var category = elementSave.Categories.FirstOrDefault(item => item.States.Contains(firstState));
+                    var category = context.Element.Categories.FirstOrDefault(item => item.States.Contains(firstState));
 
                     if (category != null)
                     {
@@ -270,7 +227,7 @@ namespace GumPlugin.CodeGeneration
 
                 currentBlock = currentBlock.Property("private System.Collections.Generic.IEnumerable<FlatRedBall.Instructions.Instruction>", propertyName).Get();
 
-                GenerateOrderedStateAndSubAnimationCode(currentBlock, animation, animationType, absoluteOrRelative);
+                GenerateOrderedStateAndSubAnimationCode(context, currentBlock, animation, animationType, absoluteOrRelative);
 
                 if(animation.Loops)
                 {
@@ -295,7 +252,7 @@ namespace GumPlugin.CodeGeneration
             
         }
 
-        private void GenerateOrderedStateAndSubAnimationCode(ICodeBlock currentBlock, AnimationSave animation, string animationType, AbsoluteOrRelative absoluteOrRelative)
+        private void GenerateOrderedStateAndSubAnimationCode(StateCodeGeneratorContext context, ICodeBlock currentBlock, AnimationSave animation, string animationType, AbsoluteOrRelative absoluteOrRelative)
         {
             List<AnimatedStateSave> remainingStates = new List<AnimatedStateSave>();
             remainingStates.AddRange(animation.States);
@@ -339,7 +296,7 @@ namespace GumPlugin.CodeGeneration
                 else
                 {
                     currentState = remainingStates[0];
-                    CreateInstructionForInterpolation(currentBlock, animationType, previousState, 
+                    CreateInstructionForInterpolation(context, currentBlock, animationType, previousState, 
                         currentState, absoluteOrRelative, animation.PropertyNameInCode());
                     previousState = currentState;
 
@@ -372,7 +329,7 @@ namespace GumPlugin.CodeGeneration
             currentBlock = currentBlock.End();
         }
 
-        private void CreateInstructionForInterpolation(ICodeBlock currentBlock, string animationType, AnimatedStateSave previousState, AnimatedStateSave currentState, AbsoluteOrRelative absoluteOrRelative, string animationName)
+        private void CreateInstructionForInterpolation(StateCodeGeneratorContext context, ICodeBlock currentBlock, string animationType, AnimatedStateSave previousState, AnimatedStateSave currentState, AbsoluteOrRelative absoluteOrRelative, string animationName)
         {
 
             currentBlock = currentBlock.Block();
@@ -380,16 +337,16 @@ namespace GumPlugin.CodeGeneration
             if (absoluteOrRelative == AbsoluteOrRelative.Absolute)
             {
 
-                CreateInstructionForInterpolationAbsolute(currentBlock, animationType, previousState, currentState, animationName);
+                CreateInstructionForInterpolationAbsolute(context, currentBlock, animationType, previousState, currentState, animationName);
             }
             else
             {
-                CreateInstructionForInterpolationRelative(currentBlock,  previousState, currentState);
+                CreateInstructionForInterpolationRelative(context,currentBlock,  previousState, currentState);
             }
             currentBlock = currentBlock.End();
         }
 
-        private void CreateInstructionForInterpolationRelative(ICodeBlock currentBlock, AnimatedStateSave previousState, AnimatedStateSave currentState)
+        private void CreateInstructionForInterpolationRelative(StateCodeGeneratorContext context, ICodeBlock currentBlock, AnimatedStateSave previousState, AnimatedStateSave currentState)
         {
             if(previousState != null)
             {
@@ -404,7 +361,7 @@ namespace GumPlugin.CodeGeneration
                     currentBlock.Line("var difference = relativeEnd;");
 
                     string categoryName = "VariableState";
-                    var category = mElementSaveContext.Categories.FirstOrDefault(item => item.States.Any(stateCandidate => stateCandidate.Name == currentState.StateName));
+                    var category = context.Element.Categories.FirstOrDefault(item => item.States.Any(stateCandidate => stateCandidate.Name == currentState.StateName));
 
                     string enumValue = currentState.StateName;
 
@@ -412,7 +369,7 @@ namespace GumPlugin.CodeGeneration
                     {
                         var split = currentState.StateName.Split('/');
 
-                        category = mElementSaveContext.Categories.FirstOrDefault(item => item.Name == split[0]);
+                        category = context.Element.Categories.FirstOrDefault(item => item.Name == split[0]);
                         enumValue = split[1];
                     }
 
@@ -452,16 +409,11 @@ namespace GumPlugin.CodeGeneration
 
                 currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + previousStateTime + ";");
                 currentBlock.Line("yield return toReturn;");
-
-
-
-
-
-
+                
             }
         }
 
-        private void CreateInstructionForInterpolationAbsolute(ICodeBlock currentBlock, string animationType, AnimatedStateSave previousState, AnimatedStateSave currentState, string animationName)
+        private void CreateInstructionForInterpolationAbsolute(StateCodeGeneratorContext context, ICodeBlock currentBlock, string animationType, AnimatedStateSave previousState, AnimatedStateSave currentState, string animationName)
         {
 
             if (previousState == null)
@@ -497,8 +449,8 @@ namespace GumPlugin.CodeGeneration
             }
             else
             {
-                var previousCategory = mElementSaveContext.Categories.FirstOrDefault(item => item.States.Any(stateCandiate => stateCandiate.Name == previousState.StateName));
-                var currentCategory = mElementSaveContext.Categories.FirstOrDefault(item => item.States.Any(stateCandiate => stateCandiate.Name == currentState.StateName));
+                var previousCategory = context.Element.Categories.FirstOrDefault(item => item.States.Any(stateCandiate => stateCandiate.Name == previousState.StateName));
+                var currentCategory = context.Element.Categories.FirstOrDefault(item => item.States.Any(stateCandiate => stateCandiate.Name == currentState.StateName));
 
                 // Now that we interpolateTo a single state, we don't
                 // need to pass in the StateSave object:
@@ -528,7 +480,7 @@ namespace GumPlugin.CodeGeneration
                 string enumValue = currentState.StateName;
                 if(currentState.StateName.Contains("/"))
                 {
-                    currentCategory = mElementSaveContext.Categories.FirstOrDefault(item => item.Name == currentState.StateName.Split('/')[0]);
+                    currentCategory = context.Element.Categories.FirstOrDefault(item => item.Name == currentState.StateName.Split('/')[0]);
                     enumValue = currentState.StateName.Split('/')[1];
                 }
 
@@ -559,8 +511,21 @@ namespace GumPlugin.CodeGeneration
                 string easing = "FlatRedBall.Glue.StateInterpolation.Easing." + previousState.Easing;
                 string interpolationType = "FlatRedBall.Glue.StateInterpolation.InterpolationType." + previousState.InterpolationType;
 
-                currentBlock.Line("var toReturn = new FlatRedBall.Instructions.DelegateInstruction(  () => this.InterpolateTo(" +
-                    string.Format("{0}, {1}, {2}, {3}, {4}));", toState, interpolationTime, interpolationType, easing, animationName));
+                var line = "var toReturn = new FlatRedBall.Instructions.DelegateInstruction(  () => this.InterpolateTo(" +
+                    string.Format("{0}, {1}, {2}, {3}, {4}));", toState, interpolationTime, interpolationType, easing, animationName);
+
+                // vic says - 
+                // For some reason I'm getting some weird code generation issues when generating one of my objects for the racing game
+                // I don't have perfect repro steps, so I wanted to catch it in the debugger:
+
+                //var toReturn = new FlatRedBall.Instructions.DelegateInstruction(  () => this.InterpolateTo(VariableState.Shown, 0.25f, FlatRedBall.Glue.StateInterpolation.InterpolationType.Linear, FlatRedBall.Glue.StateInterpolation.Easing.Out, FadeInAnimation));
+                if (line.Contains("var toReturn = new FlatRedBall.Instructions.DelegateInstruction(  () => this.InterpolateTo(VariableState.Shown, 0.25f, FlatRedBall.Glue.StateInterpolation.InterpolationType.Linear, FlatRedBall.Glue.StateInterpolation.Easing.Out, FadeInAnimation));"))
+                {
+                    int m = 3;
+                }
+
+                
+                currentBlock.Line(line);
                 currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + previousStateTime + ";");
 
             }
