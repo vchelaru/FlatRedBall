@@ -103,7 +103,11 @@ namespace FlatRedBall.TileEntities
             {
                 try
                 {
-                    lateBinder.SetValue(entity, property.Name, property.Value);
+                    var valueToSet = property.Value;
+
+                    valueToSet = SetValueAccordingToType(valueToSet, property.Name, property.Type, entityType);
+
+                    lateBinder.SetValue(entity, property.Name, valueToSet);
                 }
                 catch (Exception e)
                 {
@@ -114,25 +118,47 @@ namespace FlatRedBall.TileEntities
             }
         }
 
+        private static object SetValueAccordingToType(object valueToSet, string valueName, string valueType, Type entityType)
+        {
+            if (valueName == "CurrentState")
+            {
+                // Since it's part of the class, it uses the "+" separator
+                var enumTypeName = entityType.FullName + "+VariableState";
+                var enumType = typesInThisAssembly.FirstOrDefault(item => item.FullName == enumTypeName);
+
+                valueToSet = Enum.Parse(enumType, (string)valueToSet);
+            }
+            return valueToSet;
+        }
+
         private static void AssignCustomPropertyTo(PositionedObject entity, NamedValue property)
         {
             throw new NotImplementedException();
         }
 
+
+        static Type[] typesInThisAssembly;
         private static IEntityFactory GetFactory(string entityType)
         {
+            if (typesInThisAssembly == null)
+            {
 #if WINDOWS_8 || UWP
-                    var assembly = typeof(TileEntityInstantiator).GetTypeInfo().Assembly;
-                    var types = assembly.DefinedTypes;
-
-                    var filteredTypes =
-                        types.Where(t => t.ImplementedInterfaces.Contains(typeof(IEntityFactory))
-                                    && t.DeclaredConstructors.Any(c=>c.GetParameters().Count() == 0));
+                var assembly = typeof(TileEntityInstantiator).GetTypeInfo().Assembly;
+                typesInThisAssembly = assembly.DefinedTypes.ToArray();
 #else
-            var assembly = Assembly.GetExecutingAssembly();
-            var types = assembly.GetTypes();
+                var assembly = Assembly.GetExecutingAssembly();
+                typesInThisAssembly = assembly.GetTypes();
+#endif
+            }
+
+
+#if WINDOWS_8 || UWP
             var filteredTypes =
-                types.Where(t => t.GetInterfaces().Contains(typeof(IEntityFactory))
+                types.Where(t => t.ImplementedInterfaces.Contains(typeof(IEntityFactory))
+                            && t.DeclaredConstructors.Any(c=>c.GetParameters().Count() == 0));
+#else
+            var filteredTypes =
+                typesInThisAssembly.Where(t => t.GetInterfaces().Contains(typeof(IEntityFactory))
                             && t.GetConstructor(Type.EmptyTypes) != null);
 #endif
 

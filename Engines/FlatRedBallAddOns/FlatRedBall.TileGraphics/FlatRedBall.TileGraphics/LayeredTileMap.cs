@@ -367,7 +367,8 @@ namespace FlatRedBall.TileGraphics
                             matchingLayer.Properties.Add(new NamedValue
                             {
                                 Name = propertyValues.StrippedName,
-                                Value = propertyValues.value
+                                Value = propertyValues.value,
+                                Type = propertyValues.Type
                             });
                         }
 
@@ -390,7 +391,8 @@ namespace FlatRedBall.TileGraphics
                             List<NamedValue> namedValues = new List<NamedValue>();
                             foreach (var prop in tile.properties)
                             {
-                                namedValues.Add(new NamedValue() { Name = prop.StrippedName, Value = prop.value });
+                                namedValues.Add(new NamedValue()
+                                { Name = prop.StrippedName, Value = prop.value, Type = prop.Type });
                             }
 
                             toReturn.Properties.Add(name, namedValues);
