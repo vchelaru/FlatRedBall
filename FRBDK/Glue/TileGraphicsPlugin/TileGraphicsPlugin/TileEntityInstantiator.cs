@@ -119,9 +119,37 @@ namespace FlatRedBall.TileEntities
             }
         }
 
+
         private static object SetValueAccordingToType(object valueToSet, string valueName, string valueType, Type entityType)
         {
-            if (valueName == "CurrentState")
+            if (valueType == "bool")
+            {
+                bool boolValue = false;
+
+                if (bool.TryParse((string)valueToSet, out boolValue))
+                {
+                    valueToSet = boolValue;
+                }
+            }
+            else if (valueType == "float")
+            {
+                float floatValue;
+
+                if (float.TryParse((string)valueToSet, out floatValue))
+                {
+                    valueToSet = floatValue;
+                }
+            }
+            else if (valueType == "int")
+            {
+                int intValue;
+
+                if (int.TryParse((string)valueToSet, out intValue))
+                {
+                    valueToSet = intValue;
+                }
+            }
+            else if (valueName == "CurrentState")
             {
                 // Since it's part of the class, it uses the "+" separator
                 var enumTypeName = entityType.FullName + "+VariableState";
@@ -131,6 +159,7 @@ namespace FlatRedBall.TileEntities
             }
             return valueToSet;
         }
+
 
         private static void AssignCustomPropertyTo(PositionedObject entity, NamedValue property)
         {
