@@ -61,9 +61,9 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static void UpdateOrAddCameraSetup()
         {
-
             
-            string fileName = FileManager.RelativeDirectory + @"Setup\CameraSetup.cs";
+            
+           string fileName = GlueState.Self.CurrentGlueProjectDirectory + @"Setup\CameraSetup.cs";
 
             string newContents = GetCameraSetupCsContents();
 
