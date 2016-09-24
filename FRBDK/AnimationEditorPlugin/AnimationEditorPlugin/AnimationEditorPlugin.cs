@@ -59,7 +59,8 @@ namespace AnimationEditorPlugin
 
         public override Version Version
         {
-            get { return new Version(1, 6, 0); }
+            // 2.0 adds lots of improvements to the texture coordinate selection window.
+            get { return new Version(2, 0, 0); }
         }
 
         public bool IsSelectedItemSprite

@@ -83,29 +83,34 @@ namespace AnimationEditorPlugin
 
             if (texture != null)
             {
+                // Victor Chelaru September 24, 2016
+                // The user may invert the rectangle and not know it.
+                // Even though there are valid reasons to invert, allowing
+                // it here probably causes more harm than good. Therefore, I'm
+                // adding the Min/Max calls to the rectangle values.
                 GlueCommands.Self.GluxCommands.SetVariableOn(
                     nos,
                     "LeftTexturePixel",
                     typeof(float),
-                    rectangle.Left);
+                    System.Math.Min( rectangle.Left, rectangle.Right));
 
                 GlueCommands.Self.GluxCommands.SetVariableOn(
                     nos,
                     "RightTexturePixel",
                     typeof(float),
-                    rectangle.Right);
+                    System.Math.Max(rectangle.Left, rectangle.Right));
 
                 GlueCommands.Self.GluxCommands.SetVariableOn(
                     nos,
                     "TopTexturePixel",
                     typeof(float),
-                    rectangle.Top);
-
+                    System.Math.Min(rectangle.Top, rectangle.Bottom));
+                                                                                                                                                                                                                                   
                 GlueCommands.Self.GluxCommands.SetVariableOn(
                     nos,
                     "BottomTexturePixel",
                     typeof(float),
-                    rectangle.Bottom);
+                    System.Math.Max(rectangle.Top, rectangle.Bottom));
             }
         }
 
