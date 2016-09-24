@@ -65,6 +65,7 @@ namespace FlatRedBall.Glue.FormHelpers
         static ToolStripMenuItem mFindAllReferences;
 
         static ToolStripMenuItem mDeleteFolder;
+        static ToolStripMenuItem mRenameFolder;
 
         static ToolStripMenuItem mDuplicate;
 
@@ -421,10 +422,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 menu.Items.Add(form.addFolderToolStripMenuItem);
 
-                if (targetNode.Root().IsRootEntityNode())
+                bool isEntityContainingFolder = targetNode.Root().IsRootEntityNode();
+
+                if (isEntityContainingFolder)
                 {
                     menu.Items.Add(form.addEntityToolStripMenuItem);
-
 
                     mImportElement.Text = "Import Entity";
                     menu.Items.Add(mImportElement);
@@ -438,7 +440,10 @@ namespace FlatRedBall.Glue.FormHelpers
                 menu.Items.Add("-");
 
                 menu.Items.Add(mDeleteFolder);
-
+                if(isEntityContainingFolder)
+                {
+                    menu.Items.Add(mRenameFolder);
+                }
             }
 
             #endregion
@@ -530,6 +535,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
             mDeleteFolder = new ToolStripMenuItem("Delete Folder");
             mDeleteFolder.Click += new EventHandler(DeleteFolderClick);
+
+            mRenameFolder = new ToolStripMenuItem("Rename Folder");
+            mRenameFolder.Click += HandleRenameFolderClick;
 
             mDuplicate = new ToolStripMenuItem("Duplicate");
             mDuplicate.Click += new EventHandler(DuplicateClick);
@@ -1822,6 +1830,95 @@ namespace FlatRedBall.Glue.FormHelpers
                 EditorLogic.CurrentTreeNode.Parent.Nodes.Remove(EditorLogic.CurrentTreeNode);
                 System.IO.Directory.Delete(absolutePath, true);
                 // Do we need to save the project?  For some reason removing mulitple RFS's isn't updating the .csproj
+            }
+        }
+
+        static void HandleRenameFolderClick(object sender, EventArgs e)
+        {
+            var treeNode = GlueState.Self.CurrentTreeNode;
+
+            var inputWindow = new TextInputWindow();
+            inputWindow.Message = "Enter new folder name";
+            inputWindow.Result = treeNode.Text;
+
+            var dialogResult = inputWindow.ShowDialog();
+
+            bool shouldPerformMove = false;
+
+            string directoryRenaming = null;
+            string newDirectoryNameRelative = null;
+            string newDirectoryNameAbsolute = null;
+
+            if (dialogResult == DialogResult.OK)
+            {
+                // entities use backslash:
+                directoryRenaming = treeNode.GetRelativePath().Replace("/", "\\");
+                newDirectoryNameRelative = FileManager.GetDirectory(directoryRenaming, RelativeType.Relative) + inputWindow.Result + "\\";
+                newDirectoryNameAbsolute = GlueState.Self.CurrentGlueProjectDirectory + newDirectoryNameRelative;
+
+                string whyIsInvalid = null;
+                NameVerifier.IsDirectoryNameValid(inputWindow.Result, out whyIsInvalid);
+
+                if (string.IsNullOrEmpty(whyIsInvalid) && Directory.Exists(newDirectoryNameAbsolute))
+                {
+                    whyIsInvalid = $"The directory {inputWindow.Result} already exists.";
+                }
+
+                if (!string.IsNullOrEmpty(whyIsInvalid))
+                {
+                    MessageBox.Show(whyIsInvalid);
+                    shouldPerformMove = false;
+                }
+                else
+                {
+                    shouldPerformMove = true;
+                }
+            }
+
+            if(shouldPerformMove && !Directory.Exists(newDirectoryNameAbsolute))
+            {
+                try
+                {
+                    Directory.CreateDirectory(newDirectoryNameAbsolute);
+                }
+                catch(Exception ex)
+                {
+                    PluginManager.ReceiveError(ex.ToString());
+                    shouldPerformMove = false;
+                }
+            }
+
+            if(shouldPerformMove)
+            {
+                var allContainedEntities = GlueState.Self.CurrentGlueProject.Entities
+                    .Where(entity => entity.Name.StartsWith(directoryRenaming)).ToList();
+
+                newDirectoryNameRelative = newDirectoryNameRelative.Replace('/', '\\');
+
+                bool didAllSucceed = true;
+
+                foreach(var entity in allContainedEntities)
+                {
+                    bool succeeded = GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entity, newDirectoryNameRelative);
+
+                    if(!succeeded)
+                    {
+                        didAllSucceed = false;
+                        break;
+                    }
+                }
+
+                if(didAllSucceed)
+                {
+                    treeNode.Text = inputWindow.Result;
+
+                    ProjectLoader.Self.MakeGeneratedItemsNested();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
+                    
+                    GluxCommands.Self.SaveGlux();
+                    ProjectManager.SaveProjects();
+
+                }
             }
         }
 

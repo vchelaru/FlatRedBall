@@ -18,11 +18,21 @@ namespace OfficialPlugins.Compiler
             {
                 var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
                 string executable = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
-                string arguments = $"\"{projectFileName}\" /p:Configuration=\"{configuration}\"";
+
+                // For info on parameters:
+                // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
+                // \m uses multiple cores
+                string arguments = $"\"{projectFileName}\" " + 
+                    $"/p:Configuration=\"{configuration}\" " + 
+                    "/m " + 
+                    "/nologo " + 
+                    "/verbosity:minimal";
 
                 Process process = CreateProcess("\"" + executable + "\"", arguments);
 
-                printOutput(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
+                printOutput("Build started at " + DateTime.Now.ToLongTimeString());
+                // This is noisy and technical. Reducing output window verbosity
+                //printOutput(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
 
 
                 var errorString = RunProcess(printOutput, printError, executable, process);

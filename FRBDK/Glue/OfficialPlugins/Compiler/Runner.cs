@@ -25,7 +25,20 @@ namespace OfficialPlugins.Compiler
                 startInfo.FileName = exeLocation;
                 startInfo.WorkingDirectory = FileManager.GetDirectory(exeLocation);
 
-                System.Diagnostics.Process.Start(startInfo);
+                var process = System.Diagnostics.Process.Start(startInfo);
+
+                process.EnableRaisingEvents = true;
+                process.Exited += HandleProcessExit;
+            }
+        }
+
+        private void HandleProcessExit(object sender, EventArgs e)
+        {
+            var process = sender as Process;
+
+            if(process.ExitCode != 0)
+            {
+                System.Windows.MessageBox.Show("Oh no! The game crashed. Run from Visual Studio for more information on the error.");
             }
         }
     }

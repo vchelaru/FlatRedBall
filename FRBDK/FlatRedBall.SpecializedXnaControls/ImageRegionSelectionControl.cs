@@ -328,7 +328,9 @@ namespace FlatRedBall.SpecializedXnaControls
 
         #region Events
 
-        public event EventHandler RegionChanged;
+        public new event EventHandler RegionChanged;
+        public event EventHandler EndRegionChanged;
+
         public event EventHandler MouseWheelZoom;
         public event Action Panning;
         #endregion
@@ -404,6 +406,7 @@ namespace FlatRedBall.SpecializedXnaControls
             newSelector.AddToManagers(mManagers);
             newSelector.Visible = false;
             newSelector.RegionChanged += new EventHandler(RegionChangedInternal);
+            newSelector.EndRegionChanged += EndRegionChangedInternal;
             newSelector.SnappingGridSize = snappingGridSize;
             newSelector.RoundToUnitCoordinates = mRoundRectangleSelectorToUnit;
 
@@ -422,10 +425,12 @@ namespace FlatRedBall.SpecializedXnaControls
 
         void RegionChangedInternal(object sender, EventArgs e)
         {
-            if (RegionChanged != null)
-            {
-                RegionChanged(this, null);
-            }
+            RegionChanged?.Invoke(this, null);
+        }
+
+        void EndRegionChangedInternal(object sender, EventArgs e)
+        {
+            EndRegionChanged?.Invoke(this, null);
         }
 
         void PerformActivity()

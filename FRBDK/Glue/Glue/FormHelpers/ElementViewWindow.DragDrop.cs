@@ -1213,210 +1213,43 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             bool succeeded = true;
 
-            // Things to do:
-            // 1 Move the TreeNode from one parent TreeNode to another
-            // 2 Move the .cs and .generated.cs file from one folder to another
-            // 3 Remove the BuildItems from the project and add them back in in the VisualStudio project
-            // 4 Change the EntitySave's name
-            // 5 Change namespaces
-            // 6 Find all NamedObjectSaves that are use this Entity and re-generate the Elements, and also see if anything uses it as a base
-            // 7 Save everything!
-
             EntitySave entitySave = treeNodeMoving.EntitySave;
-            string targetDirectory = FileManager.RelativeDirectory + targetNode.GetRelativePath();
-            string oldName = entitySave.Name;
-            string newName = targetNode.GetRelativePath().Replace("/", "\\") + entitySave.ClassName;
 
+            string newRelativeDirectory = targetNode.GetRelativePath();
 
-            succeeded = MoveEntityCodeFilesToDirectory(entitySave, targetDirectory);
+            string newName = newRelativeDirectory.Replace("/", "\\") + entitySave.ClassName;
 
+            // modify data and files
+            succeeded = GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entitySave, newRelativeDirectory);
 
-
+            // adjust the UI
             if (succeeded)
             {
-
-
-                // 1: Move it from one node to another
                 treeNodeMoving.Parent.Nodes.Remove(treeNodeMoving);
                 targetNode.Nodes.Add(treeNodeMoving);
 
 
-                // 2: Move the .cs files
-                // Also handled above.
                 treeNodeMoving.GeneratedCodeFile = newName + ".Generated.cs";
                 treeNodeMoving.CodeFile = newName + ".cs";
-            }
-
-            if(succeeded)
-            {
-                // 4: Change the Entity's name
-
-                entitySave.Name = newName;
                 treeNodeMoving.Text = FileManager.RemovePath(newName);
+
             }
 
+            // Generate and save
             if (succeeded)
             {
-                // Do this after changing the name of the Entity so
-                // namespaces come over properly
-                succeeded = UpdateNamespaceOnCodeFiles(entitySave);
-            }
-            if(succeeded)
-            {
-                // 5: Change namespaces
-                string newNamespace = ProjectManager.ProjectNamespace + "." + FileManager.MakeRelative(targetDirectory).Replace("/", ".");
-                newNamespace = newNamespace.Substring(0, newNamespace.Length - 1);
-                string customFileContents = FileManager.FromFileText(FileManager.RelativeDirectory + newName + ".cs");
-                customFileContents = CodeWriter.ReplaceNamespace(customFileContents, newNamespace);
-                FileManager.SaveText(customFileContents, FileManager.RelativeDirectory + newName + ".cs");
-
-                // Generated will automatically have its namespace changed when it is re-generated
-
-                // 6:  Find all objects referending this NamedObjectSave and re-generate the code
-
-                if (entitySave.CreatedByOtherEntities)
-                {
-                    // Vic says: I'm tired.  For now just ignore the directory.  Fix this when it becomes a problem.
-                    FactoryCodeGenerator.UpdateFactoryClass(entitySave);
-                }
-
-                List<NamedObjectSave> namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldName);
-
-
-                // Let's get all the TreeNodes to regenerate.
-                // We want to store them in a list so we only generate
-                // each tree node once.
-                List<BaseElementTreeNode> treeNodesForElementsToRegenerate = new List<BaseElementTreeNode>();
-
-                foreach (NamedObjectSave nos in namedObjects)
-                {
-                    if (nos.SourceClassGenericType == oldName)
-                    {
-                        nos.SourceClassGenericType = newName;
-                    }
-
-                    if (nos.SourceClassType == oldName)
-                    {
-                        nos.SourceClassType = newName;
-                    }
-
-                    IElement element = nos.GetContainer();
-
-                    BaseElementTreeNode treeNode = GlueState.Self.Find.ElementTreeNode(element);
-                    if (!treeNodesForElementsToRegenerate.Contains(treeNode))
-                    {
-                        treeNodesForElementsToRegenerate.Add(treeNode);
-                    }
-                }
-
-
-                foreach (EntitySave esToTestForInheritance in ProjectManager.GlueProjectSave.Entities)
-                {
-                    if (esToTestForInheritance.BaseEntity == oldName)
-                    {
-                        esToTestForInheritance.BaseEntity = newName;
-
-                        BaseElementTreeNode treeNode = GlueState.Self.Find.EntityTreeNode(esToTestForInheritance);
-                        if (!treeNodesForElementsToRegenerate.Contains(treeNode))
-                        {
-                            treeNodesForElementsToRegenerate.Add(treeNode);
-                        }
-                    }
-                }
-
-                foreach (BaseElementTreeNode treeNode in treeNodesForElementsToRegenerate)
-                {
-                    CodeWriter.GenerateCode(treeNode.SaveObjectAsElement);
-                }
-
-
                 // 7: Save it!
                 ProjectLoader.Self.MakeGeneratedItemsNested();
-                CodeWriter.GenerateCode(treeNodeMoving.SaveObjectAsElement);
+                CodeWriter.GenerateCode(entitySave);
 
                 GluxCommands.Self.SaveGlux();
                 ProjectManager.SaveProjects();
 
-                GlueState.Self.CurrentElement = treeNodeMoving.SaveObjectAsElement;
+                GlueState.Self.CurrentElement = entitySave;
             }
         }
 
-        private static bool UpdateNamespaceOnCodeFiles(EntitySave entitySave)
-        {
-            var allFiles = CodeWriter.GetAllCodeFilesFor(entitySave);
-            string newNamespace = GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElement(entitySave);
-
-            foreach (string file in allFiles)
-            {
-                bool doesFileExist = System.IO.File.Exists(file);
-                bool isFactory = GetIfFileIsFactory(entitySave, file);
-
-                if(doesFileExist && !isFactory)
-                {
-                    string contents = FileManager.FromFileText(file);
-                
-                    contents = CodeWriter.ReplaceNamespace(contents, newNamespace);
-
-                    FileManager.SaveText(contents, file);
-
-
-                }
-            }
-
-            return true;
-        }
-
-        private static bool MoveEntityCodeFilesToDirectory(EntitySave entitySave, string targetDirectory)
-        {
-            bool succeeded = true;
-
-            var allFiles = CodeWriter.GetAllCodeFilesFor(entitySave);
-            foreach (string file in allFiles)
-            {
-                bool isFactory = GetIfFileIsFactory(entitySave, file);
-
-                if (!succeeded)
-                {
-                    break;
-                }
-
-                if (File.Exists(file) && !isFactory)
-                {
-                    string relative = FileManager.MakeRelative(file);
-                    succeeded = MoveSingleCodeFileToDirectory(relative, targetDirectory);
-                }
-            }
-
-            return succeeded;
-        }
-
-        private static bool GetIfFileIsFactory(EntitySave entitySave, string file)
-        {
-            return file.EndsWith("Factories/" + entitySave.ClassName + "Factory.Generated.cs");
-        }
-
-        static bool MoveSingleCodeFileToDirectory(string relativeCodeFile, string directory)
-        {
-            string absoluteCodeFile = FileManager.MakeAbsolute(relativeCodeFile);
-            bool succeeded = true;
-            string targetFile = directory + FileManager.RemovePath(absoluteCodeFile);
-
-            if (File.Exists(targetFile))
-            {
-                System.Windows.Forms.MessageBox.Show(
-                    "Can't move the the file " + absoluteCodeFile + " because the following file exists in the target location: " + targetFile);
-                succeeded = false;
-            }
-
-            if (succeeded)
-            {
-                File.Move(absoluteCodeFile, targetFile);
-
-                ProjectManager.RemoveItemFromAllProjects(relativeCodeFile, false);
-                ProjectManager.ProjectBase.AddCodeBuildItem(targetFile);
-            }
-            return succeeded;
-        }
+        
 
     }
 }

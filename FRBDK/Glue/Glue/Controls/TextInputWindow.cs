@@ -19,8 +19,9 @@ namespace FlatRedBall.Glue.Controls
 	{
 		#region Properties
 
-		public string DisplayText
-		{
+
+        public string Message
+        {
 			get
 			{
 				return this.mDisplayText.Text;
@@ -28,9 +29,14 @@ namespace FlatRedBall.Glue.Controls
 			set
 			{
 				this.mDisplayText.Text = value;
-
-                
 			}
+        }
+
+        [Obsolete("Use Message")]
+		public string DisplayText
+		{
+            get { return Message; }
+            set { Message = value; }
 		}
 
 		public string Result

@@ -150,6 +150,7 @@
       <DependentUpon>MainControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Compiler\MainPlugin.cs" />
+    <Compile Include="Compiler\OutputParser.cs" />
     <Compile Include="Compiler\Runner.cs" />
     <Compile Include="Compiler\RunnerToolbar.xaml.cs">
       <DependentUpon>RunnerToolbar.xaml</DependentUpon>

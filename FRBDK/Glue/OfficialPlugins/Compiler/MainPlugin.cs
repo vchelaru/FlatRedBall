@@ -31,7 +31,11 @@ namespace OfficialPlugins.Compiler
         {
             get
             {
-                return new Version(0, 3);
+                // 0.4 introduces:
+                // - multicore building
+                // - Removed warnings and information when building - now we just show start, end, and errors
+                // - If an error occurs, a popup appears telling the user that the game crashed, and to open Visual Studio
+                return new Version(0, 4);
             }
         }
 

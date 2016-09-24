@@ -248,8 +248,21 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
 
         #endregion
 
+        /// <summary>
+        /// Event raised whenever the region changes. This can happen through keyboard input, or through mouse dragging.
+        /// Note that this event will be raised frequently when dragging the mouse, so it should not be used to auto-save
+        /// files. See EndRegionChanged for file saving.
+        /// </summary>
         public event EventHandler RegionChanged;
+        public event EventHandler EndRegionChanged;
         public event EventHandler Pushed;
+
+        /// <summary>
+        /// Whether to raise EndRegionChanged when a mouse is released (clicked).
+        /// This is set to true whenever a drag event occurs, and it's set to false
+        /// whenever the mouse is released.
+        /// </summary>
+        bool shouldRaiseEndRegionChanged;
 
         #region Methods
 
@@ -409,10 +422,10 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
                         changed = true;
                     }
 
-                    if (changed && RegionChanged != null)
+                    if (changed )
                     {
-                        RegionChanged(this, null);
-
+                        RegionChanged?.Invoke(this, null);
+                        EndRegionChanged?.Invoke(this, null);
                     }
                 }
             }
@@ -437,7 +450,7 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
                     worldX,
                     worldY);
 
-                SetWindowsCursor(container, mSideGrabbed, sideOver, ResetsCursorIfNotOver);
+                SetWindowsCursor(container, mSideGrabbed, sideOver, ResetsCursorIfNotOver, Width < 0, Height < 0);
 
                 PushActivity(sideOver, cursor);
 
@@ -500,6 +513,11 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
                 this.Width = RoundIfNecessary(this.Width);
                 this.Height= RoundIfNecessary(this.Height);
 
+                if(shouldRaiseEndRegionChanged)
+                {
+                    EndRegionChanged?.Invoke(this, null);
+                    shouldRaiseEndRegionChanged = false;
+                }
 
                 UpdateHandles();
             }
@@ -530,10 +548,9 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
                 this.Width = mCoordinates.Width + widthMultiplier * cursor.XChange;
                 this.Height = mCoordinates.Height + heightMultiplier * cursor.YChange;
 
-                if (RegionChanged != null)
-                {
-                    RegionChanged(this, null);
-                }
+                RegionChanged?.Invoke(this, null);
+                shouldRaiseEndRegionChanged = true;
+
             }
         }
 
@@ -604,7 +621,7 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
         }
 
         private static void SetWindowsCursor(System.Windows.Forms.Control container, 
-            ResizeSide sideGrabbed, ResizeSide sideOver, bool resetToArrow)
+            ResizeSide sideGrabbed, ResizeSide sideOver, bool resetToArrow, bool flipHorizontal, bool flipVertical)
         {
             System.Windows.Forms.Cursor cursorToSet = Cursors.Arrow;
 
@@ -614,17 +631,37 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
                 sideToUse = sideGrabbed;
             }
 
+            bool flipCorners = (flipHorizontal && !flipVertical) ||
+                (!flipHorizontal && flipVertical);
+
+
+
             if (sideToUse != ResizeSide.None)
             {
                 switch (sideToUse)
                 {
                     case ResizeSide.TopLeft:
                     case ResizeSide.BottomRight:
-                        cursorToSet = Cursors.SizeNWSE;
+
+                        if(flipCorners)
+                        {
+                            cursorToSet = Cursors.SizeNESW;
+                        }
+                        else
+                        {
+                            cursorToSet = Cursors.SizeNWSE;
+                        }
                         break;
                     case ResizeSide.TopRight:
                     case ResizeSide.BottomLeft:
-                        cursorToSet = Cursors.SizeNESW;
+                        if(flipCorners)
+                        {
+                            cursorToSet = Cursors.SizeNWSE;
+                        }
+                        else
+                        {
+                            cursorToSet = Cursors.SizeNESW;
+                        }
                         break;
                     case ResizeSide.Top:
                     case ResizeSide.Bottom:
@@ -656,27 +693,28 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
 
         public ResizeSide GetSideOver(float x, float y)
         {
+            ResizeSide toReturn = ResizeSide.None;
             if (mShowHandles)
             {
+
                 for (int i = 0; i < this.mHandles.Count; i++)
                 {
                     if (mHandles[i].HasCursorOver(x, y))
                     {
-                        return (ResizeSide)i;
+                        toReturn = (ResizeSide)i;
                     }
                 }
-
             }
 
             if (mShowHandles || AllowMoveWithoutHandles)
             {
                 if (this.mLineRectangle.HasCursorOver(x, y))
                 {
-                    return ResizeSide.Middle;
+                    toReturn = ResizeSide.Middle;
                 }
             }
 
-            return ResizeSide.None;
+            return toReturn;
         }
 
 

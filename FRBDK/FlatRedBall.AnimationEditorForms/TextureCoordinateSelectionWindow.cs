@@ -23,8 +23,8 @@ namespace FlatRedBall.AnimationEditorForms
 
         InspectableTexture inspectableTexture = new InspectableTexture();
 
-        public event Action RegionChanged;
-
+        public new event Action RegionChanged;
+        public event Action EndRegionChanged;
 
         #region Properties
 
@@ -79,7 +79,7 @@ namespace FlatRedBall.AnimationEditorForms
             this.imageRegionSelectionControl1.MouseWheelZoom += HandleMouseWheelZoom;
 
             this.imageRegionSelectionControl1.RegionChanged += HandleRegionChanged;
-
+            this.imageRegionSelectionControl1.EndRegionChanged += HandleEndRegionChanged;
             this.imageRegionSelectionControl1.SystemManagers.Renderer.Camera.CameraCenterOnScreen =
                 RenderingLibrary.CameraCenterOnScreen.TopLeft;
         }
@@ -126,19 +126,18 @@ namespace FlatRedBall.AnimationEditorForms
                 var texture = imageRegionSelectionControl1.CurrentTexture;
                 SetSelectionTextureCoordinates(minY / (float)texture.Height, maxY / (float)texture.Height, minX / (float)texture.Width, maxX / (float)texture.Width);
 
-                if (RegionChanged != null)
-                {
-                    RegionChanged();
-                }
+                RegionChanged?.Invoke();
             }
         }
 
         private void HandleRegionChanged(object sender, EventArgs e)
         {
-            if(RegionChanged != null)
-            {
-                RegionChanged();
-            }
+            RegionChanged?.Invoke();
+        }
+
+        private void HandleEndRegionChanged(object sender, EventArgs e)
+        {
+            EndRegionChanged?.Invoke();
         }
 
         public void ShowSprite(string fullFileName, float topTexture, float bottomTexture, float leftTexture, float rightTexture)
@@ -146,15 +145,34 @@ namespace FlatRedBall.AnimationEditorForms
             this.imageRegionSelectionControl1.SystemManagers.Renderer.Camera.X = -8;
             this.imageRegionSelectionControl1.SystemManagers.Renderer.Camera.Y = -8;
 
+            bool isSameFile = false;
             Texture2D texture = null;
             if (!string.IsNullOrEmpty(fullFileName) && System.IO.File.Exists(fullFileName))
             {
-                texture = LoaderManager.Self.LoadContent<Texture2D>(fullFileName);
+                var fileNameStandardized = ToolsUtilities.FileManager.Standardize(fullFileName);
+
+                isSameFile = fileNameStandardized == imageRegionSelectionControl1?.CurrentTexture?.Name;
+
+                if(!isSameFile)
+                {
+                    texture = LoaderManager.Self.LoadContent<Texture2D>(fullFileName);
+                }
             }
+            else
+            {
+                isSameFile = imageRegionSelectionControl1?.CurrentTexture == null;
+            }
+            if(!isSameFile)
+            {
+                if (texture != imageRegionSelectionControl1.CurrentTexture && imageRegionSelectionControl1.CurrentTexture != null)
+                {
+                    imageRegionSelectionControl1.CurrentTexture.Dispose();
+                }
 
-            imageRegionSelectionControl1.CurrentTexture = texture;
-            inspectableTexture.Texture = texture;
+                imageRegionSelectionControl1.CurrentTexture = texture;
+                inspectableTexture.Texture = texture;
 
+            }
             SetSelectionTextureCoordinates(topTexture, bottomTexture, leftTexture, rightTexture);
 
         }

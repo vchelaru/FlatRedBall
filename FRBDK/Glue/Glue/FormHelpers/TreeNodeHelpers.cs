@@ -235,6 +235,11 @@ namespace FlatRedBall.Glue.FormHelpers
             return treeNodeInQuestion.Parent == null && treeNodeInQuestion.Text == "Unreferenced Files";
         }
         
+        /// <summary>
+        /// Returns whether the tree node is folder containing entities, files in global content, or folder in files.
+        /// </summary>
+        /// <param name="treeNodeInQuestion">Th tree node to check</param>
+        /// <returns>Whether the tree node is a folder node</returns>
         public static bool IsDirectoryNode(this TreeNode treeNodeInQuestion)
         {
             if (treeNodeInQuestion.Parent == null)

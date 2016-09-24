@@ -205,7 +205,7 @@ namespace AnimationEditorPlugin
                 {
                     mTextureCoordinateControl = new TextureCoordinateSelectionWindow();
                     mTextureCoordinateControl.Dock = DockStyle.Fill;
-                    mTextureCoordinateControl.RegionChanged += HandleRegionChanged;
+                    mTextureCoordinateControl.EndRegionChanged += HandleRegionChanged;
 
                 }
 

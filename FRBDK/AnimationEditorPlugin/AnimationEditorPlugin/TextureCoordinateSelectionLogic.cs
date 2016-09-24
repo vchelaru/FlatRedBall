@@ -121,10 +121,8 @@ namespace AnimationEditorPlugin
 
             GetTextureCoordinates(nos, out leftTextureCoordinate, out rightTextureCoordinate, out topTextureCoordinate, out bottomTextureCoordinate, out fullFileName);
 
-            if (!string.IsNullOrEmpty(fullFileName))
-            {
-                selectionWindow.ShowSprite(fullFileName, topTextureCoordinate, bottomTextureCoordinate, leftTextureCoordinate, rightTextureCoordinate);
-            }
+
+            selectionWindow.ShowSprite(fullFileName, topTextureCoordinate, bottomTextureCoordinate, leftTextureCoordinate, rightTextureCoordinate);
         }
 
     }

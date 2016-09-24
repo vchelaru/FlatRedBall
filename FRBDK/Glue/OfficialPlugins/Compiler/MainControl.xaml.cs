@@ -20,11 +20,15 @@ namespace OfficialPlugins.Compiler
     /// </summary>
     public partial class MainControl : UserControl
     {
+        OutputParser outputParser;
+
         public event EventHandler BuildClicked;
         public event EventHandler RunClicked;
 
         public MainControl()
         {
+            outputParser = new OutputParser();
+
             InitializeComponent();
 
         }
@@ -43,11 +47,17 @@ namespace OfficialPlugins.Compiler
 
         public void PrintOutput(string text)
         {
-            Glue.MainGlueWindow.Self.Invoke(() =>
+            var outputType = outputParser.GetOutputType(text);
+
+            // suppress warnings...
+            if(outputType != OutputType.Warning)
             {
-                TextBox.AppendText(text + "\n");
-                TextBox.ScrollToEnd();
-            });
+                Glue.MainGlueWindow.Self.Invoke(() =>
+                {
+                    TextBox.AppendText(text + "\n");
+                    TextBox.ScrollToEnd();
+                });
+            }
         }
     }
 }

@@ -26,6 +26,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             BuildToolAssociation buildToolAssociation, bool isBuiltFile, string options, 
             IElement sourceElement, string directoryOfTreeNode);
 
+        bool MoveEntityToDirectory(EntitySave entitySave, string newRelativeDirectory);
+
+
         // was:
         // SourceType sourceType, string sourceClassType, string sourceFile, string objectName, string sourceNameInFile, string sourceClassGenericType
         NamedObjectSave AddNewNamedObjectToSelectedElement(

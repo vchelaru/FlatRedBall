@@ -149,6 +149,16 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #endregion
 
+        public static bool IsDirectoryNameValid(string directory, out string whyItIsntValid)
+        {
+            whyItIsntValid = "";
+
+            CheckForCommonImproperNames(directory, ref whyItIsntValid);
+
+            bool returnValue = string.IsNullOrEmpty(whyItIsntValid);
+            return returnValue;
+        }
+
         public static bool IsReferencedFileNameValid(string name, AssetTypeInfo ati, ReferencedFileSave rfs, IElement container, out string whyItIsntValid)
         {
             whyItIsntValid = "";
