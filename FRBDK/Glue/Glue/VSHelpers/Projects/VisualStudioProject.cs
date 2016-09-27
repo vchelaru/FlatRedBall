@@ -473,6 +473,16 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             Project.ProjectCollection.UnloadProject(Project);
 
+
+            if(this.ContentProject != this && this.ContentProject != null && this.ContentProject is VisualStudioProject)
+            {
+                var contentAsVsProject = this.ContentProject as VisualStudioProject;
+
+                var contentProjectBase = contentAsVsProject.Project;
+
+                contentProjectBase.ProjectCollection.UnloadProject(contentProjectBase);
+
+            }
         }
 
         private bool ResolveDuplicateProjectEntry(bool wasChanged, ProjectItem buildItem)

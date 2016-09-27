@@ -668,9 +668,7 @@ namespace Glue
             }
 
 
-            #region Nullify project fields in ProjectManager (May not be needed)
             ProjectManager.UnloadProject(isExiting);
-            #endregion
 
             #region Clear existing nodes and re-add base nodes
             
