@@ -489,7 +489,13 @@ namespace OfficialPlugins.VariableDisplay
         }
 
 
-
+        /// <summary>
+        /// Determines if a variable should be ignored by the variable plugin.
+        /// </summary>
+        /// <param name="typedMember">The typed member - represents the variable which may be ignored.</param>
+        /// <param name="instance">The NamedObjectSave owning the variable.</param>
+        /// <param name="ati">The Asset Typ Info for the NamedObjectSave.</param>
+        /// <returns>Whether to skip the variable.</returns>
         private static bool GetIfShouldBeSkipped(TypedMemberBase typedMember, NamedObjectSave instance, AssetTypeInfo ati)
         {
             var name = typedMember.MemberName;
@@ -552,14 +558,18 @@ namespace OfficialPlugins.VariableDisplay
                 {
                     return
                         name == "AlphaRate" || name == "RedRate" || name == "GreenRate" || name == "BlueRate" ||
-                        name == "RelativeTop" || name == "RelativeBottom" || name == "RelativeLeft" || name == "RelativeRight" ||
+                        name == "RelativeTop" || name == "RelativeBottom" || 
+                        name == "RelativeLeft" || name == "RelativeRight" ||
                         name == "TimeCreated" || name == "TimeIntoAnimation" ||
-                        name == "ScaleX" || name == "ScaleY" || name == "CurrentChainIndex" ||
+                        name == "ScaleX" || name == "ScaleY" || 
+                        name == "CurrentChainIndex" ||
                         name == "Top" || name == "Bottom" || name == "Left" || name == "Right" ||
                         name == "PixelSize" ||
                         name == "LeftTextureCoordinate" || name == "RightTextureCoordinate" ||
                         name == "BottomTextureCoordinate" || name == "TopTextureCoordinate" ||
-                        name == "ScaleXVelocity" || name == "ScaleYVelocity";
+                        name == "ScaleXVelocity" || name == "ScaleYVelocity" ||
+                        name == "TextureFilter"
+                        ;
 
                 }
             }

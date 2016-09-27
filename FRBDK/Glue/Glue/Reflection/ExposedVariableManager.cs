@@ -778,6 +778,21 @@ namespace FlatRedBall.Glue.Reflection
             {
                 returnValue.Add(new MemberWithType { Member = "SourceFile", Type = "string" });
             }
+            // slowly move away from reflection:
+
+            //if (assetTypeInfo != null)
+            //{
+
+            //    if(assetTypeInfo.VariableDefinitions.Any(definition=> string.IsNullOrEmpty( definition.Type)))
+            //    {
+            //        throw new InvalidOperationException("The type " + assetTypeInfo.FriendlyName + " has variables without a type");
+            //    }
+
+            //    var toAdd = assetTypeInfo.VariableDefinitions
+            //        .Select(definition => new MemberWithType { Member = definition.Name, Type = definition.Type });
+            //    returnValue.AddRange(toAdd);
+            //}
+            //else 
             if (assetTypeInfo != null &&
                 !string.IsNullOrEmpty(assetTypeInfo.QualifiedRuntimeTypeName.QualifiedType))
             {
