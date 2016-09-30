@@ -324,6 +324,8 @@ namespace FlatRedBall.Glue.IO
 
                 Section.GetAndStartContextAndTime("Add items");
 
+                SetInitWindowText("Creating project view...");
+
 
                 AddEmptyTreeItems();
 

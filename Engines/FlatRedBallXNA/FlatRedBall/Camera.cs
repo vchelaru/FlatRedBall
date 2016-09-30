@@ -476,6 +476,19 @@ namespace FlatRedBall
             }
         }
 
+        public void MoveToBack(Layer layer)
+        {
+            mLayers.Remove(layer);
+            mLayers.Insert(0, layer);
+        }
+
+        public void MoveToFront(Layer layer)
+        {
+            // Last layers appear on top (front)
+            mLayers.Remove(layer);
+            mLayers.Add(layer);
+        }
+
         #region XmlDocs
         /// <summary>
         /// Supplied sprites are billboarded using the camera's RotationMatrix.

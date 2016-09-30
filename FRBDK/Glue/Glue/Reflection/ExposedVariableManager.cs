@@ -786,7 +786,11 @@ namespace FlatRedBall.Glue.Reflection
             if (assetTypeInfo != null && 
                     (assetTypeInfo.FriendlyName == "Sprite" || 
                     assetTypeInfo.FriendlyName == "AxisAlignedRectangle" ||
-                    assetTypeInfo.FriendlyName == "Circle"))
+                    assetTypeInfo.FriendlyName == "Circle" ||
+                    assetTypeInfo.FriendlyName == "Polygon" || 
+                    assetTypeInfo.FriendlyName == "Layer"
+                    
+                    ))
             {
 
                 if(assetTypeInfo.VariableDefinitions.Any(definition=> string.IsNullOrEmpty( definition.Type)))

@@ -54,19 +54,23 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public override string ProcessLink(string path)
         {
             var returnValue = base.ProcessLink(path);
-            // Android is case-sensitive
-            returnValue = returnValue.ToLower();
-
-            if (returnValue.StartsWith("assets/") || returnValue.StartsWith("assets\\"))
+            if(returnValue != null)
             {
-                // Assets folder is capitalized in FRB Android projects:
-                returnValue = "A" + returnValue.Substring(1);
-            }
 
-            if(returnValue.Contains("/"))
-            {
-                returnValue = returnValue.Replace("/", "\\");
+                // Android is case-sensitive
+                returnValue = returnValue.ToLower();
 
+                if (returnValue.StartsWith("assets/") || returnValue.StartsWith("assets\\"))
+                {
+                    // Assets folder is capitalized in FRB Android projects:
+                    returnValue = "A" + returnValue.Substring(1);
+                }
+
+                if(returnValue.Contains("/"))
+                {
+                    returnValue = returnValue.Replace("/", "\\");
+
+                }
             }
 
             return returnValue;
