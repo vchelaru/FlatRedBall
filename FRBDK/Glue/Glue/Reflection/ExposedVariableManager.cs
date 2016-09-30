@@ -702,7 +702,6 @@ namespace FlatRedBall.Glue.Reflection
         {
             List<MemberWithType> returnValue = new List<MemberWithType>();
 
-            Type type = null;
 
             if (namedObjectSave != null)
             {
@@ -720,6 +719,7 @@ namespace FlatRedBall.Glue.Reflection
                         }
                     //break;
                     case SourceType.File:
+                        Type type = null;
 
                         string typeAsString = namedObjectSave.InstanceType;
 
@@ -738,7 +738,7 @@ namespace FlatRedBall.Glue.Reflection
                         }
                         break;
                     case SourceType.FlatRedBallType:
-                        type = FillWithExposableMembersForFlatRedBallType(namedObjectSave, returnValue, type);
+                        FillWithExposableMembersForFlatRedBallType(namedObjectSave, returnValue);
 
 
 
@@ -771,57 +771,36 @@ namespace FlatRedBall.Glue.Reflection
             return returnValue;
         }
 
-        private static Type FillWithExposableMembersForFlatRedBallType(NamedObjectSave namedObjectSave, List<MemberWithType> returnValue, Type type)
+        private static void FillWithExposableMembersForFlatRedBallType(NamedObjectSave namedObjectSave, List<MemberWithType> returnValue)
         {
             AssetTypeInfo assetTypeInfo = namedObjectSave.GetAssetTypeInfo();
             if (assetTypeInfo != null && !string.IsNullOrEmpty(assetTypeInfo.Extension))
             {
                 returnValue.Add(new MemberWithType { Member = "SourceFile", Type = "string" });
             }
+
             // slowly move away from reflection:
+            // To do this, the CSV has to include 
+            // types for variables. Until it does, we
+            // are going to continue to rely on reflection.
+            if (assetTypeInfo != null && 
+                    (assetTypeInfo.FriendlyName == "Sprite" || 
+                    assetTypeInfo.FriendlyName == "AxisAlignedRectangle"))
+            {
 
-            //if (assetTypeInfo != null)
-            //{
+                if(assetTypeInfo.VariableDefinitions.Any(definition=> string.IsNullOrEmpty( definition.Type)))
+                {
+                    throw new InvalidOperationException("The type " + assetTypeInfo.FriendlyName + " has variables without a type");
+                }
 
-            //    if(assetTypeInfo.VariableDefinitions.Any(definition=> string.IsNullOrEmpty( definition.Type)))
-            //    {
-            //        throw new InvalidOperationException("The type " + assetTypeInfo.FriendlyName + " has variables without a type");
-            //    }
-
-            //    var toAdd = assetTypeInfo.VariableDefinitions
-            //        .Select(definition => new MemberWithType { Member = definition.Name, Type = definition.Type });
-            //    returnValue.AddRange(toAdd);
-            //}
-            //else 
+                var toAdd = assetTypeInfo.VariableDefinitions
+                    .Select(definition => new MemberWithType { Member = definition.Name, Type = definition.Type });
+                returnValue.AddRange(toAdd);
+            } else 
             if (assetTypeInfo != null &&
                 !string.IsNullOrEmpty(assetTypeInfo.QualifiedRuntimeTypeName.QualifiedType))
             {
-
-                // if the type is null, that means this
-                // may be a type that comes from plugins.
-                // Therefore we won't show any variables (for
-                // now).  Maybe at some point in the future we'll
-                // figure out a way to get the variables out - perhaps
-                // by loading an assembly or by supporting CSV variable
-                // definition.  I think assembly-based may not be the way
-                // to go because we'll have to start working with appdomains.
-                // Update January 24, 2014
-                // We now do support variables
-                // from CSVs.  We should handle
-                // adding variables here...or below
-                // the if check.
-                // Update October 28, 2015
-                // CSV is the way to go, or at least AssetTypeInfo. This allows
-                // ultimate customization, including excluding variables. If we have
-                // variables defined in the VariableDefinitions, then let's just use that
-                // and not use any reflection:
-                // Update October 28, 2015
-                // If we do this, we lose things like enumerations, Texture2D, and other types
-                // that Glue does know how to work with automatically. So instead, we want to rely
-                // on the variable definitions to give us our variables, and then qualify their types
-                // if we can through reflection, and only if their type name agrees with the VariableDefinition
-
-                type =
+                var type =
                     TypeManager.GetTypeFromString(assetTypeInfo.QualifiedRuntimeTypeName.QualifiedType);
 
                 // We'll fall back to reflection, but eventually I'd like to see this go away
@@ -858,7 +837,6 @@ namespace FlatRedBall.Glue.Reflection
             // I'm going to comment this out to see if
             // it causes any problems.
             //returnValue.Sort();
-            return type;
         }
 
         private static void FillFromVariableDefinitions(List<MemberWithType> returnValue, AssetTypeInfo assetTypeInfo)
