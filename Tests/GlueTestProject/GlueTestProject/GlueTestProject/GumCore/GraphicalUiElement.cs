@@ -104,6 +104,25 @@ namespace Gum.Wireframe
             }
         }
 
+        /// <summary>
+        /// Returns this instance's SystemManagers, or climbs up the parent/child relationship
+        /// until a non-null SystemsManager is found. Otherwise, returns null.
+        /// </summary>
+        public SystemManagers EffectiveManagers
+        {
+            get
+            {
+                if(mManagers != null)
+                {
+                    return mManagers;
+                }
+                else 
+                {
+                    return this.ParentGue?.EffectiveManagers;
+                }
+            }
+        }
+
         public bool Visible
         {
             get
@@ -438,6 +457,12 @@ namespace Gum.Wireframe
             get { return mParent; }
             set
             {
+#if DEBUG
+                if (value == this)
+                {
+                    throw new InvalidOperationException("Cannot attach an object to itself");
+                }
+#endif
                 if (mParent != value)
                 {
                     if (mParent != null && mParent.Children != null)

@@ -143,7 +143,14 @@ namespace FlatRedBall.TileCollisions
             return toReturn;
         }
 
+        public bool CollideAgainstBounce(ICollidable collidable, float elasticity)
+        {
+            bool toReturn = false;
 
+            toReturn = mShapes.CollideAgainstBounce(collidable.Collision, true, mSortAxis, 1, 0, elasticity);
+
+            return toReturn;
+        }
 
         public AxisAlignedRectangle GetTileAt(float x, float y)
         {
@@ -366,8 +373,14 @@ namespace FlatRedBall.TileCollisions
 
     public static class TileShapeCollectionLayeredTileMapExtensions
     {
-        // This was not originally public but made public for situations where users want to 
-        // manually specify which tiles to use rather than relying on the HasCollision methods.
+        public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
+            LayeredTileMap layeredTileMap, string nameToUse)
+        {
+            AddCollisionFrom(tileShapeCollection, layeredTileMap,
+                new List<string> { nameToUse });
+        }
+
+
         public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
             LayeredTileMap layeredTileMap, IEnumerable<string> namesToUse)
         {

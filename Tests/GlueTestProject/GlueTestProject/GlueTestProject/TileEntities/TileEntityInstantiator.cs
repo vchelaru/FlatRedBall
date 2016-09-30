@@ -97,13 +97,18 @@ namespace FlatRedBall.TileEntities
                 entity.Z = layer.Z;
             }
 
-            var lateBinder = Instructions.Reflection.LateBinder.GetInstance(entity.GetType());
+            var entityType = entity.GetType();
+            var lateBinder = Instructions.Reflection.LateBinder.GetInstance(entityType);
 
             foreach (var property in propertiesToAssign)
             {
                 try
                 {
-                    lateBinder.SetValue(entity, property.Name, property.Value);
+                    var valueToSet = property.Value;
+
+                    valueToSet = SetValueAccordingToType(valueToSet, property.Name, property.Type, entityType);
+
+                    lateBinder.SetValue(entity, property.Name, valueToSet);
                 }
                 catch (Exception e)
                 {
@@ -114,25 +119,76 @@ namespace FlatRedBall.TileEntities
             }
         }
 
+
+        private static object SetValueAccordingToType(object valueToSet, string valueName, string valueType, Type entityType)
+        {
+            if (valueType == "bool")
+            {
+                bool boolValue = false;
+
+                if (bool.TryParse((string)valueToSet, out boolValue))
+                {
+                    valueToSet = boolValue;
+                }
+            }
+            else if (valueType == "float")
+            {
+                float floatValue;
+
+                if (float.TryParse((string)valueToSet, out floatValue))
+                {
+                    valueToSet = floatValue;
+                }
+            }
+            else if (valueType == "int")
+            {
+                int intValue;
+
+                if (int.TryParse((string)valueToSet, out intValue))
+                {
+                    valueToSet = intValue;
+                }
+            }
+            else if (valueName == "CurrentState")
+            {
+                // Since it's part of the class, it uses the "+" separator
+                var enumTypeName = entityType.FullName + "+VariableState";
+                var enumType = typesInThisAssembly.FirstOrDefault(item => item.FullName == enumTypeName);
+
+                valueToSet = Enum.Parse(enumType, (string)valueToSet);
+            }
+            return valueToSet;
+        }
+
+
         private static void AssignCustomPropertyTo(PositionedObject entity, NamedValue property)
         {
             throw new NotImplementedException();
         }
 
+
+        static Type[] typesInThisAssembly;
         private static IEntityFactory GetFactory(string entityType)
         {
-#if WINDOWS_8
-                    var assembly = typeof(TileEntityInstantiator).GetTypeInfo().Assembly;
-                    var types = assembly.DefinedTypes;
-
-                    var filteredTypes =
-                        types.Where(t => t.ImplementedInterfaces.Contains(typeof(IEntityFactory))
-                                    && t.DeclaredConstructors.Any(c=>c.GetParameters().Count() == 0));
+            if (typesInThisAssembly == null)
+            {
+#if WINDOWS_8 || UWP
+                var assembly = typeof(TileEntityInstantiator).GetTypeInfo().Assembly;
+                typesInThisAssembly = assembly.DefinedTypes.ToArray();
 #else
-            var assembly = Assembly.GetExecutingAssembly();
-            var types = assembly.GetTypes();
+                var assembly = Assembly.GetExecutingAssembly();
+                typesInThisAssembly = assembly.GetTypes();
+#endif
+            }
+
+
+#if WINDOWS_8 || UWP
             var filteredTypes =
-                types.Where(t => t.GetInterfaces().Contains(typeof(IEntityFactory))
+                types.Where(t => t.ImplementedInterfaces.Contains(typeof(IEntityFactory))
+                            && t.DeclaredConstructors.Any(c=>c.GetParameters().Count() == 0));
+#else
+            var filteredTypes =
+                typesInThisAssembly.Where(t => t.GetInterfaces().Contains(typeof(IEntityFactory))
                             && t.GetConstructor(Type.EmptyTypes) != null);
 #endif
 
@@ -140,7 +196,7 @@ namespace FlatRedBall.TileEntities
                 .Select(
                     t =>
                     {
-#if WINDOWS_8
+#if WINDOWS_8 || UWP
                                 var propertyInfo = t.DeclaredProperties.First(item => item.Name == "Self");
 #else
                         var propertyInfo = t.GetProperty("Self");

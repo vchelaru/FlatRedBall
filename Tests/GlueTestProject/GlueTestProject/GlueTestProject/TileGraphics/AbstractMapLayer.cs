@@ -3,7 +3,9 @@ using System.Xml.Serialization;
 
 namespace TMXGlueLib
 {
+#if !UWP
     [Serializable]
+#endif
     [XmlInclude(typeof (MapLayer))]
     [XmlInclude(typeof (mapObjectgroup))]
     public abstract class AbstractMapLayer

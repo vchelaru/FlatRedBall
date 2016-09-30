@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Gum.Wireframe
 {
-    public partial class GraphicalUiElement : IWindow
+    public partial class GraphicalUiElement : FlatRedBall.Gui.Controls.IControl
     {
 
         public event WindowEvent Click;
@@ -458,15 +458,33 @@ namespace Gum.Wireframe
                 float worldX;
                 float worldY;
 
-                this.Managers.Renderer.Camera.ScreenToWorld(
-                    screenX, screenY,
-                    out worldX, out worldY);
+                var managers = this.EffectiveManagers;
+
+                // If there are no managers, we an still fall back to the default:
+                if(managers == null)
+                {
+                    managers = global::RenderingLibrary.SystemManagers.Default;
+                }
+
+                if(managers != null)
+                {
+                    managers.Renderer.Camera.ScreenToWorld(
+                        screenX, screenY,
+                        out worldX, out worldY);
 
 
-                // for now we'll just rely on the bounds of the GUE itself
+                    // for now we'll just rely on the bounds of the GUE itself
 
-                return global::RenderingLibrary.IPositionedSizedObjectExtensionMethods.HasCursorOver(
-                    this, worldX, worldY);
+                    return global::RenderingLibrary.IPositionedSizedObjectExtensionMethods.HasCursorOver(
+                        this, worldX, worldY);
+                }
+                else
+                {
+                    string message =
+                        "Could not determine whether the cursor is over this instance because" +
+                        "this instance is not on any camera, nor is a default camera set up";
+                    throw new Exception(message);
+                }
             }
             else
             {
@@ -550,5 +568,9 @@ namespace Gum.Wireframe
             return tweener;
         }
 
+        void FlatRedBall.Gui.Controls.IControl.SetState(string stateName)
+        {
+            this.ApplyState(stateName);
+        }
     }
 }

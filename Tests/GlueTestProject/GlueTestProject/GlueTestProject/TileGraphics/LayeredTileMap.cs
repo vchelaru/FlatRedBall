@@ -328,6 +328,11 @@ namespace FlatRedBall.TileGraphics
         {
             TiledMapSave tms = TiledMapSave.FromFile(fileName);
 
+            // Ultimately properties are tied to tiles by the tile name.
+            // If a tile has no name but it has properties, those properties
+            // will be lost in the conversion. Therefore, we have to add name properties.
+            tms.NameUnnamedTilesetTiles();
+
 
             string directory = FlatRedBall.IO.FileManager.GetDirectory(fileName);
 
@@ -362,7 +367,8 @@ namespace FlatRedBall.TileGraphics
                             matchingLayer.Properties.Add(new NamedValue
                             {
                                 Name = propertyValues.StrippedName,
-                                Value = propertyValues.value
+                                Value = propertyValues.value,
+                                Type = propertyValues.Type
                             });
                         }
 
@@ -385,7 +391,8 @@ namespace FlatRedBall.TileGraphics
                             List<NamedValue> namedValues = new List<NamedValue>();
                             foreach (var prop in tile.properties)
                             {
-                                namedValues.Add(new NamedValue() { Name = prop.StrippedName, Value = prop.value });
+                                namedValues.Add(new NamedValue()
+                                { Name = prop.StrippedName, Value = prop.value, Type = prop.Type });
                             }
 
                             toReturn.Properties.Add(name, namedValues);
@@ -478,7 +485,14 @@ namespace FlatRedBall.TileGraphics
 
         public void AddToManagers(FlatRedBall.Graphics.Layer layer)
         {
-            SpriteManager.AddPositionedObject(this);
+            bool isAlreadyManaged = SpriteManager.ManagedPositionedObjects
+                .Contains(this);
+
+            // This allows AddToManagers to be called multiple times, so it can be added to multiple layers
+            if (!isAlreadyManaged)
+            {
+                SpriteManager.AddPositionedObject(this);
+            }
             foreach (var item in this.mMapLists)
             {
                 item.AddToManagers(layer);
@@ -543,6 +557,8 @@ namespace FlatRedBall.TileGraphics
             {
                 SpriteManager.RemoveDrawableBatch(this.mMapLists[i]);
             }
+
+            SpriteManager.RemovePositionedObject(this);
 
             this.mMapLists.MakeTwoWay();
         }

@@ -184,7 +184,8 @@ namespace TMXGlueLib.DataTypes
                                 new NamedValue
                                 {
                                     Name = property.StrippedName,
-                                    Value = property.value
+                                    Value = property.value,
+                                    Type = property.Type
                                 }
                             );
                         }

@@ -68,6 +68,29 @@ namespace TMXGlueLib
             return scene.ToScene(contentManagerName);
         }
 
+        public void NameUnnamedTilesetTiles()
+        {
+            foreach (var tileset in this.Tilesets)
+            {
+                foreach (var tileDictionary in tileset.TileDictionary)
+                {
+                    var propertyList = tileDictionary.Value.properties;
+                    var nameProperty = propertyList.FirstOrDefault(item => item.StrippedNameLower == "name");
+
+                    if (nameProperty == null)
+                    {
+                        // create a new property:
+                        var newNameProperty = new property();
+                        newNameProperty.name = "Name";
+                        newNameProperty.value = tileset.Name + tileDictionary.Key + "_autoname";
+
+                        propertyList.Add(newNameProperty);
+
+                        tileDictionary.Value.ForceRebuildPropertyDictionary();
+                    }
+                }
+            }
+        }
 
 
         public string ToCSVString(CSVPropertyType type = CSVPropertyType.Tile, string layerName = null)
@@ -752,14 +775,17 @@ namespace TMXGlueLib
                     for (int i = 0; i < mapLayer.data[0].tiles.Count; i++)
                     {
                         uint gid = mLayer.data[0].tiles[i];
-                        Tileset tileSet = GetTilesetForGid(gid);
-                        if (tileSet != null)
+                        if(gid > 0)
                         {
-                            SpriteSave sprite = CreateSpriteSaveFromMapTileset(scale, mLayerCount, mLayer, i, gid,
-                                tileSet, referenceType);
-                            lock (toReturn)
+                            Tileset tileSet = GetTilesetForGid(gid);
+                            if (tileSet != null)
                             {
-                                toReturn.SpriteList.Add(sprite);
+                                SpriteSave sprite = CreateSpriteSaveFromMapTileset(scale, mLayerCount, mLayer, i, gid,
+                                    tileSet, referenceType);
+                                lock (toReturn)
+                                {
+                                    toReturn.SpriteList.Add(sprite);
+                                }
                             }
                         }
                     }

@@ -1179,6 +1179,12 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\AtlasedTexture.cs">
       <Link>GumCore\AtlasedTexture.cs</Link>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\BehaviorReference.cs">
+      <Link>GumCore\BehaviorReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\BehaviorSave.cs">
+      <Link>GumCore\BehaviorSave.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\BitmapCharacterInfo.cs">
       <Link>GumCore\BitmapCharacterInfo.cs</Link>
     </Compile>
@@ -1205,6 +1211,9 @@
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\DimensionUnitType.cs">
       <Link>GumCore\DimensionUnitType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\ElementBehaviorReference.cs">
+      <Link>GumCore\ElementBehaviorReference.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\ElementReference.cs">
       <Link>GumCore\ElementReference.cs</Link>
@@ -1273,6 +1282,9 @@
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\IRenderableIpso.cs">
       <Link>GumCore\IRenderableIpso.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\IStateContainer.cs">
+      <Link>GumCore\IStateContainer.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumCore\IVariableFinder.cs">
       <Link>GumCore\IVariableFinder.cs</Link>

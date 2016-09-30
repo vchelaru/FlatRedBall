@@ -8,11 +8,20 @@ namespace TMXGlueLib.DataTypes
     public struct NamedValue
     {
         public string Name;
+        public string Type;
         public object Value;
 
         public override string ToString()
         {
-            return $"{Name}={Value}";
+            if(string.IsNullOrEmpty(Type))
+            {
+                return $"{Name}={Value}";
+            }
+            else
+            {
+                return $"{Type} {Name}={Value}";
+            }
+
         }
     }
 }

@@ -36,11 +36,15 @@ namespace FlatRedBall.TileGraphics
         private static BasicEffect mBasicEffect;
         private static AlphaTestEffect mAlphaTestEffect;
 
-        #region XML Docs
         /// <summary>
-        /// The vertices used to draw the shape
+        /// The vertices used to draw the map.
         /// </summary>
-        #endregion
+        /// <remarks>
+        /// Coordinate order is:
+        /// 3   2
+        ///
+        /// 0   1
+        /// </remarks>
         protected VertexPositionTexture[] mVertices;
         protected Texture2D mTexture;
         #region XML Docs
@@ -61,11 +65,11 @@ namespace FlatRedBall.TileGraphics
 
         #region Properties
 
-        public List<NamedValue> Properties
+        public List<TMXGlueLib.DataTypes.NamedValue> Properties
         {
             get;
             private set;
-        } = new List<NamedValue>();
+        } = new List<TMXGlueLib.DataTypes.NamedValue>();
 
         public SortAxis SortAxis
         {

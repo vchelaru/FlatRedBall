@@ -6,8 +6,9 @@ using System.Xml.Serialization;
 
 namespace TMXGlueLib
 {
-
+#if !UWP
     [Serializable]
+#endif
     public partial class MapLayer : AbstractMapLayer
     {
         #region Fields

@@ -683,6 +683,8 @@
     <Compile Include="GumCore\AnimationFrame.cs" />
     <Compile Include="GumCore\Atlas.cs" />
     <Compile Include="GumCore\AtlasedTexture.cs" />
+    <Compile Include="GumCore\BehaviorReference.cs" />
+    <Compile Include="GumCore\BehaviorSave.cs" />
     <Compile Include="GumCore\BitmapCharacterInfo.cs" />
     <Compile Include="GumCore\BitmapFont.cs" />
     <Compile Include="GumCore\Blend.cs" />
@@ -692,6 +694,7 @@
     <Compile Include="GumCore\ContentManagerWrapper.cs" />
     <Compile Include="GumCore\CustomPropertySave.cs" />
     <Compile Include="GumCore\DimensionUnitType.cs" />
+    <Compile Include="GumCore\ElementBehaviorReference.cs" />
     <Compile Include="GumCore\ElementReference.cs" />
     <Compile Include="GumCore\ElementSave.cs" />
     <Compile Include="GumCore\ElementSaveExtensionMethods.cs" />
@@ -718,6 +721,7 @@
     <Compile Include="GumCore\IPositionedSizedObject.cs" />
     <Compile Include="GumCore\IRenderable.cs" />
     <Compile Include="GumCore\IRenderableIpso.cs" />
+    <Compile Include="GumCore\IStateContainer.cs" />
     <Compile Include="GumCore\IVariableFinder.cs" />
     <Compile Include="GumCore\IVisible.cs" />
     <Compile Include="GumCore\Layer.cs" />
