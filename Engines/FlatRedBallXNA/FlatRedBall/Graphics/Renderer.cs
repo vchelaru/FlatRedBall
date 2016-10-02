@@ -978,12 +978,7 @@ namespace FlatRedBall.Graphics
 
 #endif
 
-            // Set up device settings
-
-
-#if XNA4 || MONOGAME
             BlendOperation = FlatRedBall.Graphics.BlendOperation.Regular;
-
 
             DepthStencilState depthStencilState = new DepthStencilState();
             depthStencilState.DepthBufferEnable = false;
@@ -993,73 +988,7 @@ namespace FlatRedBall.Graphics
 
             RasterizerState rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.None;
-            
 
-
-#else
-            mGraphics.GraphicsDevice.RenderState.AlphaBlendEnable = true;
-
-            BlendOperation = BlendOperation.Regular;
-            //mGraphics.GraphicsDevice.RenderState.SourceBlend = Blend.SourceAlpha;
-            //mGraphics.GraphicsDevice.RenderState.DestinationBlend = Blend.InverseSourceAlpha;
-
-            // Vic says - we WERE at one time setting the blends like this, but this
-            // causes problems when ONLY rendering objects with a non-regular blend.  So instead
-            // we use the BlendOperation property.
-            //mGraphics.GraphicsDevice.RenderState.SourceBlend = Blend.SourceAlpha;
-            //mGraphics.GraphicsDevice.RenderState.DestinationBlend = Blend.InverseSourceAlpha;
-
-            mGraphics.GraphicsDevice.RenderState.DepthBufferEnable = false;
-            mGraphics.GraphicsDevice.RenderState.DepthBufferWriteEnable = false;
-
-            mGraphics.GraphicsDevice.RenderState.AlphaTestEnable = true;
-            mGraphics.GraphicsDevice.RenderState.ReferenceAlpha = 0;
-            mGraphics.GraphicsDevice.RenderState.AlphaFunction = CompareFunction.Greater;
-            mGraphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
-
-
-
-#endif
-        }
-
-        #region XML Docs
-        /// <summary>
-        /// Ensures that a render target pair of this surface format exists
-        /// </summary>
-        /// <param name="surfaceFormat">The surface format for the render targets</param>
-        #endregion
-        internal static void InitializeRenderTargets(SurfaceFormat surfaceFormat)
-        {
-
-            // Get the largest drawn camera size
-            int screenwidth = FlatRedBallServices.mGraphics.PreferredBackBufferWidth;
-            int screenheight = FlatRedBallServices.mGraphics.PreferredBackBufferHeight;
-
-            //foreach (Camera camera in Cameras)
-            //{
-            //    if (camera.Width > screenwidth)
-            //    {
-            //        screenwidth = camera.Width;
-            //    }
-            //    if (camera.Height > screenheight)
-            //    {
-            //        screenheight = camera.Height;
-            //    }
-            //}
-
-            // Make sure the current render target (if it exists) is large enough, and/or create
-            // a large enough render target
-            
-            // OLD CODE
-            //for (int i = 0; i < Cameras.Count; i++)
-            //{
-            //    if (!Cameras[i].PostProcessing.mRenderTargets.ContainsKey(surfaceFormat))
-            //    {
-            //        Cameras[i].PostProcessing.mRenderTargets.Add(
-            //            surfaceFormat, new RenderTargetPair(
-            //                surfaceFormat, Cameras[i].Width, Cameras[i].Height));
-            //    }
-            //}
         }
 
         #endregion
@@ -1826,13 +1755,10 @@ namespace FlatRedBall.Graphics
 
         private static void ClearBackgroundForLayer(Camera camera)
         {
-#if XNA4
-            Color clearColor = Color.Transparent;
-#else
-                Color clearColor = Color.TransparentBlack;
-#endif
+
             if (camera.ClearsDepthBuffer)
             {
+                Color clearColor = Color.Transparent;
                 mGraphics.GraphicsDevice.Clear(ClearOptions.DepthBuffer,
                         clearColor,
                         1, 0);

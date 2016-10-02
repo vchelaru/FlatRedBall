@@ -603,145 +603,63 @@ namespace FlatRedBall
             if (relativeToCamera)
             {
                 positionVector = new Vector3(0, 0, 0);
+
+                return Matrix.CreateLookAt(Vector3.Zero, -Vector3.UnitZ, Vector3.UnitY);
             }
             else
             {
                 positionVector = Position;
-            }
 
-#if FRB_MDX
-            Vector3 cameraTarget = positionVector + new Vector3(mRotationMatrix.M31, mRotationMatrix.M32, mRotationMatrix.M33);
-            //Vector3 tempUpVector = new Vector3(mRotationMatrix.M21, mRotationMatrix.M22, mRotationMatrix.M23); 
-#else
-            Vector3 cameraTarget = positionVector + mRotationMatrix.Forward;
-           // Vector3 tempUpVector = mRotationMatrix.Up;
+                Vector3 cameraTarget = positionVector + mRotationMatrix.Forward;
 
-#endif
-//            cameraTarget = Vector3.Transform(cameraTarget, mRotationMatrix);
-//            tempUpVector = Vector3.Transform(tempUpVector, mRotationMatrix);
+                // FRB has historically had a lot of
+                // jagged edges and rendering issues which
+                // I think are caused by floating point inaccuracies.
+                // Unfortunately these tend to happen most when objects
+                // are positioned at whole numbers, which is very common.
+                // Going to shift the camera by .5 units if the Camera is viewing
+                // in 2D mode to try to reduce this
+                if (ShiftsHalfUnitForRendering)
+                {
+                    // This doesn't seem to fix
+                    // problems when the camera can
+                    // smooth scroll.  I'm going to move
+                    // the camera to multiples of 5.
+                    //positionVector.X += .5f;
+                    //positionVector.Y -= .5f;
+                    //cameraTarget.X += .5f;
+                    //cameraTarget.Y -= .5f;
 
-#if FRB_MDX
-
-            return Matrix.LookAtLH(positionVector, cameraTarget, UpVector);
-#elif SILVERLIGHT
-
-
-            float widthValue = mOrthogonalWidth;
-            float heightValue = mOrthogonalHeight;
-
-            if (!Orthogonal)
-            {
-                widthValue = mDestinationRectangle.Width;
-                heightValue = mDestinationRectangle.Height;
-            }
-
-            float xRatioToMultiplyByForCameraModification = mDestinationRectangle.Width /
-                 widthValue;
-
-            float yRatioToMultiplyByForCameraModification = mDestinationRectangle.Height /
-                 heightValue;
-
-
-
-            float xOffset = Position.X;
-            float yOffset = Position.Y;
-
-            float rotationAdjustedXOffset = (float)(
-                widthValue / 2.0f -
-                (System.Math.Cos(mRotationZ) * xOffset +
-                 System.Math.Sin(mRotationZ) * yOffset));
-
-            float rotationAdjustedYOffset = (float)(
-                heightValue / 2.0f +
-                (System.Math.Sin(mRotationZ + System.Math.PI / 2.0) * yOffset +
-                 System.Math.Cos(mRotationZ + System.Math.PI / 2.0) * xOffset));
-
-            Matrix returnMatrix = Matrix.CreateTranslation(
-                rotationAdjustedXOffset * xRatioToMultiplyByForCameraModification,
-                rotationAdjustedYOffset * yRatioToMultiplyByForCameraModification,
-                0);
-
-            returnMatrix.M11 =
-                xRatioToMultiplyByForCameraModification * (float)System.Math.Cos(mRotationZ);
-            returnMatrix.M12 =
-                xRatioToMultiplyByForCameraModification * (float)System.Math.Sin(mRotationZ);
-            returnMatrix.M21 =
-                yRatioToMultiplyByForCameraModification * (float)System.Math.Cos(mRotationZ + System.Math.PI / 2.0f);
-            returnMatrix.M22 =
-                yRatioToMultiplyByForCameraModification * (float)System.Math.Sin(mRotationZ + System.Math.PI / 2.0f);
-
-
-
-            return returnMatrix;
-            
-#else 
-            // FRB has historically had a lot of
-            // jagged edges and rendering issues which
-            // I think are caused by floating point inaccuracies.
-            // Unfortunately these tend to happen most when objects
-            // are positioned at whole numbers, which is very common.
-            // Going to shift the camera by .5 units if the Camera is viewing
-            // in 2D mode to try to reduce this
-    //#if !WINDOWS_PHONE
-            if (ShiftsHalfUnitForRendering)
-            {
-                // This doesn't seem to fix
-                // problems when the camera can
-                // smooth scroll.  I'm going to move
-                // the camera to multiples of 5.
-                //positionVector.X += .5f;
-                //positionVector.Y -= .5f;
-                //cameraTarget.X += .5f;
-                //cameraTarget.Y -= .5f;
-
-                // This also causes rendering issues, I think I'm going to do it in update dependencies
-                //positionVector.X = (int)positionVector.X + .5f;
-                //positionVector.Y = (int)positionVector.Y - .5f;
-                //cameraTarget.X = (int)cameraTarget.X + .5f;
-                //cameraTarget.Y = (int)cameraTarget.Y - .5f;
+                    // This also causes rendering issues, I think I'm going to do it in update dependencies
+                    //positionVector.X = (int)positionVector.X + .5f;
+                    //positionVector.Y = (int)positionVector.Y - .5f;
+                    //cameraTarget.X = (int)cameraTarget.X + .5f;
+                    //cameraTarget.Y = (int)cameraTarget.Y - .5f;
                 
-                // Math this is complicated.  Without this
-                // stuff that is attached to the Camera tends
-                // to not be rendered properly :(  So putting it back in
-                positionVector.X += .5f;
-                positionVector.Y -= .5f;
-                cameraTarget.X += .5f;
-                cameraTarget.Y -= .5f;
+                    // Math this is complicated.  Without this
+                    // stuff that is attached to the Camera tends
+                    // to not be rendered properly :(  So putting it back in
+                    positionVector.X += .5f;
+                    positionVector.Y -= .5f;
+                    cameraTarget.X += .5f;
+                    cameraTarget.Y -= .5f;
 
+                }
+                Matrix returnMatrix;
+                Matrix.CreateLookAt(
+                    ref positionVector, // Position of the camera eye
+                    ref cameraTarget,  // Point that the eye is looking at
+                    ref UpVector,
+                    out returnMatrix);
+
+                return returnMatrix;
             }
-    //#endif
-            Matrix returnMatrix;
-            Matrix.CreateLookAt(
-                ref positionVector, // Position of the camera eye
-                ref cameraTarget,  // Point that the eye is looking at
-                ref UpVector,
-                out returnMatrix);
 
-            return returnMatrix;
-#endif
         }
 
 
         public Matrix GetProjectionMatrix()
         {
-#if FRB_MDX
-            if (mOrthogonal == false)
-            {
-                return Matrix.PerspectiveFovLH(
-                    mFieldOfView,
-                    mAspectRatio,
-                    mNearClipPlane,
-                    mFarClipPlane);
-            }
-            else
-            {
-                return Matrix.OrthoLH(
-                    mOrthogonalWidth,
-                    mOrthogonalHeight,
-                    mNearClipPlane,
-                    mFarClipPlane);
-            }
-#else
             if (mOrthogonal == false)
             {
                 //return Matrix.CreatePerspectiveFieldOfView(
@@ -757,31 +675,21 @@ namespace FlatRedBall
             }
             else
             {
-#if SILVERLIGHT
-                return Matrix.Identity;
-#else
                 return Matrix.CreateOrthographic(
                     mOrthogonalWidth,
                     mOrthogonalHeight,
                     mNearClipPlane,
                     mFarClipPlane);
-#endif
             }
-#endif
         }
 
 
         public float GetRequiredAspectRatio(float desiredYEdge, float zValue)
         {
-#if FRB_MDX
-            float modifiedDesiredYEdge = 100 * desiredYEdge / (zValue - Z);
-#else
             float modifiedDesiredYEdge = 100 * desiredYEdge / (Position.Z - zValue);
-#endif
             return (float)System.Math.Atan(modifiedDesiredYEdge / 100) * 2;
         }
 
-#if !FRB_MDX
         public Viewport GetViewport()
         {
             // Viewport is a struct, so we can start with the current viewport
@@ -879,8 +787,7 @@ namespace FlatRedBall
             return viewport;
 
         }
-
-#endif
+        
 
         #region Is object in view
 
@@ -1246,7 +1153,6 @@ namespace FlatRedBall
             Matrix.Multiply(ref view, ref mProjection, out viewProj);
             #endregion
 
-#if XNA4
             if (effect is AlphaTestEffect)
             {
                 AlphaTestEffect asAlphaTestEffect = effect as AlphaTestEffect;
@@ -1256,7 +1162,6 @@ namespace FlatRedBall
 
             }
             else
-#endif
             {
                 //TimeManager.SumTimeSection("Create the matrices");
 
@@ -1379,15 +1284,11 @@ namespace FlatRedBall
 			//  mProjection = Matrix.CreateTranslation(-0.5f, -0.5f, 0) * GetProjectionMatrix();
 			mProjection = GetProjectionMatrix();
 
-#if FRB_XNA
             if (updateFrustum)
             {
                 Matrix.Multiply(ref mView, ref mProjection, out mViewProjection);
                 mBoundingFrustum.Matrix = (mViewProjection);
             }
-#elif !SILVERLIGHT
-            mViewProjection = Matrix.Multiply(mView, mProjection);
-#endif
         }
 
         public void UsePixelCoordinates()
