@@ -449,6 +449,13 @@
       <Link>Entities\DisabledObjectEntity.Generated.cs</Link>
       <DependentUpon>DisabledObjectEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DrawableEntity.cs">
+      <Link>Entities\DrawableEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\DrawableEntity.Generated.cs">
+      <Link>Entities\DrawableEntity.Generated.cs</Link>
+      <DependentUpon>DrawableEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EmitterEntity.cs">
       <Link>Entities\EmitterEntity.cs</Link>
     </Compile>

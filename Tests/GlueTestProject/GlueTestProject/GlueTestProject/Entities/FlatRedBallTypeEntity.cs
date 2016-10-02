@@ -34,11 +34,6 @@ namespace GlueTestProject.Entities
                 throw new Exception("Attachments on Sprits in Scenes that are offset is not working properly");
             }
 
-            if (RectangleSettingBottom.RelativeY == 0)
-            {
-                throw new Exception("Setting Bottom does not adjust relative values");
-            }
-
             if (this.ShouldHaveAName.Name != "ShouldHaveAName")
             {
                 throw new Exception("Names on Sprites are not getting assigned on the instance at runtime");

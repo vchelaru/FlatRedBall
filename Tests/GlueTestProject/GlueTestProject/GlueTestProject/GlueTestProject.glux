@@ -2945,6 +2945,11 @@
         </NamedObjectSave>
         <NamedObjectSave>
           <CustomProperty>
+            <Type>float</Type>
+            <Member>TextureScale</Member>
+            <ValueAsFloat>1</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
             <Type>AnimationChainList</Type>
             <Member>AnimationChains</Member>
             <ValueAsString>AnimationChainListFile</ValueAsString>
@@ -2953,11 +2958,6 @@
             <Type>string</Type>
             <Member>CurrentChainName</Member>
             <ValueAsString>WalkDown</ValueAsString>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>1</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
@@ -3744,12 +3744,12 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Height</Member>
+            <Member>Width</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Width</Member>
+            <Member>Height</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
@@ -4085,12 +4085,12 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Height</Member>
+            <Member>Width</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Width</Member>
+            <Member>Height</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
@@ -5056,6 +5056,16 @@
         </NamedObjectSave>
         <NamedObjectSave>
           <CustomProperty>
+            <Type>float</Type>
+            <Member>X</Member>
+            <ValueAsFloat>0</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>Y</Member>
+            <ValueAsFloat>66</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
             <Type>Texture2D</Type>
             <Member>Texture</Member>
             <ValueAsString>Bear</ValueAsString>
@@ -5074,16 +5084,6 @@
             <Type>float</Type>
             <Member>ScaleY</Member>
             <ValueAsFloat>20</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>X</Member>
-            <ValueAsFloat>0</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>Y</Member>
-            <ValueAsFloat>66</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
@@ -5116,13 +5116,13 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Radius</Member>
-            <ValueAsFloat>16</ValueAsFloat>
+            <Member>X</Member>
+            <ValueAsFloat>22</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>X</Member>
-            <ValueAsFloat>22</ValueAsFloat>
+            <Member>Radius</Member>
+            <ValueAsFloat>16</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
@@ -5386,12 +5386,12 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Height</Member>
+            <Member>Width</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Width</Member>
+            <Member>Height</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
@@ -5680,6 +5680,53 @@
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
+      <Is2D>true</Is2D>
+    </EntitySave>
+    <EntitySave>
+      <Properties>
+        <PropertySave>
+          <Name>ImplementsIDrawableBatch</Name>
+          <ValueAsBool>true</ValueAsBool>
+        </PropertySave>
+      </Properties>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
+      <CustomVariables>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>X</Name>
+          <Type>float</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>Y</Name>
+          <Type>float</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>Z</Name>
+          <Type>float</Type>
+        </CustomVariable>
+      </CustomVariables>
+      <ImplementsIDrawableBatch>true</ImplementsIDrawableBatch>
+      <Name>Entities\DrawableEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
@@ -6089,17 +6136,17 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
+            <Member>Y</Member>
+            <ValueAsFloat>16</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
             <Member>ScaleX</Member>
             <ValueAsFloat>16</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
             <Member>ScaleY</Member>
-            <ValueAsFloat>16</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>Y</Member>
             <ValueAsFloat>16</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
@@ -6112,6 +6159,11 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
+            <Member>Y</Member>
+            <ValueAsFloat>-16</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
             <Member>ScaleX</Member>
             <ValueAsFloat>16</ValueAsFloat>
           </CustomProperty>
@@ -6119,11 +6171,6 @@
             <Type>float</Type>
             <Member>ScaleY</Member>
             <ValueAsFloat>16</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>Y</Member>
-            <ValueAsFloat>-16</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
@@ -6135,6 +6182,11 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
+            <Member>X</Member>
+            <ValueAsFloat>-16</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
             <Member>ScaleX</Member>
             <ValueAsFloat>16</ValueAsFloat>
           </CustomProperty>
@@ -6142,11 +6194,6 @@
             <Type>float</Type>
             <Member>ScaleY</Member>
             <ValueAsFloat>16</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>X</Member>
-            <ValueAsFloat>-16</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
@@ -6158,17 +6205,17 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
+            <Member>X</Member>
+            <ValueAsFloat>16</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
             <Member>ScaleX</Member>
             <ValueAsFloat>16</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
             <Member>ScaleY</Member>
-            <ValueAsFloat>16</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>X</Member>
             <ValueAsFloat>16</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
@@ -6353,6 +6400,11 @@
         </NamedObjectSave>
         <NamedObjectSave>
           <CustomProperty>
+            <Type>float</Type>
+            <Member>X</Member>
+            <ValueAsFloat>5</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
             <Type>string</Type>
             <Member>ScaleX</Member>
             <ValueAsFloat>16</ValueAsFloat>
@@ -6361,11 +6413,6 @@
             <Type>string</Type>
             <Member>ScaleY</Member>
             <ValueAsFloat>16</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>X</Member>
-            <ValueAsFloat>5</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
@@ -6669,29 +6716,6 @@
           <SourceFile />
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>ShouldHaveAName</InstanceName>
-          <AttachToContainer>true</AttachToContainer>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>Bottom</Member>
-            <ValueAsFloat>0</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>ScaleX</Member>
-            <ValueAsFloat>16</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>ScaleY</Member>
-            <ValueAsFloat>16</ValueAsFloat>
-          </CustomProperty>
-          <SourceType>FlatRedBallType</SourceType>
-          <SourceClassType>AxisAlignedRectangle</SourceClassType>
-          <InstanceName>RectangleSettingBottom</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
@@ -7044,12 +7068,12 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Height</Member>
+            <Member>Width</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Width</Member>
+            <Member>Height</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
@@ -7116,12 +7140,12 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Height</Member>
+            <Member>Width</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Width</Member>
+            <Member>Height</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
@@ -8650,8 +8674,8 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Height</Member>
-            <ValueAsFloat>22</ValueAsFloat>
+            <Member>Y</Member>
+            <ValueAsFloat>11</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
@@ -8660,8 +8684,8 @@
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Y</Member>
-            <ValueAsFloat>11</ValueAsFloat>
+            <Member>Height</Member>
+            <ValueAsFloat>22</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
@@ -8810,6 +8834,11 @@
       <NamedObjects>
         <NamedObjectSave>
           <CustomProperty>
+            <Type>float</Type>
+            <Member>X</Member>
+            <ValueAsFloat>5</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
             <Type>string</Type>
             <Member>ScaleX</Member>
             <ValueAsFloat>16</ValueAsFloat>
@@ -8818,11 +8847,6 @@
             <Type>string</Type>
             <Member>ScaleY</Member>
             <ValueAsFloat>16</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>X</Member>
-            <ValueAsFloat>5</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
@@ -9042,12 +9066,12 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Height</Member>
+            <Member>Width</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Width</Member>
+            <Member>Height</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
@@ -9136,6 +9160,11 @@
       <NamedObjects>
         <NamedObjectSave>
           <CustomProperty>
+            <Type>bool</Type>
+            <Member>Visible</Member>
+            <ValueAsBool>true</ValueAsBool>
+          </CustomProperty>
+          <CustomProperty>
             <Type>Color</Type>
             <Member>Color</Member>
             <ValueAsString>Black</ValueAsString>
@@ -9149,11 +9178,6 @@
             <Type>float</Type>
             <Member>ScaleY</Member>
             <ValueAsFloat>200</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>true</ValueAsBool>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceClassType>AxisAlignedRectangle</SourceClassType>
@@ -9208,12 +9232,12 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Height</Member>
+            <Member>Width</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Width</Member>
+            <Member>Height</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
@@ -9411,8 +9435,13 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Blue</Member>
+            <Member>TextureScale</Member>
             <ValueAsFloat>1</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>bool</Type>
+            <Member>Visible</Member>
+            <ValueAsBool>false</ValueAsBool>
           </CustomProperty>
           <CustomProperty>
             <Type>ColorOperation</Type>
@@ -9421,13 +9450,8 @@
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>TextureScale</Member>
+            <Member>Blue</Member>
             <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>false</ValueAsBool>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
@@ -9456,7 +9480,7 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Blue</Member>
+            <Member>TextureScale</Member>
             <ValueAsFloat>1</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
@@ -9466,7 +9490,7 @@
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>TextureScale</Member>
+            <Member>Blue</Member>
             <ValueAsFloat>1</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
@@ -9481,8 +9505,13 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Blue</Member>
+            <Member>TextureScale</Member>
             <ValueAsFloat>1</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>bool</Type>
+            <Member>Visible</Member>
+            <ValueAsBool>false</ValueAsBool>
           </CustomProperty>
           <CustomProperty>
             <Type>ColorOperation</Type>
@@ -9491,13 +9520,8 @@
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>TextureScale</Member>
+            <Member>Blue</Member>
             <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>false</ValueAsBool>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
@@ -9971,14 +9995,9 @@
           <ContainedObjects>
             <NamedObjectSave>
               <CustomProperty>
-                <Type>Color</Type>
-                <Member>Color</Member>
-                <ValueAsString>Brown</ValueAsString>
-              </CustomProperty>
-              <CustomProperty>
                 <Type>float</Type>
-                <Member>Height</Member>
-                <ValueAsFloat>8</ValueAsFloat>
+                <Member>Y</Member>
+                <ValueAsFloat>-8</ValueAsFloat>
               </CustomProperty>
               <CustomProperty>
                 <Type>float</Type>
@@ -9987,8 +10006,13 @@
               </CustomProperty>
               <CustomProperty>
                 <Type>float</Type>
-                <Member>Y</Member>
-                <ValueAsFloat>-8</ValueAsFloat>
+                <Member>Height</Member>
+                <ValueAsFloat>8</ValueAsFloat>
+              </CustomProperty>
+              <CustomProperty>
+                <Type>Color</Type>
+                <Member>Color</Member>
+                <ValueAsString>Brown</ValueAsString>
               </CustomProperty>
               <SourceType>FlatRedBallType</SourceType>
               <SourceClassType>AxisAlignedRectangle</SourceClassType>
@@ -9999,21 +10023,6 @@
             </NamedObjectSave>
             <NamedObjectSave>
               <CustomProperty>
-                <Type>Color</Type>
-                <Member>Color</Member>
-                <ValueAsString>Aqua</ValueAsString>
-              </CustomProperty>
-              <CustomProperty>
-                <Type>float</Type>
-                <Member>Height</Member>
-                <ValueAsFloat>8</ValueAsFloat>
-              </CustomProperty>
-              <CustomProperty>
-                <Type>float</Type>
-                <Member>Width</Member>
-                <ValueAsFloat>8</ValueAsFloat>
-              </CustomProperty>
-              <CustomProperty>
                 <Type>float</Type>
                 <Member>X</Member>
                 <ValueAsFloat>8</ValueAsFloat>
@@ -10022,6 +10031,21 @@
                 <Type>float</Type>
                 <Member>Y</Member>
                 <ValueAsFloat>-8</ValueAsFloat>
+              </CustomProperty>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>Width</Member>
+                <ValueAsFloat>8</ValueAsFloat>
+              </CustomProperty>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>Height</Member>
+                <ValueAsFloat>8</ValueAsFloat>
+              </CustomProperty>
+              <CustomProperty>
+                <Type>Color</Type>
+                <Member>Color</Member>
+                <ValueAsString>Aqua</ValueAsString>
               </CustomProperty>
               <SourceType>FlatRedBallType</SourceType>
               <SourceClassType>AxisAlignedRectangle</SourceClassType>
@@ -10036,12 +10060,12 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Height</Member>
+            <Member>Width</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Width</Member>
+            <Member>Height</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
@@ -10159,14 +10183,9 @@
           <ContainedObjects>
             <NamedObjectSave>
               <CustomProperty>
-                <Type>Color</Type>
-                <Member>Color</Member>
-                <ValueAsString>Brown</ValueAsString>
-              </CustomProperty>
-              <CustomProperty>
                 <Type>float</Type>
-                <Member>Height</Member>
-                <ValueAsFloat>8</ValueAsFloat>
+                <Member>Y</Member>
+                <ValueAsFloat>-8</ValueAsFloat>
               </CustomProperty>
               <CustomProperty>
                 <Type>float</Type>
@@ -10175,8 +10194,13 @@
               </CustomProperty>
               <CustomProperty>
                 <Type>float</Type>
-                <Member>Y</Member>
-                <ValueAsFloat>-8</ValueAsFloat>
+                <Member>Height</Member>
+                <ValueAsFloat>8</ValueAsFloat>
+              </CustomProperty>
+              <CustomProperty>
+                <Type>Color</Type>
+                <Member>Color</Member>
+                <ValueAsString>Brown</ValueAsString>
               </CustomProperty>
               <SourceType>FlatRedBallType</SourceType>
               <SourceClassType>AxisAlignedRectangle</SourceClassType>
@@ -10187,21 +10211,6 @@
             </NamedObjectSave>
             <NamedObjectSave>
               <CustomProperty>
-                <Type>Color</Type>
-                <Member>Color</Member>
-                <ValueAsString>Aqua</ValueAsString>
-              </CustomProperty>
-              <CustomProperty>
-                <Type>float</Type>
-                <Member>Height</Member>
-                <ValueAsFloat>8</ValueAsFloat>
-              </CustomProperty>
-              <CustomProperty>
-                <Type>float</Type>
-                <Member>Width</Member>
-                <ValueAsFloat>8</ValueAsFloat>
-              </CustomProperty>
-              <CustomProperty>
                 <Type>float</Type>
                 <Member>X</Member>
                 <ValueAsFloat>8</ValueAsFloat>
@@ -10210,6 +10219,21 @@
                 <Type>float</Type>
                 <Member>Y</Member>
                 <ValueAsFloat>-8</ValueAsFloat>
+              </CustomProperty>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>Width</Member>
+                <ValueAsFloat>8</ValueAsFloat>
+              </CustomProperty>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>Height</Member>
+                <ValueAsFloat>8</ValueAsFloat>
+              </CustomProperty>
+              <CustomProperty>
+                <Type>Color</Type>
+                <Member>Color</Member>
+                <ValueAsString>Aqua</ValueAsString>
               </CustomProperty>
               <SourceType>FlatRedBallType</SourceType>
               <SourceClassType>AxisAlignedRectangle</SourceClassType>
@@ -10224,12 +10248,12 @@
         <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Height</Member>
+            <Member>Width</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>Width</Member>
+            <Member>Height</Member>
             <ValueAsFloat>32</ValueAsFloat>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
@@ -10480,14 +10504,14 @@
         </NamedObjectSave>
         <NamedObjectSave>
           <CustomProperty>
+            <Type>float</Type>
+            <Member>X</Member>
+            <ValueAsFloat>100</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
             <Type>Texture2D</Type>
             <Member>Texture</Member>
             <ValueAsString>Monster</ValueAsString>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>BlendOperation</Type>
-            <Member>BlendOperation</Member>
-            <ValueAsInt>2</ValueAsInt>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
@@ -10495,9 +10519,9 @@
             <ValueAsFloat>10</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
-            <Type>float</Type>
-            <Member>X</Member>
-            <ValueAsFloat>100</ValueAsFloat>
+            <Type>BlendOperation</Type>
+            <Member>BlendOperation</Member>
+            <ValueAsInt>2</ValueAsInt>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
@@ -10510,21 +10534,6 @@
         </NamedObjectSave>
         <NamedObjectSave>
           <CustomProperty>
-            <Type>Texture2D</Type>
-            <Member>Texture</Member>
-            <ValueAsString>Monster</ValueAsString>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>BlendOperation</Type>
-            <Member>BlendOperation</Member>
-            <ValueAsInt>3</ValueAsInt>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>10</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
             <Type>float</Type>
             <Member>X</Member>
             <ValueAsFloat>100</ValueAsFloat>
@@ -10533,6 +10542,21 @@
             <Type>float</Type>
             <Member>Y</Member>
             <ValueAsFloat>150</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>Texture2D</Type>
+            <Member>Texture</Member>
+            <ValueAsString>Monster</ValueAsString>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>TextureScale</Member>
+            <ValueAsFloat>10</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>BlendOperation</Type>
+            <Member>BlendOperation</Member>
+            <ValueAsInt>3</ValueAsInt>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
@@ -10545,21 +10569,6 @@
         </NamedObjectSave>
         <NamedObjectSave>
           <CustomProperty>
-            <Type>Texture2D</Type>
-            <Member>Texture</Member>
-            <ValueAsString>Monster</ValueAsString>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>BlendOperation</Type>
-            <Member>BlendOperation</Member>
-            <ValueAsInt>4</ValueAsInt>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>10</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
             <Type>float</Type>
             <Member>X</Member>
             <ValueAsFloat>100</ValueAsFloat>
@@ -10568,6 +10577,21 @@
             <Type>float</Type>
             <Member>Y</Member>
             <ValueAsFloat>-150</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>Texture2D</Type>
+            <Member>Texture</Member>
+            <ValueAsString>Monster</ValueAsString>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>TextureScale</Member>
+            <ValueAsFloat>10</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>BlendOperation</Type>
+            <Member>BlendOperation</Member>
+            <ValueAsInt>4</ValueAsInt>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
@@ -11803,16 +11827,6 @@
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>
-            <Member>TopTexturePixel</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>BottomTexturePixel</Member>
-            <ValueAsFloat>14</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
             <Member>LeftTexturePixel</Member>
             <ValueAsFloat>2</ValueAsFloat>
           </CustomProperty>
@@ -11820,6 +11834,16 @@
             <Type>float</Type>
             <Member>RightTexturePixel</Member>
             <ValueAsFloat>10</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>TopTexturePixel</Member>
+            <ValueAsFloat>1</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>BottomTexturePixel</Member>
+            <ValueAsFloat>14</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
             <Type>float</Type>

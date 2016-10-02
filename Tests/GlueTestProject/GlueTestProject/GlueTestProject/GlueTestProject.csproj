@@ -307,6 +307,10 @@
     <Compile Include="Entities\DisabledObjectEntity.Generated.cs">
       <DependentUpon>DisabledObjectEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\DrawableEntity.cs" />
+    <Compile Include="Entities\DrawableEntity.Generated.cs">
+      <DependentUpon>DrawableEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\EmitterEntity.cs" />
     <Compile Include="Entities\EmitterEntity.Generated.cs">
       <DependentUpon>EmitterEntity.cs</DependentUpon>

@@ -14,6 +14,8 @@ using FlatRedBall.Math.Splines;
 using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
 using FlatRedBall.Localization;
+using GlueTestProject.Entities;
+using FlatRedBall.Graphics;
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -25,8 +27,11 @@ namespace GlueTestProject.Screens
 {
 	public partial class LayerScreen
 	{
+        DrawableEntity on3DInstance;
+        Layer layer2D;
+        Layer layer3D;
 
-		void CustomInitialize()
+        void CustomInitialize()
 		{
             if (!Layer2D.Texts.Contains(EntireScene.Texts[0]))
             {
@@ -105,11 +110,32 @@ namespace GlueTestProject.Screens
             {
                 throw new Exception("Circles on entities are not moved to a layer when calling MoveToLayer");
             }
+
+            // set a 3D camera to make sure layers with null LayerCameraSettings are also 3d:
+            Camera.Main.Orthogonal = false;
+
+            layer2D = Camera.Main.AddLayer();
+            layer2D.Name = "layer2D created in code";
+            layer2D.UsePixelCoordinates();
+
+            layer3D = Camera.Main.AddLayer();
+            layer3D.Name = "layer3D created in code";
+
+            on3DInstance = new DrawableEntity(this.ContentManagerName, false);
+            on3DInstance.AddToManagers(layer3D);
 		}
 
         void CustomActivity(bool firstTimeCalled)
 		{
-            if (!firstTimeCalled)
+            if(HasDrawBeenCalled)
+            {
+                if(on3DInstance.WasDrawn3D != true)
+                {
+                    throw new Exception("This instance shoud have been drawn on a 3D camera.");
+                }
+            }
+
+            if (!firstTimeCalled && HasDrawBeenCalled)
             {
                 IsActivityFinished = true;
             }
@@ -117,9 +143,10 @@ namespace GlueTestProject.Screens
 
 		void CustomDestroy()
 		{
-
-
-		}
+            on3DInstance.Destroy();
+            Camera.Main.RemoveLayer(layer2D);
+            Camera.Main.RemoveLayer(layer3D);
+        }
 
         static void CustomLoadStaticContent(string contentManagerName)
         {
