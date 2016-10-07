@@ -144,6 +144,8 @@ namespace FlatRedBall.TileGraphics
 
         public LayeredTileMapAnimation Animation { get; set; }
 
+        public List<NamedValue> MapProperties { get; set; }
+
 
         IVisible IVisible.Parent
         {
@@ -466,6 +468,12 @@ namespace FlatRedBall.TileGraphics
             }
 
             toReturn.Animation = new LayeredTileMapAnimation(animationDictionary);
+
+            toReturn.MapProperties = tms.properties
+                .Select(propertySave => new NamedValue
+                    { Name = propertySave.name, Value = propertySave.value, Type = propertySave.Type })
+                .ToList();
+
 
             return toReturn;
         }

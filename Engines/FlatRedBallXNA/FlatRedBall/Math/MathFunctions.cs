@@ -70,39 +70,6 @@ namespace FlatRedBall.Math
 
         #region Methods
 
-#if FRB_MDX
-        public static void AbsoluteToScreen(float x, float y, float z, ref int screenX, ref int screenY, Camera camera, System.Windows.Forms.Control form)
-        {
-            float xRatioOver = (x - camera.X) / camera.XEdge;
-            xRatioOver += 1;
-            xRatioOver /= 2.0f;
-
-            float yRatioOver = (y - camera.Y) / camera.YEdge;
-            yRatioOver -= 1;
-            yRatioOver /= -2.0f;
-
-
-            // get the top left
-            //            topLeftPoint = new System.Drawing.Point(form.ClientRectangle.Left, form.ClientRectangle.Top);
-
-            float xPixelOver = xRatioOver * form.ClientRectangle.Width;
-            float yPixelOver = yRatioOver * form.ClientRectangle.Height;
-
-            System.Drawing.Point point = new System.Drawing.Point((int)xPixelOver, (int)yPixelOver);
-
-            point = form.PointToScreen(point);
-
-            screenX = point.X;
-
-
-
-
-            screenY = point.Y;
-
-        }
-#endif
-
-
         public static void AbsoluteToWindow(float x, float y, float z, ref int screenX, ref int screenY, Camera camera)
         {
             AbsoluteToWindow(x, y, z, ref screenX, ref screenY, camera, true);

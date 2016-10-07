@@ -423,7 +423,7 @@ namespace FlatRedBall.IO.Csv
 
             string returnValue = PropertyValuePair.ConvertTypeToString(value);
 
-            if (string.IsNullOrEmpty(returnValue))
+            if (string.IsNullOrEmpty(returnValue) && type != typeof(string))
             {
                 returnValue = "new " + TypeAsFriendlyString(type) + "(" ;
 
