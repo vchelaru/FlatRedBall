@@ -55,7 +55,7 @@ namespace OfficialPlugins.FrbdkUpdater
             if (cbCleanFolder.Checked && MessageBox.Show(
                     @"Are you sure you want to clear the contents of this folder and put the selected FRBDK into it?",
                     @"Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning) != DialogResult.Yes) return;
-            
+
             SaveFrbdkDownloadSettings();
 
             var path = FileManager.UserApplicationData + @"FRBDK/TempPlugins/";
@@ -69,38 +69,23 @@ namespace OfficialPlugins.FrbdkUpdater
                 succeeded = ExtractFrbdkUpdater(path, destinationPath, sourcePath, succeeded);
             }
 
-            if(!succeeded)
+            if (!succeeded)
             {
                 return;
             }
 
-            // see if the app exists locally where it might be checked out from github:
-            var myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            var builtLocation = myDocuments + @"\FlatRedBall\FRBDK\FRBDKUpdater\FRBDKUpdater\bin\Debug\FRBDKUpdater.exe";
 
-            System.Diagnostics.Process process = null;
-            string exePath = null;
+            string exePath = GetExePath(destinationPath);
 
-            if (System.IO.File.Exists(builtLocation))
+            if (exePath != null)
             {
-                exePath = builtLocation;
-            }
-            if (File.Exists(destinationPath + @"FRBDKUpdater.exe"))
-            {
-                exePath = destinationPath + @"FRBDKUpdater.exe";
-            }
-            else if (File.Exists(destinationPath + @"FRBDKUpdater\FRBDKUpdater.exe"))
-            {
-                exePath = destinationPath + @"FRBDKUpdater\FRBDKUpdater.exe";
-            }
-
-            if(exePath != null)
-            {
+                System.Diagnostics.Process process;
                 string parameters = "\"" + FrbdkUpdaterSettings.DefaultSaveLocation + "\"";
                 process = new System.Diagnostics.Process();
                 process.StartInfo.Verb = "runas";
                 process.StartInfo.FileName = exePath;
                 process.StartInfo.Arguments = parameters;
+
                 process.Start();
 
                 _plugin.GlueCommands.CloseGlue();
@@ -117,6 +102,28 @@ or
 " + destinationPath +
                     @"\FRBDKUpdater\FRBDKUpdater.exe");
             }
+        }
+
+        private static string GetExePath(string destinationPath)
+        {
+            // see if the app exists locally where it might be checked out from github:
+            var myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            var builtLocation = myDocuments + @"\FlatRedBall\FRBDK\FRBDKUpdater\FRBDKUpdater\bin\Debug\FRBDKUpdater.exe";
+
+            string exePath = null;
+            if (System.IO.File.Exists(builtLocation))
+            {
+                exePath = builtLocation;
+            }
+            if (File.Exists(destinationPath + @"FRBDKUpdater.exe"))
+            {
+                exePath = destinationPath + @"FRBDKUpdater.exe";
+            }
+            else if (File.Exists(destinationPath + @"FRBDKUpdater\FRBDKUpdater.exe"))
+            {
+                exePath = destinationPath + @"FRBDKUpdater\FRBDKUpdater.exe";
+            }
+            return exePath;
         }
 
         private static bool ExtractFrbdkUpdater(string path, string destinationPath, string sourcePath, bool succeeded)
@@ -162,7 +169,6 @@ or
             _settings.CleanFolder = cbCleanFolder.Checked;
             _settings.ForceDownload = cbForceDownload.Checked;
             _settings.GlueRunPath = Application.ExecutablePath;
-            string whereToSave = FrbdkUpdaterSettings.DefaultSaveLocation;
             _settings.SaveSettings();
         }
 

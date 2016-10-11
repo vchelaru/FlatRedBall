@@ -929,9 +929,9 @@
     <Content Include="Libraries\ICSharpCode.NRefactory.xml" />
     <Content Include="Libraries\Ionic.Zip.dll" />
     <Content Include="Libraries\Ionic.Zlib.dll" />
-    <None Include="Plugins\FRBDKUpdater\FRBDKUpdater.exe">
+    <Content Include="Plugins\FRBDKUpdater\FRBDKUpdater.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
     <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\VsIcon.png" />
     <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\XamarinIcon.png" />
     <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\OpenFolder.png" />
@@ -939,6 +939,12 @@
     <Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraIcon.png" />
     <Resource Include="Plugins\EmbeddedPlugins\UnreferencedFiles\Icons\RefreshIcon.png" />
     <Content Include="Plugins\FRBDKUpdater\FlatRedBall.Tools.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\FRBDKUpdater\HowDidTheseGetHere.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\FRBDKUpdater\Ionic.Zip.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\IWindowCode\IWindowTemplate.txt" />
