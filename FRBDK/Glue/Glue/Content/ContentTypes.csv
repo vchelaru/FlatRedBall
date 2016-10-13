@@ -84,7 +84,7 @@ Sprite,TRUE,QualifiedType = FlatRedBall.Sprite,FlatRedBall.Content.Scene.SpriteS
 ,,,,,,,,,,,,,,,,,,"Name=RightTexturePixel, Category=Texture, Type=float",,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,"Name=TopTexturePixel, Category=Texture, Type=float",,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,"Name=BottomTexturePixel, Category=Texture, Type=float",,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,"Name=TextureAddressMode, Category=Texture, DefaultValue=Wrap, Type=TextureAddressMode",,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,"Name=TextureAddressMode, Category=Texture, DefaultValue=Clamp, Type=TextureAddressMode",,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,"Name=TextureScale, Category=Size, Type=float",,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,"Name=Width, Category=Size, Type=float",,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,"Name=Height, Category=Size, Type=float",,,,,,,,,,,,,,,
