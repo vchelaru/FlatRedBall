@@ -51,7 +51,8 @@ namespace TileGraphicsPlugin
 
         public override Version Version
         {
-            get { return new Version(1, 0, 7); }
+            // 1.0.8 introduced tile instantiation per layer
+            get { return new Version(1, 0, 8); }
         }
 
 
