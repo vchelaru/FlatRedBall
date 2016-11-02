@@ -274,16 +274,16 @@ namespace FlatRedBall.Gum
 
                 if (extension == GumProjectSave.ComponentExtension)
                 {
-                    elementSave = ObjectFinder.Self.GumProjectSave.Components.FirstOrDefault(item => item.Name.Equals(strippedName, StringComparison.InvariantCultureIgnoreCase));
+                    elementSave = ObjectFinder.Self.GumProjectSave.Components.FirstOrDefault(item => item.Name.Equals(strippedName, StringComparison.OrdinalIgnoreCase));
                 }
                 else if (extension == GumProjectSave.ScreenExtension)
                 {
 
-                    elementSave = ObjectFinder.Self.GumProjectSave.Screens.FirstOrDefault(item => item.Name.Equals(strippedName, StringComparison.InvariantCultureIgnoreCase));
+                    elementSave = ObjectFinder.Self.GumProjectSave.Screens.FirstOrDefault(item => item.Name.Equals(strippedName, StringComparison.OrdinalIgnoreCase));
                 }
                 else if (extension == GumProjectSave.StandardExtension)
                 {
-                    elementSave = ObjectFinder.Self.GumProjectSave.StandardElements.FirstOrDefault(item => item.Name.Equals(strippedName, StringComparison.InvariantCultureIgnoreCase));
+                    elementSave = ObjectFinder.Self.GumProjectSave.StandardElements.FirstOrDefault(item => item.Name.Equals(strippedName, StringComparison.OrdinalIgnoreCase));
                 }
 
                 // Set this *after* the deserialization happens.  The fileName is relative to FRB's relative directory but
@@ -438,16 +438,18 @@ namespace FlatRedBall.Gum
 
             if (renderBreaks != null)
             {
+#if DEBUG
                 // This object handles its own render breaks
                 if (renderBreaks.Count != 0)
                 {
                     var last = renderBreaks.Last();
+
                     if (last.ObjectCausingBreak == this)
                     {
                         renderBreaks.RemoveAt(renderBreaks.Count - 1);
                     }
                 }
-
+#endif
                 foreach (var item in mManagers.Renderer.SpriteRenderer.LastFrameDrawStates)
                 {
                     foreach (var changeRecord in item.ChangeRecord)
@@ -486,9 +488,9 @@ namespace FlatRedBall.Gum
             mFrbToGumLayers.Clear();
 
         }
-        #endregion
+#endregion
 
-        #region RenderingLibrary.Graphics.IVisible
+#region RenderingLibrary.Graphics.IVisible
 
         public bool AbsoluteVisible
         {
@@ -539,6 +541,6 @@ namespace FlatRedBall.Gum
             Parent = newParent;
         }
 
-        #endregion
+#endregion
     }
 }

@@ -47,7 +47,7 @@ namespace GumPlugin
 
         public override Version Version
         {
-            get { return new Version(0, 8, 0, 0); }
+            get { return new Version(0, 8, 0, 1); }
         }
 
         #endregion

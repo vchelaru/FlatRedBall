@@ -30,6 +30,7 @@ namespace BuildServerUploaderConsole.Data
                 Engines.Add(engine);
             }
 
+            // Android
             {
                 var engine = new EngineData();
 
@@ -46,6 +47,7 @@ namespace BuildServerUploaderConsole.Data
                 Engines.Add(engine);
             }
 
+            // iOS
             {
                 var engine = new EngineData();
 
@@ -61,6 +63,7 @@ namespace BuildServerUploaderConsole.Data
                 Engines.Add(engine);
             }
 
+            // WinRT
             {
                 var engine = new EngineData();
 
@@ -88,8 +91,8 @@ namespace BuildServerUploaderConsole.Data
                 engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\Debug\FlatRedBallUwp.pdb");
 
 
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\Release\FlatRedBallUwp.dll");
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\Release\FlatRedBallUwp.pdb");
+                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\Release\FlatRedBallUwp.dll");
+                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\Release\FlatRedBallUwp.pdb");
 
                 Engines.Add(engine);
             }
