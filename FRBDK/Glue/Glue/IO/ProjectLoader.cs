@@ -526,18 +526,10 @@ namespace FlatRedBall.Glue.IO
 
         private static void ClosePreviousProject(string projectFileName)
         {
-            bool isSameProject = false;
-
-            #region Close previous project
             if (ProjectManager.ProjectBase != null)
             {
-                string oldProjectName = FileManager.Standardize(ProjectManager.ProjectBase.FullFileName).ToLower();
-                string newProjectName = FileManager.Standardize(projectFileName).ToLower();
-                isSameProject = oldProjectName == newProjectName;
-
-                MainGlueWindow.CloseProject(isSameProject, false);
+                MainGlueWindow.CloseProject(shouldSave:false, isExiting:false);
             }
-            #endregion
         }
 
         private static bool PrepareInitializationWindow(InitializationWindow initializationWindow)

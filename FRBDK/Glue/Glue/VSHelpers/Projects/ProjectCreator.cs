@@ -25,7 +25,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public static ProjectBase CreateProject(string fileName)
         {
-            Project coreVisualStudioProject = new Project(fileName);
+            //Project coreVisualStudioProject = new Project(fileName);
+            Project coreVisualStudioProject = new Project(fileName, null, null, new ProjectCollection());
 
             ProjectBase toReturn = CreatePlatformSpecificProject(coreVisualStudioProject, fileName);
 

@@ -799,7 +799,7 @@ namespace FlatRedBall.Glue
                         shouldSync = true;
                     }
                 }
-                if (ContentProject != null && ContentProject.IsDirty)
+                if (ContentProject != null && ContentProject.IsDirty && ContentProject != mProjectBase)
                 {
                     ContentProject.Save(ContentProject.FullFileName);
                     shouldSync = true;
