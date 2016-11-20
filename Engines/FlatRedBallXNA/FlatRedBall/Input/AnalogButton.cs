@@ -28,11 +28,9 @@ namespace FlatRedBall.Input
             get { return mLastPosition; }
         }
 
-        #region XMl Docs
         /// <summary>
-        /// The current value of the AnalogButton.
+        /// The current value of the AnalogButton, with ranges 0 - 1
         /// </summary>
-        #endregion
         public float Position
         {
             get { return mPosition; }

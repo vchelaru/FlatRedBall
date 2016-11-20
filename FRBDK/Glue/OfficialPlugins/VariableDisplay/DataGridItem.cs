@@ -58,7 +58,7 @@ namespace OfficialPlugins.VariableDisplay
 
         public void RefreshOptions()
         {
-            CustomOptions.Clear();
+            CustomOptions?.Clear();
 
             if (this.typeConverter != null)
             {
@@ -70,6 +70,12 @@ namespace OfficialPlugins.VariableDisplay
                 var values = typeConverter.GetStandardValues(descriptor);
 
                 List<object> valuesAsList = new List<object>();
+
+                if(values.Count != 0 && CustomOptions == null)
+                {
+                    CustomOptions = new List<object>();
+                }
+
                 foreach (var item in values)
                 {
                     CustomOptions.Add(item);

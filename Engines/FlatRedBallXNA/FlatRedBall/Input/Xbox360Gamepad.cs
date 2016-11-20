@@ -354,12 +354,10 @@ namespace FlatRedBall.Input
             get { return mButtonMap; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the left trigger's current value.  When not pressed this property returns
         /// 0.0f.  When fully pressed this property returns 1.0f;
         /// </summary>
-        #endregion
         public AnalogButton LeftTrigger
         {
             get { return mLeftTrigger; }
@@ -593,7 +591,12 @@ namespace FlatRedBall.Input
 
         }
 
-
+        /// <summary>
+        /// Returns whether the argument button type is pushed. For analog buttons, such as LeftTrigger 
+        /// and RightTrigger, the AnalogOnThreshold value is used to determine if the button is pressed.
+        /// </summary>
+        /// <param name="button">The button to check.</param>
+        /// <returns>true if the button is pressed, otherwise false</returns>
         public bool ButtonPushed(Button button)
         {
 #if SILVERLIGHT

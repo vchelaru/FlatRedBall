@@ -411,7 +411,7 @@ namespace NewProjectCreator
 
                     fileWithoutPath = fileWithoutPath.Replace(stringToReplace, stringToReplaceWith);
 
-                    File.Move(fileName, directory + fileWithoutPath);
+                    TryMultipleTimes(() => File.Move(fileName, directory + fileWithoutPath), 5);
                 }
 
             }
@@ -778,6 +778,31 @@ namespace NewProjectCreator
             return null;
             
 
+        }
+
+        private static void TryMultipleTimes(Action action, int numberOfTimesToTry)
+        {
+            int failureCount = 0;
+
+            while(failureCount < numberOfTimesToTry)
+            {
+                try
+                {
+                    action();
+                    break;
+                }
+
+                
+                catch(Exception e)
+                {
+                    failureCount++;
+                    System.Threading.Thread.Sleep(150);
+                    if(failureCount >= numberOfTimesToTry)
+                    {
+                        throw e;
+                    }
+                }
+            }
         }
     }
 }
