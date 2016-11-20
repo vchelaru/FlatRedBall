@@ -14,11 +14,13 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
         {
             get
             {
-                yield return new SyncedProjectViewModel
+                if(GlueState.Self.CurrentMainProject != null)
                 {
-                    ProjectBase = GlueState.Self.CurrentMainProject
-                };
-
+                    yield return new SyncedProjectViewModel
+                    {
+                        ProjectBase = GlueState.Self.CurrentMainProject
+                    };
+                }
                 foreach(var item in ProjectManager.SyncedProjects)
                 {
                     yield return new SyncedProjectViewModel

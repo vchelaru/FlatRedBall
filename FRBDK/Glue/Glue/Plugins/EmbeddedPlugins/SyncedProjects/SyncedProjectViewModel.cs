@@ -32,7 +32,7 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
         {
             get
             {
-                return ProjectBase.Name;
+                return ProjectBase?.Name;
             }
         }
 
@@ -89,29 +89,32 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
         {
             Orphans.Clear();
 
-            foreach(var item in ProjectBase)
+            if(ProjectBase != null)
             {
-                if(BuildItemViewModel.IsOrphaned(item, ProjectBase))
+                foreach(var item in ProjectBase)
                 {
-                    Orphans.Add(new BuildItemViewModel
-                    {
-                        BuildItem = item,
-                        Owner = ProjectBase
-                    });
-                }
-            }
-
-            if(ProjectBase.ContentProject != ProjectBase && ProjectBase.ContentProject != null)
-            {
-                foreach (var item in ProjectBase.ContentProject)
-                {
-                    if (BuildItemViewModel.IsOrphaned(item, ProjectBase))
+                    if(BuildItemViewModel.IsOrphaned(item, ProjectBase))
                     {
                         Orphans.Add(new BuildItemViewModel
                         {
                             BuildItem = item,
                             Owner = ProjectBase
                         });
+                    }
+                }
+
+                if(ProjectBase.ContentProject != ProjectBase && ProjectBase.ContentProject != null)
+                {
+                    foreach (var item in ProjectBase.ContentProject)
+                    {
+                        if (BuildItemViewModel.IsOrphaned(item, ProjectBase))
+                        {
+                            Orphans.Add(new BuildItemViewModel
+                            {
+                                BuildItem = item,
+                                Owner = ProjectBase
+                            });
+                        }
                     }
                 }
             }
@@ -121,11 +124,14 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
         {
             GeneralErrors.Clear();
 
-            var errorList = ProjectBase.GetErrors();
-
-            foreach (var error in errorList)
+            if(ProjectBase != null)
             {
-                GeneralErrors.Add(error);
+                var errorList = ProjectBase.GetErrors();
+
+                foreach (var error in errorList)
+                {
+                    GeneralErrors.Add(error);
+                }
             }
         }
 
