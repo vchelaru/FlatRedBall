@@ -2507,6 +2507,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static void SetExternallyBuiltFileIfHigherThanCurrent(string directoryOfFile, bool performSave)
         {
+            if(directoryOfFile == null)
+            {
+                throw new ArgumentNullException(nameof(directoryOfFile));
+            }
             string currentExternalDirectory = null;
 
             if (!string.IsNullOrEmpty(ProjectManager.GlueProjectSave.ExternallyBuiltFileDirectory))

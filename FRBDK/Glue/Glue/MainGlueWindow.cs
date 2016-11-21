@@ -1808,18 +1808,18 @@ namespace Glue
 
         private void helpToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("http://documentation.flatredball.com/frb/docs/index.php?title=Main_Page");
+            System.Diagnostics.Process.Start("http://flatredball.com/documentation/tools/glue-reference/");
         }
 
         private void tutorialsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("http://documentation.flatredball.com/frb/docs/index.php?title=Tutorials");
+            System.Diagnostics.Process.Start("http://flatredball.com/documentation/tutorials/");
             
         }
 
         private void reportABugToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("http://bugs.flatredball.com");
+            System.Diagnostics.Process.Start("https://github.com/vchelaru/flatredball/issues");
 
         }
 

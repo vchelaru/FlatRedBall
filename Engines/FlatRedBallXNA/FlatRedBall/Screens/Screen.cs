@@ -441,6 +441,16 @@ namespace FlatRedBall.Screens
             this.IsPaused = false;
         }
 
+        /// <summary>
+        /// Returns the number of seconds since the argument time for the current screen, considering pausing.
+        /// </summary>
+        /// <remarks>
+        /// Each screen has an internal timer which keeps track of how much time has passed since it has been constructed.
+        /// This timer always begins at 0. Therefore, the following code will always tell you how long the screen has been alive:
+        /// var timeScreenHasBeenAlive = ScreenInstance.PauseAdjustedSecondsSince(0);
+        /// </remarks>
+        /// <param name="time">The time from which to check how much time has passed.</param>
+        /// <returns>How much time has passed since the parameter value.</returns>
         public double PauseAdjustedSecondsSince(double time)
         {
             return PauseAdjustedCurrentTime - time;

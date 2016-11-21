@@ -477,7 +477,11 @@ namespace FlatRedBall.Glue.IO
             // This is going to give us the .sln directory,
             // but that's okay, that way it catches all external files.
             string directoryToSet = ProjectManager.ProjectRootDirectory;
-            RightClickHelper.SetExternallyBuiltFileIfHigherThanCurrent(directoryToSet, false);
+            if(!string.IsNullOrEmpty(directoryToSet))
+            {
+
+                RightClickHelper.SetExternallyBuiltFileIfHigherThanCurrent(directoryToSet, false);
+            }
         }
 
 

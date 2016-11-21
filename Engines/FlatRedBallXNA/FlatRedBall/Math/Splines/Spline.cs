@@ -579,7 +579,7 @@ namespace FlatRedBall.Math.Splines
             return null;
         }
 
-        private DistanceToTimeRelationship GetDttrClosestToPointAlongSpline(Vector3 testPoint)
+        private DistanceToTimeRelationship GetDttrClosestToPointAlongSpline(Vector3 testPoint, int? startingBound = null, int? endingBound = null)
         {
             if (mDistanceToTimes == null || mDistanceToTimes.Count == 0)
             {
@@ -602,9 +602,11 @@ namespace FlatRedBall.Math.Splines
             float currentDistSquared;
             DistanceToTimeRelationship currentItem;
 
-            var count = mDistanceToTimes.Count;
+            int startIndex = startingBound ?? 0;
+            var endIndexExclusive = endingBound ?? mDistanceToTimes.Count;
 
-            for (int i = 0; i < count; ++i)
+
+            for (int i = startIndex; i < endIndexExclusive; ++i)
             {
                 currentItem = mDistanceToTimes[i];
                 handled = false;
@@ -639,6 +641,16 @@ namespace FlatRedBall.Math.Splines
         public double GetDistanceClosestToPointAlongSpline(Vector3 testPoint)
         {
             return GetDttrClosestToPointAlongSpline(testPoint).Distance;
+        }
+
+        public double GetDistanceClosestToPointAlongSpline(Vector3 testPoint, out int foundIndex, int? startingIndexInclusive = null, int? endingIndexExclusive = null)
+        {
+            var foundPoint = GetDttrClosestToPointAlongSpline(testPoint, startingIndexInclusive, endingIndexExclusive);
+            var distance = foundPoint.Distance;
+
+            foundIndex = mDistanceToTimes.IndexOf(foundPoint);
+
+            return distance;
         }
 
         public double GetTimeClosestToPointAlongSpline(Vector3 testPoint)
@@ -886,6 +898,14 @@ namespace FlatRedBall.Math.Splines
         public bool IsReadOnly
         {
             get { return false; }
+        }
+
+        public int DistanceToTimeRelationshipCount
+        {
+            get
+            {
+                return mDistanceToTimes?.Count ?? 0;
+            }
         }
 
         public bool Remove(SplinePoint item)
