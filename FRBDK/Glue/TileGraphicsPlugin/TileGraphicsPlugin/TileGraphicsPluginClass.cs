@@ -52,7 +52,8 @@ namespace TileGraphicsPlugin
         public override Version Version
         {
             // 1.0.8 introduced tile instantiation per layer
-            get { return new Version(1, 0, 8); }
+            // 1.0.8.1 adds a null check around returning files referenced by a .tmx
+            get { return new Version(1, 0, 8, 1); }
         }
 
 
