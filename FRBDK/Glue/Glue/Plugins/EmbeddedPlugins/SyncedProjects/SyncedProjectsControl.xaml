@@ -24,7 +24,7 @@
 
 
             <Button Margin="6" Height="30" Click="AddNewProjectClick">
-                New Sycned Project</Button>
+                New Synced Project</Button>
 
             <Button Margin="6" Height="30" Click="AddProjectClick">
                     Add Existing Project</Button>

@@ -16,7 +16,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             if (!string.IsNullOrEmpty(gameFileName))
             {
-                string contents = FileManager.FromFileText(FileManager.RelativeDirectory + gameFileName);
+                string contents = FileManager.FromFileText(GlueState.Self.CurrentGlueProjectDirectory + gameFileName);
 
                 string whatToLookFor = "CameraSetup.SetupCamera(SpriteManager.Camera, graphics";
 

@@ -64,7 +64,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override string FullFileName
         {
-            get { return mProject.ProjectFileLocation.File; }
+            get
+            {
+                return 
+                    mProject.ProjectFileLocation.File;
+            }
         }
 
         public override bool IsDirty
@@ -610,32 +614,15 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         protected override void ForceSave(string fileName)
         {
-            string backupFileName = FileManager.UserApplicationDataForThisApplication + "backupProject";
-            bool didBackupSucceed = false;
-            try
-            {
-
-                if (System.IO.File.Exists(fileName))
-                {
-                    mProject.Save(backupFileName);
-                    didBackupSucceed = true;
-                    System.IO.File.Delete(fileName);
-                }
-
-
-                mProject.Save(fileName);
-            }
-            catch (Exception e)
-            {
-                if(didBackupSucceed)
-                {
-                    System.IO.File.Copy(backupFileName, fileName, true);
-
-                }
-
-                throw e;
-
-            }
+            // this used to save a backup, but doing so
+            // changes the mProject's file name. Since the
+            // mProject is used to get this project's file name,
+            // which is in turn used by Glue to determine the Glue
+            // folder, saving a backup temporarily sets the file (and 
+            // folder) to the temporary location. I'm going to remove the
+            // backup saving because Glue doesn't handle it well anyway, and
+            // it's causing a problem with Camera setup.
+            mProject.Save(fileName);
         }
 
         public override string ToString()
