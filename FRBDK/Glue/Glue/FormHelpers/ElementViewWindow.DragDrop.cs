@@ -1051,7 +1051,11 @@ namespace FlatRedBall.Glue.FormHelpers
                     // Make sure that the two types match
                     string listType = targetNamedObjectSave.SourceClassGenericType;
 
-                    if (listType != treeNodeMoving.EntitySave.Name)
+                    bool isOfTypeOrInherits =
+                        listType == treeNodeMoving.EntitySave.Name ||
+                        treeNodeMoving.EntitySave.InheritsFrom(listType);
+
+                    if (isOfTypeOrInherits == false)
                     {
                         MessageBox.Show("The target list type is of type\n\n" +
                             listType +
