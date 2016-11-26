@@ -348,7 +348,7 @@ namespace FlatRedBall.Glue
                 foreach (CustomVariableInNamedObject cvino in n.InstructionSaves.Where(cvino=>cvino.Value != null))
                 {
                     // If there isn't a TypedMember for the variable, that means Glue won't generate code for it, so we shouln't be applying it.
-                    if (!IsVariableExposed(cvino, n))
+                    if (!ShouldApplyVariableOnRuntime(cvino, n))
                     {
 
                         continue;
@@ -425,10 +425,9 @@ namespace FlatRedBall.Glue
             }
         }
 
-        private bool IsVariableExposed(CustomVariableInNamedObject cvino, NamedObjectSave n)
+        private bool ShouldApplyVariableOnRuntime(CustomVariableInNamedObject cvino, NamedObjectSave n)
         {
-            
-            return 
+            bool shouldApply = 
                 // December 16, 2012 Victor Chelaru
                 // I think that even if the NOS isn't
                 // a Entity, the TypedMembers should still
@@ -436,6 +435,17 @@ namespace FlatRedBall.Glue
                 // like they do according to my tests...
                 //n.SourceType != SourceType.Entity ||
                 n.TypedMembers.FirstOrDefault(member => member.MemberName == cvino.Member) != null;
+
+            if(!shouldApply)
+            {
+                // Check for special cases - variables whihch can't be exposed, but which should still be aplied:
+                if(cvino.Member == "Points" && n.SourceType == SourceType.FlatRedBallType && n.ClassType == "Polygon")
+                {
+                    shouldApply = true;
+                }
+            }
+
+            return shouldApply;
         }
 
         private object LoadFileObject(NamedObjectSave objectToLoad, IElement elementSave, Layer layerToPutOn,
