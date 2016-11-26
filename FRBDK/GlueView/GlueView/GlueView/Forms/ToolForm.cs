@@ -68,5 +68,13 @@ namespace GlueView
             this.WindowState = FormWindowState.Minimized;
         }
 
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var assembly = this.GetType().Assembly;
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            string version = fvi.FileVersion;
+
+            MessageBox.Show($"Glue Preview {version}");
+        }
     }
 }

@@ -688,6 +688,10 @@ namespace FlatRedBall.Gui
 
 #endif
 
+        /// <summary>
+        /// The number of pixels between the left of the screen and the cursor. Note that this does not consider
+        /// the camera's position, orientation, or perspective - it will always return 0 at the left-edge of the screen.
+        /// </summary>
         public int ScreenX
         {
 
@@ -696,6 +700,11 @@ namespace FlatRedBall.Gui
             set { mScreenX = value; }
         }
 
+        /// <summary>
+        /// The number of pixels between the top of the screen and the cursor. Note that this does not consider
+        /// the camera's position, orientation, or perspective - it will always return 0 at the top-edge of the screen. This value
+        /// increases downward.
+        /// </summary>
         public int ScreenY
         {
             get { return mScreenY; }
