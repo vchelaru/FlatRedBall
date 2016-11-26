@@ -1067,7 +1067,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     {
                         NamedObjectSave namedObject = new NamedObjectSave();
                         namedObject.InstanceName =
-                            FileManager.RemovePath(listType) + "1";
+                            FileManager.RemovePath(treeNodeMoving.EntitySave.Name) + "1";
 
                         StringFunctions.MakeNameUnique<NamedObjectSave>(
                             namedObject, targetNamedObjectSave.ContainedObjects);

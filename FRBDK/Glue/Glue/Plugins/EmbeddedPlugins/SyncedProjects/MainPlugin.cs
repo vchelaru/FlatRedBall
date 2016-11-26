@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.Controls.ProjectSync;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects.Controls;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.VSHelpers.Projects;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 {
@@ -29,6 +31,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
         private void AddControl()
         {
             SyncedProjectsViewModel viewModel = new SyncedProjectsViewModel();
+
+            viewModel.CurrentProject = GlueState.Self.CurrentMainProject;
+            viewModel.SyncedProjects = GlueState.Self.SyncedProjects;
+
             var control = new SyncedProjectsControl();
             control.DataContext = viewModel;
 
@@ -37,10 +43,25 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             this.AddToTab(defaultTab, control, "Projects");
             this.ReactToLoadedGlux += delegate
             {
+                viewModel.CurrentProject = GlueState.Self.CurrentMainProject;
+                viewModel.SyncedProjects = GlueState.Self.SyncedProjects;
+
                 viewModel.Refresh();
             };
             this.ReactToLoadedSyncedProject += delegate
             {
+                viewModel.CurrentProject = GlueState.Self.CurrentMainProject;
+                viewModel.SyncedProjects = GlueState.Self.SyncedProjects;
+
+
+                viewModel.Refresh();
+            };
+            this.ReactToUnloadedGlux += delegate
+            {
+                viewModel.CurrentProject = null;
+                viewModel.SyncedProjects = new List<ProjectBase>() ;
+
+
                 viewModel.Refresh();
             };
         }

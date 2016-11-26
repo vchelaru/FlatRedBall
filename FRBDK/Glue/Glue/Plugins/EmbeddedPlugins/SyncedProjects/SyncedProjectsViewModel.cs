@@ -10,23 +10,36 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
 {
     internal class SyncedProjectsViewModel : ViewModel
     {
+        // This ViewModel used to pull the current project
+        // from GlueState. The problem with that is projects
+        // are not unloaded when the ReactToUnloadedGlux event
+        // is raised. Therefore, the plugin needs to manage the
+        // project reference rather than always pulling from GlueState
+
+        public ProjectBase CurrentProject { get; set; }
+        public IEnumerable<ProjectBase> SyncedProjects { get; set; }
+
         public IEnumerable<SyncedProjectViewModel> AllProjects
         {
             get
             {
-                if(GlueState.Self.CurrentMainProject != null)
+                if(CurrentProject != null)
                 {
                     yield return new SyncedProjectViewModel
                     {
                         ProjectBase = GlueState.Self.CurrentMainProject
                     };
                 }
-                foreach(var item in ProjectManager.SyncedProjects)
+
+                if(SyncedProjects != null)
                 {
-                    yield return new SyncedProjectViewModel
+                    foreach(var item in SyncedProjects)
                     {
-                        ProjectBase = item
-                    };
+                        yield return new SyncedProjectViewModel
+                        {
+                            ProjectBase = item
+                        };
+                    }
                 }
             }
         }
