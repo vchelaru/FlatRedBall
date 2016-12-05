@@ -1643,7 +1643,7 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             // addfolder, add folder, add new folder, addnewfolder
             TextInputWindow tiw = new TextInputWindow();
-            tiw.DisplayText = "Enter new folder name";
+            tiw.Message = "Enter new folder name";
             tiw.Text = "New Folder";
             DialogResult result = tiw.ShowDialog(MainGlueWindow.Self);
 
