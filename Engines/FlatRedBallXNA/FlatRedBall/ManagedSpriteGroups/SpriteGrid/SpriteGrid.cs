@@ -1,4 +1,3 @@
-#region Using statements
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,19 +6,13 @@ using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Utilities;
 
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-#elif FRB_MDX
-using Microsoft.DirectX;
-#endif
-
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Math;
 using System.Collections.ObjectModel;
 
-#endregion
 
 namespace FlatRedBall.ManagedSpriteGroups
 {
@@ -1805,11 +1798,8 @@ namespace FlatRedBall.ManagedSpriteGroups
         {
             float maxScl = System.Math.Max(mBlueprint.ScaleX, mBlueprint.ScaleY);
 
-#if FRB_MDX
-            float boundValueToUse = mZFarBound;
-#elif FRB_XNA || SILVERLIGHT
             float boundValueToUse = mZCloseBound;
-#endif
+
             while (mVisibleSprites[mVisibleSprites.Count - 1][0].Z + mBlueprint.ScaleY + mGridSpacingY < boundValueToUse &&
                 mCamera.IsYInView(mVisibleSprites[mVisibleSprites.Count - 1][0].Y, mVisibleSprites[mVisibleSprites.Count - 1][0].Z + maxScl * Math.MathFunctions.ForwardVector3.Z + mGridSpacingY))
             {
@@ -1834,11 +1824,7 @@ namespace FlatRedBall.ManagedSpriteGroups
         {
             float maxScl = System.Math.Max(mBlueprint.ScaleX, mBlueprint.ScaleY);
 
-        #if FRB_MDX
-                    float boundValueToUse = mZCloseBound;
-        #elif FRB_XNA || SILVERLIGHT
-                    float boundValueToUse = mZFarBound;
-        #endif
+            float boundValueToUse = mZFarBound;
 
             while (mVisibleSprites[0][0].Z - mBlueprint.ScaleY - mGridSpacingY > boundValueToUse &&
                 mCamera.IsYInView(mVisibleSprites[0][0].Y, mVisibleSprites[0][0].Z + maxScl * Math.MathFunctions.ForwardVector3.Z))
@@ -1888,11 +1874,7 @@ namespace FlatRedBall.ManagedSpriteGroups
         {
             float maxScl = System.Math.Max(mBlueprint.ScaleX, mBlueprint.ScaleY);
 
-#if FRB_MDX
-            float boundValueToUse = mZFarBound;
-#elif FRB_XNA || SILVERLIGHT
             float boundValueToUse = mZCloseBound;
-#endif
 
             for (int y = 0; y < mVisibleSprites.Count; y++)
             {
@@ -1918,11 +1900,7 @@ namespace FlatRedBall.ManagedSpriteGroups
         {
             float maxScl = System.Math.Max(mBlueprint.ScaleX, mBlueprint.ScaleY);
 
-#if FRB_MDX
-            float boundValueToUse = mZCloseBound;
-#elif FRB_XNA || SILVERLIGHT
             float boundValueToUse = mZFarBound;
-#endif
 
             for (int y = 0; y < mVisibleSprites.Count; y++)
             {
@@ -1978,11 +1956,7 @@ namespace FlatRedBall.ManagedSpriteGroups
             }
             else
             {
-#if FRB_MDX
-                yToUse = sprite.Z;
-#elif FRB_XNA || SILVERLIGHT
                 yToUse = -sprite.Z;
-#endif
             }
 
             AnimationChain currentChain = mAnimationTextureGrid.GetTextureAt(sprite.Position.X, yToUse);

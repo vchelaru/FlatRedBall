@@ -299,12 +299,7 @@ namespace FlatRedBall.Math
 
                 if (layerCameraSettings.Orthogonal)
                 {
-                    ray.Direction = 
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
-                                          camera.RotationMatrix.Forward;
-#else
-                        camera.RotationMatrix.Forward();
-#endif
+                    ray.Direction = camera.RotationMatrix.Forward;
 
                     float centerPixelX = 0;
                     float centerPixelY = 0;
@@ -383,14 +378,8 @@ namespace FlatRedBall.Math
 
 
                     // This may not account for the up vector...need to consider that!
-#if FRB_MDX
-                    ray.Position += normalizedX * camera.RotationMatrix.Right() * halfUnitWidth;
-                    ray.Position += normalizedY * camera.RotationMatrix.Up() * halfUnitHeight;
-
-#else
                     ray.Position += normalizedX * camera.RotationMatrix.Right * halfUnitWidth;
                     ray.Position += normalizedY * camera.RotationMatrix.Up * halfUnitHeight;
-#endif
 
                     if (layerCameraSettings.RightDestination != layerCameraSettings.LeftDestination &&
                         layerCameraSettings.TopDestination != layerCameraSettings.BottomDestination && 

@@ -661,25 +661,13 @@ namespace FlatRedBall.Graphics
         private static void FixRenderStatesAfterBatchDraw()
         {
 
-#if SILVERLIGHT
 
-#elif XNA4 || WINDOWS_8
             // do nothing with alpha?
             FlatRedBallServices.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
             // reset the texture filter:
             FlatRedBallServices.GraphicsOptions.TextureFilter = FlatRedBallServices.GraphicsOptions.TextureFilter;
             ForceSetBlendOperation();
             SetCurrentEffect(Effect, SpriteManager.Camera);
-#else
-            mGraphics.GraphicsDevice.RenderState.SeparateAlphaBlendEnabled = true;
-            mGraphics.GraphicsDevice.RenderState.AlphaBlendOperation = BlendFunction.Max;
-            mGraphics.GraphicsDevice.RenderState.AlphaDestinationBlend = Blend.DestinationAlpha;
-            mGraphics.GraphicsDevice.RenderState.AlphaSourceBlend = Blend.SourceAlpha;
-
-            mGraphics.GraphicsDevice.VertexDeclaration = mPositionColorTexture;
-            FlatRedBallServices.GraphicsDevice.RenderState.CullMode = CullMode.None;
-            SetCurrentEffect(Effect, SpriteManager.Camera);
-#endif
         }
 
         private static void GetNextZValuesByCategory(List<Sprite> spriteList, SortType sortType, List<Text> textList, List<IDrawableBatch> batches, Camera camera, ref int spriteIndex, ref int textIndex, ref float nextSpriteSortValue, ref float nextTextSortValue, ref float nextBatchSortValue)

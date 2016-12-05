@@ -2,11 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Microsoft.Xna.Framework;
-#elif FRB_MDX
-using Microsoft.DirectX;
-#endif
 using FlatRedBall.Utilities;
 
 namespace FlatRedBall.Math

@@ -92,7 +92,7 @@ namespace FlatRedBall.Content.AnimationChain
         {
             if (!string.IsNullOrEmpty(ParentFile))
             {
-#if !WINDOWS_8 && !UWP
+#if !WINDOWS_8 && !UWP && !DESKTOP_GL
                 FlatRedBall.Graphics.Animation.AnimationChain animationChain =
                     FlatRedBall.Graphics.Animation.AnimationChain.FromGif(
                         ParentFile, contentManagerName);
@@ -120,7 +120,7 @@ namespace FlatRedBall.Content.AnimationChain
 
                 return animationChain;
 #else
-                            throw new NotImplementedException();
+                throw new NotImplementedException();
 #endif
             }
             else

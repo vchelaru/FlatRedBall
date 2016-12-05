@@ -24,25 +24,13 @@ using FlatRedBall.Content.SpriteGrid;
 using FileManager = FlatRedBall.IO.FileManager;
 
 using FlatRedBall.Content.Saves;
-
-
 using FlatRedBall.IO;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Math;
 using FlatRedBall.Graphics.Texture;
-#if FRB_MDX
-using Texture2D = FlatRedBall.Texture2D;
-using FlatRedBall.Graphics.Model;
-
-#elif FRB_XNA || WINDOWS_PHONE
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
 using System.Globalization;
 using Microsoft.Xna.Framework.Graphics;
-#elif SILVERLIGHT
-using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
-using System.Globalization;
-#endif
-
 
 namespace FlatRedBall.Content
 {

@@ -16,29 +16,12 @@ using System.Xml;
 using System.Xml.Serialization;
 
 using System.Text;
-
-#if !FRB_MDX
 using System.Xml.Linq;
 using System.Linq;
 
-#endif
-
-#if FRB_MDX
-
-#elif FRB_XNA || WINDOWS_PHONE
 using Microsoft.Xna.Framework;
 
 #if USE_ISOLATED_STORAGE && !WINDOWS_8
-using System.IO.IsolatedStorage;
-#endif
-
-
-
-
-
-#elif SILVERLIGHT
-using System.Windows;
-using System.Windows.Resources;
 using System.IO.IsolatedStorage;
 #endif
 
@@ -52,14 +35,9 @@ using System.Collections;
 using System.Reflection;
 
 #if !WINDOWS_8 && !UWP
-using FlatRedBall.IO.Remote;
 using System.Runtime.Serialization.Formatters.Binary;
 #endif
 
-#if XBOX360
-using Microsoft.Xna.Framework.GamerServices;
-using Microsoft.Xna.Framework.Storage;
-#endif
 
 #if !FRB_RAW
 using FlatRedBall.Instructions.Reflection;
@@ -253,9 +231,9 @@ namespace FlatRedBall.IO
         {
             get
             {
-#if IOS
+#if IOS 
 				return "./";
-#elif FRB_RAW
+#elif FRB_RAW || DESKTOP_GL
                 return System.IO.Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ) + "/";
 
 #else
@@ -1522,13 +1500,13 @@ namespace FlatRedBall.IO
 
             BinaryWriter writer = null;
             bool handled = false;
-#if MONOGAME
+#if MONOGAME && !DESKTOP_GL
 
 
             SaveGarbageIsolatedStorage(garbageBytes, fileName);
             handled = true;
 
-#elif !XBOX360
+#else
             if (!string.IsNullOrEmpty(FileManager.GetDirectory(fileName)) &&
                 !Directory.Exists(FileManager.GetDirectory(fileName)))
             {
@@ -1536,22 +1514,6 @@ namespace FlatRedBall.IO
             }
             FileInfo fileInfo = new FileInfo(fileName);
             writer = new BinaryWriter(fileInfo.Create());
-
-
-#else
-
-
-            fileName = FileManager.GetIsolatedStorageFileName(fileName);
-
-            var sc = GetStorageContainer();
-            string dir = FileManager.GetDirectory(fileName);
-            if (!string.IsNullOrEmpty(dir) && !sc.DirectoryExists(dir))
-            {
-                sc.CreateDirectory(dir);
-            }
-            writer = new BinaryWriter(sc.CreateFile(fileName));
-                   //new StreamWriter(sc.CreateFile(fileName));
-            using(sc)
 #endif
 
             if (!handled)
@@ -1597,7 +1559,7 @@ namespace FlatRedBall.IO
 
             StreamWriter writer = null;
 
-#if MONOGAME
+#if MONOGAME && !DESKTOP_GL
 
 
             if (!fileName.Contains(IsolatedStoragePrefix))
@@ -1607,18 +1569,18 @@ namespace FlatRedBall.IO
 
             fileName = FileManager.GetIsolatedStorageFileName(fileName);
 
-#if WINDOWS_8 || IOS || UWP
+        #if WINDOWS_8 || IOS || UWP
             throw new NotImplementedException();
-#else
+        #else
             IsolatedStorageFileStream isfs = null;
 
             isfs = new IsolatedStorageFileStream(
                 fileName, FileMode.Create, mIsolatedStorageFile);
 
             writer = new StreamWriter(isfs);
-#endif
+        #endif
 
-#elif !XBOX360
+#else
             if (!string.IsNullOrEmpty(FileManager.GetDirectory(fileName)) &&
                 !Directory.Exists(FileManager.GetDirectory(fileName)))
             {
@@ -1640,19 +1602,7 @@ namespace FlatRedBall.IO
             writer = fileInfo.CreateText();
 
 
-#else
 
-
-            fileName = FileManager.GetIsolatedStorageFileName(fileName);
-
-            var sc = GetStorageContainer();
-            string dir = FileManager.GetDirectory(fileName);
-            if (!string.IsNullOrEmpty(dir) && !sc.DirectoryExists(dir))
-            {
-                sc.CreateDirectory(dir);
-            }
-            writer = new StreamWriter(sc.CreateFile(fileName));
-            using(sc)
 #endif
 
             using (writer)

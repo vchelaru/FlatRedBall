@@ -1,4 +1,4 @@
-#if XBOX360 || SILVERLIGHT || WINDOWS_PHONE || ANDROID || WINDOWS_8 || IOS
+#if ANDROID || WINDOWS_8 || IOS
 #define USES_DOT_SLASH_ABOLUTE_FILES
 #endif
 using System;
@@ -31,53 +31,30 @@ using Microsoft.Xna.Framework.Audio;
 #endif
 
 
-#if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !MONODROID && !MONOGAME
-#if !XNA4
-using CoreGraphics;
-#endif
+#if !MONODROID && !MONOGAME
 using Image = System.Drawing.Image;
 using FlatRedBall.IO.Gif;
 using FlatRedBall.IO; // For Image
 #endif
 
-#if XBOX && XNA4
-using FlatRedBall.IO.Gif;
-using FlatRedBall.IO;
-#endif
-
-#if !SILVERLIGHT
 
 using FlatRedBall.IO.Csv;
 
-#endif
 
 
-
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 
-
-#elif FRB_MDX
-
-
-#endif
-
-#if XNA4
 using Color = Microsoft.Xna.Framework.Color;
 using Microsoft.Xna.Framework.Media;
 using FlatRedBall.Content.ContentLoaders;
-#endif
 
 namespace FlatRedBall.Content
 {
     //public delegate void UnloadMethod();
 
-	public partial class ContentManager
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
- : Microsoft.Xna.Framework.Content.ContentManager
-#endif
+	public partial class ContentManager : Microsoft.Xna.Framework.Content.ContentManager
 	{
         #region Fields
 
@@ -191,9 +168,7 @@ namespace FlatRedBall.Content
 		#region Constructors
 
 		public ContentManager(string name, IServiceProvider serviceProvider)
-#if FRB_XNA || SILVERLIGHT
 			: base(serviceProvider)
-#endif
 		{
 			mName = name;
 			//    mAssetTypeAssociation = new Dictionary<string, Type>();
@@ -202,9 +177,7 @@ namespace FlatRedBall.Content
 		}
 
 		public ContentManager(string name, IServiceProvider serviceProvider, string rootDictionary)
-#if FRB_XNA || SILVERLIGHT
 			: base(serviceProvider, rootDictionary)
-#endif
 		{
 			mName = name;
 			//    mAssetTypeAssociation = new Dictionary<string, Type>();
@@ -318,9 +291,6 @@ namespace FlatRedBall.Content
 		}
 
 
-#if FRB_MDX
-		public T Load<T>(string assetName)
-#else
 		// Ok, let's explain why this method uses the "new" keyword.
 		// In the olden days (before September 2009) the user would call
 		// FlatRedBallServices.Load<TypeToLoad> which would investigate whether
@@ -349,7 +319,6 @@ namespace FlatRedBall.Content
 		// So the solution?  We make Load a "new" method.  That means that if Load is called by XNA, then it'll call the
 		// Load of XNA's ContentManager.  But if FRB calls it, it'll call the "new" version.  Problem solved.
 		public new T Load<T>(string assetName)
-#endif
 		{
 			// Assets can be loaded either from file or from assets referenced
 			// in the project.
@@ -364,7 +333,6 @@ namespace FlatRedBall.Content
 			}
 
 			#endregion
-#if !FRB_MDX
 
 			#region Else there is no extension, so the file is already part of the project.  Use a ContentManager
 			else
@@ -392,13 +360,9 @@ namespace FlatRedBall.Content
 			}
 			#endregion
 
-#else
-			return default(T); // This gets reached only in FRB_MDX
-#endif
 		}
 
 
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 		public T LoadFromProject<T>(string assetName)
 		{
 			string oldRelativePath = FileManager.RelativeDirectory;
@@ -407,7 +371,7 @@ namespace FlatRedBall.Content
 
 
 
-#if DEBUG && !SILVERLIGHT && !WINDOWS_PHONE
+        #if DEBUG
 
 			bool shouldCheckForXnb = true;
 
@@ -426,7 +390,7 @@ namespace FlatRedBall.Content
 			{
 				string errorString = "Could not find the file " + fileToCheckFor + "\n";
 
-#if !WINDOWS_8
+        #if !WINDOWS_8
 				List<string> filesInDirectory = FileManager.GetAllFilesInDirectory(FileManager.GetDirectory(assetName), null, 0);
 
 				errorString += "Found the following files:\n\n";
@@ -437,20 +401,20 @@ namespace FlatRedBall.Content
 					errorString += FileManager.RemovePath(s) + "\n";
 				}
 
-#endif
+        #endif
 				throw new FileNotFoundException(errorString);
 			}
-#endif
+        #endif
 
-#if XNA4 && !XBOX360 && !WINDOWS_PHONE && !MONOGAME
+        #if XNA4 && !MONOGAME
 			if (!FileManager.IsRelative(assetName))
 			{
 				assetName = FileManager.MakeRelative(
 					assetName, System.Windows.Forms.Application.StartupPath + "/");
 			}
-#endif
+        #endif
 
-#if USES_DOT_SLASH_ABOLUTE_FILES
+        #if USES_DOT_SLASH_ABOLUTE_FILES
 
             T asset;
 
@@ -463,9 +427,9 @@ namespace FlatRedBall.Content
 				asset = base.Load<T>(assetName);
 
 			}
-#else
+        #else
 			T asset = base.Load<T>(assetName);
-#endif
+        #endif
 			if (!mAssets.ContainsKey(assetName))
 			{
 				mAssets.Add(assetName, asset);
@@ -475,7 +439,6 @@ namespace FlatRedBall.Content
 
 			return AdjustNewAsset(asset, assetName);
 		}
-#endif
 
 		public T LoadFromFile<T>(string assetName)
 		{
@@ -643,7 +606,7 @@ namespace FlatRedBall.Content
 
 					if (assetName.EndsWith("gif"))
 					{
-#if WINDOWS_8 || UWP
+#if WINDOWS_8 || UWP || DESKTOP_GL
                         throw new NotImplementedException();
 #else
 						AnimationChainList acl = new AnimationChainList();

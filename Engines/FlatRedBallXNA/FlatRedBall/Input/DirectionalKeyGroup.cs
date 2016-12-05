@@ -2,16 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-#if FRB_MDX
-using Microsoft.DirectX.DirectInput;
-
-using Keys = Microsoft.DirectX.DirectInput.Key;
-#endif
-
-#if FRB_XNA
 using Microsoft.Xna.Framework.Input;
-#endif
 
 namespace FlatRedBall.Input
 {

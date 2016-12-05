@@ -1009,20 +1009,13 @@ namespace FlatRedBall
         {
             get
             {
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
                 return RotationMatrix * Matrix.CreateTranslation(Position);
-#else
-                return RotationMatrix * Matrix.Translation(Position);
-#endif
             }
             set
             {
                 // Get position
-#if FRB_MDX
-                Position = value.Translation();
-#else
                 Position = value.Translation;
-#endif
+
                 // Get scale
                 Vector3 finalScale = new Vector3(
                     (float)System.Math.Sqrt((double)(
@@ -1044,15 +1037,9 @@ namespace FlatRedBall
                      -(float)System.Math.Asin(value.M13 / finalScale.X),
                      (float)System.Math.Atan2(value.M12 / finalScale.X, value.M11 / finalScale.X));
 
-#if FRB_MDX
-                if (finalRot.X < 0) finalRot.X += (float)System.Math.PI;
-                if (finalRot.Y < 0) finalRot.Y += (float)System.Math.PI;
-                if (finalRot.Z < 0) finalRot.Z += (float)System.Math.PI;
-#else
                 if (finalRot.X < 0) finalRot.X += MathHelper.TwoPi;
                 if (finalRot.Y < 0) finalRot.Y += MathHelper.TwoPi;
                 if (finalRot.Z < 0) finalRot.Z += MathHelper.TwoPi;
-#endif
 
                 mRotationX = finalRot.X;
                 mRotationY = finalRot.Y;
@@ -1060,7 +1047,7 @@ namespace FlatRedBall
                 RotationZ = finalRot.Z;
             }
         }
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
+
         #region XML Docs
         /// <summary>
         /// Gets or sets the overall transformation of this object, relative to its parent
@@ -1108,7 +1095,7 @@ namespace FlatRedBall
                 RelativeRotationZ = finalRot.Z;
             }
         }
-#endif
+
         #region XML Docs
         /// <summary>
         /// The absolute X rotation speed measured in radians per second

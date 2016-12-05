@@ -1,13 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
-#if FRB_MDX
-using Microsoft.DirectX;
-#elif FRB_XNA || SILVERLIGHT
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-#endif
 
 using FlatRedBall.Content.Scene;
 using FlatRedBall.ManagedSpriteGroups;

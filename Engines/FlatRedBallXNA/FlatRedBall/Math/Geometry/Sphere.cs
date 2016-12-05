@@ -268,11 +268,7 @@ namespace FlatRedBall.Math.Geometry
 
             Vector3 nearest = GetNearestPoint(cube, relativeCenter);
 
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
             float distance = (nearest - relativeCenter).LengthSquared();
-#elif FRB_MDX
-            float distance = (nearest - relativeCenter).LengthSq();
-#endif
             return (distance <= Radius * Radius);
         }
 
@@ -312,12 +308,8 @@ namespace FlatRedBall.Math.Geometry
 
             Vector3 nearest = GetNearestPoint(cube, relativeCenter);
 
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
             float distance = (nearest - relativeCenter).LengthSquared();
-#elif FRB_MDX
-            float distance = (nearest - relativeCenter).LengthSq();
 
-#endif
             if (distance > Radius * Radius) return false;
 
             double distanceToMove = Radius - System.Math.Sqrt((double)distance);

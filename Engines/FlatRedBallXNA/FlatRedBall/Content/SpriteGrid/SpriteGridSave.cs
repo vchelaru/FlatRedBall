@@ -12,16 +12,8 @@ using FlatRedBall.Attributes;
 
 using FlatRedBall.IO;
 using FlatRedBall.Math.Geometry;
-#if FRB_MDX
-
-
-
-#elif FRB_XNA || SILVERLIGHT
 using Microsoft.Xna.Framework.Graphics;
 using FlatRedBall.Graphics.Texture;
-
-
-#endif
 
 namespace FlatRedBall.Content.SpriteGrid
 {

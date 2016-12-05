@@ -5,23 +5,13 @@ using System.Text;
 using Side = FlatRedBall.Math.Collision.CollisionEnumerations.Side;
 using FlatRedBall.Graphics;
 using FlatRedBall.Input;
-#if FRB_MDX
-using Microsoft.DirectX;
-
-using System.Drawing;
-
-#else //if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
-
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 using Microsoft.Xna.Framework.Graphics;
 
-#endif
-
-#if XNA4 || WINDOWS_8
 using Color = Microsoft.Xna.Framework.Color;
-#endif
+
 
 namespace FlatRedBall.Math.Geometry
 {

@@ -1,6 +1,3 @@
-#if FRB_MDX || XNA3
-#define SUPPORTS_FRB_DRAWN_GUI
-#endif
 
 using System;
 using System.Collections.Generic;
@@ -12,15 +9,11 @@ using FlatRedBall.Instructions;
 
 using FlatRedBall.Gui;
 using FlatRedBall.Graphics.Texture;
-#if FRB_MDX
-using Texture2D = FlatRedBall.Texture2D;
-#else//if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
 using Microsoft.Xna.Framework.Graphics;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using Vector4 = Microsoft.Xna.Framework.Vector4;
 using Microsoft.Xna.Framework;
-#endif
 
 namespace FlatRedBall.Graphics
 {
@@ -53,14 +46,10 @@ namespace FlatRedBall.Graphics
         internal static List<float> WidthList = new List<float>();
 
         static BitmapFont mDefaultFont;
-#if SILVERLIGHT || XNA4
         static SpriteFont mDefaultSpriteFont;
         public static SpriteBatch SpriteBatch;
-#endif
 
-#if XNA4
         static BasicEffect mBasicEffect;
-#endif
 
         static VertexPositionColorTexture[] v; 
         static internal float mXForVertexBuffer = 0;
@@ -85,13 +74,12 @@ namespace FlatRedBall.Graphics
             set { mDefaultFont = value; }
         }
 
-#if SILVERLIGHT || XNA4
         public static SpriteFont DefaultSpriteFont
         {
             get { return mDefaultSpriteFont; }
             set { mDefaultSpriteFont = value; }
         }
-#endif
+
         public static bool FilterTexts
         {
             get;
@@ -962,9 +950,6 @@ namespace FlatRedBall.Graphics
 
         static public void Draw(ref string txt)
         {
-#if FRB_MDX
-            if (SpriteManager.Exiting || SpriteManager.lostDevice) return;
-#endif
             if (txt == null || txt == "") return;
             float newlineShift = 0;
 
@@ -1153,94 +1138,14 @@ namespace FlatRedBall.Graphics
             #endregion
         }
 
-#if !SILVERLIGHT && !MONOGAME && !XNA4
-        static public void Draw(TextField fieldToWrite)
-        {
-#if FRB_MDX
-            if (SpriteManager.Exiting) return;
-#endif
-
-            // we simply mark the beginning of a line, calculate the end of the line, and draw that line
-            int lineOn = 0;
-
-            float textWidth = fieldToWrite.TextHeight / 2.0f;
-
-
-            float RelativeY = -textWidth * 1.5f;
-            //			float relZ = 0; // assigned but never used
-
-            if (fieldToWrite.RelativeToCamera)
-            {
-                mXForVertexBuffer = (float)(fieldToWrite.mLeft + SpriteManager.Camera.X + 1);
-                mYForVertexBuffer = (float)(fieldToWrite.mTop - textWidth * 1.5f + SpriteManager.Camera.Y);
-                mZForVertexBuffer = (float)(fieldToWrite.mZ + SpriteManager.Camera.Z);
-            }
-            else if (fieldToWrite.WindowParent != null)
-            {
-                if (fieldToWrite.WindowParent.Parent == null)
-                {
-                    mXForVertexBuffer = (float)(-SpriteManager.Camera.XEdge + fieldToWrite.WindowParent.X - fieldToWrite.WindowParent.ScaleX + fieldToWrite.mLeft + 1);
-                    mYForVertexBuffer = (float)(SpriteManager.Camera.YEdge - fieldToWrite.WindowParent.Y + fieldToWrite.WindowParent.ScaleY + fieldToWrite.mTop);
-                }
-                else
-                {
-                    mXForVertexBuffer = (float)(fieldToWrite.WindowParent.WorldUnitX - fieldToWrite.WindowParent.ScaleX + fieldToWrite.mLeft + 1);
-                    mYForVertexBuffer = (float)(fieldToWrite.WindowParent.WorldUnitY + fieldToWrite.WindowParent.ScaleY + fieldToWrite.mTop);
-                }
-                //mXForVertexBuffer = (float)( fieldToWrite.mLeft + 1);
-                //mYForVertexBuffer = (float)(fieldToWrite.mTop);
-
-
-                
-#if FRB_MDX
-                mZForVertexBuffer = (float)(SpriteManager.Camera.Z + 100);
-#else
-                mZForVertexBuffer = (float)(SpriteManager.Camera.Z - 100);
-
-#endif
-            }
-            else
-            {
-                mXForVertexBuffer = fieldToWrite.mLeft + 1;
-                mYForVertexBuffer = fieldToWrite.mTop - textWidth * 1.5f;
-                mZForVertexBuffer = fieldToWrite.mZ;
-            }
-
-            mAlignmentForVertexBuffer = HorizontalAlignment.Left;
-            mScaleForVertexBuffer = mSpacingForVertexBuffer = fieldToWrite.TextHeight / 2.0f;
-
-            mRedForVertexBuffer = fieldToWrite.Red;
-            mGreenForVertexBuffer = fieldToWrite.Green;
-            mBlueForVertexBuffer = fieldToWrite.Blue;
-            mAlphaForVertexBuffer = fieldToWrite.Alpha;
-
-            if (fieldToWrite.mLines.Count == 0)
-                fieldToWrite.FillLines();
-
-            #region loop through the lines drawing each one
-
-            for(int i = 0; i < fieldToWrite.mLines.Count; i++)
-            {
-                string s = fieldToWrite.mLines[i];
-                Draw(ref s);
-                mYForVertexBuffer -= mNewLineDistanceForVertexBuffer;
-                lineOn++;
-
-            }
-            #endregion
-        }
-#endif
 
         #endregion
 
-#if SILVERLIGHT || XNA4
         internal static void DrawTexts(IList<Text> texts, int startIndex,
     int numToDraw, Camera camera)
         {
             double currentTime = TimeManager.CurrentTime;
             int count = mAutomaticallyUpdatedTexts.Count;
-
-#if XNA4
 
             Matrix matrix = Matrix.Identity;
 
@@ -1261,15 +1166,7 @@ namespace FlatRedBall.Graphics
                 );
 
             //SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, Renderer.GraphicsDevice.DepthStencilState, Renderer.GraphicsDevice.RasterizerState, mBasicEffect, matrix);
-#else
-            SpriteBatch.Begin(SpriteBlendMode.AlphaBlend,
-                              SpriteSortMode.Immediate,
-                              SaveStateMode.None, camera.GetLookAtMatrix());
-#endif
 
-#if !XNA4
-            float scaleFromOrthogonalChanges = 1;// (float)FlatRedBallServices.Game.Height / camera.OrthogonalHeight;
-#endif
 
             //foreach (Text t in mAutomaticallyUpdatedTexts)
             int endIndex = startIndex + numToDraw;
@@ -1282,16 +1179,12 @@ namespace FlatRedBall.Graphics
                 {
                     #region Get the SpriteFont to use
 
-#if SILVERLIGHT
-                    SpriteFont spriteFont = TextManager.DefaultSpriteFont;
-#else
                     SpriteFont spriteFont = t.SpriteFont;
 
                     if (spriteFont == null)
                     {
                         spriteFont = TextManager.DefaultSpriteFont;
                     }
-#endif
 
 
                     #endregion
@@ -1300,11 +1193,7 @@ namespace FlatRedBall.Graphics
 
                     Vector2 stringDimensions = spriteFont.MeasureString(t.DisplayText);
 
-#if XNA4
                     float scaleValue = 1;
-#else
-                    float scaleValue = (float)(scaleFromOrthogonalChanges * t.Scale / spriteFont.FontSize);
-#endif
 
                     float xOffset = 0;
                     float yOffset = 0;
@@ -1349,24 +1238,15 @@ namespace FlatRedBall.Graphics
                     #endregion
 
 
-#if XNA4
                     // I dunno, maybe we need to make the rotation negative on FSB too?
 
                     FlatRedBall.Math.MathFunctions.RotatePointAroundPoint(
                         0, 0,
                         ref xOffset, ref yOffset, -t.RotationZ);
-#else
-                    FlatRedBall.Math.MathFunctions.RotatePointAroundPoint(
-                        0, 0,
-                        ref xOffset, ref yOffset, t.RotationZ);
-
-#endif
-
 
                     Color color = new Color(
                         t.Red, t.Green, t.Blue, t.Alpha);
 
-#if XNA4
                     Vector3 positionIn2D = Renderer.GraphicsDevice.Viewport.Project(t.Position, SpriteManager.Camera.Projection,
                         SpriteManager.Camera.View, Matrix.Identity);
 
@@ -1383,56 +1263,11 @@ namespace FlatRedBall.Graphics
                        SpriteEffects.None,
                        0);
 
-#else
-
-
-
-
-
-
-                    float x = t.X;// -camera.X;
-                    float y = -t.Y;// -camera.Y;
-
-
-
-
-                    // default to top alignment, then change it depending on the alignment settings
-                    Vector2 position = new Vector2(
-                                            x, //(float)(FlatRedBallServices.Game.Width / 2) + x,
-                                            y);//(float)(FlatRedBallServices.Game.Height / 2) - y);
-
-
-
-
-                    #region Adjust position based off of alignment
-
-                    position.X += xOffset;
-                    position.Y += yOffset;
-                    #endregion
-
-
-                    Vector2 scale = new Vector2(scaleValue, scaleValue);
-
-                    SpriteBatch.DrawString(spriteFont,
-                                           t.DisplayText,
-                                           position,
-                                           color
-                                           ,
-                                           t.RotationZ,
-                                           new Vector2(0, 0),
-                                           scaleValue,
-                                           SpriteEffects.None, 0);
-
-
-
-#endif
                 }
             }
 
             SpriteBatch.End();
         }
-
-#endif
 
         internal static float GetRelativeOffset(int chars, int start, string text)
         {

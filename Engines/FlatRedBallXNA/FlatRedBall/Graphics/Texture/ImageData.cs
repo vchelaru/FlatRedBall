@@ -2,27 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-#if FRB_MDX
-using Rectangle = System.Drawing.Rectangle;
-using FlatRedBall;
-using Color = System.Drawing.Color;
-using Surface = Microsoft.DirectX.Direct3D.Surface;
-using System.IO;
-using Microsoft.DirectX.Direct3D;
-using Point = System.Drawing.Point;
-using GraphicsDevice = Microsoft.DirectX.Direct3D.Device;
-
-#else//if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Microsoft.Xna.Framework.Graphics;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Point = Microsoft.Xna.Framework.Point;
-#endif
 
-#if XNA4 || WINDOWS_8
 using Color = Microsoft.Xna.Framework.Color;
 using System.Runtime.InteropServices;
-
-#endif
 
 namespace FlatRedBall.Graphics.Texture
 {

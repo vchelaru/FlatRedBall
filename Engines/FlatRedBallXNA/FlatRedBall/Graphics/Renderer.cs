@@ -1,5 +1,3 @@
-
-#region Using Statements
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -32,7 +30,6 @@ using Windows.System.Threading;
 
 #endif
 
-#endregion
 
 namespace FlatRedBall.Graphics
 {
@@ -418,29 +415,6 @@ namespace FlatRedBall.Graphics
 
         #region Public Properties
 
-#if !XNA4 && !MONOGAME
-        #region XML Docs
-        /// <summary>
-        /// Returns the maximum supported vertex shader profile on the user's device
-        /// </summary>
-        #endregion
-        public static ShaderProfile VertexShaderProfile
-        {
-            get { return GraphicsDevice.GraphicsDeviceCapabilities.MaxVertexShaderProfile; }
-        }
-
-
-        #region XML Docs
-        /// <summary>
-        /// Returns the maximum supported pixel shader profile on the user's device
-        /// </summary>
-        #endregion
-        public static ShaderProfile PixelShaderProfile
-        {
-            get { return GraphicsDevice.GraphicsDeviceCapabilities.MaxPixelShaderProfile; }
-        }
-#endif
-
         //public static RendererDiagnosticSettings RendererDiagnosticSettings
         //{
         //    get;
@@ -704,15 +678,8 @@ namespace FlatRedBall.Graphics
             mCurrentEffect.SetTextureAddressModeNoCall(mTextureAddressMode);
 #endif
 
-#if XNA4
             FlatRedBallServices.GraphicsOptions.ForceRefreshSamplerState(0);
             FlatRedBallServices.GraphicsOptions.ForceRefreshSamplerState(1);
-
-#elif XBOX_360
-                    mCurrentEffect.Parameters["Address"].SetValue(((int)mTextureAddressMode) - 1);
-#else
-                    mCurrentEffect.Parameters["Address"].SetValue((int)mTextureAddressMode);
-#endif
         }
 
         static internal IGraphicsDeviceService Graphics
@@ -814,13 +781,7 @@ namespace FlatRedBall.Graphics
 
             InitializeEffect();
 
-#if XNA4
             ForceSetBlendOperation();
-#else
-            // This needs to be done outside of the property so that it matches the default "Regular" setting:
-            mGraphics.GraphicsDevice.RenderState.SourceBlend = Blend.SourceAlpha;
-            mGraphics.GraphicsDevice.RenderState.DestinationBlend = Blend.InverseSourceAlpha;
-#endif
         }
 
 
@@ -828,18 +789,8 @@ namespace FlatRedBall.Graphics
         {
 
 
-#if XNA4
             mPositionColorTexture = VertexPositionColorTexture.VertexDeclaration;
             mPositionColor = VertexPositionColor.VertexDeclaration;
-#else
-            // Vertex Declarations
-            mPositionColorTexture = new VertexDeclaration(
-                mGraphics.GraphicsDevice, VertexPositionColorTexture.VertexElements);
-            mPositionColor = new VertexDeclaration(
-                mGraphics.GraphicsDevice, VertexPositionColor.VertexElements);
-#endif
-
-
 
             #region Verify available render modes
 
@@ -847,41 +798,6 @@ namespace FlatRedBall.Graphics
             RenderModeFormats = new Dictionary<int, SurfaceFormat>(10);
             RenderModeFormats.Add((int)RenderMode.Color, SurfaceFormat.Color);
             RenderModeFormats.Add((int)RenderMode.Default, SurfaceFormat.Color);
-#if !XNA4
-
-
-            if (GraphicsDevice.CreationParameters.Adapter.CheckDeviceFormat(
-                GraphicsDevice.CreationParameters.DeviceType,
-                GraphicsDevice.DisplayMode.Format,
-                TextureUsage.None, QueryUsages.None,
-                ResourceType.RenderTarget,
-                SurfaceFormat.Single))
-            {
-                RenderModeFormats.Add((int)RenderMode.Depth, SurfaceFormat.Single);   
-            }
-            if (GraphicsDevice.CreationParameters.Adapter.CheckDeviceFormat(
-                GraphicsDevice.CreationParameters.DeviceType,
-                GraphicsDevice.DisplayMode.Format,
-                TextureUsage.None, QueryUsages.None,
-                ResourceType.RenderTarget,
-                SurfaceFormat.HalfVector4))
-            {
-                RenderModeFormats.Add((int)RenderMode.Normals, SurfaceFormat.HalfVector4);
-                RenderModeFormats.Add((int)RenderMode.Position, SurfaceFormat.Color);
-            }
-            else if (GraphicsDevice.CreationParameters.Adapter.CheckDeviceFormat(
-                GraphicsDevice.CreationParameters.DeviceType,
-                GraphicsDevice.DisplayMode.Format,
-                TextureUsage.None, QueryUsages.None,
-                ResourceType.RenderTarget,
-                SurfaceFormat.Vector4))
-            {
-                RenderModeFormats.Add((int)RenderMode.Normals, SurfaceFormat.Vector4);
-                RenderModeFormats.Add((int)RenderMode.Position, SurfaceFormat.Vector4);
-            }
-#else
-
-#endif
 
             #endregion
 
@@ -1112,30 +1028,12 @@ namespace FlatRedBall.Graphics
 
             #region Set device settings for rendering
 
-#if XNA4
             // do nothing???
 
             // Let's force it just in case someone screwed with it outside of the rendering - 
             // like when using render states
             ForceSetTextureAddressMode(Microsoft.Xna.Framework.Graphics.TextureAddressMode.Clamp);
 
-#else
-            // Reset alpha blending
-            mGraphics.GraphicsDevice.RenderState.AlphaBlendEnable = true;
-
-            BlendOperation = BlendOperation.Regular;
-
-            mGraphics.GraphicsDevice.RenderState.SeparateAlphaBlendEnabled = true;
-            mGraphics.GraphicsDevice.RenderState.AlphaBlendOperation = BlendFunction.Max;
-            mGraphics.GraphicsDevice.RenderState.AlphaDestinationBlend = Blend.DestinationAlpha;
-            mGraphics.GraphicsDevice.RenderState.AlphaSourceBlend = Blend.SourceAlpha;
-            
-
-            // Reset alpha test
-            mGraphics.GraphicsDevice.RenderState.AlphaTestEnable = true;
-            mGraphics.GraphicsDevice.RenderState.ReferenceAlpha = 0;
-            mGraphics.GraphicsDevice.RenderState.AlphaFunction = CompareFunction.Greater;
-#endif
             #endregion
 
 
@@ -1160,7 +1058,7 @@ namespace FlatRedBall.Graphics
 
         #endregion
 
-#if !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
         public static Texture2D GetTextureFromEffect(Effect effect)
         {
 
@@ -1361,27 +1259,7 @@ namespace FlatRedBall.Graphics
                 Section.GetAndStartContextAndTime("End of Render");
             }
             
-
-            #region Reset device settings for rendering
-
-#if !XNA4 && !SILVERLIGHT && !WINDOWS_8
-            // Reset texture filter
-            FlatRedBallServices.GraphicsOptions.ResetTextureFilter();
-#endif
-
-#if !XNA4
-            // Reset alpha blending
-            mGraphics.GraphicsDevice.RenderState.AlphaBlendEnable = true;
-            BlendOperation = BlendOperation.Regular;
-
-            // Reset alpha test
-            mGraphics.GraphicsDevice.RenderState.AlphaTestEnable = true;
-            mGraphics.GraphicsDevice.RenderState.ReferenceAlpha = 0;
-            mGraphics.GraphicsDevice.RenderState.AlphaFunction = CompareFunction.Greater;
-#endif
-
-            #endregion
-
+            
             IsInRendering = false;
 
             Screens.ScreenManager.Draw();

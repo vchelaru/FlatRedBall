@@ -451,7 +451,6 @@ namespace FlatRedBall
 
         private static void UpdateToWindowSize(object sender, EventArgs e)
         {
-#if FRB_XNA
             mGraphicsOptions.SuspendDeviceReset();
 
             // Vic says:
@@ -465,12 +464,10 @@ namespace FlatRedBall
 
             mGraphicsOptions.ResumeDeviceReset();
 
-#if WINDOWS
+    #if WINDOWS
             FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
-#endif
+    #endif
             //mGraphicsOptions.ResumeDeviceReset();
-
-#endif
         }
 
         #endregion
@@ -479,18 +476,12 @@ namespace FlatRedBall
 
         #region Constructor/Initialize
 
-#if XNA4 || WINDOWS_8
-
         private static void PreInitialization()
         {
             throw new NotSupportedException();
         }
 
         private static void PreInitialization(Game game, GraphicsDeviceManager graphics)
-#else
-
-        private static void PreInitialization()
-#endif
         {
             if (mContentManagers == null)
             {
@@ -520,25 +511,7 @@ namespace FlatRedBall
 
                 mContentManagers = new Dictionary<string, FlatRedBall.Content.ContentManager>();
 
-#if !FRB_MDX && !XNA4 && !WINDOWS_8
-
-                #region Access types in Content Pipeline Reader assemblies
-                // See the following post:  https://creators.xna.com/forums/thread/5399.aspx
-
-                string throwAwayString;
-
-                throwAwayString = typeof(FlatRedBall.Content.SceneReader).AssemblyQualifiedName;
-
-                #endregion
-
-#endif
-
-#if XNA4 || WINDOWS_8
                 mGraphicsOptions = new Graphics.GraphicsOptions(game, graphics);
-#else
-
-                mGraphicsOptions = new GraphicsOptions();
-#endif
 
                 #region Fill the types that can be loaded
 
@@ -562,7 +535,7 @@ namespace FlatRedBall
 
             }
         }
-#if XNA4  && !XBOX360 && !WINDOWS_PHONE && !MONODROID
+#if XNA4  && !MONODROID
         public static void InitializeCommandLine()
         {
             InitializeCommandLine(null);
@@ -627,13 +600,7 @@ namespace FlatRedBall
         public static void InitializeFlatRedBall(Game game, GraphicsDeviceManager graphics)
         {
 
-#if XNA4 || WINDOWS_8
             PreInitialization(game, graphics);
-#else
-            PreInitialization();
-#endif
-
-
 
             GraphicsOptions graphicsOptions = new GraphicsOptions(game, graphics);
 
@@ -661,11 +628,7 @@ namespace FlatRedBall
 
         PlatformServices.Initialize();
 
-#if XNA4 || WINDOWS_8
             PreInitialization(game, graphics);
-#else
-            PreInitialization();
-#endif
             mGraphics = graphics;
             mGraphicsDevice = mGraphics.GraphicsDevice;
 
@@ -683,17 +646,13 @@ namespace FlatRedBall
             if (mGraphicsOptions.IsFullScreen != mGraphics.IsFullScreen)
                 mGraphics.ToggleFullScreen();
 
-#if !XBOX_360 && !WINDOWS_8
+#if !WINDOWS_8
             mGraphics.ApplyChanges();
 #endif
 
             mGraphics.PreparingDeviceSettings += new EventHandler<PreparingDeviceSettingsEventArgs>(graphics_PreparingDeviceSettings);
 
-#if XNA4 || WINDOWS_8
             mGraphics.DeviceReset += new EventHandler<EventArgs>(graphics_DeviceReset);
-#else
-            mGraphics.DeviceReset += new EventHandler(graphics_DeviceReset);
-#endif
 
             // Monogame Windows 8 doesn't currently ( and maybe never will) support resets, so we need to 
             // handle the resolution changing:
@@ -835,9 +794,7 @@ namespace FlatRedBall
             if (mGraphicsOptions.IsFullScreen != mGraphics.IsFullScreen)
                 mGraphics.ToggleFullScreen();
 
-#if !XBOX_360
             mGraphics.ApplyChanges();
-#endif
 
             mGraphics.PreparingDeviceSettings += new EventHandler<PreparingDeviceSettingsEventArgs>(graphics_PreparingDeviceSettings);
 
@@ -857,13 +814,9 @@ namespace FlatRedBall
             mClientWidth = mGraphicsOptions.ResolutionWidth;
             mClientHeight = mGraphicsOptions.ResolutionHeight;
 
-#if XNA4 || WINDOWS_8
             graphics.DeviceReset += new EventHandler<EventArgs>(graphics_DeviceReset);
-#else
-            graphics.DeviceReset += new EventHandler(graphics_DeviceReset);
-#endif
 
-#if !XBOX360 && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
             System.Windows.Forms.Form.FromHandle(mWindowHandle).Resize += new EventHandler(Window_ClientSizeChanged);
 
 #endif
@@ -2112,11 +2065,9 @@ namespace FlatRedBall
             }
             else
             {
-#if FRB_XNA
                 // We gotta lock the GraphicsDevice so that the dictionary isn't being 
                 // modified while rendering occurs.
                 lock (Renderer.Graphics.GraphicsDevice)
-#endif
                 {
                     mContentManagers.Add(contentManagerName, contentManager);
                 }

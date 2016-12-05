@@ -1,18 +1,11 @@
 using System;
 using System.Xml;
 using System.Xml.Serialization;
-
 using System.IO;
-
 using FlatRedBall.Graphics.Particle;
 using FlatRedBall.Content.Scene;
 using RemovalEventType = FlatRedBall.Graphics.Particle.Emitter.RemovalEventType;
-
-#if FRB_MDX
-using Microsoft.DirectX;
-#elif FRB_XNA || SILVERLIGHT
 using Microsoft.Xna.Framework;
-#endif
 
 namespace FlatRedBall.Content.Particle
 {

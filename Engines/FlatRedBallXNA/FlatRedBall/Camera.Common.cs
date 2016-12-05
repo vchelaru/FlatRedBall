@@ -624,20 +624,9 @@ namespace FlatRedBall
             }
             else
             {
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
                 float distance = Vector3.Dot(
                     (absolutePosition - Position), RotationMatrix.Forward);
-#elif FRB_MDX
 
-            Vector3 forwardCameraVector = new Vector3(
-                mRotationMatrix.M31,
-                mRotationMatrix.M32,
-                mRotationMatrix.M33);
-
-            float distance = Vector3.Dot(
-                (absolutePosition - Position), forwardCameraVector);
-
-#endif
                 return mDestinationRectangle.Height /
                     (2 * RelativeYEdgeAt(Position.Z + (Math.MathFunctions.ForwardVector3.Z * distance), fieldOfView, mAspectRatio, orthogonal, orthogonalHeight));
             }

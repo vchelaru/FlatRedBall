@@ -12,22 +12,8 @@ using FlatRedBall.Instructions.Interpolation;
 using System.Reflection;
 
 using FlatRedBall.Math;
-
-
-#if !SILVERLIGHT
 using System.Collections.ObjectModel;
-#endif
-
-
-
-#if FRB_MDX
-using Microsoft.DirectX;
-using System.Reflection;
-using FlatRedBall.Graphics.Model;
-#elif FRB_XNA || SILVERLIGHT
 using Microsoft.Xna.Framework;
-
-#endif
 
 namespace FlatRedBall.Instructions
 {

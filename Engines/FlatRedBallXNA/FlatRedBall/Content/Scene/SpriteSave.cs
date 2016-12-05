@@ -6,9 +6,7 @@ using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Attributes;
-#if !XBOX360
 using FlatRedBall.Gui;
-#endif
 
 using FlatRedBall.Graphics.Texture;
 using FlatRedBall.Input;
@@ -18,10 +16,7 @@ using FlatRedBall.ManagedSpriteGroups;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Microsoft.Xna.Framework.Graphics;
-
-#endif
 
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.IO;
@@ -36,7 +31,6 @@ namespace FlatRedBall.Content.Scene
 #endif
     public class SpriteSave : SpriteSaveBase
     {
-#if !FRB_MDX
         private static bool AsBool(System.Xml.Linq.XElement subElement)
         {
             return bool.Parse(subElement.Value);
@@ -58,7 +52,6 @@ namespace FlatRedBall.Content.Scene
         {
             return int.Parse(subElement.Value, CultureInfo.InvariantCulture);
         }
-#endif
 
         #region Fields
 

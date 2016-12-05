@@ -2,11 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Microsoft.Xna.Framework;
-#elif FRB_MDX
-using Vector3 = Microsoft.DirectX.Vector3;
-#endif
 
 
 using FlatRedBall.Math.Splines;

@@ -3,15 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-
 using System.IO;
-#if FRB_MDX
-using Microsoft.DirectX;
-using System.Drawing;
-#elif FRB_XNA || SILVERLIGHT
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-#endif
 
 using FlatRedBall.IO;
 using FlatRedBall.Math.Geometry;
@@ -100,19 +94,11 @@ namespace FlatRedBall.Content.Polygon
             polygon.Name = Name;
 
             polygon.Color =
-#if FRB_MDX
-                Color.FromArgb(
-                (int)(Alpha * 255),
-                (int)(Red * 255),
-                (int)(Green * 255),
-                (int)(Blue * 255));
-#else
                 new Color(
                     (byte)(Red * 255),
                     (byte)(Green * 255),
                     (byte)(Blue * 255),
                     (byte)(Alpha * 255));
-#endif
 
             polygon.FillVertexArray();
 

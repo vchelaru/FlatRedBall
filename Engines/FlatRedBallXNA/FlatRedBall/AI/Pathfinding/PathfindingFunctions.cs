@@ -8,11 +8,7 @@ using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Utilities;
 
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Microsoft.Xna.Framework;
-#elif FRB_MDX
-using Microsoft.DirectX;
-#endif
 
 namespace FlatRedBall.AI.Pathfinding
 {

@@ -6,15 +6,8 @@ using System.IO;
 using System.ComponentModel;
 using FlatRedBall.IO.Gif;
 using FlatRedBall.Graphics.Texture;
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-
-
-#elif FRB_MDX
-using System.Drawing;
-
-#endif
 
 
 namespace FlatRedBall.IO

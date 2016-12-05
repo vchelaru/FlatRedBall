@@ -3,28 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Graphics;
 
-#if FRB_MDX
-using Microsoft.DirectX;
-using System.Drawing;
-#else //if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using FlatRedBall.Gui;
 using FlatRedBall.Input;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
-
-#if XNA4 || WINDOWS_8
 using Color = Microsoft.Xna.Framework.Color;
-#else
-using Color = Microsoft.Xna.Framework.Graphics.Color;
-#endif
-#endif
 
 namespace FlatRedBall.Math.Geometry
 {
-    public class Circle : PositionedObject, IEquatable<Circle> , IVisible
-#if FRB_XNA
-, IMouseOver
-#endif
+    public class Circle : PositionedObject, IEquatable<Circle> , IVisible, IMouseOver
     {
         #region Fields
 
@@ -782,7 +769,7 @@ namespace FlatRedBall.Math.Geometry
         #endregion
 
         #region IMouseOver Implementation
-#if FRB_XNA
+
         public bool IsMouseOver(Cursor cursor)
         {
             return cursor.IsOn3D(this);
@@ -792,7 +779,7 @@ namespace FlatRedBall.Math.Geometry
         {
             return cursor.IsOn3D(this, layer);
         }
-#endif
+
         #endregion
 
         #region IVisible implementation

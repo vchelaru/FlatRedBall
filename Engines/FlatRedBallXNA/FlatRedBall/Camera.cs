@@ -1,38 +1,15 @@
-#if !SILVERLIGHT && !WINDOWS_8 && !XNA4 && !MONOGAME && !FRB_MDX
-#define SUPPORTS_POST_PROCESSING
-#endif
 
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 
-#if FRB_MDX
-using System.Drawing;
-
-using Microsoft.DirectX;
-#else
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-#if !XNA4
-
-using Microsoft.Xna.Framework.Storage;
-
-
-#endif
-
-#if SUPPORTS_POST_PROCESSING
-using FlatRedBall.Graphics.Shadows;
-using FlatRedBall.Graphics.Lighting;
-using FlatRedBall.Graphics.PostProcessing;
-#endif
-
 
 using Microsoft.Xna.Framework.Content;
-
-#endif
 
 using FlatRedBall.Math;
 using FlatRedBall.Graphics;
@@ -108,9 +85,7 @@ namespace FlatRedBall
 
 
 
-#if FRB_XNA
         BoundingFrustum mBoundingFrustum;
-#endif
 
         CameraCullMode mCameraCullMode;
         CameraModelCullMode mCameraModelCullMode;
@@ -815,12 +790,8 @@ namespace FlatRedBall
             }
 
             Vector3 oldPosition = sprite.Position;
-#if FRB_MDX
-			float edgeCoef = (sprite.Z - Z)/100.0f;
-#else
             float edgeCoef = (Z - sprite.Z) / 100.0f;
 
-#endif
             if (sprite.X - sprite.ScaleX < X - edgeCoef * XEdge)
                 sprite.X = X - edgeCoef * XEdge + sprite.ScaleX;
             if (sprite.X + sprite.ScaleX > X + edgeCoef * XEdge)
@@ -1069,14 +1040,6 @@ namespace FlatRedBall
 
         public void SetLookAtRotationMatrix(Vector3 LookAtPoint, Vector3 upDirection)
         {
-#if FRB_MDX
-            Vector3 forward = Vector3.Normalize(LookAtPoint - Position);
-            mRotationMatrix.M31 = forward.X;
-            mRotationMatrix.M32 = forward.Y;
-            mRotationMatrix.M33 = forward.Z;
-            UpdateRotationValuesAccordingToMatrix();
-#else
-
             Matrix newMatrix = Matrix.Invert(
                     Matrix.CreateLookAt(
                         Position,
@@ -1091,32 +1054,8 @@ namespace FlatRedBall
 
             RotationMatrix = newMatrix;
 
-#endif
 
         }
-
-#if FRB_MDX
-
-        public void SetDeviceViewAndProjection(Microsoft.DirectX.Direct3D.Device device)
-        {
-            SetDeviceViewAndProjection(device, false);
-        }
-
-		public void SetDeviceViewAndProjection(Microsoft.DirectX.Direct3D.Device device, bool relativeToCamera)
-		{
-			// Set up our view matrix. A view matrix can be defined given an eye point,
-			// a point to lookat, and a direction for which way is up. 
-            device.Transform.View = GetLookAtMatrix(relativeToCamera);
-
-            device.Transform.Projection = GetProjectionMatrix();
-		}
-
-#else
-
-
-
-
-
 
         public void SetDeviceViewAndProjection(BasicEffect effect, bool relativeToCamera)
         {
@@ -1129,9 +1068,7 @@ namespace FlatRedBall
         }
 
 
-#if !SILVERLIGHT
 
-#if XNA4 || WINDOWS_8
         public void SetDeviceViewAndProjection(GenericEffect effect, bool relativeToCamera)
         {
             // Set up our view matrix. A view matrix can be defined given an eye point,
@@ -1139,8 +1076,6 @@ namespace FlatRedBall
             effect.View = GetLookAtMatrix(relativeToCamera);
             effect.Projection = GetProjectionMatrix();
         }
-#endif
-
 
         public void SetDeviceViewAndProjection(Effect effect, bool relativeToCamera)
         {
@@ -1203,8 +1138,6 @@ namespace FlatRedBall
                 //TimeManager.SumTimeSection("Set available parameters");
             }
         }
-#endif
-#endif
 
         public override void TimedActivity(float secondDifference, double secondDifferenceSquaredDividedByTwo, float secondsPassedLastFrame)
         {

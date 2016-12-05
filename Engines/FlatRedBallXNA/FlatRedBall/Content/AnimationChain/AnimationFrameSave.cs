@@ -6,14 +6,8 @@ using System.Xml.Serialization;
 using FlatRedBall.Attributes;
 using FlatRedBall.Graphics.Texture;
 using FlatRedBall.Graphics;
-
-#if FRB_MDX
-
-#elif FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Microsoft.Xna.Framework.Graphics;
 using FlatRedBall.Content.Scene;
-
-#endif
 
 namespace FlatRedBall.Content.AnimationChain
 {

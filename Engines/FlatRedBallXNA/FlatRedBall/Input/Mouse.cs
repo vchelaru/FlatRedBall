@@ -199,15 +199,10 @@ namespace FlatRedBall.Input
         {
             get 
             {
-#if FRB_MDX
-                return (float)(mMouseState.Z) / 120.0f;
-#elif WINDOWS_PHONE || MONODROID
+#if MONODROID
                 return InputManager.TouchScreen.PinchRatioChange;
-#elif FRB_XNA
-
+#else
                 return (mMouseState.ScrollWheelValue - mLastWheel)/120.0f; 
-#elif SILVERLIGHT
-				return 0;// this should be fixed in SL 4
 #endif
             
             }

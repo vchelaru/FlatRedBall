@@ -3,20 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using FlatRedBall.Instructions;
-#if FRB_MDX
-using Microsoft.DirectX;
-#elif FRB_XNA 
 using Microsoft.Xna.Framework;
-#elif SILVERLIGHT
-using Microsoft.Xna.Framework;
-using System.Windows.Controls;
-using System.Windows.Media;
-
-#endif
-
-#if !SILVERLIGHT
-//using FlatRedBall.Threading;
-#endif
 
 
 using FlatRedBall.Graphics;

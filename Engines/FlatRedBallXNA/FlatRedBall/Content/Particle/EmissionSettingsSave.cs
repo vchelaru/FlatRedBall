@@ -544,19 +544,6 @@ namespace FlatRedBall.Graphics.Particle
                 emissionSettingsSave.TextureScale = -1;
             }
 
-#if FRB_MDX
-            int multiple = 1;
-            emissionSettingsSave.mFade = 255 - emissionSettings.Alpha;
-            emissionSettingsSave.mTintRed = emissionSettings.Red;
-            emissionSettingsSave.mTintGreen = emissionSettings.Green;
-            emissionSettingsSave.mTintBlue = emissionSettings.Blue;
-
-            emissionSettingsSave.mFadeRate = -emissionSettings.AlphaRate;
-            emissionSettingsSave.mTintRedRate = emissionSettings.RedRate;
-            emissionSettingsSave.mTintGreenRate = emissionSettings.GreenRate;
-            emissionSettingsSave.mTintBlueRate = emissionSettings.BlueRate;
-
-#elif FRB_XNA || SILVERLIGHT
             int multiple = 255;
             emissionSettingsSave.mFade = (1 - emissionSettings.Alpha) * 255;
             emissionSettingsSave.mTintRed = emissionSettings.Red * 255;
@@ -567,17 +554,12 @@ namespace FlatRedBall.Graphics.Particle
             emissionSettingsSave.mTintRedRate = emissionSettings.RedRate*255;
             emissionSettingsSave.mTintGreenRate = emissionSettings.GreenRate*255;
             emissionSettingsSave.mTintBlueRate = emissionSettings.BlueRate*255;
-#endif
+
             emissionSettingsSave.mBlendOperation =
                 GraphicalEnumerations.BlendOperationToFlatRedBallMdxString(emissionSettings.BlendOperation);
 
-#if FRB_MDX
-            emissionSettingsSave.mColorOperation = GraphicalEnumerations.TranslateColorOperation(emissionSettings.ColorOperation);
-#else
             emissionSettingsSave.mColorOperation = GraphicalEnumerations.ColorOperationToFlatRedBallMdxString(
                 emissionSettings.ColorOperation);
-            
-#endif
 
             // preserve animation  and texture settings
             emissionSettingsSave.mAnimate = emissionSettings.Animate;

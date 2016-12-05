@@ -4,12 +4,7 @@ using System.Text;
 using FlatRedBall.Graphics;
 using FlatRedBall.Attributes;
 
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Microsoft.Xna.Framework.Graphics;
-#elif FRB_MDX
-
-
-#endif
 
 
 namespace FlatRedBall.Content.Saves

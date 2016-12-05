@@ -18,20 +18,7 @@ using FlatRedBall.Graphics;
 using FlatRedBall.Utilities;
 using System.Collections.ObjectModel;
 
-#if !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME && !WINDOWS_8 && !XNA4
-using FlatRedBall.Content.Gui;
-using FlatRedBall.Gui.PropertyGrids;
-
-#endif
-
-
-#if XNA4 || WINDOWS_8
 using Color = Microsoft.Xna.Framework.Color;
-#elif FRB_XNA
-
-using Color = Microsoft.Xna.Framework.Graphics.Color;
-
-#endif
 using FlatRedBall.IO;
 
 
@@ -414,18 +401,7 @@ namespace FlatRedBall.Gui
             }
             catch(Exception e)
             {
-#if XBOX360 || SILVERLIGHT || WINDOWS_PHONE || MONODROID || WINDOWS_8 || IOS || UWP
                 throw e;
-#else
-                System.Windows.Forms.MessageBox.Show("Error setting GuiManager textures." +
-                    "  If you are seeing this, one reason may be that you do not have the " +
-                    " correct Managed DirectX files on your computer.  To download them, " +
-                    " go to www.flatredball.com, click on Resources on the top bar " + 
-                    " and click on the \"DirectX Web Installer\" link under FlatRedBall " +
-                    " Prerequisites.  If you have already done this and your problem is not " +
-                    " solved, please visit the forums on www.flatredball.com and post about your " +
-                    " problem.\n\nAdditional Information:\n" + e.ToString());                
-#endif
             }
             try
             {
@@ -433,18 +409,6 @@ namespace FlatRedBall.Gui
                 nfi = new System.Globalization.NumberFormatInfo();
                 //replaced the above line with the one below to used streamed images.
 
-#if FRB_MDX
-
-                if ( FlatRedBallServices.IsWindowsCursorVisible == false &&
-                    System.IO.File.Exists(FlatRedBall.IO.FileManager.RelativeDirectory + "Assets/Textures/cursor1.bmp"))
-                {
-                    mCursors[0].SetCursor(
-                        FlatRedBallServices.Load<Texture2D>(
-                            FlatRedBall.IO.FileManager.RelativeDirectory + "Assets/Textures/cursor1.bmp", 
-                            InternalGuiContentManagerName),
-                        .5f, -.5f, 1);
-                }
-#endif
 
                 ShowingCursorTextBox = true;
 
@@ -452,11 +416,7 @@ namespace FlatRedBall.Gui
             }
             catch(Exception e)
             {
-#if XBOX360 || SILVERLIGHT || WINDOWS_PHONE || MONODROID || MONOGAME
                 throw e;
-#else
-                System.Windows.Forms.MessageBox.Show("Error wrapping up GuiManager creation\n\n" + e.ToString());
-#endif
             }
 
 #if SUPPORTS_FRB_DRAWN_GUI

@@ -7,12 +7,7 @@ using FlatRedBall.Content.Polygon;
 using FlatRedBall.Math;
 using FileManager = FlatRedBall.IO.FileManager;
 using FlatRedBall.Math.Geometry;
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Microsoft.Xna.Framework;
-#else
-using Microsoft.DirectX;
-
-#endif
 
 namespace FlatRedBall.Content.Math.Geometry
 {

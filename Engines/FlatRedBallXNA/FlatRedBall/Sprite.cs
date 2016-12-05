@@ -833,11 +833,7 @@ namespace FlatRedBall
 #endif
             Alpha = GraphicalEnumerations.MaxColorComponentValue; 
 
-#if FRB_XNA
             ColorOperation = ColorOperation.Texture;
-#else
-            ColorOperation = TextureOperation.SelectArg1;
-#endif
             mAnimationChains = new AnimationChainList();
             mCurrentChainIndex = -1;
             mAnimationSpeed = 1;

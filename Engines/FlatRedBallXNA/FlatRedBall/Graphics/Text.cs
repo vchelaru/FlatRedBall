@@ -563,7 +563,6 @@ namespace FlatRedBall.Graphics
             }
         }
 
-#if XNA4 || SILVERLIGHT
         private SpriteFont mSpriteFont;
 
         public SpriteFont SpriteFont
@@ -578,7 +577,6 @@ namespace FlatRedBall.Graphics
 
             }
         }
-#endif
 
 
         public VerticalAlignment VerticalAlignment
@@ -1409,12 +1407,9 @@ namespace FlatRedBall.Graphics
 
                 float width;
 
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
                 Vector3 position = Vector3.Zero;
-#else
-            Vector3 position = Vector3.Empty;
-#endif
-                char letterAsChar;
+
+            char letterAsChar;
 
                 int lastPageNumber = 0;
                 int stringLength = text.Length;

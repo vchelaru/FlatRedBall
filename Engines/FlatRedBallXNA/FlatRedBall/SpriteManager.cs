@@ -10,16 +10,8 @@ using System.Text;
 using System.Threading;
 using System.Reflection;
 
-#if FRB_XNA
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-#elif SILVERLIGHT
-using System.Windows.Controls;
-using System.Windows.Media.Effects;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using CanvasRenderer = SilverArcade.SilverSprite.Graphics.CanvasRenderer;
-#endif
 using FlatRedBall.Math;
 using FlatRedBall.Graphics;
 using FlatRedBall.Graphics.Particle;

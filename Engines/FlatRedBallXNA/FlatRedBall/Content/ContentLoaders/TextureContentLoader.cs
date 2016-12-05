@@ -90,15 +90,8 @@ namespace FlatRedBall.Content.ContentLoaders
                 case "ppm":
                 case "tga":
                     {
-#if XNA4 || WINDOWS_8
                         throw new NotImplementedException("The following texture format is not supported" +
                             extension + ".  We recommend using the .png format");
-#else
-						Texture2D texture = Texture2D.FromFile(Renderer.Graphics.GraphicsDevice, assetName, TextureCreationParameters.Default);
-						texture.Name = assetName;
-						loadedAsset = texture;
-						break;
-#endif
                         //break;
                     }
                 case "gif":

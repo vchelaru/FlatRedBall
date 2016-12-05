@@ -4,21 +4,9 @@ using System.Text;
 using System.Reflection;
 using FlatRedBall.Utilities;
 using System.Globalization;
-
-#if !SILVERLIGHT && !ZUNE
 using FlatRedBall.IO;
-
-#endif
-
-
-#if FRB_XNA || ZUNE || SILVERLIGHT
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-
-#elif FRB_MDX
-using Microsoft.DirectX;
-using System.Drawing;
-#endif
 
 namespace FlatRedBall.Instructions.Reflection
 {

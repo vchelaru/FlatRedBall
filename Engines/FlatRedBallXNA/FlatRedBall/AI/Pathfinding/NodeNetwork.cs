@@ -2,21 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
-
-#if FRB_MDX
-using Vector3 = Microsoft.DirectX.Vector3;
-using Color = System.Drawing.Color;
-
-#elif FRB_XNA || SILVERLIGHT
 using Microsoft.Xna.Framework;
-
-#if XNA4 || MONOGAME
 using Color = Microsoft.Xna.Framework.Color;
-#else
-using Color = Microsoft.Xna.Framework.Graphics.Color;
-#endif
-#endif
-
 using FlatRedBall;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;

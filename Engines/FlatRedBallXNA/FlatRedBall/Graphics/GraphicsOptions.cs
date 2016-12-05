@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
 using FlatRedBall.IO;
-#if FRB_MDX
-using Microsoft.DirectX.Direct3D;
-#elif FRB_XNA || SILVERLIGHT
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
     #if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME
     using System.Windows.Forms;
     #endif
-#endif
 
 namespace FlatRedBall.Graphics
 {
@@ -51,17 +47,7 @@ namespace FlatRedBall.Graphics
 #endif
                         #endregion
 
-#if FRB_MDX
-                        Renderer.GraphicsDevice.SamplerState[0].MipFilter = mTextureFilter;
-
-                        Renderer.GraphicsDevice.SamplerState[0].MinFilter = mTextureFilter;
-                        Renderer.GraphicsDevice.SamplerState[0].MagFilter = mTextureFilter;
-#elif XNA4 || WINDOWS_8
                         ForceRefreshSamplerState();
-#elif FRB_XNA
-                        Renderer.GraphicsDevice.SamplerStates[0].MinFilter = mTextureFilter;
-                        Renderer.GraphicsDevice.SamplerStates[0].MagFilter = mTextureFilter;
-#endif
                     }
                 }
             }
@@ -69,59 +55,7 @@ namespace FlatRedBall.Graphics
 
         private static void ThrowExceptionIfFilterIsntSupported(TextureFilter value)
         {
-
-#if XNA4 || WINDOWS_8
             // For now do nothing, but we may want to perform some checks here against whether we're using REACH or HIDEF
-
-#elif FRB_XNA
-            // Check to see if the caps are supported
-            GraphicsDevice gd = FlatRedBallServices.GraphicsDevice;
-
-            switch (value)
-            {
-                case TextureFilter.Anisotropic:
-                    if (!gd.GraphicsDeviceCapabilities.TextureFilterCapabilities.SupportsMagnifyAnisotropic ||
-                        !gd.GraphicsDeviceCapabilities.TextureFilterCapabilities.SupportsMinifyAnisotropic)
-                    {
-                        throw new ArgumentException("Your graphics device does not support " + value);
-                    }
-                    break;
-                case TextureFilter.GaussianQuad:
-                    if (!gd.GraphicsDeviceCapabilities.TextureFilterCapabilities.SupportsMagnifyGaussianQuad ||
-                        !gd.GraphicsDeviceCapabilities.TextureFilterCapabilities.SupportsMinifyGaussianQuad)
-                    {
-                        throw new ArgumentException("Your graphics device does not support " + value);
-                    }
-                    break;
-                case TextureFilter.Linear:
-                    if (!gd.GraphicsDeviceCapabilities.TextureFilterCapabilities.SupportsMagnifyLinear ||
-                        !gd.GraphicsDeviceCapabilities.TextureFilterCapabilities.SupportsMinifyLinear)
-                    {
-                        throw new ArgumentException("Your graphics device does not support " + value);
-                    }
-                    break;
-                case TextureFilter.None:
-#if XBOX360
-                                throw new ArgumentException("Your graphics device does not support " + value);
-#endif
-                    break;
-                case TextureFilter.Point:
-                    if (!gd.GraphicsDeviceCapabilities.TextureFilterCapabilities.SupportsMagnifyPoint ||
-                        !gd.GraphicsDeviceCapabilities.TextureFilterCapabilities.SupportsMinifyPoint)
-                    {
-                        throw new ArgumentException("Your graphics device does not support " + value);
-                    }
-                    break;
-                case TextureFilter.PyramidalQuad:
-                    if (!gd.GraphicsDeviceCapabilities.TextureFilterCapabilities.SupportsMagnifyPyramidalQuad ||
-                        !gd.GraphicsDeviceCapabilities.TextureFilterCapabilities.SupportsMinifyPyramidalQuad)
-                    {
-                        throw new ArgumentException("Your graphics device does not support " + value);
-                    }
-
-                    break;
-            }
-#endif
         }
 
         #region XML Docs
@@ -136,9 +70,7 @@ namespace FlatRedBall.Graphics
             set
             {
                 mResolutionWidth = value;
-#if !FRB_MDX
                 ResetDevice();
-#endif
             }
         }
 
@@ -154,9 +86,7 @@ namespace FlatRedBall.Graphics
             set
             {
                 mResolutionHeight = value;
-#if !FRB_MDX
                 ResetDevice();
-#endif
             }
         }
 
@@ -174,9 +104,6 @@ namespace FlatRedBall.Graphics
         // on PC, and all other platforms will use the regular implementation.
         public event EventHandler SizeOrOrientationChanged;
 
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
-
-
         #region Fields
 
         #region XML Docs
@@ -191,17 +118,13 @@ namespace FlatRedBall.Graphics
 
         bool mIsFullScreen;
 
-#if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
         // For some reason setting to fullscreen can crash things but setting the border style to none helps.
         System.Windows.Forms.FormBorderStyle mWindowedBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D; 
 #endif
 
         bool mUseMultiSampling;
-        
-#if !XNA4
-        MultiSampleType mMultiSampleType;
-#endif
-
+    
         #region XML Docs
         /// <summary>
         /// Set to true to suspend device reset while loading from file
@@ -264,7 +187,7 @@ namespace FlatRedBall.Graphics
 						return;
                     }
 
-#if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
                     if (mIsFullScreen)
                     {
                         mWindowedBorderStyle = ((Form)FlatRedBallServices.Owner).FormBorderStyle;
@@ -273,7 +196,7 @@ namespace FlatRedBall.Graphics
 #endif
 
                     ResetDevice();
-#if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
                     if (!mIsFullScreen)
                     {
                         ((Form)FlatRedBallServices.Owner).FormBorderStyle = mWindowedBorderStyle;
@@ -302,24 +225,7 @@ namespace FlatRedBall.Graphics
                 ResetDevice();
             }
         }
-
-#if !XNA4
-        #region XML Docs
-        /// <summary>
-        /// Gets or sets the multisampling type
-        /// Use SetMultiSampling() to enable multisampling and specify options simultaneously
-        /// </summary>
-        #endregion
-        public MultiSampleType MultiSampleType
-        {
-            get { return mMultiSampleType; }
-            set
-            {
-                mMultiSampleType = value;
-                ResetDevice();
-            }
-        }
-#endif
+        
 
         #endregion
 
@@ -336,7 +242,6 @@ namespace FlatRedBall.Graphics
         {
 
 
-#if XNA4
             if (game != null)
             {
                 game.Window.ClientSizeChanged += new EventHandler<EventArgs>(HandleClientSizeOrOrientationChange);
@@ -352,35 +257,13 @@ namespace FlatRedBall.Graphics
             
             mUseMultiSampling = false;
 
-#if WINDOWS_PHONE || MONODROID
+#if MONODROID
             if (graphics != null)
             {
                 mIsFullScreen = graphics.IsFullScreen;
             }
 #endif
             
-#elif !XBOX360
-            mTextureFilter = TextureFilter.Linear;
-            mResolutionWidth = 800;
-            mResolutionHeight = 600;
-
-            mUseMultiSampling = false;
-            mMultiSampleType = MultiSampleType.TwoSamples;
-            //mMultiSampleQuality = 0;
-
-            if(graphics != null)
-            {
-                mIsFullScreen = graphics.IsFullScreen;
-            }
-#else
-            mTextureFilter = TextureFilter.Linear;
-            mResolutionWidth = 1280;
-            mResolutionHeight = 720;
-
-            mUseMultiSampling = false;
-            mMultiSampleType = MultiSampleType.TwoSamples;
-            //mMultiSampleQuality = 0;
-#endif
 
 #if !MONODROID
             #region Get Resolution
@@ -415,14 +298,6 @@ namespace FlatRedBall.Graphics
 
             if (graphics != null)
             {
-#if !XNA4 && !WINDOWS_8
-                if (!graphics.GraphicsDevice.CreationParameters.Adapter.CheckDeviceMultiSampleType(
-                    DeviceType.Hardware, SurfaceFormat.Color, IsFullScreen, MultiSampleType))
-                {
-                    MultiSampleType = MultiSampleType.None;
-                    //MultiSampleQuality = 1;
-                }
-#endif
             }
 
             ResumeDeviceReset();
@@ -460,7 +335,6 @@ namespace FlatRedBall.Graphics
         #region Methods
 
 
-#if XNA4 || WINDOWS_8
         internal void ForceRefreshSamplerState() { ForceRefreshSamplerState(0); }
         internal void ForceRefreshSamplerState(int index)
         {
@@ -503,8 +377,6 @@ namespace FlatRedBall.Graphics
             }
 
         }
-
-#endif
 
         #region Setter Operations
 
@@ -578,25 +450,6 @@ namespace FlatRedBall.Graphics
 #endregion
 
             #region Reset Operations
-
-#if !SILVERLIGHT && !XNA4 && !WINDOWS_8
-
-            #region XML Docs
-        /// <summary>
-        /// Resets the texture filtering mode on the graphics device
-        /// </summary>
-            #endregion
-        public void ResetTextureFilter()
-        {
-
-            Renderer.Graphics.GraphicsDevice.SamplerStates[0].MinFilter = mTextureFilter;
-            Renderer.Graphics.GraphicsDevice.SamplerStates[0].MagFilter = mTextureFilter;
-            Renderer.Graphics.GraphicsDevice.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
-            Renderer.Graphics.GraphicsDevice.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
-            Renderer.Graphics.GraphicsDevice.SamplerStates[0].AddressW = TextureAddressMode.Wrap;
-
-        }
-#endif
 
             #region XML Docs
         /// <summary>
@@ -713,8 +566,6 @@ namespace FlatRedBall.Graphics
                         mIsInAReset = false;
                     }
                 }
-#if !SILVERLIGHT
-
                 // Prepare the presentation parameters
                 PresentationParameters presParams = FlatRedBallServices.GraphicsDevice.PresentationParameters;
 
@@ -724,7 +575,7 @@ namespace FlatRedBall.Graphics
                 // Reset the device
                 if (FlatRedBallServices.mGraphics != null)
                 {
-#if !MONODROID
+    #if !MONODROID
                     while (FlatRedBallServices.mGraphics.GraphicsDevice.GraphicsDeviceStatus == GraphicsDeviceStatus.Lost ||
                         FlatRedBallServices.mGraphics.GraphicsDevice.GraphicsDeviceStatus == GraphicsDeviceStatus.NotReset)
                     {
@@ -732,15 +583,15 @@ namespace FlatRedBall.Graphics
                         m += 32;
                         m /= 32;
                     }
-#endif
+    #endif
                 }
 
-#if WINDOWS_8 || IOS || ANDROID || UWP
+    #if MONOGAME
                 // Resetting crashes monogame currently, but we can still react as if a reset happened
                 FlatRedBallServices.graphics_DeviceReset(null, null);
-#else
+    #else
                 FlatRedBallServices.GraphicsDevice.Reset(presParams);
-#endif
+    #endif
 
                 // When the device resets the render states could get screwed up.  Force the 
                 // blend state changes in case they were changed but nothing later changes them
@@ -748,9 +599,6 @@ namespace FlatRedBall.Graphics
                 // Hm, this seems to cause a crash because the mCurrentEffect isn't set yet
                 //Renderer.ForceSetColorOperation(Renderer.ColorOperation);
                 Renderer.ForceSetBlendOperation();
-#else
-                FlatRedBallServices.graphics_DeviceReset(null, null);
-#endif
                 mIsInAReset = false;
             }
             #endregion
@@ -764,22 +612,9 @@ namespace FlatRedBall.Graphics
             #endregion
         public void SetPresentationParameters(ref PresentationParameters presentationParameters)
         {
-#if !SILVERLIGHT
             presentationParameters.BackBufferWidth = mResolutionWidth;
             presentationParameters.BackBufferHeight = mResolutionHeight;
             presentationParameters.IsFullScreen = mIsFullScreen;
-
-
-#if XNA4 || WINDOWS_8
-
-            //throw new NotImplementedException();
-#else
-            presentationParameters.MultiSampleType = mUseMultiSampling ? mMultiSampleType : MultiSampleType.None;
-            presentationParameters.MultiSampleQuality = 0;
-#endif
-
-
-#endif
         }
 
             #endregion
@@ -826,50 +661,6 @@ namespace FlatRedBall.Graphics
             #endregion
 
 #endregion
-
-#elif FRB_MDX
-            #region Fields
-
-        public UInt32 TextureLoadingColorKey = 0xff000000;
-
-            #endregion
-
-            #region Properties
-
-        public static bool UseXnaColors
-        {
-            get;
-            set;
-        }
-
-
-        public bool FullScreen { get; set; }
-
-            #endregion
-
-            #region Public Methods
-
-            #region XML Docs
-        /// <summary>
-        /// Resets the texture filtering mode on the graphics device
-        /// </summary>
-            #endregion
-        public void ResetTextureFilter()
-        {
-#if SILVERLIGHT
-            throw new NotImplementedException();
-#else
-            Renderer.GraphicsDevice.SamplerState[0].MinFilter = mTextureFilter;
-            Renderer.GraphicsDevice.SamplerState[0].MagFilter = mTextureFilter;
-#endif
-
-        }
-
-
-
-            #endregion
-#endif
-
         }
 
     }

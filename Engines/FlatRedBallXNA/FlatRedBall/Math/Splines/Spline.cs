@@ -4,19 +4,8 @@ using System.Linq;
 using System.Text;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Utilities;
-
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
-
-#if !XNA4 && !MONOGAME
-using Color = Microsoft.Xna.Framework.Graphics.Color;
-#endif
 using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
-#elif FRB_MDX
-using Color = System.Drawing.Color;
-using Vector3 = Microsoft.DirectX.Vector3;
-
-#endif
 
 namespace FlatRedBall.Math.Splines
 {

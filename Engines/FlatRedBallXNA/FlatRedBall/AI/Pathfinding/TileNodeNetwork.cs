@@ -6,18 +6,9 @@ using FlatRedBall.Math;
 using Math = System.Math;
 using FlatRedBall.Math.Geometry;
 
-#if FRB_XNA
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
-#endif
-
-
-#if XNA4 || MONOGAME
 using Color = Microsoft.Xna.Framework.Color;
-
-#elif FRB_XNA
-using Color = Microsoft.Xna.Framework.Graphics.Color;
-#endif
 namespace FlatRedBall.AI.Pathfinding
 {
     #region Enums
