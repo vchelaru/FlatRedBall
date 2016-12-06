@@ -15,7 +15,8 @@ namespace Game1Copier
             "FlatRedBalliOSTemplate/FlatRedBalliOSTemplate/Game1.cs",
             "FlatRedBallXna4Template/FlatRedBallXna4Template/FlatRedBallXna4Template/Game1.cs",
             "Windows8Template/Windows8Template/Game1.cs",
-            "FlatRedBallUwpTemplate/FlatRedBallUwpTemplate/Game1.cs"
+            "FlatRedBallUwpTemplate/FlatRedBallUwpTemplate/Game1.cs",
+            "FlatRedBallDesktopGL/FlatRedBallDesktopGL/Game1.cs"
         };
         static void Main(string[] args)
         {

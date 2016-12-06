@@ -48,6 +48,9 @@ using System.Diagnostics;
 
 #endif
 
+#if !MONOGAME
+using FlatRedBall.IO.Remote;
+#endif
 #endregion
 
 namespace FlatRedBall.IO

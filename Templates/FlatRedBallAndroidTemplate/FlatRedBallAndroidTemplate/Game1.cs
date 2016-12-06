@@ -12,7 +12,7 @@ using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace FlatRedBallAndroidTemplate
+namespace FlatRedBallXna4Template
 {
     public class Game1 : Microsoft.Xna.Framework.Game
     {
