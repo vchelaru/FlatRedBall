@@ -19,7 +19,10 @@ using System.Text;
 using System.Xml.Linq;
 using System.Linq;
 
+// FileManager is used by FRBDK Updater, so the #if is needed
+#if FRB_XNA
 using Microsoft.Xna.Framework;
+#endif
 
 #if USE_ISOLATED_STORAGE && !WINDOWS_8
 using System.IO.IsolatedStorage;
@@ -63,7 +66,7 @@ namespace FlatRedBall.IO
 
     public static partial class FileManager
     {
-        #region Fields
+#region Fields
 
         static bool mHasUserFolderBeenInitialized = false;
 
@@ -103,9 +106,9 @@ namespace FlatRedBall.IO
 
         static XmlReaderSettings mXmlReaderSettings = new XmlReaderSettings();
 
-        #endregion
+#endregion
 
-        #region Properties
+#region Properties
 
         public static string CurrentDirectory
         {
@@ -135,11 +138,11 @@ namespace FlatRedBall.IO
             set;
         }
 
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// The directory that FlatRedBall will use when loading assets.  Defaults to the application's directory.
         /// </summary>
-        #endregion
+#endregion
         static public string RelativeDirectory
         {
             get
@@ -148,7 +151,7 @@ namespace FlatRedBall.IO
                 int threadID = Environment.CurrentManagedThreadId;
 #else
                 int threadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
-#endif                
+#endif
                 if (mRelativeDirectoryDictionary.ContainsKey(threadID))
                 {
                     return mRelativeDirectoryDictionary[threadID];
@@ -234,7 +237,7 @@ namespace FlatRedBall.IO
         {
             get
             {
-#if IOS 
+#if IOS
 				return "./";
 #elif FRB_RAW || DESKTOP_GL
                 return System.IO.Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ) + "/";
@@ -252,7 +255,7 @@ namespace FlatRedBall.IO
             get { return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\"; }
         }
 
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// Gets the path to the user specific application data directory.
         /// </summary>
@@ -261,7 +264,7 @@ namespace FlatRedBall.IO
         /// whether the user will have the needed permissions to write to the directory where the 
         /// executable lives.</remarks>
         /// <example>C:\Documents and Settings\&lt;username&gt;\Application Data</example> 
-        #endregion
+#endregion
         public static string UserApplicationData
         {
             get { return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\"; }
@@ -307,21 +310,21 @@ namespace FlatRedBall.IO
         }
 
 #endif
-        #endregion
+#endregion
 
-        #region Methods
+#region Methods
 
-        #region Constructor
+#region Constructor
 
         static FileManager()
         {
         }
 
-        #endregion
+#endregion
 
-        #region Public Methods
+#region Public Methods
 
-        #region Caching Methods
+#region Caching Methods
         public static void CacheObject(object objectToCache, string fileName)
         {
             mFileCache.Add(Standardize(fileName), objectToCache);
@@ -342,7 +345,7 @@ namespace FlatRedBall.IO
 
 
 
-        #endregion
+#endregion
 
         public static T CloneObject<T>(T objectToClone)
         {
@@ -440,7 +443,7 @@ namespace FlatRedBall.IO
 
 #endif
 
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// Returns whether the file exists considering the relative directory.
         /// </summary>
@@ -451,7 +454,7 @@ namespace FlatRedBall.IO
         /// a project's content. Therefore this internally will use the preferred way of checking for files per platform.
         /// iOS and Android use the TitleContainer.OpenStream method.
         /// </remarks>
-        #endregion
+#endregion
         public static bool FileExists(string fileName)
         {
             if (IsRelative(fileName))
@@ -476,13 +479,13 @@ namespace FlatRedBall.IO
 
 
 
-		#if ANDROID
+#if ANDROID
 			// We may be checking for a file outside of the title container
 			if(System.IO.File.Exists(fileName))
 			{
 				return true;
 			}
-		#endif
+#endif
 
 
 
@@ -559,14 +562,14 @@ namespace FlatRedBall.IO
         
 
 #if !WINDOWS_8
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// Searches the passed directory and all subdirectories for the passed file.
         /// </summary>
         /// <param name="fileToFind">The name of the file including extension.</param>
         /// <param name="directory">The directory to search in, including all subdirectories.</param>
         /// <returns>The full path of the first file found matching the name, or an empty string if none is found.</returns>
-        #endregion
+#endregion
         public static string FindFileInDirectory(string fileToFind, string directory)
         {
 
@@ -592,13 +595,13 @@ namespace FlatRedBall.IO
             return "";
         }
 
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// Searches the executable's director and all subdirectories for the passed file.
         /// </summary>
         /// <param name="fileToFind">The name of the file which may or may not include an extension.</param>
         /// <returns>The full path of the first file found matching the name, or an empty string if none is found</returns>
-        #endregion
+#endregion
         public static string FindFileInDirectory(string fileToFind)
         {
             return FindFileInDirectory(FileManager.RelativeDirectory);
@@ -716,7 +719,7 @@ namespace FlatRedBall.IO
             return buffer;
         }
 
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// Returns the extension in a filename.
         /// </summary>
@@ -732,7 +735,7 @@ namespace FlatRedBall.IO
         /// </remarks>
         /// <param name="fileName">The filename.</param>
         /// <returns>Returns the extension or an empty string if no period is found in the filename.</returns>
-        #endregion
+#endregion
         public static string GetExtension(string fileName)
         {
             if (fileName == null)
@@ -846,16 +849,16 @@ namespace FlatRedBall.IO
         }
 
 
-        #region GetAllFilesInDirectory
+#region GetAllFilesInDirectory
 
 
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// Returns a List containing all of the files found in a particular directory and its subdirectories.
         /// </summary>
         /// <param name="directory">The directory to search in.</param>
         /// <returns></returns>
-        #endregion
+#endregion
         public static List<string> GetAllFilesInDirectory(string directory)
         {
 #if SILVERLIGHT || USE_ISOLATED_STORAGE
@@ -881,7 +884,7 @@ namespace FlatRedBall.IO
 #endif
         }
 
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// Returns a List containing all files which match the fileType argument which are 
         /// in the directory argument or a subfolder.  This recurs, returning all files.
@@ -892,7 +895,7 @@ namespace FlatRedBall.IO
         /// can either have a period or not.  That is ".jpg" and "jpg" are both valid fileType arguments.  An empty
         /// or null value for this parameter will return all files regardless of file type.</param>
         /// <returns>A list containing all of the files found which match the fileType.</returns>
-        #endregion
+#endregion
         public static List<string> GetAllFilesInDirectory(string directory, string fileType)
         {
             return GetAllFilesInDirectory(directory, fileType, int.MaxValue);
@@ -900,7 +903,7 @@ namespace FlatRedBall.IO
         }
 
 
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// Returns a List containing all files which match the fileType argument which are within
         /// the depthToSearch folder range relative to the directory argument.
@@ -913,7 +916,7 @@ namespace FlatRedBall.IO
         /// <param name="depthToSearch">The depth to search through.  If the depthToSearch
         /// is 0, only the argument directory will be searched.</param>
         /// <returns>A list containing all of the files found which match the fileType.</returns>
-        #endregion
+#endregion
         public static List<string> GetAllFilesInDirectory(string directory, string fileType, int depthToSearch)
         {
             List<string> arrayToReturn = new List<string>();
@@ -981,7 +984,7 @@ namespace FlatRedBall.IO
             }
 #endif
         }
-        #endregion
+#endregion
 
 
 
@@ -1076,11 +1079,11 @@ namespace FlatRedBall.IO
         {
 #if USE_ISOLATED_STORAGE
 
-    #if WINDOWS_8 || IOS || UWP
+#if WINDOWS_8 || IOS || UWP
             // I don't know if we need to get anything here
-    #else
+#else
             mIsolatedStorageFile = IsolatedStorageFile.GetUserStoreForApplication();
-    #endif
+#endif
             mHasUserFolderBeenInitialized = true;
 
 #else
@@ -1107,7 +1110,7 @@ namespace FlatRedBall.IO
 #endif
 
 
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// Determines whether a particular file is a graphical file that can be loaded by the FRB Engine.
         /// </summary>
@@ -1117,7 +1120,7 @@ namespace FlatRedBall.IO
         /// </remarks>
         /// <param name="fileToTest">The file name to test.</param>
         /// <returns>Whether the file is a graphic file.</returns>
-        #endregion
+#endregion
         public static bool IsGraphicFile(string fileToTest)
         {
 
@@ -1201,7 +1204,7 @@ namespace FlatRedBall.IO
         }
 
 
-        #region Make Absolute/Make Relative
+#region Make Absolute/Make Relative
 
         public static string MakeAbsolute(string pathToMakeAbsolute)
         {
@@ -1295,16 +1298,16 @@ namespace FlatRedBall.IO
 
         }
 
-        #endregion
+#endregion
 
 
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// Returns the fileName without an extension, or makes no changes if fileName has no extension.
         /// </summary>
         /// <param name="fileName">The file name.</param>
         /// <returns>The file name with extension removed if an extension existed.</returns>
-        #endregion
+#endregion
         public static string RemoveExtension(string fileName)
         {
             int extensionLength = GetExtension(fileName).Length;
@@ -1319,12 +1322,12 @@ namespace FlatRedBall.IO
 
         }
 
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// Modifies the fileName by removing its path, or makes no changes if the fileName has no path.
         /// </summary>
         /// <param name="fileName">The file name to change</param>
-        #endregion
+#endregion
         public static void RemovePath(ref string fileName)
         {
             int indexOf1 = fileName.LastIndexOf('/', fileName.Length - 1, fileName.Length);
@@ -1346,13 +1349,13 @@ namespace FlatRedBall.IO
                 fileName = fileName.Remove(0, indexOf2 + 1);
         }
 
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// Returns the fileName without a path, or makes no changes if the fileName has no path.
         /// </summary>
         /// <param name="fileName">The file name.</param>
         /// <returns>The modified fileName if a path is found.</returns>
-        #endregion
+#endregion
         public static string RemovePath(string fileName)
         {
             RemovePath(ref fileName);
@@ -1360,7 +1363,7 @@ namespace FlatRedBall.IO
             return fileName;
         }
 
-        #region XML Docs
+#region XML Docs
         /// <summary>
         /// Sets the relative directory to the current directory.
         /// </summary>
@@ -1369,7 +1372,7 @@ namespace FlatRedBall.IO
         /// .exe is called from a different location (such as the command line in a different folder),
         /// the current directory will differ.
         /// </remarks>
-        #endregion
+#endregion
         public static void ResetRelativeToCurrentDirectory()
         {
 #if WINDOWS_8
@@ -1424,30 +1427,30 @@ namespace FlatRedBall.IO
                     }
                     else
                     {
-	#if MONODROID
+#if MONODROID
 
                         FileNotFoundException fnfe = new FileNotFoundException("Could not find the " +
                             "file " + fileName + " but found the directory " + directory +
                             "  Did you type in the name of the file wrong?");
-	#else
+#else
 
                         FileNotFoundException fnfe = new FileNotFoundException("Could not find the " +
                             "file " + fileName + " but found the directory " + directory +
                             "  Did you type in the name of the file wrong?", fileName);
-	#endif
+#endif
                         throw fnfe;
                     }
                 }
                 else
                 {
-	#if MONODROID
+#if MONODROID
 
                     throw new FileNotFoundException("Could not find the " +
                         "file " + fileName + " or the directory " + directory);
-	#else
+#else
                     throw new FileNotFoundException("Could not find the " +
                         "file " + fileName + " or the directory " + directory, fileName);
-	#endif
+#endif
                 }
 
 #endif
@@ -1572,16 +1575,16 @@ namespace FlatRedBall.IO
 
             fileName = FileManager.GetIsolatedStorageFileName(fileName);
 
-        #if WINDOWS_8 || IOS || UWP
+#if WINDOWS_8 || IOS || UWP
             throw new NotImplementedException();
-        #else
+#else
             IsolatedStorageFileStream isfs = null;
 
             isfs = new IsolatedStorageFileStream(
                 fileName, FileMode.Create, mIsolatedStorageFile);
 
             writer = new StreamWriter(isfs);
-        #endif
+#endif
 
 #else
             if (!string.IsNullOrEmpty(FileManager.GetDirectory(fileName)) &&
@@ -1795,7 +1798,7 @@ namespace FlatRedBall.IO
         }
 
 
-        #region XML Methods
+#region XML Methods
 
         public static T XmlDeserialize<T>(string fileName)
         {
@@ -2223,7 +2226,7 @@ namespace FlatRedBall.IO
 
 #if USE_ISOLATED_STORAGE && !XBOX360 && !IOS
 
-#if WINDOWS_8  || UWP
+#if WINDOWS_8 || UWP
                 throw new NotImplementedException();
 #else
 
@@ -2318,7 +2321,7 @@ namespace FlatRedBall.IO
             serializer.Serialize(memoryStream, objectToSerialize);
 
 
-#if SILVERLIGHT || WINDOWS_PHONE  || (XBOX360 && XNA4) || MONOGAME
+#if SILVERLIGHT || WINDOWS_PHONE || (XBOX360 && XNA4) || MONOGAME
 
             byte[] asBytes = memoryStream.ToArray();
 
@@ -2363,11 +2366,11 @@ namespace FlatRedBall.IO
 #endif
 
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Internal Methods
+#region Internal Methods
 
         internal static XmlSerializer GetXmlSerializer<T>()
         {
@@ -2404,9 +2407,9 @@ namespace FlatRedBall.IO
         }
 
 
-        #endregion
+#endregion
 
-        #region Private Methods
+#region Private Methods
 
 #if !SILVERLIGHT && !WINDOWS_8
 
@@ -2494,8 +2497,8 @@ namespace FlatRedBall.IO
 #endif
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
     }
 }
