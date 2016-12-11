@@ -28,7 +28,8 @@ namespace FlatRedBallAndroidTemplate
             // so let's keep that for other phones too
             TargetElapsedTime = TimeSpan.FromTicks(333333);
             graphics.IsFullScreen = true;
-#elif WINDOWS
+#elif WINDOWS || DESKTOP_GL
+            graphics.PreferredBackBufferWidth = 800;
             graphics.PreferredBackBufferHeight = 600;
 #endif
 
