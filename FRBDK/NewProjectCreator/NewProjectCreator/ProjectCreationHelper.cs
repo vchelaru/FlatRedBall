@@ -165,14 +165,6 @@ namespace NewProjectCreator
             UpdateSolutionContents(unpackDirectory, stringToReplace,
                 viewModel.ProjectName);
 
-            // UpdateProjects does a simple "Replace" call, which should
-            // happen before we do the stricter UpdateNamespace call below.
-            // Otherwise, if the user changes the project name to something that contains
-            // the original name (like "StarBlaster"), then UpdateProject will result in the
-            // namespace being incorrect.
-            UpdateProjects(unpackDirectory, stringToReplace,
-                viewModel.DifferentNamespace);
-
             UpdateNamespaces(unpackDirectory, stringToReplace,
                 viewModel.DifferentNamespace);
 
@@ -525,8 +517,8 @@ namespace NewProjectCreator
 
         private static void UpdateNamespaces(string unpackDirectory, string stringToReplace, string stringToReplaceWith)
         {
-            List<string> filesToFix = FileManager.GetAllFilesInDirectory(
-                unpackDirectory, "cs");
+            List<string> 
+                filesToFix = FileManager.GetAllFilesInDirectory(unpackDirectory, "cs");
 
             filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "xaml"));
             filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "aspx"));
@@ -547,6 +539,10 @@ namespace NewProjectCreator
             filesToFix.Clear();
             filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "csproj"));
 
+            // We want to be careful doing a pure copy/paste 
+            // replace in .csproj files, because .csproj files
+            // can reference .dlls which have names that contain
+            // the 
             foreach (string fileName in filesToFix)
             {
                 string contents = FileManager.FromFileText(fileName);
@@ -558,9 +554,13 @@ namespace NewProjectCreator
 
                 contents = contents.Replace(namespaceLine, namespaceLineReplacement);
 
-                string original = "<StartupObject>" + stringToReplace + ".Program</StartupObject>";
-                string replacement = "<StartupObject>" + stringToReplaceWith + ".Program</StartupObject>";
-                contents = contents.Replace(original, replacement);
+                string originalStartup = "<StartupObject>" + stringToReplace + ".Program</StartupObject>";
+                string replacementStartup = "<StartupObject>" + stringToReplaceWith + ".Program</StartupObject>";
+                contents = contents.Replace(originalStartup, replacementStartup);
+
+                string originalAssemblyName = $"<AssemblyName>{stringToReplace}</AssemblyName>";
+                string newAssemblyName = $"<AssemblyName>{stringToReplaceWith}</AssemblyName>";
+                contents = contents.Replace(originalAssemblyName, newAssemblyName);
 
                 FileManager.SaveText(contents, fileName);
             }
@@ -580,23 +580,7 @@ namespace NewProjectCreator
                 FileManager.SaveText(contents, fileName);
             }
         }
-
-        private static void UpdateProjects(string unpackDirectory, string stringToReplace, string stringToReplaceWith)
-        {
-            List<string> filesToFix = FileManager.GetAllFilesInDirectory(
-                unpackDirectory, "csproj");
-
-            filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "contentproj"));
-
-            foreach (string fileName in filesToFix)
-            {
-                string contents = FileManager.FromFileText(fileName);
-
-                contents = contents.Replace(stringToReplace, stringToReplaceWith);
-
-                FileManager.SaveText(contents, fileName);
-            }
-        }
+        
 
         private static void AddEngineProjectsToProject(PlatformProjectInfo projectType, ref string contents)
         {
