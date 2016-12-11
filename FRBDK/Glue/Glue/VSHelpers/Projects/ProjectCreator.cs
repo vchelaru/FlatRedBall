@@ -61,46 +61,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 // If we got here that means that the preprocessor defines don't match what
                 // Glue expects.  This is probably bad - Glue generated code will likely not
                 // compile, so let's warn the user
-                string warning = "Could not determine project type based off of preprocessor defines.  Glue will try to load the project, but you may have compilation errors";
+                string warning = "Could not determine project type based on of preprocessor defines.";
                 GlueGui.ShowMessageBox(warning);
 
-
-                #region Backup Method for detecting project type off of FlatRedBall
-
-                foreach (ProjectItem buildItem in coreVisualStudioProject.AllEvaluatedItems.Where(buildItem => buildItem.EvaluatedInclude.Contains("FlatRedBall")))
-                {
-                    if (buildItem.EvaluatedInclude.Contains("Mdx"))
-                    {
-                        toReturn = new MdxProject(coreVisualStudioProject);
-                        break;
-                    }
-
-                    if (buildItem.EvaluatedInclude.Contains("FlatRedBall"))
-                    {
-                        if (buildItem.EvaluatedInclude.Contains("x86"))
-                        {
-                            toReturn = new XnaProject(coreVisualStudioProject);
-                            break;
-                        }
-                        
-                    }
-
-                    break;
-                }
-                #endregion
             }
-
-            if (toReturn == null)
-            {
-
-                foreach (ProjectItem buildItem in coreVisualStudioProject.AllEvaluatedItems.Where(buildItem => buildItem.EvaluatedInclude.Contains("Microsoft.Phone")))
-                {
-                    toReturn = new WindowsPhoneProject(coreVisualStudioProject);
-                    break;
-                }
-
-            }
-
 
             return toReturn;
         }
@@ -142,20 +106,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 toReturn = new Xna4Project(coreVisualStudioProject);
             }
 
-            else if (preProcessorConstants.Contains("FRB_XNA"))
+            else if(preProcessorConstants.Contains("DESKTOP_GL"))
             {
-                toReturn = new XnaProject(coreVisualStudioProject);
+                toReturn = new DesktopGlProject(coreVisualStudioProject);
             }
-
-            else if (preProcessorConstants.Contains("FSB") || preProcessorConstants.Contains("SILVERLIGHT"))
-            {
-                toReturn = new FsbProject(coreVisualStudioProject);
-            }
-
-            else if (preProcessorConstants.Contains("FRB_MDX"))
-            {
-                toReturn = new MdxProject(coreVisualStudioProject);
-            }
+            
             
             return toReturn;
         }

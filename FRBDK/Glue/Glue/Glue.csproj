@@ -749,9 +749,8 @@
     <Compile Include="VSHelpers\CodeBuildItemAdder.cs" />
     <Compile Include="VSHelpers\Projects\ClassLibraryProject.cs" />
     <Compile Include="VSHelpers\Projects\CombinedEmbeddedContentProject.cs" />
-    <Compile Include="VSHelpers\Projects\FsbProject.cs" />
+    <Compile Include="VSHelpers\Projects\DesktopGlProject.cs" />
     <Compile Include="VSHelpers\Projects\IosMonogameProject.cs" />
-    <Compile Include="VSHelpers\Projects\MdxProject.cs" />
     <Compile Include="VSHelpers\Projects\AndroidProject.cs" />
     <Compile Include="VSHelpers\Projects\ProjectCreator.cs" />
     <Compile Include="VSHelpers\Projects\UwpProject.cs" />
@@ -759,7 +758,6 @@
     <Compile Include="VSHelpers\Projects\WindowsPhoneProject.cs" />
     <Compile Include="VSHelpers\Projects\Xna4Project.cs" />
     <Compile Include="VSHelpers\Projects\XnaContentProject.cs" />
-    <Compile Include="VSHelpers\Projects\XnaProject.cs" />
     <Compile Include="VSHelpers\VSSolution.cs" />
     <Compile Include="WaitingForm.cs">
       <SubType>Form</SubType>
