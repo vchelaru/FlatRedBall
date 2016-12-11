@@ -372,6 +372,7 @@
     <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\ViewModels\BrowseGlueVaultViewModel.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\ViewModels\FeedItemViewModel.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\ViewModels\PluginViewModel.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\Particle\ParticleFileReferenceManager.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\ExclusionControl.xaml.cs">
       <DependentUpon>ExclusionControl.xaml</DependentUpon>
     </Compile>

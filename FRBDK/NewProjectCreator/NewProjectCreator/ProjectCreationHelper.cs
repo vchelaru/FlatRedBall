@@ -192,6 +192,13 @@ namespace NewProjectCreator
             {
                 string message = "There is no zip file online for this template.  What would you like to do?";
                 ShowErrorMessageBox(ref hasUserCancelled, ref zipToUnpack, message);
+
+                // null means user wants to use default file name
+                if(string.IsNullOrEmpty(zipToUnpack))
+                {
+                    zipToUnpack = FileManager.UserApplicationDataForThisApplication + viewModel.SelectedTemplate.BackingData.ZipName;
+                }
+
                 checkOnline = false;
             }
 

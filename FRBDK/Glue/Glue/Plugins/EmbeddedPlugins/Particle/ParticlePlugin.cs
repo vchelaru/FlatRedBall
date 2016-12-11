@@ -11,12 +11,18 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Particle
     public class ParticlePlugin : EmbeddedPlugin
     {
         ParticleCodeGenerator mParticleCodeGenerator;
-
+        ParticleFileReferenceManager fileReferenceManager;
 
         public override void StartUp()
         {
             mParticleCodeGenerator = new ParticleCodeGenerator();
             CodeWriter.CodeGenerators.Add(mParticleCodeGenerator);
+
+            fileReferenceManager = new ParticleFileReferenceManager();
+
+            this.CanFileReferenceContent = fileReferenceManager.CanFileReferenceContent;
+            this.GetFilesReferencedBy = fileReferenceManager.GetFilesReferencedBy;
+
         }
     }
 }

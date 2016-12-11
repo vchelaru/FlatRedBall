@@ -7,16 +7,37 @@ using System.Threading.Tasks;
 
 namespace Game1Copier
 {
+
+
+
     class Program
     {
-        static List<string> targetFiles = new List<string>
+        static List<TemplateInformation> templates = new List<TemplateInformation>
         {
-            "FlatRedBallAndroidTemplate/FlatRedBallAndroidTemplate/Game1.cs",
-            "FlatRedBalliOSTemplate/FlatRedBalliOSTemplate/Game1.cs",
-            "FlatRedBallXna4Template/FlatRedBallXna4Template/FlatRedBallXna4Template/Game1.cs",
-            "Windows8Template/Windows8Template/Game1.cs",
-            "FlatRedBallUwpTemplate/FlatRedBallUwpTemplate/Game1.cs",
-            "FlatRedBallDesktopGLTemplate/FlatRedBallDesktopGLTemplate/Game1.cs"
+            new TemplateInformation {
+                DestinationGameFile = "FlatRedBallAndroidTemplate/FlatRedBallAndroidTemplate/Game1.cs",
+                Namespace = "FlatRedBallAndroidTemplate"
+            },
+            new TemplateInformation {
+                DestinationGameFile = "FlatRedBallDesktopGLTemplate/FlatRedBallDesktopGLTemplate/Game1.cs",
+                Namespace = "FlatRedBallDesktopGlTemplate"
+            },
+            new TemplateInformation {
+                DestinationGameFile = "FlatRedBalliOSTemplate/FlatRedBalliOSTemplate/Game1.cs",
+                Namespace = "FlatRedBalliOSTemplate"
+            },
+            new TemplateInformation {
+                DestinationGameFile = "FlatRedBallUwpTemplate/FlatRedBallUwpTemplate/Game1.cs",
+                Namespace = "FlatRedBallUwpTemplate"
+            },
+            new TemplateInformation {
+                DestinationGameFile = "FlatRedBallXna4Template/FlatRedBallXna4Template/FlatRedBallXna4Template/Game1.cs",
+                Namespace = "FlatRedBallXna4Template"
+            },
+            new TemplateInformation {
+                DestinationGameFile = "Windows8Template/Windows8Template/Game1.cs",
+                Namespace = "Windows8Template"
+            },
         };
         static void Main(string[] args)
         {
@@ -26,9 +47,14 @@ namespace Game1Copier
             var game1String = System.IO.File.ReadAllText("MasterGame.cs");
 
 
-            foreach (var file in targetFiles)
+            foreach (var template in templates)
             {
-                System.IO.File.WriteAllText(file, game1String);
+                var whatToReplace = "namespace FlatRedBallXna4Template";
+                var whatToReplaceWith = $"namespace {template.Namespace}";
+                string modifiedString = game1String.Replace(whatToReplace, whatToReplaceWith) ;
+
+
+                System.IO.File.WriteAllText(template.DestinationGameFile, modifiedString);
             }
         }
     }
