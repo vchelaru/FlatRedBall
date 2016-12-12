@@ -100,17 +100,20 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 toReturn = new WindowsPhoneProject(coreVisualStudioProject);
             }
-
-            else if (preProcessorConstants.Contains("XNA4"))
-            {
-                toReturn = new Xna4Project(coreVisualStudioProject);
-            }
-
             else if(preProcessorConstants.Contains("DESKTOP_GL"))
             {
                 toReturn = new DesktopGlProject(coreVisualStudioProject);
             }
             
+
+            // Do XNA_4 last, since every 
+            // other project type has this 
+            // preprocessor type, so every project
+            // type would return true here
+            else if (preProcessorConstants.Contains("XNA4"))
+            {
+                toReturn = new Xna4Project(coreVisualStudioProject);
+            }
             
             return toReturn;
         }

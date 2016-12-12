@@ -76,11 +76,11 @@ namespace FlatRedBall.IO
         static StorageContainer mLastStorageContainer = null;
 #endif
 
-#if MONOGAME
-        public static string DefaultRelativeDirectory = "./";
-#elif FRB_RAW
+#if FRB_RAW || DESKTOP_GL
         public static string DefaultRelativeDirectory = 
             System.IO.Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ) + "/";
+#elif MONOGAME
+        public static string DefaultRelativeDirectory = "./";
 
 #else
         // Vic says - this used to be:

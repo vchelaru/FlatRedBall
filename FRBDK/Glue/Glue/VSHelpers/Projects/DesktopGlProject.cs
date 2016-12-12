@@ -23,6 +23,12 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
+
+        public override string ContentDirectory
+        {
+            get { return "Content/"; }
+        }
+
         public override string FolderName
         {
             get
