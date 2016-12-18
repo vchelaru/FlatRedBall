@@ -915,6 +915,7 @@ namespace FlatRedBall.Instructions.Reflection
         {
             object returnObject = null;
 
+            value = value.Trim();
 
             returnObject = Activator.CreateInstance(type);
 
@@ -937,7 +938,7 @@ namespace FlatRedBall.Instructions.Reflection
                     if (indexOfEqual < 0)
                     {
 						string message = 
-						 "Invalid value " + assignment  + " in " + value + ". Expected a variable assignment like \"X=" + assignment + "\" when creating an instance of {type.Name}";
+						 "Invalid value " + assignment  + " in " + value + $". Expected a variable assignment like \"X={assignment}\" when creating an instance of {type.Name}";
 					
                         throw new Exception(message);
                     }
