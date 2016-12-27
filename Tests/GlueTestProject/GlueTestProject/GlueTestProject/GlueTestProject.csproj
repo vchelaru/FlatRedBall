@@ -648,6 +648,10 @@
     <Compile Include="Entities\TexturePixelEntity.Generated.cs">
       <DependentUpon>TexturePixelEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\TileEntity.cs" />
+    <Compile Include="Entities\TileEntity.Generated.cs">
+      <DependentUpon>TileEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\ToBeDeleted.cs" />
     <Compile Include="Entities\ToBeDeleted.Generated.cs">
       <DependentUpon>ToBeDeleted.cs</DependentUpon>

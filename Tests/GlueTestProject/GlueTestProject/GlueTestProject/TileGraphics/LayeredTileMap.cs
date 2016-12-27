@@ -144,6 +144,8 @@ namespace FlatRedBall.TileGraphics
 
         public LayeredTileMapAnimation Animation { get; set; }
 
+        public List<NamedValue> MapProperties { get; set; }
+
 
         IVisible IVisible.Parent
         {
@@ -467,6 +469,12 @@ namespace FlatRedBall.TileGraphics
 
             toReturn.Animation = new LayeredTileMapAnimation(animationDictionary);
 
+            toReturn.MapProperties = tms.properties
+                .Select(propertySave => new NamedValue
+                    { Name = propertySave.name, Value = propertySave.value, Type = propertySave.Type })
+                .ToList();
+
+
             return toReturn;
         }
 
@@ -581,6 +589,7 @@ namespace FlatRedBall.TileGraphics
     }
 
 
+
     public static class LayeredTileMapExtensions
     {
         public static void RemoveTiles(this LayeredTileMap map,
@@ -592,27 +601,42 @@ namespace FlatRedBall.TileGraphics
 
             foreach (var layer in map.MapLayers)
             {
-                List<int> indexes = new List<int>();
-
-                foreach (var itemThatPasses in filteredInfos)
-                {
-                    string tileName = itemThatPasses
-                        .FirstOrDefault(item => item.Name.ToLowerInvariant() == "name")
-                        .Value as string;
-
-
-                    if (layer.NamedTileOrderedIndexes.ContainsKey(tileName))
-                    {
-                        var intsOnThisLayer =
-                            layer.NamedTileOrderedIndexes[tileName];
-
-                        indexes.AddRange(intsOnThisLayer);
-                    }
-                }
-
-
-                layer.RemoveQuads(indexes);
+                RemoveTilesFromLayer(filteredInfos, layer);
             }
+        }
+
+        public static void RemoveTiles(this MapDrawableBatch layer,
+            Func<List<NamedValue>, bool> predicate,
+            Dictionary<string, List<NamedValue>> Properties)
+        {
+            // Force execution now for performance reasons
+            var filteredInfos = Properties.Values.Where(predicate).ToList();
+
+            RemoveTilesFromLayer(filteredInfos, layer);
+        }
+
+        private static void RemoveTilesFromLayer(List<List<NamedValue>> filteredInfos, MapDrawableBatch layer)
+        {
+            List<int> indexes = new List<int>();
+
+            foreach (var itemThatPasses in filteredInfos)
+            {
+                string tileName = itemThatPasses
+                    .FirstOrDefault(item => item.Name.ToLowerInvariant() == "name")
+                    .Value as string;
+
+
+                if (layer.NamedTileOrderedIndexes.ContainsKey(tileName))
+                {
+                    var intsOnThisLayer =
+                        layer.NamedTileOrderedIndexes[tileName];
+
+                    indexes.AddRange(intsOnThisLayer);
+                }
+            }
+
+
+            layer.RemoveQuads(indexes);
         }
     }
 }

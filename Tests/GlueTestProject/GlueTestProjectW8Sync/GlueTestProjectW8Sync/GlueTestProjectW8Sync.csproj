@@ -1083,6 +1083,13 @@
       <Link>Entities\TexturePixelEntity.Generated.cs</Link>
       <DependentUpon>TexturePixelEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\TileEntity.cs">
+      <Link>Entities\TileEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\TileEntity.Generated.cs">
+      <Link>Entities\TileEntity.Generated.cs</Link>
+      <DependentUpon>TileEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\ToBeDeleted.cs">
       <Link>Entities\ToBeDeleted.cs</Link>
     </Compile>

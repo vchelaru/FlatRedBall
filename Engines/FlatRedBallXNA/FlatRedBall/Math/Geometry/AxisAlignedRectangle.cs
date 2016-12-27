@@ -729,25 +729,37 @@ namespace FlatRedBall.Math.Geometry
                     float amountToMoveThis = otherMass / (thisMass + otherMass);
                     Vector2 movementVector = new Vector2();
 
+                    // Victor Chelaru
+                    // December 26, 2016
+                    // I'm not sure why we
+                    // have a maxMovement variable
+                    // here. It used to be set to the 
+                    // sum of the two rectangles' scales
+                    // (half width), but that prevents the
+                    // rectangles from separating when using
+                    // reposition directions that cause them to
+                    // move across the entire rectangle. I'm going
+                    // to use Scale*2 for each, because I'm not sure
+                    // if I should remove the maxMovement condition yet
                     float maxMovement = float.PositiveInfinity;
 
                     switch (side)
                     {
                         case Side.Left: 
                             movementVector.X = rectangle.X - rectangle.mScaleX - mScaleX - X;
-                            maxMovement = rectangle.mScaleX + mScaleX;
+                            maxMovement = (rectangle.mScaleX + mScaleX) * 2;
                             break;
                         case Side.Right: 
                             movementVector.X = rectangle.X + rectangle.mScaleX + mScaleX - X; 
-                            maxMovement = rectangle.mScaleX + mScaleX;
+                            maxMovement = (rectangle.mScaleX + mScaleX) * 2;
                             break;
                         case Side.Top: 
                             movementVector.Y = rectangle.Y + rectangle.mScaleY + mScaleY - Y; 
-                            maxMovement = rectangle.mScaleY + mScaleY;
+                            maxMovement = (rectangle.mScaleY + mScaleY) * 2;
                             break;
                         case Side.Bottom: 
                             movementVector.Y = rectangle.Y - rectangle.mScaleY - mScaleY - Y; 
-                            maxMovement = rectangle.mScaleY + mScaleY;
+                            maxMovement = (rectangle.mScaleY + mScaleY) * 2;
                             break;
                     }
 

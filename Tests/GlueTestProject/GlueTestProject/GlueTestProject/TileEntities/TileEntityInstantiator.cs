@@ -13,9 +13,28 @@ namespace FlatRedBall.TileEntities
 {
     public static class TileEntityInstantiator
     {
+
+        /// <summary>
+        /// Creates entities from a single layer for any tile with the EntityToCreate property.
+        /// </summary>
+        /// <param name="mapLayer">The layer to create entities from.</param>
+        /// <param name="layeredTileMap">The map which contains the mapLayer instance.</param>
+        public static void CreateEntitiesFrom(MapDrawableBatch mapLayer, LayeredTileMap layeredTileMap)
+        {
+            var entitiesToRemove = new List<string>();
+
+            CreateEntitiesFrom(entitiesToRemove, mapLayer, layeredTileMap.Properties);
+
+            foreach (var entityToRemove in entitiesToRemove)
+            {
+                string remove = entityToRemove;
+                mapLayer.RemoveTiles(t => t.Any(item => item.Name == "EntityToCreate" && item.Value as string == remove), layeredTileMap.Properties);
+            }
+
+        }
+
         public static void CreateEntitiesFrom(LayeredTileMap layeredTileMap)
         {
-            // prob need to clear out the tileShapeCollection
             var entitiesToRemove = new List<string>();
 
             foreach (var layer in layeredTileMap.MapLayers)

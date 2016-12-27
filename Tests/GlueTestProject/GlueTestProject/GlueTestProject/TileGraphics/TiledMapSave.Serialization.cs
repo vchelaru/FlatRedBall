@@ -172,23 +172,26 @@ namespace TMXGlueLib
         {
             List<string> referencedFiles = new List<string>();
 
-            foreach (var tileset in this.Tilesets)
+            if(this.Tilesets != null)
             {
-                if(!string.IsNullOrEmpty(tileset.Source ))
+                foreach (var tileset in this.Tilesets)
                 {
-                    referencedFiles.Add(tileset.Source);
-                }
-                else if (tileset != null && tileset.Images.Length != 0)
-                {
-                    var image = tileset.Images[0];
+                    if(!string.IsNullOrEmpty(tileset.Source ))
+                    {
+                        referencedFiles.Add(tileset.Source);
+                    }
+                    else if (tileset?.Images != null && tileset.Images.Length != 0)
+                    {
+                        var image = tileset.Images[0];
 
-                    string fileName = image.Source;
+                        string fileName = image.Source;
                     
-                    // keep it relative
-                    referencedFiles.Add(fileName);
+                        // keep it relative
+                        referencedFiles.Add(fileName);
+
+                    }
 
                 }
-
             }
 
 

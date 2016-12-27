@@ -32,6 +32,12 @@ namespace TileGraphicsPlugin.CodeGeneration
             return codeBlock;
         }
 
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        {
+            return base.GenerateDestroy(codeBlock, element);
+        }
+
+
         private void GenerateInitializeLevel(ICodeBlock codeBlock, IElement element)
         {
             #region /////////////////////////////////Early out////////////////////////////////
