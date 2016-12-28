@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GluxViewManager", "GluxViewManager\GluxViewManager.csproj", "{6CFA6ADB-1FFD-4DD7-AEF8-090A2B86A620}"
 EndProject
@@ -1242,6 +1242,7 @@ Global
 		{4344D74E-76BC-4F3D-A158-E2B029F24214}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{4344D74E-76BC-4F3D-A158-E2B029F24214}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{4344D74E-76BC-4F3D-A158-E2B029F24214}.Debug|x86.ActiveCfg = Debug|x86
+		{4344D74E-76BC-4F3D-A158-E2B029F24214}.Debug|x86.Build.0 = Debug|x86
 		{4344D74E-76BC-4F3D-A158-E2B029F24214}.Debug|x86WithoutSelectionInterface.ActiveCfg = Debug|x86
 		{4344D74E-76BC-4F3D-A158-E2B029F24214}.Debug|x86WithoutSelectionInterface.Build.0 = Debug|x86
 		{4344D74E-76BC-4F3D-A158-E2B029F24214}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
@@ -1250,6 +1251,7 @@ Global
 		{4344D74E-76BC-4F3D-A158-E2B029F24214}.Debug2|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{4344D74E-76BC-4F3D-A158-E2B029F24214}.Debug2|Mixed Platforms.Build.0 = Debug|Any CPU
 		{4344D74E-76BC-4F3D-A158-E2B029F24214}.Debug2|x86.ActiveCfg = Debug|x86
+		{4344D74E-76BC-4F3D-A158-E2B029F24214}.Debug2|x86.Build.0 = Debug|x86
 		{4344D74E-76BC-4F3D-A158-E2B029F24214}.Debug2|x86WithoutSelectionInterface.ActiveCfg = Debug|x86
 		{4344D74E-76BC-4F3D-A158-E2B029F24214}.Debug2|x86WithoutSelectionInterface.Build.0 = Debug|x86
 		{4344D74E-76BC-4F3D-A158-E2B029F24214}.Debug2|Xbox 360.ActiveCfg = Debug|Any CPU
