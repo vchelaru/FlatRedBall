@@ -741,47 +741,44 @@ namespace FlatRedBall.Math.Geometry
                     // move across the entire rectangle. I'm going
                     // to use Scale*2 for each, because I'm not sure
                     // if I should remove the maxMovement condition yet
-                    float maxMovement = float.PositiveInfinity;
+                    // Update: I think this was in place for cloud collision,
+                    // so only half of the rectangle would trigger a collision.
+                    // This can cause confusing behavior, especially when creating
+                    // tile-based collision, so I'm removing maxMovement:
+                    //float maxMovement = float.PositiveInfinity;
 
                     switch (side)
                     {
                         case Side.Left: 
                             movementVector.X = rectangle.X - rectangle.mScaleX - mScaleX - X;
-                            maxMovement = (rectangle.mScaleX + mScaleX) * 2;
                             break;
                         case Side.Right: 
                             movementVector.X = rectangle.X + rectangle.mScaleX + mScaleX - X; 
-                            maxMovement = (rectangle.mScaleX + mScaleX) * 2;
                             break;
                         case Side.Top: 
                             movementVector.Y = rectangle.Y + rectangle.mScaleY + mScaleY - Y; 
-                            maxMovement = (rectangle.mScaleY + mScaleY) * 2;
                             break;
                         case Side.Bottom: 
                             movementVector.Y = rectangle.Y - rectangle.mScaleY - mScaleY - Y; 
-                            maxMovement = (rectangle.mScaleY + mScaleY) * 2;
                             break;
                     }
 
-                    if (System.Math.Abs(movementVector.X) <= maxMovement && System.Math.Abs(movementVector.Y) < maxMovement)
-                    {
-                        mLastMoveCollisionReposition.X = movementVector.X * amountToMoveThis;
-                        mLastMoveCollisionReposition.Y = movementVector.Y * amountToMoveThis;
+                    mLastMoveCollisionReposition.X = movementVector.X * amountToMoveThis;
+                    mLastMoveCollisionReposition.Y = movementVector.Y * amountToMoveThis;
 
-                        TopParent.X += mLastMoveCollisionReposition.X;
-                        TopParent.Y += mLastMoveCollisionReposition.Y;
+                    TopParent.X += mLastMoveCollisionReposition.X;
+                    TopParent.Y += mLastMoveCollisionReposition.Y;
 
 
-                        rectangle.mLastMoveCollisionReposition.X = -movementVector.X * (1 - amountToMoveThis);
-                        rectangle.mLastMoveCollisionReposition.Y = -movementVector.Y * (1 - amountToMoveThis);
+                    rectangle.mLastMoveCollisionReposition.X = -movementVector.X * (1 - amountToMoveThis);
+                    rectangle.mLastMoveCollisionReposition.Y = -movementVector.Y * (1 - amountToMoveThis);
 
 
-                        rectangle.TopParent.X += rectangle.mLastMoveCollisionReposition.X;
-                        rectangle.TopParent.Y += rectangle.mLastMoveCollisionReposition.Y;
+                    rectangle.TopParent.X += rectangle.mLastMoveCollisionReposition.X;
+                    rectangle.TopParent.Y += rectangle.mLastMoveCollisionReposition.Y;
 
-                        ForceUpdateDependencies();
-                        rectangle.ForceUpdateDependencies();
-                    }
+                    ForceUpdateDependencies();
+                    rectangle.ForceUpdateDependencies();
                 }
 
                 return true;

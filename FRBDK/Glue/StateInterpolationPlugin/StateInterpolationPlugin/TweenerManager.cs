@@ -152,6 +152,8 @@ namespace StateInterpolationPlugin
 
                 tweener.PositionChanged = HandlePositionSet;
 
+                tweener.Owner = Caller;
+
                 TweenerManager.Self.Add(tweener);
                 tweener.Start();
                 return tweener;
