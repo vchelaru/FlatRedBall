@@ -60,7 +60,9 @@ namespace AnimationEditorPlugin
         public override Version Version
         {
             // 2.0 adds lots of improvements to the texture coordinate selection window.
-            get { return new Version(2, 0, 1); }
+            // 2.0.2 fixes a crash reported by users with the selection rectangle and improves
+            // the region selection to show the full texture when no coordinates are specified.
+            get { return new Version(2, 0, 2); }
         }
 
         public bool IsSelectedItemSprite
