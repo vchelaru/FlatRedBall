@@ -108,6 +108,58 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <NextScreen>Screens\TransparencyRenderingScreen</NextScreen>
+      <Name>Screens\CollisionScreen</Name>
+      <NamedObjects>
+        <NamedObjectSave>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>Width</Member>
+            <ValueAsFloat>32</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>Height</Member>
+            <ValueAsFloat>32</ValueAsFloat>
+          </CustomProperty>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>AxisAlignedRectangle</SourceClassType>
+          <InstanceName>ImmovableRectangle</InstanceName>
+          <HasPublicProperty>true</HasPublicProperty>
+          <AttachToContainer>false</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>Width</Member>
+            <ValueAsFloat>32</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>Height</Member>
+            <ValueAsFloat>32</ValueAsFloat>
+          </CustomProperty>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>AxisAlignedRectangle</SourceClassType>
+          <InstanceName>MovableRectangle</InstanceName>
+          <HasPublicProperty>true</HasPublicProperty>
+          <AttachToContainer>false</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+      </NamedObjects>
+    </ScreenSave>
+    <ScreenSave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Events>
         <EventResponseSave>
           <EventName>ConditionalIWindowClick</EventName>
@@ -656,7 +708,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
-      <NextScreen>Screens\TransparencyRenderingScreen</NextScreen>
+      <NextScreen>Screens\CollisionScreen</NextScreen>
       <Name>Screens\FirstScreen</Name>
     </ScreenSave>
     <ScreenSave>

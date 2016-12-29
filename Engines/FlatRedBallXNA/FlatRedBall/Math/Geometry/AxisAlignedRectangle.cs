@@ -726,7 +726,11 @@ namespace FlatRedBall.Math.Geometry
 
                 if (float.IsPositiveInfinity(smallest) == false)
                 {
-                    float amountToMoveThis = otherMass / (thisMass + otherMass);
+                    float amountToMoveThis = 1;
+                    if (!float.IsPositiveInfinity(otherMass))
+                    {
+                        amountToMoveThis = otherMass / (thisMass + otherMass);
+                    }
                     Vector2 movementVector = new Vector2();
 
                     // Victor Chelaru

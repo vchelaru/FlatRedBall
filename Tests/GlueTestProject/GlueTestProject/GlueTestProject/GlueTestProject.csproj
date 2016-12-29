@@ -823,6 +823,10 @@
     <Compile Include="Screens\CameraAttachScreen.Generated.cs">
       <DependentUpon>CameraAttachScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="Screens\CollisionScreen.cs" />
+    <Compile Include="Screens\CollisionScreen.Generated.cs">
+      <DependentUpon>CollisionScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Screens\CompilationTestScreen.cs" />
     <Compile Include="Screens\CompilationTestScreen.Event.cs">
       <DependentUpon>CompilationTestScreen.cs</DependentUpon>

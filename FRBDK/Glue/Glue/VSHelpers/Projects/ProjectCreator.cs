@@ -36,6 +36,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             if (toReturn != null)
             {
                 toReturn.Saving += FlatRedBall.Glue.IO.FileWatchManager.IgnoreNextChangeOnFile;
+                // Saving seems to cause 2 file changes, so we're going to ignore 2, what a hack!
+                toReturn.Saving += FlatRedBall.Glue.IO.FileWatchManager.IgnoreNextChangeOnFile;
             }
 #endif
             return toReturn;
