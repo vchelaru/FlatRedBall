@@ -74,7 +74,7 @@ namespace GlueTestProject.Screens
         void CustomActivity(bool firstTimeCalled)
 		{
 
-
+            IsActivityFinished = true;
 		}
 
 		void CustomDestroy()

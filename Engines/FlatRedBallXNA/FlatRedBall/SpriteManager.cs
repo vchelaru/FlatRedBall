@@ -474,7 +474,10 @@ namespace FlatRedBall
         }
 
 
-        static public Layer TopLayer
+        /// <summary>
+        /// A layer which is drawn on top of all other layers. This is drawn on every camera, obeying the camera's DestinationRectangle.
+        /// </summary>
+        public static Layer TopLayer
         {
             get { return mTopLayer; }
         }

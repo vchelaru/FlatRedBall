@@ -1504,6 +1504,13 @@
       <Link>Screens\CameraAttachScreen.Generated.cs</Link>
       <DependentUpon>CameraAttachScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CollisionScreen.cs">
+      <Link>Screens\CollisionScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CollisionScreen.Generated.cs">
+      <Link>Screens\CollisionScreen.Generated.cs</Link>
+      <DependentUpon>CollisionScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\CompilationTestScreen.cs">
       <Link>Screens\CompilationTestScreen.cs</Link>
     </Compile>
@@ -1922,66 +1929,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
-    </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
       <Name>TmxFile</Name>
       <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>

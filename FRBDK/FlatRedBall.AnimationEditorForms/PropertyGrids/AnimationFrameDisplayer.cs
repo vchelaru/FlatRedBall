@@ -10,8 +10,8 @@ using FlatRedBall.AnimationEditorForms.Data;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Controls;
 using System.Windows.Forms;
-using Glue.IO;
 using FlatRedBall.AnimationEditorForms.Preview;
+using FlatRedBall.AnimationEditorForms.IO;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -315,18 +315,21 @@ namespace FlatRedBall.AnimationEditorForms
             // max width, especially for phones.
             // Maybe in the far future this will go
             // up.
-            int maxDimension = 2048;
+            // Update December 29, 2016
+            // Get with the times, 4k is what it's all
+            // about!
+            int maxDimension = 4096;
             bool shown = false;
             if (width > maxDimension)
             {
                 MessageBox.Show(
-                    "The texture is wider than 2048.  This could cause problems.  It is recommended to keep your texture at or under 2048 width.");
+                    $"The texture is wider than {maxDimension}.  This could cause problems.  It is recommended to keep your texture at or under {maxDimension} width.");
                 shown = true;
             }
             if (!shown && height > maxDimension)
             {
                 MessageBox.Show(
-                    "The texture is taller than 2048.  This could cause problems.  It is recommended to keep your texture at or under 2048 height.");
+                    $"The texture is taller than {maxDimension}.  This could cause problems.  It is recommended to keep your texture at or under {maxDimension} height.");
             }
         }
 

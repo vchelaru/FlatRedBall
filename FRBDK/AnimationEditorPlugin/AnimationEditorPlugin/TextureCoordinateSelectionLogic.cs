@@ -6,6 +6,7 @@ using FlatRedBall.AnimationEditorForms;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
+using Glue.IO;
 
 namespace AnimationEditorPlugin
 {
@@ -61,6 +62,25 @@ namespace AnimationEditorPlugin
             if (bottomTextureCoordinateVar != null && bottomTextureCoordinateVar.Value != null)
             {
                 bottomTextureCoordinate = (float)bottomTextureCoordinateVar.Value;
+            }
+
+            bool needsFile = rightTextureCoordinateVar == null || bottomTextureCoordinateVar == null;
+
+            if(needsFile)
+            {
+                if(System.IO.File.Exists(fullFileName))
+                {
+                    var size = Glue.IO.ImageHeader.GetDimensions(fullFileName);
+                    if(rightTextureCoordinateVar == null)
+                    {
+                        rightTextureCoordinate = size.Width;
+                    }
+                    if(bottomTextureCoordinateVar == null)
+                    {
+                        bottomTextureCoordinate = size.Height;
+                    }
+                }
+                
             }
         }
 

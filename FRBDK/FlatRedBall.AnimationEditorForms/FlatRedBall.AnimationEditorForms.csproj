@@ -111,9 +111,6 @@
     <Compile Include="..\Glue\Glue\Extensions\WindowsForm.cs">
       <Link>Controls\WindowsForm.cs</Link>
     </Compile>
-    <Compile Include="..\Glue\Glue\IO\ImageHeader.cs">
-      <Link>IO\ImageHeader.cs</Link>
-    </Compile>
     <Compile Include="CommandsAndState\ApplicationEvents.cs" />
     <Compile Include="CommandsAndState\ApplicationState.cs" />
     <Compile Include="Controls\AdjustOffsetControl.cs">
@@ -159,6 +156,7 @@
     <Compile Include="Gif\GifManager.cs" />
     <Compile Include="Gif\LZWEncoder.cs" />
     <Compile Include="Gif\NeuQuant.cs" />
+    <Compile Include="IO\ImageHeader.cs" />
     <Compile Include="IO\IoManager.cs" />
     <Compile Include="Preview\CameraController.cs" />
     <Compile Include="Preview\PreviewManager.cs" />

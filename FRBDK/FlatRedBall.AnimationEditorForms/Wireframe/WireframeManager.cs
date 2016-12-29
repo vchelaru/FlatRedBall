@@ -364,7 +364,10 @@ namespace FlatRedBall.AnimationEditorForms
             }
             else
             {
-                mControl.RectangleSelector.Visible = false;
+                if (mControl.RectangleSelector != null)
+                {
+                    mControl.RectangleSelector.Visible = false;
+                }
                 Texture = null;
                 mSpriteOutline.Visible = false;
                 mLineGrid.Visible = false;

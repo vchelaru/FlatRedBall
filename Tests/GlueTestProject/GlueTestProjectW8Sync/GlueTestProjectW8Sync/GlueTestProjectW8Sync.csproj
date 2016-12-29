@@ -2256,66 +2256,6 @@
       <Name>TmxFile</Name>
       <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
     </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TileEntity\TmxFile.tmx">
-      <Name>TmxFile</Name>
-      <Link>Content\Entities\TileEntity\TmxFile.tmx</Link>
-    </Content>
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TunneledVariableEntity\AnimationChainListFile.achx">
       <Name>AnimationChainListFile</Name>
       <Link>Content\Entities\TunneledVariableEntity\AnimationChainListFile.achx</Link>
