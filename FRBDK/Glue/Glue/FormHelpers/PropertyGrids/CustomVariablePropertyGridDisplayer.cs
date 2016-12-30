@@ -142,7 +142,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                     // We want to allow the user to set the type on a variable if it's new
 
                     ExcludeMember("Type");
-                    TypeConverter typeConverter = new AvailableCustomVariableTypes();
+                    TypeConverter typeConverter = new AvailableCustomVariableTypes { AllowNone = false };
 
                     IncludeMember("Type", typeof(string),
                         ChangeType,

@@ -187,12 +187,14 @@ namespace FlatRedBall.Glue.Controls
 
         private void FillNewVariableTypes(IElement element)
         {
-            List<string> newVariableTypes = ExposedVariableManager.GetAvailableNewVariableTypes();
+            List<string> newVariableTypes = ExposedVariableManager.GetAvailableNewVariableTypes(allowNone:false);
 
             foreach (string s in newVariableTypes)
             {
                 this.NewTypeListBox.Items.Add(s);
             }
+
+            this.NewTypeListBox.SelectedIndex = 0;
         }
 
         private List<string> GetNewVariableTypes()
