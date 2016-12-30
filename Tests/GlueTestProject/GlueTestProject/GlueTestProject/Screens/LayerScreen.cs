@@ -111,6 +111,11 @@ namespace GlueTestProject.Screens
                 throw new Exception("Circles on entities are not moved to a layer when calling MoveToLayer");
             }
 
+            if(SpriteManager.TopLayer.Sprites.Contains(TopLayerSprite) == false)
+            {
+                throw new Exception($"The {nameof(TopLayerSprite)} should be on the SpriteManager's TopLayer, but it's not!");
+            }
+
             // set a 3D camera to make sure layers with null LayerCameraSettings are also 3d:
             Camera.Main.Orthogonal = false;
 

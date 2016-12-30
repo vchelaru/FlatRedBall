@@ -1850,14 +1850,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                         if (!string.IsNullOrEmpty(namedObject.LayerOn))
                         {
-                            if (namedObject.LayerOn == AvailableLayersTypeConverter.UnderEverythingLayerName)
-                            {
-                                layerName = AvailableLayersTypeConverter.UnderEverythingLayerCode;
-                            }
-                            else
-                            {
-                                layerName = namedObject.LayerOn;
-                            }
+                            layerName = GetNamedObjectLayerName(namedObject);
                         }
                         else if (element is EntitySave)
                         {
@@ -1970,15 +1963,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         string layerAddToManagersMethod = ati.LayeredAddToManagersMethod[0];
 
-                        string layerName;
-                        if (namedObject.LayerOn == AvailableLayersTypeConverter.UnderEverythingLayerName)
-                        {
-                            layerName = AvailableLayersTypeConverter.UnderEverythingLayerCode;
-                        }
-                        else
-                        {
-                            layerName = namedObject.LayerOn;
-                        }
+                        string layerName = GetNamedObjectLayerName(namedObject);
 
                         layerAddToManagersMethod = layerAddToManagersMethod.Replace("mLayer", layerName);
 
@@ -1994,6 +1979,25 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 AddEndIfIfNecessary(codeBlock, namedObject);
             }
+        }
+
+        private static string GetNamedObjectLayerName(NamedObjectSave namedObject)
+        {
+            string layerName;
+            if (namedObject.LayerOn == AvailableLayersTypeConverter.UnderEverythingLayerName)
+            {
+                layerName = AvailableLayersTypeConverter.UnderEverythingLayerCode;
+            }
+            else if (namedObject.LayerOn == AvailableLayersTypeConverter.TopLayerName)
+            {
+                layerName = AvailableLayersTypeConverter.TopLayerCode;
+            }
+            else
+            {
+                layerName = namedObject.LayerOn;
+            }
+
+            return layerName;
         }
 
         public static void AssignInstanceVaraiblesOn(IElement element, NamedObjectSave namedObject, ICodeBlock codeBlock)

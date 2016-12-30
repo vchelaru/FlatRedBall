@@ -17,7 +17,10 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
 
 
         public const string UnderEverythingLayerName = "Under Everything (Engine Layer)";
-        public const string UnderEverythingLayerCode = "SpriteManager.UnderAllDrawnLayer";
+        public const string UnderEverythingLayerCode = "FlatRedBall.SpriteManager.UnderAllDrawnLayer";
+
+        public const string TopLayerName = "Top Layer (Engine Layer)";
+        public const string TopLayerCode = "FlatRedBall.SpriteManager.TopLayer";
 
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
@@ -30,7 +33,7 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
             return true;
         }
 
-        List<string> stringToReturn = new List<string>();
+        List<string> stringsToReturn = new List<string>();
 
         public AvailableLayersTypeConverter(IElement currentElement)
             : base()
@@ -41,9 +44,9 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
 
         public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            stringToReturn.Clear();
-            stringToReturn.Add("<NONE>");
-            stringToReturn.Add(UnderEverythingLayerName);
+            stringsToReturn.Clear();
+            stringsToReturn.Add("<NONE>");
+            stringsToReturn.Add(UnderEverythingLayerName);
 
             if (CurrentElement != null)
             {
@@ -51,12 +54,13 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
                 {
                     if (namedObjectSave.IsLayer)
                     {
-                        stringToReturn.Add(namedObjectSave.InstanceName);
+                        stringsToReturn.Add(namedObjectSave.InstanceName);
                     }
                 }
 
+                stringsToReturn.Add(TopLayerName);
 
-                return new StandardValuesCollection(stringToReturn);
+                return new StandardValuesCollection(stringsToReturn);
             }
 
             return base.GetStandardValues(context);
