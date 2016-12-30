@@ -168,5 +168,20 @@ namespace FlatRedBall.Input
             Inputs = new List<I2DInput>();
         }
     }
+
+    public static class I2DInputExtensions
+    {
+        public static float? GetAngle(this I2DInput instance)
+        {
+            if(instance.X == 0 && instance.Y == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return (float)System.Math.Atan2(instance.Y, instance.X);
+            }
+        }
+    }
 }
 
