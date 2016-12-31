@@ -268,6 +268,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tools\ExcludeFromDesignerAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\CustomBehaviorFunctions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ExportOrderAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\GameRandom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\INameable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ITimed.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\SpriteSelectionOptions.cs" />
