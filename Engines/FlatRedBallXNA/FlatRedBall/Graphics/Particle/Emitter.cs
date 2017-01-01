@@ -123,7 +123,7 @@ namespace FlatRedBall.Graphics.Particle
 
         //private Texture2D mTexture;
         
-        Random mRandom;
+        FlatRedBall.Utilities.GameRandom mRandom;
 
         bool mEmitsAutomaticallyUpdatedSprites = true;
 

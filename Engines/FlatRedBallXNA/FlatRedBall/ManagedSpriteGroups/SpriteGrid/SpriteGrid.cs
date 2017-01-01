@@ -43,7 +43,7 @@ namespace FlatRedBall.ManagedSpriteGroups
 
         Camera mCamera;
         Sprite mBlueprint;
-        Random mRandom;
+        FlatRedBall.Utilities.GameRandom mRandom;
 
         internal List<SpriteList> mVisibleSprites = new List<SpriteList>();
         ReadOnlyCollection<SpriteList> mVisibleSpritesReadOnlyCollection;

@@ -272,7 +272,6 @@ namespace FlatRedBall.Math
             zPos = (float)(1 - 2 * (x1 * x1 + x2 * x2));
         }
 
-
         public static Vector3 GetPositionAfterTime(ref Vector3 startPosition, ref Vector3 velocity, ref Vector3 acceleration, double time)
         {
             double secondDifferenceSquaredDividedByTwo = (time * time) / 2;

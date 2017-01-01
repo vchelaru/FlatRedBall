@@ -202,7 +202,7 @@ namespace FlatRedBall
 #endif
 
 #endif
-        static Random mRandom;
+        static FlatRedBall.Utilities.GameRandom mRandom = new FlatRedBall.Utilities.GameRandom();
 
         // Graphics options
         static internal int mClientWidth;
@@ -239,7 +239,7 @@ namespace FlatRedBall
             get { return mIsInitialized; }
         }
 
-        public static Random Random
+        public static FlatRedBall.Utilities.GameRandom Random
         {
             get { return mRandom; }
             set
@@ -499,10 +499,6 @@ namespace FlatRedBall
 #endif
 
 
-
-
-                mRandom = new Random();
-
 #if WINDOWS_8 || UWP
                 mPrimaryThreadId = Environment.CurrentManagedThreadId;
 #else
@@ -578,7 +574,6 @@ namespace FlatRedBall
 
 #endif
 
-            mRandom = new Random();
             InstructionManager.Initialize();
             TimeManager.Initialize();
             ShapeManager.Initialize();
