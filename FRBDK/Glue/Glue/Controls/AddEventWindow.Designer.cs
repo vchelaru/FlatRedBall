@@ -52,10 +52,10 @@
             this.pnlTunnelEvent = new System.Windows.Forms.Panel();
             this.label10 = new System.Windows.Forms.Label();
             this.pnlNewEvent = new System.Windows.Forms.Panel();
+            this.GenericTypeTextBox = new System.Windows.Forms.TextBox();
+            this.GenericTypeLabel = new System.Windows.Forms.Label();
             this.mCancelButton = new System.Windows.Forms.Button();
             this.mOkWindow = new System.Windows.Forms.Button();
-            this.GenericTypeLabel = new System.Windows.Forms.Label();
-            this.GenericTypeTextBox = new System.Windows.Forms.TextBox();
             this.pnlExistingEvent.SuspendLayout();
             this.pnlTunnelEvent.SuspendLayout();
             this.pnlNewEvent.SuspendLayout();
@@ -112,6 +112,8 @@
             // 
             // AlternativeNameTextBox
             // 
+            this.AlternativeNameTextBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.AlternativeNameTextBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.AlternativeNameTextBox.Location = new System.Drawing.Point(106, 81);
             this.AlternativeNameTextBox.Name = "AlternativeNameTextBox";
             this.AlternativeNameTextBox.Size = new System.Drawing.Size(160, 20);
@@ -180,6 +182,8 @@
             // 
             // textBox1
             // 
+            this.textBox1.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.textBox1.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.textBox1.Location = new System.Drawing.Point(82, 50);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(184, 20);
@@ -284,7 +288,7 @@
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(3, 63);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(111, 13);
+            this.label10.Size = new System.Drawing.Size(95, 13);
             this.label10.TabIndex = 12;
             this.label10.Text = "Advanced Options";
             // 
@@ -301,6 +305,23 @@
             this.pnlNewEvent.Size = new System.Drawing.Size(271, 75);
             this.pnlNewEvent.TabIndex = 0;
             this.pnlNewEvent.Visible = false;
+            // 
+            // GenericTypeTextBox
+            // 
+            this.GenericTypeTextBox.Location = new System.Drawing.Point(82, 25);
+            this.GenericTypeTextBox.Name = "GenericTypeTextBox";
+            this.GenericTypeTextBox.Size = new System.Drawing.Size(183, 20);
+            this.GenericTypeTextBox.TabIndex = 21;
+            this.GenericTypeTextBox.Text = "float";
+            // 
+            // GenericTypeLabel
+            // 
+            this.GenericTypeLabel.AutoSize = true;
+            this.GenericTypeLabel.Location = new System.Drawing.Point(2, 28);
+            this.GenericTypeLabel.Name = "GenericTypeLabel";
+            this.GenericTypeLabel.Size = new System.Drawing.Size(74, 13);
+            this.GenericTypeLabel.TabIndex = 20;
+            this.GenericTypeLabel.Text = "Generic Type:";
             // 
             // mCancelButton
             // 
@@ -323,23 +344,6 @@
             this.mOkWindow.TabIndex = 3;
             this.mOkWindow.Text = "OK";
             this.mOkWindow.UseVisualStyleBackColor = true;
-            // 
-            // GenericTypeLabel
-            // 
-            this.GenericTypeLabel.AutoSize = true;
-            this.GenericTypeLabel.Location = new System.Drawing.Point(2, 28);
-            this.GenericTypeLabel.Name = "GenericTypeLabel";
-            this.GenericTypeLabel.Size = new System.Drawing.Size(74, 13);
-            this.GenericTypeLabel.TabIndex = 20;
-            this.GenericTypeLabel.Text = "Generic Type:";
-            // 
-            // GenericTypeTextBox
-            // 
-            this.GenericTypeTextBox.Location = new System.Drawing.Point(82, 25);
-            this.GenericTypeTextBox.Name = "GenericTypeTextBox";
-            this.GenericTypeTextBox.Size = new System.Drawing.Size(183, 20);
-            this.GenericTypeTextBox.TabIndex = 21;
-            this.GenericTypeTextBox.Text = "float";
             // 
             // AddEventWindow
             // 

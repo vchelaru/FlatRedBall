@@ -53,7 +53,7 @@
             this.NewTypeListBox = new System.Windows.Forms.ListBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.NewVariableNameTextBox = new System.Windows.Forms.TextBox();
             this.ExistingVariablePanel.SuspendLayout();
             this.TunnelVariablePanel.SuspendLayout();
             this.NewVariablePanel.SuspendLayout();
@@ -139,7 +139,7 @@
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(3, 63);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(111, 13);
+            this.label10.Size = new System.Drawing.Size(95, 13);
             this.label10.TabIndex = 12;
             this.label10.Text = "Advanced Options";
             // 
@@ -296,7 +296,7 @@
             this.NewVariablePanel.Controls.Add(this.NewTypeListBox);
             this.NewVariablePanel.Controls.Add(this.label2);
             this.NewVariablePanel.Controls.Add(this.label1);
-            this.NewVariablePanel.Controls.Add(this.textBox1);
+            this.NewVariablePanel.Controls.Add(this.NewVariableNameTextBox);
             this.NewVariablePanel.Location = new System.Drawing.Point(3, 89);
             this.NewVariablePanel.Name = "NewVariablePanel";
             this.NewVariablePanel.Size = new System.Drawing.Size(372, 162);
@@ -313,6 +313,8 @@
             this.NewTypeListBox.Name = "NewTypeListBox";
             this.NewTypeListBox.Size = new System.Drawing.Size(325, 134);
             this.NewTypeListBox.TabIndex = 20;
+            this.NewTypeListBox.Click += new System.EventHandler(this.NewTypeListBox_Click);
+            this.NewTypeListBox.SelectedIndexChanged += new System.EventHandler(this.NewTypeListBox_SelectedIndexChanged);
             // 
             // label2
             // 
@@ -333,14 +335,16 @@
             this.label1.TabIndex = 18;
             this.label1.Text = "Type:";
             // 
-            // textBox1
+            // NewVariableNameTextBox
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.NewVariableNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.Location = new System.Drawing.Point(42, 138);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(325, 20);
-            this.textBox1.TabIndex = 1;
+            this.NewVariableNameTextBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.NewVariableNameTextBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+            this.NewVariableNameTextBox.Location = new System.Drawing.Point(42, 138);
+            this.NewVariableNameTextBox.Name = "NewVariableNameTextBox";
+            this.NewVariableNameTextBox.Size = new System.Drawing.Size(325, 20);
+            this.NewVariableNameTextBox.TabIndex = 1;
             // 
             // AddVariableWindow
             // 
@@ -392,7 +396,7 @@
         private System.Windows.Forms.Panel NewVariablePanel;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox NewVariableNameTextBox;
         private System.Windows.Forms.Panel TunnelVariablePanel;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label8;

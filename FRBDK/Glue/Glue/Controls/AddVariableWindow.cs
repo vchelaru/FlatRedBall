@@ -77,7 +77,7 @@ namespace FlatRedBall.Glue.Controls
                 else if (radTunnelVariable.Checked)
                     return this.AlternativeNameTextBox.Text;
                 else
-                    return this.textBox1.Text;
+                    return this.NewVariableNameTextBox.Text;
             }
 		}
 
@@ -288,10 +288,10 @@ namespace FlatRedBall.Glue.Controls
             if (this.DialogResult == System.Windows.Forms.DialogResult.OK &&
                 this.radCreateNewVariable.Checked && 
                 EditorLogic.CurrentEntitySave != null &&
-                ExposedVariableManager.IsMemberDefinedByPositionedObject(this.textBox1.Text)
+                ExposedVariableManager.IsMemberDefinedByPositionedObject(this.NewVariableNameTextBox.Text)
                 )
             {
-                System.Windows.Forms.MessageBox.Show("The variable " + this.textBox1.Text + " is " +
+                System.Windows.Forms.MessageBox.Show("The variable " + this.NewVariableNameTextBox.Text + " is " +
                     "already defined by the engine.  You can expose this variable or select a different name.");
                 e.Cancel = true;
             }
@@ -385,11 +385,19 @@ namespace FlatRedBall.Glue.Controls
             ExistingVariablePanel.Visible = false;
 
             if (radCreateNewVariable.Checked)
+            {
                 NewVariablePanel.Visible = true;
+                this.NewVariableNameTextBox.Focus();
+
+            }
             else if (radExistingVariable.Checked)
+            {
                 ExistingVariablePanel.Visible = true;
+            }
             else if (radTunnelVariable.Checked)
+            {
                 TunnelVariablePanel.Visible = true;
+            }
         }
 
         #endregion
@@ -431,5 +439,14 @@ namespace FlatRedBall.Glue.Controls
             senderComboBox.DropDownWidth = width;
         }
 
+        private void NewTypeListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.NewVariableNameTextBox.Focus();
+        }
+
+        private void NewTypeListBox_Click(object sender, EventArgs e)
+        {
+            this.NewVariableNameTextBox.Focus();
+        }
     }
 }
