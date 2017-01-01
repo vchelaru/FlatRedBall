@@ -1278,6 +1278,13 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         #endregion
 
+                        // Nodes aren't directly removed in the code above. Instead, 
+                        // a "refresh nodes" method is called, which may remove unneeded
+                        // nodes, but event raising is suppressed. Therefore, we have to explicitly 
+                        // do it here:
+                        PluginManager.ReactToItemSelect(GlueState.Self.CurrentTreeNode);
+
+
                         if (saveAndRegenerate)
                         {
 

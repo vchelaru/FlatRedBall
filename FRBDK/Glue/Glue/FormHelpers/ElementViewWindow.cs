@@ -202,8 +202,7 @@ namespace FlatRedBall.Glue.FormHelpers
             mTreeView = treeView;
             mEntityNode = entityNode;
 
-
-
+            
             mScreenNode = screenNode;
 
             
@@ -277,13 +276,21 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #endregion
 
-            VisibilityManager.ReactivelySetItemViewVisibility();
 
             EditorLogic.TakeSnapshot();
 
+            bool wasFocused = mTreeView.Focused;
+            VisibilityManager.ReactivelySetItemViewVisibility();
             if (!SuppressSelectionEvents)
             {
                 PluginManager.ReactToItemSelect(node);
+            }
+            // ReactivelySetItemViewVisibility may add or remove controls, and as a result the
+            // list view may lose focus. We dont' want that to happen so we will explicitly put
+            // focus on the control:
+            if(wasFocused)
+            {
+                mTreeView.Focus(); 
             }
         }
 

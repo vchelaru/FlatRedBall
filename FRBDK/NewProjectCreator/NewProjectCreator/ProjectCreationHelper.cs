@@ -244,6 +244,8 @@ namespace NewProjectCreator
 
         private static bool GetIfFileNameIsValid(NewProjectViewModel viewModel, ref string unpackDirectory)
         {
+            string whyIsInvalid = null;
+
             bool isFileNameValid = true;
             #region Check for spaces if creating a directory for the project
 
@@ -251,22 +253,30 @@ namespace NewProjectCreator
             {
                 if (viewModel.ProjectName.Contains(" "))
                 {
-                    System.Windows.Forms.MessageBox.Show("Project names cannot contain spaces.");
-                    isFileNameValid = false;
+                    whyIsInvalid = "Project names cannot contain spaces.";
                 }
-
-
                 unpackDirectory = viewModel.CombinedProjectDirectory;
             }
 
             #endregion
 
-
-            if (Directory.Exists(unpackDirectory))
+            // I think we can be more lenient here, let's allow empty directories so users can put new projects in github folders.
+            if (string.IsNullOrEmpty(whyIsInvalid) && Directory.Exists(unpackDirectory))
             {
-                MessageBox.Show("The directory " + unpackDirectory + " already exists");
-                isFileNameValid = false;
+                bool hasFiles = Directory.GetFiles(unpackDirectory).Any();
+
+                if(hasFiles)
+                {
+                    whyIsInvalid = "The directory " + unpackDirectory + " is not empty";
+                }
             }
+
+            if(!string.IsNullOrEmpty(whyIsInvalid))
+            {
+                MessageBox.Show(whyIsInvalid);
+            }
+
+            isFileNameValid = string.IsNullOrEmpty(whyIsInvalid);
             return isFileNameValid;
         }
 
