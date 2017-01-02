@@ -30,4 +30,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.1.0.0")]
+// 1.1.1 fixes sprites not deselecting when Glu user selects a folder node like "Objects"
+[assembly: AssemblyVersion("1.1.1.0")]

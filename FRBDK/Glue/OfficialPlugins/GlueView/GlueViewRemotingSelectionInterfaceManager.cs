@@ -61,27 +61,13 @@ namespace OfficialPlugins.GlueView
             //    SetState("", immediate);
             //}
 
-            if (EditorLogicSnapshot.CurrentNamedObject == null)
+            if (immediate)
             {
-                if (immediate)
-                {
-                    HighlightElementThreadProc(false);
-                }
-                else
-                {
-                    ThreadPool.QueueUserWorkItem(HighlightElementThreadProc, false);
-                }
+                HighlightElementThreadProc(false);
             }
             else
             {
-                if (immediate)
-                {
-                    HighlightElementThreadProc(false);
-                }
-                else
-                {
-                    ThreadPool.QueueUserWorkItem(HighlightElementThreadProc, false);
-                }
+                ThreadPool.QueueUserWorkItem(HighlightElementThreadProc, false);
             }
         }
 
@@ -180,6 +166,10 @@ namespace OfficialPlugins.GlueView
                 if (EditorLogicSnapshot.CurrentNamedObject != null)
                 {
                     OutInterface.HighlightElement(EditorLogicSnapshot.CurrentNamedObject.InstanceName);
+                }
+                else
+                {
+                    OutInterface.HighlightElement(null);
                 }
             }
 

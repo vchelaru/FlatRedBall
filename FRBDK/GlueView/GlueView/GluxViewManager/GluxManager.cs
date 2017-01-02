@@ -583,8 +583,11 @@ namespace FlatRedBall.Glue
                     }
 
                     mNextElement = elementName;
-                    ElementToHighlight = null;
-                    
+
+                    if(currentElementName != elementName)
+                    {
+                        ElementToHighlight = null;
+                    }
                 }
 
             }
@@ -725,19 +728,7 @@ namespace FlatRedBall.Glue
                 {
                     if (mCurrentElementHighlight.CurrentElement != null)
                     {
-                        // If we hit this it may be that the
-                        // current element was completely reloaded.
-                        // However, that happens either when something is
-                        // selected OR when a variable changes.  If a variable
-                        // has changed we don't want to deselect, so let's try to
-                        // reselect the existing element.
-                        if (mCurrentElementHighlight.CurrentElement.AssociatedNamedObjectSave != null && mCurrentElement != null)
-                        {
-                            ElementRuntime nextElement = mCurrentElement.GetContainedElementRuntime(mCurrentElementHighlight.CurrentElement.AssociatedNamedObjectSave.InstanceName);
-                            mCurrentElementHighlight.CurrentElement = nextElement;
-                            mCurrentElementHighlight.Color = 
-                                mCurrentElementHighlight.GetColorVisibleAgainst( SpriteManager.Camera.BackgroundColor);
-                        }
+                        mCurrentElementHighlight.CurrentElement = null;
                     }
                 }
                 else if(mCurrentElement != null)
