@@ -13,6 +13,7 @@ using FlatRedBall.Glue.VSHelpers;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Projects
 {
@@ -210,6 +211,7 @@ namespace FlatRedBall.Glue.Projects
                         newProjectBase.RemoveItem(newProjectBase.Directory + "Game1.cs");
                         File.Delete(newProjectBase.Directory + "Game1.cs");
                     }
+
 
                     ProjectManager.SaveProjects();
                 }

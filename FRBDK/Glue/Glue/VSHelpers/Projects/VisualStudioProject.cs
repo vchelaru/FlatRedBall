@@ -193,6 +193,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 if (addToContentPipeline && AllowContentCompile)
                 {
                     buildItem = mProject.AddItem("Compile", ProcessInclude(itemInclude)).First();
+                    mProject.ReevaluateIfNecessary();
 
                     if (string.IsNullOrEmpty(assetTypeInfo.ContentImporter) ||
                         string.IsNullOrEmpty(assetTypeInfo.ContentProcessor))
@@ -213,6 +214,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 else
                 {
                     buildItem = mProject.AddItem(DefaultContentAction, ProcessInclude(itemInclude)).FirstOrDefault();
+                    mProject.ReevaluateIfNecessary();
                     if (ContentCopiedToOutput)
                         buildItem.SetMetadataValue("CopyToOutputDirectory", "PreserveNewest");
                 }
@@ -510,6 +512,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 {
                     case DialogResult.OK:
                         mProject.RemoveItem(buildItem);
+                        mProject.ReevaluateIfNecessary();
                         break;
                     case DialogResult.No:
                         StringBuilder stringBuilder = new StringBuilder();
@@ -523,6 +526,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
 
                         mProject.RemoveItem(buildItem);
+                        mProject.ReevaluateIfNecessary();
                         break;
                     case DialogResult.Cancel:
                         throw new Exception("Duplicate entries found: " + buildItem.ItemType + " " + buildItem.UnevaluatedInclude);
@@ -534,6 +538,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 //mProject.EvaluatedItems.RemoveItemAt(i);
                 mProject.RemoveItem(buildItem);
+                mProject.ReevaluateIfNecessary();
             }
             wasChanged = true;
             return wasChanged;
@@ -685,6 +690,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     if (ContentProject.GetItem(absoluteFileName) != null)
                     {
                         ContentProject.RemoveItem(absoluteFileName);
+                        
                     }
 
                     ContentProject.AddContentBuildItem(absoluteFileName, SyncedProjectRelativeType.Linked, forceToContent);
@@ -835,11 +841,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 {
 
                     item = ((VisualStudioProject)this).Project.AddItem("Compile", fileName).First();
+                    Project.ReevaluateIfNecessary();
                     item.UnevaluatedInclude = fileName;
                 }
                 else
                 {
                     item = ((VisualStudioProject)this).Project.AddItem("Compile", fileName).First();
+                    Project.ReevaluateIfNecessary();
                     item.UnevaluatedInclude = fileName;
                     item.SetMetadataValue("Link", nameRelativeToThisProject);
 
@@ -877,6 +885,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 if (item != null)
                 {
                     Project.RemoveItem(item);
+                    Project.ReevaluateIfNecessary();
+
                     mBuildItemDictionaries.Remove(itemName);
                 }
             }

@@ -820,7 +820,7 @@ namespace FlatRedBall.Glue
                             syncedProject.IsDirty = true;
                         }
                     }
-                    if (syncedProject.ContentProject.IsDirty)
+                    if (syncedProject.ContentProject.IsDirty && syncedProject.ContentProject != syncedProject)
                     {
                         syncedProject.ContentProject.Save(syncedProject.ContentProject.FullFileName);
                     }
@@ -839,7 +839,10 @@ namespace FlatRedBall.Glue
                 foreach (var syncedProject in mSyncedProjects)
                 {
                     syncedProject.Save(syncedProject.FullFileName);
-                    syncedProject.ContentProject.Save(syncedProject.ContentProject.FullFileName);
+                    if(syncedProject != syncedProject.ContentProject)
+                    {
+                        syncedProject.ContentProject.Save(syncedProject.ContentProject.FullFileName);
+                    }
                 }
 
                 mHaveNewProjectsBeenSyncedSinceSave = false;
