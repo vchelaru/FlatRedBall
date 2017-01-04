@@ -142,13 +142,20 @@ namespace FlatRedBall.Math.Geometry
             Point intersectionPoint;
 
             // Check if one of the polygon's edges intersects the line segment
-            for (int i = 0; i < polygon.Points.Count - 1; i++)
+            for (int i = 0; i < polygon.Vertices.Length - 1; i++)
             {
-                if (Intersects(new Segment(
-                      new Point(polygon.Position.X + polygon.Points[i].X,
-                                polygon.Position.Y + polygon.Points[i].Y),
-                      new Point(polygon.Position.X + polygon.Points[i + 1].X,
-                                polygon.Position.Y + polygon.Points[i + 1].Y)), out intersectionPoint))
+                var vertexBefore = polygon.Vertices[i];
+                var vertexAfter = polygon.Vertices[i + 1];
+
+                var currentPolygonSegment =
+                    new Segment(
+                      new Point(vertexBefore.Position.X,
+                                vertexBefore.Position.Y),
+                      new Point(vertexAfter.Position.X,
+                                vertexAfter.Position.Y));
+
+
+                if (Intersects(currentPolygonSegment, out intersectionPoint))
                 {
                     polygon.mLastCollisionPoint = intersectionPoint;
                     return true;
