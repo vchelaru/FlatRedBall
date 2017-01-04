@@ -781,7 +781,11 @@ namespace FlatRedBall.Glue
             lock (mProjectBase)
             {
                 bool shouldSync = false;
-                if (mProjectBase != null && mProjectBase.IsDirty)
+                // IsDirty means that the project has items that haven't
+                // been updated to the "evaluated" list, not if it needs to
+                // be saved.
+                //if (mProjectBase != null && mProjectBase.IsDirty)
+                if (mProjectBase != null)
                 {
                     bool succeeded = true;
                     try
@@ -799,7 +803,7 @@ namespace FlatRedBall.Glue
                         shouldSync = true;
                     }
                 }
-                if (ContentProject != null && ContentProject.IsDirty && ContentProject != mProjectBase)
+                if (ContentProject != null && ContentProject != mProjectBase)
                 {
                     ContentProject.Save(ContentProject.FullFileName);
                     shouldSync = true;
@@ -808,19 +812,16 @@ namespace FlatRedBall.Glue
                 //Save projects in case they are dirty
                 foreach (var syncedProject in mSyncedProjects)
                 {
-                    if (syncedProject.IsDirty)
+                    try
                     {
-                        try
-                        {
-                            syncedProject.Save(syncedProject.FullFileName);
-                        }
-                        catch(Exception e)
-                        {
-                            PluginManager.ReceiveError(e.ToString());
-                            syncedProject.IsDirty = true;
-                        }
+                        syncedProject.Save(syncedProject.FullFileName);
                     }
-                    if (syncedProject.ContentProject.IsDirty && syncedProject.ContentProject != syncedProject)
+                    catch(Exception e)
+                    {
+                        PluginManager.ReceiveError(e.ToString());
+                        syncedProject.IsDirty = true;
+                    }
+                    if (syncedProject.ContentProject != syncedProject)
                     {
                         syncedProject.ContentProject.Save(syncedProject.ContentProject.FullFileName);
                     }

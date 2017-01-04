@@ -190,7 +190,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         }
         public void Save(string fileName)
         {
-            if (IsDirty)
+            //if (IsDirty)
             {
                 if (Saving != null)
                 {

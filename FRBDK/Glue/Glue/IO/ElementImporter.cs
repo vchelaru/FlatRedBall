@@ -392,10 +392,8 @@ namespace FlatRedBall.Glue.IO
                 }
             }
 
-            if(project.IsDirty)
-            {
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-            }
+
+            GlueCommands.Self.ProjectCommands.SaveProjects();
         }
 
         private static void ResolveElementReferences(IElement newElement)
