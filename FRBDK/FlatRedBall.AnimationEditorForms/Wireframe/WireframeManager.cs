@@ -103,6 +103,7 @@ namespace FlatRedBall.AnimationEditorForms
             get { return mManagers; }
         }
 
+
         #endregion
 
         #region Events
@@ -220,6 +221,7 @@ namespace FlatRedBall.AnimationEditorForms
                 }
             }
         }
+
 
         #endregion
 
@@ -356,6 +358,8 @@ namespace FlatRedBall.AnimationEditorForms
             if (SelectedState.Self.SelectedFrame != null)
             {
                 UpdateToSelectedFrame();
+
+                UpdateHandlesAndMoveCursor();
             }
 
             else if (SelectedState.Self.SelectedChain != null && SelectedState.Self.SelectedChain.Frames.Count != 0) 
@@ -374,6 +378,54 @@ namespace FlatRedBall.AnimationEditorForms
 
             }
             mStatusText.UpdateText();
+        }
+
+
+        internal void FocusSelectionIfOffScreen()
+        {
+            bool isSelectionOnScreen = GetIfSelectionIsOnScreen();
+
+            if (isSelectionOnScreen == false)
+            {
+                FocusOnSelection();
+            }
+        }
+
+        private void FocusOnSelection()
+        {
+            var camera = mManagers.Renderer.Camera;
+            var selector = this.mControl.RectangleSelector;
+
+            camera.AbsoluteLeft = selector.Left - 20;
+            camera.AbsoluteTop = selector.Top - 20;
+        }
+
+        private bool GetIfSelectionIsOnScreen()
+        {
+            var camera = mManagers.Renderer.Camera;
+
+            var selector = this.mControl.RectangleSelector;
+
+            bool isOnScreen = selector.Right > camera.AbsoluteLeft &&
+                selector.Left < camera.AbsoluteRight &&
+                selector.Bottom > camera.AbsoluteTop &&
+                selector.Top < camera.AbsoluteBottom;
+
+            return isOnScreen;
+        }
+
+        private void UpdateHandlesAndMoveCursor()
+        {
+            if (PropertyGridManager.Self.UnitType == UnitType.SpriteSheet || mWireframeControl.IsMagicWandSelected)
+            {
+                this.mControl.RectangleSelector.ShowHandles = false;
+                this.mControl.RectangleSelector.ShowMoveCursorWhenOver = false;
+            }
+            else
+            {
+                this.mControl.RectangleSelector.ShowHandles = true;
+                this.mControl.RectangleSelector.ShowMoveCursorWhenOver = true;
+            }
         }
 
         private void UpdateToSelectedAnimation(bool skipPushed = false)
@@ -478,14 +530,7 @@ namespace FlatRedBall.AnimationEditorForms
 
             UpdateLineGridToTexture(texture);
 
-            if (PropertyGridManager.Self.UnitType == UnitType.SpriteSheet || mWireframeControl.IsMagicWandSelected)
-            {
-                this.mControl.RectangleSelector.ShowHandles = false;
-            }
-            else
-            {
-                this.mControl.RectangleSelector.ShowHandles = true;
-            }
+
 
 
             this.mControl.RoundRectangleSelectorToUnit = PropertyGridManager.Self.UnitType == UnitType.Pixel;

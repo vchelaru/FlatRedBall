@@ -28,6 +28,8 @@ namespace FlatRedBall.AnimationEditorForms.IO
             settingsSave.HorizontalGuides.AddRange(PreviewManager.Self.HorizontalGuides);
             settingsSave.VerticalGuides.AddRange(PreviewManager.Self.VerticalGuides);
 
+            settingsSave.ExpandedNodes.Clear();
+            settingsSave.ExpandedNodes.AddRange(TreeViewManager.Self.GetExpandedNodeAnimationChainNames());
 
             string locationToSave = GetCompanionFileFor(fileName);
 
@@ -75,6 +77,11 @@ namespace FlatRedBall.AnimationEditorForms.IO
 
             PreviewManager.Self.HorizontalGuides = loadedInstance.HorizontalGuides;
             PreviewManager.Self.VerticalGuides = loadedInstance.VerticalGuides;
+
+            if(loadedInstance.ExpandedNodes != null)
+            {
+                TreeViewManager.Self.ExpandNodes(loadedInstance.ExpandedNodes);
+            }
         }
     }
 }

@@ -246,9 +246,10 @@ namespace FlatRedBall.AnimationEditorForms
             lock (RenderingLibrary.Graphics.Renderer.LockObject)
             {
                 ProjectManager.Self.LoadAnimationChain(fileName);
-                IoManager.Self.LoadAndApplyCompanionFileFor(fileName);
 
                 TreeViewManager.Self.RefreshTreeView();
+                // do this after refreshing the tree node:
+                IoManager.Self.LoadAndApplyCompanionFileFor(fileName);
                 WireframeManager.Self.RefreshAll();
                 PreviewManager.Self.RefreshAll();
             }

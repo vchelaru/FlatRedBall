@@ -62,7 +62,14 @@ namespace AnimationEditorPlugin
             // 2.0 adds lots of improvements to the texture coordinate selection window.
             // 2.0.2 fixes a crash reported by users with the selection rectangle and improves
             // the region selection to show the full texture when no coordinates are specified.
-            get { return new Version(2, 0, 2); }
+            // 2.1 
+            // - No longer shows the + move in all directions arrows when the user has the magic
+            //   wand selected and is over a region.
+            // - Camera now focuses on selected region when it's off screen when an animation chain
+            //   or frame is selected.
+            // - .aeproperties file now includes list of expanded nodes. This is applied whenever the
+            //   .ach file is loaded
+            get { return new Version(2, 1, 0); }
         }
 
         public bool IsSelectedItemSprite

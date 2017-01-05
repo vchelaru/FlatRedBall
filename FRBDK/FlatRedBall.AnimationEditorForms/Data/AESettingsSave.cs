@@ -18,5 +18,8 @@ namespace FlatRedBall.AnimationEditorForms.Data
         [XmlElement("Texture")]
         public List<TextureSettings> TextureSettings = new List<TextureSettings>();
 
+        [XmlElement("ExpandedNode")]
+        public List<string> ExpandedNodes { get; set; } = new List<string>();
+
     }
 }

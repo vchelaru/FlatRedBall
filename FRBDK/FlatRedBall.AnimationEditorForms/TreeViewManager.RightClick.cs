@@ -80,6 +80,28 @@ namespace FlatRedBall.AnimationEditorForms
             
         }
 
+        internal IEnumerable<string> GetExpandedNodeAnimationChainNames()
+        {
+            foreach(TreeNode treeNode in mTreeView.Nodes)
+            {
+                if(treeNode.IsExpanded)
+                {
+                    yield return treeNode.Text;
+                }
+            }
+        }
+
+        internal void ExpandNodes(List<string> expandedNodes)
+        {
+            foreach (TreeNode treeNode in mTreeView.Nodes)
+            {
+                if (expandedNodes.Contains( treeNode.Text))
+                {
+                    treeNode.Expand();
+                }
+            }
+        }
+
         private void AdjustOffsetsClick(object sender, EventArgs e)
         {
             AdjustOffsetForm form = new AdjustOffsetForm();

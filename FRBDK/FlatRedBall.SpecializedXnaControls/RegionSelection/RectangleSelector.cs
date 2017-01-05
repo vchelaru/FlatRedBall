@@ -209,6 +209,8 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
             }
         }
 
+        public bool ShowMoveCursorWhenOver { get; set; } = true;
+
         public bool Visible
         {
             get
@@ -620,7 +622,7 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
             }
         }
 
-        private static void SetWindowsCursor(System.Windows.Forms.Control container, 
+        private void SetWindowsCursor(System.Windows.Forms.Control container, 
             ResizeSide sideGrabbed, ResizeSide sideOver, bool resetToArrow, bool flipHorizontal, bool flipVertical)
         {
             System.Windows.Forms.Cursor cursorToSet = Cursors.Arrow;
@@ -672,7 +674,10 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
                         cursorToSet = Cursors.SizeWE;
                         break;
                     case ResizeSide.Middle:
-                        cursorToSet = Cursors.SizeAll;
+                        if(ShowMoveCursorWhenOver)
+                        {
+                            cursorToSet = Cursors.SizeAll;
+                        }
                         break;
                     case ResizeSide.None:
 

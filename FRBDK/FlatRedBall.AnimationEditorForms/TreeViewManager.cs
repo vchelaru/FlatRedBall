@@ -212,6 +212,7 @@ namespace FlatRedBall.AnimationEditorForms
                 PreviewManager.Self.ReactToAnimationFrameSelected();
             }
 
+            WireframeManager.Self.FocusSelectionIfOffScreen();
 
         }
 
