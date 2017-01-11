@@ -43,12 +43,10 @@ namespace FlatRedBall.Math.Geometry
         static internal int NumberOfTimesCollideAgainstPolygonCalled = 0;
         static internal int NumberOfTimesRadiusTestPassed = 0;
 
-        #region XML Docs
         /// <summary>
         /// The points relative to the center of the Polygon.  These
         /// define the shape and size of the Polygon.
         /// </summary>
-        #endregion
         private Point[] mPoints;
 
         #region XML Docs
@@ -62,11 +60,18 @@ namespace FlatRedBall.Math.Geometry
         Color mColor;
 
 
-        // these are the vertices that get fed into the VertexBuffer
-        // when the polygon is rendered.  The position is calculated
-        // by positioning the mPoints relative to the polygon using its
-        // position and rotation properties.  This is done in the
-        // FillVertexArray method (similar to the Text object)
+        /// <summary>
+        /// The vertices that get fed into the VertexBuffer
+        /// when the polygon is rendered.  The position is calculated
+        /// by positioning the mPoints relative to the polygon using its
+        /// position and rotation properties.  This is done in the
+        /// FillVertexArray method (similar to the Text object)
+        /// </summary>
+        /// <remarks>
+        /// These vertices contain the absolute vertices of the polygon, so they
+        /// can be used in collision requiring these positions (rather than calculating
+        /// them using mPoints and position/rotation values.
+        /// </remarks>
         internal VertexPositionColor[] mVertices;
 
 

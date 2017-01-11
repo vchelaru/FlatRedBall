@@ -573,7 +573,7 @@ namespace GumPlugin.CodeGeneration
 
         private static string ToFloatString(float value)
         {
-            string toReturn = value.ToString();
+            string toReturn = value.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             if(toReturn.Contains('.'))
             {

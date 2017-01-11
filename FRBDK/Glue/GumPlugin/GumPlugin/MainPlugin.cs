@@ -47,6 +47,8 @@ namespace GumPlugin
 
         public override Version Version
         {
+            // Version 0.8.0.2 adds support for computer settings with ',' decimal separator
+            // Fixed layout not considering Text font scale
             get { return new Version(0, 8, 0, 1); }
         }
 
