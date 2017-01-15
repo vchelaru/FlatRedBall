@@ -397,10 +397,17 @@ namespace FlatRedBall.TileGraphics
                                 { Name = prop.StrippedName, Value = prop.value, Type = prop.Type });
                             }
 
+
 #if DEBUG
                             if(toReturn.Properties.Any(item => item.Key == name))
                             {
+                                // Assume it was a duplicate tile name, but it may not be
                                 string message = $"The tileset contains more than one tile with the name {name}. Names must be unique in a tileset.";
+                                bool hasDuplicateObject = tms.objectgroup.Any(item => item.@object.Any(objectInstance => objectInstance.Name == name));
+                                if(hasDuplicateObject)
+                                {
+                                    message = $"The tileset contains a tile with the name {name}, but this name is already used in an object layer";
+                                }
                                 throw new InvalidOperationException(message);
                             }
 #endif
