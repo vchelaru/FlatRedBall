@@ -782,6 +782,13 @@
       <Link>Entities\ManuallyUpdatedEntity.Generated.cs</Link>
       <DependentUpon>ManuallyUpdatedEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\MoveToLayerDerivedEntity.cs">
+      <Link>Entities\MoveToLayerDerivedEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\MoveToLayerDerivedEntity.Generated.cs">
+      <Link>Entities\MoveToLayerDerivedEntity.Generated.cs</Link>
+      <DependentUpon>MoveToLayerDerivedEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\MoveToLayerEntity.cs">
       <Link>Entities\MoveToLayerEntity.cs</Link>
     </Compile>

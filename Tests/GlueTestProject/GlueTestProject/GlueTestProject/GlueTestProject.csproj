@@ -475,6 +475,10 @@
     <Compile Include="Entities\ManuallyUpdatedEntity.Generated.cs">
       <DependentUpon>ManuallyUpdatedEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\MoveToLayerDerivedEntity.cs" />
+    <Compile Include="Entities\MoveToLayerDerivedEntity.Generated.cs">
+      <DependentUpon>MoveToLayerDerivedEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\MoveToLayerEntity.cs" />
     <Compile Include="Entities\MoveToLayerEntity.Generated.cs">
       <DependentUpon>MoveToLayerEntity.cs</DependentUpon>

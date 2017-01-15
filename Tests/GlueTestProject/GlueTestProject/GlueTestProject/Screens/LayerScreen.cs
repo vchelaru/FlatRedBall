@@ -128,7 +128,33 @@ namespace GlueTestProject.Screens
 
             on3DInstance = new DrawableEntity(this.ContentManagerName, false);
             on3DInstance.AddToManagers(layer3D);
+
+            TestMoveToLayerDerived();
 		}
+
+        private void TestMoveToLayerDerived()
+        {
+            var sprite = MoveToLayerDerivedEntityInstance.SpriteInstance;
+            // make sure it's on the right layer by defrault:
+            var isOnRightStartingLayer = Layer2D.Sprites.Contains(sprite);
+            if(!isOnRightStartingLayer)
+            {
+                throw new Exception($"{nameof(MoveToLayerDerivedEntityInstance)}.Sprite is not on {nameof(Layer2D)}");
+            }
+            MoveToLayerDerivedEntityInstance.MoveToLayer(Layer3DIndependentOfCamera);
+
+            var isOnRightEndingLayer = Layer3DIndependentOfCamera.Sprites.Contains(sprite);
+            if(!isOnRightEndingLayer)
+            {
+                throw new Exception($"{nameof(MoveToLayerDerivedEntityInstance)}.Sprite is not on {nameof(Layer3DIndependentOfCamera)}");
+            }
+
+            var wasRemovedFromOldLayer = Layer2D.Sprites.Contains(sprite) == false;
+            if(!wasRemovedFromOldLayer)
+            {
+                throw new Exception($"{nameof(MoveToLayerDerivedEntityInstance)}.Sprite is still on {nameof(Layer2D)} even though it should have been removed.");
+            }
+        }
 
         void CustomActivity(bool firstTimeCalled)
 		{

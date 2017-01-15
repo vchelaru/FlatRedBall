@@ -397,6 +397,14 @@ namespace FlatRedBall.TileGraphics
                                 { Name = prop.StrippedName, Value = prop.value, Type = prop.Type });
                             }
 
+#if DEBUG
+                            if(toReturn.Properties.Any(item => item.Key == name))
+                            {
+                                string message = $"The tileset contains more than one tile with the name {name}. Names must be unique in a tileset.";
+                                throw new InvalidOperationException(message);
+                            }
+#endif
+
                             toReturn.Properties.Add(name, namedValues);
 
                         }

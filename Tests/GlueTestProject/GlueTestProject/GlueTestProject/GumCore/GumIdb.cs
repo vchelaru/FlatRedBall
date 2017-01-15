@@ -123,24 +123,10 @@ namespace FlatRedBall.Gum
                 mManagers.Renderer.Camera.AbsoluteLeft = 0;
                 mManagers.Renderer.Camera.AbsoluteTop = 0;
 
-                var viewport = mManagers.Renderer.GraphicsDevice.Viewport;
-                viewport.Width = FlatRedBall.Math.MathFunctions.RoundToInt(FlatRedBall.Camera.Main.DestinationRectangle.Width);
-                viewport.Height = FlatRedBall.Math.MathFunctions.RoundToInt(FlatRedBall.Camera.Main.DestinationRectangle.Height);
-                mManagers.Renderer.GraphicsDevice.Viewport = viewport;
-
-                if (FlatRedBall.Camera.Main.Orthogonal)
-                {
-                    GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.OrthogonalHeight;
-                    GraphicalUiElement.CanvasWidth = FlatRedBall.Camera.Main.OrthogonalWidth;
-                }
-                else
-                {
-                    GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height;
-                    GraphicalUiElement.CanvasWidth = FlatRedBall.Camera.Main.DestinationRectangle.Width;
-                }
+                UpdateDisplayToMainFrbCamera();
 
                 // Need to do the zoom here in response to the FRB camera vs. the Gum camera
-                mManagers.Renderer.Camera.Zoom = viewport.Height / (float)GraphicalUiElement.CanvasHeight;
+                mManagers.Renderer.Camera.Zoom = mManagers.Renderer.GraphicsDevice.Viewport.Height / (float)GraphicalUiElement.CanvasHeight;
                 mManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
                 mManagers.Renderer.Camera.X = 0;
                 mManagers.Renderer.Camera.Y = 0;
@@ -249,6 +235,28 @@ namespace FlatRedBall.Gum
 
             StandardElementsManager.Self.Initialize();
         }
+
+        public static void UpdateDisplayToMainFrbCamera()
+        {
+            var viewport = mManagers.Renderer.GraphicsDevice.Viewport;
+            viewport.Width = FlatRedBall.Math.MathFunctions.RoundToInt(FlatRedBall.Camera.Main.DestinationRectangle.Width);
+            viewport.Height = FlatRedBall.Math.MathFunctions.RoundToInt(FlatRedBall.Camera.Main.DestinationRectangle.Height);
+            mManagers.Renderer.GraphicsDevice.Viewport = viewport;
+
+            if (FlatRedBall.Camera.Main.Orthogonal)
+            {
+                GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.OrthogonalHeight;
+                GraphicalUiElement.CanvasWidth = FlatRedBall.Camera.Main.OrthogonalWidth;
+            }
+            else
+            {
+                GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height;
+                GraphicalUiElement.CanvasWidth = FlatRedBall.Camera.Main.DestinationRectangle.Width;
+            }
+        }
+
+
+
 
         public void LoadFromFile(string fileName)
         {

@@ -25,11 +25,14 @@ namespace PluginTestbed.MoveToLayerPlugin
             if (isInDerived)
             {
                 codeBlock = codeBlock.Function("public override void", "MoveToLayer", "FlatRedBall.Graphics.Layer layerToMoveTo");
+                codeBlock.Line("var layerToRemoveFrom = LayerProvidedByContainer; // assign before calling base so removal is not impacted by base call");
                 codeBlock.Line("base.MoveToLayer(layerToMoveTo);");
             }
             else
             {
                 codeBlock = codeBlock.Function("public virtual void", "MoveToLayer", "FlatRedBall.Graphics.Layer layerToMoveTo");
+                codeBlock.Line("var layerToRemoveFrom = LayerProvidedByContainer;");
+
             }
 
 
@@ -41,8 +44,8 @@ namespace PluginTestbed.MoveToLayerPlugin
                 {
                     if (ati.RemoveFromLayerMethod != null)
                     {
-                        codeBlock.If("LayerProvidedByContainer != null")
-                            .Line(ati.RemoveFromLayerMethod.Replace("mLayer", "LayerProvidedByContainer") + ";")
+                        codeBlock.If("layerToRemoveFrom != null")
+                            .Line(ati.RemoveFromLayerMethod.Replace("mLayer", "layerToRemoveFrom") + ";")
                         .End();
                     }
 
@@ -76,8 +79,8 @@ namespace PluginTestbed.MoveToLayerPlugin
                             {
                                 codeBlock = codeBlock.If(nos.InstanceName + " != null");
                             }
-                            codeBlock.If("LayerProvidedByContainer != null")
-                                .Line(nos.GetAssetTypeInfo().RemoveFromLayerMethod.Replace("this", nos.InstanceName).Replace("mLayer", "LayerProvidedByContainer") + ";")
+                            codeBlock.If("layerToRemoveFrom != null")
+                                .Line(nos.GetAssetTypeInfo().RemoveFromLayerMethod.Replace("this", nos.InstanceName).Replace("mLayer", "layerToRemoveFrom") + ";")
                             .End();
 
                             codeBlock.Line(nos.GetAssetTypeInfo().LayeredAddToManagersMethod[0].Replace("this", nos.InstanceName).Replace("mLayer", "layerToMoveTo") + ";");
@@ -110,7 +113,11 @@ namespace PluginTestbed.MoveToLayerPlugin
                 }
             }
 
-            codeBlock.Line("LayerProvidedByContainer = layerToMoveTo;");
+            if (isInDerived == false)
+            {
+                // Doesn't hurt if derived assigns this but...I guess we can keep it clean and only do it in one place
+                codeBlock.Line("LayerProvidedByContainer = layerToMoveTo;");
+            }
 
             codeBlock = codeBlock.End();
 
