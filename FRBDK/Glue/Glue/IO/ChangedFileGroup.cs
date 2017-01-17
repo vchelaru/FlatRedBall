@@ -166,6 +166,30 @@ namespace FlatRedBall.Glue.IO
             mFileSystemWatcher.Changed += new FileSystemEventHandler(HandleFileSystemChange);
         }
 
+        public void ClearIgnores()
+        {
+            mChangesToIgnore.Clear();
+        }
+
+        public int NumberOfTimesToIgnore(string file)
+        {
+
+            if (FileManager.IsRelative(file))
+            {
+                throw new Exception("File name should be absolute");
+            }
+            string standardized = FileManager.Standardize(file, null, false).ToLower();
+
+            if (mChangesToIgnore.ContainsKey(standardized))
+            {
+                return mChangesToIgnore[standardized];
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
         public void SetIgnoreDictionary(Dictionary<string, int> sharedInstance)
         {
             mChangesToIgnore = sharedInstance;
@@ -177,6 +201,7 @@ namespace FlatRedBall.Glue.IO
             ChangeInformation toAddTo = mDeletedFiles;
 
             AddChangedFileTo(fileName, toAddTo);
+
         }
 
         void HandleFileSystemChange(object sender, FileSystemEventArgs e)
@@ -184,11 +209,18 @@ namespace FlatRedBall.Glue.IO
             string fileName = e.FullPath;
             ChangeInformation toAddTo = mChangedFiles;
 
-            AddChangedFileTo(fileName, toAddTo);
+            bool wasAdded = AddChangedFileTo(fileName, toAddTo);
+
+            //if(!wasAdded && FileManager.GetExtension(fileName) == "csproj")
+            //{
+            //    Plugins.PluginManager.ReceiveOutput($"Ignored {fileName}, {NumberOfTimesToIgnore(fileName)} left");
+            //}
         }
 
-        private void AddChangedFileTo(string fileName, ChangeInformation toAddTo)
+        private bool AddChangedFileTo(string fileName, ChangeInformation toAddTo)
         {
+            bool wasAdded = false;
+
             lock (LockObject)
             {
                 bool wasIgnored = TryIgnoreFileChange(fileName);
@@ -199,9 +231,11 @@ namespace FlatRedBall.Glue.IO
                     {
                         toAddTo.Sort(SortDelegate);
                     }
+                    wasAdded = true;
                 }
                 mLastModification = DateTime.Now;
             }
+            return wasAdded;
         }
 
         bool TryIgnoreFileChange(string fileName)

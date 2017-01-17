@@ -234,7 +234,7 @@ namespace FlatRedBall.Glue.IO
                 GlueCommands.Self.ProjectCommands.SaveProjects();
 
                 FileWatchManager.PerformFlushing = true;
-
+                FileWatchManager.FlushAndClearIgnores();
             }
             if (closeInitWindow)
             {

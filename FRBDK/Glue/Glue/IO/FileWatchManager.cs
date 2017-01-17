@@ -47,25 +47,7 @@ namespace FlatRedBall.Glue.IO
         //static DateTime mLastChangedFileAdded;
         //static DateTime mLastChangedExternallyBuiltFileAdded;
 
-        // Files like 
-        // the .glux and
-        // .csproj files are
-        // saved by Glue, but
-        // when they change on
-        // disk Glue needs to react
-        // to the change.  To react to
-        // the change, Glue keeps a file
-        // watch on these files.  However
-        // when Glue saves these files it kicks
-        // of a file change.  Therefore, any time
-        // Glue changes one of these files it needs
-        // to know to ignore the next file change since
-        // it came from itself.  Furthermore, multiple plugins
-        // and parts of Glue may kick off multiple saves.  Therefore
-        // we can't just keep track of a bool on whether to ignore the
-        // next change or not - instead we have to keep track of an int
-        // to mark how many changes Glue should ignore.
-        static Dictionary<string, int> mChangesToIgnore = new Dictionary<string, int>();
+
 
         public static bool PerformFlushing = true;
 
@@ -122,6 +104,11 @@ namespace FlatRedBall.Glue.IO
 
         #region Methods
 
+        public static void FlushAndClearIgnores()
+        {
+            Flush();
+            mChangedProjectFiles.ClearIgnores();
+        }
 
         public static void Flush()
         {
@@ -203,6 +190,26 @@ namespace FlatRedBall.Glue.IO
         public static void Initialize()
         {
             mChangedProjectFiles = new ChangedFileGroup();
+
+            // Files like 
+            // the .glux and
+            // .csproj files are
+            // saved by Glue, but
+            // when they change on
+            // disk Glue needs to react
+            // to the change.  To react to
+            // the change, Glue keeps a file
+            // watch on these files.  However
+            // when Glue saves these files it kicks
+            // of a file change.  Therefore, any time
+            // Glue changes one of these files it needs
+            // to know to ignore the next file change since
+            // it came from itself.  Furthermore, multiple plugins
+            // and parts of Glue may kick off multiple saves.  Therefore
+            // we can't just keep track of a bool on whether to ignore the
+            // next change or not - instead we have to keep track of an int
+            // to mark how many changes Glue should ignore.
+            Dictionary<string, int> mChangesToIgnore = new Dictionary<string, int>();
             mChangedProjectFiles.SetIgnoreDictionary(mChangesToIgnore);
             mChangedProjectFiles.SortDelegate = CompareFiles;
 
@@ -221,6 +228,11 @@ namespace FlatRedBall.Glue.IO
             
 #if !UNIT_TESTS
             mChangedProjectFiles.IgnoreNextChangeOn(file);
+            //if(FileManager.GetExtension(file) == "csproj")
+            //{
+            //    Plugins.PluginManager.ReceiveOutput($"Ignore {file} {mChangedProjectFiles.NumberOfTimesToIgnore(file)} times");
+            //}
+
 #endif
         }
 

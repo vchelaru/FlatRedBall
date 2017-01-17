@@ -23,16 +23,14 @@ namespace FlatRedBall.Math
 
         #region Properties
 
-        #region XML Docs
         /// <summary>
-        /// Gets the rolling average using the values currently stored.
+        /// Gets the rolling average using the values currently stored, or 0 if no values have been added.
         /// </summary>
         /// <remarks>
         /// The rolling average is calculated using the Capacity number of
         /// values.  If AddValue has not been called enough times to fill the
         /// Capacity, then the number of values stored are used.
         /// </remarks>
-        #endregion
         public float Average
         {
             get
@@ -130,12 +128,10 @@ namespace FlatRedBall.Math
 
         #region Methods
 
-        #region XML Docs
         /// <summary>
         /// Creates a new RolllingAverage with capacity equalling the argument capacity value.
         /// </summary>
         /// <param name="capacity">The maximum number of values that the RollingAverage can store.</param>
-        #endregion
         public RollingAverage(int capacity)
         {
             mCapacity = capacity;
@@ -143,12 +139,10 @@ namespace FlatRedBall.Math
             mValues = new List<float>(capacity);
         }
 
-        #region XML Docs
         /// <summary>
         /// Adds a value to the RollingAverage.  The oldest value is discarded if the Capacity has been reached. 
         /// </summary>
         /// <param name="value">The value to add.</param>
-        #endregion
         public void AddValue(float value)
         {
             if (IsRadian)
@@ -164,6 +158,9 @@ namespace FlatRedBall.Math
             }
         }
 
+        /// <summary>
+        /// Clears all values from the rolling average.
+        /// </summary>
         public void Clear()
         {
             mValues.Clear();

@@ -3,16 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 
 using FlatRedBall;
-#if FRB_MDX
-using Microsoft.DirectX.DirectInput;
 
-using Keys = Microsoft.DirectX.DirectInput.Key;
-
-
-#else
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-#endif
 
 namespace FlatRedBall.Input
 {
@@ -31,22 +24,10 @@ namespace FlatRedBall.Input
         #endregion
 
         #region Fields
-
-#if FRB_MDX
-        Device mKeyboardDevice;
-
-        BufferedDataCollection mBufferedData;
-        KeyboardState mLastFrameKeyboardState;
-
-#else
+        
         KeyboardState mLastFrameKeyboardState = new KeyboardState();
 
-#endif
         KeyboardState mKeyboardState;
-
-#if SILVERLIGHT
-        KeyboardState mTemporaryKeyboardState;
-#endif
 
         public const int NumberOfKeys = 255;
 

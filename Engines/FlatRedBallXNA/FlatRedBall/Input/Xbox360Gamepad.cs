@@ -886,7 +886,10 @@ namespace FlatRedBall.Input
         }
         #endregion
 
-
+        /// <summary>
+        /// Clears the input on this controller for this frame. This includes
+        /// analog stick values, button values, and trigger values.
+        /// </summary>
         public void Clear()
         {
             mGamePadState = new GamePadState();
