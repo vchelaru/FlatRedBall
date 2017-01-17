@@ -61,7 +61,7 @@ namespace PluginTestbed.MoveToLayerPlugin
 
             foreach (NamedObjectSave nos in element.NamedObjects)
             {
-                if (!nos.IsDisabled && !nos.IsContainer)
+                if (!nos.IsDisabled && !nos.IsContainer && !nos.DefinedByBase )
                 {
                     bool shouldCheckForNull = nos.Instantiate == false;
 
