@@ -724,7 +724,8 @@ namespace FlatRedBall.Math.Geometry
 
             if (layer != null)
             {
-                bool shouldMakeVisible = rectangle.mLayerBelongingTo == null && rectangle.ListsBelongingTo.Contains(mRectangles) == false;
+                bool shouldMakeVisible = rectangle.mLayerBelongingTo == null && rectangle.ListsBelongingTo.Contains(mRectangles) == false
+                    && rectangle.Visible; 
 
                 if (!rectangle.ListsBelongingTo.Contains(mAutomaticallyUpdated))
                 {
@@ -815,7 +816,8 @@ namespace FlatRedBall.Math.Geometry
 
             if (layer != null)
             {
-                bool shouldMakeVisible = circle.mLayerBelongingTo == null && circle.ListsBelongingTo.Contains(mCircles) == false;
+                bool shouldMakeVisible = circle.mLayerBelongingTo == null && circle.ListsBelongingTo.Contains(mCircles) == false
+                    && circle.Visible;
 
                 if (!circle.ListsBelongingTo.Contains(mAutomaticallyUpdated))
                 {
@@ -864,7 +866,8 @@ namespace FlatRedBall.Math.Geometry
 
             if (layer != null)
             {
-                bool shouldMakeVisible = sphere.mLayerBelongingTo == null && sphere.ListsBelongingTo.Contains(mSpheres) == false;
+                bool shouldMakeVisible = sphere.mLayerBelongingTo == null && sphere.ListsBelongingTo.Contains(mSpheres) == false
+                    && sphere.Visible;
 
                 if (!sphere.ListsBelongingTo.Contains(mAutomaticallyUpdated))
                 {
@@ -918,7 +921,8 @@ namespace FlatRedBall.Math.Geometry
             if (layer != null)
             {
 
-                bool shouldMakeVisible = line.mLayerBelongingTo == null && line.ListsBelongingTo.Contains(mLines) == false;
+                bool shouldMakeVisible = line.mLayerBelongingTo == null && line.ListsBelongingTo.Contains(mLines) == false
+                    && line.Visible;
 
                 if (line.Visible)
                 {
@@ -994,7 +998,8 @@ namespace FlatRedBall.Math.Geometry
 
             if (layer != null)
             {
-                bool shouldMakeVisible = polygon.mLayerBelongingTo == null && polygon.ListsBelongingTo.Contains(mRectangles) == false;
+                bool shouldMakeVisible = polygon.mLayerBelongingTo == null && polygon.ListsBelongingTo.Contains(mRectangles) == false
+                    && polygon.Visible;
 
                 if (!polygon.ListsBelongingTo.Contains(mAutomaticallyUpdated))
                 {
@@ -1047,7 +1052,8 @@ namespace FlatRedBall.Math.Geometry
 
             if (layer != null)
             {
-                bool shouldMakeVisible = capsule.mLayerBelongingTo == null && capsule.ListsBelongingTo.Contains(mCircles) == false;
+                bool shouldMakeVisible = capsule.mLayerBelongingTo == null && capsule.ListsBelongingTo.Contains(mCircles) == false
+                    && capsule.Visible;
 
 
                 if (capsule.Visible)

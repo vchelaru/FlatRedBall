@@ -32,7 +32,7 @@ namespace GlueTestProject.Screens
         Layer layer3D;
 
         void CustomInitialize()
-		{
+        {
             if (!Layer2D.Texts.Contains(EntireScene.Texts[0]))
             {
                 throw new Exception("Texts in entire Scenes which come from files in Screens are not properly added to Layers");
@@ -52,8 +52,8 @@ namespace GlueTestProject.Screens
             {
                 throw new Exception("The 3D Layer needs its own LayerCameraSettings to be independent from the Camera");
             }
-   
-            if(Layer3DIndependentOfCamera.LayerCameraSettings.Orthogonal)
+
+            if (Layer3DIndependentOfCamera.LayerCameraSettings.Orthogonal)
             {
                 throw new Exception("The 3D Layer should not be orthogonal - it should be 3D 3D");
             }
@@ -105,13 +105,9 @@ namespace GlueTestProject.Screens
                 throw new Exception("Sprites which are on Layers in Entities, which come from Scenes which are not on Layers, and have their Entity put on a Layer are being rendered twice.");
             }
 
-            MoveToLayerEntityInstance.MoveToLayer(Layer2D);
-            if (Layer2D.Circles.Contains(MoveToLayerEntityInstance.CircleInstance) == false)
-            {
-                throw new Exception("Circles on entities are not moved to a layer when calling MoveToLayer");
-            }
+            TestMovingEntitiesAlsoMovesShapes();
 
-            if(SpriteManager.TopLayer.Sprites.Contains(TopLayerSprite) == false)
+            if (SpriteManager.TopLayer.Sprites.Contains(TopLayerSprite) == false)
             {
                 throw new Exception($"The {nameof(TopLayerSprite)} should be on the SpriteManager's TopLayer, but it's not!");
             }
@@ -130,7 +126,36 @@ namespace GlueTestProject.Screens
             on3DInstance.AddToManagers(layer3D);
 
             TestMoveToLayerDerived();
-		}
+
+            TestAddedToLayerInvisibleShapesStayInvisible();
+        }
+
+        private void TestMovingEntitiesAlsoMovesShapes()
+        {
+            MoveToLayerEntityInstance.MoveToLayer(Layer2D);
+            if (Layer2D.Circles.Contains(MoveToLayerEntityInstance.CircleInstance) == false)
+            {
+                throw new Exception("Circles on entities are not moved to a layer when calling MoveToLayer");
+            }
+        }
+
+        private void TestAddedToLayerInvisibleShapesStayInvisible()
+        {
+            MoveToLayerEntityInstance.MoveToLayer(Layer3DIndependentOfCamera);
+
+            if (MoveToLayerEntityInstance.InvisibleCircle.Visible)
+            {
+                throw new Exception("Moving an entity with an invisible circle makes it visible.");
+            }
+            if (MoveToLayerEntityInstance.InvisibleAxisAlignedRectangleInstance.Visible)
+            {
+                throw new Exception("Moving an entity with an invisible AxisAlignedRectangle makes it visible.");
+            }
+            if (MoveToLayerEntityInstance.InvisiblePolygonInstance.Visible)
+            {
+                throw new Exception("Moving an entity with an invisible Polygon makes it visible.");
+            }
+        }
 
         private void TestMoveToLayerDerived()
         {
