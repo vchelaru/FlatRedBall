@@ -72,6 +72,34 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         /// <summary>
+        /// Returns whether the calling Entity inherits from another class that implements ICollidable.
+        /// Whether the calling Entity itself implements ICollidable doesn't matter.
+        /// </summary>
+        /// <param name="instance">The calling Entity</param>
+        /// <returns>Whether the implementation is found in a base Entity.</returns>
+        public static bool GetHasImplementsCollidableProperty(this EntitySave instance)
+        {
+            if (string.IsNullOrEmpty(instance.BaseEntity))
+            {
+                return true;
+            }
+            else
+            {
+                if (instance.InheritsFromFrbType())
+                {
+
+                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(instance.BaseEntity);
+
+                    if (ati != null)
+                    {
+                        return !ati.ImplementsICollidable;
+                    }
+                }
+                return true;
+            }
+        }
+
+        /// <summary>
         /// Returns whether the calling Entity inherits from another Entity that implements IVisible.
         /// Whether the calling Entity itself implements IVisible doesn't matter.
         /// </summary>
