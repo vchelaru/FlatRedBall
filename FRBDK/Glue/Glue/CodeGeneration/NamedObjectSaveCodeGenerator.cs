@@ -1644,42 +1644,26 @@ namespace FlatRedBall.Glue.CodeGeneration
             IEnumerable<CustomVariableInNamedObject> enumerable = namedObject.InstructionSaves;
             var ati = namedObject.GetAssetTypeInfo();
 
-            string extraVariablePattern = null;
+            var variableDefinitions = ati?.VariableDefinitions;
+            
 
-            if (ati != null)
+            if (variableDefinitions != null)
             {
-                extraVariablePattern = ati.ExtraVariablesPattern;
-            }
-            string[] extraVariables;
-
-            if (extraVariablePattern != null)
-            {
-
-                extraVariables = extraVariablePattern.Split(';');
-
-                for (int i = 0; i < extraVariables.Length; i++)
-                {
-                    extraVariables[i] = extraVariables[i].Trim().Substring(extraVariables[i].Trim().IndexOf(' ') + 1);
-                }
-
                 enumerable = enumerable.OrderBy(item =>
                     {
-                        if (extraVariables.Contains(item.Member))
+                        var matching = variableDefinitions.FirstOrDefault(definition => definition.Name == item.Member);
+
+                        if(matching == null)
                         {
-                            return namedObject.InstructionSaves.IndexOf(item) - namedObject.InstructionSaves.Count;
+                            return -1;
                         }
                         else
                         {
-                            return namedObject.InstructionSaves.IndexOf(item);
+                            return variableDefinitions.IndexOf(matching);
                         }
                     });
 
             }
-            else
-            {
-                extraVariables = new string[0];
-            }
-
 
             foreach (var instructionSave in enumerable)
             {

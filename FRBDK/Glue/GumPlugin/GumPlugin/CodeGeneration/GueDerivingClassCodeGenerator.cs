@@ -64,6 +64,11 @@ namespace GumPlugin.CodeGeneration
         
         public string GenerateCodeFor(ElementSave elementSave)
         {
+            if(elementSave == null)
+            {
+                throw new ArgumentNullException(nameof(elementSave));
+            }
+
             CodeBlockBase topBlock =
                 new CodeBlockBase(null);
             // It's much easier to add the LINQ usings here instead of using the qualified method names in code gen below
@@ -79,7 +84,7 @@ namespace GumPlugin.CodeGeneration
             }
             else
             {
-                GenerateScreenAndComponentCodeFor(elementSave as ElementSave, currentBlock);
+                GenerateScreenAndComponentCodeFor(elementSave, currentBlock);
                 // for now always true
                 generated = true;
             }
@@ -108,6 +113,10 @@ namespace GumPlugin.CodeGeneration
 
         public static string GetUnqualifiedRuntimeTypeFor(ElementSave elementSave)
         {
+            if(elementSave == null)
+            {
+                throw new ArgumentNullException(nameof(elementSave));
+            }
             return FlatRedBall.IO.FileManager.RemovePath( elementSave.Name) + "Runtime";
         }
 
@@ -115,6 +124,11 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateScreenAndComponentCodeFor(ElementSave elementSave, ICodeBlock codeBlock)
         {
+            if(elementSave == null)
+            {
+                throw new ArgumentNullException(nameof(elementSave));
+            }
+
             string runtimeClassName = GetUnqualifiedRuntimeTypeFor(elementSave);
             
             ICodeBlock currentBlock = GenerateClassHeader(codeBlock, elementSave);
