@@ -92,9 +92,10 @@ namespace FRBDKUpdater
             {
                 Logger.Log("Downloading from " + mSettings.Url);
 
-
-                int maxFailures = 4;
-                int msToSleepOn0Length = 400;
+                // 4 failures @ 400 ms each was not enough
+                // for brake neck
+                int maxFailures = 5;
+                int msToSleepOn0Length = 800;
                 int numberOfFailures = 0;
 
                 HttpWebResponse response = null;
