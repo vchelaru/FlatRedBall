@@ -92,7 +92,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     if (ati != null)
                     {
-                        return ati.HasImplementsIColladableProperty;
+                        return !ati.ImplementsICollidable;
                     }
                 }
                 return true;

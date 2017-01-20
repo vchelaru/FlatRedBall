@@ -160,7 +160,7 @@ namespace FlatRedBall.Glue.Elements
         public string AttachToNullOnlyMethod;
         public bool HasCursorIsOn;
         public bool HasVisibleProperty;
-        public bool HasImplementsIColladableProperty = true;
+        public bool ImplementsICollidable;
         public string ContentImporter;
         public string ContentProcessor;
 
