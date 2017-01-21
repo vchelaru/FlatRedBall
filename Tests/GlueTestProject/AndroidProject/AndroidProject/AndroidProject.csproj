@@ -1940,6 +1940,14 @@
       <Name>TmxFile</Name>
       <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
     </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\sheet_9.png">
+      <Name>sheet_9</Name>
+      <Link>Assets\content\screens\tmxscreen\sheet_9.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\tmxscreen\withlargeobjectonfirstlayer.tmx">
+      <Name>WithLargeObjectOnFirstLayer</Name>
+      <Link>Assets\content\screens\tmxscreen\withlargeobjectonfirstlayer.tmx</Link>
+    </AndroidAsset>
     <AndroidAsset Include="Assets\content\spriteFont1.xnb" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />

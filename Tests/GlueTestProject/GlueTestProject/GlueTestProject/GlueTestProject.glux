@@ -2762,6 +2762,12 @@
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
+        <ReferencedFileSave>
+          <Name>Screens/TmxScreen/WithLargeObjectOnFirstLayer.tmx</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
       </ReferencedFiles>
       <NamedObjects>
         <NamedObjectSave>
@@ -8606,13 +8612,13 @@
         </NamedObjectSave>
         <NamedObjectSave>
           <CustomProperty>
-            <Member>Points</Member>
-            <ValueAsListOfVector2 />
-          </CustomProperty>
-          <CustomProperty>
             <Type>bool</Type>
             <Member>Visible</Member>
             <ValueAsBool>false</ValueAsBool>
+          </CustomProperty>
+          <CustomProperty>
+            <Member>Points</Member>
+            <ValueAsListOfVector2 />
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />

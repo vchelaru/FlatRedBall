@@ -62,7 +62,20 @@ namespace GlueTestProject.Screens
 
             TestRotatedTiles();
 
+            TestTileSizeOnMapWithObjects();
+
 		}
+
+        private void TestTileSizeOnMapWithObjects()
+        {
+            var expectedWidth = 32 * 16;
+            var actualWidth = WithLargeObjectOnFirstLayer.Width;
+
+            if(expectedWidth != actualWidth)
+            {
+                throw new Exception("Maps with objects on the first layer that are not the same size as tiles report the wrong width and height");
+            }
+        }
 
         private void TestRotatedTiles()
         {

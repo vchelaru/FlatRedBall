@@ -761,6 +761,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>RotatedTileTmx</Name>
     </None>
+    <None Include="Screens\TmxScreen\sheet_9.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>sheet_9</Name>
+    </None>
     <None Include="Screens\TmxScreen\TestLevel2.scnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TestLevel2</Name>
@@ -780,6 +784,10 @@
     <None Include="Screens\TmxScreen\TmxWithTileProperties.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TmxWithTileProperties</Name>
+    </None>
+    <None Include="Screens\TmxScreen\WithLargeObjectOnFirstLayer.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>WithLargeObjectOnFirstLayer</Name>
     </None>
     <None Include="Screens\TransparencyRenderingScreen\ColorTest.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

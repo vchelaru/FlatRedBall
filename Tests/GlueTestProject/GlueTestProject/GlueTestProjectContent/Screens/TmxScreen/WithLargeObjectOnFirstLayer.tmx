@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="16" tileheight="16" nextobjectid="2">
+ <tileset firstgid="1" name="sheet_9" tilewidth="16" tileheight="16" tilecount="136" columns="17">
+  <image source="sheet_9.png" width="272" height="128"/>
+ </tileset>
+ <objectgroup name="Object Layer 1">
+  <object id="1" gid="77" x="27" y="271" width="284" height="290"/>
+ </objectgroup>
+ <layer name="Tile Layer 1" width="32" height="32">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgoA6QJRNTC4zaP2r/qP2j9o/aT579HEiYEwtNK/upFU7D2X5iAK39j8099LRzsNk/UHaP4lE8ikfxKB7F1MAA2TPdnwAQAAA=
+  </data>
+ </layer>
+</map>

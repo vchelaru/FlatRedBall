@@ -2722,6 +2722,10 @@
       <Name>RotatedTileTmx</Name>
       <Link>Content\Screens\TmxScreen\RotatedTileTmx.tmx</Link>
     </Content>
+    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Screens\TmxScreen\sheet_9.png">
+      <Name>sheet_9</Name>
+      <Link>Content\Screens\TmxScreen\sheet_9.png</Link>
+    </Content>
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Screens\TmxScreen\TestLevel2.scnx">
       <Name>TestLevel2</Name>
       <Link>Content\Screens\TmxScreen\TestLevel2.scnx</Link>
@@ -2749,6 +2753,10 @@
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Screens\TmxScreen\TmxWithTileProperties.csv">
       <Name>TmxWithTileProperties</Name>
       <Link>Content\Screens\TmxScreen\TmxWithTileProperties.csv</Link>
+    </Content>
+    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Screens\TmxScreen\WithLargeObjectOnFirstLayer.tmx">
+      <Name>WithLargeObjectOnFirstLayer</Name>
+      <Link>Content\Screens\TmxScreen\WithLargeObjectOnFirstLayer.tmx</Link>
     </Content>
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Screens\TransparencyRenderingScreen\ColorTest.png">
       <Name>ColorTest</Name>
