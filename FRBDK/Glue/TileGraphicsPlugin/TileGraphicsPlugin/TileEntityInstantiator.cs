@@ -121,13 +121,30 @@ namespace FlatRedBall.TileEntities
 
             foreach (var property in propertiesToAssign)
             {
+                var valueToSet = property.Value;
+                valueToSet = SetValueAccordingToType(valueToSet, property.Name, property.Type, entityType);
                 try
                 {
-                    var valueToSet = property.Value;
-
-                    valueToSet = SetValueAccordingToType(valueToSet, property.Name, property.Type, entityType);
-
                     lateBinder.SetValue(entity, property.Name, valueToSet);
+                }
+                catch (InvalidCastException e)
+                {
+                    string assignedType = valueToSet.GetType().ToString() ?? "unknown type";
+                    assignedType = GetFriendlyNameForType(assignedType);
+
+                    string expectedType = "unknown type";
+                    object outValue;
+                    if (lateBinder.TryGetValue(entity, property.Name, out outValue) && outValue != null)
+                    {
+                        expectedType = outValue.GetType().ToString();
+                        expectedType = GetFriendlyNameForType(expectedType);
+                    }
+
+                    // This means that the property exists but is of a different type. 
+                    string message = $"Attempted to assign the property {property.Name} " +
+                        $"to a value of type {assignedType} but expected {expectedType}. " +
+                        $"Check the property type in your TMX and make sure it matches the type on the entity.";
+                    throw new Exception(message, e);
                 }
                 catch (Exception e)
                 {
@@ -136,6 +153,18 @@ namespace FlatRedBall.TileEntities
 
                 }
             }
+        }
+
+
+        private static string GetFriendlyNameForType(string type)
+        {
+            switch (type)
+            {
+                case "System.String": return "string";
+                case "System.Single": return "float";
+
+            }
+            return type;
         }
 
 
