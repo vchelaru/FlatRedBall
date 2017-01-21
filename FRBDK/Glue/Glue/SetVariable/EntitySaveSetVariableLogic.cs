@@ -249,6 +249,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 AskToPreserveVariables(entitySave, variablesBefore);
             }
+            PropertyGridHelper.UpdateEntitySaveDisplay();
         }
 
         private static bool GetIfCurrentEntityBaseIsValid(EntitySave entitySave)

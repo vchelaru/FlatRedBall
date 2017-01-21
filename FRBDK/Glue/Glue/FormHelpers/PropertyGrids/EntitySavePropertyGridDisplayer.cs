@@ -43,6 +43,11 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                 IncludeMember("ImplementsIVisible", typeof(EntitySave), null, base.ReadOnlyAttribute());
             }
 
+            if (!string.IsNullOrEmpty(instance.BaseEntity) && !instance.GetHasImplementsCollidableProperty())
+            {
+                ExcludeMember("ImplementsICollidable");
+            }
+
 
             if (!instance.CreatedByOtherEntities)
             {
