@@ -2378,73 +2378,100 @@ namespace FlatRedBall.Glue.FormHelpers
 
         private static void MoveToTopClick(object sender, EventArgs e)
         {
+            MoveToTop();
+
+        }
+
+        public static bool MoveToTop()
+        {
             object objectToRemove;
             IList listToRemoveFrom;
             GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom);
-
-            int index = listToRemoveFrom.IndexOf(objectToRemove);
-            if (index > 0)
+            if (listToRemoveFrom != null)
             {
-                listToRemoveFrom.Remove(objectToRemove);
-                listToRemoveFrom.Insert(0, objectToRemove);
+                int index = listToRemoveFrom.IndexOf(objectToRemove);
+                if (index > 0)
+                {
+                    listToRemoveFrom.Remove(objectToRemove);
+                    listToRemoveFrom.Insert(0, objectToRemove);
+                    PostMoveActivity(EditorLogic.CurrentTreeNode);
+                }
+                return true;
             }
-
-            PostMoveActivity(EditorLogic.CurrentTreeNode);
-
+            return false;
         }
 
         private static void MoveUpClick(object sender, EventArgs e)
         {
-            object objectToRemove;
-            IList listToRemoveFrom;
-            GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom);
-            int index = listToRemoveFrom.IndexOf(objectToRemove);
-
-            if (index > 0)
-            {
-                listToRemoveFrom.Remove(objectToRemove);
-
-                listToRemoveFrom.Insert(index - 1, objectToRemove);
-            }
-
-            PostMoveActivity(EditorLogic.CurrentTreeNode);
+            MoveSelectedObjectUp();
         }
-
-
 
         private static void MoveDownClick(object sender, EventArgs e)
         {
-            object objectToRemove;
-            IList listToRemoveFrom;
-            GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom);
-            int index = listToRemoveFrom.IndexOf(objectToRemove);
-
-            if (index < listToRemoveFrom.Count - 1)
-            {
-                listToRemoveFrom.Remove(objectToRemove);
-
-                listToRemoveFrom.Insert(index + 1, objectToRemove);
-            }
-
-            PostMoveActivity(EditorLogic.CurrentTreeNode);
+            MoveSelectedObjectDown();
         }
 
-        private static void MoveToBottomClick(object sender, EventArgs e)
+        public static bool MoveSelectedObjectUp()
+        {
+            int direction = -1;
+            return MoveObjectInDirection(direction);
+        }
+
+        public static bool MoveSelectedObjectDown()
+        {
+            int direction = 1;
+            return MoveObjectInDirection(direction);
+        }
+
+        private static bool MoveObjectInDirection(int direction)
         {
             object objectToRemove;
             IList listToRemoveFrom;
             GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom);
-            int index = listToRemoveFrom.IndexOf(objectToRemove);
-
-            if (index < listToRemoveFrom.Count - 1)
+            if (listToRemoveFrom != null)
             {
-                listToRemoveFrom.Remove(objectToRemove);
+                int index = listToRemoveFrom.IndexOf(objectToRemove);
+                int newIndex = index + direction;
+                if (newIndex >= 0 && newIndex < listToRemoveFrom.Count)
+                {
+                    listToRemoveFrom.Remove(objectToRemove);
 
+                    listToRemoveFrom.Insert(newIndex, objectToRemove);
 
-                listToRemoveFrom.Insert(listToRemoveFrom.Count, objectToRemove);
+                    PostMoveActivity(EditorLogic.CurrentTreeNode);
+
+                    return true;
+                }
             }
 
-            PostMoveActivity(EditorLogic.CurrentTreeNode);
+            return false;
+        }
+
+
+        private static void MoveToBottomClick(object sender, EventArgs e)
+        {
+            MoveToBottom();
+        }
+
+        public static bool MoveToBottom()
+        {
+            object objectToRemove;
+            IList listToRemoveFrom;
+            GetObjectAndListForMoving(out objectToRemove, out listToRemoveFrom);
+            if (listToRemoveFrom != null)
+            {
+
+                int index = listToRemoveFrom.IndexOf(objectToRemove);
+
+                if (index < listToRemoveFrom.Count - 1)
+                {
+                    listToRemoveFrom.Remove(objectToRemove);
+                    listToRemoveFrom.Insert(listToRemoveFrom.Count, objectToRemove);
+                    PostMoveActivity(EditorLogic.CurrentTreeNode);
+                }
+                return true;
+            }
+            return false;
         }
 
         private static void GetObjectAndListForMoving(out object objectToRemove, out IList listToRemoveFrom)
@@ -2509,8 +2536,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
             GluxCommands.Self.SaveGlux();
         }
-
-
 
         public static void SetExternallyBuiltFileIfHigherThanCurrent(string directoryOfFile, bool performSave)
         {

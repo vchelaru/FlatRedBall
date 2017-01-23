@@ -1292,29 +1292,14 @@ namespace Glue
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            // CTRL+F, control f, search focus, ctrl f, ctrl + f
-            switch (keyData)
+            if(HotkeyManager.Self.TryHandleKeys(keyData))
             {
-                case Keys.Control | Keys.F:
-                    this.SearchTextbox.Focus();
-                    return true;
-                case Keys.Alt | Keys.Left:
-                    TreeNodeStackManager.Self.GoBack();
-                    return true;
-                case Keys.Alt | Keys.Right:
-                    TreeNodeStackManager.Self.GoForward();
-                    return true;
-                case Keys.Escape:
-                    if (this.SearchTextbox.Focused)
-                    {
-                        this.ElementTreeView.Focus();
-                    }
-                    break;
-                default:
-                    break;
+                return true;
             }
-
-            return base.ProcessCmdKey(ref msg, keyData);
+            else
+            {
+                return base.ProcessCmdKey(ref msg, keyData);
+            }
         }
 
         private void connectToGlueViewToolStripMenuItem_Click(object sender, EventArgs e)
