@@ -1,4 +1,4 @@
-﻿using $PROJECT_NAMESPACE$.DataTypes;
+﻿using TleMergingTest.DataTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,8 +32,8 @@ namespace FlatRedBall.TileGraphics
         float? mNumberTilesWide;
         float? mNumberTilesTall;
 
-        float? mWidthPerTile;
-        float? mHeightPerTile;
+        public float? WidthPerTile { get; private set; }
+        public float? HeightPerTile { get; private set; }
 
         #endregion
 
@@ -113,9 +113,9 @@ namespace FlatRedBall.TileGraphics
         {
             get
             {
-                if (mNumberTilesWide.HasValue && mWidthPerTile.HasValue)
+                if (mNumberTilesWide.HasValue && WidthPerTile.HasValue)
                 {
-                    return mNumberTilesWide.Value * mWidthPerTile.Value;
+                    return mNumberTilesWide.Value * WidthPerTile.Value;
                 }
                 else
                 {
@@ -131,9 +131,9 @@ namespace FlatRedBall.TileGraphics
         {
             get
             {
-                if (mNumberTilesTall.HasValue && mHeightPerTile.HasValue)
+                if (mNumberTilesTall.HasValue && HeightPerTile.HasValue)
                 {
-                    return mNumberTilesTall.Value * mHeightPerTile.Value;
+                    return mNumberTilesTall.Value * HeightPerTile.Value;
                 }
                 else
                 {
@@ -307,8 +307,8 @@ namespace FlatRedBall.TileGraphics
                 toReturn.mNumberTilesTall = rtmi.NumberCellsTall;
             }
 
-            toReturn.mWidthPerTile = rtmi.QuadWidth;
-            toReturn.mHeightPerTile = rtmi.QuadHeight;
+            toReturn.WidthPerTile = rtmi.QuadWidth;
+            toReturn.HeightPerTile = rtmi.QuadHeight;
 
             for (int i = 0; i < rtmi.Layers.Count; i++)
             {
@@ -486,7 +486,7 @@ namespace FlatRedBall.TileGraphics
 
             toReturn.MapProperties = tms.properties
                 .Select(propertySave => new NamedValue
-                    { Name = propertySave.name, Value = propertySave.value, Type = propertySave.Type })
+                { Name = propertySave.name, Value = propertySave.value, Type = propertySave.Type })
                 .ToList();
 
 

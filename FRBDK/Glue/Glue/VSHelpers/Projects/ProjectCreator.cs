@@ -51,10 +51,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 toReturn = new XnaContentProject(coreVisualStudioProject);
             }
 
+            string errorMessage = null;
 
             if (toReturn == null)
             {
-                toReturn = TryGetProjectTypeFromDefineConstants(coreVisualStudioProject);
+                toReturn = TryGetProjectTypeFromDefineConstants(coreVisualStudioProject, out errorMessage);
             }
 
 
@@ -63,15 +64,14 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 // If we got here that means that the preprocessor defines don't match what
                 // Glue expects.  This is probably bad - Glue generated code will likely not
                 // compile, so let's warn the user
-                string warning = "Could not determine project type based on of preprocessor defines.";
-                GlueGui.ShowMessageBox(warning);
+                GlueGui.ShowMessageBox(errorMessage);
 
             }
 
             return toReturn;
         }
 
-        private static ProjectBase TryGetProjectTypeFromDefineConstants(Project coreVisualStudioProject)
+        private static ProjectBase TryGetProjectTypeFromDefineConstants(Project coreVisualStudioProject, out string message)
         {
             string preProcessorConstants = GetPreProcessorConstantsFromProject(coreVisualStudioProject);
 
@@ -116,7 +116,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 toReturn = new Xna4Project(coreVisualStudioProject);
             }
-            
+
+            message = null;
+            if(toReturn == null)
+            {
+                message = $"Could not determine project type from preprocessor directives. The preprocessor directive string is {preProcessorConstants}";
+            }
+
             return toReturn;
         }
 
@@ -127,7 +133,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             // Victor Chelaru October 20, 2012
             // We used to just look at the XML and had a broad way of determining the 
             // patterns.  I decided it was time to clean this up and make it more precise
-            // so now we use the PropertyGroups from the project.
+            // so now we use the Properties from the project.
             foreach (var property in coreVisualStudioProject.Properties)
             {
                 if (property.Name == "DefineConstants")
