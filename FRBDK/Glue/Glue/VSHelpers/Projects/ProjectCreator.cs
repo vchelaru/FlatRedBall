@@ -120,7 +120,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             message = null;
             if(toReturn == null)
             {
-                message = $"Could not determine project type from preprocessor directives. The preprocessor directive string is {preProcessorConstants}";
+                message = $"Could not determine project type from preprocessor directives. The preprocessor directive string is \"{preProcessorConstants}\"";
             }
 
             return toReturn;

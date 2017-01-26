@@ -1596,29 +1596,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool IsMouseOver(Gui.Cursor cursor, Layer layer)
         {
-#if SILVERLIGHT
-            for(int i= 0; i < this.Circles.Count; i++)
-            {
-                if(cursor.IsOn(Circles[i]))
-                {
-                    return true;
-                }
-            }
-
-            for (int i = 0; i < this.Polygons.Count; i++ )
-            {
-                if (cursor.IsOn(Polygons[i]))
-                {
-                    return true;
-                }
-            }
-
-            // todo - add AARects
-
-            return false;
-#else
             return cursor.IsOn3D(this, layer);
-#endif
         }
     }
 }

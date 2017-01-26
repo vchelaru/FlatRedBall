@@ -1,5 +1,4 @@
-﻿using TleMergingTest.DataTypes;
-using FlatRedBall.Math;
+﻿using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.TileGraphics;
 using System;
@@ -90,6 +89,12 @@ namespace FlatRedBall.TileCollisions
             GridSize = 16;
         }
 
+
+        public void AddToLayer(FlatRedBall.Graphics.Layer layer)
+        {
+            this.mShapes.AddToManagers(layer);
+        }
+
         public bool CollideAgainstSolid(AxisAlignedRectangle movableObject)
         {
             bool toReturn = false;
@@ -108,7 +113,6 @@ namespace FlatRedBall.TileCollisions
             return toReturn;
         }
 
-
         public bool CollideAgainstSolid(Polygon movableObject)
         {
             bool toReturn = false;
@@ -117,7 +121,6 @@ namespace FlatRedBall.TileCollisions
 
             return toReturn;
         }
-
 
         public bool CollideAgainst(AxisAlignedRectangle rectangle)
         {
