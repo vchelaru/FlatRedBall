@@ -772,7 +772,6 @@ namespace FlatRedBall.Glue.Plugins
                     // around.
                     control.Parent.Controls.Remove(control);
                 }
-
             }
 
             return doesPluginWantToShutDown;

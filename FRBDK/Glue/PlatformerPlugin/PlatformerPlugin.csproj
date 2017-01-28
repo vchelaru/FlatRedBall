@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\MainController.cs" />
+    <Compile Include="Generators\CodeGenerator.cs" />
     <Compile Include="Generators\CsvGenerator.cs" />
     <Compile Include="MainPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

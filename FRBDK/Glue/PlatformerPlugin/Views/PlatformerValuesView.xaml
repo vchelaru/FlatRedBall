@@ -16,63 +16,77 @@
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        
+
+        <Button Grid.Column="4" Width="24" Click="HandleXClick">X</Button>
+
+        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="3" VerticalAlignment="Stretch" Fill="LightGray" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" HorizontalAlignment="Left" Width="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Left" Width="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" HorizontalAlignment="Left" Width="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" HorizontalAlignment="Left" Width="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="5" HorizontalAlignment="Right" Width="1" Fill="Gray" />
+
+
+        <Rectangle Grid.Row="0" Grid.ColumnSpan="5" VerticalAlignment="Top" Height="1" Fill="Black" />
+        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
+
+
+
+        <Rectangle Grid.Row="1" Grid.ColumnSpan="5" Grid.Column="0" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
+
+
         <!--Name-->
-        <TextBlock HorizontalAlignment="Center" Margin="3">Name</TextBlock>
         <StackPanel Grid.Row="1" Margin="3">
-            <TextBox Text="{Binding Name}" Width="80" VerticalAlignment="Top"></TextBox>
+            <TextBlock HorizontalAlignment="Center" Margin="3">Movement Type</TextBlock>
+            <TextBox Text="{Binding Name}" Width="90" VerticalAlignment="Top"></TextBox>
             
         </StackPanel>
 
         <!--Horizontal Movement-->
-        <TextBlock Grid.Column="1"  HorizontalAlignment="Center" Margin="3">Horizontal Movement</TextBlock>
-        <StackPanel Grid.Row="1" Grid.Column="1" Margin="3">
+        <TextBlock Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Horizontal Movement</TextBlock>
+        <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,3,8,3">
 
             <TextBlock>Max Speed:</TextBlock>
-            <TextBox Text="{Binding MaxSpeedX}" Margin="0,0,0,5"></TextBox>
+            <TextBox Text="{Binding MaxSpeedX}" HorizontalAlignment="Left" Width="70" Margin="0,0,0,5"></TextBox>
 
             <RadioButton IsChecked="{Binding IsImmediate}">Immediate</RadioButton>
             <RadioButton  IsChecked="{Binding UsesAcceleration}" Margin="0,0,0,5">Speed Up/Down</RadioButton>
 
             <StackPanel Visibility="{Binding AccelerationValuesVisibility}">
                 <TextBlock>Speed Up Time:</TextBlock>
-                <TextBox Text="{Binding AccelerationTimeX}"></TextBox>
+                <TextBox HorizontalAlignment="Left" Width="50"  Text="{Binding AccelerationTimeX}"></TextBox>
                 <TextBlock>Slow Down Time:</TextBlock>
-                <TextBox Text="{Binding DecelerationTimeX}"></TextBox>
+                <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding DecelerationTimeX}"></TextBox>
 
             </StackPanel>
             
         </StackPanel>
 
         <!--Jumping-->
-        <TextBlock Grid.Column="2"  HorizontalAlignment="Center" Margin="3">Jumping</TextBlock>
-        <StackPanel Grid.Column="2" Grid.Row="1" Margin="3">
+        <TextBlock Grid.Column="2" FontSize="16" HorizontalAlignment="Left" Margin="3">Jumping</TextBlock>
+        <StackPanel Grid.Column="2" Grid.Row="1" Margin="12,3,8,3">
             <TextBlock>Jump Speed:</TextBlock>
-            <TextBox Text="{Binding JumpVelocity}" Margin="1,0,-1,5"></TextBox>
+            <TextBox HorizontalAlignment="Left" Width="70"  Text="{Binding JumpVelocity}" Margin="1,0,-1,5"></TextBox>
 
             <CheckBox Margin="0,0,0,5" IsChecked="{Binding JumpApplyByButtonHold}">Hold to Jump Higher</CheckBox>
             <StackPanel Visibility="{Binding JumpHoldTimeVisibility}">
                 <TextBlock>Max Jump Hold Time:</TextBlock>
-                <TextBox Text="{Binding JumpApplyLength}"></TextBox>
+                <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding JumpApplyLength}"></TextBox>
             </StackPanel>
         </StackPanel>
 
         <!--Falling-->
-        <TextBlock Grid.Column="3"  HorizontalAlignment="Center" Margin="3">Falling</TextBlock>
-        <StackPanel Grid.Column="3" Grid.Row="1" Margin="3">
+        <TextBlock Grid.Column="3" FontSize="16" HorizontalAlignment="Left" Margin="3">Falling</TextBlock>
+        <StackPanel Grid.Column="3" Grid.Row="1" Margin="12,3,8,3">
             <TextBlock>Gravity:</TextBlock>
-            <TextBox Text="{Binding Gravity}"></TextBox>
+            <TextBox HorizontalAlignment="Left" Width="70" Text="{Binding Gravity}" Margin="0,0,0,5" ></TextBox>
             <TextBlock>Max Falling Speed:</TextBlock>
-            <TextBox Text="{Binding MaxFallSpeed}"></TextBox>
+            <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding MaxFallSpeed}"></TextBox>
         </StackPanel>
 
-        <Button Grid.Column="4" Width="24" Click="HandleXClick">X</Button>
-        
-        <Rectangle Grid.Row="1" Grid.ColumnSpan="6" VerticalAlignment="Bottom" Height="1" Fill="Black" />
 
     </Grid>
 </UserControl>

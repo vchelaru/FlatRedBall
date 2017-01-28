@@ -15,12 +15,20 @@ using FlatRedBall.Instructions.Reflection;
 using System.ComponentModel;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Content.Instructions;
+using FlatRedBall.Glue.CodeGeneration;
+using FlatRedBall.Glue.Parsing;
 
 namespace FlatRedBall.Glue.Plugins
 {
     public abstract class PluginBase : IPlugin
     {
         Dictionary<ToolStripMenuItem, ToolStripMenuItem> mItemsAndParents = new Dictionary<ToolStripMenuItem, ToolStripMenuItem>();
+
+        List<ElementComponentCodeGenerator> CodeGenerators
+        {
+            get;
+            set;
+        } = new List<ElementComponentCodeGenerator>();
 
         #region Properties
 
@@ -297,6 +305,17 @@ namespace FlatRedBall.Glue.Plugins
         protected void FocusTab()
         {
             mTabContainer.SelectTab(PluginTab);
+        }
+
+        public void RegisterCodeGenerator(ElementComponentCodeGenerator codeGenerator)
+        {
+            CodeGenerators.Add(codeGenerator);
+            CodeWriter.CodeGenerators.Add(codeGenerator);
+        }
+
+        public void UnregisterAllCodeGenerators()
+        {
+            CodeWriter.CodeGenerators.RemoveAll(item => CodeGenerators.Contains(item));
         }
 
         #endregion

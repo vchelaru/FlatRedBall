@@ -23,7 +23,8 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             return absoluteFileName;
         }
 
-        public const string RelativeCsvFile = "PlatformerValues.csv";
+        public const string StrippedCsvFile = "PlatformerValues";
+        public const string RelativeCsvFile = StrippedCsvFile + ".csv";
 
 
         internal void GenerateFor(EntitySave entity, PlatformerEntityViewModel viewModel)

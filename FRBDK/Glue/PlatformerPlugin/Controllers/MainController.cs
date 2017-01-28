@@ -52,8 +52,20 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
             var entity = GlueState.Self.CurrentEntitySave;
             var viewModel = sender as PlatformerEntityViewModel;
-            bool shouldGenerateCsv, shouldGenerateEntity;
-            DetermineWhatToGenerate(e.PropertyName, viewModel, out shouldGenerateCsv, out shouldGenerateEntity);
+            bool shouldGenerateCsv, shouldGenerateEntity, shouldAddPlatformerVariables;
+            DetermineWhatToGenerate(e.PropertyName, viewModel, 
+                out shouldGenerateCsv, out shouldGenerateEntity, out shouldAddPlatformerVariables);
+
+            if (shouldGenerateCsv)
+            {
+                GenerateCsv(entity, viewModel);
+            }
+
+            if(shouldAddPlatformerVariables)
+            {
+                AddPlatformerVariables(entity);
+
+            }
 
             if (shouldGenerateEntity)
             {
@@ -63,65 +75,13 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
             }
 
-            if (shouldGenerateCsv)
+            if(shouldAddPlatformerVariables)
             {
-                TaskManager.Self.AddAsyncTask(
-                    () => CsvGenerator.Self.GenerateFor(entity, viewModel),
-                    "Generating Platformer CSV for " + entity.Name);
-
-
-                TaskManager.Self.AddAsyncTask(
-                    () =>
-                    {
-                        string rfsName = entity.Name.Replace("\\", "/") + "/" + CsvGenerator.RelativeCsvFile;
-                        bool isAlreadyAdded = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName) != null;
-
-                        if (!isAlreadyAdded)
-                        {
-                            GlueCommands.Self.GluxCommands.AddSingleFileTo(
-                                CsvGenerator.Self.CsvFileFor(entity),
-                                CsvGenerator.RelativeCsvFile,
-                                "",
-                                null,
-                                false,
-                                null,
-                                entity,
-                                null
-                                );
-                        }
-
-                        var rfs = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName);
-
-                        if (rfs != null && rfs.CreatesDictionary == false)
-                        {
-                            rfs.CreatesDictionary = true;
-                            GlueCommands.Self.GluxCommands.SaveGlux();
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
-                        }
-
-                        const string customClassName = "PlatformerValues";
-                        if(GlueState.Self.CurrentGlueProject.CustomClasses.Any(item=>item.Name == customClassName) == false)
-                        {
-                            CustomClassSave throwaway;
-                            GlueCommands.Self.GluxCommands.AddNewCustomClass(customClassName, out throwaway);
-                        }
-
-                        var customClass = GlueState.Self.CurrentGlueProject.CustomClasses
-                            .FirstOrDefault(item => item.Name == customClassName);
-
-                        if (customClass != null)
-                        {
-                            if(rfs != null)
-                            {
-                                Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force:true);
-                            }
-                        }
-                    },
-                    "Adding csv to platformer entity"
-                    );
+                GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+                GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
             }
 
-            if (shouldGenerateCsv || shouldGenerateEntity)
+            if (shouldGenerateCsv || shouldGenerateEntity || shouldAddPlatformerVariables)
             {
                 TaskManager.Self.AddAsyncTask(
                     () => GlueCommands.Self.GluxCommands.SaveGlux(),
@@ -129,25 +89,136 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             }
         }
 
-        private static void DetermineWhatToGenerate(string propertyName, PlatformerEntityViewModel viewModel, out bool shouldGenerateCsv, out bool shouldGenerateEntity)
+        private void AddPlatformerVariables(EntitySave entity)
+        {
+
+            const string GroundMovement = "GroundMovement";
+            const string AirMovement = "AirMovement";
+            const string AfterDoubleJump = "AfterDoubleJump";
+            {
+
+                bool alreadyHasVariable = entity.CustomVariables.Any(
+                    item => item.Name == GroundMovement);
+                if(!alreadyHasVariable)
+                {
+                    CustomVariable newVariable = new CustomVariable();
+                    newVariable.Type = GlueState.Self.ProjectNamespace + ".DataTypes.PlatformerValues";
+                    newVariable.Name = GroundMovement;
+                    newVariable.CreatesEvent = true;
+                    entity.CustomVariables.Add(newVariable);
+                }
+            }
+
+            {
+                bool alreadyHasVariable = entity.CustomVariables.Any(
+                    item => item.Name == AirMovement);
+                if(!alreadyHasVariable)
+                {
+                    CustomVariable newVariable = new CustomVariable();
+                    newVariable.Type = GlueState.Self.ProjectNamespace + ".DataTypes.PlatformerValues";
+                    newVariable.Name = AirMovement;
+                    newVariable.CreatesEvent = true;
+
+                    entity.CustomVariables.Add(newVariable);
+                }
+            }
+
+            {
+                bool alreadyHasVariable = entity.CustomVariables.Any(
+                    item => item.Name == AfterDoubleJump);
+                if(!alreadyHasVariable)
+                {
+                    CustomVariable newVariable = new CustomVariable();
+                    newVariable.Type = GlueState.Self.ProjectNamespace + ".DataTypes.PlatformerValues";
+                    newVariable.Name = AfterDoubleJump;
+                    newVariable.CreatesEvent = true;
+
+                    entity.CustomVariables.Add(newVariable);
+                }
+            }
+        }
+
+        private static void GenerateCsv(EntitySave entity, PlatformerEntityViewModel viewModel)
+        {
+            TaskManager.Self.AddAsyncTask(
+                                () => CsvGenerator.Self.GenerateFor(entity, viewModel),
+                                "Generating Platformer CSV for " + entity.Name);
+
+
+            TaskManager.Self.AddAsyncTask(
+                () =>
+                {
+                    string rfsName = entity.Name.Replace("\\", "/") + "/" + CsvGenerator.RelativeCsvFile;
+                    bool isAlreadyAdded = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName) != null;
+
+                    if (!isAlreadyAdded)
+                    {
+                        GlueCommands.Self.GluxCommands.AddSingleFileTo(
+                            CsvGenerator.Self.CsvFileFor(entity),
+                            CsvGenerator.RelativeCsvFile,
+                            "",
+                            null,
+                            false,
+                            null,
+                            entity,
+                            null
+                            );
+                    }
+
+                    var rfs = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName);
+
+                    if (rfs != null && rfs.CreatesDictionary == false)
+                    {
+                        rfs.CreatesDictionary = true;
+                        GlueCommands.Self.GluxCommands.SaveGlux();
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
+                    }
+
+                    const string customClassName = "PlatformerValues";
+                    if (GlueState.Self.CurrentGlueProject.CustomClasses.Any(item => item.Name == customClassName) == false)
+                    {
+                        CustomClassSave throwaway;
+                        GlueCommands.Self.GluxCommands.AddNewCustomClass(customClassName, out throwaway);
+                    }
+
+                    var customClass = GlueState.Self.CurrentGlueProject.CustomClasses
+                        .FirstOrDefault(item => item.Name == customClassName);
+
+                    if (customClass != null && customClass.CsvFilesUsingThis.Contains(rfs.Name) == false)
+                    {
+                        if (rfs != null)
+                        {
+                            Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
+                        }
+                    }
+                },
+                "Adding csv to platformer entity"
+                );
+        }
+
+        private static void DetermineWhatToGenerate(string propertyName, PlatformerEntityViewModel viewModel, 
+            out bool shouldGenerateCsv, out bool shouldGenerateEntity, out bool shouldAddMovementVariables)
         {
             var entity = GlueState.Self.CurrentEntitySave;
             shouldGenerateCsv = false;
             shouldGenerateEntity = false;
+            shouldAddMovementVariables = false;
             if (entity != null)
             {
                 switch (propertyName)
-                {
+                {   
                     case nameof(PlatformerEntityViewModel.IsPlatformer):
                         entity.Properties.SetValue(propertyName, viewModel.IsPlatformer);
                         // Don't generate a CSV if it's not a platformer
                         shouldGenerateCsv = viewModel.IsPlatformer;
+                        shouldAddMovementVariables = viewModel.IsPlatformer;
                         shouldGenerateEntity = true;
                         break;
                     case nameof(PlatformerEntityViewModel.PlatformerValues):
                         shouldGenerateCsv = true;
                         // I don't think we need this...yet
                         shouldGenerateEntity = false;
+                        shouldAddMovementVariables = false;
                         break;
                 }
 

@@ -20,6 +20,14 @@
         }
     }
 
+    public class CodeBlockAutoGet : CodeBlockBase
+    {
+        public CodeBlockAutoGet(ICodeBlock pParent) : base(pParent)
+        {
+            PreCodeLines.Add(new CodeLine("get;"));
+        }
+    }
+
     public class CodeBlockSet : CodeBlockBase
     {
         public CodeBlockSet(ICodeBlock pParent, string pPre)
@@ -30,6 +38,15 @@
             PostCodeLines.Add(new CodeLine("}"));
         }
     }
+
+    public class CodeBlockAutoSet : CodeBlockBase
+    {
+        public CodeBlockAutoSet(ICodeBlock pParent) : base(pParent)
+        {
+            PreCodeLines.Add(new CodeLine("set;"));
+        }
+    }
+
 
     public class CodeBlockAutoProperty : CodeBlockBase
     {
@@ -61,9 +78,20 @@
             return new CodeBlockGet(pParent, pPre);
         }
 
+
+        public static ICodeBlock AutoGet(this ICodeBlock pParent)
+        {
+            return new CodeBlockAutoGet(pParent);
+        }
+
         public static ICodeBlock Get(this ICodeBlock pParent)
         {
             return new CodeBlockGet(pParent, "");
+        }
+
+        public static ICodeBlock AutoSet(this ICodeBlock pParent)
+        {
+            return new CodeBlockAutoSet(pParent);
         }
 
         public static ICodeBlock Set(this ICodeBlock pParent, string pPre)

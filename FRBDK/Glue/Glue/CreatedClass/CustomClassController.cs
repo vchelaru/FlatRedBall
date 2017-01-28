@@ -83,7 +83,15 @@ namespace FlatRedBall.Glue.CreatedClass
                 currentReferencedFile.Name);
             if (customClassAlreadyBeingUsed != null)
             {
-                customClassAlreadyBeingUsed.CsvFilesUsingThis.Remove(currentReferencedFile.Name);
+                // This could fail due to threading issues, so ignore failures:
+                try
+                {
+                    customClassAlreadyBeingUsed.CsvFilesUsingThis.Remove(currentReferencedFile.Name);
+                }
+                catch(Exception e)
+                {
+                    int m = 3;
+                }
                 succeeded = true;
             }
             else

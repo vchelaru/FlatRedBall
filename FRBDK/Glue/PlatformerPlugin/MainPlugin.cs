@@ -10,13 +10,18 @@ using System.Windows.Forms;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.PlatformerPlugin.Controllers;
 using FlatRedBall.PlatformerPlugin.Views;
+using FlatRedBall.PlatformerPlugin.Generators;
 
 namespace FlatRedBall.PlatformerPlugin
 {
     [Export(typeof(PluginBase))]
     public class MainPlugin : PluginBase
     {
+        #region Fields/Properties
+
         MainControl control;
+
+        CodeGenerator codeGenerator;
 
         public override string FriendlyName
         {
@@ -34,8 +39,11 @@ namespace FlatRedBall.PlatformerPlugin
             }
         }
 
+        #endregion
+
         public override void StartUp()
         {
+            base.RegisterCodeGenerator(new CodeGenerator());
             this.ReactToItemSelectHandler += HandleItemSelected;
         }
 
@@ -66,6 +74,7 @@ namespace FlatRedBall.PlatformerPlugin
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
+            base.UnregisterAllCodeGenerators();
             return true;
         }
 

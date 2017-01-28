@@ -25,7 +25,7 @@
         </ScrollViewer>
         
         <StackPanel Visibility="{Binding PlatformerUiVisibility}" Grid.Row="2">
-            <Button Click="AddPlatformerValuesClick">+</Button>
+            <Button Click="AddPlatformerValuesClick" Height="28">Add Control Values</Button>
         </StackPanel>
 
     </Grid>
