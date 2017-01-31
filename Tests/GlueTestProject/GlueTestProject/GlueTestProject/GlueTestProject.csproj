@@ -628,6 +628,10 @@
     <Compile Include="Entities\StateEntityContainer.Generated.cs">
       <DependentUpon>StateEntityContainer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\StateEntityExposedNoneVariable.cs" />
+    <Compile Include="Entities\StateEntityExposedNoneVariable.Generated.cs">
+      <DependentUpon>StateEntityExposedNoneVariable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\StateEntityWithoutCurrentStateVariable.cs" />
     <Compile Include="Entities\StateEntityWithoutCurrentStateVariable.Generated.cs">
       <DependentUpon>StateEntityWithoutCurrentStateVariable.cs</DependentUpon>

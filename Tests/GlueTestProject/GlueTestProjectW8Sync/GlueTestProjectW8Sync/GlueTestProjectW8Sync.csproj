@@ -1048,6 +1048,13 @@
       <Link>Entities\StateEntityContainer.Generated.cs</Link>
       <DependentUpon>StateEntityContainer.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StateEntityExposedNoneVariable.cs">
+      <Link>Entities\StateEntityExposedNoneVariable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StateEntityExposedNoneVariable.Generated.cs">
+      <Link>Entities\StateEntityExposedNoneVariable.Generated.cs</Link>
+      <DependentUpon>StateEntityExposedNoneVariable.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\StateEntityWithoutCurrentStateVariable.cs">
       <Link>Entities\StateEntityWithoutCurrentStateVariable.cs</Link>
     </Compile>

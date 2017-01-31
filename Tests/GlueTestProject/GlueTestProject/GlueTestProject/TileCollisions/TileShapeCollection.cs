@@ -1,5 +1,4 @@
-using GlueTestProject.DataTypes;
-using FlatRedBall.Math;
+﻿using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.TileGraphics;
 using System;
@@ -90,6 +89,12 @@ namespace FlatRedBall.TileCollisions
             GridSize = 16;
         }
 
+
+        public void AddToLayer(FlatRedBall.Graphics.Layer layer)
+        {
+            this.mShapes.AddToManagers(layer);
+        }
+
         public bool CollideAgainstSolid(AxisAlignedRectangle movableObject)
         {
             bool toReturn = false;
@@ -108,7 +113,6 @@ namespace FlatRedBall.TileCollisions
             return toReturn;
         }
 
-
         public bool CollideAgainstSolid(Polygon movableObject)
         {
             bool toReturn = false;
@@ -117,7 +121,6 @@ namespace FlatRedBall.TileCollisions
 
             return toReturn;
         }
-
 
         public bool CollideAgainst(AxisAlignedRectangle rectangle)
         {
@@ -368,9 +371,9 @@ namespace FlatRedBall.TileCollisions
             }
         }
     }
-	
-	
-    
+
+
+
     public static class TileShapeCollectionLayeredTileMapExtensions
     {
         public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
@@ -406,8 +409,10 @@ namespace FlatRedBall.TileCollisions
 
                 if (predicate(namedValues))
                 {
-                    float dimension = float.NaN;
-                    float dimensionHalf = 0;
+                    float dimension = layeredTileMap.WidthPerTile.Value;
+                    float dimensionHalf = dimension / 2.0f;
+                    tileShapeCollection.GridSize = dimension;
+
                     foreach (var layer in layeredTileMap.MapLayers)
                     {
                         var dictionary = layer.NamedTileOrderedIndexes;
@@ -422,21 +427,161 @@ namespace FlatRedBall.TileCollisions
                                 float bottom;
                                 layer.GetBottomLeftWorldCoordinateForOrderedTile(index, out left, out bottom);
 
-                                if (float.IsNaN(dimension))
+                                var centerX = left + dimensionHalf;
+                                var centerY = bottom + dimensionHalf;
+                                tileShapeCollection.AddCollisionAtWorld(centerX,
+                                    centerY);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void AddMergedCollisionFrom(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap,
+            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate)
+        {
+            var properties = layeredTileMap.Properties;
+            float dimension = layeredTileMap.WidthPerTile.Value;
+
+            Dictionary<int, List<int>> rectangleIndexes = new Dictionary<int, List<int>>();
+
+            foreach (var kvp in properties)
+            {
+                string name = kvp.Key;
+                var namedValues = kvp.Value;
+
+                if (predicate(namedValues))
+                {
+                    float dimensionHalf = dimension / 2.0f;
+                    tileShapeCollection.GridSize = dimension;
+
+                    foreach (var layer in layeredTileMap.MapLayers)
+                    {
+                        var dictionary = layer.NamedTileOrderedIndexes;
+
+                        if (dictionary.ContainsKey(name))
+                        {
+                            var indexList = dictionary[name];
+
+                            foreach (var index in indexList)
+                            {
+                                float left;
+                                float bottom;
+                                layer.GetBottomLeftWorldCoordinateForOrderedTile(index, out left, out bottom);
+
+                                var centerX = left + dimensionHalf;
+                                var centerY = bottom + dimensionHalf;
+
+                                int key;
+                                int value;
+
+                                if (tileShapeCollection.SortAxis == Axis.X)
                                 {
-                                    dimension = layer.Vertices[(index * 4) + 1].Position.X - left;
-                                    dimensionHalf = dimension / 2.0f;
-                                    tileShapeCollection.GridSize = dimension;
+                                    key = (int)(centerX / dimension);
+                                    value = (int)(centerY / dimension);
+                                }
+                                else if (tileShapeCollection.SortAxis == Axis.Y)
+                                {
+                                    key = (int)(centerY / dimension);
+                                    value = (int)(centerX / dimension);
+                                }
+                                else
+                                {
+                                    throw new NotImplementedException("Cannot add tile collision on z-sorted shape collections");
                                 }
 
-                                tileShapeCollection.AddCollisionAtWorld(left + dimensionHalf,
-                                    bottom + dimensionHalf);
+                                List<int> listToAddTo = null;
+                                if (rectangleIndexes.ContainsKey(key) == false)
+                                {
+                                    listToAddTo = new List<int>();
+                                    rectangleIndexes.Add(key, listToAddTo);
+                                }
+                                else
+                                {
+                                    listToAddTo = rectangleIndexes[key];
+                                }
+                                listToAddTo.Add(value);
+
                             }
                         }
                     }
                 }
             }
 
+            foreach (var kvp in rectangleIndexes.OrderBy(item => item.Key))
+            {
+
+
+                var rectanglePositionList = kvp.Value.OrderBy(item => item).ToList();
+
+                var firstValue = rectanglePositionList[0];
+                var currentValue = firstValue;
+                var expectedValue = firstValue + 1;
+                for (int i = 1; i < rectanglePositionList.Count; i++)
+                {
+                    if (rectanglePositionList[i] != expectedValue)
+                    {
+                        CloseRectangle(tileShapeCollection, kvp.Key, dimension, firstValue, currentValue);
+
+                        firstValue = rectanglePositionList[i];
+                        currentValue = firstValue;
+                    }
+                    else
+                    {
+                        currentValue++;
+                    }
+
+                    expectedValue = currentValue + 1;
+                }
+
+                CloseRectangle(tileShapeCollection, kvp.Key, dimension, firstValue, currentValue);
+
+            }
+        }
+
+        private static void CloseRectangle(TileShapeCollection tileShapeCollection, int keyIndex, float dimension, int firstValue, int currentValue)
+        {
+            float x = 0;
+            float y = 0;
+            float width = dimension;
+            float height = dimension;
+
+            if (tileShapeCollection.SortAxis == Axis.X)
+            {
+                x = (keyIndex + .5f) * dimension;
+            }
+            else
+            {
+                // y moves down so we subtract
+                y = (keyIndex - .5f) * dimension;
+            }
+
+            var centerIndex = (firstValue + currentValue) / 2.0f;
+
+            if (tileShapeCollection.SortAxis == Axis.X)
+            {
+                y = (centerIndex - .5f) * dimension;
+                height = (currentValue - firstValue + 1) * dimension;
+            }
+            else
+            {
+                x = (centerIndex + .5f) * dimension;
+                width = (currentValue - firstValue + 1) * dimension;
+            }
+
+            AddRectangleStrip(tileShapeCollection, x, y, width, height);
+        }
+
+        private static void AddRectangleStrip(TileShapeCollection tileShapeCollection, float x, float y, float width, float height)
+        {
+            AxisAlignedRectangle rectangle = new AxisAlignedRectangle();
+            rectangle.X = x;
+            rectangle.Y = y;
+            rectangle.Width = width;
+            rectangle.Height = height;
+
+            tileShapeCollection.Rectangles.Add(rectangle);
         }
 
         static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,

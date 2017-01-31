@@ -334,6 +334,21 @@ namespace FlatRedBall.Graphics
 
         #region Methods
 
+        static readonly SamplerState PointMirror = new SamplerState
+        {
+            AddressU = TextureAddressMode.Mirror,
+            AddressV = TextureAddressMode.Mirror,
+            AddressW = TextureAddressMode.Mirror,
+            Filter = TextureFilter.Point
+        };
+
+        static readonly SamplerState LinearMirror = new SamplerState
+        {
+            AddressU = TextureAddressMode.Mirror,
+            AddressV = TextureAddressMode.Mirror,
+            AddressW = TextureAddressMode.Mirror,
+            Filter = TextureFilter.Linear
+        };
 
         internal void ForceRefreshSamplerState() { ForceRefreshSamplerState(0); }
         internal void ForceRefreshSamplerState(int index)
@@ -355,9 +370,20 @@ namespace FlatRedBall.Graphics
                     }
                     break;
                 case Microsoft.Xna.Framework.Graphics.TextureAddressMode.Mirror:
-                    throw new NotSupportedException();
-                    //GraphicsDevice.SamplerStates[index] = SamplerState.;
-                    //break;
+
+                    if (mTextureFilter == Microsoft.Xna.Framework.Graphics.TextureFilter.Point)
+                    {
+                        Renderer.GraphicsDevice.SamplerStates[index] = PointMirror;
+                    }
+                    else if (mTextureFilter == Microsoft.Xna.Framework.Graphics.TextureFilter.Linear)
+                    {
+                        Renderer.GraphicsDevice.SamplerStates[index] = LinearMirror;
+                    }
+                    else
+                    {
+                        throw new NotSupportedException();
+                    }
+                    break;
                 case Microsoft.Xna.Framework.Graphics.TextureAddressMode.Wrap:
                     if (mTextureFilter == Microsoft.Xna.Framework.Graphics.TextureFilter.Point)
                     {
