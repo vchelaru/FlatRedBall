@@ -185,6 +185,7 @@
     <Compile Include="FrbUpdater\UpdateWindow.designer.cs">
       <DependentUpon>UpdateWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Git\MainPlugin.cs" />
     <Compile Include="GlobalContentManagerPlugin\ElementCommands.cs" />
     <Compile Include="GlobalContentManagerPlugin\GlobalContentManagerHelperPlugin.cs" />
     <Compile Include="GlobalContentManagerPlugin\PluginForm.cs">
