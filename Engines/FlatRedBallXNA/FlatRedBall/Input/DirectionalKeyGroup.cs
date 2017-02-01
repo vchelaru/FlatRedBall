@@ -13,19 +13,31 @@ namespace FlatRedBall.Input
         public Keys LeftKey { get; set; }
         public Keys RightKey { get; set; }
 
+        public bool IsRadial { get; set; } = true;
+
         #region I2DInput
+
+        const float sinOf45Degrees = 0.707106781f;
 
         float I2DInput.X
         {
             get 
             {
+                float magnitude = 1;
+
+                if(IsRadial && (InputManager.Keyboard.KeyDown(DownKey) ||
+                    InputManager.Keyboard.KeyDown(UpKey)))
+                {
+                    magnitude = sinOf45Degrees;
+                }
+
                 if (InputManager.Keyboard.KeyDown(LeftKey))
                 {
-                    return -1;
+                    return -magnitude;
                 }
                 else if (InputManager.Keyboard.KeyDown(RightKey))
                 {
-                    return 1;
+                    return magnitude;
                 }
                 else
                 {
@@ -38,13 +50,22 @@ namespace FlatRedBall.Input
         {
             get 
             {
-                if(InputManager.Keyboard.KeyDown(DownKey))
+                float magnitude = 1;
+
+
+                if (IsRadial && (InputManager.Keyboard.KeyDown(LeftKey) ||
+                    InputManager.Keyboard.KeyDown(RightKey)))
                 {
-                    return -1;
+                    magnitude = sinOf45Degrees;
+                }
+
+                if (InputManager.Keyboard.KeyDown(DownKey))
+                {
+                    return -magnitude;
                 }
                 else if (InputManager.Keyboard.KeyDown(UpKey))
                 {
-                    return 1;
+                    return magnitude;
                 }
                 else
                 {
