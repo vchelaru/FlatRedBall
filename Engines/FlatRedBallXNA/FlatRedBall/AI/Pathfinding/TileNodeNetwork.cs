@@ -21,6 +21,9 @@ namespace FlatRedBall.AI.Pathfinding
 
     #endregion
 
+    /// <summary>
+    /// A node network which is designed specifically for tile-based pathfinding.
+    /// </summary>
     public class TileNodeNetwork : NodeNetwork
     {
         #region Fields

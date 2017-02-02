@@ -53,7 +53,8 @@ namespace TileGraphicsPlugin
         {
             // 1.0.8 introduced tile instantiation per layer
             // 1.0.8.1 adds a null check around returning files referenced by a .tmx
-            get { return new Version(1, 0, 8, 1); }
+            // 1.0.9 adds TileNodeNetworkCreator
+            get { return new Version(1, 0, 9, 0); }
         }
 
 

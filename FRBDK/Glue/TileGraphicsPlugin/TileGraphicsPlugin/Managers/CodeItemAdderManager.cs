@@ -27,9 +27,9 @@ namespace TileGraphicsPlugin.Managers
             mTileGraphicsAdder.Add("TileGraphicsPlugin.Tileset.cs");
             mTileGraphicsAdder.Add("TileGraphicsPlugin.ReducedTileMapInfo.cs");
             mTileGraphicsAdder.Add("TileGraphicsPlugin.TileAnimationFrame.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin.TileAnimationFrame.cs");
+            mTileGraphicsAdder.Add("TileGraphicsPlugin.TileNodeNetworkCreator.cs");
 
-            
+
 
             mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/AbstractMapLayer.cs");
             mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/ExternalTileset.cs");

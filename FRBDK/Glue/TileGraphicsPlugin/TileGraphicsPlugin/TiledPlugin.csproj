@@ -121,6 +121,7 @@
     </EmbeddedResource>
     <Compile Include="Behaviors\InputBindingsManager.cs" />
     <Compile Include="Managers\BuildToolSaver.cs" />
+    <EmbeddedResource Include="TileNodeNetworkCreator.cs" />
     <Compile Include="ViewModels\AddNewLevelViewModel.cs" />
     <Compile Include="ViewModels\CommandLineViewModel.cs" />
     <Compile Include="Views\AddNewLevelView.xaml.cs">
