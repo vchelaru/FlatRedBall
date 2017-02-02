@@ -45,6 +45,8 @@ namespace FlatRedBall.AnimationEditorForms
 
         RectangleSelector mPushedRegion;
 
+        Keyboard keyboard;
+
         #endregion
 
         #region Properties
@@ -159,29 +161,18 @@ namespace FlatRedBall.AnimationEditorForms
 
                 if (maxX >= minX && maxY >= minY)
                 {
-                    // Selection found!
+                    bool isCtrlDown =
+                        keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl) ||
+                        keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.RightControl);
 
-                    AnimationFrameSave frame = SelectedState.Self.SelectedFrame;
-
-                    Texture2D texture = GetTextureForFrame(frame);
-
-                    mControl.RectangleSelector.Visible = texture != null;
-
-                    this.RefreshAll();
-
-                    if (texture != null)
+                    if (isCtrlDown)
                     {
-                        mControl.RectangleSelector.Left = minX;
-                        mControl.RectangleSelector.Top = minY;
-
-                        // We add 1 because if the min and max X are equal, that means we'd
-                        // have a 1x1 pixel area, and the rectangle's width would need to be 1.
-                        mControl.RectangleSelector.Width = maxX - minX + 1;
-                        mControl.RectangleSelector.Height = maxY - minY + 1;
-
-                        HandleRegionChanged(null, null);
+                        CreateNewFrameFromMagicWand(minX, minY, maxX, maxY);
                     }
-
+                    else
+                    {
+                        SetCurrentFrameFromMagicWand(minX, minY, maxX, maxY);
+                    }
                     RefreshAll();
 
 
@@ -191,6 +182,74 @@ namespace FlatRedBall.AnimationEditorForms
                     }
 
                 }
+            }
+        }
+
+        private void CreateNewFrameFromMagicWand(int minX, int minY, int maxX, int maxY)
+        {
+            AnimationChainSave chain = SelectedState.Self.SelectedChain;
+
+
+            if (string.IsNullOrEmpty(ProjectManager.Self.FileName))
+            {
+                MessageBox.Show("You must first save this file before adding frames");
+            }
+            else if (chain == null)
+            {
+                MessageBox.Show("First select an Animation to add a frame to");
+            }
+            else
+            {
+                AnimationFrameSave afs = new AnimationFrameSave();
+
+                var texture = this.mInspectableTexture.Texture;
+                var achxFolder = FileManager.GetDirectory(ProjectManager.Self.FileName);
+                var relative = FileManager.MakeRelative(texture.Name, achxFolder);
+
+                afs.TextureName = relative;
+
+                afs.LeftCoordinate = minX / (float)texture.Width;
+                afs.RightCoordinate = maxX / (float)texture.Width;
+                afs.TopCoordinate = minY / (float)texture.Height;
+                afs.BottomCoordinate = maxY / (float)texture.Height;
+
+                afs.FrameLength = .1f; // default to .1 seconds.  
+
+                chain.Frames.Add(afs);
+
+                TreeViewManager.Self.RefreshTreeNode(chain);
+
+                SelectedState.Self.SelectedFrame = afs;
+
+                AnimationChainChange?.Invoke(this, null);
+            }
+
+
+        }
+
+        private void SetCurrentFrameFromMagicWand(int minX, int minY, int maxX, int maxY)
+        {
+            // Selection found!
+
+            AnimationFrameSave frame = SelectedState.Self.SelectedFrame;
+
+            Texture2D texture = GetTextureForFrame(frame);
+
+            mControl.RectangleSelector.Visible = texture != null;
+
+            this.RefreshAll();
+
+            if (texture != null)
+            {
+                mControl.RectangleSelector.Left = minX;
+                mControl.RectangleSelector.Top = minY;
+
+                // We add 1 because if the min and max X are equal, that means we'd
+                // have a 1x1 pixel area, and the rectangle's width would need to be 1.
+                mControl.RectangleSelector.Width = maxX - minX + 1;
+                mControl.RectangleSelector.Height = maxY - minY + 1;
+
+                HandleRegionChanged(null, null);
             }
         }
 
@@ -230,9 +289,10 @@ namespace FlatRedBall.AnimationEditorForms
             mManagers = managers;
             mManagers.Renderer.SamplerState = SamplerState.PointClamp;
 
-
             mControl = control;
 
+            keyboard = new Keyboard();
+            keyboard.Initialize(control);
 
             mManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
 
@@ -281,6 +341,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         void HandleXnaUpdate()
         {
+            keyboard.Activity();
             mStatusText.AdjustTextSize();
             if (mStatusText.Visible)
             {

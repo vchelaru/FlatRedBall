@@ -106,6 +106,16 @@ namespace FlatRedBall.Screens
             }
         }
 
+        /// <summary>
+        /// Returns the number of seconds since the Screen was initialized, excluding paused time.
+        /// This value begins at 0 when the Screen is first created.
+        /// </summary>
+        /// <remarks>
+        /// If a screen is never paused, then its PauseAdjustedCurrentTime value increases regularly.
+        /// If a screen is never paused and it is the first screen in the game, then PauseAdjustedCurrentTime
+        /// will equal TimeManager.CurrentTime.
+        /// </remarks>
+        /// <seealso cref="AccumulatedPauseTime"/>
         public double PauseAdjustedCurrentTime
         {
             get { return TimeManager.CurrentTime - mAccumulatedPausedTime; }
@@ -449,6 +459,10 @@ namespace FlatRedBall.Screens
         /// This timer always begins at 0. Therefore, the following code will always tell you how long the screen has been alive:
         /// var timeScreenHasBeenAlive = ScreenInstance.PauseAdjustedSecondsSince(0);
         /// </remarks>
+        /// <example>
+        /// PauseAdjustedSecondsSince can be used to determine if some timed event has expired. For example:
+        /// bool isCooldownFinished = PauseAdjustedSecondsSince(lastAbilityUse) >= CooldownTime;
+        /// </example>
         /// <param name="time">The time from which to check how much time has passed.</param>
         /// <returns>How much time has passed since the parameter value.</returns>
         public double PauseAdjustedSecondsSince(double time)

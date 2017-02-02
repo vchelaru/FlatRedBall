@@ -474,6 +474,15 @@ namespace FlatRedBall.Input
             return toReturn;
         }
 
+        /// <summary>
+        /// Returns an instance of I2DInput which can be used to read 2D input using the four
+        /// argument keys.
+        /// </summary>
+        /// <param name="left">The key to use for the left direction.</param>
+        /// <param name="right">The key to use for the right direction.</param>
+        /// <param name="up">The key to use for the up direction.</param>
+        /// <param name="down">The key to use for the down direction.</param>
+        /// <returns>The I2DInput instance which can be used to read input.</returns>
         public I2DInput Get2DInput(Keys left, Keys right, Keys up, Keys down)
         {
             var toReturn = new DirectionalKeyGroup();

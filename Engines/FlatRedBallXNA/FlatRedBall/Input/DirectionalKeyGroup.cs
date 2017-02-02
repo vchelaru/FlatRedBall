@@ -6,6 +6,11 @@ using Microsoft.Xna.Framework.Input;
 
 namespace FlatRedBall.Input
 {
+    /// <summary>
+    /// An object implementing I2DInput which can be used to read 2D input from the keyboard.
+    /// Instances of DirectionalKeyGroup are typically created through the Keyboard's 
+    /// Get2DInput method.
+    /// </summary>
     public class DirectionalKeyGroup : I2DInput, I1DInput
     {
         public Keys UpKey { get; set; }

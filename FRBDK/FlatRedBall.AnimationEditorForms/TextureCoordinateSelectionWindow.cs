@@ -93,7 +93,12 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 var cursor = imageRegionSelectionControl1.XnaCursor;
 
-                if (this.wireframeEditControls1.IsMagicWandSelected && cursor.IsInWindow && imageRegionSelectionControl1.CurrentTexture != null)
+                bool shouldApplyMagicWandClick =
+                    this.wireframeEditControls1.IsMagicWandSelected && 
+                    cursor.IsInWindow && 
+                    imageRegionSelectionControl1.CurrentTexture != null;
+
+                if (shouldApplyMagicWandClick)
                 {
                     HandleMagicWandClick(cursor);
                 }

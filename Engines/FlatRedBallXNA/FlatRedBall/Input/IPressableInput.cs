@@ -5,7 +5,13 @@ namespace FlatRedBall.Input
 {
 	public interface IPressableInput
 	{
+        /// <summary>
+        /// Returns whether the input is down (such as if a key is held or a mouse button is down)
+        /// </summary>
 		bool IsDown { get; }
+        /// <summary>
+        /// Returns whether the input was pressed this frame (not down last frame, is down this frame)
+        /// </summary>
 		bool WasJustPressed { get; }
 		bool WasJustReleased { get; }
 	}
