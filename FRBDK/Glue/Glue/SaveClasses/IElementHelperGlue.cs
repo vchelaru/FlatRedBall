@@ -173,8 +173,9 @@ namespace FlatRedBall.Glue.SaveClasses
                     string absoluteOldFile = pair.Item1;
                     string absoluteNewFile = pair.Item2;
 
+                    bool isCapitalizationOnlyChange = absoluteOldFile.Equals(absoluteNewFile, StringComparison.InvariantCultureIgnoreCase);
 
-                    if (File.Exists(absoluteNewFile))
+                    if (isCapitalizationOnlyChange == false && File.Exists(absoluteNewFile))
                     {
                         FileHelper.DeleteFile(absoluteNewFile);
                     }

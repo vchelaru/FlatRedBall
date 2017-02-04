@@ -114,24 +114,12 @@ namespace GumPlugin
                     gumScreen.Name = gumScreenName;
 
                     string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
-                    var directory = FileManager.GetDirectory(gumProjectFileName) + ElementReference.ScreenSubfolder + "/";
 
-                    AppState.Self.GumProjectSave.Screens.Add(gumScreen);
-                    var elementReference = new ElementReference
-                    {
-                        ElementType = ElementType.Screen,
-                        Name = gumScreenName
-                    };
-                    AppState.Self.GumProjectSave.ScreenReferences.Add(elementReference);
-                    AppState.Self.GumProjectSave.ScreenReferences.Sort((first, second) => first.Name.CompareTo(second.Name));
+                    AppCommands.Self.AddScreen(gumScreen);
 
-                    AppState.Self.GumProjectSave.Save(gumProjectFileName, saveElements: false);
+                    AppCommands.Self.SaveGlux(saveAllElements: false);
 
-                    string screenFileName =
-                        directory + gumScreen.Name + "." + GumProjectSave.ScreenExtension;
-
-
-                    gumScreen.Save(screenFileName);
+                    AppCommands.Self.SaveScreen(gumScreen);
 
                 }
                 // Select the screen to add the file to this

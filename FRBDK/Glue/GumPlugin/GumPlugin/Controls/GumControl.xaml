@@ -16,6 +16,6 @@
                   Content="Automatically Create Gum Screens for Glue Screens" IsChecked="{Binding AutoCreateGumScreens}"></CheckBox>
         <CheckBox x:Name="UseAtlasesCheckBox" VerticalContentAlignment="Center" 
                   Content="Use Atlases" IsChecked="{Binding UseAtlases}"></CheckBox>
-
+        <Button HorizontalAlignment="Left" Margin="0,10,0,0" Width="200" Click="HandleGenerateBehaviors">Generate FlatRedBall Behaviors</Button>
     </StackPanel>
 </UserControl>
