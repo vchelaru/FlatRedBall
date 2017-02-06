@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Gum.DataTypes;
 using Gum.DataTypes.Behaviors;
 using FlatRedBall.IO;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace GumPlugin.Managers
 {
@@ -16,8 +17,8 @@ namespace GumPlugin.Managers
         {
             string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
+            GlueCommands.Self.FileCommands.IgnoreNextChangeOnFile(gumProjectFileName);
             AppState.Self.GumProjectSave.Save(gumProjectFileName, saveAllElements);
-
         }
 
         internal void AddScreen(ScreenSave gumScreen)
@@ -30,6 +31,8 @@ namespace GumPlugin.Managers
             };
             AppState.Self.GumProjectSave.ScreenReferences.Add(elementReference);
             AppState.Self.GumProjectSave.ScreenReferences.Sort((first, second) => first.Name.CompareTo(second.Name));
+            FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput("Added Gum screen " + gumScreen.Name);
+
         }
 
         internal void AddBehavior(BehaviorSave behavior)
@@ -41,6 +44,8 @@ namespace GumPlugin.Managers
             };
             AppState.Self.GumProjectSave.BehaviorReferences.Add(behaviorReference);
             AppState.Self.GumProjectSave.BehaviorReferences.Sort((first, second) => first.Name.CompareTo(second.Name));
+            FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput("Added Gum behavior " + behavior.Name);
+
         }
 
         internal void SaveScreen(ScreenSave gumScreen)
@@ -53,6 +58,7 @@ namespace GumPlugin.Managers
 
 
             gumScreen.Save(screenFileName);
+
         }
 
         internal void SaveBehavior(BehaviorSave behavior)
@@ -63,6 +69,7 @@ namespace GumPlugin.Managers
                 directory + behavior.Name + "." + BehaviorReference.Extension;
 
             behavior.Save(behaviorFileName);
+
         }
     }
 }

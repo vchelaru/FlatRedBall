@@ -13,109 +13,30 @@ namespace FlatRedBall.Glue.SaveClasses
     public static class IBehaviorContainerHelper
     {
 
-        //public static List<string> GetFulfilledRequirements<T>(T container) where T : IBehaviorContainer, INamedObjectContainer
-        //{
-        //    List<string> listToReturn = new List<string>();
 
-        //    for (int i = 0; i < container.CustomVariables.Count; i++)
-        //    {
-        //        string fulfilledRequirement = container.CustomVariables[i].FulfillsRequirement;
-        //        if (!string.IsNullOrEmpty(fulfilledRequirement)
-        //            && fulfilledRequirement != "<NONE>")
-        //        {
-
-        //            listToReturn.Add(fulfilledRequirement);
-        //        }
-        //    }
-
-        //    for (int i = 0; i < container.NamedObjects.Count; i++)
-        //    {
-        //        string fulfilledRequirement = container.NamedObjects[i].FulfillsRequirement;
-
-        //        if (!string.IsNullOrEmpty(fulfilledRequirement) &&
-        //            fulfilledRequirement != "<NONE>")
-        //        {
-        //            listToReturn.Add(fulfilledRequirement);
-        //        }
-        //    }
-
-        //    return listToReturn;
-        //}
-
-
-        //public static string GetFulfillerName<T>(T container, BehaviorRequirement requirement) where T : IBehaviorContainer, INamedObjectContainer
-        //{
-        //    string requirementStringToMatch = requirement.ToString();
-
-        //    for (int i = 0; i < container.CustomVariables.Count; i++)
-        //    {
-        //        string fulfilledRequirement = container.CustomVariables[i].FulfillsRequirement;
-
-        //        if (requirementStringToMatch == fulfilledRequirement)
-        //        {
-        //            return container.CustomVariables[i].Name;
-        //        }
-        //    }
-
-        //    for (int i = 0; i < container.NamedObjects.Count; i++)
-        //    {
-        //        string fulfilledRequirement = container.NamedObjects[i].FulfillsRequirement;
-
-        //        if (requirementStringToMatch == fulfilledRequirement)
-        //        {
-        //            return container.NamedObjects[i].InstanceName;
-        //        }
-        //    }
-
-        //    return null;
-
-        //}
-
-        //public static BehaviorSave GetBehavior(IBehaviorContainer container, string behaviorName)
-        //{
-        //    for (int i = 0; i < container.Behaviors.Count; i++)
-        //    {
-        //        if (container.Behaviors[i].Name == behaviorName)
-        //        {
-        //            return container.Behaviors[i];
-        //        }
-        //    }
-
-        //    return null;
-        //}
-
-        //public static bool ContainsBehavior<T>(T container, string behaviorName) where T : IBehaviorContainer
-        //{
-        //    return GetBehavior(container, behaviorName) != null;
-        //}
-
-
-
-
-
-        public static void UpdateCustomVariablesFromBaseType(IElement behaviorContainer)
+        public static void UpdateCustomVariablesFromBaseType(IElement element)
         {
 
             IElement baseElement = null;
 
-            if (behaviorContainer is ScreenSave)
+            if (element is ScreenSave)
             {
-                baseElement = ObjectFinder.Self.GetScreenSave(behaviorContainer.BaseObject);
+                baseElement = ObjectFinder.Self.GetScreenSave(element.BaseObject);
             }
             else
             {
-                baseElement = ObjectFinder.Self.GetEntitySave(behaviorContainer.BaseObject);
+                baseElement = ObjectFinder.Self.GetEntitySave(element.BaseObject);
             }
 
 
 
             List<CustomVariable> customVariablesBeforeUpdate = new List<CustomVariable>();
 
-            for (int i = 0; i < behaviorContainer.CustomVariables.Count; i++)
+            for (int i = 0; i < element.CustomVariables.Count; i++)
             {
-                if (behaviorContainer.CustomVariables[i].DefinedByBase)
+                if (element.CustomVariables[i].DefinedByBase)
                 {
-                    customVariablesBeforeUpdate.Add(behaviorContainer.CustomVariables[i]);
+                    customVariablesBeforeUpdate.Add(element.CustomVariables[i]);
                 }
             }
 
@@ -150,7 +71,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 if (!contains)
                 {
                     // We got a NamedObject we should remove
-                    behaviorContainer.CustomVariables.Remove(customVariablesBeforeUpdate[i]);
+                    element.CustomVariables.Remove(customVariablesBeforeUpdate[i]);
                     customVariablesBeforeUpdate.RemoveAt(i);
                 }
             }
@@ -176,7 +97,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     // is just a regular variable - and in that
                     // case we want to connect the existing variable
                     // with the variable in the base
-                    CustomVariable existingInDerived = behaviorContainer.GetCustomVariable(newCustomVariables[i].Name);
+                    CustomVariable existingInDerived = element.GetCustomVariable(newCustomVariables[i].Name);
                     if (existingInDerived != null)
                     {
                         existingInDerived.DefinedByBase = true;
@@ -204,66 +125,11 @@ namespace FlatRedBall.Glue.SaveClasses
                         // We'll assume that this thing is going to be the acutal definition
                         customVariable.SetByDerived = false;
 
-                        behaviorContainer.CustomVariables.Add(customVariable);
+                        element.CustomVariables.Add(customVariable);
                     }
                 }
             }
         }
-
-    }
-
-
-
-    public static class BehaviorSaveExtensionMethods
-    {
-        //public static void UpdateFilePair(this BehaviorSave behaviorSave)
-        //{
-        //    #region Copy to local project if necessary
-
-        //    bool shouldLocalProjectFileExist = behaviorSave.FileLocation == FileLocation.ProjectPrimarySharedSecondary ||
-        //        behaviorSave.FileLocation == FileLocation.SharedPrimaryProjectSecondary ||
-        //        behaviorSave.FileLocation == FileLocation.ProjectOnly;
-
-        //    string localProjectLocation = FileManager.RelativeDirectory + "Behaviors/" + behaviorSave.Name + ".cs";
-
-        //    string sharedLocation = BehaviorManager.BehaviorFolder + behaviorSave.Name + ".cs";
-
-        //    if (FileManager.FileExists(sharedLocation) && !FileManager.FileExists(localProjectLocation))
-        //    {
-        //        string projectBehaviorsDirectory = FileManager.RelativeDirectory + "Behaviors/";
-
-        //        if (!Directory.Exists(projectBehaviorsDirectory))
-        //        {
-        //            Directory.CreateDirectory(projectBehaviorsDirectory);
-        //        }
-
-        //        File.Copy(sharedLocation, localProjectLocation);
-        //    }
-
-        //    #endregion
-
-        //    #region Copy to shared if necessary
-
-        //    bool shouldSharedProjectFileExist = behaviorSave.FileLocation == FileLocation.ProjectPrimarySharedSecondary ||
-        //        behaviorSave.FileLocation == FileLocation.SharedPrimaryProjectSecondary ||
-        //        behaviorSave.FileLocation == FileLocation.SharedOnly;
-
-        //    if (FileManager.FileExists(localProjectLocation) && !FileManager.FileExists(sharedLocation))
-        //    {
-        //        if (!Directory.Exists(BehaviorManager.BehaviorFolder))
-        //        {
-        //            Directory.CreateDirectory(BehaviorManager.BehaviorFolder);
-        //        }
-
-        //        File.Copy(localProjectLocation, sharedLocation);
-        //    }
-
-
-        //    #endregion
-
-
-        //}
-
 
     }
 }

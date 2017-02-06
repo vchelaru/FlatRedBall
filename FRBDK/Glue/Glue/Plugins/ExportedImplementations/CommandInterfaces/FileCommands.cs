@@ -188,6 +188,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return contentFolder + relativeElementFolder;
         }
 
+        public void IgnoreNextChangeOnFile(string absoluteFileName)
+        {
+            IO.FileWatchManager.IgnoreNextChangeOnFile(absoluteFileName);
+        }
     }
 
 }

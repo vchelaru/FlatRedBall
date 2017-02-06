@@ -16,13 +16,36 @@ namespace GumPlugin.CodeGeneration
 
         List<string> mVariableNamesToSkipForStates = new List<string>();
 
-        Dictionary<string, string> mVariableNamesToReplaceForStates = new Dictionary<string, string>();
+        public static Dictionary<string, string> VariableNamesToReplaceForStates = new Dictionary<string, string>();
         
         #endregion
 
         #region Methods
 
         #region Constructor/Init
+
+        static StateCodeGenerator()
+        {
+
+
+            VariableNamesToReplaceForStates.Add("Texture Address", "TextureAddress");
+            VariableNamesToReplaceForStates.Add("Texture Height Scale", "TextureHeightScale");
+            VariableNamesToReplaceForStates.Add("Texture Width Scale", "TextureWidthScale");
+            VariableNamesToReplaceForStates.Add("Texture Height", "TextureHeight");
+            VariableNamesToReplaceForStates.Add("Texture Width", "TextureWidth");
+            VariableNamesToReplaceForStates.Add("Texture Left", "TextureLeft");
+            VariableNamesToReplaceForStates.Add("Texture Top", "TextureTop");
+            VariableNamesToReplaceForStates.Add("Font Scale", "FontScale");
+            VariableNamesToReplaceForStates.Add("Clips Children", "ClipsChildren");
+
+            VariableNamesToReplaceForStates.Add("X Origin", "XOrigin");
+            VariableNamesToReplaceForStates.Add("X Units", "XUnits");
+            VariableNamesToReplaceForStates.Add("Y Origin", "YOrigin");
+            VariableNamesToReplaceForStates.Add("Y Units", "YUnits");
+            VariableNamesToReplaceForStates.Add("Wraps Children", "WrapsChildren");
+            VariableNamesToReplaceForStates.Add("Source File", "SourceFile");
+
+        }
 
         public StateCodeGenerator()
         {
@@ -52,24 +75,6 @@ namespace GumPlugin.CodeGeneration
             // September 17 2014
             // no longer needed:
             //mVariableNamesToSkipForStates.Add("State");
-
-
-            mVariableNamesToReplaceForStates.Add("Texture Address", "TextureAddress");
-            mVariableNamesToReplaceForStates.Add("Texture Height Scale", "TextureHeightScale");
-            mVariableNamesToReplaceForStates.Add("Texture Width Scale", "TextureWidthScale");
-            mVariableNamesToReplaceForStates.Add("Texture Height", "TextureHeight");
-            mVariableNamesToReplaceForStates.Add("Texture Width", "TextureWidth");
-            mVariableNamesToReplaceForStates.Add("Texture Left", "TextureLeft");
-            mVariableNamesToReplaceForStates.Add("Texture Top", "TextureTop");
-            mVariableNamesToReplaceForStates.Add("Font Scale", "FontScale");
-            mVariableNamesToReplaceForStates.Add("Clips Children", "ClipsChildren");
-
-            mVariableNamesToReplaceForStates.Add("X Origin", "XOrigin");
-            mVariableNamesToReplaceForStates.Add("X Units", "XUnits");
-            mVariableNamesToReplaceForStates.Add("Y Origin", "YOrigin");
-            mVariableNamesToReplaceForStates.Add("Y Units", "YUnits");
-            mVariableNamesToReplaceForStates.Add("Wraps Children", "WrapsChildren");
-            mVariableNamesToReplaceForStates.Add("Source File", "SourceFile");
 
 
             
@@ -305,21 +310,30 @@ namespace GumPlugin.CodeGeneration
                     var behavior = Managers.AppState.Self.GumProjectSave.Behaviors
                         .FirstOrDefault(item => item.Name == elementBehavior.BehaviorName);
 
-                    string interfaceType = $"I{behavior.Name}";
-
-                    foreach(var behaviorCategory in behavior.Categories)
+                    if(behavior == null)
                     {
-                        string propertyType = $"{behavior.Name}{behaviorCategory.Name}";
+                        // user set a behavior, then deleted the behavior. We don't want to generate code for it
+                        currentBlock.Line("// No properties generated for behavior because it's not part of the Gum project: " + elementBehavior.BehaviorName);
+                    }
+                    else
+                    {
 
-                        var propertyBlock = currentBlock.Property($"{propertyType}", $"{interfaceType}.Current{propertyType}State");
-                        var setBlock = propertyBlock.Set();
-                        var switchBlock = setBlock.Switch("value");
-                        foreach(var behaviorState in behaviorCategory.States)
+                        string interfaceType = $"I{behavior.Name}";
+
+                        foreach(var behaviorCategory in behavior.Categories)
                         {
-                            var caseBlock = switchBlock.Case($"{behavior.Name}{behaviorCategory.Name}.{behaviorState.Name}");
+                            string propertyType = $"{behavior.Name}{behaviorCategory.Name}";
 
-                            caseBlock.Line($"this.Current{behaviorCategory.Name}State = {behaviorCategory.Name}.{behaviorState.Name};");
+                            var propertyBlock = currentBlock.Property($"{propertyType}", $"{interfaceType}.Current{propertyType}State");
+                            var setBlock = propertyBlock.Set();
+                            var switchBlock = setBlock.Switch("value");
+                            foreach(var behaviorState in behaviorCategory.States)
+                            {
+                                var caseBlock = switchBlock.Case($"{behavior.Name}{behaviorCategory.Name}.{behaviorState.Name}");
 
+                                caseBlock.Line($"this.Current{behaviorCategory.Name}State = {behaviorCategory.Name}.{behaviorState.Name};");
+
+                            }
                         }
                     }
                 }
@@ -359,7 +373,7 @@ namespace GumPlugin.CodeGeneration
                                 }
                                 else
                                 {
-                                    string memberNameInCode = variable.MemberNameInCode(container, mVariableNamesToReplaceForStates);
+                                    string memberNameInCode = variable.MemberNameInCode(container, VariableNamesToReplaceForStates);
                                     caseBlock.Line(memberNameInCode + " = " + variableValue + ";");
                                 }
                             }
@@ -411,7 +425,7 @@ namespace GumPlugin.CodeGeneration
                     {
                         foreach (var variable in state.Variables.Where(item => GetIfShouldGenerateStateVariable(item, container)))
                         {
-                            string memberNameInCode = variable.MemberNameInCode(container, mVariableNamesToReplaceForStates);
+                            string memberNameInCode = variable.MemberNameInCode(container, VariableNamesToReplaceForStates);
 
                             caseBlock.Line("newState.Variables.Add(new Gum.DataTypes.Variables.VariableSave()");
                             var instantiatorBlock = caseBlock.Block();

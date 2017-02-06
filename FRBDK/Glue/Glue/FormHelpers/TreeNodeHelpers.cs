@@ -13,12 +13,7 @@ namespace FlatRedBall.Glue.FormHelpers
     public static class TreeNodeHelpers
     {
         #region IsXXXXXXXXNode
-
-        public static bool IsBehaviorNode(this TreeNode treeNodeInQuestion)
-		{
-			return treeNodeInQuestion.Parent != null &&
-				treeNodeInQuestion.Parent.IsRootBehaviorsNode();
-		}
+        
 
         public static bool IsNamedObjectNode(this TreeNode treeNodeInQuestion)
         {
@@ -90,13 +85,6 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             return treeNodeInQuestion.Text == "Entities" && treeNodeInQuestion.Parent == null;
         }
-
-		public static bool IsRootBehaviorsNode(this TreeNode treeNodeInQuestion)
-		{
-            return treeNodeInQuestion.Text == "Behaviors" &&
-                treeNodeInQuestion.Parent != null &&
-                (treeNodeInQuestion.Parent.IsEntityNode() || treeNodeInQuestion.Parent.IsScreenNode());
-		}
 
         public static bool IsRootCustomVariablesNode(this TreeNode treeNodeInQuestion)
         {

@@ -23,5 +23,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void ClearFileCache(string absoluteName);
 
         string GetContentFolder(IElement element);
+
+        void IgnoreNextChangeOnFile(string absoluteFileName);
     }
 }

@@ -199,7 +199,7 @@ namespace GumPlugin.CodeGeneration
 
                 foreach (VariableSave variableSave in variables)
                 {
-                    string member = variableSave.MemberNameInCode(element, mVariableNamesToReplaceForStates);
+                    string member = variableSave.MemberNameInCode(element, VariableNamesToReplaceForStates);
 
                     if (!ContainsKey(interpolationCharacteristics, member, element))
                     {
@@ -211,7 +211,7 @@ namespace GumPlugin.CodeGeneration
 
                         if (interpolationCharacteristic != InterpolationCharacteristic.CantInterpolate)
                         {
-                            string stringSuffix = variableSave.MemberNameInCode(element, mVariableNamesToReplaceForStates).Replace(".", "");
+                            string stringSuffix = variableSave.MemberNameInCode(element, VariableNamesToReplaceForStates).Replace(".", "");
                             curBlock.Line("bool set" + stringSuffix + FirstValue + " = false;");
                             curBlock.Line("bool set" + stringSuffix + SecondValue + " = false;");
 
@@ -264,7 +264,7 @@ namespace GumPlugin.CodeGeneration
 
                 if (kvp.Value != InterpolationCharacteristic.CantInterpolate)
                 {
-                    string stringSuffix = variable.MemberNameInCode(element, mVariableNamesToReplaceForStates).Replace(".", "");
+                    string stringSuffix = variable.MemberNameInCode(element, VariableNamesToReplaceForStates).Replace(".", "");
 
                     curBlock = curBlock.If("set" + stringSuffix + FirstValue + " && set" + stringSuffix + SecondValue);
 
@@ -278,7 +278,7 @@ namespace GumPlugin.CodeGeneration
 
         private void AddAssignmentForInterpolationForVariable(ICodeBlock curBlock, VariableSave variable, ElementSave container)
         {
-            string memberNameInCode = variable.MemberNameInCode(container, mVariableNamesToReplaceForStates);
+            string memberNameInCode = variable.MemberNameInCode(container, VariableNamesToReplaceForStates);
             ElementSave categoryContainer;
             StateSaveCategory stateSaveCategory;
 
@@ -316,11 +316,11 @@ namespace GumPlugin.CodeGeneration
 
                 foreach (VariableSave variable in state.Variables.Where(item => GetIfShouldGenerateStateVariable(item, element)))
                 {
-                    var nameInCode = variable.MemberNameInCode(element, mVariableNamesToReplaceForStates);
+                    var nameInCode = variable.MemberNameInCode(element, VariableNamesToReplaceForStates);
 
                     if (GetValue(mInterpolationCharacteristics, nameInCode, element) != InterpolationCharacteristic.CantInterpolate)
                     {
-                        string stringSuffix = variable.MemberNameInCode(element, mVariableNamesToReplaceForStates).Replace(".", "");
+                        string stringSuffix = variable.MemberNameInCode(element, VariableNamesToReplaceForStates).Replace(".", "");
                         if (variable.Value == null)
                         {
                             //curBlock.Line("set" + stringSuffix + " = false;");
@@ -340,7 +340,7 @@ namespace GumPlugin.CodeGeneration
                             {
                                 curBlock.Line("set" + stringSuffix + firstOrSecondValue + " = true;");
 
-                                curBlock.Line(variable.MemberNameInCode(element, mVariableNamesToReplaceForStates).Replace(".", "") + firstOrSecondValue + " = " + variableValue + ";");
+                                curBlock.Line(variable.MemberNameInCode(element, VariableNamesToReplaceForStates).Replace(".", "") + firstOrSecondValue + " = " + variableValue + ";");
                             }
                         }
                     }
@@ -382,7 +382,7 @@ namespace GumPlugin.CodeGeneration
         {
             foreach (var kvp in dictionary)
             {
-                if (kvp.Key.MemberNameInCode(container, mVariableNamesToReplaceForStates) == value)
+                if (kvp.Key.MemberNameInCode(container, VariableNamesToReplaceForStates) == value)
                 {
                     return kvp.Value;
                 }
@@ -445,7 +445,7 @@ namespace GumPlugin.CodeGeneration
         {
             foreach (KeyValuePair<VariableSave, InterpolationCharacteristic> kvp in dictionary)
             {
-                if (kvp.Key.MemberNameInCode(container, mVariableNamesToReplaceForStates) == member)
+                if (kvp.Key.MemberNameInCode(container, VariableNamesToReplaceForStates) == member)
                 {
                     return true;
                 }

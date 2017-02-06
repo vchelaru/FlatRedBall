@@ -233,6 +233,10 @@ namespace GumPlugin
                 {
                     CodeGeneratorManager.Self.GenerateDueToFileChange(fileName);
                 }
+
+                // Behaviors could have been added, so generate them
+                CodeGeneratorManager.Self.GenerateAllBehaviors();
+
                 EventsManager.Self.RefreshEvents();
 
                 FileReferenceTracker.Self.RemoveUnreferencedMissingFilesFromVsProject();

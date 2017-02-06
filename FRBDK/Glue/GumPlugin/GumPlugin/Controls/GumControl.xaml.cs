@@ -1,4 +1,5 @@
-﻿using GumPlugin.DataGeneration;
+﻿using Gum.DataTypes.Behaviors;
+using GumPlugin.DataGeneration;
 using GumPlugin.Managers;
 using System;
 using System.Collections.Generic;
@@ -33,20 +34,31 @@ namespace GumPlugin.Controls
 
         private void HandleGenerateBehaviors(object sender, RoutedEventArgs e)
         {
+            bool didAdd = false;
+
+            didAdd = AddIfDoesntHave(BehaviorGenerator.CreateButtonBehavior());
+            didAdd = AddIfDoesntHave(BehaviorGenerator.CreateToggleBehavior());
+
+            if(didAdd)
+            {
+                AppCommands.Self.SaveGlux();
+            }
+        }
+
+        private bool AddIfDoesntHave(BehaviorSave behaviorSave)
+        {
             var project = AppState.Self.GumProjectSave;
 
             bool doesProjectAlreadyHaveBehavior =
-                project.Behaviors.Any(item => item.Name == BehaviorGenerator.ButtonBehaviorName);
+                project.Behaviors.Any(item => item.Name == behaviorSave.Name);
 
             if(!doesProjectAlreadyHaveBehavior)
             {
-                var behaviorSave = BehaviorGenerator.CreateButtonBehavior();
                 AppCommands.Self.AddBehavior(behaviorSave);
-                AppCommands.Self.SaveGlux();
-
-
-
+                AppCommands.Self.SaveBehavior(behaviorSave);
             }
+
+            return doesProjectAlreadyHaveBehavior == false;
         }
     }
 }

@@ -61,8 +61,12 @@ namespace GumPlugin.CodeGeneration
         
 
 
-        public static string MemberNameInCode(this VariableSave variableSave, ElementSave container, Dictionary<string, string> replacements)
+        public static string MemberNameInCode(this VariableSave variableSave, ElementSave container, Dictionary<string, string> replacements = null)
         {
+            if(replacements == null)
+            {
+                replacements = StateCodeGenerator.VariableNamesToReplaceForStates;
+            }
             var rootName = variableSave.GetRootName();
             var objectName = variableSave.SourceObject;
 

@@ -216,7 +216,6 @@
     </Compile>
     <Compile Include="AutomatedGlue\AutoGlue.cs" />
     <Compile Include="AutomatedGlue\GlueGui.cs" />
-    <Compile Include="BehaviorManager.cs" />
     <Compile Include="CodeGeneration\CameraSetupCodeGenerator.cs" />
     <Compile Include="CodeGeneration\CodeBuilder\CodeBlockBase.cs" />
     <Compile Include="CodeGeneration\CodeBuilder\CodeBlockClass.cs" />
@@ -525,12 +524,6 @@
     </Compile>
     <Compile Include="Controls\ReferencedFileListTreeNode.cs" />
     <Compile Include="Controls\ScreenTreeNode.cs" />
-    <Compile Include="Controls\SelectExistingBehaviorWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\SelectExistingBehaviorWindow.Designer.cs">
-      <DependentUpon>SelectExistingBehaviorWindow.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\StateListTreeNode.cs" />
     <Compile Include="Controls\TabControlEx.cs">
       <SubType>Component</SubType>
@@ -1076,10 +1069,6 @@
       <DependentUpon>ReferencedFileFlatListWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\SelectExistingBehaviorWindow.resx">
-      <DependentUpon>SelectExistingBehaviorWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Controls\TextInputWindow.resx">
       <DependentUpon>TextInputWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -1122,10 +1111,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <None Include="Resources\CameraSetupTemplate.cs" />
-    <Compile Include="SaveClasses\BehaviorSave.cs" />
     <Compile Include="SaveClasses\FileAssociationsSave.cs" />
     <Compile Include="SaveClasses\GlueSettingsSave.cs" />
-    <Compile Include="SaveClasses\IBehaviorContainer.cs" />
     <Compile Include="SaveClasses\NameVerifier.cs" />
     <Compile Include="Settings\FileAssociationSettings.cs" />
     <Compile Include="Utilities\ListHelper.cs" />

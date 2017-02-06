@@ -1072,16 +1072,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
 
                 #endregion
-
-                #region Double-clicked a behavior
-
-                else if (!string.IsNullOrEmpty(EditorLogic.CurrentBehavior))
-                {
-                    EditCurrentBehaviorNode();
-                }
-
-                #endregion
-
+                
                 #region Double-clicked a named object
 
                 else if (selectedNode.IsNamedObjectNode())
@@ -1194,35 +1185,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
         }
 
-        private static void EditCurrentBehaviorNode()
-        {
-            DialogResult result = System.Windows.Forms.MessageBox.Show(
-                "Are you sure you want to edit this behavior?  " +
-                    "Changes will apply to all Screens and Entities that use this behavior in all projects!",
-                "Warning",
-                MessageBoxButtons.YesNo);
-
-            if (result == DialogResult.Yes)
-            {
-                if (BehaviorManager.DoesBehaviorExist(EditorLogic.CurrentBehavior))
-                {
-                    string file = BehaviorManager.BehaviorFolder + EditorLogic.CurrentBehavior + ".cs";
-                    file = file.Replace("/", "\\");
-                    string command = "/C \"" + file + "\"";
-
-                    ProcessStartInfo startInfo = new ProcessStartInfo("cmd", command);
-                    startInfo.RedirectStandardOutput = true; startInfo.UseShellExecute = false;
-                    Process.Start(startInfo);
-                    //Process.Start(BehaviorManager.BehaviorFolder + EditorLogic.CurrentBehavior + ".cs");
-                }
-                else
-                {
-                    MessageBox.Show("Could not find Behavior " + EditorLogic.CurrentBehavior);
-                }
-
-            }
-
-        }
         #endregion
 
         public static void UpdateChangedElements()

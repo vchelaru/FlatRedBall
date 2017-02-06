@@ -782,16 +782,6 @@ namespace Glue
 
         }
 
-        private void openBehaviorFolderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Process.Start(BehaviorManager.BehaviorFolder);
-        }
-
-        private void importBehaviorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RightClickHelper.ImportBehaviorClick();
-        }
-
         private void reGenerateCodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RightClickHelper.ReGenerateCodeForSelectedElement();

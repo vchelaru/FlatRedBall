@@ -5,6 +5,8 @@ using Gum.Converters;
 using Gum.DataTypes;
 using Gum.DataTypes.Variables;
 using Gum.Managers;
+using GumPlugin.DataGeneration;
+using GumPlugin.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -178,11 +180,29 @@ namespace GumPlugin.CodeGeneration
 
             if(asComponentSave != null)
             {
-                foreach (var behavior in asComponentSave.Behaviors)
+                var project = AppState.Self.GumProjectSave;
+                var behaviors = project.Behaviors;
+
+                foreach (var behaviorReference in asComponentSave.Behaviors)
                 {
-                    inheritance += $", {GueRuntimeNamespace}.I{behavior.BehaviorName}";
+                    inheritance += $", {GueRuntimeNamespace}.I{behaviorReference.BehaviorName}";
+
+                    var behavior = behaviors.FirstOrDefault(item => item.Name == behaviorReference.BehaviorName);
+
+                    string behaviorInheritance = null;
+                    if (behavior != null)
+                    {
+                        behaviorInheritance = BehaviorCodeGenerator.GetInterfacesFromBehaviors(behavior);
+                    }
+
+                    if(!string.IsNullOrEmpty(behaviorInheritance))
+                    {
+                        inheritance += $", {behaviorInheritance}";
+                    }
                 }
+
             }
+
 
             // If it's not public then exposing an instance in a public class makes the project not compile
             //ICodeBlock currentBlock = codeBlock.Class("partial", runtimeClassName, " : " + inheritance);
@@ -213,16 +233,29 @@ namespace GumPlugin.CodeGeneration
 
                 currentBlock.Line("public event FlatRedBall.Gui.WindowEvent " + name + ";");
             }
+
+            if (elementSave.DefaultState != null)
+            {
+                var variablesWithEvents =
+                    elementSave.DefaultState.Variables.Where(item =>
+                        !string.IsNullOrEmpty(item.ExposedAsName) &&
+                        GetIfShouldGenerateEventOnVariableSet(elementSave, item));
+
+                foreach (var variable in variablesWithEvents)
+                {
+                    currentBlock.Line($"public event System.EventHandler {GetEventName(variable, elementSave)};");
+                }
+            }
         }
 
         private void GenerateProperties(ElementSave elementSave, ICodeBlock currentBlock)
         {
             GenerateInstanceProperties(elementSave, currentBlock);
 
-            GenerateVariableProperties(elementSave, currentBlock);
+            GenerateExposedVariableProperties(elementSave, currentBlock);
         }
 
-        private void GenerateVariableProperties(ElementSave elementSave, ICodeBlock currentBlock)
+        private void GenerateExposedVariableProperties(ElementSave elementSave, ICodeBlock currentBlock)
         {
             // Get all exposed variables and make properties otu of them.
             if (elementSave.DefaultState != null)
@@ -232,64 +265,86 @@ namespace GumPlugin.CodeGeneration
 
                 foreach (var variable in allVariablesToProcess)
                 {
-
-                    string variableType = variable.Type;
-
-
-
-                    ModifyVariableTypeForProperty(ref variableType, variable, elementSave);
-
-                    string propertyName = variable.ExposedAsName.Replace(" ", "_");
-
-                    ICodeBlock property = currentBlock.Property("public " + variableType, propertyName);
-
-                    string whatToGetOrSet = variable.Name;
-
-                    if(whatToGetOrSet.Contains("IconTypeState"))
-                    {
-                        int m = 3;
-                    }
-                    if(variableType.Contains("DimensionUnit"))
-                    {
-                        int m = 3;
-                    }
-                    // If this is an exposed property on a standard element, then we just need to kill all spaces and replace
-                    // them with nothing
-                    var instance = elementSave.GetInstance(variable.SourceObject);
-
-                    if (instance != null)
-                    {
-                        var baseElement = Gum.Managers.ObjectFinder.Self.GetElementSave(instance.BaseType);
-
-                        if (baseElement != null && baseElement is StandardElementSave)
-                        {
-                            whatToGetOrSet = whatToGetOrSet.Replace(" ", "");
-                        }
-
-                        var rootName = variable.GetRootName();
-                        if(rootName.EndsWith("State"))
-                        {
-                            var withoutState = rootName.Substring(0, rootName.Length - "State".Length);
-                            if(rootName == "State")
-                            {
-                                whatToGetOrSet = variable.SourceObject + "." + "CurrentVariableState";
-                            }
-                            else if(baseElement != null && baseElement.Categories.Any(item=>item.Name == withoutState))
-                            {
-                                whatToGetOrSet = variable.SourceObject + ".Current" + withoutState + "State";
-                            }
-
-                        }
-                    }
-
-
-                    property.Get()
-                        .Line("return " + whatToGetOrSet + ";");
-                    property.Set()
-                        .Line(whatToGetOrSet + " = value;");
+                    GenerateExposedVariableProperty(elementSave, currentBlock, variable);
                 }
 
             }
+        }
+
+        private void GenerateExposedVariableProperty(ElementSave elementSave, ICodeBlock currentBlock, VariableSave variable)
+        {
+            string variableType = variable.Type;
+
+            ModifyVariableTypeForProperty(ref variableType, variable, elementSave);
+
+            string propertyName = variable.ExposedAsName.Replace(" ", "_");
+
+            ICodeBlock property = currentBlock.Property("public " + variableType, propertyName);
+
+            string whatToGetOrSet = variable.Name;
+
+            // If this is an exposed property on a standard element, then we just need to kill all spaces and replace
+            // them with nothing
+            var instance = elementSave.GetInstance(variable.SourceObject);
+
+            if (instance != null)
+            {
+                var baseElement = Gum.Managers.ObjectFinder.Self.GetElementSave(instance.BaseType);
+
+                if (baseElement != null && baseElement is StandardElementSave)
+                {
+                    whatToGetOrSet = whatToGetOrSet.Replace(" ", "");
+                }
+
+                var rootName = variable.GetRootName();
+                if (rootName.EndsWith("State"))
+                {
+                    var withoutState = rootName.Substring(0, rootName.Length - "State".Length);
+                    if (rootName == "State")
+                    {
+                        whatToGetOrSet = variable.SourceObject + "." + "CurrentVariableState";
+                    }
+                    else if (baseElement != null && baseElement.Categories.Any(item => item.Name == withoutState))
+                    {
+                        whatToGetOrSet = variable.SourceObject + ".Current" + withoutState + "State";
+                    }
+
+                }
+            }
+
+            property.Get()
+                .Line("return " + whatToGetOrSet + ";");
+            var setter = property.Set();
+
+            if (GetIfShouldGenerateEventOnVariableSet(elementSave, variable))
+            {
+                string eventName = GetEventName(variable, elementSave);
+
+                setter.If($"{whatToGetOrSet} != value")
+                    .Line(whatToGetOrSet + " = value;")
+                    .Line($"{eventName}?.Invoke(this, null);");
+            }
+            else
+            {
+                setter.Line(whatToGetOrSet + " = value;");
+            }
+        }
+
+        private string GetEventName(VariableSave variable, ElementSave container)
+        {
+            if(!string.IsNullOrEmpty(variable.ExposedAsName ))
+            {
+                return $"{variable.ExposedAsName}Changed";
+            }
+            else
+            {
+                return $"{variable.MemberNameInCode(container)}Changed";
+            }
+        }
+
+        bool GetIfShouldGenerateEventOnVariableSet(ElementSave elementSave, VariableSave variable)
+        {
+            return true;
         }
 
         private void ModifyVariableTypeForProperty(ref string variableType, VariableSave variableSave, ElementSave elementSave)
@@ -529,10 +584,27 @@ namespace GumPlugin.CodeGeneration
         {
             currentBlock = currentBlock.Function("public override void", "AddToManagers", "RenderingLibrary.SystemManagers managers, RenderingLibrary.Graphics.Layer layer");
             {
+                GenerateStandardFrbBehaviorCode(elementSave, currentBlock);
+
+
                 currentBlock.Line("base.AddToManagers(managers, layer);");
             }
         }
 
+        private void GenerateStandardFrbBehaviorCode(ElementSave elementSave, ICodeBlock currentBlock)
+        {
+            var behaviors = (elementSave as ComponentSave)?.Behaviors;
+
+            if(behaviors?.Any(item =>item.BehaviorName == BehaviorGenerator.ButtonBehaviorName) == true)
+            {
+                currentBlock.Line("(new FlatRedBall.Gui.Behaviors.ButtonBehavior()).ApplyTo(this);");
+            }
+
+            if(behaviors?.Any(item =>item.BehaviorName == BehaviorGenerator.ToggleBehaviorName) == true)
+            {
+                currentBlock.Line("(new FlatRedBall.Gui.Behaviors.ToggleBehavior()).ApplyTo(this);");
+            }
+        }
 
         private void GenerateRaiseExposedEvents(ElementSave elementSave, ICodeBlock currentBlock)
         {

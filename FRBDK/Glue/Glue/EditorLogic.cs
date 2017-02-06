@@ -35,22 +35,6 @@ namespace FlatRedBall.Glue
             });
         }
 
-        public static string CurrentBehavior
-		{
-			get
-			{
-				if (CurrentTreeNode != null && CurrentTreeNode.IsBehaviorNode())
-				{
-					return CurrentTreeNode.Text;
-
-				}
-				else
-				{
-					return null;
-				}
-			}
-		}
-
         public static EventResponseSave CurrentEventResponseSave
         {
             get

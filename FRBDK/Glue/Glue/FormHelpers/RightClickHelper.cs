@@ -254,16 +254,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             }
             #endregion
-
-            #region IsRootBehaviorsNode
-            else if (targetNode.IsRootBehaviorsNode())
-            {
-                menu.Items.Add(form.addBehaviorToolStripMenuItem);
-                menu.Items.Add(form.openBehaviorFolderToolStripMenuItem);
-                menu.Items.Add(form.importBehaviorToolStripMenuItem);
-            }
-            #endregion
-
+            
             #region IsRootCustomVariables
 
             else if (targetNode.IsRootCustomVariablesNode())
@@ -377,16 +368,6 @@ namespace FlatRedBall.Glue.FormHelpers
                 menu.Items.Add(mMoveUp);
                 menu.Items.Add(mMoveDown);
                 menu.Items.Add(mMoveToBottom);
-            }
-
-            #endregion
-
-            #region IsBehaviorNode
-            else if (targetNode.IsBehaviorNode())
-            {
-
-                AddRemoveFromProjectItems(form, menu);
-
             }
 
             #endregion
@@ -2108,28 +2089,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
         }
 
-
-
-        internal static void ImportBehaviorClick()
-        {
-
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Multiselect = true;
-            openFileDialog.Filter = "C# Code Files (*.cs)|*.cs";
-            DialogResult result = openFileDialog.ShowDialog(MainGlueWindow.Self);
-
-            if (result == DialogResult.OK)
-            {
-                foreach (string fileName in openFileDialog.FileNames)
-                {
-                    string destination = BehaviorManager.BehaviorFolder +
-                        FileManager.RemovePath(fileName);
-
-                    File.Copy(fileName, destination, true);
-
-                }
-            }
-        }
 
         internal static void AddVariableClick(CustomVariableType variableType = CustomVariableType.Exposed, string tunnelingObject = "")
         {
