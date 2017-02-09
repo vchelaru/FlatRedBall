@@ -359,8 +359,34 @@ namespace FlatRedBall
 
         }
 
+        /// <summary>
+        /// Checks if an Entity is within the Camera's boundaries.
+        /// </summary>
+        /// <param name="entity">The entity to check</param>
+        /// <param name="buffer">A buffer zone to account for entity size on boundary check. Defaults to 0</param>
+        /// <returns>Returns true in case it is inside the camera's boundaries, false otherwise</returns>
+        public bool IsEntityInView(PositionedObject entity, float buffer = 0)
+        {
+            return IsEntityInView(entity.Position, buffer);
+        }
 
+        /// <summary>
+        /// Checks if an object with Vector3 position is inside the Camera's boundaries.
+        /// </summary>
+        /// <param name="position">The position of the entity to check</param>
+        /// <param name="buffer">A buffer zone to account for entity size on boundary check. Defaults to 0</param>
+        /// <returns>Returns true in case it is inside the camera's boundaries, false otherwise</returns>
+        public bool IsEntityInView(Vector3 position, float buffer = 0)
+        {
+            var z = position.Z;
 
+            bool isOnScreen = position.X < Camera.Main.AbsoluteRightXEdgeAt(z) + buffer &&
+                                position.X > Camera.Main.AbsoluteLeftXEdgeAt(z) - buffer &&
+                                position.Y < Camera.Main.AbsoluteTopYEdgeAt(z) + buffer &&
+                                position.Y > Camera.Main.AbsoluteBottomYEdgeAt(z) - buffer;
+
+            return isOnScreen;
+        }
 
         public bool IsSpriteInView(Sprite sprite)
         {
