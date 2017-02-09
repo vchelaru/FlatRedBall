@@ -104,8 +104,14 @@ namespace GumPlugin.CodeGeneration
         public static string GetQualifiedRuntimeTypeFor(InstanceSave instance)
         {
             var element = ObjectFinder.Self.GetElementSave(instance);
-
-            return GetQualifiedRuntimeTypeFor(element);
+            if(element == null)
+            {
+                return "UnknownType";
+            }
+            else
+            {
+                return GetQualifiedRuntimeTypeFor(element);
+            }
         }
 
         public static string GetQualifiedRuntimeTypeFor(ElementSave elementSave)

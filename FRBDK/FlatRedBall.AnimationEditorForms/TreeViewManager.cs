@@ -78,6 +78,16 @@ namespace FlatRedBall.AnimationEditorForms
                 AnimationFrameSave selectedAnimationFrame = SelectedState.Self.SelectedFrame;
                 AnimationChainSave selectedAnimationChain = SelectedState.Self.SelectedChain;
 
+                List<AnimationChainSave> expandedAnimationChains = new List<AnimationChainSave>();
+
+                foreach(TreeNode treeNode in mTreeView.Nodes)
+                {
+                    if(treeNode.IsExpanded)
+                    {
+                        expandedAnimationChains.Add(treeNode.Tag as AnimationChainSave);
+                    }
+                }
+
                 mTreeView.Nodes.Clear();
 
 
@@ -93,6 +103,10 @@ namespace FlatRedBall.AnimationEditorForms
                         nodesToAdd[index] = treeNode;
 
                         WithoutEnvokeRefreshTreeNode(treeNode, animationChain);
+                        if(expandedAnimationChains.Contains(animationChain))
+                        {
+                            treeNode.Expand();
+                        }
                         index++;
                     }
 
@@ -212,7 +226,10 @@ namespace FlatRedBall.AnimationEditorForms
                 PreviewManager.Self.ReactToAnimationFrameSelected();
             }
 
-            WireframeManager.Self.FocusSelectionIfOffScreen();
+            if(SelectedState.Self.SelectedFrame != null)
+            {
+                WireframeManager.Self.FocusSelectionIfOffScreen();
+            }
 
         }
 
@@ -331,81 +348,138 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void DragDropFile(object sender, DragEventArgs e)
         {
-            
-            string fileName = ((string[])e.Data.GetData("FileDrop")).FirstOrDefault();
-            
-            string extension = FileManager.GetExtension(fileName);
-            
-            if(extension == "achx")
+            var allFiles = ((string[])e.Data.GetData("FileDrop"));
+
+
+            bool areAllImageFiles = allFiles.All(file => IsExtensionImage(FileManager.GetExtension(file)));
+
+            if(areAllImageFiles)
             {
-                HandleDroppedAchxFile(fileName);
+                HandleDroppedImageFiles(sender, e, allFiles);
             }
-                // add more extensions here if needed:
-            else if(extension == "png" || extension == "bmp" || extension == "jpg" || extension == "tga")
+            else
             {
-                TreeView tree = (TreeView)sender;
-
-                Point pt = new Point(e.X, e.Y);
-                pt = tree.PointToClient(pt);
-                TreeNode targetNode = tree.GetNodeAt(pt);
-
-                if (targetNode != null && !string.IsNullOrEmpty(fileName))
+                var fileName = allFiles.FirstOrDefault();
+                string extension = FileManager.GetExtension(fileName);
+            
+                if(extension == "achx")
                 {
-                    string creationReport;
+                    HandleDroppedAchxFile(fileName);
+                }
+
+            }
+        }
+
+        private bool IsExtensionImage(string extension)
+        {
+            return extension == "png" || extension == "bmp" || extension == "jpg" || extension == "tga";
+        }
+
+        private void HandleDroppedImageFiles(object sender, DragEventArgs e, string[] fileNames)
+        {
+            TreeView tree = (TreeView)sender;
+
+            // We could check this deep in the functions that care about it, but
+            // we want to check this before any popups appear
+            bool isCtrlDown = (Control.ModifierKeys & Keys.Control) != 0;
+
+            Point pt = new Point(e.X, e.Y);
+            pt = tree.PointToClient(pt);
+            TreeNode targetNode = tree.GetNodeAt(pt);
+
+            if (targetNode != null && fileNames.Any())
+            {
+                string creationReport;
 
 
-                    bool isValidDrop = targetNode.Tag is AnimationFrameSave ||
-                        targetNode.Tag is AnimationChainSave;
+                bool isValidDrop = targetNode.Tag is AnimationFrameSave ||
+                    targetNode.Tag is AnimationChainSave;
 
-                    if (isValidDrop)
+                if (isValidDrop)
+                {
+                    string folder;
+
+                    bool alreadySaidYes = false;
+
+                    foreach(var fileName in fileNames)
                     {
-                        string folder;
                         string fileNameCopy = fileName;
 
-                        bool shouldProceed = 
-                            AnimationFrameDisplayer.TryAskToMoveFileRelativeToAnimationChainFile(ref fileNameCopy, out folder);
+                        bool shouldProceed =
+                            AnimationFrameDisplayer.TryAskToMoveFileRelativeToAnimationChainFile(alreadySaidYes, ref fileNameCopy, out folder);
 
                         if (shouldProceed)
                         {
+                            if(AnimationFrameDisplayer.ShouldAskUserToCopyFile(fileName))
+                            {
+                                alreadySaidYes = true;
+                            }
+
+
                             if (targetNode.Tag is AnimationFrameSave)
                             {
-                                string message = "Set the AnimationFrame's texture?  Texture name:\n" + fileNameCopy;
-
-                                DialogResult result = MessageBox.Show(message, "Set Texture?", MessageBoxButtons.OKCancel);
-
-                                if (result == DialogResult.OK)
-                                {
-                                    ((AnimationFrameSave)targetNode.Tag).TextureName = FileManager.MakeRelative(fileNameCopy, folder);
-                                    PreviewManager.Self.RefreshAll();
-                                    WireframeManager.Self.RefreshAll();
-                                    TreeViewManager.Self.RefreshTreeView();
-                                    CallAnimationChainsChange();
-                                }
+                                HandleDroppedImageOnAnimationFrame(targetNode, folder, fileNameCopy);
                             }
                             else if (targetNode.Tag is AnimationChainSave)
                             {
-                                string message = "Set all contained AnimationFrames' texture?  Texture name:\n" + fileNameCopy;
-
-                                DialogResult result = MessageBox.Show(message, "Set all Textures?", MessageBoxButtons.OKCancel);
-
-                                if (result == DialogResult.OK)
-                                {
-                                    AnimationChainSave animationChainSave = targetNode.Tag as AnimationChainSave;
-                                    string relativeFile = FileManager.MakeRelative(fileNameCopy, folder);
-                                    foreach (AnimationFrameSave animationFrame in animationChainSave.Frames)
-                                    {
-                                        animationFrame.TextureName = relativeFile;
-                                    }
-                                    PreviewManager.Self.RefreshAll();
-                                    WireframeManager.Self.RefreshAll();
-                                    TreeViewManager.Self.RefreshTreeView();
-                                    CallAnimationChainsChange();
-                                }
+                                HandleDroppedImageOnAnimationChain(targetNode, folder, fileNameCopy, isCtrlDown);
                             }
                         }
+
                     }
                 }
             }
+        }
+
+        private void HandleDroppedImageOnAnimationChain(TreeNode targetNode, string folder, string fileNameCopy, bool isCtrlDown)
+        {
+            AnimationChainSave animationChainSave = targetNode.Tag as AnimationChainSave;
+            string relativeFile = FileManager.MakeRelative(fileNameCopy, folder);
+
+            bool madeChanges = false;
+
+            if (isCtrlDown)
+            {
+                // ctrl is down, so add a new animation frame
+                AnimationFrameSave newFrame = new AnimationFrameSave();
+                newFrame.TextureName = relativeFile;
+                animationChainSave.Frames.Add(newFrame);
+
+                madeChanges = true;
+            }
+            else
+            {
+                string message = "Set all contained AnimationFrames' texture?  Texture name:\n" + fileNameCopy;
+
+                DialogResult result = MessageBox.Show(message, "Set all Textures?", MessageBoxButtons.OKCancel);
+
+                if (result == DialogResult.OK)
+                {
+                    foreach (AnimationFrameSave animationFrame in animationChainSave.Frames)
+                    {
+                        animationFrame.TextureName = relativeFile;
+                    }
+                    madeChanges = true;
+                }
+            }
+
+            if(madeChanges)
+            {
+                PreviewManager.Self.RefreshAll();
+                WireframeManager.Self.RefreshAll();
+                TreeViewManager.Self.RefreshTreeView();
+                CallAnimationChainsChange();
+            }
+        }
+
+        private void HandleDroppedImageOnAnimationFrame(TreeNode targetNode, string folder, string fileNameCopy)
+        {
+
+            ((AnimationFrameSave)targetNode.Tag).TextureName = FileManager.MakeRelative(fileNameCopy, folder);
+            PreviewManager.Self.RefreshAll();
+            WireframeManager.Self.RefreshAll();
+            TreeViewManager.Self.RefreshTreeView();
+            CallAnimationChainsChange();
         }
 
         private void HandleDroppedAchxFile(string fileName)

@@ -69,7 +69,8 @@ namespace AnimationEditorPlugin
             //   or frame is selected.
             // - .aeproperties file now includes list of expanded nodes. This is applied whenever the
             //   .ach file is loaded
-            get { return new Version(2, 1, 0); }
+            // 2.2 - Added CTRL drag+drop file on AnimationChain to add a frame
+            get { return new Version(2, 2, 0); }
         }
 
         public bool IsSelectedItemSprite

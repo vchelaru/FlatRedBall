@@ -290,8 +290,8 @@ namespace FlatRedBall.AnimationEditorForms
             else
             {
 
-                bool shouldProceed = 
-                    TryAskToMoveFileRelativeToAnimationChainFile(ref absoluteFileName, out achxFolder);
+                bool shouldProceed =
+                    TryAskToMoveFileRelativeToAnimationChainFile(false,ref absoluteFileName, out achxFolder);
 
                 if (shouldProceed)
                 {
@@ -354,7 +354,7 @@ namespace FlatRedBall.AnimationEditorForms
             return shouldAsk;
         }
 
-        public static bool TryAskToMoveFileRelativeToAnimationChainFile(ref string absoluteFileName, out string achxFolder)
+        public static bool TryAskToMoveFileRelativeToAnimationChainFile(bool copyWithoutAsking, ref string absoluteFileName, out string achxFolder)
         {
             bool shouldProceed = true;
 
@@ -363,13 +363,19 @@ namespace FlatRedBall.AnimationEditorForms
             if (ShouldAskUserToCopyFile(absoluteFileName))
             {
 
-                MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
-                mbmb.MessageText = "The selected file:\n\n" + absoluteFileName + "\n\nis not relative to the Animation Chain file.  What would you like to do?";
+                DialogResult result = DialogResult.Yes;
 
-                mbmb.AddButton("Copy the file to the same folder as the Animation Chain", System.Windows.Forms.DialogResult.Yes);
-                mbmb.AddButton("Keep the file where it is (this may limit the portability of the Animation Chain file)", System.Windows.Forms.DialogResult.No);
+                if(!copyWithoutAsking)
+                {
 
-                DialogResult result = mbmb.ShowDialog();
+                    MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                    mbmb.MessageText = "The selected file:\n\n" + absoluteFileName + "\n\nis not relative to the Animation Chain file.  What would you like to do?";
+
+                    mbmb.AddButton("Copy the file to the same folder as the Animation Chain", System.Windows.Forms.DialogResult.Yes);
+                    mbmb.AddButton("Keep the file where it is (this may limit the portability of the Animation Chain file)", System.Windows.Forms.DialogResult.No);
+
+                    result = mbmb.ShowDialog();
+                }
 
                 if (result == DialogResult.Yes)
                 {
