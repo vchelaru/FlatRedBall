@@ -220,7 +220,7 @@ namespace FlatRedBall.AI.Pathfinding
         {
 
             int xTilesFromSeed = MathFunctions.RoundToInt((x - mXSeed) / mGridSpacing);
-            int yTilesFromSeed = MathFunctions.RoundToInt((y - mXSeed) / mGridSpacing);
+            int yTilesFromSeed = MathFunctions.RoundToInt((y - mYSeed) / mGridSpacing);
 
             xTilesFromSeed = System.Math.Max(0, xTilesFromSeed);
             xTilesFromSeed = System.Math.Min(xTilesFromSeed, mNumberOfXTiles - 1);
