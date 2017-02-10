@@ -558,7 +558,8 @@ namespace GumPlugin.CodeGeneration
             {
                 currentBlock.Line("base.AssignReferences();");
 
-                foreach(var instance in elementSave.Instances)
+
+                foreach (var instance in elementSave.Instances)
                 {
                     var foundBase = Gum.Managers.ObjectFinder.Self.GetElementSave(instance.BaseType);
 
@@ -583,6 +584,9 @@ namespace GumPlugin.CodeGeneration
                     }
                 }
 
+                // must be done after instances are assigned, since beahvior code may reference instances
+                GenerateStandardFrbBehaviorCode(elementSave, currentBlock);
+
             }
         }
 
@@ -590,7 +594,10 @@ namespace GumPlugin.CodeGeneration
         {
             currentBlock = currentBlock.Function("public override void", "AddToManagers", "RenderingLibrary.SystemManagers managers, RenderingLibrary.Graphics.Layer layer");
             {
-                GenerateStandardFrbBehaviorCode(elementSave, currentBlock);
+                // Used to generate FRB behavior code addition here, but instances which are children of
+                // other instances don't have their AddToManagers called.
+                // Moving it to assign references
+                //GenerateStandardFrbBehaviorCode(elementSave, currentBlock);
 
 
                 currentBlock.Line("base.AddToManagers(managers, layer);");
