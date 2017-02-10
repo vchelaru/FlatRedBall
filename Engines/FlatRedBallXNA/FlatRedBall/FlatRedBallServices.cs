@@ -167,7 +167,7 @@ namespace FlatRedBall
 
         static int mPrimaryThreadId;
 
-#if !XBOX360 && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
         static System.Windows.Forms.Control mOwner;
 #endif
 
@@ -175,43 +175,21 @@ namespace FlatRedBall
         static List<FlatRedBall.Content.ContentManager> mContentManagersWaitingToBeDestroyed = new List<Content.ContentManager>();
         static Game mGame = null;
         static object mSuspendLockObject = new object();
-#if FRB_MDX
-
-        // Calling System.Windows.Forms.Cursor.Hide twice will 
-        // result in the cursor only being shown after the Show
-        // method is called twice.  To allow users to hide and show
-        // the cursor without having to keep track of whether it is already
-        // hidden, the engine will keep track of this in the mWindowsCursorVisible
-        // field.
-        static bool mWindowsCursorVisible = true;
-
-        static string mScreenShotFile;
-
-#else
 
         static internal GraphicsDeviceManager mGraphics = null;
         static internal GraphicsDevice mGraphicsDevice;
-
 
 #if !MONOGAME
         // Content Management
         internal static ResourceContentManager mResourceContentManager;
 #endif
-#if !XNA4
-
-#endif
-
-#endif
+        
         static FlatRedBall.Utilities.GameRandom mRandom = new FlatRedBall.Utilities.GameRandom();
 
         // Graphics options
         static internal int mClientWidth;
         static internal int mClientHeight;
         static GraphicsOptions mGraphicsOptions;
-
-#if XBOX360
-        static bool mIgnoreExtensionsWhenLoadingContent = false;
-#endif
 
         static internal bool mIsInitialized = false;
         static internal bool mIsCommandLine = false;
@@ -224,11 +202,9 @@ namespace FlatRedBall
         /// </remarks>
         static string mEncryptionKey = String.Empty;
 
-#if !FRB_MDX
         private static Texture2D _textureToDraw = null;
         private static SpriteBatch _loadingScreenSpriteBatch = null;
         private static Rectangle _sourceRect;
-#endif
 
         #endregion
 

@@ -116,9 +116,8 @@ namespace FlatRedBall.Math
             screenY = (int)(yRatioOver * camera.DestinationRectangle.Height);
         }
 
-        #region XML Docs
         /// <summary>
-        /// Determines the shortest absolute difference between two angles.
+        /// Determines the shortest absolute difference between two angles. For example, AngleToAngle(PI/4, -PI/4) will return -PI/2
         /// </summary>
         /// <remarks>
         /// This method will never return a value with absolute value greater than PI.  It will return 
@@ -127,7 +126,6 @@ namespace FlatRedBall.Math
         /// <param name="angle1">Starting angle in radians.</param>
         /// <param name="angle2">Ending angle in radians.</param>
         /// <returns>The number of radians between the two angles.</returns>
-        #endregion
         public static float AngleToAngle(float angle1, float angle2)
         {
             float angle = angle2 - angle1;
