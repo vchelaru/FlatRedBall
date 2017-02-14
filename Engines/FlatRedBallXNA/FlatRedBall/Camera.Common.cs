@@ -591,7 +591,6 @@ namespace FlatRedBall
         }
 
 
-        #region XML Docs
         /// <summary>
         /// Returns the number of pixels per unit at the given absolute Z value.  Assumes
         /// that the Camera is unrotated.
@@ -602,7 +601,6 @@ namespace FlatRedBall
         /// </remarks>
         /// <param name="absoluteZ">The absolute Z position.</param>
         /// <returns>The number of pixels per world unit (perpendicular to the camera's forward vector).</returns>
-        #endregion
         public float PixelsPerUnitAt(float absoluteZ)
         {
             // June 7, 2011

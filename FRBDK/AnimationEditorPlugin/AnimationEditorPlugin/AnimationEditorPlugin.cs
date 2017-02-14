@@ -70,7 +70,8 @@ namespace AnimationEditorPlugin
             // - .aeproperties file now includes list of expanded nodes. This is applied whenever the
             //   .ach file is loaded
             // 2.2 - Added CTRL drag+drop file on AnimationChain to add a frame
-            get { return new Version(2, 2, 0); }
+            // 2.2.1 - Dropped frames now default to a frame length of .1 seconds
+            get { return new Version(2, 2, 1); }
         }
 
         public bool IsSelectedItemSprite
