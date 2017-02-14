@@ -207,25 +207,15 @@ namespace FlatRedBall.Graphics
             else
             {
                 mTexture = null;
-#if FRB_MDX
-                ColorOperation = TextureOperation.SelectArg1;
-#else
                 ColorOperation = ColorOperation.None;
-#endif
                 BlendOperation = BlendOperation.Regular;
                 TextureAddressMode = TextureAddressMode.Clamp;
             }
         }
 
-#if FRB_MDX
-        public RenderBreak(int itemNumber, Texture2D texture,
-            TextureOperation colorOperation, 
-            BlendOperation blendOperation, TextureAddressMode textureAddressMode)
-#else
         public RenderBreak(int itemNumber, Texture2D texture,
             ColorOperation colorOperation, 
             BlendOperation blendOperation, TextureAddressMode textureAddressMode)
-#endif
         {
 #if DEBUG
             ObjectCausingBreak = null;
@@ -248,23 +238,14 @@ namespace FlatRedBall.Graphics
             TextureFilter = FlatRedBallServices.GraphicsOptions.TextureFilter;
             _originalTextureFilter = TextureFilter.Linear;
 
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME
             Red = 0;
             Green = 0;
             Blue = 0;
 
 #endif
         }
-
-#if FRB_MDX
-        public RenderBreak(int itemNumber, Texture2D texture,
-            TextureOperation colorOperation, 
-            BlendOperation blendOperation, TextureAddressMode textureAddressMode, PrimitiveType primitiveType) :
-            this(itemNumber, texture, colorOperation, blendOperation, textureAddressMode)
-        {
-            PrimitiveType = primitiveType;
-        }
-#endif
+        
 
         #endregion
 

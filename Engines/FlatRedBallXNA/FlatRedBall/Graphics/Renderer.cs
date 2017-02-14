@@ -1928,7 +1928,7 @@ namespace FlatRedBall.Graphics
                                         circle.Radius * (float)System.Math.Cos(angle) + circle.X,
                                         circle.Radius * (float)System.Math.Sin(angle) + circle.Y,
                                         circle.Z);
-                                mShapeVertices[vertexBufferNum][vertNum + pointNumber].Color.PackedValue = circle.Color.PackedValue;
+                                mShapeVertices[vertexBufferNum][vertNum + pointNumber].Color.PackedValue = circle.mPremultipliedColor.PackedValue;
                             }
                             vertNum += ShapeManager.NumberOfVerticesForCircles;
 

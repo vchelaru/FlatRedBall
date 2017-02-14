@@ -20,6 +20,7 @@ namespace FlatRedBall.Math.Geometry
         float mRadiusVelocity;
         bool mVisible;
         Color mColor;
+        internal Color mPremultipliedColor;
 
         // Marks the tangent of the surface where
         // the circle last collided against.
@@ -52,10 +53,29 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
+        /// <summary>
+        /// The (premultiplied alpha) color used to draw this circle.
+        /// </summary>
+        /// 
         public Color Color
         {
             get { return mColor; }
-            set { mColor = value; }
+            set
+            {
+                mColor = value;
+                if(value.A != 255)
+                {
+                    mPremultipliedColor.A = mColor.A;
+                    mPremultipliedColor.R = (byte)(mColor.R * mColor.A / 255);
+                    mPremultipliedColor.G = (byte)(mColor.G * mColor.A / 255);
+                    mPremultipliedColor.B = (byte)(mColor.B * mColor.A / 255);
+
+                }
+                else
+                {
+                    mPremultipliedColor = mColor;
+                }
+            }
         }
 
 #if SILVERLIGHT
@@ -318,6 +338,79 @@ namespace FlatRedBall.Math.Geometry
         public bool CollideAgainst(ShapeCollection shapeCollection)
         {
             return shapeCollection.CollideAgainst(this);
+        }
+
+        public bool CollideAgainstMoveSoft(Circle circle, float thisMass, float otherMass, float separationVelocity)
+        {
+#if DEBUG
+            if (thisMass == 0 && otherMass == 0)
+            {
+                throw new ArgumentException("Both masses cannot be 0.  For equal masses pick a non-zero value");
+            }
+
+            if (this == circle)
+            {
+                throw new Exception("The circle shouldn't collide with itself!");
+            }
+#endif
+            if (mLastDependencyUpdate != TimeManager.CurrentTime)
+            {
+                UpdateDependencies(TimeManager.CurrentTime);
+            }
+            if (circle.mLastDependencyUpdate != TimeManager.CurrentTime)
+            {
+                circle.UpdateDependencies(TimeManager.CurrentTime);
+            }
+
+            float differenceX = circle.Position.X - Position.X;
+            float differenceY = circle.Position.Y - Position.Y;
+
+            float differenceSquared =
+                differenceX * differenceX + differenceY * differenceY;
+
+            if (differenceSquared < (Radius + circle.Radius) * (Radius + circle.Radius))
+            {
+
+                double angle =
+                    System.Math.Atan2(Position.Y - circle.Position.Y, Position.X - circle.Position.X);
+
+                double distanceToMove = Radius + circle.Radius - System.Math.Sqrt(differenceSquared);
+                float amountToMoveThis = otherMass / (thisMass + otherMass);
+
+                var thisMoveX = (float)(System.Math.Cos(angle) * distanceToMove * amountToMoveThis);
+                var thisMoveY = (float)(System.Math.Sin(angle) * distanceToMove * amountToMoveThis);
+                var otherMoveX = -(float)(System.Math.Cos(angle) * distanceToMove * (1 - amountToMoveThis));
+                var otherMoveY = -(float)(System.Math.Sin(angle) * distanceToMove * (1 - amountToMoveThis));
+
+                if (mParent != null)
+                {
+                    TopParent.Velocity.X += thisMoveX * separationVelocity * TimeManager.SecondDifference;
+                    TopParent.Velocity.Y += thisMoveY * separationVelocity * TimeManager.SecondDifference;
+                    ForceUpdateDependencies();
+                }
+                else
+                {
+                    Velocity.X += thisMoveX * separationVelocity * TimeManager.SecondDifference;
+                    Velocity.Y += thisMoveY * separationVelocity * TimeManager.SecondDifference;
+                }
+
+                if (circle.mParent != null)
+                {
+                    circle.TopParent.Velocity.X += otherMoveX * separationVelocity * TimeManager.SecondDifference;
+                    circle.TopParent.Velocity.Y += otherMoveY * separationVelocity * TimeManager.SecondDifference;
+                    circle.ForceUpdateDependencies();
+                }
+                else
+                {
+                    circle.Velocity.X += otherMoveX * separationVelocity * TimeManager.SecondDifference;
+                    circle.Velocity.Y += otherMoveY * separationVelocity * TimeManager.SecondDifference;
+                }
+
+                return true;
+
+            }
+            else
+                return false;
         }
 
         public bool CollideAgainstMove(Circle circle, float thisMass, float otherMass)
