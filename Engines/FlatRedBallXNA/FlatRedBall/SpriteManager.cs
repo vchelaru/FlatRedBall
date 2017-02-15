@@ -493,7 +493,8 @@ namespace FlatRedBall
         #region XML Docs
         /// <summary>
         /// Gets and sets the sorting type used on Sprites, Text objects, and DrawableBatches
-        /// in the world (not on layers).
+        /// in the world (not on layers). For sorting visual objects on layers, see the Layer's
+        /// SortType property.
         /// </summary>
         #endregion
         public static SortType OrderedSortType

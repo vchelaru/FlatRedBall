@@ -676,7 +676,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 string enumValue = (string)instruction.Value;
 
-                if (!string.IsNullOrEmpty(enumValue))
+                if (!string.IsNullOrEmpty(enumValue) && enumValue != "<NONE>")
                 {
                     string variableType = "VariableState";
 

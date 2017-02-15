@@ -1089,7 +1089,47 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if (usesStandardCodeGen)
                 {
-                    AppendCustomVariableInInstanceStandard(namedObject, codeBlock, instructionSave, ati);
+                    CustomVariable customVariable = null;
+                    EntitySave entitySave = null;
+                    if (namedObject.SourceType == SourceType.Entity && !string.IsNullOrEmpty(namedObject.SourceClassType))
+                    {
+                        entitySave = ObjectFinder.Self.GetEntitySave(namedObject.SourceClassType);
+                        if (entitySave != null)
+                        {
+                            customVariable = entitySave.GetCustomVariable(instructionSave.Member);
+                        }
+                    }
+
+
+                    IElement rootElementForVariable = entitySave;
+                    string rootVariable = instructionSave.Member;
+
+                    while (customVariable != null && customVariable.IsTunneling)
+                    {
+                        NamedObjectSave referencedNamedObject = rootElementForVariable.GetNamedObjectRecursively(customVariable.SourceObject);
+                        if (referencedNamedObject != null && referencedNamedObject.IsFullyDefined && referencedNamedObject.SourceType == SourceType.Entity)
+                        {
+                            rootElementForVariable = ObjectFinder.Self.GetIElement(referencedNamedObject.SourceClassType);
+                            rootVariable = customVariable.SourceObjectProperty;
+
+                            customVariable = rootElementForVariable.GetCustomVariable(customVariable.SourceObjectProperty);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    // We do a check up top to see if we should skip generation, but that's based on null values.
+                    // This check requires a little more context.
+                    bool shouldSkipGeneration = customVariable?.GetIsVariableState(entitySave) == true &&
+                        (instructionSave.Value as string) == "<NONE>";
+
+                    if(!shouldSkipGeneration)
+                    {
+                        AppendCustomVariableInInstanceStandard(namedObject, codeBlock, instructionSave, ati, entitySave, customVariable, rootVariable);
+
+                    }
                 }
                 else
                 {
@@ -1100,42 +1140,14 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        private static void AppendCustomVariableInInstanceStandard(NamedObjectSave namedObject, ICodeBlock codeBlock, InstructionSave instructionSave, AssetTypeInfo ati)
+        private static void AppendCustomVariableInInstanceStandard(NamedObjectSave namedObject, ICodeBlock codeBlock, 
+            InstructionSave instructionSave, AssetTypeInfo ati, IElement entitySave, CustomVariable customVariable, string rootVariable)
         {
             object objectToParse = instructionSave.Value;
 
             #region Determine the right-side value to assign
 
-            CustomVariable customVariable = null;
-            EntitySave entitySave = null;
-            if (namedObject.SourceType == SourceType.Entity && !string.IsNullOrEmpty(namedObject.SourceClassType))
-            {
-                entitySave = ObjectFinder.Self.GetEntitySave(namedObject.SourceClassType);
-                if (entitySave != null)
-                {
-                    customVariable = entitySave.GetCustomVariable(instructionSave.Member);
-                }
-            }
 
-
-            IElement rootElementForVariable = entitySave;
-            string rootVariable = instructionSave.Member;
-
-            while (customVariable != null && customVariable.IsTunneling)
-            {
-                NamedObjectSave referencedNamedObject = rootElementForVariable.GetNamedObjectRecursively(customVariable.SourceObject);
-                if (referencedNamedObject != null && referencedNamedObject.IsFullyDefined && referencedNamedObject.SourceType == SourceType.Entity)
-                {
-                    rootElementForVariable = ObjectFinder.Self.GetIElement(referencedNamedObject.SourceClassType);
-                    rootVariable = customVariable.SourceObjectProperty;
-
-                    customVariable = rootElementForVariable.GetCustomVariable(customVariable.SourceObjectProperty);
-                }
-                else
-                {
-                    break;
-                }
-            }
 
 
             string value = CodeParser.ParseObjectValue(objectToParse);

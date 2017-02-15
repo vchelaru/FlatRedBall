@@ -530,21 +530,24 @@ namespace FlatRedBall.Graphics
             }
         }
 
-
+        /// <summary>
+        /// The SortType used for visible objects placed on this layer.
+        /// Only objects on this layer will use this sort type. Each layer
+        /// can have its own sort type, and unlayered visible objects will use
+        /// the SpriteManager.OrderedSortType SortType.
+        /// </summary>
         public SortType SortType
         {
             get { return mSortType; }
             set { mSortType = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Whether the SpriteLayer is visible.
         /// </summary>
         /// <remarks>
         /// This does not set the contained Sprite's visible value to false.
         /// </remarks>
-        #endregion
         public bool Visible
         {
             get { return mVisible; }

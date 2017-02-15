@@ -985,6 +985,10 @@
     <Compile Include="Screens\SplashScreen.Generated.cs">
       <DependentUpon>SplashScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="Screens\SpriteSortScreen.cs" />
+    <Compile Include="Screens\SpriteSortScreen.Generated.cs">
+      <DependentUpon>SpriteSortScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Screens\StateScreen.cs" />
     <Compile Include="Screens\StateScreen.Generated.cs">
       <DependentUpon>StateScreen.cs</DependentUpon>
@@ -1049,6 +1053,7 @@
     <Compile Include="TileGraphics\TiledMapSave.Conversion.cs" />
     <Compile Include="TileGraphics\TiledMapSave.Serialization.cs" />
     <Compile Include="TileGraphics\TiledMapToShapeCollectionConverter.cs" />
+    <Compile Include="TileGraphics\TileNodeNetworkCreator.cs" />
     <Compile Include="TileGraphics\Tileset.cs" />
     <Compile Include="TileGraphics\TilesetExtensionMethods.cs" />
   </ItemGroup>

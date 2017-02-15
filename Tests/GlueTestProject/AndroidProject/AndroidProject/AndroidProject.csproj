@@ -1780,6 +1780,13 @@
       <Link>Screens\SplashScreen.Generated.cs</Link>
       <DependentUpon>SplashScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\SpriteSortScreen.cs">
+      <Link>Screens\SpriteSortScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\SpriteSortScreen.Generated.cs">
+      <Link>Screens\SpriteSortScreen.Generated.cs</Link>
+      <DependentUpon>SpriteSortScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\StateScreen.cs">
       <Link>Screens\StateScreen.cs</Link>
     </Compile>
@@ -1931,6 +1938,9 @@
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\TiledMapToShapeCollectionConverter.cs">
       <Link>TileGraphics\TiledMapToShapeCollectionConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\TileNodeNetworkCreator.cs">
+      <Link>TileGraphics\TileNodeNetworkCreator.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TileGraphics\Tileset.cs">
       <Link>TileGraphics\Tileset.cs</Link>
