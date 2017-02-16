@@ -301,8 +301,14 @@ namespace FlatRedBall.Graphics
                 int ID = StringFunctions.GetIntAfter("char id=", fontPattern, index);
 
                 sizeOfArray = System.Math.Max(sizeOfArray, ID + 1);
-            }
 
+
+
+            }
+            else
+            {
+                throw new Exception("Could not find the last index of the string \"char id=\" in the font pattern: " + fontPattern);
+            }
             #endregion
 
 
@@ -352,7 +358,12 @@ namespace FlatRedBall.Graphics
                         {
                             string message = $"Error trying to access character with int {ID} which is character {(char)ID}";
 
-                            message += $"This is happening in the font string at index {index} which has the following 100 characters:";
+                            message += $"This is happening in the font string at index {index} which has the following characters:";
+
+                            int startIndex = System.Math.Max(0, index);
+                            int endIndex = System.Math.Min(fontPattern.Length - 1, index + 100);
+
+                            message += fontPattern.Substring(startIndex, endIndex - startIndex);
 
                             throw new IndexOutOfRangeException(message);
                         }
