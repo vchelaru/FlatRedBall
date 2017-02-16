@@ -295,7 +295,7 @@ namespace FlatRedBall.Graphics
             // I think they're ordered by character
             // index, so we can just find the last one
             // and save some time.
-            int index = fontPattern.LastIndexOf("char id=");
+            int index = fontPattern.LastIndexOf("char id=", fontPattern.Length, StringComparison.InvariantCulture);
             if (index != -1)
             {
                 int ID = StringFunctions.GetIntAfter("char id=", fontPattern, index);
@@ -307,7 +307,17 @@ namespace FlatRedBall.Graphics
             }
             else
             {
-                throw new Exception("Could not find the last index of the string \"char id=\" in the font pattern: " + fontPattern);
+                // index is -1, but let's try a regular IndexOf:
+                int forwardIndexOf = fontPattern.IndexOf("char id=");
+                if(forwardIndexOf != -1 && index == -1)
+                {
+                    throw new Exception("How is this possible? LastIndexOf \"char id=\" is returning a value of -1, while IndexOf for the same string is returning an index value)");
+
+                }
+                else
+                {
+                    throw new Exception("Could not find the last index of the string \"char id=\" in the font pattern: " + fontPattern);
+                }
             }
             #endregion
 
@@ -335,7 +345,7 @@ namespace FlatRedBall.Graphics
                 mCharacterInfo['t'].ScaleX = space.ScaleX * 4;
                 mCharacterInfo['t'].Spacing = space.Spacing * 4;
 
-                index = fontPattern.IndexOf("char id=");
+                index = fontPattern.IndexOf("char id=", 0, StringComparison.InvariantCulture);
                 while (index != -1)
                 {
 
@@ -346,7 +356,7 @@ namespace FlatRedBall.Graphics
                         // The bitmap font may have something like this as the first character:
                         // char id=-1   x=149   y=84    width=10    height=18    xoffset=1     yoffset=7     xadvance=12    page=0  chnl=15
                         // We don't use that, but we don't want to crash on it, so continue onward.
-                        int indexOfID = fontPattern.IndexOf("char id=", index);
+                        int indexOfID = fontPattern.IndexOf("char id=", index, StringComparison.InvariantCulture);
                         index = indexOfID + ID.ToString().Length;
 
                         continue;
@@ -373,7 +383,7 @@ namespace FlatRedBall.Graphics
                         mCharacterInfo[ID] = FillBitmapCharacterInfo(ID, fontPattern, mTextures[0].Width,
                             mTextures[0].Height, mLineHeightInPixels, index);
 
-                        int indexOfID = fontPattern.IndexOf("char id=", index);
+                        int indexOfID = fontPattern.IndexOf("char id=", index, StringComparison.InvariantCulture);
                         if (indexOfID != -1)
                         {
                             index = indexOfID + ID.ToString().Length;
@@ -385,12 +395,12 @@ namespace FlatRedBall.Graphics
 
                 #region Get Kearning Info
 
-                index = fontPattern.IndexOf("kerning ");
+                index = fontPattern.IndexOf("kerning ", 0, StringComparison.InvariantCulture);
 
                 if (index != -1)
                 {
 
-                    index = fontPattern.IndexOf("first=", index);
+                    index = fontPattern.IndexOf("first=", index, StringComparison.InvariantCulture);
 
                     while (index != -1)
                     {
@@ -400,7 +410,7 @@ namespace FlatRedBall.Graphics
 
                         mCharacterInfo[ID].SecondLetterKearning.Add(secondCharacter, kearningAmount);
 
-                        index = fontPattern.IndexOf("first=", index + 1);
+                        index = fontPattern.IndexOf("first=", index + 1, StringComparison.InvariantCulture);
                     }
                 }
 
@@ -413,14 +423,12 @@ namespace FlatRedBall.Graphics
         {
             // standardize before doing anything else
             fntFileName = FileManager.Standardize(fntFileName);
-
-#if !SILVERLIGHT
+            
 
             if (FlatRedBall.IO.FileManager.IsRelative(fntFileName))
             {
                 fntFileName = FlatRedBall.IO.FileManager.RelativeDirectory + fntFileName;
             }
-#endif
 
             mFontFile = fntFileName;
 
