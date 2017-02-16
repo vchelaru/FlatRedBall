@@ -295,7 +295,7 @@ namespace FlatRedBall.Graphics
             // I think they're ordered by character
             // index, so we can just find the last one
             // and save some time.
-            int index = fontPattern.LastIndexOf("char id=", fontPattern.Length, StringComparison.InvariantCulture);
+            int index = fontPattern.LastIndexOf("char id=", fontPattern.Length, StringComparison.Ordinal);
             if (index != -1)
             {
                 int ID = StringFunctions.GetIntAfter("char id=", fontPattern, index);
@@ -345,7 +345,7 @@ namespace FlatRedBall.Graphics
                 mCharacterInfo['t'].ScaleX = space.ScaleX * 4;
                 mCharacterInfo['t'].Spacing = space.Spacing * 4;
 
-                index = fontPattern.IndexOf("char id=", 0, StringComparison.InvariantCulture);
+                index = fontPattern.IndexOf("char id=", 0, StringComparison.Ordinal);
                 while (index != -1)
                 {
 
@@ -356,7 +356,7 @@ namespace FlatRedBall.Graphics
                         // The bitmap font may have something like this as the first character:
                         // char id=-1   x=149   y=84    width=10    height=18    xoffset=1     yoffset=7     xadvance=12    page=0  chnl=15
                         // We don't use that, but we don't want to crash on it, so continue onward.
-                        int indexOfID = fontPattern.IndexOf("char id=", index, StringComparison.InvariantCulture);
+                        int indexOfID = fontPattern.IndexOf("char id=", index, StringComparison.Ordinal);
                         index = indexOfID + ID.ToString().Length;
 
                         continue;
@@ -383,7 +383,7 @@ namespace FlatRedBall.Graphics
                         mCharacterInfo[ID] = FillBitmapCharacterInfo(ID, fontPattern, mTextures[0].Width,
                             mTextures[0].Height, mLineHeightInPixels, index);
 
-                        int indexOfID = fontPattern.IndexOf("char id=", index, StringComparison.InvariantCulture);
+                        int indexOfID = fontPattern.IndexOf("char id=", index, StringComparison.Ordinal);
                         if (indexOfID != -1)
                         {
                             index = indexOfID + ID.ToString().Length;
@@ -395,12 +395,12 @@ namespace FlatRedBall.Graphics
 
                 #region Get Kearning Info
 
-                index = fontPattern.IndexOf("kerning ", 0, StringComparison.InvariantCulture);
+                index = fontPattern.IndexOf("kerning ", 0, StringComparison.Ordinal);
 
                 if (index != -1)
                 {
 
-                    index = fontPattern.IndexOf("first=", index, StringComparison.InvariantCulture);
+                    index = fontPattern.IndexOf("first=", index, StringComparison.Ordinal);
 
                     while (index != -1)
                     {
@@ -410,7 +410,7 @@ namespace FlatRedBall.Graphics
 
                         mCharacterInfo[ID].SecondLetterKearning.Add(secondCharacter, kearningAmount);
 
-                        index = fontPattern.IndexOf("first=", index + 1, StringComparison.InvariantCulture);
+                        index = fontPattern.IndexOf("first=", index + 1, StringComparison.Ordinal);
                     }
                 }
 
