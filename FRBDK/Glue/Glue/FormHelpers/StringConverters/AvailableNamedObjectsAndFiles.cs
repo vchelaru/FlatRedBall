@@ -41,6 +41,15 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
         }
 
+        /// <summary>
+        /// Sets the restriction of types to return. For example "FlatRedBall.Sprite" would restrict
+        /// the returned values to only of type Sprite.
+        /// </summary>
+        public string NamedObjectTypeRestriction
+        {
+            get; set;
+        }
+
         #endregion
 
         public override bool GetStandardValuesSupported(
@@ -62,7 +71,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             IncludeReferencedFiles = true;
         }
 
-        public static List<string> GetAvailableObjects(bool addNone, bool includeReferencedfiles, IElement currentElement)
+        public static List<string> GetAvailableObjects(bool addNone, bool includeReferencedfiles, IElement currentElement, string namedObjectTypeRestriction)
         {
             stringListToReturn.Clear();
 
@@ -78,7 +87,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
             namedObjects = currentElement.NamedObjects;
 
-            AddContainedNamedObjects(namedObjects);
+            AddContainedNamedObjects(namedObjects, namedObjectTypeRestriction);
 
             #endregion
 
@@ -111,14 +120,19 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
         }
 
-        private static void AddContainedNamedObjects(List<NamedObjectSave> namedObjects)
+        private static void AddContainedNamedObjects(List<NamedObjectSave> namedObjects, string namedObjectTypeRestriction)
         {
             // Loop through the named objects and add them here
             foreach (NamedObjectSave namedObject in namedObjects)
             {
-                stringListToReturn.Add(namedObject.InstanceName);
+                bool shouldAdd = namedObjectTypeRestriction == null || namedObject.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType == namedObjectTypeRestriction;
 
-                AddContainedNamedObjects(namedObject.ContainedObjects);
+                if(shouldAdd)
+                {
+                    stringListToReturn.Add(namedObject.InstanceName);
+
+                    AddContainedNamedObjects(namedObject.ContainedObjects, namedObjectTypeRestriction);
+                }
             }
         }
 
@@ -126,7 +140,7 @@ namespace FlatRedBall.Glue.GuiDisplay
         public override System.ComponentModel.TypeConverter.StandardValuesCollection
                      GetStandardValues(ITypeDescriptorContext context)
         {
-            List<string> stringList = GetAvailableObjects(true, IncludeReferencedFiles, CurrentElement);
+            List<string> stringList = GetAvailableObjects(true, IncludeReferencedFiles, CurrentElement, this.NamedObjectTypeRestriction);
 
             return new System.ComponentModel.TypeConverter.StandardValuesCollection(stringList);
         }

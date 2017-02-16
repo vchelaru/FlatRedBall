@@ -317,6 +317,35 @@ namespace FlatRedBall.Glue.SaveClasses
 
         }
 
+        public static bool GetIsObjectType(this CustomVariable customVariable)
+        {
+            string typeString = null;
+
+            if (string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+            {
+                typeString = customVariable.Type;
+            }
+            else
+            {
+                typeString = customVariable.OverridingPropertyType;
+            }
+
+            return GetIsObjectType(typeString);
+        }
+
+        public static bool GetIsObjectType(string typeString)
+        {
+            if (typeString != null)
+            {
+                return AvailableAssetTypes.Self.AllAssetTypes.Any(item =>
+                {
+                    return item.CanBeObject && (item.RuntimeTypeName == typeString || item.QualifiedRuntimeTypeName.QualifiedType == typeString);
+                });
+            }
+
+            return false;
+        }
+
         public static Type GetRuntimeType(this CustomVariable customVariable)
         {
             if (customVariable.GetIsVariableState())

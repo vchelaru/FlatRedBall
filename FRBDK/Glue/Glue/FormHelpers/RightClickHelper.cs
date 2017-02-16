@@ -110,6 +110,7 @@ namespace FlatRedBall.Glue.FormHelpers
             ContextMenuStrip menu = MainGlueWindow.Self.mElementContextMenu;
 
             menu.Items.Clear();
+            var sourceNode = ElementViewWindow.TreeNodeDraggedOff;
 
 
             #region IsScreenNode
@@ -118,8 +119,11 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 if (menuShowingAction == MenuShowingAction.RightButtonDrag)
                 {
-                    menu.Items.Add(mAddEntityInstance);
-                    menu.Items.Add(mAddEntityList);
+                    if(sourceNode.IsEntityNode())
+                    {
+                        menu.Items.Add(mAddEntityInstance);
+                        menu.Items.Add(mAddEntityList);
+                    }   
                 }
                 else
                 {
@@ -152,7 +156,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (targetNode.IsEntityNode())
             {
-                if (menuShowingAction == MenuShowingAction.RightButtonDrag)
+                if (menuShowingAction == MenuShowingAction.RightButtonDrag && sourceNode.IsEntityNode())
                 {
                     menu.Items.Add(mAddEntityInstance);
                     menu.Items.Add(mAddEntityList);
@@ -206,7 +210,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     ElementViewWindow.TreeNodeDraggedOff.Tag as ElementCommands;
                 }
 
-                if (menuShowingAction == MenuShowingAction.RightButtonDrag && !isSameObject)
+                if (menuShowingAction == MenuShowingAction.RightButtonDrag && !isSameObject && sourceNode.IsEntityNode())
                 {
                     menu.Items.Add(mAddEntityInstance);
                     menu.Items.Add(mAddEntityList);

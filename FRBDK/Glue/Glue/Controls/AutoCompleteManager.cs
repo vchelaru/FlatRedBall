@@ -109,7 +109,7 @@ namespace FlatRedBall.Glue.Controls
 
                 ReferencedFileSave rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(fileName);
 
-                if (rfs.IsCsvOrTreatedAsCsv)
+                if (rfs?.IsCsvOrTreatedAsCsv == true)
                 {
                     toFill.AddRange(CsvCodeGenerator.GetMemberNamesFrom(rfs));
                 }

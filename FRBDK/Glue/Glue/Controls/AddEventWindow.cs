@@ -329,7 +329,7 @@ namespace FlatRedBall.Glue.Controls
 
         private void FillTunnelingObjects()
         {
-            List<string> availableObjects = AvailableNamedObjectsAndFiles.GetAvailableObjects(false, false, GlueState.Self.CurrentElement);
+            List<string> availableObjects = AvailableNamedObjectsAndFiles.GetAvailableObjects(false, false, GlueState.Self.CurrentElement, null);
 
             foreach (string availableObject in availableObjects)
                 this.TunnelingObjectComboBox.Items.Add(availableObject);

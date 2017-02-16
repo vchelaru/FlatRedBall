@@ -94,7 +94,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
             {
                 if (instance.DoesMemberNeedToBeSetByContainer(memberName))
                 {
-                    typeConverter = new AvailableNamedObjectsAndFiles(container);
+                    var availableNamedObjectsAndFiles = new AvailableNamedObjectsAndFiles(container);
+                    availableNamedObjectsAndFiles.NamedObjectTypeRestriction = typedMember.MemberType.FullName;
+                    typeConverter = availableNamedObjectsAndFiles;
                 }
                 else if (memberType.IsEnum)
                 {

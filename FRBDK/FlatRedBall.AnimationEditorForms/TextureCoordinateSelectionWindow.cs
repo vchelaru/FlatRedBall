@@ -129,9 +129,9 @@ namespace FlatRedBall.AnimationEditorForms
                 maxY += 1;
 
                 var texture = imageRegionSelectionControl1.CurrentTexture;
-                SetSelectionTextureCoordinates(minY / (float)texture.Height, maxY / (float)texture.Height, minX / (float)texture.Width, maxX / (float)texture.Width);
+                SetSelectionTextureCoordinates(minY, maxY , minX , maxX );
 
-                RegionChanged?.Invoke();
+                EndRegionChanged?.Invoke();
             }
         }
 
@@ -182,15 +182,15 @@ namespace FlatRedBall.AnimationEditorForms
 
         }
 
-        private void SetSelectionTextureCoordinates(float topTexture, float bottomTexture, float leftTexture, float rightTexture)
+        private void SetSelectionTextureCoordinates(float topTexturePixel, float bottomTexturePixel, float leftTexturePixel, float rightTexturePixel)
         {
             Texture2D texture = imageRegionSelectionControl1.CurrentTexture;
             imageRegionSelectionControl1.DesiredSelectorCount = 1;
-            imageRegionSelectionControl1.RectangleSelector.Left = leftTexture;
-            imageRegionSelectionControl1.RectangleSelector.Width = (rightTexture - leftTexture);
+            imageRegionSelectionControl1.RectangleSelector.Left = leftTexturePixel;
+            imageRegionSelectionControl1.RectangleSelector.Width = (rightTexturePixel - leftTexturePixel);
 
-            imageRegionSelectionControl1.RectangleSelector.Top = topTexture;
-            imageRegionSelectionControl1.RectangleSelector.Height = (bottomTexture - topTexture);
+            imageRegionSelectionControl1.RectangleSelector.Top = topTexturePixel;
+            imageRegionSelectionControl1.RectangleSelector.Height = (bottomTexturePixel - topTexturePixel);
 
             imageRegionSelectionControl1.RectangleSelector.Visible = true;
             imageRegionSelectionControl1.RectangleSelector.ShowHandles = true;

@@ -347,6 +347,18 @@ namespace FlatRedBall.Graphics
                     }
                     else
                     {
+#if DEBUG
+                        if(ID >= mCharacterInfo.Length)
+                        {
+                            string message = $"Error trying to access character with int {ID} which is character {(char)ID}";
+
+                            message += $"This is happening in the font string at index {index} which has the following 100 characters:";
+
+                            throw new IndexOutOfRangeException(message);
+                        }
+#endif
+
+
                         mCharacterInfo[ID] = FillBitmapCharacterInfo(ID, fontPattern, mTextures[0].Width,
                             mTextures[0].Height, mLineHeightInPixels, index);
 

@@ -1128,6 +1128,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
         internal static NamedObjectSave CreateNewNamedObjectInElement(IElement elementToCreateIn, EntitySave blueprintEntity, bool createList = false)
         {
+            if(blueprintEntity == null)
+            {
+                throw new ArgumentNullException($"{nameof(blueprintEntity)} cannot be null");
+            }
+
             if (elementToCreateIn is EntitySave && ((EntitySave)elementToCreateIn).ImplementsIVisible && !blueprintEntity.ImplementsIVisible)
             {
                 MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
