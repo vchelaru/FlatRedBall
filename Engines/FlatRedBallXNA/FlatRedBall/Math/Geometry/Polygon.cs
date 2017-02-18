@@ -1144,9 +1144,11 @@ namespace FlatRedBall.Math.Geometry
 
             #region Test side vs. side
 
+            bool hasIntersections = false;
+
             // it's possible that there could still be a collision.  In this case, the points might not fall
             // inside of eachother, but the edges will still overlap
-            if (double.IsNegativeInfinity(longestDistanceSquared))
+            //if (double.IsNegativeInfinity(longestDistanceSquared))
             {
 
                 List<List<int>> sidesTouching = new List<List<int>>();
@@ -1170,6 +1172,7 @@ namespace FlatRedBall.Math.Geometry
                         if (thisSegment.Intersects(otherSegment))
                         {
                             currentIntersections.Add(j);
+                            hasIntersections = true;
                         }
                     }
                 }
@@ -1178,78 +1181,147 @@ namespace FlatRedBall.Math.Geometry
                 if (double.IsNegativeInfinity(longestDistanceSquared))
                     longestDistance = float.NegativeInfinity;
 
-                // the sidesTouching tells which segments are touching which segments.
-                // We're interested in adjacent segments on this polygon which cross the same segment
-                for (int i = 0; i < sidesTouching.Count - 1; i++)
-                {
-                    for (int j = 0; j < sidesTouching[i].Count; j++)
-                    {
-                        int afterI = i + 1;
-                        bool isAdjacent = sidesTouching[afterI].Contains(sidesTouching[i][j]);
 
-                        if (isAdjacent)
-                        {
-                            int otherPolygonSide = sidesTouching[i][j];
-                            int afterOtherPolygonSide = otherPolygonSide + 1;
-                            // here's the point we're interested in moving out
-                            Point point = new Point(ref mVertices[afterI].Position);
-                            Segment tempSegment = new Segment();
+                // todo - we do this vs. other, now need to do other vs. this and get the shortest of the two, I think
 
-                            Segment segment = new Segment(
-                                ref otherVertices[otherPolygonSide],
-                                ref otherVertices[afterOtherPolygonSide]);
+                float longestDistanceStep4This = float.NegativeInfinity;
+                Vector3 vector3Step4This = Vector3.Zero;
 
-                            if (segment.DistanceTo(point, out tempSegment) > longestDistance)
-                            {
-                                vectorTo = new Point3D(
-                                    tempSegment.Point2.X - tempSegment.Point1.X,
-                                    tempSegment.Point2.Y - tempSegment.Point1.Y,
-                                    0);
-                                longestDistance = (float)vectorTo.Length();
-
-                            }
-                        }
-                    }
-                }
-
+                // Step 1: This segment that intersects with other segment can be moved one of two ways. Get each distance
+                // Step 2: Get the shortest distance of the two values obtained in step 1 
+                // Step 3: Perform step 1 and step 2 on the other segment against this segment (opposite order) and get the shortest distance of the two
+                // Step 4: See if the result of step 3 is the shortest distance obtained so far
                 for (int i = 0; i < sidesTouching.Count; i++)
                 {
-                    int afterI = i + 1;
+                    var thisSegment = new Segment(ref mVertices[i], ref mVertices[i + 1]);
                     for (int j = 0; j < sidesTouching[i].Count; j++)
                     {
-                        int afterJ = j + 1;
-                        bool isAdjacent = j < sidesTouching[i].Count - 1 &&
-                            sidesTouching[i][j] + 1 == sidesTouching[i][afterJ];
-                        //sidesTouching[i + 1].Contains(sidesTouching[i][j]);
+                        var otherSegment = new Segment(ref otherVertices[sidesTouching[i][j]], ref otherVertices[sidesTouching[i][j] + 1]);
 
-                        if (isAdjacent)
+                        // step 1 for this:
+                        var thisDistance1 = otherSegment.DistanceTo(thisSegment.Point1);
+                        var thisDistance2 = otherSegment.DistanceTo(thisSegment.Point2);
+
+
+                        // step 2 for this/other:
+                        var shortestDistanceThis = System.Math.Min(thisDistance1, thisDistance2);
+
+                        float step3ShortestDistance;
+                        Point step3Endpoint;
+                        Segment step3Segment;
+                        // step 3:
+
+                        step3Segment = otherSegment;
+                        if (shortestDistanceThis == thisDistance1)
                         {
-                            int otherPolygonSide = sidesTouching[i][j];
-                            int afterOtherPolygonSide = otherPolygonSide + 1;
+                            step3Endpoint = thisSegment.Point1;
+                            step3ShortestDistance = thisDistance1;
+                        }
+                        else // thisDistance2
+                        {
+                            step3Endpoint = thisSegment.Point2;
+                            step3ShortestDistance = thisDistance2;
+                        }
 
-                            // here's the point we're interested in moving out
-                            Point point = new Point(ref otherVertices[afterOtherPolygonSide].Position);
-                            Segment tempSegment = new Segment();
 
-                            Segment segment = new Segment(
-                                ref mVertices[i],
-                                ref mVertices[afterI]);
-
-                            if (segment.DistanceTo(point, out tempSegment) > longestDistance)
-                            {
-                                vectorTo = new Point3D(
-                                    -tempSegment.Point2.X + tempSegment.Point1.X,
-                                    -tempSegment.Point2.Y + tempSegment.Point1.Y,
-                                    0);
-                                longestDistance = (float)vectorTo.Length();
-
-                            }
+                        if (step3ShortestDistance > longestDistanceStep4This)
+                        {
+                            longestDistanceStep4This = step3ShortestDistance;
+                            var step3ClosestPoint = step3Segment.ClosestPointTo(step3Endpoint);
+                            vector3Step4This = new Vector3((float)(step3ClosestPoint.X - step3Endpoint.X), (float)(step3ClosestPoint.Y - step3Endpoint.Y), 0);
 
                         }
                     }
                 }
 
+                float longestDistanceStep4Other = float.NegativeInfinity;
+                Vector3 vector3Step4Other = Vector3.Zero;
+
+
+                // now do the 2nd polygon vs. the first
+                for (int i = 0; i < sidesTouching.Count; i++)
+                {
+                    var thisSegment = new Segment(ref mVertices[i], ref mVertices[i + 1]);
+                    for (int j = 0; j < sidesTouching[i].Count; j++)
+                    {
+                        var otherSegment = new Segment(ref otherVertices[sidesTouching[i][j]], ref otherVertices[sidesTouching[i][j] + 1]);
+
+                        // step 1 for this:
+                        var otherDistance1 = thisSegment.DistanceTo(otherSegment.Point1);
+                        var otherDistance2 = thisSegment.DistanceTo(otherSegment.Point2);
+
+
+                        // step 2 for this/other:
+                        var shortestDistanceOther = System.Math.Min(otherDistance1, otherDistance2);
+
+                        float step3ShortestDistance;
+                        Point step3Endpoint;
+                        Segment step3Segment;
+                        // step 3:
+
+                        step3Segment = thisSegment;
+                        if (shortestDistanceOther == otherDistance1)
+                        {
+                            step3Endpoint = otherSegment.Point1;
+                            step3ShortestDistance = otherDistance1;
+                        }
+                        else // thisDistance2
+                        {
+                            step3Endpoint = otherSegment.Point2;
+                            step3ShortestDistance = otherDistance2;
+                        }
+
+
+                        if (step3ShortestDistance > longestDistanceStep4Other)
+                        {
+                            longestDistanceStep4Other = step3ShortestDistance;
+                            var step3ClosestPoint = step3Segment.ClosestPointTo(step3Endpoint);
+                            vector3Step4Other = new Vector3((float)(step3ClosestPoint.X - step3Endpoint.X), (float)(step3ClosestPoint.Y - step3Endpoint.Y), 0);
+
+                        }
+                    }
+                }
+
+                float distanceToConsider = float.NegativeInfinity;
+                if(float.IsPositiveInfinity(longestDistanceStep4This) && float.IsPositiveInfinity(longestDistanceStep4Other))
+                {
+                    // do nothing
+                }
+                else if (!float.IsPositiveInfinity(longestDistanceStep4This) && float.IsPositiveInfinity(longestDistanceStep4Other))
+                {
+                    distanceToConsider = longestDistanceStep4This;
+                }
+                else if (float.IsPositiveInfinity(longestDistanceStep4This) && !float.IsPositiveInfinity(longestDistanceStep4Other))
+                {
+                    distanceToConsider = longestDistanceStep4Other;
+                }
+                else if(longestDistanceStep4This < longestDistanceStep4Other)
+                {
+                    distanceToConsider = longestDistanceStep4This;
+                }
+                else
+                {
+                    distanceToConsider = longestDistanceStep4Other;
+                }
+
+                if(!float.IsNegativeInfinity(distanceToConsider) && distanceToConsider > longestDistance)
+                {
+                    if(distanceToConsider == longestDistanceStep4This)
+                    {
+                        vectorTo.X = vector3Step4This.X;
+                        vectorTo.Y = vector3Step4This.Y;
+                    }
+                    else
+                    {
+                        vectorTo.X = vector3Step4Other.X;
+                        vectorTo.Y = vector3Step4Other.Y;
+                    }
+                }
+                
+
+
             }
+
 
             #endregion
 
