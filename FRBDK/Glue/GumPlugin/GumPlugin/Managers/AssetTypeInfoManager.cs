@@ -304,6 +304,8 @@ namespace GumPlugin.Managers
                 newAti.ExtraVariablesPattern += ";";
             }
 
+            newAti.ExtraVariablesPattern = "";
+
             // 9/24/2014
             // Jesse was getting
             // the plugin to crash
@@ -312,9 +314,15 @@ namespace GumPlugin.Managers
             // I'm going to wrap this in if-s to be sure it's safe.
             if (element != null && element.DefaultState != null && element.DefaultState.Variables != null)
             {
-                foreach (var variable in element.DefaultState.Variables.Where(item => !string.IsNullOrEmpty(item.ExposedAsName)))
+                foreach (var variable in element.DefaultState.Variables.Where(item => !string.IsNullOrEmpty(item.ExposedAsName) || string.IsNullOrEmpty(item.SourceObject)))
                 {
-                    newAti.ExtraVariablesPattern += variable.Type + " " + variable.ExposedAsName + ";";
+                    var variableDefinition = new VariableDefinition();
+                    variableDefinition.Category = variable.Category;
+                    variableDefinition.DefaultValue = variable.Value?.ToString();
+                    variableDefinition.Name = variable.ExposedAsName ?? variable.Name;
+                    variableDefinition.Type = variable.Type;
+
+                    newAti.VariableDefinitions.Add(variableDefinition);
                 }
             }
 
