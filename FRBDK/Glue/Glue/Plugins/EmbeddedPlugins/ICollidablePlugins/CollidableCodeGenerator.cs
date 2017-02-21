@@ -45,7 +45,7 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
             {
                 codeBlock.Line("mGeneratedCollision = new FlatRedBall.Math.Geometry.ShapeCollection();");
 
-                foreach (var item in element.NamedObjects.Where(item=>item.IncludeInICollidable))
+                foreach (var item in element.NamedObjects.Where(item=>item.IncludeInICollidable && !item.IsDisabled))
                 {
                     string addCall = item.GetAddToShapeCollection();
 

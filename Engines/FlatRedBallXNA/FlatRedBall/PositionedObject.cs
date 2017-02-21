@@ -768,6 +768,7 @@ namespace FlatRedBall
         public double LastDependencyUpdate
         {
             get { return mLastDependencyUpdate; }
+            internal set { mLastDependencyUpdate = value; }
         }
 
         #region XML Docs

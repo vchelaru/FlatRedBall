@@ -1030,6 +1030,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(thisShapeCollection.mAxisAlignedRectangles[i]);
                     returnValue = true;
                 }
@@ -1056,6 +1057,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCircles[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCircles.Add(thisShapeCollection.mCircles[i]);
                     returnValue = true;
                 }
@@ -1082,6 +1084,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mPolygons[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionPolygons.Add(thisShapeCollection.mPolygons[i]);
                     returnValue = true;
                 }
@@ -1108,6 +1111,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mLines[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionLines.Add(thisShapeCollection.mLines[i]);
                     returnValue = true;
                 }
@@ -1134,6 +1138,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCapsule2Ds.Add(thisShapeCollection.mCapsule2Ds[i]);
                     returnValue = true;
                 }
@@ -1191,6 +1196,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(thisShapeCollection.mAxisAlignedRectangles[i]);
                     returnValue = true;
                 }
@@ -1217,6 +1223,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCircles[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCircles.Add(thisShapeCollection.mCircles[i]);
                     returnValue = true;
                 }
@@ -1243,6 +1250,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mPolygons[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionPolygons.Add(thisShapeCollection.mPolygons[i]);
                     returnValue = true;
                 }
@@ -1269,6 +1277,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mLines[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionLines.Add(thisShapeCollection.mLines[i]);
                     returnValue = true;
                 }
@@ -1295,6 +1304,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCapsule2Ds.Add(thisShapeCollection.mCapsule2Ds[i]);
                     returnValue = true;
                 }
@@ -1352,6 +1362,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(thisShapeCollection.mAxisAlignedRectangles[i]);
                     returnValue = true;
                 }
@@ -1378,6 +1389,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCircles[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCircles.Add(thisShapeCollection.mCircles[i]);
                     returnValue = true;
                 }
@@ -1404,6 +1416,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mPolygons[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionPolygons.Add(thisShapeCollection.mPolygons[i]);
                     returnValue = true;
                 }
@@ -1430,6 +1443,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mLines[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionLines.Add(thisShapeCollection.mLines[i]);
                     returnValue = true;
                 }
@@ -1456,6 +1470,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCapsule2Ds.Add(thisShapeCollection.mCapsule2Ds[i]);
                     returnValue = true;
                 }
@@ -1513,6 +1528,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(thisShapeCollection.mAxisAlignedRectangles[i]);
                     returnValue = true;
                 }
@@ -1539,6 +1555,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCircles[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCircles.Add(thisShapeCollection.mCircles[i]);
                     returnValue = true;
                 }
@@ -1565,6 +1582,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mPolygons[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionPolygons.Add(thisShapeCollection.mPolygons[i]);
                     returnValue = true;
                 }
@@ -1591,6 +1609,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mLines[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionLines.Add(thisShapeCollection.mLines[i]);
                     returnValue = true;
                 }
@@ -1617,6 +1636,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCapsule2Ds.Add(thisShapeCollection.mCapsule2Ds[i]);
                     returnValue = true;
                 }
@@ -1674,6 +1694,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(thisShapeCollection.mAxisAlignedRectangles[i]);
                     returnValue = true;
                 }
@@ -1700,6 +1721,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCircles[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCircles.Add(thisShapeCollection.mCircles[i]);
                     returnValue = true;
                 }
@@ -1726,6 +1748,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mPolygons[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionPolygons.Add(thisShapeCollection.mPolygons[i]);
                     returnValue = true;
                 }
@@ -1752,6 +1775,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mLines[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionLines.Add(thisShapeCollection.mLines[i]);
                     returnValue = true;
                 }
@@ -1778,6 +1802,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCapsule2Ds.Add(thisShapeCollection.mCapsule2Ds[i]);
                     returnValue = true;
                 }
@@ -1835,6 +1860,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mSpheres[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionSpheres.Add(thisShapeCollection.mSpheres[i]);
                     returnValue = true;
                 }
@@ -1861,6 +1887,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mAxisAlignedCubes[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionAxisAlignedCubes.Add(thisShapeCollection.mAxisAlignedCubes[i]);
                     returnValue = true;
                 }
@@ -1918,6 +1945,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mSpheres[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionSpheres.Add(thisShapeCollection.mSpheres[i]);
                     returnValue = true;
                 }
@@ -1944,6 +1972,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mAxisAlignedCubes[i], shapeMass, collectionMass))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionAxisAlignedCubes.Add(thisShapeCollection.mAxisAlignedCubes[i]);
                     returnValue = true;
                 }
@@ -2002,6 +2031,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(thisShapeCollection.mAxisAlignedRectangles[i]);
                     returnValue = true;
                 }
@@ -2028,6 +2058,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCircles[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCircles.Add(thisShapeCollection.mCircles[i]);
                     returnValue = true;
                 }
@@ -2054,6 +2085,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mPolygons[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionPolygons.Add(thisShapeCollection.mPolygons[i]);
                     returnValue = true;
                 }
@@ -2080,6 +2112,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mLines[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionLines.Add(thisShapeCollection.mLines[i]);
                     returnValue = true;
                 }
@@ -2106,6 +2139,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCapsule2Ds.Add(thisShapeCollection.mCapsule2Ds[i]);
                     returnValue = true;
                 }
@@ -2163,6 +2197,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(thisShapeCollection.mAxisAlignedRectangles[i]);
                     returnValue = true;
                 }
@@ -2189,6 +2224,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCircles[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCircles.Add(thisShapeCollection.mCircles[i]);
                     returnValue = true;
                 }
@@ -2215,6 +2251,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mPolygons[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionPolygons.Add(thisShapeCollection.mPolygons[i]);
                     returnValue = true;
                 }
@@ -2241,6 +2278,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mLines[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionLines.Add(thisShapeCollection.mLines[i]);
                     returnValue = true;
                 }
@@ -2267,6 +2305,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCapsule2Ds.Add(thisShapeCollection.mCapsule2Ds[i]);
                     returnValue = true;
                 }
@@ -2324,6 +2363,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(thisShapeCollection.mAxisAlignedRectangles[i]);
                     returnValue = true;
                 }
@@ -2350,6 +2390,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCircles[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCircles.Add(thisShapeCollection.mCircles[i]);
                     returnValue = true;
                 }
@@ -2376,6 +2417,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mPolygons[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionPolygons.Add(thisShapeCollection.mPolygons[i]);
                     returnValue = true;
                 }
@@ -2402,6 +2444,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mLines[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionLines.Add(thisShapeCollection.mLines[i]);
                     returnValue = true;
                 }
@@ -2428,6 +2471,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCapsule2Ds.Add(thisShapeCollection.mCapsule2Ds[i]);
                     returnValue = true;
                 }
@@ -2485,6 +2529,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(thisShapeCollection.mAxisAlignedRectangles[i]);
                     returnValue = true;
                 }
@@ -2511,6 +2556,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCircles[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCircles.Add(thisShapeCollection.mCircles[i]);
                     returnValue = true;
                 }
@@ -2537,6 +2583,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mPolygons[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionPolygons.Add(thisShapeCollection.mPolygons[i]);
                     returnValue = true;
                 }
@@ -2563,6 +2610,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mLines[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionLines.Add(thisShapeCollection.mLines[i]);
                     returnValue = true;
                 }
@@ -2589,6 +2637,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCapsule2Ds.Add(thisShapeCollection.mCapsule2Ds[i]);
                     returnValue = true;
                 }
@@ -2646,6 +2695,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionAxisAlignedRectangles.Add(thisShapeCollection.mAxisAlignedRectangles[i]);
                     returnValue = true;
                 }
@@ -2672,6 +2722,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCircles[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCircles.Add(thisShapeCollection.mCircles[i]);
                     returnValue = true;
                 }
@@ -2698,6 +2749,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mPolygons[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionPolygons.Add(thisShapeCollection.mPolygons[i]);
                     returnValue = true;
                 }
@@ -2724,6 +2776,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mLines[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionLines.Add(thisShapeCollection.mLines[i]);
                     returnValue = true;
                 }
@@ -2750,6 +2803,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionCapsule2Ds.Add(thisShapeCollection.mCapsule2Ds[i]);
                     returnValue = true;
                 }
@@ -2807,6 +2861,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mSpheres[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionSpheres.Add(thisShapeCollection.mSpheres[i]);
                     returnValue = true;
                 }
@@ -2833,6 +2888,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mAxisAlignedCubes[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionAxisAlignedCubes.Add(thisShapeCollection.mAxisAlignedCubes[i]);
                     returnValue = true;
                 }
@@ -2890,6 +2946,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mSpheres[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionSpheres.Add(thisShapeCollection.mSpheres[i]);
                     returnValue = true;
                 }
@@ -2916,6 +2973,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mAxisAlignedCubes[i], shapeMass, collectionMass, elasticity))
                 {
+                    thisShapeCollection.ResetLastUpdateTimes();
                     thisShapeCollection.mLastCollisionAxisAlignedCubes.Add(thisShapeCollection.mAxisAlignedCubes[i]);
                     returnValue = true;
                 }

@@ -917,6 +917,17 @@ namespace FlatRedBall.Math.Geometry
 			}
 		}
 
+        internal void ResetLastUpdateTimes()
+        {
+            foreach (var shape in mAxisAlignedRectangles) { shape.LastDependencyUpdate = -1; }
+            foreach (var shape in mCircles) { shape.LastDependencyUpdate = -1; }
+            foreach (var shape in mPolygons) { shape.LastDependencyUpdate = -1; }
+            foreach (var shape in mLines) { shape.LastDependencyUpdate = -1; }
+            foreach (var shape in mSpheres) { shape.LastDependencyUpdate = -1; }
+            foreach (var shape in mAxisAlignedCubes) { shape.LastDependencyUpdate = -1; }
+            foreach (var shape in mCapsule2Ds) { shape.LastDependencyUpdate = -1; }
+        }
+
         #endregion
 
         #region Private Methods

@@ -138,6 +138,11 @@ namespace FlatRedBall.Math.Geometry
             return toReturn;
         }
 
+        public static bool IsPointInsideCollision(this ICollidable thisInstance, float x, float y)
+        {
+            return thisInstance.Collision.IsPointInside(x, y);
+        }
+
     }
 
 

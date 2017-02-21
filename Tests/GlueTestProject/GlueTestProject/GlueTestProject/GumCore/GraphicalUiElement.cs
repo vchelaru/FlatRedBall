@@ -469,6 +469,7 @@ namespace Gum.Wireframe
                     if (mParent != null && mParent.Children != null)
                     {
                         mParent.Children.Remove(this);
+                        (mParent as GraphicalUiElement)?.UpdateLayout();
                     }
                     mParent = value;
                     if (mParent != null && mParent.Children != null)
@@ -696,7 +697,9 @@ namespace Gum.Wireframe
             set;
         }
 
-
+        /// <summary>
+        /// The pixel coorinate of the top of the displayed region.
+        /// </summary>
         public int TextureTop
         {
             get
@@ -713,6 +716,10 @@ namespace Gum.Wireframe
             }
         }
 
+
+        /// <summary>
+        /// The pixel coorinate of the left of the displayed region.
+        /// </summary>
         public int TextureLeft
         {
             get
@@ -728,6 +735,11 @@ namespace Gum.Wireframe
                 }
             }
         }
+
+
+        /// <summary>
+        /// The pixel width of the displayed region.
+        /// </summary>
         public int TextureWidth
         {
             get
@@ -743,6 +755,11 @@ namespace Gum.Wireframe
                 }
             }
         }
+
+
+        /// <summary>
+        /// The pixel height of the displayed region.
+        /// </summary>
         public int TextureHeight
         {
             get
