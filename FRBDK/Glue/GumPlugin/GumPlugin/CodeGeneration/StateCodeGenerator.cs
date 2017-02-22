@@ -45,6 +45,9 @@ namespace GumPlugin.CodeGeneration
             VariableNamesToReplaceForStates.Add("Wraps Children", "WrapsChildren");
             VariableNamesToReplaceForStates.Add("Source File", "SourceFile");
 
+            VariableNamesToReplaceForStates.Add("Width Units", "WidthUnits");
+            VariableNamesToReplaceForStates.Add("Height Units", "HeightUnits");
+
         }
 
         public StateCodeGenerator()
@@ -59,8 +62,9 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForStates.Add("Guide");
             mVariableNamesToSkipForStates.Add("Parent");
 
-            mVariableNamesToSkipForStates.Add("Height Units");
-            mVariableNamesToSkipForStates.Add("Width Units");
+            // Why did we skip width units and height units?
+            //mVariableNamesToSkipForStates.Add("Height Units");
+            //mVariableNamesToSkipForStates.Add("Width Units");
             mVariableNamesToSkipForStates.Add("Custom Texture Coordinates");
             mVariableNamesToSkipForStates.Add("Children Layout");
 

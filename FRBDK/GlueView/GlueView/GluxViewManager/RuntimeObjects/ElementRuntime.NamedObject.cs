@@ -567,6 +567,11 @@ namespace FlatRedBall.Glue
                 {
                     layerToPutOn = SpriteManager.UnderAllDrawnLayer;
                 }
+                else if (n.LayerOn == "Top Layer (Engine Layer)")
+                {
+                    layerToPutOn = SpriteManager.TopLayer;
+                }
+            
                 else
                 {
                     ElementRuntime layerContainer = GetContainedElementRuntime(n.LayerOn);

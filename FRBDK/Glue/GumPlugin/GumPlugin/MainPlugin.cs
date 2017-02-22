@@ -52,7 +52,10 @@ namespace GumPlugin
             // - Fixed layout not considering Text font scale
             // 0.8.0.3
             // - First pass at behaviors
-            get { return new Version(0, 8, 0, 3); }
+            // 0.8.0.4
+            // - Big improvements on auto-sizing components which stack their children.
+            // - Added state code generation for Width Units and Height Units
+            get { return new Version(0, 8, 0, 4); }
         }
 
         #endregion
