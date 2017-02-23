@@ -88,7 +88,11 @@ namespace Glue
                 }
                 catch(Exception e)
                 {
-                    throw e;
+                    if(!IsDisposed)
+                    {
+                        throw e;
+                    }
+                    // otherwise, we don't care, they're exiting
                 }
             });
 

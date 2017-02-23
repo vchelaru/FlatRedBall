@@ -478,6 +478,10 @@ namespace FlatRedBall.Glue.Reflection
                         {
                             foundType = ati.CachedExtraVariables.First(item => item.Member == variableName).Type;
                         }
+                        else if(ati != null && ati.VariableDefinitions.Any(item => item.Name == variableName))
+                        {
+                            foundType = ati.VariableDefinitions.First(item => item.Name == variableName).Type;
+                        }
                         else
                         {
                             string typeAsString = namedObject.InstanceType;

@@ -681,6 +681,10 @@ namespace GumPlugin.CodeGeneration
             var innerIf = ifStatement.If("callAssignReferences");
 
             innerIf.Line("this.AssignReferences();");
+            // This used to be called in AddtoManagers, but that
+            // doesn't get called for all objects - specifically on
+            // runtimes created in code and added to children.
+            innerIf.Line("CallCustomInitialize();");
         }
 
         public bool ShouldGenerateRuntimeFor(ElementSave elementSave)

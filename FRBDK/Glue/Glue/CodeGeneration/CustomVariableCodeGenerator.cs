@@ -358,8 +358,14 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             else
             {
+                bool shouldGenerateRelative = GetIfShouldGenerateRelative(customVariable, saveObject);
 
-                string relativeVersionOfProperty = InstructionManager.GetRelativeForAbsolute(customVariable.SourceObjectProperty);
+                string relativeVersionOfProperty = null;
+                if(shouldGenerateRelative)
+                {
+                    relativeVersionOfProperty = InstructionManager.GetRelativeForAbsolute(customVariable.SourceObjectProperty);
+
+                }
                 if (!string.IsNullOrEmpty(relativeVersionOfProperty))
                 {
                     setter = setter.If(customVariable.SourceObject + ".Parent == null");
@@ -471,8 +477,13 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             else
             {
+                bool shouldGenerateRelative = GetIfShouldGenerateRelative(customVariable, element);
 
-                string relativeVersionOfProperty = InstructionManager.GetRelativeForAbsolute(customVariable.SourceObjectProperty);
+                string relativeVersionOfProperty = null;
+                if (shouldGenerateRelative)
+                {
+                    relativeVersionOfProperty = InstructionManager.GetRelativeForAbsolute(customVariable.SourceObjectProperty);
+                }
 
                 if (!string.IsNullOrEmpty(relativeVersionOfProperty))
                 {
@@ -514,6 +525,18 @@ namespace FlatRedBall.Glue.CodeGeneration
                     getter.End();
                 }
             }
+        }
+
+        private static bool GetIfShouldGenerateRelative(CustomVariable customVariable, IElement element)
+        {
+            NamedObjectSave referencedNos = null;
+            if (!string.IsNullOrEmpty(customVariable.SourceObject))
+            {
+                referencedNos = element.AllNamedObjects.FirstOrDefault(item => item.InstanceName == customVariable.SourceObject);
+            }
+
+            return (referencedNos == null && element is EntitySave) ||
+                (referencedNos?.GetAssetTypeInfo()?.IsPositionedObject == true);
         }
 
         private static void CreateNewVariableMember(ICodeBlock codeBlock, CustomVariable customVariable, bool isExposing, IElement element)

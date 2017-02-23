@@ -71,7 +71,6 @@ namespace Gum.Wireframe
             {
                 GuiManager.AddWindow(this);
             }
-            CallCustomInitialize();
         }
 
         partial void CustomRemoveFromManagers()
