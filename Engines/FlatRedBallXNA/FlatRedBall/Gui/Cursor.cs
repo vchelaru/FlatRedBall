@@ -2720,7 +2720,7 @@ namespace FlatRedBall.Gui
                 PrimaryDoublePush = PrimaryPush && (currentTime - mLastTimePrimaryPush) < .25;
 
                 PrimaryClick = PrimaryDown == false && mLastPrimaryDown == true;
-                SecondaryClick = !SecondaryDown && mLastMiddleDown;
+                SecondaryClick = !SecondaryDown && mLastSecondaryDown;
                 MiddleClick = !MiddleDown && mLastMiddleDown;
 
                 PrimaryDoubleClick = PrimaryClick && (currentTime - mLastTimePrimaryClick) < .25;
