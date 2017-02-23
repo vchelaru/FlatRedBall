@@ -163,9 +163,8 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateCallCustomInitialize(ElementSave elementSave, ICodeBlock currentBlock)
         {
-            currentBlock = currentBlock.Function("protected override void", "CallCustomInitialize", "");
+            currentBlock = currentBlock.Function("private void", "CallCustomInitialize", "");
             {
-                currentBlock.Line("base.CallCustomInitialize();");
                 currentBlock.Line("CustomInitialize();");
 
             }
@@ -586,6 +585,7 @@ namespace GumPlugin.CodeGeneration
 
                 // must be done after instances are assigned, since beahvior code may reference instances
                 GenerateStandardFrbBehaviorCode(elementSave, currentBlock);
+                currentBlock.Line("CallCustomInitialize();");
 
             }
         }
@@ -684,7 +684,6 @@ namespace GumPlugin.CodeGeneration
             // This used to be called in AddtoManagers, but that
             // doesn't get called for all objects - specifically on
             // runtimes created in code and added to children.
-            innerIf.Line("CallCustomInitialize();");
         }
 
         public bool ShouldGenerateRuntimeFor(ElementSave elementSave)

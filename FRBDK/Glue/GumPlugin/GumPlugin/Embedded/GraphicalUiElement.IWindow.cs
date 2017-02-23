@@ -59,7 +59,7 @@ namespace Gum.Wireframe
             return false;
         }
 
-        protected virtual void CallCustomInitialize()
+        private void CallCustomInitialize()
         {
             this.Click += (window) => CallLosePush();
             this.RollOff += (window) => CallLosePush();
