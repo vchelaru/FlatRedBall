@@ -297,15 +297,17 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static void ShowAllElementVariablesInPropertyGrid()
         {
+            var element = GlueState.Self.CurrentElement;
+
             PropertyGridDisplayer displayer = new PropertyGridDisplayer();
-            displayer.Instance = GlueState.Self.CurrentElement;
+            displayer.Instance = element;
             displayer.ExcludeAllMembers();
             displayer.RefreshOnTimer = false;
             
             displayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
 
 
-            foreach (CustomVariable variable in GlueState.Self.CurrentElement.CustomVariables)
+            foreach (CustomVariable variable in element.CustomVariables)
             {
                 Type type = variable.GetRuntimeType();
                 if (type == null)
@@ -315,18 +317,18 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 string name = variable.Name;
                 object value = variable.DefaultValue;
-                TypeConverter converter = variable.GetTypeConverter(GlueState.Self.CurrentElement);
+                TypeConverter converter = variable.GetTypeConverter(element);
 
 
                 displayer.IncludeMember(name, type,
                     delegate(object sender, MemberChangeArgs args)
                     {
-                        GlueState.Self.CurrentElement.GetCustomVariableRecursively(name).DefaultValue = args.Value;
+                        element.GetCustomVariableRecursively(name).DefaultValue = args.Value;
                     }
                     ,
                     delegate()
                     {
-                        return GlueState.Self.CurrentElement.GetCustomVariableRecursively(name).DefaultValue;
+                        return element.GetCustomVariableRecursively(name).DefaultValue;
                     },
                     converter);
             

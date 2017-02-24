@@ -112,18 +112,21 @@ namespace FlatRedBall.Glue.Parsing
         {
             foreach (DefineLayer defineLayer in mDefineStack)
             {
-                foreach (string define in defineLayer.CurrentDefines)
+                if (defineLayer != null)
                 {
-                    if (!projectDefines.Contains(define))
+                    foreach (string define in defineLayer.CurrentDefines)
                     {
-                        return true;
+                        if (!projectDefines.Contains(define))
+                        {
+                            return true;
+                        }
                     }
-                }
-                foreach (string define in defineLayer.CurrentExcludes)
-                {
-                    if (projectDefines.Contains(define))
+                    foreach (string define in defineLayer.CurrentExcludes)
                     {
-                        return true;
+                        if (projectDefines.Contains(define))
+                        {
+                            return true;
+                        }
                     }
                 }
             }
