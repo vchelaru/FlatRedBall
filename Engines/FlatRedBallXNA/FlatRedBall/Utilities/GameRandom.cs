@@ -49,8 +49,8 @@ namespace FlatRedBall.Utilities
             var length = Between(minLength, maxLength);
 
             return new Vector2(
-                (float)System.Math.Cos((double)angle * length), 
-                (float)System.Math.Sin((double)angle * length));
+                (float)System.Math.Cos((double)angle) * length, 
+                (float)System.Math.Sin((double)angle) * length);
         }
 
     }
