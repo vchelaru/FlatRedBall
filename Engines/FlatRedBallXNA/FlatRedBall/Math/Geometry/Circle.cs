@@ -111,7 +111,7 @@ namespace FlatRedBall.Math.Geometry
         public Circle()
         {
             Radius = 1;
-            mColor = Color.White;
+            Color = Color.White;
 #if SILVERLIGHT
             FillColor = new Color(0, 0, 0, 0);
 #endif

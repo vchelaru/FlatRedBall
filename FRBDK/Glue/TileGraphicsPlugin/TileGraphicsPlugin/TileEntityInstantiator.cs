@@ -222,7 +222,8 @@ namespace FlatRedBall.TileEntities
             {
 #if WINDOWS_8 || UWP
                 var assembly = typeof(TileEntityInstantiator).GetTypeInfo().Assembly;
-                typesInThisAssembly = assembly.DefinedTypes.ToArray();
+                typesInThisAssembly = assembly.DefinedTypes.Select(item=>item.AsType()).ToArray();
+
 #else
                 var assembly = Assembly.GetExecutingAssembly();
                 typesInThisAssembly = assembly.GetTypes();
@@ -232,8 +233,8 @@ namespace FlatRedBall.TileEntities
 
 #if WINDOWS_8 || UWP
             var filteredTypes =
-                types.Where(t => t.ImplementedInterfaces.Contains(typeof(IEntityFactory))
-                            && t.DeclaredConstructors.Any(c=>c.GetParameters().Count() == 0));
+                typesInThisAssembly.Where(t => t.GetInterfaces().Contains(typeof(IEntityFactory))
+                            && t.GetConstructors().Any(c=>c.GetParameters().Count() == 0));
 #else
             var filteredTypes =
                 typesInThisAssembly.Where(t => t.GetInterfaces().Contains(typeof(IEntityFactory))
@@ -245,7 +246,7 @@ namespace FlatRedBall.TileEntities
                     t =>
                     {
 #if WINDOWS_8 || UWP
-                                var propertyInfo = t.DeclaredProperties.First(item => item.Name == "Self");
+                        var propertyInfo = t.GetProperty("Self");
 #else
                         var propertyInfo = t.GetProperty("Self");
 #endif
