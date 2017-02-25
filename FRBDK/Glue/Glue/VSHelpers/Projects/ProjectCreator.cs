@@ -35,7 +35,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             catch (Microsoft.Build.Exceptions.InvalidProjectFileException exception)
             {
                 throw new Exception($"Could not load the project {fileName}\n" +
-                    $"Usually this occurs if the Visual Studio XNA plugin is not installed", e);
+                    $"Usually this occurs if the Visual Studio XNA plugin is not installed", exception);
             }
 
             ProjectBase toReturn = CreatePlatformSpecificProject(coreVisualStudioProject, fileName);
