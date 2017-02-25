@@ -224,10 +224,12 @@ namespace FlatRedBall.AI.Pathfinding
         {
             PositionedNode node = new PositionedNode();
             mNodes.Add(node);
-            node.Name = mNodes.Count.ToString();
+            // We used to set the name on nodes, but this causes huge performance issues
+            // on large node neworks (like 10k nodes), which is common for tilemaps
+            //node.Name = mNodes.Count.ToString();
 
-            FlatRedBall.Utilities.StringFunctions.MakeNameUnique<PositionedNode, PositionedNode>(
-                node, mNodes);
+            //FlatRedBall.Utilities.StringFunctions.MakeNameUnique<PositionedNode, PositionedNode>(
+            //    node, mNodes);
             return node;
         }
 
