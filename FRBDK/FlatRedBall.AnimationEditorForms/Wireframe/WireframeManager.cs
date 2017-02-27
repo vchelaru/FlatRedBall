@@ -255,12 +255,14 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void TryHandleSpriteSheetClicking()
         {
+            var frame = SelectedState.Self.SelectedFrame;
+            var tileInformation = SelectedState.Self.SelectedTileMapInformation;
             if (PropertyGridManager.Self.UnitType == UnitType.SpriteSheet &&
                 mControl.CurrentTexture != null &&
-                SelectedState.Self.SelectedTileMapInformation != null &&
-                SelectedState.Self.SelectedTileMapInformation.TileWidth != 0 &&
-                SelectedState.Self.SelectedTileMapInformation.TileHeight != 0 &&
-                SelectedState.Self.SelectedFrame != null
+                tileInformation != null &&
+                tileInformation.TileWidth != 0 &&
+                tileInformation.TileHeight != 0 &&
+                frame != null
                 )
             {
                 float worldX = mControl.XnaCursor.GetWorldX(mManagers);
@@ -269,11 +271,11 @@ namespace FlatRedBall.AnimationEditorForms
                 if (worldX > 0 && worldX < mControl.CurrentTexture.Width &&
                     worldY > 0 && worldY < mControl.CurrentTexture.Height)
                 {
-                    int xIndex = (int)(worldX / SelectedState.Self.SelectedTileMapInformation.TileWidth);
-                    int yIndex = (int)(worldY / SelectedState.Self.SelectedTileMapInformation.TileHeight);
+                    int xIndex = (int)(worldX / tileInformation.TileWidth);
+                    int yIndex = (int)(worldY / tileInformation.TileHeight);
 
-                    PropertyGridManager.Self.SetTileX(SelectedState.Self.SelectedFrame, xIndex);
-                    PropertyGridManager.Self.SetTileY(SelectedState.Self.SelectedFrame, yIndex);
+                    PropertyGridManager.Self.SetTileX(frame, xIndex);
+                    PropertyGridManager.Self.SetTileY(frame, yIndex);
 
 
                     this.RefreshAll();

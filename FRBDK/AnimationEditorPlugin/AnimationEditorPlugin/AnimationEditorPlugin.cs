@@ -72,7 +72,8 @@ namespace AnimationEditorPlugin
             // 2.2 - Added CTRL drag+drop file on AnimationChain to add a frame
             // 2.2.1 - Dropped frames now default to a frame length of .1 seconds
             // 2.2.2 - Fixed bug with texture selection with magic wand
-            get { return new Version(2, 2, 2); }
+            // 2.2.3 - Fixed (maybe) a null reference exception in sprite sheet mode
+            get { return new Version(2, 2, 3); }
         }
 
         public bool IsSelectedItemSprite
