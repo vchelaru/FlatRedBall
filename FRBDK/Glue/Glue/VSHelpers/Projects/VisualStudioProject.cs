@@ -617,7 +617,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
 
 
-        protected override void ForceSave(string fileName)
+        public override void Save(string fileName)
         {
             // this used to save a backup, but doing so
             // changes the mProject's file name. Since the
@@ -627,7 +627,32 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             // folder) to the temporary location. I'm going to remove the
             // backup saving because Glue doesn't handle it well anyway, and
             // it's causing a problem with Camera setup.
-            mProject.Save(fileName);
+            // Update Feb 26, 2017
+            // It seems like calling 
+            // Save on mProject will actually
+            // only write to disk if it's modified...
+            // either that or it does always write to disk
+            // but the file watch manager doesn't pick up the
+            // change, causing accumulated ignores. So instead
+            // we're going to check if the file actually changed,
+            // and only if it did will we raise the events and write
+            // all text.
+
+            bool shouldSave = false;
+            using (var stringWriter = new UnicodeStringWriter())
+            {
+                mProject.Save(stringWriter);
+
+                string newText = stringWriter.ToString();
+                var oldText = System.IO.File.ReadAllText(fileName);
+
+                if (oldText != newText)
+                {
+                    RaiseSaving(FullFileName);
+
+                    System.IO.File.WriteAllText(FullFileName, newText, Encoding.Unicode);
+                }
+            }
         }
 
         public override string ToString()
@@ -915,5 +940,12 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
 
         #endregion
+    }
+
+
+
+    public sealed class UnicodeStringWriter : System.IO.StringWriter
+    {
+        public override Encoding Encoding => Encoding.Unicode;
     }
 }

@@ -276,7 +276,7 @@ namespace FlatRedBall.Glue.ContentPipeline
                     syncedContentProjectBase = syncedProject.ContentProject;
                 }
 
-                syncedContentProjectBase.Save(syncedContentProjectBase.FullFileName);
+                syncedContentProjectBase.Save();
             }
 
             #endregion

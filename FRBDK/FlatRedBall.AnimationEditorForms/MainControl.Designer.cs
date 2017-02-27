@@ -35,6 +35,7 @@
             this.AnimationTreeView = new System.Windows.Forms.TreeView();
             this.TreeViewRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.TexturesPage = new System.Windows.Forms.TabPage();
+            this.TexturesTreeView = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.SelectedItemPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.tileMapInfoWindow1 = new FlatRedBall.AnimationEditorForms.Controls.TileMapInfoWindow();
@@ -54,7 +55,6 @@
             this.frameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.CursorStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.TexturesTreeView = new System.Windows.Forms.TreeView();
             ((System.ComponentModel.ISupportInitialize)(this.TreeViewAndEverythingElse)).BeginInit();
             this.TreeViewAndEverythingElse.Panel1.SuspendLayout();
             this.TreeViewAndEverythingElse.Panel2.SuspendLayout();
@@ -152,6 +152,17 @@
             this.TexturesPage.Text = "Textures";
             this.TexturesPage.UseVisualStyleBackColor = true;
             // 
+            // TexturesTreeView
+            // 
+            this.TexturesTreeView.AllowDrop = true;
+            this.TexturesTreeView.ContextMenuStrip = this.TreeViewRightClickMenu;
+            this.TexturesTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TexturesTreeView.HideSelection = false;
+            this.TexturesTreeView.Location = new System.Drawing.Point(3, 3);
+            this.TexturesTreeView.Name = "TexturesTreeView";
+            this.TexturesTreeView.Size = new System.Drawing.Size(147, 352);
+            this.TexturesTreeView.TabIndex = 1;
+            // 
             // splitContainer1
             // 
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -228,11 +239,14 @@
             // zoomControl1
             // 
             this.zoomControl1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.zoomControl1.GridSize = 16;
             this.zoomControl1.IsMagicWandSelected = false;
             this.zoomControl1.Location = new System.Drawing.Point(0, 0);
             this.zoomControl1.Name = "zoomControl1";
             this.zoomControl1.PercentageValue = 100;
+            this.zoomControl1.ShowFullAlpha = false;
             this.zoomControl1.Size = new System.Drawing.Size(443, 23);
+            this.zoomControl1.SnapToGrid = false;
             this.zoomControl1.TabIndex = 1;
             this.zoomControl1.ZoomChanged += new System.EventHandler(this.zoomControl1_ZoomChanged);
             // 
@@ -290,21 +304,21 @@
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.copyToolStripMenuItem.Text = "Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // pasteToolStripMenuItem
             // 
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.pasteToolStripMenuItem.Text = "Paste";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
             // 
             // resizeTextureToolStripMenuItem
             // 
             this.resizeTextureToolStripMenuItem.Name = "resizeTextureToolStripMenuItem";
-            this.resizeTextureToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.resizeTextureToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.resizeTextureToolStripMenuItem.Text = "Resize Texture...";
             this.resizeTextureToolStripMenuItem.Click += new System.EventHandler(this.resizeTextureToolStripMenuItem_Click);
             // 
@@ -347,17 +361,6 @@
             this.CursorStatusLabel.Size = new System.Drawing.Size(76, 17);
             this.CursorStatusLabel.Text = "Cursor: (X, Y)";
             // 
-            // TexturesTreeView
-            // 
-            this.TexturesTreeView.AllowDrop = true;
-            this.TexturesTreeView.ContextMenuStrip = this.TreeViewRightClickMenu;
-            this.TexturesTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TexturesTreeView.HideSelection = false;
-            this.TexturesTreeView.Location = new System.Drawing.Point(3, 3);
-            this.TexturesTreeView.Name = "TexturesTreeView";
-            this.TexturesTreeView.Size = new System.Drawing.Size(147, 352);
-            this.TexturesTreeView.TabIndex = 1;
-            // 
             // MainControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -397,7 +400,6 @@
         private System.Windows.Forms.TreeView AnimationTreeView;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.PropertyGrid SelectedItemPropertyGrid;
-        private System.Windows.Forms.ComboBox UnitTypeComboBox;
         private Controls.TileMapInfoWindow tileMapInfoWindow1;
         private System.Windows.Forms.ContextMenuStrip TreeViewRightClickMenu;
         private System.Windows.Forms.SplitContainer PreviewSplitContainer;
@@ -419,5 +421,6 @@
         private System.Windows.Forms.TabPage AnimationsTab;
         private System.Windows.Forms.TabPage TexturesPage;
         private System.Windows.Forms.TreeView TexturesTreeView;
+        public System.Windows.Forms.ComboBox UnitTypeComboBox;
     }
 }

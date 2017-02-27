@@ -23,10 +23,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             get { return "XnaContent"; }
         }
-
-        protected override void LoadContentProject()
-        {
-        }
+        
 
         public override string NeededVisualStudioVersion
         {

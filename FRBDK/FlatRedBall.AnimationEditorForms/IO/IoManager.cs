@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using FlatRedBall.AnimationEditorForms.Data;
 using FlatRedBall.AnimationEditorForms.Preview;
 using ToolsUtilities;
+using FlatRedBall.AnimationEditorForms.CommandsAndState;
 
 namespace FlatRedBall.AnimationEditorForms.IO
 {
@@ -30,7 +31,7 @@ namespace FlatRedBall.AnimationEditorForms.IO
 
             settingsSave.ExpandedNodes.Clear();
             settingsSave.ExpandedNodes.AddRange(TreeViewManager.Self.GetExpandedNodeAnimationChainNames());
-
+            settingsSave.UnitType = ApplicationState.Self.UnitType;
             string locationToSave = GetCompanionFileFor(fileName);
 
             try
@@ -82,6 +83,8 @@ namespace FlatRedBall.AnimationEditorForms.IO
             {
                 TreeViewManager.Self.ExpandNodes(loadedInstance.ExpandedNodes);
             }
+            ApplicationState.Self.UnitType = loadedInstance.UnitType;
+
         }
     }
 }

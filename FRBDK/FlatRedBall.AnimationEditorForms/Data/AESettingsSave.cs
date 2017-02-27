@@ -21,5 +21,8 @@ namespace FlatRedBall.AnimationEditorForms.Data
         [XmlElement("ExpandedNode")]
         public List<string> ExpandedNodes { get; set; } = new List<string>();
 
+        public List<AnimationChainSettingSave> AnimationChainSettings = new List<AnimationChainSettingSave>();
+
+        public UnitType UnitType { get; set; }
     }
 }

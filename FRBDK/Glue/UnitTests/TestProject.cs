@@ -56,7 +56,7 @@ namespace UnitTests
             throw new NotImplementedException();
         }
 
-        protected override void ForceSave(string fileName)
+        public override void Save(string fileName)
         {
             throw new NotImplementedException();
         }

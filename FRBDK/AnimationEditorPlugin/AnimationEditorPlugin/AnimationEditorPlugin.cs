@@ -73,7 +73,10 @@ namespace AnimationEditorPlugin
             // 2.2.1 - Dropped frames now default to a frame length of .1 seconds
             // 2.2.2 - Fixed bug with texture selection with magic wand
             // 2.2.3 - Fixed (maybe) a null reference exception in sprite sheet mode
-            get { return new Version(2, 2, 3); }
+            // 2.2.4
+            // - Fixed possible crashes when changing texture coord modes with no frame/chain selected
+            // - Editor remembers coordinate mode per .achx
+            get { return new Version(2, 2, 4); }
         }
 
         public bool IsSelectedItemSprite

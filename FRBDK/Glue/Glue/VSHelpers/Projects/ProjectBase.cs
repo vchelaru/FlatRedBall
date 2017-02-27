@@ -153,6 +153,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public event SaveDelegate Saving;
 
+        protected void RaiseSaving(string fileName)
+        {
+            Saving?.Invoke(fileName);
+        }
+
         #endregion
 
 #if GLUE
@@ -184,23 +189,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             return new List<string>();
         }
 
-        public void Save()
-        {
-            Save(FullFileName);
-        }
-        public void Save(string fileName)
-        {
-            //if (IsDirty)
-            {
-                if (Saving != null)
-                {
-                    Saving(fileName);
-                }
-                ForceSave(fileName);
-            }
-        }
-
-        protected abstract void ForceSave(string fileName);
+        public void Save() { Save(FullFileName); }
+        public abstract void Save(string fileName);
 
         public abstract void Load(string fileName);
         public abstract void MakeBuildItemNested(ProjectItem item, string parent);
@@ -440,7 +430,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 #endif
         }
 
-        protected virtual void LoadContentProject()
+        public virtual void LoadContentProject()
         {
             ContentProject = this;
         }

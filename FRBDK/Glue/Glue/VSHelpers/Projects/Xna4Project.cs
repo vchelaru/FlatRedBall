@@ -44,7 +44,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
-        protected override void LoadContentProject()
+        public override void LoadContentProject()
         {
             List<string> files = FileManager.GetAllFilesInDirectory(ContentProjectDirectory, "contentproj", 0);
 

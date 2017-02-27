@@ -128,44 +128,50 @@ namespace FlatRedBall.AnimationEditorForms
 
         public void RefreshTreeNode(AnimationChainSave animationChain)
         {
-            mTreeView.Invoke((MethodInvoker)delegate()
+            if(animationChain != null)
             {
-                TreeNode treeNode = GetTreeNodeByTag(animationChain, mTreeView.Nodes);
-
-                if(treeNode == null)
+                mTreeView.Invoke((MethodInvoker)delegate()
                 {
-                    treeNode = new TreeNode();
-                    mTreeView.Nodes.Add(treeNode);
-                }
+                    TreeNode treeNode = GetTreeNodeByTag(animationChain, mTreeView.Nodes);
 
-                WithoutEnvokeRefreshTreeNode(treeNode, animationChain);
-            });
+                    if(treeNode == null)
+                    {
+                        treeNode = new TreeNode();
+                        mTreeView.Nodes.Add(treeNode);
+                    }
+
+                    WithoutEnvokeRefreshTreeNode(treeNode, animationChain);
+                });
+            }
         }
 
         public void RefreshTreeNode(AnimationFrameSave animationFrame)
         {
-            mTreeView.Invoke((MethodInvoker)delegate()
+            if(animationFrame != null)
             {
-                var node = GetTreeNodeFor(animationFrame);
-
-                node.Text = animationFrame.TextureName;
-                if (string.IsNullOrEmpty(animationFrame.TextureName))
+                mTreeView.Invoke((MethodInvoker)delegate()
                 {
-                    node.Text = "<UNTEXTURED>";
-                }
-                else
-                {
-                    var texture = WireframeManager.Self.GetTextureForFrame(animationFrame);
+                    var node = GetTreeNodeFor(animationFrame);
 
-                    int left = MathFunctions.RoundToInt(animationFrame.LeftCoordinate * texture.Width);
-                    int top = MathFunctions.RoundToInt(animationFrame.TopCoordinate * texture.Height);
+                    node.Text = animationFrame.TextureName;
+                    if (string.IsNullOrEmpty(animationFrame.TextureName))
+                    {
+                        node.Text = "<UNTEXTURED>";
+                    }
+                    else
+                    {
+                        var texture = WireframeManager.Self.GetTextureForFrame(animationFrame);
+
+                        int left = MathFunctions.RoundToInt(animationFrame.LeftCoordinate * texture.Width);
+                        int top = MathFunctions.RoundToInt(animationFrame.TopCoordinate * texture.Height);
 
 
-                    node.Text += string.Format(
-                        " {0},{1}", left, top);
-                }
+                        node.Text += string.Format(
+                            " {0},{1}", left, top);
+                    }
 
-            });
+                });
+            }
         }
 
         

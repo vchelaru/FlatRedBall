@@ -148,6 +148,7 @@
     <Compile Include="Converters\AnimationChainListSaveConverter.cs" />
     <Compile Include="CopyManager.cs" />
     <Compile Include="Data\AESettingsSave.cs" />
+    <Compile Include="Data\AnimationChainSettingSave.cs" />
     <Compile Include="Data\SpriteAlignment.cs" />
     <Compile Include="Data\TextureSettings.cs" />
     <Compile Include="Editing\ResizeMethods.cs" />

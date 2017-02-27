@@ -27,6 +27,11 @@ namespace FlatRedBall.AnimationEditorForms.CommandsAndState
             {
                 PropertyGridManager.Self.UnitType = value;
 
+                if(MainControl.Self.UnitTypeComboBox.SelectedValue == null || ((UnitType)MainControl.Self.UnitTypeComboBox.SelectedValue) != value)
+                {
+                    MainControl.Self.UnitTypeComboBox.SelectedItem = value;
+                }
+
             }
         }
 

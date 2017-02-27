@@ -268,7 +268,13 @@ namespace FlatRedBall.Glue.IO
                 }
                 else
                 {
-                    // Reload the synced content project
+                    TaskManager.Self.OnUiThread(() =>
+                    {
+                        // Reload the synced content project
+                        project.ContentProject.Unload();
+                        project.LoadContentProject();
+
+                    });
                 }
                 handled = true;
             }

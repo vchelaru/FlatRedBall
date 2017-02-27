@@ -345,7 +345,7 @@ namespace FlatRedBall.Glue.Controls
         
         public override void UpdateReferencedTreeNodes()
         {
-            UpdateReferencedTreeNodes(true);
+            UpdateReferencedTreeNodes(false);
         }
 
         public override void UpdateReferencedTreeNodes(bool performSave)
