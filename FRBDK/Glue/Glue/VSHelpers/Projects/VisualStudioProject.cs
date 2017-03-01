@@ -213,7 +213,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 else
                 {
-                    buildItem = mProject.AddItem(DefaultContentAction, ProcessInclude(itemInclude)).FirstOrDefault();
+                    buildItem = mProject.AddItem(DefaultContentAction, itemInclude).FirstOrDefault();
                     mProject.ReevaluateIfNecessary();
                     if (ContentCopiedToOutput)
                         buildItem.SetMetadataValue("CopyToOutputDirectory", "PreserveNewest");
@@ -224,7 +224,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 {
                     // The items in the dictionary must be to-lower on some
                     // platforms, and ProcessPath takes care of this.
-                    mBuildItemDictionaries.Add(ProcessInclude(itemInclude).ToLower(), buildItem);
+                    mBuildItemDictionaries.Add(itemInclude.ToLower(), buildItem);
                 }
                 catch
                 {
@@ -264,6 +264,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                     buildItem.SetMetadataValue("Link", linkValue);
                 }
+                mProject.ReevaluateIfNecessary();
 
                 return buildItem;
             }
@@ -684,13 +685,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         private void AddContentFileItemsFrom(ProjectBase projectBase)
         {
-            foreach (var bi in projectBase.ContentProject.EvaluatedItems)
-            {
-                if (SkipContentBuildItem(bi, projectBase.ContentProject))
-                {
-                    continue;
-                }
+            var contentItemsToSync =
+                projectBase.ContentProject.EvaluatedItems.Where(item => !SkipContentBuildItem(item, projectBase.ContentProject)).ToList();
 
+            foreach (var bi in contentItemsToSync)
+            {
                 string absoluteFileName = projectBase.ContentProject.MakeAbsolute(bi.UnevaluatedInclude);
 
                 bool forceToContent = false;

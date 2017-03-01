@@ -482,7 +482,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
     {
         public static string GetLink(this ProjectItem buildItem)
         {
-            return (string)buildItem.Metadata.FirstOrDefault(item=>item.ItemType == "Link")?.EvaluatedValue;
+            return (string)buildItem.Metadata.FirstOrDefault(item=>item.Name == "Link")?.EvaluatedValue;
         }
         public static void SetLink(this ProjectItem buildItem, string value)
         {

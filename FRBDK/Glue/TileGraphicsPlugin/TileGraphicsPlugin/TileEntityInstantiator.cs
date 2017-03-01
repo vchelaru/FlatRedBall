@@ -70,7 +70,6 @@ namespace FlatRedBall.TileEntities
                             if (entity is Math.Geometry.ICollidable)
                             {
                                 var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
-                                entityCollision.Clear();
                                 entityCollision.Polygons.Add(polygon);
                                 polygon.AttachTo(entity, false);
                             }
