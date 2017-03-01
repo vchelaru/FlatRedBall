@@ -333,6 +333,7 @@ namespace FlatRedBall.TileGraphics
             // If a tile has no name but it has properties, those properties
             // will be lost in the conversion. Therefore, we have to add name properties.
             tms.NameUnnamedTilesetTiles();
+            tms.NameUnnamedObjects();
 
 
             string directory = FlatRedBall.IO.FileManager.GetDirectory(fileName);
@@ -378,6 +379,7 @@ namespace FlatRedBall.TileGraphics
                 }
             }
 
+
             foreach (var tileset in tms.Tilesets)
             {
                 foreach (var tile in tileset.TileDictionary.Values)
@@ -386,34 +388,22 @@ namespace FlatRedBall.TileGraphics
                     {
                         // this needs a name:
                         string name = tile.properties.FirstOrDefault(item => item.StrippedName.ToLowerInvariant() == "name")?.value;
+                        AddPropertiesToMap(tms, toReturn, tile.properties, name);
+                    }
+                }
+            }
 
-                        if (!string.IsNullOrEmpty(name))
-                        {
-                            List<NamedValue> namedValues = new List<NamedValue>();
-                            foreach (var prop in tile.properties)
-                            {
-                                namedValues.Add(new NamedValue()
-                                { Name = prop.StrippedName, Value = prop.value, Type = prop.Type });
-                            }
+            foreach (var objectLayer in tms.objectgroup)
+            {
+                foreach (var objectInstance in objectLayer.@object)
+                {
+                    if (objectInstance.properties.Count != 0)
+                    {
+                        string name = objectInstance.Name;
+                        var properties = objectInstance.properties;
 
+                        AddPropertiesToMap(tms, toReturn, properties, name);
 
-#if DEBUG
-                            if(toReturn.Properties.Any(item => item.Key == name))
-                            {
-                                // Assume it was a duplicate tile name, but it may not be
-                                string message = $"The tileset contains more than one tile with the name {name}. Names must be unique in a tileset.";
-                                bool hasDuplicateObject = tms.objectgroup.Any(item => item.@object.Any(objectInstance => objectInstance.Name == name));
-                                if(hasDuplicateObject)
-                                {
-                                    message = $"The tileset contains a tile with the name {name}, but this name is already used in an object layer";
-                                }
-                                throw new InvalidOperationException(message);
-                            }
-#endif
-
-                            toReturn.Properties.Add(name, namedValues);
-
-                        }
                     }
                 }
             }
@@ -491,6 +481,39 @@ namespace FlatRedBall.TileGraphics
 
             return toReturn;
         }
+
+        private static void AddPropertiesToMap(TiledMapSave tms, LayeredTileMap toReturn, List<property> properties, string name)
+        {
+            if (!string.IsNullOrEmpty(name))
+            {
+                List<NamedValue> namedValues = new List<NamedValue>();
+                foreach (var prop in properties)
+                {
+                    namedValues.Add(new NamedValue()
+                    { Name = prop.StrippedName, Value = prop.value, Type = prop.Type });
+                }
+
+
+#if DEBUG
+                if (toReturn.Properties.Any(item => item.Key == name))
+                {
+                    // Assume it was a duplicate tile name, but it may not be
+                    string message = $"The tileset contains more than one tile with the name {name}. Names must be unique in a tileset.";
+                    bool hasDuplicateObject = tms.objectgroup.Any(item => item.@object.Any(objectInstance => objectInstance.Name == name));
+                    if (hasDuplicateObject)
+                    {
+                        message = $"The tileset contains a tile with the name {name}, but this name is already used in an object layer";
+                    }
+                    throw new InvalidOperationException(message);
+                }
+#endif
+
+                toReturn.Properties.Add(name, namedValues);
+
+            }
+        }
+
+
 
         public void AnimateSelf()
         {
