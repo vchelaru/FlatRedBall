@@ -509,7 +509,10 @@ namespace FlatRedBall.AI.Pathfinding
                 start.AStarState = AStarState.Open;
 
                 mShortestPath = float.PositiveInfinity;
-                GetPathCalculate(start, end);
+                while (mOpenList.Count != 0)
+                {
+                    GetPathCalculate(mOpenList[0], end);
+                }
 
                 // inefficient, but we'll do this for now
                 if (end.mParentNode != null)
@@ -1096,18 +1099,6 @@ namespace FlatRedBall.AI.Pathfinding
                         AddNodeToOpenList(nodeLinkingTo);
                     }
                 }
-            }
-
-
-            while (mOpenList.Count != 0
-                // We used to not continue if the end has been found, but
-                // it could have been found in a suboptimal way.  We internally
-                // check the lengths in GetPathCalculate, so we can just continue to loop here
-                //&& endNode.mParentNode == null
-                )
-            {
-                GetPathCalculate(mOpenList[0], endNode);
-
             }
         }
 
