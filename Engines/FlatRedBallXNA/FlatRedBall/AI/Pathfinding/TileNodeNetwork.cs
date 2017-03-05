@@ -486,15 +486,29 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
-
-        public PositionedNode TiledNodeAtWorld(float x, float y)
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public PositionedNode TiledNodeAtWorld(float xWorld, float yWorld)
         {
             int xIndex;
             int yIndex;
 
-            WorldToIndex(x, y, out xIndex, out yIndex);
+            xIndex = MathFunctions.RoundToInt((xWorld - mXSeed) / mGridSpacing);
+            yIndex = MathFunctions.RoundToInt((yWorld - mYSeed) / mGridSpacing);
 
-            return TiledNodeAt(xIndex, yIndex);
+            xIndex = System.Math.Max(0, xIndex);
+            xIndex = System.Math.Min(xIndex, mNumberOfXTiles - 1);
+
+            yIndex = System.Math.Max(0, yIndex);
+            yIndex = System.Math.Min(yIndex, mNumberOfYTiles - 1);
+            
+            if (xIndex < 0 || xIndex >= mNumberOfXTiles || yIndex < 0 || yIndex >= mNumberOfYTiles)
+            {
+                return null;
+            }
+            else
+            {
+                return mTiledNodes[xIndex][yIndex];
+            }
         }
 
         public PositionedNode TiledNodeAt(int x, int y)
@@ -646,11 +660,19 @@ namespace FlatRedBall.AI.Pathfinding
         }
         public override void Remove(PositionedNode nodeToRemove)
         {
-            base.Remove(nodeToRemove);
+            //base.Remove(nodeToRemove);
+            // bake it for performance reasons:
+            for (int i = nodeToRemove.Links.Count - 1; i > -1; i--)
+            {
+                nodeToRemove.Links[i].NodeLinkingTo.BreakLinkBetween(nodeToRemove);
+            }
+            mNodes.Remove(nodeToRemove);
+
             int tileX, tileY;
             WorldToIndex(nodeToRemove.Position.X, nodeToRemove.Position.Y, out tileX, out tileY);
             mTiledNodes[tileX][tileY] = null;
         }
+        
 
         public void RemoveAndUnlinkNode( ref Microsoft.Xna.Framework.Vector3 positionToRemoveNodeFrom )
         {

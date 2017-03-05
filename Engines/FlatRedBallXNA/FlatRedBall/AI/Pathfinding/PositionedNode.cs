@@ -23,7 +23,7 @@ namespace FlatRedBall.AI.Pathfinding
     /// <summary>
     /// An object which has position properties 
     /// </summary>
-    public class PositionedNode : IStaticPositionable, INameable, IEquatable<PositionedNode>
+    public class PositionedNode : IStaticPositionable, INameable
     {
         #region Fields
 
@@ -196,7 +196,7 @@ namespace FlatRedBall.AI.Pathfinding
         /// </summary>
         /// <param name="node">The PositionedNode to break links between.</param>
         #endregion
-        public virtual void BreakLinkBetween(PositionedNode node)
+        public void BreakLinkBetween(PositionedNode node)
         {
             for (int i = 0; i < node.mLinks.Count; i++)
             {
@@ -362,7 +362,7 @@ namespace FlatRedBall.AI.Pathfinding
         /// <param name="nodeToLinkTo">The PositionedNode to create a link to.</param>
         /// <param name="costTo">The cost to travel from this to the argument nodeToLinkTo.</param>
         #endregion
-        public virtual void LinkToOneWay(PositionedNode nodeToLinkTo, float costTo)
+        public void LinkToOneWay(PositionedNode nodeToLinkTo, float costTo)
         {
             foreach (Link link in mLinks)
             {
@@ -389,15 +389,6 @@ namespace FlatRedBall.AI.Pathfinding
 
         #endregion
 
-
-        #region IEquatable<PositionedNode> Members
-
-        bool IEquatable<PositionedNode>.Equals(PositionedNode other)
-        {
-            return this == other;
-        }
-
-        #endregion
     }
 
     public static class PositionedNodeListExtensionMethods

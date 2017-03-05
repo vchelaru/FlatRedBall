@@ -1060,6 +1060,7 @@ namespace FlatRedBall.Math
             return ((int)( System.Math.Sign(valueToRound) * .5 + valueToRound  / multipleOf)) * multipleOf;
         }
 
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public static int RoundToInt(float floatToRound)
         {
             // System.Math.Round should give us a number very close to the decimal
