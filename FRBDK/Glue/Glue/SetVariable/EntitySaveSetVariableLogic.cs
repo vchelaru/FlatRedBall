@@ -39,38 +39,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (changedMember == "CreatedByOtherEntities")
             {
-                if (entitySave.CreatedByOtherEntities == true)
-                {
-                    FactoryCodeGenerator.AddGeneratedPerformanceTypes();
-                    FactoryCodeGenerator.UpdateFactoryClass(entitySave);
-                }
-                else
-                {
-                    FactoryCodeGenerator.RemoveFactory(entitySave);
-                    ProjectManager.SaveProjects();
-                }
-
-
-                List<EntitySave> entitiesToRefresh = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(entitySave);
-                entitiesToRefresh.AddRange(entitySave.GetAllBaseEntities());
-                entitiesToRefresh.Add(entitySave);
-
-                // We need to re-generate all objects that use this Entity
-                foreach (EntitySave entityToRefresh in entitiesToRefresh)
-                {
-                    List<NamedObjectSave> namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entityToRefresh.Name);
-
-                    foreach (NamedObjectSave nos in namedObjects)
-                    {
-                        IElement namedObjectContainer = nos.GetContainer();
-
-                        if (namedObjectContainer != null)
-                        {
-                            CodeWriter.GenerateCode(namedObjectContainer);
-                        }
-                    }
-                }
-                PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
+                HandleCreatedByOtherEntitiesSet(entitySave);
             }
 
             #endregion
@@ -228,6 +197,42 @@ namespace FlatRedBall.Glue.SetVariable
             }
 
             #endregion
+        }
+
+        private static void HandleCreatedByOtherEntitiesSet(EntitySave entitySave)
+        {
+            if (entitySave.CreatedByOtherEntities == true)
+            {
+                FactoryCodeGenerator.AddGeneratedPerformanceTypes();
+                FactoryCodeGenerator.UpdateFactoryClass(entitySave);
+            }
+            else
+            {
+                FactoryCodeGenerator.RemoveFactory(entitySave);
+                ProjectManager.SaveProjects();
+            }
+
+
+            List<EntitySave> entitiesToRefresh = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(entitySave);
+            entitiesToRefresh.AddRange(entitySave.GetAllBaseEntities());
+            entitiesToRefresh.Add(entitySave);
+
+            // We need to re-generate all objects that use this Entity
+            foreach (EntitySave entityToRefresh in entitiesToRefresh)
+            {
+                List<NamedObjectSave> namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entityToRefresh.Name);
+
+                foreach (NamedObjectSave nos in namedObjects)
+                {
+                    IElement namedObjectContainer = nos.GetContainer();
+
+                    if (namedObjectContainer != null)
+                    {
+                        CodeWriter.GenerateCode(namedObjectContainer);
+                    }
+                }
+            }
+            PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
         }
 
         private static void ReactToChangedBaseEntity(object oldValue, EntitySave entitySave)

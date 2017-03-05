@@ -28,29 +28,44 @@ namespace MasterInstallerWpf
 
         public MainWindow()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
 
-            Show();
+                Show();
 
-            mainFlow = new MainFlow();
-            mainFlow.MainForm = this;
+                mainFlow = new MainFlow();
+                mainFlow.MainForm = this;
 
-            mainFlow.StartFlow();
+                mainFlow.StartFlow();
+            }
+            catch(Exception e)
+            {
+                var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                System.IO.File.WriteAllText(folder + "/InstallerError.txt", e.ToString());
+            }
         }
 
         public async void SetComponent(ComponentBase component)
         {
-            _currentComponent = component;
-            this.Content = null;
-
-            var newControl = component.MainControl;
-
-            if (newControl == null)
+            try
             {
-                throw new Exception("The component " + component.GetType().Name + " does not define a Control.  Every component needs a control");
-            }
-            this.Content = newControl;
+                _currentComponent = component;
+                this.Content = null;
 
+                var newControl = component.MainControl;
+
+                if (newControl == null)
+                {
+                    throw new Exception("The component " + component.GetType().Name + " does not define a Control.  Every component needs a control");
+                }
+                this.Content = newControl;
+            }
+            catch(Exception e)
+            {
+                var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                System.IO.File.WriteAllText(folder + "/InstallerError.txt", e.ToString());
+            }
             await component.Show();
         }
 

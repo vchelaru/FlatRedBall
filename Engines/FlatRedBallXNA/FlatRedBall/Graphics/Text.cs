@@ -414,7 +414,24 @@ namespace FlatRedBall.Graphics
         public float NewLineDistance
         {
             get { return mNewLineDistance; }
-            set { mNewLineDistance = value; }
+            set
+            {
+#if DEBUG
+                if(float.IsPositiveInfinity(value))
+                {
+                    throw new NotFiniteNumberException("Value cannot be positive infinity");
+                }
+                if (float.IsNegativeInfinity(value))
+                {
+                    throw new NotFiniteNumberException("Value cannot be negative infinity");
+                }
+                if (float.IsNaN(value))
+                {
+                    throw new NotFiniteNumberException("Value is not a valid float");
+                }
+#endif
+                mNewLineDistance = value;
+            }
         }
 
         #region XML Docs
@@ -490,6 +507,20 @@ namespace FlatRedBall.Graphics
             get { return mSpacing; }
             set
             {
+#if DEBUG
+                if (float.IsPositiveInfinity(value))
+                {
+                    throw new NotFiniteNumberException("Value cannot be positive infinity");
+                }
+                if (float.IsNegativeInfinity(value))
+                {
+                    throw new NotFiniteNumberException("Value cannot be negative infinity");
+                }
+                if (float.IsNaN(value))
+                {
+                    throw new NotFiniteNumberException("Value is not a valid float");
+                }
+#endif
                 mSpacing = value;
                 UpdateDisplayedText();
                 UpdateDimensions();
@@ -503,6 +534,20 @@ namespace FlatRedBall.Graphics
             get { return mScale; }
             set
             {
+#if DEBUG
+                if (float.IsPositiveInfinity(value))
+                {
+                    throw new NotFiniteNumberException("Value cannot be positive infinity");
+                }
+                if (float.IsNegativeInfinity(value))
+                {
+                    throw new NotFiniteNumberException("Value cannot be negative infinity");
+                }
+                if (float.IsNaN(value))
+                {
+                    throw new NotFiniteNumberException("Value is not a valid float");
+                }
+#endif
                 mScale = value;
                 UpdateDisplayedText();
                 UpdateDimensions();
@@ -1017,8 +1062,13 @@ namespace FlatRedBall.Graphics
             }
             else
             {
-                Scale = .5f * mFont.LineHeightInPixels / SpriteManager.Camera.PixelsPerUnitAt(ref this.Position);
-
+                var camera = Camera.Main;
+                bool destinationRectangleHasArea = camera.DestinationRectangle.Width != 0 && camera.DestinationRectangle.Height != 0;
+                if(destinationRectangleHasArea)
+                {
+                    var pixelsPerUnit = camera.PixelsPerUnitAt(ref this.Position);
+                    Scale = .5f * mFont.LineHeightInPixels / pixelsPerUnit;
+                }
             }
 
             Spacing = Scale;

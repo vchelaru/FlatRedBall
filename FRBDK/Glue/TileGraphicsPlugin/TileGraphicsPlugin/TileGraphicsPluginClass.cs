@@ -56,7 +56,9 @@ namespace TileGraphicsPlugin
             // 1.0.9 adds TileNodeNetworkCreator
             // 1.0.10 adds shape property support
             // 1.0.11 Adds automatic instantiation and collision setting from shapes
-            get { return new Version(1, 0, 11, 0); }
+            // 1.0.11.1 Fixed bug where shape had a name
+            // 1.0.11.2 Fixed rectangle polygon creation offset bug
+            get { return new Version(1, 0, 11, 2); }
         }
 
 
