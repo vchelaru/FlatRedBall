@@ -419,15 +419,15 @@ namespace FlatRedBall.Graphics
 #if DEBUG
                 if(float.IsPositiveInfinity(value))
                 {
-                    throw new NotFiniteNumberException("Value cannot be positive infinity");
+                    throw new Exception("Value cannot be positive infinity");
                 }
                 if (float.IsNegativeInfinity(value))
                 {
-                    throw new NotFiniteNumberException("Value cannot be negative infinity");
+                    throw new Exception("Value cannot be negative infinity");
                 }
                 if (float.IsNaN(value))
                 {
-                    throw new NotFiniteNumberException("Value is not a valid float");
+                    throw new Exception("Value is not a valid float");
                 }
 #endif
                 mNewLineDistance = value;
@@ -510,15 +510,15 @@ namespace FlatRedBall.Graphics
 #if DEBUG
                 if (float.IsPositiveInfinity(value))
                 {
-                    throw new NotFiniteNumberException("Value cannot be positive infinity");
+                    throw new Exception("Value cannot be positive infinity");
                 }
                 if (float.IsNegativeInfinity(value))
                 {
-                    throw new NotFiniteNumberException("Value cannot be negative infinity");
+                    throw new Exception("Value cannot be negative infinity");
                 }
                 if (float.IsNaN(value))
                 {
-                    throw new NotFiniteNumberException("Value is not a valid float");
+                    throw new Exception("Value is not a valid float");
                 }
 #endif
                 mSpacing = value;
@@ -537,15 +537,15 @@ namespace FlatRedBall.Graphics
 #if DEBUG
                 if (float.IsPositiveInfinity(value))
                 {
-                    throw new NotFiniteNumberException("Value cannot be positive infinity");
+                    throw new Exception("Value cannot be positive infinity");
                 }
                 if (float.IsNegativeInfinity(value))
                 {
-                    throw new NotFiniteNumberException("Value cannot be negative infinity");
+                    throw new Exception("Value cannot be negative infinity");
                 }
                 if (float.IsNaN(value))
                 {
-                    throw new NotFiniteNumberException("Value is not a valid float");
+                    throw new Exception("Value is not a valid float");
                 }
 #endif
                 mScale = value;
