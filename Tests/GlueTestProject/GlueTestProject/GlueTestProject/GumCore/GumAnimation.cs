@@ -9,11 +9,16 @@ namespace FlatRedBall.Gum.Animation
 {
     public class GumAnimation
     {
+        #region Internal Classes
+
         class NamedEvent
         {
             public string Name { get; set; }
             public float Time { get; set; }
         }
+
+        #endregion
+
 
         public List<GumAnimation> SubAnimations
         {
@@ -124,7 +129,10 @@ namespace FlatRedBall.Gum.Animation
             }
         }
 
-
+        public bool IsPlaying()
+        {
+            return InstructionManager.Instructions.Any(item => item.Target == this);
+        }
 
         public void PlayAfter(float delay, object whatStartedPlayigThis = null)
         {

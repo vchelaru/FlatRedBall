@@ -475,7 +475,7 @@ namespace FlatRedBall.Glue.Parsing
                 .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Layer layer")
                     .If("string.IsNullOrEmpty(mContentManagerName)")
                         .Line("throw new System.Exception(\"You must first initialize the factory to use it. You can either add PositionedObjectList of type " +
-                            baseEntityName + " (the most common solution) or call Initialize in custom code\");")
+                            className + " (the most common solution) or call Initialize in custom code\");")
                     .End()
 
                     .Line(className + " instance = null;");

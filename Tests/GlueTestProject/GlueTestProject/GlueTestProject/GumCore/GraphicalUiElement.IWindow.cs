@@ -22,6 +22,8 @@ namespace Gum.Wireframe
 
         public event WindowEvent LosePush;
 
+        public bool RaiseChildrenEventsOutsideOfBounds { get; set; } = false;
+
         // Maybe we'll eventually move this out of IWindow implementation into its own file:
         public virtual void AssignReferences()
         {
@@ -57,7 +59,7 @@ namespace Gum.Wireframe
             return false;
         }
 
-        protected virtual void CallCustomInitialize()
+        private void CallCustomInitialize()
         {
             this.Click += (window) => CallLosePush();
             this.RollOff += (window) => CallLosePush();
@@ -71,7 +73,6 @@ namespace Gum.Wireframe
             {
                 GuiManager.AddWindow(this);
             }
-            CallCustomInitialize();
         }
 
         partial void CustomRemoveFromManagers()
@@ -311,7 +312,11 @@ namespace Gum.Wireframe
             bool handledByChild = false;
             bool handledByThis = false;
 
-            if (HasCursorOver(cursor))
+            bool isOver = HasCursorOver(cursor);
+
+
+
+            if (isOver)
             {
 
                 #region Try handling by children
@@ -339,7 +344,9 @@ namespace Gum.Wireframe
                 }
 
                 #endregion
-
+            }
+            if(isOver)
+            { 
 
                 if (!handledByChild && this.IsComponentOrInstanceOfComponent())
                 {
@@ -451,6 +458,8 @@ namespace Gum.Wireframe
 
         public bool HasCursorOver(Cursor cursor)
         {
+            bool toReturn = false;
+
             if (((IWindow)this).AbsoluteVisible)
             {
                 int screenX = cursor.ScreenX;
@@ -476,7 +485,7 @@ namespace Gum.Wireframe
 
                     // for now we'll just rely on the bounds of the GUE itself
 
-                    return global::RenderingLibrary.IPositionedSizedObjectExtensionMethods.HasCursorOver(
+                    toReturn = global::RenderingLibrary.IPositionedSizedObjectExtensionMethods.HasCursorOver(
                         this, worldX, worldY);
                 }
                 else
@@ -487,10 +496,13 @@ namespace Gum.Wireframe
                     throw new Exception(message);
                 }
             }
-            else
+
+            if(!toReturn && RaiseChildrenEventsOutsideOfBounds)
             {
-                return false;
+                toReturn = this.Children.Any(item => item is GraphicalUiElement &&  ((GraphicalUiElement)item).HasCursorOver(cursor));
             }
+
+            return toReturn;
         }
 
         FlatRedBall.Graphics.Layer frbLayer;
