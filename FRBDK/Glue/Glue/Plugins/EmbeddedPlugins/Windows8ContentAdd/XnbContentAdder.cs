@@ -18,7 +18,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
         Always
     }
 
-
+    // Why does this exist and also the BuiltFileCopier?
     [Export(typeof(PluginBase))]
     public class XnbContentAdder : EmbeddedPlugin
     {
@@ -47,8 +47,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
         {
             return project is IosMonogameProject || 
                 project is Windows8MonoGameProject ||
-                project is AndroidProject |
-                project is UwpProject
+                project is AndroidProject ||
+                project is UwpProject ||
+                project is DesktopGlProject
                 ;
 
         }

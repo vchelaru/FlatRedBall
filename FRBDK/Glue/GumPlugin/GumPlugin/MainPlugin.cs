@@ -60,7 +60,9 @@ namespace GumPlugin
             //   have their CustomInit called
             // - Gum runtimes can now turn on events on all children, whether on the parent or
             //   floating
-            get { return new Version(0, 8, 0, 5); }
+            // 0.8.0.6 - Exposing variables with spaces no longer generates code with spaces.
+            // 0.8.0.7 - Added GumAnimation.IsPlaying() method.
+            get { return new Version(0, 8, 0, 7); }
         }
 
         #endregion

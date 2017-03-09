@@ -20,6 +20,8 @@ namespace FlatRedBall.Glue.IO
         GlueOutput
     }
 
+
+    // Why does this exist and also the XnbContentAdder
     /// <summary>
     /// Currently project types like MonoGame require 
     /// some files to be built as XNBs before they can
@@ -99,7 +101,8 @@ namespace FlatRedBall.Glue.IO
             return project is IosMonogameProject || 
                 project is Windows8MonoGameProject || 
                 project is AndroidProject ||
-                project is UwpProject;
+                project is UwpProject ||
+                project is DesktopGlProject;
 
         }
 

@@ -339,7 +339,7 @@ namespace GumPlugin.CodeGeneration
         {
             if(!string.IsNullOrEmpty(variable.ExposedAsName ))
             {
-                return $"{variable.ExposedAsName}Changed";
+                return $"{variable.ExposedAsName.Replace(" ", "")}Changed";
             }
             else
             {

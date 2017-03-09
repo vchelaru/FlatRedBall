@@ -47,6 +47,18 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public DesktopGlProject(Project project) : base(project)
         {
+
+            // This is temporary - eventually we need a better solution for this:
+            // Update October 1, 2012
+            // I wanted to integrate this
+            // into Glue, but it seems like
+            // something that is more plugin-worthy.
+            // I'm going to continue to make these ignored
+            // and we'll add them later through a plugin.
+            this.ExtensionsToIgnore.Add("mp3");
+            this.ExtensionsToIgnore.Add("wav");
+
+
         }
     }
 }
