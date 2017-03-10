@@ -32,10 +32,10 @@ forceZero=0
 # output file
 outWidth=256
 outHeight=256
-outBitDepth=8
+outBitDepth=32
 fontDescFormat=0
 fourChnlPacked=0
-textureFormat=tga
+textureFormat=png
 textureCompression=0
 alphaChnl=1
 redChnl=0
@@ -50,6 +50,6 @@ invB=0
 outlineThickness=0
 
 # selected chars
-
+chars=65-66
 
 # imported icon images

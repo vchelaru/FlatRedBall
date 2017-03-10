@@ -316,7 +316,9 @@ namespace FlatRedBall.Graphics
                 }
                 else
                 {
-                    throw new Exception("Could not find the last index of the string \"char id=\" in the font pattern: " + fontPattern);
+                    string message = "Could not find the last index of the string \"char id=\" in the font pattern. " + 
+                        "This means that the font file has no characters. Font files must have at least one defined character";
+                    throw new Exception(message);
                 }
             }
             #endregion

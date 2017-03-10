@@ -1,5 +1,6 @@
 "FriendlyName (System.String, required)",Namespace (System.String),ZipName (System.String),Url (System.String),SupportedInGlue (bool)
-Star Blaster,StarBlaster,StarBlaster.zip,https://github.com/vchelaru/StarBlaster/archive/master.zip,TRUE
-Tile Adventure,TileAdventure,TileAdventure.zip,https://github.com/vchelaru/TileAdventure/archive/master.zip,TRUE
 Brake Neck,BrakeNeck,BrakeNeck.zip,https://github.com/vchelaru/BrakeNeck/archive/master.zip,TRUE
 Farseer Samples,FarseerProjectDesktop,FarseerSamples.zip,https://github.com/vchelaru/FarseerStarter/archive/master.zip,TRUE
+Star Blaster,StarBlaster,StarBlaster.zip,https://github.com/vchelaru/StarBlaster/archive/master.zip,TRUE
+Tile Adventure,TileAdventure,TileAdventure.zip,https://github.com/vchelaru/TileAdventure/archive/master.zip,TRUE
+TownRaiser,TownRaiser,TownRaiser.zip,https://github.com/vchelaru/TownRaiser/archive/master.zip,TRUE
