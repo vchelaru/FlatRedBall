@@ -695,7 +695,7 @@ namespace FlatRedBall.Graphics
 
                 if (batches != null && batches.Count != 0)
                 {
-                    if (sortType == SortType.Z)
+                    if (sortType == SortType.Z || sortType == SortType.ZSecondaryParentY)
                     {
                         // The Z value of the current batch is used.  Batches are always visible
                         // to this code.
@@ -853,10 +853,18 @@ namespace FlatRedBall.Graphics
                         // away from the camera the object will be.
                         SortBatchesZInsertionAscending(batches);
                         break;
+
                     case SortType.DistanceAlongForwardVector:
                         batches.Sort(new FlatRedBall.Graphics.BatchForwardVectorSorter(camera));
                         break;
+                    case SortType.ZSecondaryParentY:
+                        SortBatchesZInsertionAscending(batches);
 
+                        // Eventually we may need to do this, but for now I'm just
+                        // adding the Z sorting since it fixes some serious bugs
+                        //batches.SortParentYInsertionDescendingOnZBreaks();
+
+                        break;
                     case SortType.CustomComparer:
 
                         if (mDrawableBatchComparer != null)
