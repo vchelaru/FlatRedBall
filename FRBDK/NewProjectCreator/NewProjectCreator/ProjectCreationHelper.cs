@@ -450,7 +450,7 @@ namespace NewProjectCreator
 
                         string targetDirectory = beforeLastIndex + after;
 
-                        Directory.Move(fileName, targetDirectory);
+                        TryMultipleTimes( () => Directory.Move(fileName, targetDirectory), 5);
 
                         shouldRepeat = true;
 
@@ -527,6 +527,7 @@ namespace NewProjectCreator
 
         private static void UpdateNamespaces(string unpackDirectory, string stringToReplace, string stringToReplaceWith)
         {
+            // simple replacements:
             List<string> 
                 filesToFix = FileManager.GetAllFilesInDirectory(unpackDirectory, "cs");
 
@@ -547,6 +548,20 @@ namespace NewProjectCreator
             }
 
             filesToFix.Clear();
+
+            filesToFix = FileManager.GetAllFilesInDirectory(unpackDirectory, "csv");
+
+            foreach (string fileName in filesToFix)
+            {
+                string contents = FileManager.FromFileText(fileName);
+                // to catch namespaces:
+                contents = contents.Replace(stringToReplace + ".", stringToReplaceWith + ".");
+
+                FileManager.SaveText(contents, fileName);
+            }
+
+            filesToFix.Clear();
+
             filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "csproj"));
 
             // We want to be careful doing a pure copy/paste 
@@ -784,6 +799,8 @@ namespace NewProjectCreator
 
         private static void TryMultipleTimes(Action action, int numberOfTimesToTry)
         {
+            const int msSleep = 200;
+
             int failureCount = 0;
 
             while(failureCount < numberOfTimesToTry)
@@ -798,7 +815,7 @@ namespace NewProjectCreator
                 catch(Exception e)
                 {
                     failureCount++;
-                    System.Threading.Thread.Sleep(150);
+                    System.Threading.Thread.Sleep(msSleep);
                     if(failureCount >= numberOfTimesToTry)
                     {
                         throw e;
