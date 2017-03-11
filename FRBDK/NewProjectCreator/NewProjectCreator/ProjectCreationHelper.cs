@@ -587,7 +587,7 @@ namespace NewProjectCreator
                 string newAssemblyName = $"<AssemblyName>{stringToReplaceWith}</AssemblyName>";
                 contents = contents.Replace(originalAssemblyName, newAssemblyName);
 
-                System.IO.File.WriteAllText(fileName, contents, Encoding.Unicode);
+                System.IO.File.WriteAllText(fileName, contents, Encoding.UTF8);
 
             }
 
