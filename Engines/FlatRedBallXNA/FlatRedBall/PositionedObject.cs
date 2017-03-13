@@ -1226,7 +1226,7 @@ namespace FlatRedBall
 
         #region XML Docs
         /// <summary>
-        /// Gets and sets the absolute X Velocity.  Meausred in units per second.
+        /// Gets and sets the absolute X Velocity.  Measured in units per second.
         /// </summary>
         #endregion
         public float XVelocity
@@ -1237,7 +1237,7 @@ namespace FlatRedBall
 
         #region XML Docs
         /// <summary>
-        /// Gets and sets the absolute Y Velocity.  Meausred in units per second.
+        /// Gets and sets the absolute Y Velocity.  Measured in units per second.
         /// </summary>
         #endregion
         public float YVelocity
@@ -1248,7 +1248,7 @@ namespace FlatRedBall
 
         #region XML Docs
         /// <summary>
-        /// Gets and sets the absolute Z Velocity.  Meausred in units per second.
+        /// Gets and sets the absolute Z Velocity.  Measured in units per second.
         /// </summary>
         #endregion
         public float ZVelocity
@@ -1259,7 +1259,7 @@ namespace FlatRedBall
 
         #region XML Docs
         /// <summary>
-        /// Gets and sets the absolute X Acceleration.  Meausred in units per second.
+        /// Gets and sets the absolute X Acceleration.  Measured in units per second.
         /// </summary>
         #endregion
         public float XAcceleration
@@ -1270,7 +1270,7 @@ namespace FlatRedBall
 
         #region XML Docs
         /// <summary>
-        /// Gets and sets the absolute Y Acceleration.  Meausred in units per second.
+        /// Gets and sets the absolute Y Acceleration.  Measured in units per second.
         /// </summary>
         #endregion
         public float YAcceleration
@@ -1281,7 +1281,7 @@ namespace FlatRedBall
 
         #region XML Docs
         /// <summary>
-        /// Gets and sets the absolute Z Acceleration.  Meausred in units per second.
+        /// Gets and sets the absolute Z Acceleration.  Measured in units per second.
         /// </summary>
         #endregion
         public float ZAcceleration

@@ -18,21 +18,21 @@ namespace FlatRedBall.Math
     {
         #region XML Docs
         /// <summary>
-        /// Gets and sets the absolute X Velocity.  Meausred in units per second.
+        /// Gets and sets the absolute X Velocity.  Measured in units per second.
         /// </summary>
         #endregion
         float XVelocity { get; set;}
 
         #region XML Docs
         /// <summary>
-        /// Gets and sets the absolute Y Velocity.  Meausred in units per second.
+        /// Gets and sets the absolute Y Velocity.  Measured in units per second.
         /// </summary>
         #endregion
         float YVelocity { get; set;}
 
         #region XML Docs
         /// <summary>
-        /// Gets and sets the absolute Z Velocity.  Meausred in units per second.
+        /// Gets and sets the absolute Z Velocity.  Measured in units per second.
         /// </summary>
         #endregion
         float ZVelocity { get; set;}
@@ -40,21 +40,21 @@ namespace FlatRedBall.Math
 
         #region XML Docs
         /// <summary>
-        /// Gets and sets the absolute X Acceleration.  Meausred in units per second.
+        /// Gets and sets the absolute X Acceleration.  Measured in units per second.
         /// </summary>
         #endregion
         float XAcceleration { get; set;}
 
         #region XML Docs
         /// <summary>
-        /// Gets and sets the absolute Y Acceleration.  Meausred in units per second.
+        /// Gets and sets the absolute Y Acceleration.  Measured in units per second.
         /// </summary>
         #endregion
         float YAcceleration { get; set;}
 
         #region XML Docs
         /// <summary>
-        /// Gets and sets the absolute Z Acceleration.  Meausred in units per second.
+        /// Gets and sets the absolute Z Acceleration.  Measured in units per second.
         /// </summary>
         #endregion
         float ZAcceleration { get; set;}
