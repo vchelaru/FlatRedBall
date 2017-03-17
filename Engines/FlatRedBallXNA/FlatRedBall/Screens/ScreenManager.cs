@@ -166,7 +166,8 @@ namespace FlatRedBall.Screens
 				// on April 22, 2015. I'm commenting it out because I don't think we need to wait
 				// for finalizers, and we can just continue on. Maybe try to bring the code back
 				// on Android in the future too.
-				#if !ANDROID
+                // March 16, 2017 - Desktop GL too, not sure why...
+				#if !ANDROID && !DESKTOP_GL
                 GC.WaitForPendingFinalizers();
 				#endif
 

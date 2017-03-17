@@ -7,7 +7,7 @@ using Microsoft.Build.Evaluation;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
-    class DesktopGlProject : VisualStudioProject
+    public class DesktopGlProject : VisualStudioProject
     {
         public override string ProjectId { get { return "DesktopGl"; } }
         public override string PrecompilerDirective { get { return "DESKTOP_GL"; } }

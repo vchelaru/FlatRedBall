@@ -423,7 +423,17 @@ namespace FlatRedBall.Graphics
         //    set { mOverridingFieldOfView = value; }
         //}
 
-
+        /// <summary>
+        /// Controls whether all objects on this layer are drawn relative to the camera. If this value is true, then objects
+        /// with a position of 0,0 will be positioned at the center of the camera. This value is false by default, which means
+        /// objects on this layer will be positioned relative to world coordinates.
+        /// </summary>
+        /// <remarks>
+        /// Setting this value to true is an alternative to attaching all objects to the camera. Using this value has a number of
+        /// benefits:
+        ///  - It removes the overhead of attachment if dealing with a large number of objects
+        ///  - It removes "jittering" which can occur when attaching to a rotating camera
+        /// </remarks>
         public bool RelativeToCamera
         {
             get { return mRelativeToCamera; }

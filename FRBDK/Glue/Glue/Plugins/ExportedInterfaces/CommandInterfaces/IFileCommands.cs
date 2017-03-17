@@ -25,5 +25,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         string GetContentFolder(IElement element);
 
         void IgnoreNextChangeOnFile(string absoluteFileName);
+
+        string GetFullFileName(ReferencedFileSave rfs);
+
     }
 }

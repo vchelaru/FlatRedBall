@@ -33,6 +33,34 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             Process.GetCurrentProcess().Kill();
         }
 
+
+        public void TryMultipleTimes(Action action, int numberOfTimesToTry)
+        {
+            const int msSleep = 200;
+
+            int failureCount = 0;
+
+            while (failureCount < numberOfTimesToTry)
+            {
+                try
+                {
+                    action();
+                    break;
+                }
+
+
+                catch (Exception e)
+                {
+                    failureCount++;
+                    System.Threading.Thread.Sleep(msSleep);
+                    if (failureCount >= numberOfTimesToTry)
+                    {
+                        throw e;
+                    }
+                }
+            }
+        }
+
         public GlueCommands()
         {
             mSelf = this;

@@ -295,6 +295,11 @@ namespace FlatRedBall
         bool mParentRotationChangesPosition;
         bool mParentRotationChangesRotation;
 
+        /// <summary>
+        /// Controls whether this instance ignores parent positioning. This is false by default, which means Relative values are used
+        /// to determine this instance's absolute positions when it has a parent. If this is set to true, then the positioning of this
+        /// object behaves as if it was not attached. Rotation and other properties which may be affected by a Parent still apply.
+        /// </summary>
         public bool IgnoreParentPosition
         {
             get;

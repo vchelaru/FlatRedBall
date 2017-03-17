@@ -95,7 +95,7 @@ namespace GumPlugin.Managers
             mStateInterpolationItemAdder.AddFileBehavior = AddFileBehavior.IfOutOfDate;
 
             mStateInterpolationItemAdder.OutputFolderInProject = "StateInterpolation";
-            mStateInterpolationItemAdder.PerformAddAndSave(assembly);
+            TaskManager.Self.AddSync(() => mStateInterpolationItemAdder.PerformAddAndSave(assembly), "Adding interpolation files for Gum");
 
         }
 
@@ -140,7 +140,7 @@ namespace GumPlugin.Managers
 
             mCodeAdder.AddFolder("GumPlugin.Embedded.LibraryFiles.ToolsUtilities", assembly);
 
-            mCodeAdder.PerformAddAndSave(assembly);
+            TaskManager.Self.AddSync(() => mCodeAdder.PerformAddAndSave(assembly), "Adding standard Gum files");
         }
 
     }

@@ -7,25 +7,6 @@ using System;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
-    #region ProjectType Enum
-
-    //public enum ProjectType
-    //{
-    //    Xna = 1,
-    //    Mdx,
-    //    Fsb,
-    //    Xna360,
-    //    XnaContent, 
-    //    Android,
-    //    WindowsPhone,
-    //    Xna4,
-    //    Xna4_360,
-    //    MonoDroid
-
-    //}
-
-    #endregion
-
     public enum BuildItemMembershipType
     {
         CopyIfNewer,
@@ -222,7 +203,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
             if (!mBuildItemDictionaries.ContainsKey(itemName))
             {
-                foreach (var item in mBuildItemDictionaries.Values)
+                var values = mBuildItemDictionaries.Values.ToList();
+                foreach (var item in values)
                 {
                     // This may be a link
                     var foundLink = (string)item.Metadata.FirstOrDefault(metadata=>metadata.ItemType == "Link")?.EvaluatedValue;

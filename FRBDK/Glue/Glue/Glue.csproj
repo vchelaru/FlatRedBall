@@ -244,6 +244,7 @@
     <Compile Include="CodeGeneration\EventCodeGenerator.cs" />
     <Compile Include="CodeGeneration\CodeGeneratorIElement.cs" />
     <Compile Include="CodeGeneration\GlobalContentCodeGeneratorBase.cs" />
+    <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Managers\HotkeyManager.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\IDrawableBatch\IDrawableBatchCodeGenerator.cs" />
     <Compile Include="CodeGeneration\InheritanceCodeWriter.cs" />
@@ -743,9 +744,11 @@
     <Compile Include="VSHelpers\CodeBuildItemAdder.cs" />
     <Compile Include="VSHelpers\Projects\ClassLibraryProject.cs" />
     <Compile Include="VSHelpers\Projects\CombinedEmbeddedContentProject.cs" />
+    <Compile Include="VSHelpers\Projects\ContentHybridProject.cs" />
     <Compile Include="VSHelpers\Projects\DesktopGlProject.cs" />
     <Compile Include="VSHelpers\Projects\IosMonogameProject.cs" />
     <Compile Include="VSHelpers\Projects\AndroidProject.cs" />
+    <Compile Include="VSHelpers\Projects\MonoGameContentProject.cs" />
     <Compile Include="VSHelpers\Projects\ProjectCreator.cs" />
     <Compile Include="VSHelpers\Projects\UwpProject.cs" />
     <Compile Include="VSHelpers\Projects\Windows8MonoGameProject.cs" />

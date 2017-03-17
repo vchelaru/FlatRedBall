@@ -150,6 +150,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Linked, bool forceToContentPipeline = false)
         {
+            /////////////////////////Early Out////////////////////////////
+            string extension = FileManager.GetExtension(absoluteFile);
+            if(ExtensionsToIgnore.Contains(extension))
+            {
+                return null;
+            }
+            ///////////////////End Early Out//////////////////////////////
             lock (this)
             {
                 string relativeFileName = FileManager.MakeRelative(absoluteFile, this.Directory);
@@ -157,7 +164,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 ProjectItem buildItem = null;
 
                 bool addToContentPipeline = false;
-                string extension = FileManager.GetExtension(absoluteFile);
                 AssetTypeInfo assetTypeInfo = AvailableAssetTypes.Self.GetAssetTypeFromExtension(extension);
 
                 if (assetTypeInfo != null)
@@ -238,7 +244,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 if (relativityType == SyncedProjectRelativeType.Linked)
                 {
                     string linkValue;
-                    string path;
+                    string path = null;
 
                     if (MasterProjectBase != null)
                     {
@@ -253,16 +259,23 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                             path = MasterProjectBase.ContentProject.FullContentPath;
                         }
                     }
-                    else
+                    // This will be null if we're creating a linked content file without a source project - which is the case for MonoGame projects
+                    // linking audio files:
+                    else if (OriginalProjectBaseIfSynced != null)
+                    {
                         path = OriginalProjectBaseIfSynced.ContentProject.FullContentPath;
+                    }
 
-                    linkValue = ContentDirectory + FileManager.MakeRelative(absoluteFile, path);
-                    linkValue = FileManager.RemoveDotDotSlash(linkValue);
-                    linkValue = ProcessInclude(linkValue);
+                    if(path != null)
+                    {
+                        linkValue = ContentDirectory + FileManager.MakeRelative(absoluteFile, path);
+                        linkValue = FileManager.RemoveDotDotSlash(linkValue);
+                        linkValue = ProcessInclude(linkValue);
 
 
 
-                    buildItem.SetMetadataValue("Link", linkValue);
+                        buildItem.SetMetadataValue("Link", linkValue);
+                    }
                 }
                 mProject.ReevaluateIfNecessary();
 

@@ -230,8 +230,7 @@ namespace FlatRedBall.Glue.IO
                     GluxCommands.Self.SaveGlux();
                 }
 
-                // saves the projects if dirty
-                GlueCommands.Self.ProjectCommands.SaveProjects();
+                TaskManager.Self.AddSync( GlueCommands.Self.ProjectCommands.SaveProjects, "Save all projects");
 
                 FileWatchManager.PerformFlushing = true;
                 FileWatchManager.FlushAndClearIgnores();

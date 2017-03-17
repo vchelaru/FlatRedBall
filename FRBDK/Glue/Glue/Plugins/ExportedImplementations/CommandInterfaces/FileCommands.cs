@@ -192,6 +192,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             IO.FileWatchManager.IgnoreNextChangeOnFile(absoluteFileName);
         }
+
+        public string GetFullFileName(ReferencedFileSave rfs)
+        {
+            return ProjectManager.ContentDirectory + rfs.Name;
+        }
     }
 
 }

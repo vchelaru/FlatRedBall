@@ -111,6 +111,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Glue\Libraries\Ionic.Zlib.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -194,6 +196,8 @@
     <Compile Include="GlobalContentManagerPlugin\PluginForm.Designer.cs">
       <DependentUpon>PluginForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MonoGameContent\ContentItem.cs" />
+    <Compile Include="MonoGameContent\MainPlugin.cs" />
     <Compile Include="MoveToLayerPlugin\MoveToLayerComponentGenerator.cs" />
     <Compile Include="MoveToLayerPlugin\MoveToLayerContainer.cs" />
     <Compile Include="PointEditingPlugin\MainPlugin.cs" />

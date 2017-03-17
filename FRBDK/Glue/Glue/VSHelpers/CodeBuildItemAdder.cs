@@ -106,7 +106,11 @@ namespace FlatRedBall.Glue.VSHelpers
                 // Add these files to the project and any synced project
                 foreach (var file in filesToAddToProject)
                 {
-                    ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(ProjectManager.ProjectBase, file);
+                    bool wasAdded = ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(ProjectManager.ProjectBase, file);
+                    if(wasAdded)
+                    {
+                        PluginManager.ReceiveOutput("Added file to project: " + file);
+                    }
                 }
             }
 
@@ -187,7 +191,6 @@ namespace FlatRedBall.Glue.VSHelpers
                 {
                     FileManager.SaveEmbeddedResource(assembly, resourceName.Replace("/", "."), destination);
                     succeeded = true;
-                    PluginManager.ReceiveOutput("Added file to project: " + destination);
                     break;
                 }
                 catch (Exception e)
