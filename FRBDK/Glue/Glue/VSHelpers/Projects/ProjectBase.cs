@@ -203,7 +203,12 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
             if (!mBuildItemDictionaries.ContainsKey(itemName))
             {
-                var values = mBuildItemDictionaries.Values.ToList();
+                List<ProjectItem> values;
+                lock(this)
+                {
+                    values = mBuildItemDictionaries.Values.ToList();
+                }
+
                 foreach (var item in values)
                 {
                     // This may be a link

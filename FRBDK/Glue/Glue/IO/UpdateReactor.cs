@@ -207,13 +207,18 @@ namespace FlatRedBall.Glue.IO
         private static bool TryHandleProjectFileChanges(string changedFile)
         {
             bool handled = false;
-            
-            handled = TryHandleSpecificProjectFileChange(changedFile, ProjectManager.ProjectBase);
+
+            var project = ProjectManager.ProjectBase;
+
+            if(project != null)
+            {
+                handled = TryHandleSpecificProjectFileChange(changedFile, project);
+            }
 
             // Can't foreach because TryHandleSpecificProjectFileChange may modify it.
             for (int i = 0; i < ProjectManager.SyncedProjects.Count; i++)
             {
-                var project = ProjectManager.SyncedProjects[i];
+                project = ProjectManager.SyncedProjects[i];
                 if (handled)
                 {
                     break;
