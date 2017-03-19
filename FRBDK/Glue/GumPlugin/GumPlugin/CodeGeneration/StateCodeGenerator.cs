@@ -72,6 +72,7 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForStates.Add("FontSize");
             mVariableNamesToSkipForStates.Add("OutlineThickness");
             mVariableNamesToSkipForStates.Add("HasEvents");
+            mVariableNamesToSkipForStates.Add("ExposeChildrenEvents");
             //mVariableNamesToSkipForStates.Add("SourceFile");
 
             // Eventually we'll support this but first Gum needs to support 

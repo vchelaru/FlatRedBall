@@ -22,6 +22,7 @@ using EditorObjects.Parsing;
 using Gum.Managers;
 using System.Drawing;
 using Gum.DataTypes.Behaviors;
+using FlatRedBall.Glue.Events;
 
 namespace GumPlugin
 {
@@ -105,10 +106,17 @@ namespace GumPlugin
 
             this.ReactToNewScreenCreated += HandleNewScreen;
 
+            this.GetEventSignatureArgs += HandleGetEventSignatureArgs;
+
             CodeGeneratorManager.Self.CreateElementComponentCodeGenerators();
 
             Gum.Managers.StandardElementsManager.Self.Initialize();
             
+        }
+
+        private void HandleGetEventSignatureArgs(NamedObjectSave namedObject, EventResponseSave eventResponseSave, out string type, out string args)
+        {
+            EventCodeGenerator.Self.HandleGetEventSignatureArgs(namedObject, eventResponseSave, out type, out args);
         }
 
         private void HandleNewScreen(FlatRedBall.Glue.SaveClasses.ScreenSave newScreen)

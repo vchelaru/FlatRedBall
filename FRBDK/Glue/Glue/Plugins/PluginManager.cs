@@ -2192,6 +2192,32 @@ namespace FlatRedBall.Glue.Plugins
             return toReturn;
         }
 
+        public static void GetEventSignatureArgs(NamedObjectSave namedObjectSave, EventResponseSave eventResponseSave, out string type, out string args)
+        {
+            string foundType = null;
+            string foundArgs = null;
+
+            CallMethodOnPlugin(
+                delegate (PluginBase plugin)
+                {
+                    if (plugin.GetEventSignatureArgs != null)
+                    {
+                        string tempFoundType;
+                        string tempFoundArgs;
+                        plugin.GetEventSignatureArgs(namedObjectSave, eventResponseSave, out tempFoundType, out tempFoundArgs);
+                        if (tempFoundType != null)
+                        {
+                            foundType = tempFoundType;
+                            foundArgs = tempFoundArgs;
+                        }
+                    }
+                },
+                "GetEventSignatureArgs");
+
+            type = foundType;
+            args = foundArgs;
+        }
+
         public static void WriteInstanceVariableAssignment(NamedObjectSave namedObject, ICodeBlock codeBlock, InstructionSave instructionSave)
         {
             TypeConverter toReturn = null;

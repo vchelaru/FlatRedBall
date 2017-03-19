@@ -146,7 +146,7 @@ namespace GumPlugin.CodeGeneration
             GenerateProperties(elementSave, currentBlock);
 
 
-            GenerateEvents(elementSave, currentBlock);
+            EventCodeGenerator.Self.GenerateEvents(elementSave, currentBlock);
 
             GenerateConstructor(elementSave, currentBlock, runtimeClassName);
 
@@ -223,35 +223,6 @@ namespace GumPlugin.CodeGeneration
             currentBlock.Line("partial void CustomInitialize();");
         }
 
-        private void GenerateEvents(ElementSave elementSave, ICodeBlock currentBlock)
-        {
-            foreach (var eventSave in elementSave.Events.Where(item => !IsHandledByIWindow(item) &&
-                (string.IsNullOrEmpty(item.GetSourceObject()) || !string.IsNullOrEmpty(item.ExposedAsName))))
-            {
-
-                string name = eventSave.GetRootName();
-
-                if (!string.IsNullOrEmpty(eventSave.ExposedAsName))
-                {
-                    name = eventSave.ExposedAsName;
-                }
-
-                currentBlock.Line("public event FlatRedBall.Gui.WindowEvent " + name + ";");
-            }
-
-            if (elementSave.DefaultState != null)
-            {
-                var variablesWithEvents =
-                    elementSave.DefaultState.Variables.Where(item =>
-                        !string.IsNullOrEmpty(item.ExposedAsName) &&
-                        GetIfShouldGenerateEventOnVariableSet(elementSave, item));
-
-                foreach (var variable in variablesWithEvents)
-                {
-                    currentBlock.Line($"public event System.EventHandler {GetEventName(variable, elementSave)};");
-                }
-            }
-        }
 
         private void GenerateProperties(ElementSave elementSave, ICodeBlock currentBlock)
         {
@@ -321,9 +292,9 @@ namespace GumPlugin.CodeGeneration
                 .Line("return " + whatToGetOrSet + ";");
             var setter = property.Set();
 
-            if (GetIfShouldGenerateEventOnVariableSet(elementSave, variable))
+            if (EventCodeGenerator.Self.GetIfShouldGenerateEventOnVariableSet(elementSave, variable))
             {
-                string eventName = GetEventName(variable, elementSave);
+                string eventName = EventCodeGenerator.Self.GetEventName(variable, elementSave);
 
                 setter.If($"{whatToGetOrSet} != value")
                     .Line(whatToGetOrSet + " = value;")
@@ -333,23 +304,6 @@ namespace GumPlugin.CodeGeneration
             {
                 setter.Line(whatToGetOrSet + " = value;");
             }
-        }
-
-        private string GetEventName(VariableSave variable, ElementSave container)
-        {
-            if(!string.IsNullOrEmpty(variable.ExposedAsName ))
-            {
-                return $"{variable.ExposedAsName.Replace(" ", "")}Changed";
-            }
-            else
-            {
-                return $"{variable.MemberNameInCode(container)}Changed";
-            }
-        }
-
-        bool GetIfShouldGenerateEventOnVariableSet(ElementSave elementSave, VariableSave variable)
-        {
-            return true;
         }
 
         private void ModifyVariableTypeForProperty(ref string variableType, VariableSave variableSave, ElementSave elementSave)
@@ -536,21 +490,6 @@ namespace GumPlugin.CodeGeneration
             variableValue = prefix + "." + variableValue;
         }
 
-        private bool IsHandledByIWindow(EventSave item)
-        {
-            // Specifically check "Name" because we want to create events for events on instances
-            if (item.Name == "Click" ||
-                item.Name == "RollOn" ||
-                item.Name == "RollOff" ||
-                item.Name == "RollOver"
-                )
-            {
-                return true;
-            }
-
-            return false;
-        }
-
         private void GenerateAssignReferencesMethod(ElementSave elementSave, ICodeBlock currentBlock)
         {
             currentBlock = currentBlock.Function("public override void", "AssignReferences", "");
@@ -581,6 +520,13 @@ namespace GumPlugin.CodeGeneration
                             currentBlock.Line(eventSave.Name + " += Raise" + eventSave.ExposedAsName + ";");
                         }
                     }
+                }
+
+                List<EventSave> exposedChildrenEvents = EventCodeGenerator.Self.GetExposedChildrenEvents(elementSave);
+
+                foreach (var exposedChildEvent in exposedChildrenEvents)
+                {
+                    currentBlock.Line($"{exposedChildEvent.Name} += (unused) => {exposedChildEvent.ExposedAsName}?.Invoke(this);");
                 }
 
                 // must be done after instances are assigned, since beahvior code may reference instances

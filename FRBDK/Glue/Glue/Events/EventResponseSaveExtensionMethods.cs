@@ -32,6 +32,8 @@ namespace FlatRedBall.Glue.Events
         /// </summary>
         public static EventSave GetEventSave(this EventResponseSave instance)
         {
+            EventSave toReturn = null;
+
             string key = "";
             if (!string.IsNullOrEmpty(instance.SourceObject) && !string.IsNullOrEmpty(instance.SourceObjectEvent))
             {
@@ -42,8 +44,19 @@ namespace FlatRedBall.Glue.Events
                 if (container != null)
                 {
                     NamedObjectSave nos = container.GetNamedObjectRecursively(instance.SourceObject);
+#if GLUE
+                    string type;
+                    string args;
 
-                    if (nos != null && nos.SourceType == SourceType.Entity)
+                    FlatRedBall.Glue.Plugins.PluginManager.GetEventSignatureArgs(nos, instance, out type, out args);
+                    if(type != null)
+                    {
+                        toReturn = new EventSave();
+                        toReturn.Arguments = args;
+                        toReturn.DelegateType = type;
+                    }
+#endif
+                    if (toReturn == null && nos != null && nos.SourceType == SourceType.Entity)
                     {
 
                         // This may be a tunnel into a tunneled event
@@ -53,12 +66,11 @@ namespace FlatRedBall.Glue.Events
                         {
                             foreach (EventResponseSave ers in element.Events)
                             {
-                                //////////////////////////////////////EARLY OUT/////////////////////////////////
                                 if (ers.EventName == instance.SourceObjectEvent)
                                 {
-                                    return ers.GetEventSave();
+                                    toReturn = ers.GetEventSave();
+                                    break;
                                 }
-                                ///////////////////////////////////END EARLY OUT/////////////////////////////////
                             }
                         }
                     }
@@ -69,14 +81,13 @@ namespace FlatRedBall.Glue.Events
                 key = instance.EventName;
             }
 
-            if (EventManager.AllEvents.ContainsKey(key))
+            if (toReturn == null && EventManager.AllEvents.ContainsKey(key))
             {
-                return EventManager.AllEvents[key];
+                
+                toReturn = EventManager.AllEvents[key];
             }
-            else
-            {
-                return null;
-            }
+
+            return toReturn;
         }
 
         public static bool GetIsTunneling(this EventResponseSave instance)

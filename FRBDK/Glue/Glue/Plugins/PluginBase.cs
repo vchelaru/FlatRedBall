@@ -42,7 +42,7 @@ namespace FlatRedBall.Glue.Plugins
         public abstract Version Version { get; }
 
 
-        protected PluginTab PluginTab{ get; private set; } // This is the tab that will hold our control
+        protected PluginTab PluginTab { get; private set; } // This is the tab that will hold our control
 
 
         #endregion
@@ -117,7 +117,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action<string, EditorObjects.Parsing.TopLevelOrRecursive, List<string>> GetFilesReferencedBy { get; protected set; }
         public Action<string, List<string>> GetFilesNeededOnDiskBy { get; protected set; }
-        
+
 
 
         /// <summary>
@@ -130,14 +130,15 @@ namespace FlatRedBall.Glue.Plugins
         /// </remarks>
         public Func<string, bool> CanFileReferenceContent { get; protected set; }
 
-        public AdjustDisplayedReferencedFileDelegate AdjustDisplayedReferencedFile { get; protected set;}
-        public AdjustDisplayedCustomVariableDelegate AdjustDisplayedCustomVariable { get; protected set;}
+        public AdjustDisplayedReferencedFileDelegate AdjustDisplayedReferencedFile { get; protected set; }
+        public AdjustDisplayedCustomVariableDelegate AdjustDisplayedCustomVariable { get; protected set; }
         public AdjustDisplayedNamedObjectDelegate AdjustDisplayedNamedObject { get; protected set; }
         public Action<NamedObjectSave, List<ExposableEvent>> AddEventsForObject { get; protected set; }
         public Action<ProjectBase> ReactToLoadedSyncedProject { get; protected set; }
 
-        public Func<IElement, NamedObjectSave, TypedMemberBase, TypeConverter> GetTypeConverter { get; protected set; }
+        public GetEventTypeAndSignature GetEventSignatureArgs { get; protected set;}
 
+        public Func<IElement, NamedObjectSave, TypedMemberBase, TypeConverter> GetTypeConverter { get; protected set; }
         public Action<NamedObjectSave, ICodeBlock, InstructionSave> WriteInstanceVariableAssignment { get; protected set; }
 
         #endregion

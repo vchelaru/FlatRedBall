@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Gum.DataTypes;
+using GumPlugin.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,53 @@ namespace GumPlugin.Managers
 
         internal void HandleAddEventsForObject(NamedObjectSave namedObject, List<ExposableEvent> listToFill)
         {
+            bool shouldAddEventsForThis, shouldAddEventsForChildren;
+            GetIfShouldAddEvents(namedObject, out shouldAddEventsForThis, out shouldAddEventsForChildren);
+
+            if (shouldAddEventsForThis)
+            {
+                listToFill.Add(new ExposableEvent("Click"));
+                listToFill.Add(new ExposableEvent("RollOver"));
+                listToFill.Add(new ExposableEvent("RollOn"));
+                listToFill.Add(new ExposableEvent("RollOff"));
+            }
+            if (shouldAddEventsForChildren)
+            {
+                string strippedName = FileManager.RemoveExtension(FileManager.RemovePath(namedObject.SourceFile));
+
+                var element = AppState.Self.AllLoadedElements.FirstOrDefault(item =>
+                    item.Name.ToLowerInvariant() == strippedName.ToLowerInvariant());
+
+                if(element != null)
+                {
+                    string instanceName = namedObject.SourceNameWithoutParenthesis;
+
+                    if (instanceName != "this")
+                    {
+                        var instance = element.Instances.FirstOrDefault(item => item.Name == instanceName);
+                        element = Gum.Managers.ObjectFinder.Self.GetElementSave(instance);
+                    }
+
+                    if(element != null)
+                    {
+                        var events = EventCodeGenerator.Self.GetExposedChildrenEvents(element);
+                        foreach(var childEvent in events)
+                        {
+                            var exposableEvent =
+                                new ExposableEvent(childEvent.ExposedAsName);
+                            
+                            listToFill.Add(exposableEvent);
+                        }
+                    }
+                }
+            }
+
+        }
+
+        private static void GetIfShouldAddEvents(NamedObjectSave namedObject, out bool shouldAddEventsForThis, out bool shouldAddEventsForChildren)
+        {
+            shouldAddEventsForThis = false;
+            shouldAddEventsForChildren = false;
             if (namedObject.SourceType == SourceType.File)
             {
                 string extension = FileManager.GetExtension(namedObject.SourceFile);
@@ -28,55 +76,41 @@ namespace GumPlugin.Managers
                 {
                     string strippedName = FileManager.RemoveExtension(FileManager.RemovePath(namedObject.SourceFile));
 
-                    var element = AppState.Self.AllLoadedElements.FirstOrDefault(item=>
+                    var element = AppState.Self.AllLoadedElements.FirstOrDefault(item =>
                         item.Name.ToLowerInvariant() == strippedName.ToLowerInvariant());
 
-                    if(element != null)
+                    if (element != null)
                     {
                         string instanceName = namedObject.SourceNameWithoutParenthesis;
 
-                        // Click
-                        // RollOver
-                        // RollOn
-                        // RollOff
-
-                        bool shouldAddEvents = false;
+                        object hasEventsAsObject;
+                        object exposeChildrenEventsAsObject;
 
                         if (instanceName == "this")
                         {
-                            var asObject = element.GetValueFromThisOrBase("HasEvents");
+                            hasEventsAsObject = element.GetValueFromThisOrBase("HasEvents");
+                            exposeChildrenEventsAsObject = element.GetValueFromThisOrBase("ExposeChildrenEvents");
 
-                            if(asObject != null && asObject is bool)
-                            {
-                                shouldAddEvents = (bool)asObject;
-                            }
                         }
                         else
                         {
-
                             var instance = element.Instances.FirstOrDefault(item => item.Name == instanceName);
 
-                            var asObject = instance.GetValueFromThisOrBase(element, "HasEvents");
-
-                            if(asObject != null && asObject is bool)
-                            {
-                                shouldAddEvents = (bool)asObject;
-                            }
-                            
+                            hasEventsAsObject = instance.GetValueFromThisOrBase(element, "HasEvents");
+                            exposeChildrenEventsAsObject = instance.GetValueFromThisOrBase(element, "ExposeChildrenEvents");
                         }
 
-                        if(shouldAddEvents)
+                        if (hasEventsAsObject != null && hasEventsAsObject is bool)
                         {
-                            listToFill.Add(new ExposableEvent("Click"));
-                            listToFill.Add(new ExposableEvent("RollOver"));
-                            listToFill.Add(new ExposableEvent("RollOn"));
-                            listToFill.Add(new ExposableEvent("RollOff"));
+                            shouldAddEventsForThis = (bool)hasEventsAsObject;
+                        }
+                        if (exposeChildrenEventsAsObject != null && exposeChildrenEventsAsObject is bool)
+                        {
+                            shouldAddEventsForChildren = (bool)exposeChildrenEventsAsObject;
                         }
                     }
                 }
-
             }
-
         }
 
         internal void RefreshEvents()
