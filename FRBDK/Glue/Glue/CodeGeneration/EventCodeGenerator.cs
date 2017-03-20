@@ -100,7 +100,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 wasEventAdded = true;
             }
 
-            else if (string.IsNullOrEmpty(ers.SourceObject))
+            else if (string.IsNullOrEmpty(ers.SourceObject) || ers.SourceObject == "<NONE>")
             {
 
                 string leftSide = null;
