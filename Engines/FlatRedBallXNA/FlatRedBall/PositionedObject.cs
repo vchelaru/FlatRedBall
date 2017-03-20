@@ -399,36 +399,30 @@ namespace FlatRedBall
             protected set { mParentBone = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Whether the parent's rotation should change the object's position.
         /// </summary>
-        #endregion
         public bool ParentRotationChangesPosition
         {
             get { return mParentRotationChangesPosition; }
             set { mParentRotationChangesPosition = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets whether the parent's rotation should change the object's rotation.
         /// </summary>
-        #endregion
         public bool ParentRotationChangesRotation
         {
             get { return mParentRotationChangesRotation; }
             set { mParentRotationChangesRotation = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the X position relative to the instance's parent.
         /// </summary>
         /// <remarks>
         /// If the instance does not have a parent this property has no effect.
         /// </remarks>
-        #endregion
         public float RelativeX
         {
             get { return RelativePosition.X; }
@@ -453,14 +447,12 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the Y position relative to the instance's parent.
         /// </summary>
         /// <remarks>
         /// If the instance does not have a parent this property has no effect.
         /// </remarks>
-        #endregion
         public float RelativeY
         {
             get { return RelativePosition.Y; }
@@ -484,14 +476,12 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the Z position relative to the instance's parent.
         /// </summary>
         /// <remarks>
         /// If the instance does not have a parent this property has no effect.
         /// </remarks>
-        #endregion
         public float RelativeZ
         {
             get { return RelativePosition.Z; }
@@ -508,77 +498,63 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the rate of change of the RelativeX property in units per second.
         /// </summary>
-        #endregion
         public float RelativeXVelocity
         {
             get { return RelativeVelocity.X; }
             set { RelativeVelocity.X = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the rate of change of the RelativeY property in units per second.
         /// </summary>
-        #endregion
         public float RelativeYVelocity
         {
             get { return RelativeVelocity.Y; }
             set { RelativeVelocity.Y = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the rate of change of the RelativeZ property in units per second.
         /// </summary>
-        #endregion
         public float RelativeZVelocity
         {
             get { return RelativeVelocity.Z; }
             set { RelativeVelocity.Z = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the rate of change of the RelativeXVelocity property in units per second.
         /// </summary>
-        #endregion
         public float RelativeXAcceleration
         {
             get { return RelativeAcceleration.X; }
             set { RelativeAcceleration.X = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the rate of change of the RelativeYVelocity property in units per second.
         /// </summary>
-        #endregion
         public float RelativeYAcceleration
         {
             get { return RelativeAcceleration.Y; }
             set { RelativeAcceleration.Y = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the rate of change of the RelativeZVelocity property in units per second.
         /// </summary>
-        #endregion
         public float RelativeZAcceleration
         {
             get { return RelativeAcceleration.Z; }
             set { RelativeAcceleration.Z = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the rotation on the X axis relative to the instance's parent.
         /// </summary>
-        #endregion
         public float RelativeRotationX
         {
             get { return mRelativeRotationX; }
@@ -602,11 +578,9 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the rotation on the Y axis relative to the instance's parent.
         /// </summary>
-        #endregion
         public float RelativeRotationY
         {
             get { return mRelativeRotationY; }
@@ -629,11 +603,9 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the rotation on the Z axis relative to the instance's parent.
         /// </summary>
-        #endregion
         public float RelativeRotationZ
         {
             get { return mRelativeRotationZ; }
@@ -660,14 +632,12 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The rotation representing the orientation relative to the instance's Parent.
         /// </summary>
         /// <remarks>
         /// If the instance does not have a Parent then this property has no effect.
         /// </remarks>
-        #endregion
         public Matrix RelativeRotationMatrix
         {
             get { return mRelativeRotationMatrix; }
@@ -729,54 +699,45 @@ namespace FlatRedBall
 
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the rate of change of the RelativeRotationX property in units per second.
         /// </summary>
-        #endregion
         public float RelativeRotationXVelocity
         {
             get { return mRelativeRotationXVelocity; }
             set { mRelativeRotationXVelocity = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the rate of change of the RelativeRotationY property in units per second.
         /// </summary>
-        #endregion
         public float RelativeRotationYVelocity
         {
             get { return mRelativeRotationYVelocity; }
             set { mRelativeRotationYVelocity = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the rate of change of the RelativeRotationZ property in units per second.
         /// </summary>
-        #endregion
         public float RelativeRotationZVelocity
         {
             get { return mRelativeRotationZVelocity; }
             set { mRelativeRotationZVelocity = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// The last time Update was called.
         /// </summary>
         /// <remarks>
         /// This value is set through the TimeManager's CurrentTime property.
         /// </remarks>
-        #endregion
         public double LastDependencyUpdate
         {
             get { return mLastDependencyUpdate; }
             internal set { mLastDependencyUpdate = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// The x rotation of a PositionedObject
         /// </summary>
@@ -790,7 +751,6 @@ namespace FlatRedBall
         /// be flipped during animation (if it is a Sprite).  AnimationFrames can be flipped without 
         /// setting a Sprite's Rotation values.
         /// </remarks>
-        #endregion
         public float RotationX
         {
             get
@@ -815,7 +775,6 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The y rotation of a PositionedObject
         /// </summary>
@@ -829,7 +788,6 @@ namespace FlatRedBall
         /// should not be flipped during animation (if it is a Sprite).  AnimationFrames can be flipped without
         /// setting a Sprite's Rotation values.
         /// </remarks>
-        #endregion
         public float RotationY
         {
             get
@@ -865,7 +823,6 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The z rotation of a PositionedObject
         /// </summary>
@@ -878,7 +835,6 @@ namespace FlatRedBall
         /// RotationZ can be used to "spin" a PositionedObject, with a positive variable spinning
         /// clockwise.  
         /// </remarks>
-        #endregion
         public float RotationZ
         {
             get
@@ -909,7 +865,6 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The matrix applied to the object resulting in its final orientation.
         /// </summary>
@@ -919,7 +874,6 @@ namespace FlatRedBall
         /// <seealso cref="RotationY"/>
         /// <seealso cref="RotationZ"/>
         /// </remarks>
-        #endregion
         public Matrix RotationMatrix
         {
             get

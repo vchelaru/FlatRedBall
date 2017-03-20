@@ -63,7 +63,8 @@ namespace GumPlugin
             //   floating
             // 0.8.0.6 - Exposing variables with spaces no longer generates code with spaces.
             // 0.8.0.7 - Added GumAnimation.IsPlaying() method.
-            get { return new Version(0, 8, 0, 7); }
+            // 0.8.2.2 - Added support for automatic one-level Click event exposing
+            get { return new Version(0, 8, 2, 2); }
         }
 
         #endregion

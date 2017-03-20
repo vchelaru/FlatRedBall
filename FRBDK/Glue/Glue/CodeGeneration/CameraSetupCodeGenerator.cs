@@ -88,6 +88,9 @@ namespace FlatRedBall.Glue.CodeGeneration
             ICodeBlock classContents = new CodeBlockBase(null);
             classContents.TabCount = 2;
 
+            classContents.Line("// This is a generated file created by Glue. To change this file, edit the camera settings in Glue.");
+            classContents.Line("// To access the camera settings, push the camera icon.");
+
             GenerateSetupCameraMethod(classContents);
             GenerateResetCameraMethod(classContents);
 
