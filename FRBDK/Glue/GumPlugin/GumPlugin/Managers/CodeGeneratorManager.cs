@@ -57,10 +57,28 @@ namespace GumPlugin.Managers
 
         public void GenerateDueToFileChange(string file)
         {
-            var changedElement = GetElementFromFile(file);
+            string extension = FileManager.GetExtension(file);
+            if(extension == "gumx")
+            {
+                foreach(var screen in ObjectFinder.Self.GumProjectSave.Screens)
+                {
+                    GenerateCodeFor(screen);
+                }
+                foreach (var component in ObjectFinder.Self.GumProjectSave.Components)
+                {
+                    GenerateCodeFor(component);
+                }
+                foreach (var standard in ObjectFinder.Self.GumProjectSave.StandardElements)
+                {
+                    GenerateCodeFor(standard);
+                }
+            }
+            else
+            {
+                var changedElement = GetElementFromFile(file);
 
-            GenerateDueToFileChange(changedElement);
-
+                GenerateDueToFileChange(changedElement);
+            }
         }
 
         private void GenerateDueToFileChange(ElementSave changedElement)
@@ -207,6 +225,11 @@ namespace GumPlugin.Managers
         /// <returns></returns>
         public bool GenerateCodeFor(Gum.DataTypes.ElementSave element, CodeGenerationSavingBehavior savingBehavior = CodeGenerationSavingBehavior.AlwaysSave)
         {
+            if(element == null)
+            {
+                throw new ArgumentNullException(nameof(element));
+            }
+
             bool wasSaved = false;
 
             string directoryToSave = GumRuntimesFolder;
