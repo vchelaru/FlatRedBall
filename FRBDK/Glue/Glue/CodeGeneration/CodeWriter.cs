@@ -1512,33 +1512,40 @@ namespace FlatRedBall.Glue.Parsing
 
         internal static string ReplaceNamespace(string fileContents, string newNamespace, out string oldNamespace)
         {
-            int indexOfNamespaceStart = fileContents.IndexOf("namespace ") + "namespace ".Length;
-
-            int indexOfSlashR = fileContents.IndexOf("\r", indexOfNamespaceStart);
-            int indexOfSlashN = fileContents.IndexOf("\n", indexOfNamespaceStart);
-
-            int indexOfEndOfNamespace = indexOfNamespaceStart;
-
-            if (indexOfSlashR == -1)
+            int indexOfNamespaceKeyword = fileContents.IndexOf("namespace ");
+            oldNamespace = "";
+            if(indexOfNamespaceKeyword != -1)
             {
-                indexOfEndOfNamespace = indexOfSlashN;
+
+
+                int indexOfNamespaceStart = indexOfNamespaceKeyword + "namespace ".Length;
+
+                int indexOfSlashR = fileContents.IndexOf("\r", indexOfNamespaceStart);
+                int indexOfSlashN = fileContents.IndexOf("\n", indexOfNamespaceStart);
+
+                int indexOfEndOfNamespace = indexOfNamespaceStart;
+
+                if (indexOfSlashR == -1)
+                {
+                    indexOfEndOfNamespace = indexOfSlashN;
+                }
+                else if(indexOfSlashN == -1)
+                {
+                    indexOfEndOfNamespace = indexOfSlashR;
+                }
+                else
+                {
+                    indexOfEndOfNamespace = System.Math.Min(indexOfSlashR, indexOfSlashN);
+                }
+
+                oldNamespace = fileContents.Substring(indexOfNamespaceStart, indexOfEndOfNamespace - indexOfNamespaceStart);
+
+
+                fileContents = fileContents.Remove(indexOfNamespaceStart, indexOfEndOfNamespace - indexOfNamespaceStart);
+
+                fileContents = fileContents.Insert(indexOfNamespaceStart, newNamespace);
+
             }
-            else if(indexOfSlashN == -1)
-            {
-                indexOfEndOfNamespace = indexOfSlashR;
-            }
-            else
-            {
-                indexOfEndOfNamespace = System.Math.Min(indexOfSlashR, indexOfSlashN);
-            }
-
-            oldNamespace = fileContents.Substring(indexOfNamespaceStart, indexOfEndOfNamespace - indexOfNamespaceStart);
-
-
-            fileContents = fileContents.Remove(indexOfNamespaceStart, indexOfEndOfNamespace - indexOfNamespaceStart);
-
-            fileContents = fileContents.Insert(indexOfNamespaceStart, newNamespace);
-
             return fileContents;
         }
 

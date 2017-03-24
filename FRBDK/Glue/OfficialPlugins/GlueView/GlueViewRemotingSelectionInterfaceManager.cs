@@ -148,7 +148,12 @@ namespace OfficialPlugins.GlueView
         {
             try
             {
-                OutInterface.ShowElement(EditorLogicSnapshot.CurrentElement.Name);
+                var element = EditorLogicSnapshot.CurrentElement;
+
+                if(element != null)
+                {
+                    OutInterface.ShowElement(element.Name);
+                }
             }
             catch (Exception e)
             {

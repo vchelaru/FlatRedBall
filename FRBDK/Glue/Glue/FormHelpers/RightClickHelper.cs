@@ -486,15 +486,19 @@ namespace FlatRedBall.Glue.FormHelpers
         public static void Initialize()
         {
             mMoveToTop = new ToolStripMenuItem("^^ Move To Top");
+            mMoveToTop.ShortcutKeyDisplayString = "Alt+Shift+Up";
             mMoveToTop.Click += new System.EventHandler(MoveToTopClick);
 
             mMoveUp = new ToolStripMenuItem("^ Move Up");
+            mMoveUp.ShortcutKeyDisplayString = "Alt+Up";
             mMoveUp.Click += new System.EventHandler(MoveUpClick);
 
             mMoveDown = new ToolStripMenuItem("v Move Down");
+            mMoveDown.ShortcutKeyDisplayString = "Alt+Down";
             mMoveDown.Click += new System.EventHandler(MoveDownClick);
 
             mMoveToBottom = new ToolStripMenuItem("vv Move To Bottom");
+            mMoveToBottom.ShortcutKeyDisplayString = "Alt+Shift+Down";
             mMoveToBottom.Click += new System.EventHandler(MoveToBottomClick);
 
             mMakeRequiredAtStartup = new ToolStripMenuItem("Make Required at StartUp");
@@ -2469,6 +2473,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
         private static void PostMoveActivity(TreeNode namedObjectTreeNode)
         {
+            // do this before refreshing the tree nodes
+            var tag = namedObjectTreeNode.Tag;
+
             EditorLogic.CurrentElement.RefreshStatesToCustomVariables();
 
             UpdateCurrentElementTreeNode();
@@ -2494,8 +2501,15 @@ namespace FlatRedBall.Glue.FormHelpers
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementToRegen);
             }
 
-
-            ElementViewWindow.SelectedNode = namedObjectTreeNode;
+            // I think the variables are complete remade. I could make it preserve them, but it's easier to do this:
+            if(tag is CustomVariable)
+            {
+                GlueState.Self.CurrentCustomVariable = tag as CustomVariable;
+            }
+            else
+            {
+                ElementViewWindow.SelectedNode = namedObjectTreeNode;
+            }
 
             GluxCommands.Self.SaveGlux();
         }

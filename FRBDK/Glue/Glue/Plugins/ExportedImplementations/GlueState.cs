@@ -137,6 +137,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             {
                 return EditorLogic.CurrentCustomVariable;
             }
+            set
+            {
+                EditorLogic.CurrentCustomVariable = value;
+            }
         }
 
         public States.Clipboard Clipboard

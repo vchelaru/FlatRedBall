@@ -122,18 +122,22 @@ namespace GumPlugin.CodeGeneration
         internal void HandleGetEventSignatureArgs(FlatRedBall.Glue.SaveClasses.NamedObjectSave namedObject, FlatRedBall.Glue.Events.EventResponseSave eventResponseSave,
             out string type, out string args)
         {
+            bool isGumFile = false;
             type = null;
             args = null;
 
-            bool isFromFile = namedObject.SourceType == FlatRedBall.Glue.SaveClasses.SourceType.File;
-            string extension = null;
-            if(isFromFile && !string.IsNullOrEmpty(namedObject.SourceFile))
+            if(namedObject != null)
             {
-                extension = FileManager.GetExtension(namedObject.SourceFile);
+                bool isFromFile = namedObject.SourceType == FlatRedBall.Glue.SaveClasses.SourceType.File;
+                string extension = null;
+                if(isFromFile && !string.IsNullOrEmpty(namedObject.SourceFile))
+                {
+                    extension = FileManager.GetExtension(namedObject.SourceFile);
+                }
+
+
+                isGumFile = extension == "gusx" || extension == "gucx";
             }
-
-            bool isGumFile = extension == "gusx" || extension == "gucx";
-
             if(isGumFile)
             {
                 type = "FlatRedBall.Gui.WindowEvent";
