@@ -1148,10 +1148,14 @@ namespace FlatRedBall.Glue.FormHelpers
                         else if (EditorLogic.CurrentReferencedFile != null)
                         {
                             var toRemove = EditorLogic.CurrentReferencedFile;
+                            IElement element = GlueState.Self.CurrentElement;
+
                             // this could happen at the same time as file flushing, which can cause locks.  Therefore we need to add this as a task:
                             TaskManager.Self.AddSync(() =>
                             {
                                 GluxCommands.Self.RemoveReferencedFile(toRemove, filesToRemove, saveAndRegenerate);
+                                PluginManager.ReactToFileRemoved(element, toRemove);
+
                             },
                             "Remove file " + toRemove.ToString());
                             //ProjectManager.RemoveReferencedFile(EditorLogic.CurrentReferencedFile);
@@ -1171,7 +1175,10 @@ namespace FlatRedBall.Glue.FormHelpers
                         #region Else if is EventSave
                         else if (EditorLogic.CurrentEventResponseSave != null)
                         {
-                            EditorLogic.CurrentElement.Events.Remove(EditorLogic.CurrentEventResponseSave);
+                            var element = EditorLogic.CurrentElement;
+                            var eventResponse = EditorLogic.CurrentEventResponseSave;
+                            EditorLogic.CurrentElement.Events.Remove(eventResponse);
+                            PluginManager.ReactToEventResponseRemoved(element, eventResponse);
                             GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
                         }
                         #endregion

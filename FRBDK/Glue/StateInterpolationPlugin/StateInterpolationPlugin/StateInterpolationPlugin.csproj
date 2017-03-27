@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{F92B6138-992A-4C7E-B8A8-C2B6BBBDD9DE}</ProjectGuid>
+    <ProjectGuid>{D73086FC-957E-4E3F-97FA-742CBBF02EA6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>StateInterpolationPlugin</RootNamespace>

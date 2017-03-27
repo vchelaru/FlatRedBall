@@ -1,0 +1,37 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using FlatRedBall.Glue.Events;
+using FlatRedBall.Glue.SaveClasses;
+
+namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CleanupPlugin
+{
+    [Export(typeof(PluginBase))]
+    class MainPlugin : EmbeddedPlugin
+    {
+        EventRemovalLogic eventRemovalLogic;
+        FileRemovalLogic fileRemovalLogic;
+
+        public override void StartUp()
+        {
+            eventRemovalLogic = new EventRemovalLogic();
+            fileRemovalLogic = new FileRemovalLogic();
+
+            this.ReactToFileRemoved += HandleFileRemoved;
+            this.ReactToEventRemoved += HandleEventRemoved;
+        }
+
+        private void HandleEventRemoved(IElement element, EventResponseSave eventResponse)
+        {
+            eventRemovalLogic.HandleEventRemoved(element, eventResponse);
+        }
+
+        private void HandleFileRemoved(IElement element, ReferencedFileSave file)
+        {
+            fileRemovalLogic.HandleFileRemoved(element, file);
+        }
+    }
+}

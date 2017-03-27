@@ -97,6 +97,11 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("Clips Children");
             mVariableNamesToSkipForProperties.Add("Wraps Children");
 
+            // properties to skip because they're handled in the GUE
+            mVariableNamesToSkipForProperties.Add("Rotation");
+            mVariableNamesToSkipForProperties.Add("Wrap");
+
+
         }
 
         #endregion

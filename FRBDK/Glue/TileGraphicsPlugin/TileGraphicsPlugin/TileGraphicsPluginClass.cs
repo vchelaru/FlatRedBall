@@ -58,7 +58,10 @@ namespace TileGraphicsPlugin
             // 1.0.11 Adds automatic instantiation and collision setting from shapes
             // 1.0.11.1 Fixed bug where shape had a name
             // 1.0.11.2 Fixed rectangle polygon creation offset bug
-            get { return new Version(1, 0, 11, 2); }
+            // 1.0.11.3 
+            // - Fixed crash occurring when the Object layer .object property is null
+            // - Upped to .NET 4.5.2
+            get { return new Version(1, 0, 11, 3); }
         }
 
 

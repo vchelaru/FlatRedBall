@@ -186,5 +186,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         }
 
+        public void RemoveFromProjects(string absoluteFileName)
+        {
+            ProjectManager.RemoveItemFromAllProjects(absoluteFileName);
+        }
     }
 }

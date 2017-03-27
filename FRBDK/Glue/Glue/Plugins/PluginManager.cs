@@ -846,6 +846,48 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+        internal static void ReactToEventResponseRemoved(IElement element, EventResponseSave eventResponse)
+        {
+            foreach (PluginManager pluginManager in mInstances)
+            {
+                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToEventRemoved != null);
+                foreach (var plugin in plugins)
+                {
+                    var container = pluginManager.mPluginContainers[plugin];
+                    if (container.IsEnabled)
+                    {
+                        PluginBase plugin1 = plugin;
+                        PluginCommand(() =>
+                        {
+                            plugin1.ReactToEventRemoved(element, eventResponse);
+                        }, container, "Failed in ReactToEventResponseRemoved");
+                    }
+                }
+            }
+        }
+
+        internal static void ReactToFileRemoved(IElement element, ReferencedFileSave file)
+        {
+            foreach (PluginManager pluginManager in mInstances)
+            {
+                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToFileRemoved != null);
+                foreach (var plugin in plugins)
+                {
+                    var container = pluginManager.mPluginContainers[plugin];
+                    if (container.IsEnabled)
+                    {
+                        PluginBase plugin1 = plugin;
+                        PluginCommand(() =>
+                        {
+                            plugin1.ReactToFileRemoved(element, file);
+                        }, container, "Failed in ReactToFileRemoved");
+                    }
+                }
+            }
+        }
+
+
+
         internal static void ReactToNewObject(NamedObjectSave newObject)
         {
             foreach (PluginManager pluginManager in mInstances)

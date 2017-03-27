@@ -92,6 +92,9 @@ namespace FlatRedBall.Glue.Plugins
         public ReactToStateNameChangeDelegate ReactToStateNameChangeHandler { get; protected set; }
         public ReactToStateRemovedDelegate ReactToStateRemovedHandler { get; protected set; }
 
+        public Action<IElement, ReferencedFileSave> ReactToFileRemoved { get; protected set; }
+        public Action<IElement, EventResponseSave> ReactToEventRemoved { get; protected set; }
+
         public Action<string> SelectItemInCurrentFile { get; protected set; }
 
         public Action ReactToLoadedGluxEarly { get; protected set; }

@@ -23,5 +23,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void AddDirectory(string folderName, TreeNode treeNodeToAddTo);
 
         string MakeAbsolute(string relativeFileName, bool forceAsContent);
+
+        void RemoveFromProjects(string absoluteFileName);
     }
 }

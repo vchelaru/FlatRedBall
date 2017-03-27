@@ -208,11 +208,11 @@ namespace FlatRedBall.Glue
 
                 if (rfs != null)
                 {
-                    absoluteFileName = FileManager.RelativeDirectory + GetFullDataFileNameFor(rfs);
+                    absoluteFileName = Plugins.ExportedImplementations.GlueState.Self.CurrentGlueProjectDirectory + GetFullDataFileNameFor(rfs);
                 }
                 else
                 {
-                    absoluteFileName = FileManager.RelativeDirectory + "DataTypes/" + className + ".Generated.cs";
+                    absoluteFileName = Plugins.ExportedImplementations.GlueState.Self.CurrentGlueProjectDirectory + "DataTypes/" + className + ".Generated.cs";
                 }
 
                 CodeWriter.SaveFileContents(codeContent.ToString(), absoluteFileName, true);

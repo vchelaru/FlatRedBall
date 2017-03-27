@@ -246,6 +246,9 @@
     <Compile Include="CodeGeneration\GlobalContentCodeGeneratorBase.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Managers\HotkeyManager.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\CleanupPlugin\EventRemovalLogic.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\CleanupPlugin\FileRemovalLogic.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\CleanupPlugin\MainPlugin.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\IDrawableBatch\IDrawableBatchCodeGenerator.cs" />
     <Compile Include="CodeGeneration\InheritanceCodeWriter.cs" />
     <Compile Include="CodeGeneration\IVisibleCodeGenerator.cs" />
