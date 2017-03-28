@@ -26,7 +26,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CleanupPlugin
             string fileName = element.Name + ".Generated.Event.cs";
             string fullFileName = ProjectManager.ProjectBase.Directory + fileName;
 
-            GlueCommands.Self.ProjectCommands.RemoveFromProjects(fileName);
+            GlueCommands.Self.ProjectCommands.RemoveFromProjects(fullFileName);
             
         }
     }
