@@ -110,7 +110,14 @@ namespace StateInterpolationPlugin
             return toReturn;
         }
 
-
+        public static TweenerHolder Tween(this PositionedObject positionedObject, string property, float to,
+            float during, InterpolationType interpolation, Easing easing)
+        {
+            TweenerHolder toReturn = new TweenerHolder();
+            toReturn.Caller = positionedObject;
+            toReturn.Tween(property, to, during, interpolation, easing);
+            return toReturn;
+        }
     }
 
     public struct TweenerHolder : ITweenerTween, ITweenerTo, ITweenerDuring, ITweenerUsing
@@ -120,25 +127,55 @@ namespace StateInterpolationPlugin
         internal float ValueToSet;
         internal double TimeToTake;
 
+        public Tweener Tween(string member, float value, float time, InterpolationType interpolation, Easing easing)
+        {
+            MemberToSet = member;
 
+            object currentValueAsObject =
+                LateBinder.GetValueStatic(Caller, member);
+
+            if (currentValueAsObject is float)
+            {
+                float currentValue = (float)currentValueAsObject;
+                Tweener tweener = new Tweener(currentValue, value, time,
+                    interpolation, easing);
+
+                tweener.PositionChanged = HandlePositionSet;
+
+                tweener.Owner = Caller;
+
+                TweenerManager.Self.Add(tweener);
+                tweener.Start();
+                return tweener;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+        
+        [Obsolete("Use Tween(string, float, float, InterpolationType, Easing) instead.")]
         public ITweenerTo Tween(string member)
         {
             this.MemberToSet = member;
             return this;
         }
 
+        [Obsolete("Use Tween(string, float, float, InterpolationType, Easing) instead.")]
         public ITweenerDuring To(float value)
         {
             this.ValueToSet = value;
             return this;
         }
 
+        [Obsolete("Use Tween(string, float, float, InterpolationType, Easing) instead.")]
         public ITweenerUsing During(double time)
         {
             TimeToTake = time;
             return this;
         }
 
+        [Obsolete("Use Tween(string, float, float, InterpolationType, Easing) instead.")]
         public Tweener Using(InterpolationType interpolation, Easing easing)
         {
             object currentValueAsObject =
@@ -168,9 +205,6 @@ namespace StateInterpolationPlugin
         {
             LateBinder.SetValueStatic(Caller, MemberToSet, newPosition);
         }
-
-
-
     }
 
     public interface ITweenerTween
