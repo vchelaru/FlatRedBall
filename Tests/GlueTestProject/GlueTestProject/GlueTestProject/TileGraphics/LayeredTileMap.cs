@@ -395,15 +395,18 @@ namespace FlatRedBall.TileGraphics
 
             foreach (var objectLayer in tms.objectgroup)
             {
-                foreach (var objectInstance in objectLayer.@object)
+                if (objectLayer.@object != null)
                 {
-                    if (objectInstance.properties.Count != 0)
+                    foreach (var objectInstance in objectLayer.@object)
                     {
-                        string name = objectInstance.Name;
-                        var properties = objectInstance.properties;
+                        if (objectInstance.properties.Count != 0)
+                        {
+                            string name = objectInstance.Name;
+                            var properties = objectInstance.properties;
 
-                        AddPropertiesToMap(tms, toReturn, properties, name);
+                            AddPropertiesToMap(tms, toReturn, properties, name);
 
+                        }
                     }
                 }
             }

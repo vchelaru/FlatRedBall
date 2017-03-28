@@ -74,11 +74,11 @@ namespace FlatRedBall.Gum
         {
             get
             {
-                throw new NotImplementedException();
+                return 0;
             }
             set
             {
-                throw new NotImplementedException();
+                throw new InvalidOperationException();
             }
         }
 
@@ -86,11 +86,11 @@ namespace FlatRedBall.Gum
         {
             get
             {
-                throw new NotImplementedException();
+                return 0;
             }
             set
             {
-                throw new NotImplementedException();
+                throw new InvalidOperationException();
             }
         }
 

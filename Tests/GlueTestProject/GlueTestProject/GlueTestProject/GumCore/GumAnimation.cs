@@ -41,7 +41,7 @@ namespace FlatRedBall.Gum.Animation
 
         public event Action EndReached;
 
-        Func<IEnumerable<Instruction>> getInstructionsFunc;
+        Func<object, IEnumerable<Instruction>> getInstructionsFunc;
 
         public object WhatStartedPlayingThis
         {
@@ -55,7 +55,7 @@ namespace FlatRedBall.Gum.Animation
             private set;
         }
 
-        public GumAnimation(float length, Func<IEnumerable<Instruction>> getInstructionsFunc)
+        public GumAnimation(float length, Func<object, IEnumerable<Instruction>> getInstructionsFunc)
         {
             this.getInstructionsFunc = getInstructionsFunc;
             this.Length = length;
@@ -114,9 +114,8 @@ namespace FlatRedBall.Gum.Animation
                 }
             }
 
-            foreach (var instruction in getInstructionsFunc())
+            foreach (var instruction in getInstructionsFunc(this))
             {
-                instruction.Target = this;
                 InstructionManager.Instructions.Add(instruction);
             }
 

@@ -12,6 +12,8 @@ namespace GlueTestProject
 {
 	internal static class CameraSetup
 	{
+			// This is a generated file created by Glue. To change this file, edit the camera settings in Glue.
+			// To access the camera settings, push the camera icon.
 			internal static void SetupCamera (Camera cameraToSetUp, GraphicsDeviceManager graphicsDeviceManager)
 			{
 				SetupCamera(cameraToSetUp, graphicsDeviceManager, 800, 600);

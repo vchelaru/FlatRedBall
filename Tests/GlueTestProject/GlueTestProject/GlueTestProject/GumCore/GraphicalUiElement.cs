@@ -1221,6 +1221,8 @@ namespace Gum.Wireframe
 
 
                         UpdatePosition(parentWidth, parentHeight);
+
+                        mContainedObjectAsIpso.Rotation = this.GetAbsoluteRotation();
                     }
 
 

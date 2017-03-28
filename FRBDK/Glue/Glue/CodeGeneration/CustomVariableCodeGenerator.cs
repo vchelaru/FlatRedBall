@@ -373,9 +373,11 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 string value = "value";
 
-                if (!string.IsNullOrEmpty(customVariable.OverridingPropertyType) &&
+                bool hasCustomType = !string.IsNullOrEmpty(customVariable.OverridingPropertyType) &&
                     // If the overriding type is the same as the variable type then no conversion can be performed
-                    customVariable.OverridingPropertyType != customVariable.Type)
+                    customVariable.OverridingPropertyType != customVariable.Type;
+
+                if (hasCustomType)
                 {
                     value = TypeConverterHelper.Convert(
                         customVariable, GetterOrSetter.Setter, value);
@@ -392,7 +394,15 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     setter.Line("var oldValue = " + leftSide + ";");
                 }
-                setter.Line(leftSide + " = " + value + ";");
+
+                if(hasCustomType && string.IsNullOrEmpty(value))
+                {
+                    setter.Line($"throw new System.Exception(\"Could not convert from {customVariable.Type} to {customVariable.OverridingPropertyType}\");");
+                }
+                else
+                {
+                    setter.Line(leftSide + " = " + value + ";");
+                }
 
                 if (!string.IsNullOrEmpty(relativeVersionOfProperty))
                 {
@@ -504,7 +514,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 else
                 {
-                    getter.Line("throw new System.Exception();");
+                    getter.Line($"throw new System.Exception(\"Glue can't convert from {customVariable.Type} to {customVariable.OverridingPropertyType}\");");
                 }
 
 

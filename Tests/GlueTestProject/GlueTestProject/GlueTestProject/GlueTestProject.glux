@@ -12387,6 +12387,26 @@
           <Properties>
             <PropertySave>
               <Name>Type</Name>
+              <ValueAsString>Texture2D</ValueAsString>
+            </PropertySave>
+            <PropertySave>
+              <Name>OverridingPropertyType</Name>
+              <ValueAsString>Microsoft.Xna.Framework.Graphics.Texture2D</ValueAsString>
+            </PropertySave>
+            <PropertySave>
+              <Name>TypeConverter</Name>
+              <ValueAsString>&lt;default&gt;</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>SpriteInstanceTextureAsTexture2D</Name>
+          <Type>Texture2D</Type>
+          <SourceObject>SpriteInstance</SourceObject>
+          <SourceObjectProperty>Texture</SourceObjectProperty>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
               <ValueAsString>BorderSides</ValueAsString>
             </PropertySave>
           </Properties>
@@ -12555,6 +12575,18 @@
           <SourceObject>CircleObject</SourceObject>
           <SourceObjectProperty>Name</SourceObjectProperty>
         </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>Texture2D</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>SpriteObjectTexture</Name>
+          <Type>Texture2D</Type>
+          <SourceObject>SpriteObject</SourceObject>
+          <SourceObjectProperty>Texture</SourceObjectProperty>
+        </CustomVariable>
       </CustomVariables>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\TunneledVariableEntity</Name>
@@ -12608,6 +12640,21 @@
           <SourceType>Entity</SourceType>
           <SourceClassType>Entities\StateEntityWithoutCurrentStateVariable</SourceClassType>
           <InstanceName>StateEntityWithoutCurrentStateVariableInstance</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>TextureScale</Member>
+            <ValueAsFloat>1</ValueAsFloat>
+          </CustomProperty>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>Sprite</SourceClassType>
+          <InstanceName>SpriteInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
