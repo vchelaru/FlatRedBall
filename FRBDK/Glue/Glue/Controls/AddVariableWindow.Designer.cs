@@ -157,7 +157,7 @@
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(91, 19);
             this.label7.TabIndex = 7;
-            this.label7.Text = "Variable Type:";
+            this.label7.Text = "Converted Type:";
             // 
             // TypeConverterComboBox
             // 
