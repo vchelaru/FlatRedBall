@@ -41,8 +41,8 @@ namespace GumPlugin.CodeGeneration
             {
                 foreach(var animation in animations.Animations)
                 {
-                    GenerateEnumerableFor(context, currentBlock, animation, AbsoluteOrRelative.Absolute);
-                    GenerateEnumerableFor(context, currentBlock, animation, AbsoluteOrRelative.Relative);
+                    GenerateGetEnumerableFor(context, currentBlock, animation, AbsoluteOrRelative.Absolute);
+                    GenerateGetEnumerableFor(context, currentBlock, animation, AbsoluteOrRelative.Relative);
 
                     GenerateAnimationMember(context, currentBlock, animation, AbsoluteOrRelative.Absolute);
                     GenerateAnimationMember(context, currentBlock, animation, AbsoluteOrRelative.Relative);
@@ -112,7 +112,7 @@ namespace GumPlugin.CodeGeneration
             var ifBlock = currentBlock.If($"{fieldName} == null");
             {
                 ifBlock.Line(
-                    $"{fieldName} = new FlatRedBall.Gum.Animation.GumAnimation({lengthAsString}, () => {referencedInstructionProperty});");
+                    $"{fieldName} = new FlatRedBall.Gum.Animation.GumAnimation({lengthAsString}, {referencedInstructionProperty});");
 
                 foreach(var namedEvent in animation.Events)
                 {
@@ -181,7 +181,7 @@ namespace GumPlugin.CodeGeneration
             return max;
         }
 
-        private void GenerateEnumerableFor(StateCodeGeneratorContext context, ICodeBlock currentBlock, AnimationSave animation, AbsoluteOrRelative absoluteOrRelative)
+        private void GenerateGetEnumerableFor(StateCodeGeneratorContext context, ICodeBlock currentBlock, AnimationSave animation, AbsoluteOrRelative absoluteOrRelative)
         {
             string animationType = "VariableState";
 
@@ -197,9 +197,12 @@ namespace GumPlugin.CodeGeneration
             // Instructions used to be public - the user would grab them and add them to the InstructionManager,
             // but now everything is encased in an Animation object which handles stopping itself and provides a simple
             // Play method.
+
+            const string signature = "private System.Collections.Generic.IEnumerable<FlatRedBall.Instructions.Instruction>";
+
             if (animation.States.Count == 0 && animation.Animations.Count == 0)
             {
-                currentBlock = currentBlock.Property("private System.Collections.Generic.IEnumerable<FlatRedBall.Instructions.Instruction>", propertyName).Get();
+                currentBlock = currentBlock.Function(signature, propertyName, "object target");
 
                 currentBlock.Line("yield break;");
 
@@ -207,7 +210,7 @@ namespace GumPlugin.CodeGeneration
             else if(absoluteOrRelative == AbsoluteOrRelative.Relative && animation.States.Count < 2 && animation.Animations.Count == 0)
             {
 
-                currentBlock = currentBlock.Property("private System.Collections.Generic.IEnumerable<FlatRedBall.Instructions.Instruction>", propertyName).Get();
+                currentBlock = currentBlock.Function(signature, propertyName, "object target");
 
                 currentBlock.Line("yield break;");
             }
@@ -225,7 +228,7 @@ namespace GumPlugin.CodeGeneration
                     }
                 }
 
-                currentBlock = currentBlock.Property("private System.Collections.Generic.IEnumerable<FlatRedBall.Instructions.Instruction>", propertyName).Get();
+                currentBlock = currentBlock.Function(signature, propertyName, "object target");
 
                 GenerateOrderedStateAndSubAnimationCode(context, currentBlock, animation, animationType, absoluteOrRelative);
 
@@ -234,7 +237,7 @@ namespace GumPlugin.CodeGeneration
                     currentBlock = currentBlock.Block();
 
                     currentBlock.Line("var toReturn = new FlatRedBall.Instructions.DelegateInstruction(  " + 
-                        "() => FlatRedBall.Instructions.InstructionManager.Instructions.AddRange(this." + propertyName + "));");
+                        "() => FlatRedBall.Instructions.InstructionManager.Instructions.AddRange(this." + propertyName + "(target)));");
                     string executionTime = "0.0f";
 
                     if(animation.States.Count != 0)
@@ -243,6 +246,7 @@ namespace GumPlugin.CodeGeneration
                     }
 
                     currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + executionTime + ";");
+                    currentBlock.Line("toReturn.Target = target;");
 
                     currentBlock.Line("yield return toReturn;");
                     currentBlock = currentBlock.End();
@@ -408,6 +412,8 @@ namespace GumPlugin.CodeGeneration
                 string previousStateTime = ToFloatString(previousState.Time);
 
                 currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + previousStateTime + ";");
+                currentBlock.Line("toReturn.Target = target;");
+
                 currentBlock.Line("yield return toReturn;");
                 
             }
@@ -445,6 +451,7 @@ namespace GumPlugin.CodeGeneration
                 currentBlock.Line("var toReturn = new FlatRedBall.Instructions.DelegateInstruction( ()=> this." + variableStateName + " = " +
                     animationType + "." + enumValue + ");");
                 currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime;");
+                currentBlock.Line("toReturn.Target = target;");
 
             }
             else
@@ -514,18 +521,8 @@ namespace GumPlugin.CodeGeneration
                 var line = "var toReturn = new FlatRedBall.Instructions.DelegateInstruction(  () => this.InterpolateTo(" +
                     string.Format("{0}, {1}, {2}, {3}, {4}));", toState, interpolationTime, interpolationType, easing, animationName);
 
-                // vic says - 
-                // For some reason I'm getting some weird code generation issues when generating one of my objects for the racing game
-                // I don't have perfect repro steps, so I wanted to catch it in the debugger:
-
-                //var toReturn = new FlatRedBall.Instructions.DelegateInstruction(  () => this.InterpolateTo(VariableState.Shown, 0.25f, FlatRedBall.Glue.StateInterpolation.InterpolationType.Linear, FlatRedBall.Glue.StateInterpolation.Easing.Out, FadeInAnimation));
-                if (line.Contains("var toReturn = new FlatRedBall.Instructions.DelegateInstruction(  () => this.InterpolateTo(VariableState.Shown, 0.25f, FlatRedBall.Glue.StateInterpolation.InterpolationType.Linear, FlatRedBall.Glue.StateInterpolation.Easing.Out, FadeInAnimation));"))
-                {
-                    int m = 3;
-                }
-
-                
                 currentBlock.Line(line);
+                currentBlock.Line("toReturn.Target = target;");
                 currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + previousStateTime + ";");
 
             }
