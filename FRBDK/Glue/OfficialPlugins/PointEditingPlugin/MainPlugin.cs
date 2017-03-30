@@ -44,8 +44,9 @@ namespace OfficialPlugins.PointEditingPlugin
 
             if (shouldShow)
             {
-                shouldShow = namedObjectSave.SourceClassType == "Polygon";
-
+                shouldShow = 
+                    namedObjectSave.SourceClassType == "Polygon" ||
+                    namedObjectSave.SourceClassType == "FlatRedBall.Math.Geometry.Polygon";
             }
 
             if (shouldShow)

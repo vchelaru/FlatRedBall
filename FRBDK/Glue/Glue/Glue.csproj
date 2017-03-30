@@ -244,6 +244,9 @@
     <Compile Include="CodeGeneration\EventCodeGenerator.cs" />
     <Compile Include="CodeGeneration\CodeGeneratorIElement.cs" />
     <Compile Include="CodeGeneration\GlobalContentCodeGeneratorBase.cs" />
+    <Compile Include="Controls\AddEntityWindow.xaml.cs">
+      <DependentUpon>AddEntityWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Managers\HotkeyManager.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\CleanupPlugin\EventRemovalLogic.cs" />
@@ -1244,6 +1247,10 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\AddEntityWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ToolbarControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,0 +1,42 @@
+﻿<Window x:Class="FlatRedBall.Glue.Controls.AddEntityWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
+             WindowStyle="ToolWindow"
+             mc:Ignorable="d" 
+             SizeToContent="Height"
+             Width="220">
+    <StackPanel>
+        <TextBlock Margin="3,0,3,0">Enter a name for the new entity:</TextBlock>
+        <TextBox x:Name="TextBox" Margin="3,0,3,0" KeyDown="TextBox_KeyDown" TextChanged="TextBox_TextChanged"></TextBox>
+        <TextBlock x:Name="FailureTextBlock" Margin="3,0,3,3" Foreground="Red" Visibility="Collapsed" TextWrapping="Wrap">Failure Message</TextBlock>
+        <GroupBox Header="Visuals">
+            <StackPanel>
+                <CheckBox x:Name="SpriteCheckBox">Sprite</CheckBox>
+                <CheckBox x:Name="TextCheckBox">Text</CheckBox>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Collisions">
+            <StackPanel>
+                <CheckBox x:Name="CircleCheckBox" Checked="CircleCheckBox_Checked">Circle</CheckBox>
+                <CheckBox x:Name="AxisAlignedRectangleCheckBox" Checked="AxisAlignedRectangleCheckBox_Checked">AxisAlignedRectangle</CheckBox>
+                <CheckBox x:Name="PolygonCheckBox" Checked="PolygonCheckBox_Checked">Polygon (Rectangle)</CheckBox>
+            </StackPanel>            
+        </GroupBox>
+        <GroupBox Header="Interfaces">
+            <StackPanel>
+                <CheckBox x:Name="IVisibleCheckBox">IVisible</CheckBox>
+                <CheckBox x:Name="IClickableCheckBox">IClickable</CheckBox>
+                <CheckBox x:Name="IWindowCheckBox" Checked="IWindowCheckBox_Checked">IWindow</CheckBox>
+                <CheckBox x:Name="ICollidableCheckBox" Checked="ICollidableCheckBox_Checked">ICollidable</CheckBox>
+            </StackPanel>
+        </GroupBox>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Width="60" Click="OkClickInternal">OK</Button>
+            <Button Margin="5,0,0,0" Width="60" Click="CancelClickInternal" Content="Cancel"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

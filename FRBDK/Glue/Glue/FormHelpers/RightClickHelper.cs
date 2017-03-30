@@ -34,7 +34,8 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Factories;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Managers;
-
+using FlatRedBall.Glue.ViewModels;
+using Microsoft.Xna.Framework;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -1584,45 +1585,141 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
                 {
-                    TextInputWindow tiw = new TextInputWindow();
-                    tiw.DisplayText = "Enter a name for the new Entity";
-                    tiw.Text = "New Entity";
+                    AddEntityWindow window = new Controls.AddEntityWindow();
+                    var result = window.ShowDialog();
 
-                    CheckBox is2DCheckBox = new CheckBox();
-                    is2DCheckBox.Text = "Is 2D";
-                    is2DCheckBox.Checked = true;
-                    is2DCheckBox.Margin = new Padding(2, 0, 0, 0);
-
-                    tiw.AddControl(is2DCheckBox);
-
-                    if (tiw.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
+                    if(result == true)
                     {
-
-                        string entityName = tiw.Result;
+                        string entityName = window.EnteredText;
 
                         string whyIsntValid;
-                        string directory = "";
 
-                        if (EditorLogic.CurrentTreeNode.IsDirectoryNode())
-                        {
-                            directory = EditorLogic.CurrentTreeNode.GetRelativePath();
-                            directory = directory.Replace('/', '\\');
-                        }
-
-                        if (!NameVerifier.IsEntityNameValid(tiw.Result, null, out whyIsntValid))
+                        if (!NameVerifier.IsEntityNameValid(entityName, null, out whyIsntValid))
                         {
                             MessageBox.Show(whyIsntValid);
                         }
                         else
                         {
-                            var newElement = 
-                                GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(directory + tiw.Result, is2DCheckBox.Checked);
+                            string directory = "";
 
-                            GlueState.Self.CurrentElement = newElement;
+                            if (EditorLogic.CurrentTreeNode.IsDirectoryNode())
+                            {
+                                directory = EditorLogic.CurrentTreeNode.GetRelativePath();
+                                directory = directory.Replace('/', '\\');
+                            }
+                            CreateEntityAndObjects(window, entityName, directory);
 
                         }
                     }
                 }
+            }
+        }
+
+        private static void CreateEntityAndObjects(AddEntityWindow window, string entityName, string directory)
+        {
+            var gluxCommands = GlueCommands.Self.GluxCommands;
+
+            var newElement = gluxCommands.EntityCommands.AddEntity(
+                directory + entityName, is2D: true);
+
+            GlueState.Self.CurrentElement = newElement;
+
+            if (window.SpriteChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "SpriteInstance";
+                addObjectViewModel.SourceClassType = "Sprite";
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            if (window.TextChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "TextInstance";
+                addObjectViewModel.SourceClassType = "Text";
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            if (window.CircleChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "CircleInstance";
+                addObjectViewModel.SourceClassType = "Circle";
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            if (window.AxisAlignedRectangleChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
+                addObjectViewModel.SourceClassType = "AxisAlignedRectangle";
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            bool needsRefreshAndSave = false;
+
+            if (window.PolygonChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ObjectName = "PolygonInstance";
+                addObjectViewModel.SourceClassType = "Polygon";
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+
+                var nos = gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                var instructions = new CustomVariableInNamedObject();
+                instructions.Member = "Points";
+                var points = new List<Vector2>();
+                points.Add(new Vector2(-16, 16));
+                points.Add(new Vector2( 16, 16));
+                points.Add(new Vector2( 16,-16));
+                points.Add(new Vector2(-16,-16));
+                points.Add(new Vector2(-16, 16));
+                instructions.Value = points;
+
+                nos.InstructionSaves.Add(instructions);
+
+                needsRefreshAndSave = true;
+                
+                GlueState.Self.CurrentElement = newElement;
+            }
+
+            if(window.IVisibleChecked)
+            {
+                newElement.ImplementsIVisible = true;
+                needsRefreshAndSave = true;
+            }
+
+            if(window.IClickableChecked)
+            {
+                newElement.ImplementsIClickable = true;
+                needsRefreshAndSave = true;
+            }
+
+            if(window.IWindowChecked)
+            {
+                newElement.ImplementsIWindow = true;
+                needsRefreshAndSave = true;
+            }
+
+            if(window.ICollidableChecked)
+            {
+                newElement.ImplementsICollidable = true;
+                needsRefreshAndSave = true;
+            }
+
+            if(needsRefreshAndSave)
+            {
+                MainGlueWindow.Self.PropertyGrid.Refresh();
+                ElementViewWindow.GenerateSelectedElementCode();
+                GluxCommands.Self.SaveGlux();
             }
         }
 
