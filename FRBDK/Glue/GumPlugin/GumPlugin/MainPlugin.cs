@@ -65,10 +65,10 @@ namespace GumPlugin
             // 0.8.0.7 - Added GumAnimation.IsPlaying() method.
             // 0.8.2.2 - Added support for automatic one-level Click event exposing
             // 0.8.2.3 - Fixed Rotation on Sprites not rotating about their origin
-            // 0.8.2.4 
+            // 0.8.3.0 
             // - Calling Stop on a looping animation now properly stops it
-            // - Still in progress...
-            get { return new Version(0, 8, 2, 4); }
+            // - Line rectangles now render properly in components 
+            get { return new Version(0, 8, 3, 0); }
         }
 
         #endregion

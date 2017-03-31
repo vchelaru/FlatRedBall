@@ -20,6 +20,7 @@ using EditorObjects.SaveClasses;
 using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.ViewModels;
+using FlatRedBall.Glue.SetVariable;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -792,6 +793,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 oldValue = instruction.Value;
             }
             NamedObjectPropertyGridDisplayer.SetVariableOn(nos, memberName, memberType, value);
+
+            EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                memberName, nos.InstanceName, oldValue);
 
 
             PluginManager.ReactToChangedProperty(memberName, oldValue);

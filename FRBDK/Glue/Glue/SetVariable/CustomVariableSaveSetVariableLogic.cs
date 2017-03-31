@@ -13,10 +13,10 @@ using FlatRedBall.Glue.SaveClasses.Helpers;
 
 namespace FlatRedBall.Glue.SetVariable
 {
-    internal class CustomVariableSaveSetVariableLogic
+    public class CustomVariableSaveSetVariableLogic
     {
 
-        internal void ReactToCustomVariableChangedValue(string changedMember, CustomVariable customVariable, object oldValue)
+        public void ReactToCustomVariableChangedValue(string changedMember, CustomVariable customVariable, object oldValue)
         {
 
             #region Name

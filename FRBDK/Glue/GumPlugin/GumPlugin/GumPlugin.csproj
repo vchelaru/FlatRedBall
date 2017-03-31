@@ -87,6 +87,9 @@
     <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\IStateContainer.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\IStateContainer.cs</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\InvisibleRenderable.cs">
+      <Link>Embedded\LibraryFiles\RenderingLibrary\InvisibleRenderable.cs</Link>
+    </EmbeddedResource>
     <Compile Include="CodeGeneration\BehaviorCodeGenerator.cs" />
     <Compile Include="CodeGeneration\EventCodeGenerator.cs" />
     <Compile Include="DataGeneration\BehaviorGenerator.cs" />

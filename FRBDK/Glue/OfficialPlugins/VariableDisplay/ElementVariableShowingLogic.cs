@@ -10,6 +10,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Utilities;
 using WpfDataUi;
 using WpfDataUi.DataTypes;
+using FlatRedBall.Glue.SetVariable;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -65,21 +66,26 @@ namespace OfficialPlugins.VariableDisplay
                 instanceMember.TypeConverter = converter;
 
                 instanceMember.CustomSetEvent += (intance, value) =>
-                    {
-                        instanceMember.IsDefault = false;
+                {
+                    instanceMember.IsDefault = false;
 
-                        RefreshLogic.IgnoreNextRefresh();
+                    RefreshLogic.IgnoreNextRefresh();
 
+                    var customVariable = element.GetCustomVariableRecursively(name);
 
-                        element.GetCustomVariableRecursively(name).DefaultValue = value;
+                    var oldValue = customVariable.DefaultValue;
 
+                    customVariable.DefaultValue = value;
 
-                        GlueCommands.Self.GluxCommands.SaveGlux();
+                    EditorObjects.IoC.Container.Get<CustomVariableSaveSetVariableLogic>().ReactToCustomVariableChangedValue(
+                        "DefaultValue", customVariable, oldValue);
 
-                        GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+                    GlueCommands.Self.GluxCommands.SaveGlux();
 
-                        GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-                    };
+                    GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                };
 
                 instanceMember.CustomGetEvent += (instance) =>
                     {

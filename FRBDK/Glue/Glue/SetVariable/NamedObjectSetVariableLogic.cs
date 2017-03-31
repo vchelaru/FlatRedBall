@@ -20,7 +20,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace FlatRedBall.Glue.SetVariable
 {
-    internal class NamedObjectSetVariableLogic
+    public class NamedObjectSetVariableLogic
     {
         Dictionary<string, Action<NamedObjectSave, object>> PropertiesToMethods = new Dictionary<string, Action<NamedObjectSave, object>>();
 
@@ -30,7 +30,8 @@ namespace FlatRedBall.Glue.SetVariable
 
             PropertiesToMethods.Add("TextureAddressMode", ReactToTextureAddressMode);
         }
-        internal void ReactToNamedObjectChangedValue(string changedMember, string parent, object oldValue)
+
+        public void ReactToNamedObjectChangedValue(string changedMember, string parent, object oldValue)
         {
             string combinedMember;
 
