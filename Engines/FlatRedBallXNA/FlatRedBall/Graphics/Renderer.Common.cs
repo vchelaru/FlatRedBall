@@ -860,9 +860,9 @@ namespace FlatRedBall.Graphics
                     case SortType.ZSecondaryParentY:
                         SortBatchesZInsertionAscending(batches);
 
-                        // Eventually we may need to do this, but for now I'm just
-                        // adding the Z sorting since it fixes some serious bugs
-                        //batches.SortParentYInsertionDescendingOnZBreaks();
+                        // Even though the sort type is by parent, IDB doesn't have a Parent object, so we'll just rely on Y.
+                        // May need to revisit this if it causes problems
+                        SortBatchesYInsertionDescendingOnZBreaks(batches);
 
                         break;
                     case SortType.CustomComparer:
@@ -883,6 +883,75 @@ namespace FlatRedBall.Graphics
             #endregion
         }
 
+        static List<int> batchZBreaks = new List<int>(10);
+
+        private static void SortBatchesYInsertionDescendingOnZBreaks(List<IDrawableBatch> batches)
+        {
+            GetBatchZBreaks(batches, batchZBreaks);
+
+            batchZBreaks.Insert(0, 0);
+            batchZBreaks.Add(batches.Count);
+
+
+            for (int i = 0; i < batchZBreaks.Count - 1; i++)
+            {
+                SortBatchInsertionDescending(batches, batchZBreaks[i], batchZBreaks[i + 1]);
+            }
+        }
+
+        private static void SortBatchInsertionDescending(List<IDrawableBatch> batches, int firstObject, int lastObjectExclusive)
+        {
+            int whereObjectBelongs;
+
+            float yAtI;
+            float yAtIMinusOne;
+
+            for (int i = firstObject + 1; i < lastObjectExclusive; i++)
+            {
+                yAtI = batches[i].Y;
+                yAtIMinusOne = batches[i - 1].Y;
+
+                if (yAtI > yAtIMinusOne)
+                {
+                    if (i == firstObject + 1)
+                    {
+                        batches.Insert(firstObject, batches[i]);
+                        batches.RemoveAt(i + 1);
+                        continue;
+                    }
+
+                    for (whereObjectBelongs = i - 2; whereObjectBelongs > firstObject - 1; whereObjectBelongs--)
+                    {
+                        if (yAtI <= (batches[whereObjectBelongs]).Y)
+                        {
+                            batches.Insert(whereObjectBelongs + 1, batches[i]);
+                            batches.RemoveAt(i + 1);
+                            break;
+                        }
+                        else if (whereObjectBelongs == firstObject && yAtI > (batches[firstObject]).Y)
+                        {
+                            batches.Insert(firstObject, batches[i]);
+                            batches.RemoveAt(i + 1);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void GetBatchZBreaks(List<IDrawableBatch> batches, List<int> zBreaks)
+        {
+            zBreaks.Clear();
+
+            if (batches.Count == 0 || batches.Count == 1)
+                return;
+
+            for (int i = 1; i < batches.Count; i++)
+            {
+                if (batches[i].Z != batches[i - 1].Z)
+                    zBreaks.Add(i);
+            }
+        }
 
         static LayerCameraSettings mOldCameraLayerSettings = new LayerCameraSettings();
         private static void DrawLayers(Camera camera, RenderMode renderMode, Section section)
