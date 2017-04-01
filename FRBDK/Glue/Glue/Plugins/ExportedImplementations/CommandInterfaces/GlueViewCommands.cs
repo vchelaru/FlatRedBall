@@ -8,6 +8,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
     public class GlueViewCommands
     {
+        public void SendRefreshVariablesCommand()
+        {
+            GlueViewPlugin.Self.RefreshVariables();
+        }
+
         public void SendScript(string script)
         {
             GlueViewPlugin.Self.SendScript(script);

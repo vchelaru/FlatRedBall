@@ -136,6 +136,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\NCalc.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="SelectionInterface, Version=1.0.0.1, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Glue\Glue\bin\Debug\SelectionInterface.dll</HintPath>
@@ -153,6 +155,7 @@
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml">
       <Private>False</Private>
     </Reference>
@@ -162,6 +165,8 @@
     <Reference Include="System.Xml.Linq">
       <Private>False</Private>
     </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\Glue\Glue\Controls\DownloadPluginProgressWindow.cs">
@@ -248,6 +253,11 @@
     <Compile Include="CommandLineManager.cs" />
     <Compile Include="Editing\EditingPlugin.cs" />
     <Compile Include="EditorLogic.cs" />
+    <Compile Include="EmbeddedPlugins\CursorDisplayPlugin\CursorDisplayControl.xaml.cs">
+      <DependentUpon>CursorDisplayControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EmbeddedPlugins\CursorDisplayPlugin\CursorDisplayViewModel.cs" />
+    <Compile Include="EmbeddedPlugins\CursorDisplayPlugin\MainPlugin.cs" />
     <Compile Include="Facades\CursorState.cs" />
     <Compile Include="Facades\ElementCommands.cs" />
     <Compile Include="Facades\GlueProjectSaveCommands.cs" />
@@ -269,6 +279,7 @@
     </Compile>
     <Compile Include="Forms\PropertyGrids\CameraDisplayer.cs" />
     <Compile Include="Gui\GuiData.cs" />
+    <Compile Include="MVVM\ViewModel.cs" />
     <Compile Include="Plugin\GlueViewPlugin.cs" />
     <Compile Include="Plugin\EmbeddedPlugin.cs" />
     <Compile Include="Plugin\InternalPlugins\CameraControlPlugin.cs" />
@@ -478,6 +489,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Reflection\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="EmbeddedPlugins\CursorDisplayPlugin\CursorDisplayControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

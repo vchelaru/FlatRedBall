@@ -52,6 +52,32 @@ namespace FlatRedBall.Winforms.Container
             return newControl;
         }
 
+        public CollapsibleControl AddCollapsibleControlFor(System.Windows.Controls.UserControl wpfControl, int expandedHeight, string label)
+        {
+            if (expandedHeight == -1)
+            {
+                expandedHeight = (int)wpfControl.Height;
+            }
+
+            CollapsibleControl newControl = AddCollapsibleControl(expandedHeight);
+            newControl.SuspendLayout();
+
+            newControl.Label = label;
+
+            System.Windows.Forms.Integration.ElementHost wpfHost;
+            wpfHost = new System.Windows.Forms.Integration.ElementHost();
+            wpfHost.Dock = DockStyle.Fill;
+            wpfHost.Child = wpfControl;
+
+
+            newControl.Controls.Add(wpfHost);
+            wpfHost.Dock = DockStyle.Fill;
+            wpfHost.BringToFront();
+
+            newControl.ResumeLayout();
+            return newControl;
+        }
+
         public CollapsibleControl AddCollapsibleControlFor(Control control, int expandedHeight = 50, string label = "Collapsible Control")
         {
             if (expandedHeight == -1)

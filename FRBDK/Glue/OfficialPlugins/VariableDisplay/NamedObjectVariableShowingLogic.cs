@@ -584,8 +584,17 @@ namespace OfficialPlugins.VariableDisplay
 
             // do we want to run this async?
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-            
-            GlueCommands.Self.GluxCommands.SaveGlux();
+
+            // normally we want to refresh only the variables
+            // However, refreshing the variables means "re-assign all variables"
+            // If a variable is made default, then re-assigning won't un-assign the
+            // already-assigned default value. Therefore, the easiest way to fix this
+            // is to just refresh everything. At some point we may want to have the ability
+            // to refresh a single variable, but that will be a lot more work.
+            //bool sendRefreshCommands = false;
+            //GlueCommands.Self.GluxCommands.SaveGlux(sendRefreshCommands);
+            //GlueCommands.Self.GlueViewCommands.SendRefreshVariablesCommand();
+            GlueCommands.Self.GluxCommands.SaveGlux(true);
 
             MainGlueWindow.Self.PropertyGrid.Refresh();
         }

@@ -61,11 +61,18 @@ namespace OfficialPlugins.VariableDisplay
             // Get this on the UI thread, but use it in the async call below
             var currentElement = GlueState.Self.CurrentElement;
 
+
             TaskManager.Self.AddAsyncTask(() =>
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                // don't send an entire frefresh command, we'll refresh
+                // just the variables (prevents a full camera reset)
+                bool sendRefreshCommands = false;
+                GlueCommands.Self.GluxCommands.SaveGlux(sendRefreshCommands);
+
+                GlueCommands.Self.GlueViewCommands.SendRefreshVariablesCommand();
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
+
             },
             "Saving .glux and regenerating the code for the current element");
         }

@@ -26,6 +26,11 @@ namespace OfficialPlugins.GlueView
             _selectionInterface.SendScript(script);
         }
 
+        public void RefreshVariables()
+        {
+            _selectionInterface.RefreshVariables(true);
+        }
+
         #region IPlugin Members
         
 

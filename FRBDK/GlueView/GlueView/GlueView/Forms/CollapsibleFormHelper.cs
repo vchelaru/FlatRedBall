@@ -48,6 +48,16 @@ namespace GlueView.Forms
             return cp;
         }
 
+        public Control AddCollapsableForm(string panelTitle, int expandedHeight, System.Windows.Controls.UserControl controlToAdd, IPlugin owner)
+        {
+            FlatRedBall.Winforms.CollapsibleControl cp = mForm.AddCollapsibleControlFor(controlToAdd, expandedHeight, panelTitle);
+            if (owner != null)
+            {
+                Plugin.PluginManager.GlobalInstance.RegisterControlForPlugin(cp, owner);
+            }
+            return cp;
+        }
+
         public Control GetControlByLabel(string label)
         {
             return mForm.GetControlByLabel(label);

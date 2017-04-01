@@ -39,6 +39,8 @@ namespace GlueView
 
         ToolForm mToolForm;
 
+        Form mainForm;
+
         FormMethods mFormMethods;
         public Game1()
         {
@@ -107,9 +109,8 @@ namespace GlueView
 
             CommandLineManager.Self.ProcessCommandLineArgs(this.mToolForm);
 
-            Form form = Form.FromHandle(FlatRedBallServices.WindowHandle) as Form;
-            form.Resize += HandleResize;
-            
+            mainForm = Form.FromHandle(FlatRedBallServices.WindowHandle) as Form;
+            mainForm.Resize += HandleResize;
             base.Initialize();
         }
 
@@ -121,8 +122,7 @@ namespace GlueView
 
         private void HandleResize(object sender, EventArgs e)
         {
-            Form form = Form.FromHandle(FlatRedBallServices.WindowHandle) as Form;
-            if (form.WindowState == FormWindowState.Minimized)
+            if (mainForm.WindowState == FormWindowState.Minimized)
             {
                 FlatRedBallServices.SuspendEngine();
                 // Do some stuff
