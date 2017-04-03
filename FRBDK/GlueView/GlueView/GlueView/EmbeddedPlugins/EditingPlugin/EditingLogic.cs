@@ -33,11 +33,30 @@ namespace GlueView.EmbeddedPlugins.EditingPlugin
                 {
                     grabbedElement.X += x;
                     grabbedElement.Y += y;
+
+                    var directObject = grabbedElement.DirectObjectReference;
+
+                    if(directObject is FlatRedBall.PositionedObject)
+                    {
+                        var asPO = directObject as FlatRedBall.PositionedObject;
+                        asPO.X += x;
+                        asPO.Y += y;
+                    }
+
                 }
                 else
                 {
                     grabbedElement.RelativeX += x;
                     grabbedElement.RelativeY += y;
+
+                    var directObject = grabbedElement.DirectObjectReference;
+
+                    if (directObject is FlatRedBall.PositionedObject)
+                    {
+                        var asPO = directObject as FlatRedBall.PositionedObject;
+                        asPO.RelativeX += x;
+                        asPO.RelativeY += y;
+                    }
                 }
                 didMove = true;
             }
@@ -64,9 +83,25 @@ namespace GlueView.EmbeddedPlugins.EditingPlugin
                         xVariable.Value = grabbedElement.Parent == null ? grabbedElement.X : grabbedElement.RelativeX;
                         shouldSave = true;
                     }
+                    else
+                    {
+                        xVariable = new FlatRedBall.Glue.SaveClasses.CustomVariableInNamedObject();
+                        xVariable.Member = "X";
+                        xVariable.Value = grabbedElement.Parent == null ? grabbedElement.X : grabbedElement.RelativeX;
+                        nos.InstructionSaves.Add(xVariable);
+                        shouldSave = true;
+                    }
                     if (yVariable != null)
                     {
                         yVariable.Value = grabbedElement.Parent == null ? grabbedElement.Y : grabbedElement.RelativeY;
+                        shouldSave = true;
+                    }
+                    else
+                    {
+                        yVariable = new FlatRedBall.Glue.SaveClasses.CustomVariableInNamedObject();
+                        yVariable.Member = "Y";
+                        xVariable.Value = grabbedElement.Parent == null ? grabbedElement.Y : grabbedElement.RelativeY;
+                        nos.InstructionSaves.Add(yVariable);
                         shouldSave = true;
                     }
                 }
