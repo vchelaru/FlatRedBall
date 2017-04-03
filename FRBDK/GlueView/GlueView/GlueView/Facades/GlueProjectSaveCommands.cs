@@ -22,15 +22,6 @@ namespace GlueView.Facades
 		}
 
 		/// <summary>
-		/// Saves the X and Y position changes made to the element to the current glux
-		/// Tells GlueView to ignore the next Glue Save
-		/// </summary>
-		public void SaveElement(ElementRuntime elementRuntime)
-		{
-            SaveElement(elementRuntime, mPositionVariables);
-		}
-
-		/// <summary>
 		/// Saves the variables to the glux file.
 		/// If a variable does not exist, it will be created
 		/// Tells GlueView to ignore the next Glue Save

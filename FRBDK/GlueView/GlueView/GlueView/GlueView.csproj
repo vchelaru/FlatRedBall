@@ -258,6 +258,8 @@
     </Compile>
     <Compile Include="EmbeddedPlugins\CursorDisplayPlugin\CursorDisplayViewModel.cs" />
     <Compile Include="EmbeddedPlugins\CursorDisplayPlugin\MainPlugin.cs" />
+    <Compile Include="EmbeddedPlugins\EditingPlugin\EditingLogic.cs" />
+    <Compile Include="EmbeddedPlugins\EditingPlugin\MainPlugin.cs" />
     <Compile Include="Facades\CursorState.cs" />
     <Compile Include="Facades\ElementCommands.cs" />
     <Compile Include="Facades\GlueProjectSaveCommands.cs" />

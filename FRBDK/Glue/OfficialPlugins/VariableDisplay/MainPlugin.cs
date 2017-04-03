@@ -31,8 +31,15 @@ namespace OfficialPlugins.VariableDisplay
         {
             this.ReactToItemSelectHandler += HandleItemSelect;
 
+            this.ReactToLoadedGlux += HandleLoadedGlux;
+
             this.ReactToChangedPropertyHandler += HandleRefreshProperties;
 
+        }
+
+        private void HandleLoadedGlux()
+        {
+            HandleItemSelect(GlueState.Self.CurrentTreeNode);
         }
 
         private void HandleRefreshProperties(string changedMember, object oldValue)

@@ -392,7 +392,10 @@ namespace FlatRedBall.Glue.IO
                              {
                                  NamedObjectSave newNos = newElement.GetNamedObject(((NamedObjectSave)selectedObject).InstanceName);
 
+                                 // forces a refresh:
+                                 ElementViewWindow.SelectedNode = null;
                                  ElementViewWindow.SelectedNode = GlueState.Self.Find.NamedObjectTreeNode(newNos);
+
                              }));
 
 
