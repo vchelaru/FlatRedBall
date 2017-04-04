@@ -30,5 +30,11 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-// 1.1.1 fixes sprites not deselecting when Glu user selects a folder node like "Objects"
-[assembly: AssemblyVersion("1.1.1.0")]
+// 1.1.1 fixes sprites not deselecting when Glue user selects a folder node like "Objects"
+// 1.2.0.0
+//  - Adds Drag+move objects in Screens/Entities
+//  - Re-adds selection back in GlueView to go back to Glue
+//  - Adds camera bounds
+//  - Moves camera and localization to plugins
+//  - GlueView now remembers collapsed states.
+[assembly: AssemblyVersion("1.2.0.0")]
