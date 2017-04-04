@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue;
+﻿using FlatRedBall;
+using FlatRedBall.Glue;
 using FlatRedBall.Gui;
 using GlueView.Facades;
 using System;
@@ -26,41 +27,33 @@ namespace GlueView.EmbeddedPlugins.EditingPlugin
         {
             if(x != 0 || y != 0)
             {
-
+                PositionedObject objectToMove = GetEffectivePositionedObject();
                 var cursor = GuiManager.Cursor;
 
-                if(grabbedElement.Parent == null)
+                if (objectToMove.Parent == null)
                 {
-                    grabbedElement.X += x;
-                    grabbedElement.Y += y;
-
-                    var directObject = grabbedElement.DirectObjectReference;
-
-                    if(directObject is FlatRedBall.PositionedObject)
-                    {
-                        var asPO = directObject as FlatRedBall.PositionedObject;
-                        asPO.X += x;
-                        asPO.Y += y;
-                    }
-
+                    objectToMove.X += x;
+                    objectToMove.Y += y;
                 }
                 else
                 {
-                    grabbedElement.RelativeX += x;
-                    grabbedElement.RelativeY += y;
-
-                    var directObject = grabbedElement.DirectObjectReference;
-
-                    if (directObject is FlatRedBall.PositionedObject)
-                    {
-                        var asPO = directObject as FlatRedBall.PositionedObject;
-                        asPO.RelativeX += x;
-                        asPO.RelativeY += y;
-                    }
+                    objectToMove.RelativeX += x;
+                    objectToMove.RelativeY += y;
                 }
                 didMove = true;
             }
 
+        }
+
+        private static PositionedObject GetEffectivePositionedObject()
+        {
+            PositionedObject objectToMove = grabbedElement;
+            if (grabbedElement.DirectObjectReference is PositionedObject)
+            {
+                objectToMove = grabbedElement.DirectObjectReference as PositionedObject;
+            }
+
+            return objectToMove;
         }
 
         internal static void HandleClick()
@@ -73,37 +66,28 @@ namespace GlueView.EmbeddedPlugins.EditingPlugin
 
                 if (nos != null)
                 {
+                    shouldSave = true;
+
+                    PositionedObject objectToMove = GetEffectivePositionedObject();
 
                     var xVariable = nos.InstructionSaves.FirstOrDefault(item => item.Member == "X");
                     var yVariable = nos.InstructionSaves.FirstOrDefault(item => item.Member == "Y");
 
-
-                    if (xVariable != null)
-                    {
-                        xVariable.Value = grabbedElement.Parent == null ? grabbedElement.X : grabbedElement.RelativeX;
-                        shouldSave = true;
-                    }
-                    else
+                    if (xVariable == null)
                     {
                         xVariable = new FlatRedBall.Glue.SaveClasses.CustomVariableInNamedObject();
                         xVariable.Member = "X";
-                        xVariable.Value = grabbedElement.Parent == null ? grabbedElement.X : grabbedElement.RelativeX;
                         nos.InstructionSaves.Add(xVariable);
-                        shouldSave = true;
                     }
-                    if (yVariable != null)
-                    {
-                        yVariable.Value = grabbedElement.Parent == null ? grabbedElement.Y : grabbedElement.RelativeY;
-                        shouldSave = true;
-                    }
-                    else
+                    if (yVariable == null)
                     {
                         yVariable = new FlatRedBall.Glue.SaveClasses.CustomVariableInNamedObject();
                         yVariable.Member = "Y";
-                        xVariable.Value = grabbedElement.Parent == null ? grabbedElement.Y : grabbedElement.RelativeY;
                         nos.InstructionSaves.Add(yVariable);
-                        shouldSave = true;
                     }
+
+                    xVariable.Value = objectToMove.Parent == null ? objectToMove.X : objectToMove.RelativeX;
+                    yVariable.Value = objectToMove.Parent == null ? objectToMove.Y : objectToMove.RelativeY;
                 }
             }
 

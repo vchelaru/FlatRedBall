@@ -288,6 +288,12 @@ namespace FlatRedBall.Glue
                     screenSave.UpdateCustomProperties();
                 }
 
+                foreach (var entitySave in GlueProjectSave.Entities)
+                {
+                    entitySave.UpdateCustomProperties();
+                }
+
+
                 LocalizationManager.ClearDatabase();
                 GlueProjectSave.UpdateIfTranslationIsUsed();
 
