@@ -249,6 +249,7 @@
     <Compile Include="CommandLineManager.cs" />
     <Compile Include="Editing\EditingPlugin.cs" />
     <Compile Include="EditorLogic.cs" />
+    <Compile Include="EmbeddedPlugins\CameraControlsPlugin\BoundsLogic.cs" />
     <Compile Include="EmbeddedPlugins\CameraControlsPlugin\MainPlugin.cs" />
     <Compile Include="EmbeddedPlugins\CursorDisplayPlugin\CursorDisplayControl.xaml.cs">
       <DependentUpon>CursorDisplayControl.xaml</DependentUpon>

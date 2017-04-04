@@ -14,6 +14,8 @@ namespace GlueView.EmbeddedPlugins.CameraControlsPlugin
     [Export(typeof(GlueViewPlugin))]
     public class MainPlugin : GlueViewPlugin
     {
+        BoundsLogic boundsLogic;
+
         public override string FriendlyName
         {
             get
@@ -37,8 +39,18 @@ namespace GlueView.EmbeddedPlugins.CameraControlsPlugin
 
         public override void StartUp()
         {
+            boundsLogic = new CameraControlsPlugin.BoundsLogic();
+
+
             GlueViewCommands.Self.CollapsibleFormCommands.AddCollapsableForm(
                 "Camera", -1, new CameraControl(), this);
+
+            this.ElementLoaded += HandleElementLoaded;
+        }
+
+        private void HandleElementLoaded(object sender, EventArgs e)
+        {
+            boundsLogic.HandleElementLoaded();
         }
     }
 }
