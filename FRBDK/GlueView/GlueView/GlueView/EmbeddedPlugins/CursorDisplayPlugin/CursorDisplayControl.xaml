@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:GlueView.EmbeddedPlugins.CursorDisplayPlugin"
              mc:Ignorable="d" 
              BorderBrush="Transparent"
-             d:DesignHeight="50" d:DesignWidth="300">
+             d:DesignHeight="40" d:DesignWidth="300">
     <StackPanel>
         <StackPanel Orientation="Horizontal">
             <TextBlock>Z for coordinates:</TextBlock>

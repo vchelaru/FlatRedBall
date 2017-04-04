@@ -11,7 +11,7 @@ using GlueView.Facades;
 namespace GlueView.EmbeddedPlugins.CursorDisplayPlugin
 {
     [Export(typeof(GlueViewPlugin))]
-    class MainPlugin : GlueViewPlugin
+    public class MainPlugin : GlueViewPlugin
     {
         CursorDisplayViewModel viewModel;
         public override string FriendlyName
@@ -47,7 +47,7 @@ namespace GlueView.EmbeddedPlugins.CursorDisplayPlugin
 
 
             GlueViewCommands.Self.CollapsibleFormCommands.AddCollapsableForm(
-                "Cursor Values", 80, control, this);
+                "Cursor Values", 50, control, this);
 
             this.Update += HandleUpdate;
         }

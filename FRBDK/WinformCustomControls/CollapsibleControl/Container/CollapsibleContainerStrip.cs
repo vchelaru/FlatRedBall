@@ -15,6 +15,9 @@ namespace FlatRedBall.Winforms.Container
 
         public int mTotalHeight;
 
+        public event EventHandler ItemCollapsedOrExpanded;
+
+
         public CollapsibleContainerStrip()
         {
             InitializeComponent();
@@ -41,6 +44,7 @@ namespace FlatRedBall.Winforms.Container
             CollapsibleControl newControl = new CollapsibleControl();
             this.Controls.Add(newControl);
             newControl.Width = this.Width - SubtractFromWidthForControlWidth;
+            
             //newControl.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
             
             newControl.ExpandedHeight = 28 + expandedHeight;
@@ -149,6 +153,8 @@ namespace FlatRedBall.Winforms.Container
         void OnCollapseChange(object sender, EventArgs e)
         {
             UpdatePositions();
+
+            ItemCollapsedOrExpanded?.Invoke(this, null);
         }
 
         void UpdatePositions()

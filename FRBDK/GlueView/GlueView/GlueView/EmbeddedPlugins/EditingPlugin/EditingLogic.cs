@@ -105,6 +105,15 @@ namespace GlueView.EmbeddedPlugins.EditingPlugin
         {
             didMove = false;
             grabbedElement = GlueViewState.Self.CursorState.GetElementRuntimeOver();
+
+            var grabbedNamedObject = grabbedElement?.AssociatedNamedObjectSave;
+            var containingElement = GlueViewState.Self.CurrentElement;
+
+            if(grabbedNamedObject != null && containingElement != null)
+            {
+                Wcf.WcfManager.Self.GlueSelect(containingElement.Name, grabbedNamedObject.InstanceName);
+            }
+
         }
     }
 }

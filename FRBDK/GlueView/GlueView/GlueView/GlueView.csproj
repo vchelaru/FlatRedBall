@@ -138,10 +138,6 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="SelectionInterface, Version=1.0.0.1, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Glue\Glue\bin\Debug\SelectionInterface.dll</HintPath>
-    </Reference>
     <Reference Include="StaffDotNet.CollapsiblePanel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\StaffDotNet.CollapsiblePanel.dll</HintPath>
@@ -253,6 +249,7 @@
     <Compile Include="CommandLineManager.cs" />
     <Compile Include="Editing\EditingPlugin.cs" />
     <Compile Include="EditorLogic.cs" />
+    <Compile Include="EmbeddedPlugins\CameraControlsPlugin\MainPlugin.cs" />
     <Compile Include="EmbeddedPlugins\CursorDisplayPlugin\CursorDisplayControl.xaml.cs">
       <DependentUpon>CursorDisplayControl.xaml</DependentUpon>
     </Compile>
@@ -260,6 +257,7 @@
     <Compile Include="EmbeddedPlugins\CursorDisplayPlugin\MainPlugin.cs" />
     <Compile Include="EmbeddedPlugins\EditingPlugin\EditingLogic.cs" />
     <Compile Include="EmbeddedPlugins\EditingPlugin\MainPlugin.cs" />
+    <Compile Include="EmbeddedPlugins\LocalizationPlugin\MainPlugin.cs" />
     <Compile Include="Facades\CursorState.cs" />
     <Compile Include="Facades\ElementCommands.cs" />
     <Compile Include="Facades\GlueProjectSaveCommands.cs" />
@@ -294,7 +292,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource1.resx</DependentUpon>
     </Compile>
-    <Compile Include="SaveClasses\ElementSettingsSave.cs" />
+    <Compile Include="SaveClasses\GlueViewSettings.cs" />
     <Compile Include="SaveClasses\StateSaveExtensionMethodsGlueView.cs" />
     <Compile Include="Forms\ToolForm.cs">
       <SubType>Form</SubType>
@@ -454,6 +452,10 @@
     <ProjectReference Include="..\RemotingHelper\RemotingHelper.csproj">
       <Project>{95630012-D69D-4410-ADC9-A08CDA88F10C}</Project>
       <Name>RemotingHelper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SelectionInterface\SelectionInterface.csproj">
+      <Project>{b85cc176-2137-4a85-91ba-ce9d703bba00}</Project>
+      <Name>SelectionInterface</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

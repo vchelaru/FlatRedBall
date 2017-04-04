@@ -17,13 +17,13 @@ namespace GlueView
 {
     public partial class ToolForm : Form
     {
-
+        public event EventHandler ItemCollapsedOrExpanded;
 
         public ToolForm()
         {
             InitializeComponent();
 
-
+            this.collapsibleContainerStrip1.ItemCollapsedOrExpanded += (not, used) => ItemCollapsedOrExpanded?.Invoke(this, null);
 
             CollapsibleFormHelper.Self.Initialize(this.collapsibleContainerStrip1);
         }
@@ -52,15 +52,6 @@ namespace GlueView
 
         private void ToolForm_Load(object sender, EventArgs e)
         {
-            this.collapsibleContainerStrip1.SuspendLayout();
-            GlueViewCommands.Self.CollapsibleFormCommands.AddCollapsableForm(
-                "Camera", -1, new CameraControl(), null);
-
-
-            GlueViewCommands.Self.CollapsibleFormCommands.AddCollapsableForm(
-                "Localization", -1, new LocalizationControl(), null);
-
-            this.collapsibleContainerStrip1.ResumeLayout();
         }
 
         public void Minimize()

@@ -66,6 +66,7 @@ namespace GlueView
 
             mToolForm = new ToolForm();
             mToolForm.Owner = (Form)(Form.FromHandle(FlatRedBallServices.WindowHandle));
+            mToolForm.ItemCollapsedOrExpanded += HandleToolFormItemCollapsedOrExpanded;
             Plugin.PluginManager.Initialize();
 
             IsMouseVisible = true;
@@ -112,6 +113,11 @@ namespace GlueView
             mainForm = Form.FromHandle(FlatRedBallServices.WindowHandle) as Form;
             mainForm.Resize += HandleResize;
             base.Initialize();
+        }
+
+        private void HandleToolFormItemCollapsedOrExpanded(object sender, EventArgs e)
+        {
+            EditorLogic.HandleToolItemCollapsedOrExpanded();
         }
 
         private void RegisterAdditionalAssemblies()

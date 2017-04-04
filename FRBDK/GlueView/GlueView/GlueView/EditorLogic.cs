@@ -33,8 +33,8 @@ namespace GlueView
     {
         #region Fields
 
-        static ElementSettingsSave mElementSettingsSave = new ElementSettingsSave();
-
+        static GlueViewSettings glueViewSettings = new GlueViewSettings();
+        static bool ignoreCollapseChange = false;
         #endregion
 
         #region Properties
@@ -45,11 +45,11 @@ namespace GlueView
             set;
         }
 
-        static string ElementSettingsSaveFileName
+        static string SettingsSaveFileName
         {
             get
             {
-                return FileManager.GetDirectory(GluxManager.CurrentGlueFile) + "GlueViewElementSettings.gvwx";
+                return FileManager.GetDirectory(GluxManager.CurrentGlueFile) + "GlueViewSettings.gvwx";
             }
         }
 
@@ -63,11 +63,26 @@ namespace GlueView
             // This needs to move to plugins eventually
             LocalizationControl.Self.PopulateFromLocalizationManager();
             
-            string essFileName = ElementSettingsSaveFileName;
+            string essFileName = SettingsSaveFileName;
 
             if (File.Exists(essFileName))
             {   
-                mElementSettingsSave = ElementSettingsSave.Load(essFileName);
+                try
+                {
+                    glueViewSettings = GlueViewSettings.Load(essFileName);
+                }
+                catch
+                {
+                    // do nothing? It's just a settings file
+                }
+            }
+
+            if(glueViewSettings?.CollapsedPlugins != null)
+            {
+                ignoreCollapseChange = true;
+                CollapsibleFormHelper.Self.SetCollapsedItems(glueViewSettings.CollapsedPlugins);
+                ignoreCollapseChange = false;
+
             }
 
             InteractiveConnection.Initialize();
@@ -80,8 +95,8 @@ namespace GlueView
         {
             if (obj != null)
             {
-                mElementSettingsSave.SetElementCameraSave(obj, SpriteManager.Camera);
-                mElementSettingsSave.Save(ElementSettingsSaveFileName);
+                glueViewSettings.SetElementCameraSave(obj, SpriteManager.Camera);
+                glueViewSettings.Save(SettingsSaveFileName);
                 GlueViewState.Self.CurrentElement = null;
             }
         }
@@ -127,7 +142,18 @@ namespace GlueView
             TypeManager.LoadAdditionalTypes(Assembly.GetExecutingAssembly(), "FlatRedBall.Glue.StateInterpolation.");
         }
 
-        
+        internal static void HandleToolItemCollapsedOrExpanded()
+        {
+            if(!ignoreCollapseChange)
+            {
+                var collapsedItems = CollapsibleFormHelper.Self.GetCollapsedItems();
+
+                glueViewSettings.CollapsedPlugins = collapsedItems;
+
+                glueViewSettings.Save(SettingsSaveFileName);
+            }
+        }
+
         public static void Activity()
         {
             if (FlickeringOn)

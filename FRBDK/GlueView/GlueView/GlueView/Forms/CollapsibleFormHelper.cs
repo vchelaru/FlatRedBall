@@ -7,27 +7,16 @@ using StaffDotNet.CollapsiblePanel;
 using FlatRedBall.Winforms;
 using FlatRedBall.Winforms.Container;
 using FlatRedBall.Glue.Plugins.Interfaces;
+using GlueView.Managers;
 
 namespace GlueView.Forms
 {
-    public class CollapsibleFormHelper
+    public class CollapsibleFormHelper : Singleton<CollapsibleFormHelper>
     {
         static CollapsibleFormHelper mSelf;
         CollapsibleContainerStrip mForm;
 
-
-        public static CollapsibleFormHelper Self
-        {
-            get
-            {
-                if (mSelf == null)
-                {
-                    mSelf = new CollapsibleFormHelper();
-                }
-                return mSelf;
-            }
-        }
-
+        
 
         public void Initialize(CollapsibleContainerStrip form)
         {
@@ -107,6 +96,23 @@ namespace GlueView.Forms
             }
         }
 
+        internal void SetCollapsedItems(List<string> collapsedPlugins)
+        {
+            foreach (var item in Plugin.PluginManager.GlobalInstance.PluginContainers)
+            {
+                var pluginControls = item.Value.Controls;
+
+                foreach (var control in pluginControls)
+                {
+                    if (control is CollapsibleControl)
+                    {
+                        var pluginName = item.Key.GetType().FullName;
+                        ((CollapsibleControl)control).IsCollapsed = collapsedPlugins.Contains(pluginName);
+                    }
+                }
+            }
+        }
+
         private CollapsiblePanel GetBottomPanel()
         {
             int maxY = int.MinValue;
@@ -131,6 +137,24 @@ namespace GlueView.Forms
             return bottomPanel;
         }
 
+        public List<string> GetCollapsedItems()
+        {
+            List<string> collapsedItems = new List<string>();
 
+            foreach(var item in Plugin.PluginManager.GlobalInstance.PluginContainers)
+            {
+                var pluginControls = item.Value.Controls;
+
+                foreach(var control in pluginControls)
+                {
+                    if(control is CollapsibleControl && ((CollapsibleControl)control).IsCollapsed)
+                    {
+                        collapsedItems.Add(item.Key.GetType().FullName);
+                    }
+                }
+            }
+
+            return collapsedItems;
+        }
     }
 }

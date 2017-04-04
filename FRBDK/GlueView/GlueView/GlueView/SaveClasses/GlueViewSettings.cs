@@ -19,9 +19,11 @@ namespace GlueView.SaveClasses
 
     #endregion
 
-    public class ElementSettingsSave
+    public class GlueViewSettings
     {
         #region Fields
+
+        public List<string> CollapsedPlugins { get; set; } = new List<string>();
 
         public List<ElementCameraSave> ElementCameraSaves = new List<ElementCameraSave>();
 
@@ -87,9 +89,9 @@ namespace GlueView.SaveClasses
             return returnValue;
         }
 
-        public static ElementSettingsSave Load(string fileName)
+        public static GlueViewSettings Load(string fileName)
         {
-            return FileManager.XmlDeserialize<ElementSettingsSave>(fileName);
+            return FileManager.XmlDeserialize<GlueViewSettings>(fileName);
         }
 
         public void Save(string fileName)
