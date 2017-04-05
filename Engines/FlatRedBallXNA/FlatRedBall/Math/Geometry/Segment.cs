@@ -198,6 +198,12 @@ namespace FlatRedBall.Math.Geometry
             return DistanceTo(point.X, point.Y);
         }
         
+        /// <summary>
+        /// Returns the distance from this segment to the argument polygon's edges. If the segment is "inside" the polygon, it will still return the distance to the edge.
+        /// In other words, the polygon is not considered "filled in" when performing these checks.
+        /// </summary>
+        /// <param name="polygon">The polygon to check against.</param>
+        /// <returns>The distance from this segment to the polygon, or float.MaxValue if the polygon does not have any vertices.</returns>
         public float DistanceTo(Polygon polygon)
         {
             float finalDistance = float.MaxValue;
