@@ -594,6 +594,11 @@ namespace GumPlugin.CodeGeneration
             }
             var constructor = currentBlock.Constructor("public", runtimeClassName, "bool fullInstantiation = true, bool callAssignReferences = true",  baseCall );
 
+            bool hasEvents = elementSave.DefaultState.GetValueOrDefault<bool>("HasEvents");
+            bool exposeChildrenEvents = elementSave.DefaultState.GetValueOrDefault<bool>("ExposeChildrenEvents");
+            constructor.Line($"this.HasEvents = {hasEvents.ToString().ToLower()};");
+            constructor.Line($"this.ExposeChildrenEvents = {exposeChildrenEvents.ToString().ToLower()};");
+
             var ifStatement = constructor.If("fullInstantiation");
 
             string componentScreenOrStandard = null;

@@ -24,6 +24,9 @@ namespace Gum.Wireframe
 
         public bool RaiseChildrenEventsOutsideOfBounds { get; set; } = false;
 
+        public bool HasEvents { get; set; } = true;
+        public bool ExposeChildrenEvents { get; set; } = true;
+
         // Maybe we'll eventually move this out of IWindow implementation into its own file:
         public virtual void AssignReferences()
         {
@@ -335,8 +338,14 @@ namespace Gum.Wireframe
                         {
                             handledByChild = asGue.TryHandleCursorActivity(cursor);
 
+
                             if (handledByChild)
                             {
+                                if (this.ExposeChildrenEvents == false || (child is GraphicalUiElement && ((GraphicalUiElement)child).HasEvents == false))
+                                {
+                                    // we'll break out, but set not handled by child, letting the parent do the logic
+                                    handledByChild = false;
+                                }
                                 break;
                             }
                         }
@@ -345,49 +354,52 @@ namespace Gum.Wireframe
 
                 #endregion
             }
-            if(isOver)
-            { 
+            if (isOver)
+            {
 
                 if (!handledByChild && this.IsComponentOrInstanceOfComponent())
                 {
                     handledByThis = true;
 
-                    cursor.WindowOver = this;
-
-                    if (cursor.PrimaryPush)
+                    if (this.HasEvents)
                     {
+                        cursor.WindowOver = this;
 
-                        cursor.WindowPushed = this;
-
-                        if (Push != null)
-                            Push(this);
-
-
-                        cursor.GrabWindow(this);
-
-                    }
-
-                    if (cursor.PrimaryClick) // both pushing and clicking can occur in one frame because of buffered input
-                    {
-                        if (cursor.WindowPushed == this)
+                        if (cursor.PrimaryPush)
                         {
-                            if (Click != null)
-                            {
-                                Click(this);
-                            }
-                            if (cursor.PrimaryClickNoSlide && ClickNoSlide != null)
-                            {
-                                ClickNoSlide(this);
-                            }
 
-                            // if (cursor.PrimaryDoubleClick && DoubleClick != null)
-                            //   DoubleClick(this);
+                            cursor.WindowPushed = this;
+
+                            if (Push != null)
+                                Push(this);
+
+
+                            cursor.GrabWindow(this);
+
                         }
-                        else
+
+                        if (cursor.PrimaryClick) // both pushing and clicking can occur in one frame because of buffered input
                         {
-                            if (SlideOnClick != null)
+                            if (cursor.WindowPushed == this)
                             {
-                                SlideOnClick(this);
+                                if (Click != null)
+                                {
+                                    Click(this);
+                                }
+                                if (cursor.PrimaryClickNoSlide && ClickNoSlide != null)
+                                {
+                                    ClickNoSlide(this);
+                                }
+
+                                // if (cursor.PrimaryDoubleClick && DoubleClick != null)
+                                //   DoubleClick(this);
+                            }
+                            else
+                            {
+                                if (SlideOnClick != null)
+                                {
+                                    SlideOnClick(this);
+                                }
                             }
                         }
                     }
