@@ -77,12 +77,22 @@ namespace GumPlugin.Managers
             {
                 var changedElement = GetElementFromFile(file);
 
-                GenerateDueToFileChange(changedElement);
+                // Maybe the element doesn't exist - like it's a .gucx that is not part of the .gumx
+                if(changedElement != null)
+                {
+                    GenerateDueToFileChange(changedElement);
+                }
+
             }
         }
 
         private void GenerateDueToFileChange(ElementSave changedElement)
         {
+            if(changedElement == null)
+            {
+                throw new ArgumentNullException("changedElement");
+            }
+
             // This code is going to attempt to be more efficient than a full regeneration of the entire project.
             // It will do so by:
             // 1. Only regenerating the changed element and any elements that include it
