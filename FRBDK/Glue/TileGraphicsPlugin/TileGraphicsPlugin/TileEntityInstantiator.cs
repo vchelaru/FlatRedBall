@@ -64,6 +64,7 @@ namespace FlatRedBall.TileEntities
 
                             var entity = factory.CreateNew(null) as PositionedObject;
 
+                            entity.Name = polygon.Name;
                             ApplyPropertiesTo(entity, properties, polygon.Position);
                             shapeCollection.Polygons.Remove(polygon);
 
