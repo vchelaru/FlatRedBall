@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ComponentSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Name>TextureSettingInStateComponent</Name>
+  <Name>StateComponent</Name>
   <BaseType>Container</BaseType>
   <State>
     <Name>Default</Name>
@@ -61,25 +61,6 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <IsFile>true</IsFile>
-      <Type>string</Type>
-      <Name>SpriteInstance.SourceFile</Name>
-      <Value xsi:type="xsd:string">..\globalcontent\arrow01.png</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>float</Type>
-      <Name>SpriteInstance.X</Name>
-      <Value xsi:type="xsd:float">63.5</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>float</Type>
-      <Name>SpriteInstance.Y</Name>
-      <Value xsi:type="xsd:float">46.5</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
       <Type>State</Type>
       <Name>State</Name>
       <SetsValue>true</SetsValue>
@@ -114,7 +95,7 @@
       <Type>float</Type>
       <Name>X</Name>
       <Category>Position</Category>
-      <SetsValue>true</SetsValue>
+      <SetsValue>false</SetsValue>
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
@@ -134,7 +115,7 @@
       <Type>float</Type>
       <Name>Y</Name>
       <Category>Position</Category>
-      <SetsValue>true</SetsValue>
+      <SetsValue>false</SetsValue>
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
@@ -151,15 +132,17 @@
       <SetsValue>true</SetsValue>
     </Variable>
   </State>
+  <State>
+    <Name>NonDefaultState</Name>
+  </State>
   <Category>
     <Name>Category1</Name>
     <State>
       <Name>Categorized1</Name>
     </State>
+    <State>
+      <Name>Categorized2</Name>
+    </State>
   </Category>
-  <Instance>
-    <Name>SpriteInstance</Name>
-    <BaseType>Sprite</BaseType>
-  </Instance>
   <Behaviors />
 </ComponentSave>

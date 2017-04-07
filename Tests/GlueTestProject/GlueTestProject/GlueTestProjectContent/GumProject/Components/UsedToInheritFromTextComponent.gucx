@@ -61,6 +61,13 @@
     </Variable>
     <Variable>
       <Type>bool</Type>
+      <Name>ExposeChildrenEvents</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Behavior</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
       <Name>FlipHorizontal</Name>
       <Value xsi:type="xsd:boolean">false</Value>
       <Category>Flip</Category>
@@ -109,6 +116,13 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>bool</Type>
+      <Name>HasEvents</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Behavior</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>float</Type>
       <Name>Height</Name>
       <Value xsi:type="xsd:float">150</Value>
@@ -149,6 +163,13 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>float</Type>
+      <Name>Rotation</Name>
+      <Value xsi:type="xsd:float">0</Value>
+      <Category>Flip and Rotation</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <IsFile>true</IsFile>
       <Type>string</Type>
       <Name>SourceFile</Name>
@@ -184,7 +205,7 @@
     <Variable>
       <Type>float</Type>
       <Name>Texture Height Scale</Name>
-      <Value xsi:type="xsd:int">0</Value>
+      <Value xsi:type="xsd:float">0</Value>
       <Category>Source</Category>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -212,7 +233,7 @@
     <Variable>
       <Type>float</Type>
       <Name>Texture Width Scale</Name>
-      <Value xsi:type="xsd:int">0</Value>
+      <Value xsi:type="xsd:float">0</Value>
       <Category>Source</Category>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -312,4 +333,5 @@
       <Value />
     </VariableList>
   </State>
+  <Behaviors />
 </ComponentSave>

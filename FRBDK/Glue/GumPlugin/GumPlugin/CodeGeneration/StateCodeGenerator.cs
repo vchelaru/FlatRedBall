@@ -104,6 +104,41 @@ namespace GumPlugin.CodeGeneration
             GenerateStopAnimations(elementSave, currentBlock);
 
             GenerateGetCurrentValuesOnState(elementSave, currentBlock);
+
+            GenerateApplyStateOverride(elementSave, currentBlock);
+        }
+
+        private void GenerateApplyStateOverride(ElementSave elementSave, ICodeBlock currentBlock)
+        {
+            currentBlock = currentBlock.Function("public override void", "ApplyState", "Gum.DataTypes.Variables.StateSave state");
+            {
+                currentBlock.Line("bool matches = this.ElementSave.AllStates.Contains(state);");
+
+                var ifStatement = currentBlock.If("matches");
+                {
+                    ifStatement.Line("var category = this.ElementSave.Categories.FirstOrDefault(item => item.States.Contains(state));");
+
+                    var innerIf = ifStatement.If("category == null");
+                    {
+                        foreach(var state in elementSave.States)
+                        {
+                            innerIf.Line($"if (state.Name == \"{state.Name}\") this.mCurrentVariableState = VariableState.{state.MemberNameInCode()};");
+                        }
+                    }
+                    foreach(var category in elementSave.Categories)
+                    {
+                        var elseIf = ifStatement.ElseIf($"category.Name == \"{category.Name}\"");
+                        {
+                            foreach(var state in category.States)
+                            {
+                                elseIf.Line($"if(state.Name == \"{state.Name}\") this.mCurrent{category.Name}State = {category.Name}.{state.MemberNameInCode()};");
+                            }
+                        }
+                    }
+                }
+
+                currentBlock.Line("base.ApplyState(state);");
+            }
         }
 
         public void GenerateStateEnums(IStateContainer stateContainer, ICodeBlock currentBlock, string enumNamePrefix = null)

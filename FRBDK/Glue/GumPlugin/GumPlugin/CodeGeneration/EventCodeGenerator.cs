@@ -80,8 +80,8 @@ namespace GumPlugin.CodeGeneration
                         if (hasEvents)
                         {
                             EventSave eventSave = new EventSave();
-                            eventSave.Name = $"{child.Name}.Click";
-                            eventSave.ExposedAsName = $"{child.Name}Click";
+                            eventSave.Name = $"{child.MemberNameInCode()}.Click";
+                            eventSave.ExposedAsName = $"{child.MemberNameInCode()}Click";
 
                             exposedChildrenEvents.Add(eventSave);
                         }

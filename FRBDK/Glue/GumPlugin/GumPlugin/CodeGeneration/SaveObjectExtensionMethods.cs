@@ -18,7 +18,12 @@ namespace GumPlugin.CodeGeneration
 
         public static string InstanceNameInCode(string name)
         {
-            return FlatRedBall.IO.FileManager.RemovePath(name.Replace(" ", "_").Replace("-", "_"));
+            string toReturn = FlatRedBall.IO.FileManager.RemovePath(name.Replace(" ", "_").Replace("-", "_"));
+            if(Char.IsDigit(name[0]))
+            {
+                toReturn = "_" + toReturn;
+            }
+            return toReturn;
         }
 
         public static string MemberNameInCode(this StateSave stateSave)

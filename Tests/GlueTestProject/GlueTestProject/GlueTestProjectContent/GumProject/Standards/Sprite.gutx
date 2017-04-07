@@ -40,6 +40,13 @@
     </Variable>
     <Variable>
       <Type>bool</Type>
+      <Name>ExposeChildrenEvents</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Behavior</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
       <Name>FlipHorizontal</Name>
       <Value xsi:type="xsd:boolean">false</Value>
       <Category>Flip</Category>
@@ -66,6 +73,13 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>bool</Type>
+      <Name>HasEvents</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Behavior</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>float</Type>
       <Name>Height</Name>
       <Value xsi:type="xsd:float">100</Value>
@@ -89,6 +103,13 @@
       <Name>Red</Name>
       <Value xsi:type="xsd:int">255</Value>
       <Category>Rendering</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>Rotation</Name>
+      <Value xsi:type="xsd:float">0</Value>
+      <Category>Flip and Rotation</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -121,7 +142,7 @@
     <Variable>
       <Type>float</Type>
       <Name>Texture Height Scale</Name>
-      <Value xsi:type="xsd:int">0</Value>
+      <Value xsi:type="xsd:float">0</Value>
       <Category>Source</Category>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -149,7 +170,7 @@
     <Variable>
       <Type>float</Type>
       <Name>Texture Width Scale</Name>
-      <Value xsi:type="xsd:int">0</Value>
+      <Value xsi:type="xsd:float">0</Value>
       <Category>Source</Category>
       <SetsValue>true</SetsValue>
     </Variable>

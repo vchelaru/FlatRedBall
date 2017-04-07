@@ -48,6 +48,12 @@ namespace GlueTestProject.Screens
 
             // Make sure that categories run fine...
             EntireGumScreen.CurrentStateCategory1State = GumRuntimes.TestScreenRuntime.StateCategory1.On;
+
+            if(this.StateComponentInstance.CurrentVariableState != GumRuntimes.StateComponentRuntime.VariableState.NonDefaultState)
+            {
+                throw new Exception("Setting a state on an instance in a screen does not result in the state being set on the runtime.");
+            }
+
 		}
 
 		void CustomActivity(bool firstTimeCalled)

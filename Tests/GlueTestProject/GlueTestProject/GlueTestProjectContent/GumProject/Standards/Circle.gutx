@@ -1,30 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ComponentSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Name>TextureSettingInStateComponent</Name>
-  <BaseType>Container</BaseType>
+<StandardElementSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Circle</Name>
   <State>
     <Name>Default</Name>
     <Variable>
-      <Type>Category1State</Type>
-      <Name>Category1State</Name>
-      <SetsValue>false</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>ChildrenLayout</Type>
-      <Name>Children Layout</Name>
-      <Value xsi:type="xsd:int">0</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>bool</Type>
-      <Name>Clips Children</Name>
-      <Value xsi:type="xsd:boolean">false</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
       <Type>bool</Type>
       <Name>ExposeChildrenEvents</Name>
-      <Value xsi:type="xsd:boolean">true</Value>
+      <Value xsi:type="xsd:boolean">false</Value>
       <Category>Behavior</Category>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -37,23 +19,16 @@
     <Variable>
       <Type>bool</Type>
       <Name>HasEvents</Name>
-      <Value xsi:type="xsd:boolean">true</Value>
+      <Value xsi:type="xsd:boolean">false</Value>
       <Category>Behavior</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>float</Type>
       <Name>Height</Name>
-      <Value xsi:type="xsd:float">150</Value>
-      <Category>Dimensions</Category>
+      <Value xsi:type="xsd:float">16</Value>
       <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>DimensionUnitType</Type>
-      <Name>Height Units</Name>
-      <Value xsi:type="xsd:int">0</Value>
-      <Category>Dimensions</Category>
-      <SetsValue>true</SetsValue>
+      <IsHiddenInPropertyGrid>true</IsHiddenInPropertyGrid>
     </Variable>
     <Variable>
       <Type>string</Type>
@@ -61,28 +36,16 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <IsFile>true</IsFile>
-      <Type>string</Type>
-      <Name>SpriteInstance.SourceFile</Name>
-      <Value xsi:type="xsd:string">..\globalcontent\arrow01.png</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
       <Type>float</Type>
-      <Name>SpriteInstance.X</Name>
-      <Value xsi:type="xsd:float">63.5</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>float</Type>
-      <Name>SpriteInstance.Y</Name>
-      <Value xsi:type="xsd:float">46.5</Value>
+      <Name>Radius</Name>
+      <Value xsi:type="xsd:float">16</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>State</Type>
       <Name>State</Name>
-      <SetsValue>true</SetsValue>
+      <Value xsi:type="xsd:string">Default</Value>
+      <SetsValue>false</SetsValue>
     </Variable>
     <Variable>
       <Type>bool</Type>
@@ -93,26 +56,14 @@
     <Variable>
       <Type>float</Type>
       <Name>Width</Name>
-      <Value xsi:type="xsd:float">150</Value>
-      <Category>Dimensions</Category>
+      <Value xsi:type="xsd:float">16</Value>
       <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>DimensionUnitType</Type>
-      <Name>Width Units</Name>
-      <Value xsi:type="xsd:int">0</Value>
-      <Category>Dimensions</Category>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>bool</Type>
-      <Name>Wraps Children</Name>
-      <Value xsi:type="xsd:boolean">false</Value>
-      <SetsValue>true</SetsValue>
+      <IsHiddenInPropertyGrid>true</IsHiddenInPropertyGrid>
     </Variable>
     <Variable>
       <Type>float</Type>
       <Name>X</Name>
+      <Value xsi:type="xsd:float">0</Value>
       <Category>Position</Category>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -133,6 +84,7 @@
     <Variable>
       <Type>float</Type>
       <Name>Y</Name>
+      <Value xsi:type="xsd:float">0</Value>
       <Category>Position</Category>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -151,15 +103,4 @@
       <SetsValue>true</SetsValue>
     </Variable>
   </State>
-  <Category>
-    <Name>Category1</Name>
-    <State>
-      <Name>Categorized1</Name>
-    </State>
-  </Category>
-  <Instance>
-    <Name>SpriteInstance</Name>
-    <BaseType>Sprite</BaseType>
-  </Instance>
-  <Behaviors />
-</ComponentSave>
+</StandardElementSave>

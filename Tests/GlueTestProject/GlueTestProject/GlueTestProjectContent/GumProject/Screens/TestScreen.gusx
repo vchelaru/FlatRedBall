@@ -130,6 +130,30 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>Category1State</Type>
+      <Name>StateComponentInstance.Category1State</Name>
+      <Value xsi:type="xsd:string">Categorized2</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>State</Type>
+      <Name>StateComponentInstance.State</Name>
+      <Value xsi:type="xsd:string">NonDefaultState</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StateComponentInstance.X</Name>
+      <Value xsi:type="xsd:float">620</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StateComponentInstance.Y</Name>
+      <Value xsi:type="xsd:float">338</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>float</Type>
       <Name>SwitchInstance.X</Name>
       <Value xsi:type="xsd:float">425</Value>
@@ -208,5 +232,9 @@
   <Instance>
     <Name>ContainerInstance</Name>
     <BaseType>Container</BaseType>
+  </Instance>
+  <Instance>
+    <Name>StateComponentInstance</Name>
+    <BaseType>StateComponent</BaseType>
   </Instance>
 </ScreenSave>
