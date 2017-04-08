@@ -71,22 +71,17 @@ namespace FlatRedBall.Graphics.Particle
 
         public enum RemovalEventType
         {
-            #region XML Docs
             /// <summary>
             /// No removal event specified.
             /// </summary>
-            #endregion
             None,
-            #region XML Docs
             /// <summary>
             /// Particles will be removed when out of the screen.
             /// </summary>
             /// <remarks>
             /// This uses the camera's IsSpriteInView method.
             /// </remarks>
-            #endregion
             OutOfScreen,
-            #region XML Docs
             /// <summary>
             /// Particles will be removed when Alpha is 0
             /// </summary>
@@ -94,14 +89,11 @@ namespace FlatRedBall.Graphics.Particle
             /// Setting the Alpha to 0 manually on a particle created by an emitter with this removal event will
             /// also remove the Sprite.
             /// </remarks>
-            #endregion
             Alpha0,
-            #region XML Docs
             /// <summary>
             /// Particles will be removed after a certain amount of time has passed after emission.  This value is set through the
             /// SecondsLasting property.
             /// </summary>
-            #endregion
             Timed
         }
 
@@ -297,6 +289,14 @@ namespace FlatRedBall.Graphics.Particle
 
         #region emission event/time value
 
+        /// <summary>
+        /// Sets the area which defines where new particles can appear. 
+        /// By default this is set to Point, which means
+        /// emitted particles will appear at the Emitter's Position.
+        /// </summary>
+        /// <remarks>
+        /// If the AreaEmission is set to Rectangle or Cube, then the ScaleX, ScaleY, and ScaleZ values are used.
+        /// </remarks>
         public AreaEmissionType AreaEmission
         {
             get { return mAreaEmission; }
@@ -349,12 +349,11 @@ namespace FlatRedBall.Graphics.Particle
         }
 
 
-        #region XML Docs
-        /// <summary>
-        /// This is used only in the ParticleEditor.  
-        /// </summary>
-        #endregion
         internal RemovalEventType mRemovalEvent = RemovalEventType.None;
+        /// <summary>
+        /// Specifies the type of logic to perform for removing the particle.
+        /// </summary>
+        /// <seealso cref="SecondsLasting"/>
         public RemovalEventType RemovalEvent
         {
             get { return mRemovalEvent; }
@@ -428,7 +427,6 @@ namespace FlatRedBall.Graphics.Particle
         // This is not thread safe:
         static AxisAlignedRectangle cameraRectangle = new AxisAlignedRectangle();
 
-        #region XML Docs
         /// <summary>
         /// Emits particles as specified by the Emitter class
         /// </summary>
@@ -448,7 +446,6 @@ namespace FlatRedBall.Graphics.Particle
         /// </remarks>
         /// <param name="spriteList">The list of Sprites (which can be null) to add all Sprites created
         /// by this call.</param>
-        #endregion
         public void Emit(SpriteList spriteList)
         {
 
@@ -870,12 +867,18 @@ namespace FlatRedBall.Graphics.Particle
             TimedEmit(null);
         }
 
-        public void TimedEmit(SpriteList sa)
+        /// <summary>
+        /// Checks if the emitter is ready to emit, and if so, performs an emit. This method will only emit if 
+        /// TimedEmission is set to true. Emitters which have TimedEmission set to true will typically have TimedEmit
+        /// called every frame.
+        /// </summary>
+        /// <param name="spriteList"></param>
+        public void TimedEmit(SpriteList spriteList)
         {
 
             if (IsReadyForTimedEmission)
             {
-                Emit(sa);
+                Emit(spriteList);
                 mLastTimeEmitted = TimeManager.CurrentTime;
             }
 
