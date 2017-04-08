@@ -48,9 +48,10 @@ namespace PluginProject
             get { return "Particle Editor"; }
         }
 
+        // 1.5.1 - Updates to .NEt 4.5.2 so it runs fine on latest version of Glue
         public override Version Version
         {
-            get { return new Version(1, 5); }
+            get { return new Version(1, 5, 1); }
         }
 
 

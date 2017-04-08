@@ -206,6 +206,14 @@ namespace FlatRedBall.Graphics.Particle
             }
         }
 
+        /// <summary>
+        /// If true, restricts this emitter to only emit when its EmissionBoundary is within the camera's view. This defaults to false, which means the emitter
+        /// will ignore camera bounds when attempting to emit.
+        /// </summary>
+        /// <remarks>
+        /// BoundedEmission can be used to improve the performance of your game, by reducing the number of off-screen particles which the engine has to manage.
+        /// </remarks>
+        /// <seealso cref="EmissionBoundary"/>
         public bool BoundedEmission
         {
             get { return mBoundedEmission; }
