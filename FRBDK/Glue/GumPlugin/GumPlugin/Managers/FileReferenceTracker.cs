@@ -473,7 +473,7 @@ namespace GumPlugin.Managers
             {
                 if (Gum.Managers.ObjectFinder.Self.GumProjectSave == null || force)
                 {
-                    string gumxFile = System.IO.Directory.GetFiles(gumxDirectory).FirstOrDefault(item => item.ToLowerInvariant().EndsWith(".gumx"));
+                    string gumxFile = GetGumProjectFile(gumxDirectory);
 
                     // This can occur if the user has added a gumx file, then removed it, but the project still
                     // references gum files like gum screens or components.  This is an invalid setup, but we're
@@ -498,6 +498,33 @@ namespace GumPlugin.Managers
                 // then we'll initialize that element specifically in the switch
                 //InitializeElements();
             }
+        }
+
+        private static string GetGumProjectFile(string gumxDirectory)
+        {
+            var files = System.IO.Directory.GetFiles(gumxDirectory)
+                .Where(item => item.ToLowerInvariant().EndsWith(".gumx"))
+                .ToArray();
+
+            bool multipleGumxFilesExist = files.Length > 1;
+
+            string toReturn;
+
+            if(files.Length > 1)
+            {
+                // Let's limit it to any files in the project.
+                var gumxInProject = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Where(item => item.Name.ToLowerInvariant().EndsWith("gumx"));
+
+                var absoluteFiles = gumxInProject.Select(item => GlueCommands.Self.GetAbsoluteFileName(item).ToLowerInvariant());
+
+                toReturn = files.FirstOrDefault(item => absoluteFiles.Contains(item.ToLowerInvariant()));
+            }
+            else
+            {
+                toReturn = files.FirstOrDefault();
+            }
+
+            return toReturn;
         }
 
         private static void InitializeElements()

@@ -72,6 +72,7 @@ namespace GumPlugin
             // - If an Instance in a Component/Screen starts with a number, codegen will prefix _ so it compiles in code.
             // - Fixed a bug where the plugin might crash if it handles a file change that isn't part of the .gumx. This could happen
             //   when pulling from source control, or if a user copies a file just to test it locally
+            // - Fixed bug where plugin could load wrong Gum file if more than one .gumx file is in the same folder (like a backup file)
             get { return new Version(0, 8, 3, 1); }
         }
 
