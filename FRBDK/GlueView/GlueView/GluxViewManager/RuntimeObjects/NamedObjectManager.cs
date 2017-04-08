@@ -633,6 +633,10 @@ namespace FlatRedBall.Glue.RuntimeObjects
                 {
                     layerToAddTo = SpriteManager.UnderAllDrawnLayer;
                 }
+                else if(objectToLoad.LayerOn == "Top Layer (Engine Layer)")
+                {
+                    layerToAddTo = SpriteManager.TopLayer;
+                }
                 else
                 {
                     ElementRuntime layerContainer = elementRuntime.GetContainedElementRuntime(objectToLoad.LayerOn);
