@@ -93,7 +93,7 @@ namespace GumPlugin.Managers
 
                     mScreenAti.QualifiedSaveTypeName = "Gum.Data.ScreenSave";
                     mScreenAti.Extension = "gusx";
-                    mScreenAti.AddToManagersMethod.Add("this.InstanceInitialize()");
+                    mScreenAti.AddToManagersMethod.Add("this.InstanceInitialize(); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += this.HandleResolutionChanged");
                     mScreenAti.CustomLoadMethod =
                         "Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = true;  {THIS} = new FlatRedBall.Gum.GumIdb();  {THIS}.LoadFromFile(\"{FILE_NAME}\");  {THIS}.AssignReferences();" +
 
@@ -102,7 +102,7 @@ namespace GumPlugin.Managers
                         "Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = false; {THIS}.Element.UpdateLayout(); {THIS}.Element.UpdateLayout();";
 
                     
-                    mScreenAti.DestroyMethod = "FlatRedBall.SpriteManager.RemoveDrawableBatch(this)";
+                    mScreenAti.DestroyMethod = "FlatRedBall.SpriteManager.RemoveDrawableBatch(this); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged -= this.HandleResolutionChanged";
                     mScreenAti.SupportsMakeOneWay = false;
                     mScreenAti.ShouldAttach = false;
                     mScreenAti.MustBeAddedToContentPipeline = false;
@@ -210,7 +210,9 @@ namespace GumPlugin.Managers
         {
             string toReturn = "FlatRedBall.Gum.GumIdb.StaticInitialize(\"{FILE_NAME}\"); " +
                         "FlatRedBall.Gum.GumIdb.RegisterTypes();  " +
-                        "FlatRedBall.Gui.GuiManager.BringsClickedWindowsToFront = false;";
+                        "FlatRedBall.Gui.GuiManager.BringsClickedWindowsToFront = false;" +
+                        "FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (not, used) => {{ FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera(); }};"
+                        ;
 
             var gumxRfs = GumProjectManager.Self.GetRfsForGumProject();
 

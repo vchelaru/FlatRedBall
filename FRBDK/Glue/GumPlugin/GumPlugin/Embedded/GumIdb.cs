@@ -123,10 +123,8 @@ namespace FlatRedBall.Gum
                 mManagers.Renderer.Camera.AbsoluteLeft = 0;
                 mManagers.Renderer.Camera.AbsoluteTop = 0;
 
-                UpdateDisplayToMainFrbCamera();
 
                 // Need to do the zoom here in response to the FRB camera vs. the Gum camera
-                mManagers.Renderer.Camera.Zoom = mManagers.Renderer.GraphicsDevice.Viewport.Height / (float)GraphicalUiElement.CanvasHeight;
                 mManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
                 mManagers.Renderer.Camera.X = 0;
                 mManagers.Renderer.Camera.Y = 0;
@@ -137,6 +135,8 @@ namespace FlatRedBall.Gum
                 RenderingLibrary.Graphics.Text.RenderBoundaryDefault = false;
                 // FlatRedBall uses premult alpha.
                 RenderingLibrary.Graphics.Renderer.NormalBlendState = Microsoft.Xna.Framework.Graphics.BlendState.AlphaBlend;
+
+                UpdateDisplayToMainFrbCamera();
 
 
                 var idb = new GumIdb();
@@ -236,12 +236,13 @@ namespace FlatRedBall.Gum
             StandardElementsManager.Self.Initialize();
         }
 
+        public void HandleResolutionChanged(object sender, EventArgs args)
+        {
+            this.Element?.UpdateLayout();
+        }
+
         public static void UpdateDisplayToMainFrbCamera()
         {
-            var viewport = mManagers.Renderer.GraphicsDevice.Viewport;
-            viewport.Width = FlatRedBall.Math.MathFunctions.RoundToInt(FlatRedBall.Camera.Main.DestinationRectangle.Width);
-            viewport.Height = FlatRedBall.Math.MathFunctions.RoundToInt(FlatRedBall.Camera.Main.DestinationRectangle.Height);
-            mManagers.Renderer.GraphicsDevice.Viewport = viewport;
 
             if (FlatRedBall.Camera.Main.Orthogonal)
             {
@@ -253,6 +254,8 @@ namespace FlatRedBall.Gum
                 GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height;
                 GraphicalUiElement.CanvasWidth = FlatRedBall.Camera.Main.DestinationRectangle.Width;
             }
+
+            
         }
 
 
