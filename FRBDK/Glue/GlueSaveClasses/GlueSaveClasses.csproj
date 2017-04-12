@@ -169,6 +169,7 @@
     <Compile Include="..\Glue\SaveClasses\TranslatedFileSave.cs">
       <Link>TranslatedFileSave.cs</Link>
     </Compile>
+    <Compile Include="DisplaySettings.cs" />
     <Compile Include="FloatRectangle.cs" />
     <Compile Include="FloatRectangleTypeConverter.cs" />
     <Compile Include="GlueProjectSaveExtensions.cs" />

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using GlueSaveClasses;
 
 //using System.Windows.Forms;
 #if GLUE
@@ -39,6 +40,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
         #region Camera Fields
+        // April 2017 - adding replacement for these, eventually should get removed:
         public bool In2D = true;
         public bool RunFullscreen = false;
 
@@ -113,6 +115,8 @@ namespace FlatRedBall.Glue.SaveClasses
         #endregion
 
         #region Properties
+
+        public DisplaySettings DisplaySettings { get; set; }
 
         [XmlIgnore]
         public bool UsesTranslation

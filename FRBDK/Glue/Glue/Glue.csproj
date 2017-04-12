@@ -249,6 +249,10 @@
     </Compile>
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Managers\HotkeyManager.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSettingsControl.xaml.cs">
+      <DependentUpon>CameraSettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\DisplaySettingsViewModel.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\CleanupPlugin\EventRemovalLogic.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\CleanupPlugin\FileRemovalLogic.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\CleanupPlugin\MainPlugin.cs" />
@@ -1256,6 +1260,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="GlueView\GlueViewToolbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSettingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

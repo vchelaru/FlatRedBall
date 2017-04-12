@@ -32,6 +32,7 @@
             this.cbIs2D = new System.Windows.Forms.ComboBox();
             this.cbSetResolution = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.RunFullscreenCheckBox = new System.Windows.Forms.CheckBox();
             this.ApplyToNonPCCheckBox = new System.Windows.Forms.CheckBox();
             this.AddResolutionButton = new System.Windows.Forms.Button();
             this.PresetsTreeView = new System.Windows.Forms.TreeView();
@@ -47,7 +48,7 @@
             this.cbSetOrthResolution = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
-            this.RunFullscreenCheckBox = new System.Windows.Forms.CheckBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.gbOrth.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
@@ -106,6 +107,17 @@
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Resolution";
+            // 
+            // RunFullscreenCheckBox
+            // 
+            this.RunFullscreenCheckBox.AutoSize = true;
+            this.RunFullscreenCheckBox.Location = new System.Drawing.Point(117, 12);
+            this.RunFullscreenCheckBox.Name = "RunFullscreenCheckBox";
+            this.RunFullscreenCheckBox.Size = new System.Drawing.Size(97, 17);
+            this.RunFullscreenCheckBox.TabIndex = 11;
+            this.RunFullscreenCheckBox.Text = "Run Fullscreen";
+            this.RunFullscreenCheckBox.UseVisualStyleBackColor = true;
+            this.RunFullscreenCheckBox.CheckedChanged += new System.EventHandler(this.RunFullscreen_CheckedChanged);
             // 
             // ApplyToNonPCCheckBox
             // 
@@ -250,10 +262,11 @@
             this.flowLayoutPanel1.Controls.Add(this.flowLayoutPanel2);
             this.flowLayoutPanel1.Controls.Add(this.groupBox1);
             this.flowLayoutPanel1.Controls.Add(this.gbOrth);
+            this.flowLayoutPanel1.Controls.Add(this.button1);
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(246, 266);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(246, 295);
             this.flowLayoutPanel1.TabIndex = 8;
             // 
             // flowLayoutPanel2
@@ -267,16 +280,15 @@
             this.flowLayoutPanel2.Size = new System.Drawing.Size(111, 27);
             this.flowLayoutPanel2.TabIndex = 9;
             // 
-            // RunFullscreenCheckBox
+            // button1
             // 
-            this.RunFullscreenCheckBox.AutoSize = true;
-            this.RunFullscreenCheckBox.Location = new System.Drawing.Point(117, 12);
-            this.RunFullscreenCheckBox.Name = "RunFullscreenCheckBox";
-            this.RunFullscreenCheckBox.Size = new System.Drawing.Size(97, 17);
-            this.RunFullscreenCheckBox.TabIndex = 11;
-            this.RunFullscreenCheckBox.Text = "Run Fullscreen";
-            this.RunFullscreenCheckBox.UseVisualStyleBackColor = true;
-            this.RunFullscreenCheckBox.CheckedChanged += new System.EventHandler(this.RunFullscreen_CheckedChanged);
+            this.button1.Location = new System.Drawing.Point(3, 269);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(179, 23);
+            this.button1.TabIndex = 10;
+            this.button1.Text = " Update to new display settings";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.HandleUpdateToNewDisplaySettingsClicked);
             // 
             // CameraSettingsWindow
             // 
@@ -330,5 +342,6 @@
         private System.Windows.Forms.TreeView PresetsTreeView;
         private System.Windows.Forms.CheckBox ApplyToNonPCCheckBox;
         private System.Windows.Forms.CheckBox RunFullscreenCheckBox;
+        private System.Windows.Forms.Button button1;
     }
 }

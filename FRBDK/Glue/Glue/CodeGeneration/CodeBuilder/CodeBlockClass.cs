@@ -34,7 +34,7 @@
 
     public static class CodeBlockClassExtensions
     {
-        public static ICodeBlock Class(this ICodeBlock pCodeBlock, string pPre, string pName, string pPost)
+        public static ICodeBlock Class(this ICodeBlock pCodeBlock, string pPre, string pName, string pPost = null)
         {
             return new CodeBlockClass(pCodeBlock, pPre, pName, pPost);
         }

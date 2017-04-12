@@ -11,6 +11,8 @@ using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -325,6 +327,45 @@ namespace FlatRedBall.Glue.Controls
         private void RunFullscreen_CheckedChanged(object sender, EventArgs e)
         {
             UpdateGluxCameraSettings();
+        }
+
+        private void HandleUpdateToNewDisplaySettingsClicked(object sender, EventArgs e)
+        {
+            var project = GlueState.Self.CurrentGlueProject;
+
+            if(project == null)
+            {
+                MessageBox.Show("No project loaded");
+            }
+            else
+            {
+                DisplaySettings settings = new DisplaySettings();
+
+
+                settings.AllowWindowResizing = false;
+                settings.AspectRatioHeight = 9;
+                settings.AspectRatioWidth = 16;
+
+                settings.Is2D = project.In2D;
+
+                settings.ResizeBehavior = ResizeBehavior.IncreaseVisibleArea;
+
+                settings.ResolutionWidth = project.ResolutionWidth;
+                settings.ResolutionHeight = project.ResolutionHeight;
+
+                settings.RunInFullScreen = false;
+                settings.Scale = 100;
+                settings.SupportLandscape = true;
+                settings.SupportPortrait = false;
+
+                project.DisplaySettings = settings;
+
+                GlueCommands.Self.GluxCommands.SaveGlux();
+
+                this.Close();
+
+                CameraMainPlugin.Self.ShowCameraUi();
+            }
         }
     }
 }

@@ -16,18 +16,25 @@ using System.Windows.Shapes;
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 {
     /// <summary>
-    /// Interaction logic for CameraToolbar.xaml
+    /// Interaction logic for CameraSettingsControl.xaml
     /// </summary>
-    public partial class CameraToolbar : UserControl
+    public partial class CameraSettingsControl : UserControl
     {
-        public CameraToolbar()
+        public CameraSettingsControl()
         {
             InitializeComponent();
         }
 
-        private void HandleButtonClick(object sender, RoutedEventArgs e)
+        private void TextBox_KeyUp(object sender, KeyEventArgs e)
         {
-            CameraMainPlugin.Self.ShowCameraUi();
+            if (e.Key == Key.Enter)
+            {
+                TextBox tBox = (TextBox)sender;
+                DependencyProperty prop = TextBox.TextProperty;
+
+                BindingExpression binding = BindingOperations.GetBindingExpression(tBox, prop);
+                if (binding != null) { binding.UpdateSource(); }
+            }
         }
     }
 }

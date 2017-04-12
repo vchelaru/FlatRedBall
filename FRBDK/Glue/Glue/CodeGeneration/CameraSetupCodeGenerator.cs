@@ -7,6 +7,7 @@ using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Utilities;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -81,21 +82,186 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static string GetCameraSetupCsContents()
         {
-            string newContents = Resources.Resource1.CameraSetupTemplate;
+            bool shouldGenerateNew = GlueState.Self.CurrentGlueProject.DisplaySettings != null;
 
-            newContents = CodeWriter.ReplaceNamespace(newContents, ProjectManager.ProjectNamespace);
+            string fileContents = null;
 
             ICodeBlock classContents = new CodeBlockBase(null);
-            classContents.TabCount = 2;
 
             classContents.Line("// This is a generated file created by Glue. To change this file, edit the camera settings in Glue.");
             classContents.Line("// To access the camera settings, push the camera icon.");
+            if(shouldGenerateNew == false)
+            {
+                classContents.TabCount = 2;
+                fileContents = GetDisplaySetupOld(classContents);
+            }
+            else
+            {
+                fileContents = GetDisplaySetupNew(classContents);
+            }
+            return fileContents;
+        }
+
+        private static string GetDisplaySetupNew(ICodeBlock fileCode)
+        {
+            var displaySettings = GlueState.Self.CurrentGlueProject.DisplaySettings;
+
+
+            fileCode.Line("using Camera = FlatRedBall.Camera;");
+
+            var namespaceContents = fileCode.Namespace(ProjectManager.ProjectNamespace);
+            var classContents = namespaceContents.Class("internal static", "CameraSetup");
+
+            classContents.Line($"const float Scale = {displaySettings.Scale / 100.0m};");
+
+            GenerateResetMethodNew(displaySettings, classContents);
+            GenerateSetupCameraMethodNew(displaySettings, classContents);
+            GenerateHandleResize(displaySettings, classContents);
+            GenerateSetAspectRatio(displaySettings, classContents);
+
+            return fileCode.ToString();
+        }
+
+        private static void GenerateSetAspectRatio(DisplaySettings displaySettings, ICodeBlock classContents)
+        {
+            var functionBlock = classContents.Function("private static void", "SetAspectRatioTo", "decimal aspectRatio");
+            {
+                functionBlock.Line("var resolutionAspectRatio = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth / (decimal)FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight;");
+                functionBlock.Line("int destinationRectangleWidth;");
+                functionBlock.Line("int destinationRectangleHeight;");
+                functionBlock.Line("int x = 0;");
+                functionBlock.Line("int y = 0;");
+
+                var ifBlock = functionBlock.If("aspectRatio > resolutionAspectRatio");
+                {
+                    ifBlock.Line("destinationRectangleWidth = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth;");
+                    ifBlock.Line("destinationRectangleHeight = FlatRedBall.Math.MathFunctions.RoundToInt(destinationRectangleWidth / (float)aspectRatio);");
+
+                    ifBlock.Line("y = (FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight - destinationRectangleHeight) / 2;");
+                }
+                var elseBlock = ifBlock.End().Else();
+                {
+                    elseBlock.Line("destinationRectangleHeight = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight;");
+                    elseBlock.Line("destinationRectangleWidth = FlatRedBall.Math.MathFunctions.RoundToInt(destinationRectangleHeight * (float)aspectRatio);");
+
+                    elseBlock.Line("x = (FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth - destinationRectangleWidth) / 2;");
+                }
+
+                functionBlock.Line("FlatRedBall.Camera.Main.DestinationRectangle = new Microsoft.Xna.Framework.Rectangle(x, y, destinationRectangleWidth, destinationRectangleHeight);");
+                functionBlock.Line("FlatRedBall.Camera.Main.FixAspectRatioYConstant();");
+            }
+        }
+
+        private static void GenerateHandleResize(DisplaySettings displaySettings, ICodeBlock classContents)
+        {
+            var functionBlock = classContents.Function("private static void", "HandleResolutionChange", "object sender, System.EventArgs args");
+            {
+                functionBlock.Line($"SetAspectRatioTo({displaySettings.AspectRatioWidth} / {displaySettings.AspectRatioHeight}m);");
+
+                if(displaySettings.Is2D && displaySettings.ResizeBehavior == ResizeBehavior.IncreaseVisibleArea)
+                {
+                    functionBlock.Line("FlatRedBall.Camera.Main.OrthogonalHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / Scale;");
+                    functionBlock.Line("FlatRedBall.Camera.Main.FixAspectRatioYConstant();");
+
+
+                }
+            }
+        }
+
+        private static void GenerateSetupCameraMethodNew(DisplaySettings displaySettings, ICodeBlock classContents)
+        {
+            var methodContents = classContents.Function(
+                "internal static void",
+                "SetupCamera",
+                $"Camera cameraToSetUp, Microsoft.Xna.Framework.GraphicsDeviceManager graphicsDeviceManager, int width = {displaySettings.ResolutionWidth}, int height = {displaySettings.ResolutionHeight}");
+
+            if (displaySettings.GenerateDisplayCode)
+            {
+
+
+                methodContents.Line("#if WINDOWS");
+
+                string widthVariable = "width";
+                string heightVariable = "height";
+                if (displaySettings.RunInFullScreen)
+                {
+                    methodContents.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(width, height);");
+                }
+                else
+                {
+                    if (displaySettings.Scale != 100)
+                    {
+                        widthVariable = $"(int)({widthVariable} * Scale)";
+                        heightVariable = $"(int)({heightVariable} * Scale)";
+                    }
+                    methodContents.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution({widthVariable}, {heightVariable});");
+                }
+
+                methodContents.Line($"FlatRedBall.FlatRedBallServices.Game.Window.AllowUserResizing = {displaySettings.AllowWindowResizing.ToString().ToLowerInvariant()};");
+
+                methodContents.Line("#elif IOS || ANDROID");
+
+                // We used to not set the resolution on iOS/Android, but this makes the camera not use the full screen.
+                // We want it to do that, so we'll do this:
+                // Update November 12, 2015
+                // Setting everything to fullscreen makes things render correctly, and also
+                // hides the status UI on iOS, but we also need to set the resolution to the
+                // native resolution for the cursor to work correctly:
+                //methodContents.Line("FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(width, height);");
+                methodContents.Line(
+                    //"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(width, height);"
+                    "FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight);"
+                    );
+
+
+                // closes the #if platform section
+                methodContents.Line("#endif");
+
+
+                methodContents.Line("ResetCamera(cameraToSetUp);");
+
+                if (displaySettings.FixedAspectRatio)
+                {
+                    methodContents.Line(
+                        $"FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += HandleResolutionChange;");
+                }
+            }
+        }
+
+        private static void GenerateResetMethodNew(SaveClasses.DisplaySettings displaySettings, ICodeBlock classContents)
+        {
+            var resetMethod = classContents.Function(
+                "internal static void", "ResetCamera", "Camera cameraToReset");
+            {
+                if (displaySettings.GenerateDisplayCode)
+                {
+                    if (displaySettings.Is2D)
+                    {
+                        resetMethod.Line($"FlatRedBall.Camera.Main.Orthogonal = true;");
+                        resetMethod.Line($"FlatRedBall.Camera.Main.OrthogonalHeight = {displaySettings.ResolutionHeight};");
+                        resetMethod.Line($"FlatRedBall.Camera.Main.OrthogonalWidth = {displaySettings.ResolutionWidth};");
+                    }
+
+                    if(displaySettings.FixedAspectRatio)
+                    {
+                        resetMethod.Line($"SetAspectRatioTo({displaySettings.AspectRatioWidth} / {displaySettings.AspectRatioHeight}m);");
+                    }
+                }
+            }
+        }
+
+        #region Old Code
+        private static string GetDisplaySetupOld(ICodeBlock classContents)
+        {
+            string fileContents = Resources.Resource1.CameraSetupTemplate;
+            fileContents = CodeWriter.ReplaceNamespace(fileContents, ProjectManager.ProjectNamespace);
+
 
             GenerateSetupCameraMethod(classContents);
             GenerateResetCameraMethod(classContents);
 
-            StringFunctions.ReplaceLine(ref newContents, "// Generated Code:", classContents.ToString());
-            return newContents;
+            StringFunctions.ReplaceLine(ref fileContents, "// Generated Code:", classContents.ToString());
+            return fileContents;
         }
 
         private static void GenerateResetCameraMethod(ICodeBlock classContents)
@@ -230,5 +396,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                 methodContents.Line("#endif");
             }
         }
+
+
+
+
+        #endregion
     }
 }
