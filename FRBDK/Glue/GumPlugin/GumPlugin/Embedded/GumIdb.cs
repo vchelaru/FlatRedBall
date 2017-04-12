@@ -243,19 +243,22 @@ namespace FlatRedBall.Gum
 
         public static void UpdateDisplayToMainFrbCamera()
         {
+            var frbCamera = FlatRedBall.Camera.Main;
 
             if (FlatRedBall.Camera.Main.Orthogonal)
             {
-                GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.OrthogonalHeight;
-                GraphicalUiElement.CanvasWidth = FlatRedBall.Camera.Main.OrthogonalWidth;
+                GraphicalUiElement.CanvasHeight = frbCamera.OrthogonalHeight;
+                GraphicalUiElement.CanvasWidth = frbCamera.OrthogonalWidth;
+
+                var zoom = frbCamera.DestinationRectangle.Height / frbCamera.OrthogonalHeight;
+
+                global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;
             }
             else
             {
-                GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height;
-                GraphicalUiElement.CanvasWidth = FlatRedBall.Camera.Main.DestinationRectangle.Width;
+                GraphicalUiElement.CanvasHeight = frbCamera.DestinationRectangle.Height;
+                GraphicalUiElement.CanvasWidth = frbCamera.DestinationRectangle.Width;
             }
-
-            
         }
 
 

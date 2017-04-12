@@ -179,7 +179,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
 
 
-                methodContents.Line("#if WINDOWS");
+                methodContents.Line("#if WINDOWS || DESKTOP_GL");
 
                 string widthVariable = "width";
                 string heightVariable = "height";
