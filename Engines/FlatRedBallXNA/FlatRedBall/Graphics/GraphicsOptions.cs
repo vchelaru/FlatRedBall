@@ -19,6 +19,8 @@ namespace FlatRedBall.Graphics
         bool mSuspendDeviceReset = false;
         int mResolutionWidth;
 
+        Game game;
+
         int mResolutionHeight;
         #endregion
 
@@ -241,11 +243,13 @@ namespace FlatRedBall.Graphics
         public GraphicsOptions(Game game, GraphicsDeviceManager graphics)
         {
 
-
-            if (game != null)
-            {
-                game.Window.ClientSizeChanged += new EventHandler<EventArgs>(HandleClientSizeOrOrientationChange);
-            }
+            // We used to call this here, but that makes HandleClientSizeOrOrientationChange get called first, before 
+            // internal code, and that means that custom code gets logic before internal, which can result in resolutions being wrong...
+            //if (game != null)
+            //{
+            //    game.Window.ClientSizeChanged += new EventHandler<EventArgs>(HandleClientSizeOrOrientationChange);
+            //}
+            this.game = game;
 
             if (graphics != null)
             {
@@ -333,6 +337,14 @@ namespace FlatRedBall.Graphics
         #endregion
 
         #region Methods
+
+        public void Initialize()
+        {
+            if (game != null)
+            {
+                game.Window.ClientSizeChanged += new EventHandler<EventArgs>(HandleClientSizeOrOrientationChange);
+            }
+        }
 
         static readonly SamplerState PointMirror = new SamplerState
         {

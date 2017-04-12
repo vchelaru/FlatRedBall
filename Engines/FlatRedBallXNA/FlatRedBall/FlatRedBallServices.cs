@@ -414,7 +414,7 @@ namespace FlatRedBall
 #if !WINDOWS_8
                     mGraphicsOptions.ResumeDeviceReset();
 
-#if WINDOWS
+#if WINDOWS 
                     FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
 #endif
 
@@ -630,6 +630,7 @@ namespace FlatRedBall
 #if WINDOWS_8
             FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += HandleSizeOrOrientationChanged;
 #endif
+
             mServices = game.Services;
             mGame = game;
 
@@ -666,6 +667,8 @@ namespace FlatRedBall
 #else
             game.Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged);
 #endif
+            // call this *after assignign the events
+            mGraphicsOptions.Initialize();
 
             CommonInitialize(graphics);
             
