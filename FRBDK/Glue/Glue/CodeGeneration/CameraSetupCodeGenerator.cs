@@ -62,8 +62,6 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static void UpdateOrAddCameraSetup()
         {
-            
-            
            string fileName = GlueState.Self.CurrentGlueProjectDirectory + @"Setup\CameraSetup.cs";
 
             string newContents = GetCameraSetupCsContents();
@@ -115,8 +113,11 @@ namespace FlatRedBall.Glue.CodeGeneration
             classContents.Line($"const float Scale = {displaySettings.Scale / 100.0m};");
 
             GenerateResetMethodNew(displaySettings, classContents);
+
             GenerateSetupCameraMethodNew(displaySettings, classContents);
+
             GenerateHandleResize(displaySettings, classContents);
+
             GenerateSetAspectRatio(displaySettings, classContents);
 
             return fileCode.ToString();
@@ -181,11 +182,26 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 methodContents.Line("#if WINDOWS || DESKTOP_GL");
 
+                // This needs to come before the fullscreen assignment, because if not it changes the border style
+                methodContents.Line($"FlatRedBall.FlatRedBallServices.Game.Window.AllowUserResizing = {displaySettings.AllowWindowResizing.ToString().ToLowerInvariant()};");
+
                 string widthVariable = "width";
                 string heightVariable = "height";
                 if (displaySettings.RunInFullScreen)
                 {
+                    methodContents.Line("#if DESKTOP_GL");
+
+                    // We used to do this on WINDOWS too but that isn't stable so we use borderless
                     methodContents.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(width, height);");
+                    methodContents.Line("#elif WINDOWS");
+                    methodContents.Line("System.IntPtr hWnd = FlatRedBall.FlatRedBallServices.Game.Window.Handle;");
+                    methodContents.Line("var control = System.Windows.Forms.Control.FromHandle(hWnd);");
+                    methodContents.Line("var form = control.FindForm();");
+
+
+                    methodContents.Line("form.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;");
+                    methodContents.Line("form.WindowState = System.Windows.Forms.FormWindowState.Maximized;");
+                    methodContents.Line("#endif");
                 }
                 else
                 {
@@ -197,7 +213,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                     methodContents.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution({widthVariable}, {heightVariable});");
                 }
 
-                methodContents.Line($"FlatRedBall.FlatRedBallServices.Game.Window.AllowUserResizing = {displaySettings.AllowWindowResizing.ToString().ToLowerInvariant()};");
 
                 methodContents.Line("#elif IOS || ANDROID");
 
@@ -250,7 +265,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        #region Old Code
+#region Old Code
         private static string GetDisplaySetupOld(ICodeBlock classContents)
         {
             string fileContents = Resources.Resource1.CameraSetupTemplate;
@@ -400,6 +415,6 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
 
-        #endregion
+#endregion
     }
 }
