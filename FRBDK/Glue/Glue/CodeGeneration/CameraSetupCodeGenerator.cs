@@ -227,7 +227,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                     //"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(width, height);"
                     "FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight);"
                     );
-
+                methodContents.Line("#elif UWP");
+                if (displaySettings.RunInFullScreen)
+                {
+                    methodContents.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(width, height);");
+                }
 
                 // closes the #if platform section
                 methodContents.Line("#endif");

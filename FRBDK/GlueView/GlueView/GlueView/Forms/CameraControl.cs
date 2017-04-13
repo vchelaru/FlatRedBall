@@ -83,23 +83,13 @@ namespace GlueView.Forms
 
                     if (glueProject != null)
                     {
-                        SpriteManager.Camera.Orthogonal = glueProject.In2D;
-                        if (glueProject.SetResolution)
+                        if(glueProject.DisplaySettings != null)
                         {
-                            SetResolution(glueProject.ResolutionWidth, glueProject.ResolutionHeight);
-                            yResolution = glueProject.ResolutionHeight;
-
-                        }
-                        if (glueProject.SetOrthogonalResolution)
-                        {
-                            SpriteManager.Camera.OrthogonalWidth = glueProject.OrthogonalWidth;
-                            SpriteManager.Camera.OrthogonalHeight = glueProject.OrthogonalHeight;
+                            yResolution = SetCameraFromDisplaySettings(yResolution, glueProject.DisplaySettings);
                         }
                         else
                         {
-                            // If we don't set it explicitly then default to the resolution:
-                            SpriteManager.Camera.OrthogonalWidth = glueProject.ResolutionWidth;
-                            SpriteManager.Camera.OrthogonalHeight = glueProject.ResolutionHeight;
+                            yResolution = SetCameraFromOldValues(yResolution, glueProject);
                         }
                     }
                 }
@@ -111,6 +101,45 @@ namespace GlueView.Forms
             this.propertyGrid1.Refresh();
 
             PluginManager.ReactToResolutionChange();
+        }
+
+        private float SetCameraFromDisplaySettings(float yResolution, DisplaySettings displaySettings)
+        {
+            SpriteManager.Camera.Orthogonal = displaySettings.Is2D;
+            if(displaySettings.GenerateDisplayCode)
+            {
+                SetResolution(displaySettings.ResolutionWidth, displaySettings.ResolutionHeight);
+                yResolution = displaySettings.ResolutionHeight;
+            }
+
+            SpriteManager.Camera.OrthogonalWidth = displaySettings.ResolutionWidth;
+            SpriteManager.Camera.OrthogonalHeight = displaySettings.ResolutionHeight;
+            return yResolution;
+        }
+
+        private float SetCameraFromOldValues(float yResolution, GlueProjectSave glueProject)
+        {
+            SpriteManager.Camera.Orthogonal = glueProject.In2D;
+
+            if (glueProject.SetResolution)
+            {
+                SetResolution(glueProject.ResolutionWidth, glueProject.ResolutionHeight);
+                yResolution = glueProject.ResolutionHeight;
+
+            }
+            if (glueProject.SetOrthogonalResolution)
+            {
+                SpriteManager.Camera.OrthogonalWidth = glueProject.OrthogonalWidth;
+                SpriteManager.Camera.OrthogonalHeight = glueProject.OrthogonalHeight;
+            }
+            else
+            {
+                // If we don't set it explicitly then default to the resolution:
+                SpriteManager.Camera.OrthogonalWidth = glueProject.ResolutionWidth;
+                SpriteManager.Camera.OrthogonalHeight = glueProject.ResolutionHeight;
+            }
+
+            return yResolution;
         }
 
         private void ApplySettingsFromCameraConfigurationEnum(ref float yResolution)

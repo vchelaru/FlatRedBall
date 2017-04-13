@@ -556,7 +556,7 @@ namespace FlatRedBall.Graphics
                         // the ability to run on 
                         // multiple resolutions, so 
                         // we won't do any checks here.
-#if DEBUG && !SILVERLIGHT && !ANDROID
+#if DEBUG && !SILVERLIGHT && !ANDROID && !UWP
                         if (IsFullScreen)
                         {
                             bool foundResolution = false;
