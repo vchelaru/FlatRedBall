@@ -6,11 +6,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{10BDA06C-7269-4CCE-AE2A-D445F414520A}</ProjectGuid>
     <OutputType>Library</OutputType>
+    <OutputPath>bin\DesktopGL\Debug\</OutputPath>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>FlatRedBallDesktopGL</RootNamespace>
     <AssemblyName>FlatRedBallDesktopGL</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <DefineConstants>TRACE;DEBUG;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
