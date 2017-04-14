@@ -115,6 +115,23 @@ namespace BuildServerUploaderConsole.Data
 
             }
 
+            {
+                var engine = new EngineData();
+
+                engine.RelativeToLibrariesDebugFolder = @"DesktopGl\Debug";
+                engine.RelativeToLibrariesReleaseFolder = @"DesktopGl\Release";
+                engine.TemplateFolder = @"FlatRedBallDesktopGlLinuxTemplate\FlatRedBallDesktopGlLinuxTemplate\";
+
+                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Debug\FlatRedBallDesktopGL.dll");
+                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Debug\FlatRedBallDesktopGL.pdb");
+
+                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Release\FlatRedBallDesktopGL.dll");
+                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Release\FlatRedBallDesktopGL.pdb");
+
+                Engines.Add(engine);
+
+            }
+
         }
     }
 }
