@@ -34,7 +34,7 @@ namespace OfficialPlugins.ProjectCopier
 
         public override void StartUp()
         {
-            copyManager = new CopyManager();
+            copyManager = new CopyManager(ShowError);
             //this.AddMenuItemTo("Copy Projects To...", ShowFileWindowForCopy, "Project");
             this.InitializeBottomTabHandler += AddControlToTab;
 
@@ -102,6 +102,11 @@ namespace OfficialPlugins.ProjectCopier
             mControl = null;
 
             return true;
+        }
+
+        private void ShowError(string error)
+        {
+            MessageBox.Show(error);
         }
     }
 }

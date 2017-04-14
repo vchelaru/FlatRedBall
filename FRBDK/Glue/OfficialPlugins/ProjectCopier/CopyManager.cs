@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -15,6 +16,7 @@ namespace OfficialPlugins.ProjectCopier
         bool saveOnNextCopy;
         ProjectCopierSettings mSettings;
         static DateTime lastCopy;
+        private Action<string> showErrorAction;
 
         public event EventHandler AfterCopyFinished;
 
@@ -61,10 +63,12 @@ namespace OfficialPlugins.ProjectCopier
                 return ProjectManager.ProjectSpecificSettingsFolder + "CopySettings.xml.user";
             }
         }
-
         
-        public CopyManager()
+        public CopyManager(Action<string> showErrorAction)
         {
+            if (showErrorAction == null) throw new ArgumentNullException(nameof(showErrorAction));
+
+            this.showErrorAction = showErrorAction;
             mSettings = new ProjectCopierSettings();
         }
 
@@ -97,7 +101,18 @@ namespace OfficialPlugins.ProjectCopier
                 }
                 catch
                 {
-                    PluginManager.ReceiveOutput(percentage + " Error copying to " + destination);
+                    // If the file is encrypted via windows folder encryption, it most likely failed due to copying an encrypted file
+                    // over the network (which requires user interaction).
+                    var attributes = File.GetAttributes(fileUnmodified);
+                    if (attributes.HasFlag(FileAttributes.Encrypted))
+                    {
+                        PluginManager.ReceiveOutput($"{percentage} Error copying to {destination} (original file is encrypted!)");
+                    }
+                    else
+                    {
+                        PluginManager.ReceiveOutput(percentage + " Error copying to " + destination);
+                    }
+                    
                     errorCount++;
                 }
                 if (succeeded)
@@ -264,7 +279,9 @@ namespace OfficialPlugins.ProjectCopier
             string errorText = "";
             if (errorCount != 0)
             {
-                errorText = errorCount.ToString() + " Errors.  ";
+                errorText = errorCount + " Errors.  ";
+                var message = $"{errorCount} errors occurred while copying the project.  See output window for details";
+                showErrorAction(message);
             }
 
             string output = errorText + countCopied + " Copied.  " + skippedCount + " Skipped.";
@@ -280,7 +297,6 @@ namespace OfficialPlugins.ProjectCopier
             }
 
             lastCopy = System.DateTime.Now;
-
         }
     }
 }
