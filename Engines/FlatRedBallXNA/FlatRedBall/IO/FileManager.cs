@@ -1130,14 +1130,12 @@ namespace FlatRedBall.IO
         }
 
 
-        public static bool IsRelative(string fileName)
-        {
-            if (fileName == null)
-            {
-                throw new System.ArgumentException("Cannot check if a null file name is relative.");
-            }
-
-
+		public static bool IsRelative(string fileName)
+		{
+			if (fileName == null)
+			{
+				throw new System.ArgumentException("Cannot check if a null file name is relative.");
+			}
 
 #if USES_DOT_SLASH_ABOLUTE_FILES
             if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
@@ -1159,12 +1157,11 @@ namespace FlatRedBall.IO
                 return true;
             }
 #else
-            // a non-relative directory will have a letter than a : at the beginning.
-            // for example c:/file.bmp.  If other cases arise, this may need to be changed.
-            // Aha!  If it starts with \\ then it's a network file.  Thsi is absolute.
-            return !(fileName.Length > 1 && fileName[1] == ':') && fileName.StartsWith("\\\\") == false;
+			// .net considers a path relative if it doesn't start with a separator
+			// or windows drive identifier
+			return !Path.IsPathRooted(fileName);
 #endif
-        }
+		}
 
 
         public static bool IsRelativeTo(string fileName, string directory)
@@ -2309,23 +2306,23 @@ namespace FlatRedBall.IO
 
         public static void XmlSerialize<T>(T objectToSerialize, out string stringToSerializeTo)
         {
-            XmlSerialize(typeof(T), objectToSerialize, out stringToSerializeTo);
-        }
+			XmlSerialize(typeof(T), objectToSerialize, out stringToSerializeTo);
+		}
 
-        public static void XmlSerialize(Type type, object objectToSerialize, out string stringToSerializeTo)
-        {
-            MemoryStream memoryStream = new MemoryStream();
+		public static void XmlSerialize(Type type, object objectToSerialize, out string stringToSerializeTo)
+		{
+			MemoryStream memoryStream = new MemoryStream();
 
-            XmlSerializer serializer = GetXmlSerializer(type);
+			XmlSerializer serializer = GetXmlSerializer(type);
 
-            serializer.Serialize(memoryStream, objectToSerialize);
+			serializer.Serialize(memoryStream, objectToSerialize);
 
 
 #if SILVERLIGHT || WINDOWS_PHONE || (XBOX360 && XNA4) || MONOGAME
 
-            byte[] asBytes = memoryStream.ToArray();
+			byte[] asBytes = memoryStream.ToArray();
 
-            stringToSerializeTo = System.Text.Encoding.UTF8.GetString(asBytes, 0, asBytes.Length);
+			stringToSerializeTo = System.Text.Encoding.UTF8.GetString(asBytes, 0, asBytes.Length);
 #elif XBOX360
             
             throw new NotImplementedException("XmlSerialization to string is not supported yet");
@@ -2337,62 +2334,62 @@ namespace FlatRedBall.IO
             stringToSerializeTo = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
 #endif
 
-        }
+		}
 
 #if !FRB_MDX
-        //Implemented based on interface, not part of algorithm
-        public static string RemoveAllNamespaces(string xmlDocument)
-        {
-            XElement xmlDocumentWithoutNs = RemoveAllNamespaces(XElement.Parse(xmlDocument));
+		//Implemented based on interface, not part of algorithm
+		public static string RemoveAllNamespaces(string xmlDocument)
+		{
+			XElement xmlDocumentWithoutNs = RemoveAllNamespaces(XElement.Parse(xmlDocument));
 
-            return xmlDocumentWithoutNs.ToString();
-        }
+			return xmlDocumentWithoutNs.ToString();
+		}
 
-        //Core recursion function
-        private static XElement RemoveAllNamespaces(XElement xmlDocument)
-        {
-            if (!xmlDocument.HasElements)
-            {
-                XElement xElement = new XElement(xmlDocument.Name.LocalName);
-                xElement.Value = xmlDocument.Value;
+		//Core recursion function
+		private static XElement RemoveAllNamespaces(XElement xmlDocument)
+		{
+			if (!xmlDocument.HasElements)
+			{
+				XElement xElement = new XElement(xmlDocument.Name.LocalName);
+				xElement.Value = xmlDocument.Value;
 
-                foreach (XAttribute attribute in xmlDocument.Attributes())
-                    xElement.Add(attribute);
+				foreach (XAttribute attribute in xmlDocument.Attributes())
+					xElement.Add(attribute);
 
-                return xElement;
-            }
-            return new XElement(xmlDocument.Name.LocalName, xmlDocument.Elements().Select(el => RemoveAllNamespaces(el)));
-        }
+				return xElement;
+			}
+			return new XElement(xmlDocument.Name.LocalName, xmlDocument.Elements().Select(el => RemoveAllNamespaces(el)));
+		}
 #endif
 
 
-#endregion
+		#endregion
 
-#endregion
+		#endregion
 
-#region Internal Methods
+		#region Internal Methods
 
-        internal static XmlSerializer GetXmlSerializer<T>()
-        {
-            return GetXmlSerializer(typeof(T));
-        }
+		internal static XmlSerializer GetXmlSerializer<T>()
+		{
+			return GetXmlSerializer(typeof(T));
+		}
 
 
-        internal static XmlSerializer GetXmlSerializer(Type type)
-        {
-            lock (mXmlSerializers)
-            {
-                if (mXmlSerializers.ContainsKey(type))
-                {
-                    return mXmlSerializers[type];
-                }
-                else
-                {
-      
-                    // For info on this block, see:
-                    // http://stackoverflow.com/questions/1127431/xmlserializer-giving-filenotfoundexception-at-constructor
+		internal static XmlSerializer GetXmlSerializer(Type type)
+		{
+			lock (mXmlSerializers)
+			{
+				if (mXmlSerializers.ContainsKey(type))
+				{
+					return mXmlSerializers[type];
+				}
+				else
+				{
+
+					// For info on this block, see:
+					// http://stackoverflow.com/questions/1127431/xmlserializer-giving-filenotfoundexception-at-constructor
 #if DEBUG
-                    XmlSerializer newSerializer = XmlSerializer.FromTypes(new[] { type })[0];
+					XmlSerializer newSerializer = XmlSerializer.FromTypes(new[] { type })[0];
 #else
                     XmlSerializer newSerializer = null;
 
@@ -2400,100 +2397,100 @@ namespace FlatRedBall.IO
 #endif
 
 
-                    mXmlSerializers.Add(type, newSerializer);
-                    return newSerializer;
-                }
-            }
-        }
+					mXmlSerializers.Add(type, newSerializer);
+					return newSerializer;
+				}
+			}
+		}
 
 
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
 
 #if !SILVERLIGHT && !WINDOWS_8
 
-        private static void CopyDirectoryHelper(string sourceDirectory, string destDirectory, bool clearDestination, List<string> excludeFiles, List<string> excludeDirectories)
-        {
-            destDirectory = FileManager.Standardize(destDirectory);
+		private static void CopyDirectoryHelper(string sourceDirectory, string destDirectory, bool clearDestination, List<string> excludeFiles, List<string> excludeDirectories)
+		{
+			destDirectory = FileManager.Standardize(destDirectory);
 
-            if (!destDirectory.EndsWith(@"\") && !destDirectory.EndsWith(@"/"))
-            {
-                destDirectory += @"\";
-            }
+			if (!destDirectory.EndsWith(@"\") && !destDirectory.EndsWith(@"/"))
+			{
+				destDirectory += @"\";
+			}
 
-            if (Directory.Exists(destDirectory) && clearDestination)
-            {
-                DeleteDirectory(destDirectory);
-            }
+			if (Directory.Exists(destDirectory) && clearDestination)
+			{
+				DeleteDirectory(destDirectory);
+			}
 
-            if (!Directory.Exists(destDirectory))
-            {
-                Directory.CreateDirectory(destDirectory);
-            }
+			if (!Directory.Exists(destDirectory))
+			{
+				Directory.CreateDirectory(destDirectory);
+			}
 
-            string[] fileList = Directory.GetFiles(sourceDirectory);
-            foreach (string file in fileList)
-            {
-                if (excludeFiles == null || !excludeFiles.Contains(file))
-                    File.Copy(file, destDirectory + RemovePath(file), true);
-            }
+			string[] fileList = Directory.GetFiles(sourceDirectory);
+			foreach (string file in fileList)
+			{
+				if (excludeFiles == null || !excludeFiles.Contains(file))
+					File.Copy(file, destDirectory + RemovePath(file), true);
+			}
 
-            string dirName;
-            string[] dirList = Directory.GetDirectories(sourceDirectory);
-            foreach (string dir in dirList)
-            {
-                dirName = RemovePath(dir);
+			string dirName;
+			string[] dirList = Directory.GetDirectories(sourceDirectory);
+			foreach (string dir in dirList)
+			{
+				dirName = RemovePath(dir);
 
-                if (excludeDirectories == null || !excludeDirectories.Contains(dirName))
-                    CopyDirectoryHelper(dir, destDirectory + dirName, clearDestination, excludeFiles, excludeDirectories);
-            }
+				if (excludeDirectories == null || !excludeDirectories.Contains(dirName))
+					CopyDirectoryHelper(dir, destDirectory + dirName, clearDestination, excludeFiles, excludeDirectories);
+			}
 
-        }
+		}
 #endif
-        
-        public static void Close(Stream stream)
-        {
+
+		public static void Close(Stream stream)
+		{
 #if WINDOWS_8 || UWP
             // Close was removed - no need to do anything
 #else
-            stream.Close();
+			stream.Close();
 #endif
-        }
+		}
 
-        public static void Close(StreamReader streamReader)
-        {
+		public static void Close(StreamReader streamReader)
+		{
 #if WINDOWS_8 || UWP
             // Close was removed - no need to do anything
 #else
-            streamReader.Close();
+			streamReader.Close();
 #endif
-        }
+		}
 
-        private static void Close(BinaryWriter writer)
-        {
+		private static void Close(BinaryWriter writer)
+		{
 #if WINDOWS_8 || UWP
             // Close was removed - no need to do anything
 #else
-            writer.Close();
+			writer.Close();
 #endif
-        }
+		}
 
-        private static void Close(StreamWriter writer)
-        {
+		private static void Close(StreamWriter writer)
+		{
 #if WINDOWS_8 || UWP
             // Close was removed - no need to do anything
 #else
-            writer.Close();
+			writer.Close();
 #endif
-        }
+		}
 
-        public static void Close(TextReader writer)
-        {
+		public static void Close(TextReader writer)
+		{
 #if WINDOWS_8 || UWP
             // Close was removed - no need to do anything
 #else
-            writer.Close();
+			writer.Close();
 #endif
         }
 
