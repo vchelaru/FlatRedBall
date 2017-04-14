@@ -112,6 +112,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 toReturn = new WindowsPhoneProject(coreVisualStudioProject);
             }
+            else if(preProcessorConstants.Contains("LINUX"))
+            {
+                toReturn = new DesktopGlLinuxProject(coreVisualStudioProject);
+            }
             else if(preProcessorConstants.Contains("DESKTOP_GL"))
             {
                 toReturn = new DesktopGlProject(coreVisualStudioProject);

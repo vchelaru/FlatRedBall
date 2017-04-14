@@ -755,6 +755,7 @@
     <Compile Include="VSHelpers\Projects\ClassLibraryProject.cs" />
     <Compile Include="VSHelpers\Projects\CombinedEmbeddedContentProject.cs" />
     <Compile Include="VSHelpers\Projects\ContentHybridProject.cs" />
+    <Compile Include="VSHelpers\Projects\DesktopGlLinuxProject.cs" />
     <Compile Include="VSHelpers\Projects\DesktopGlProject.cs" />
     <Compile Include="VSHelpers\Projects\IosMonogameProject.cs" />
     <Compile Include="VSHelpers\Projects\AndroidProject.cs" />

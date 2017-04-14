@@ -98,29 +98,8 @@ namespace PluginTestbed.SourceSetup
             var result = new List<string>();
             string str;
 
-            if (project is FsbProject)
-            {
-                str = CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatSilverBall\FlatSilverBall\FlatRedBall.csproj";
-                CheckFile(str);
-                result.Add(str);
-
-                str = CleanBaseDirectory(_settings.SelectedEngineDirectory) +
-                      @"\FlatSilverBall\SilverSpriteSource\SilverArcade.SilverSprite\SilverArcade.SilverSprite.csproj";
-                CheckFile(str);
-                result.Add(str);
-
-                str = CleanBaseDirectory(_settings.SelectedEngineDirectory) +
-                      @"\FlatSilverBall\SilverSpriteSource\SilverArcade.SilverSprite\SilverArcade.SilverSprite.Core.csproj";
-                CheckFile(str);
-                result.Add(str);
-            }
-            else if (project is MdxProject)
-            {
-                str = CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallMDX\FRB.csproj";
-                CheckFile(str);
-                result.Add(str);
-            }
-            else if (project is AndroidProject)
+            
+            if (project is AndroidProject)
             {
                 str = CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallAndroid\FlatRedBallAndroid\FlatRedBallMonoDroid\FlatRedBallMonoDroid.csproj";
                 CheckFile(str);
