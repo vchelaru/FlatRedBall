@@ -316,13 +316,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not exist $(SolutionDir)Glue\bin\Debug\Plugins\ md $(SolutionDir)Glue\bin\Debug\Plugins\
+    <PostBuildEvent>if not exist "$(SolutionDir)Glue\bin\Debug\Plugins\" md "$(SolutionDir)Glue\bin\Debug\Plugins\"
 
-if not exist $(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\ md $(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\
-copy $(TargetDir)OfficialPlugins.dll $(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\OfficialPlugins.dll
+if not exist "$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\" md "$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\"
+copy "$(TargetDir)OfficialPlugins.dll" "$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\OfficialPlugins.dll"
 
 echo Needed for installer
-copy $(TargetDir)FlatRedBall.dll $(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\FlatRedBall.dll
+copy "$(TargetDir)FlatRedBall.dll" "$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\FlatRedBall.dll"
 
 </PostBuildEvent>
   </PropertyGroup>

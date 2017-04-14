@@ -65,10 +65,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not exist $(SolutionDir)Glue\bin\Debug\Plugins\ md $(SolutionDir)Glue\bin\Debug\Plugins\
+    <PostBuildEvent>if not exist "$(SolutionDir)Glue\bin\Debug\Plugins\" md "$(SolutionDir)Glue\bin\Debug\Plugins\"
 
-if not exist $(SolutionDir)Glue\bin\Debug\Plugins\TortoiseSvnPlugin\ md $(SolutionDir)Glue\bin\Debug\Plugins\TortoiseSvnPlugin\
-copy $(TargetDir)TortoiseSvnPlugin.dll $(SolutionDir)Glue\bin\Debug\Plugins\TortoiseSvnPlugin\TortoiseSvnPlugin.dll"</PostBuildEvent>
+if not exist "$(SolutionDir)Glue\bin\Debug\Plugins\TortoiseSvnPlugin\" md "$(SolutionDir)Glue\bin\Debug\Plugins\TortoiseSvnPlugin\"
+copy "$(TargetDir)TortoiseSvnPlugin.dll" "$(SolutionDir)Glue\bin\Debug\Plugins\TortoiseSvnPlugin\TortoiseSvnPlugin.dll"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
