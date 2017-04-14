@@ -36,37 +36,36 @@ namespace FlatRedBall.Instructions
 
         #region Properties
 
-        #region XML Docs
         /// <summary>
-        /// The system time to execute the instruction at.
+        /// The game time to check for execution.
         /// </summary>
         /// <remarks>
         /// The TimeManager.CurrentTime property is used for comparisons.
         /// </remarks>
-        #endregion
         public double TimeToExecute
         {
             get { return mTimeToExecute; }
             set { mTimeToExecute = value; }
         }
 
-        #region XML Docs
         /// <summary>
-        /// The amount of time to add to the instruction for cycled execution.  Default of 0 
-        /// instructs the executing logic to not cycle the Instruction.
+        /// The amount of time between executions for an instruction that cycles. If this value is 0, the
+        /// instruction does not cycle. CycleTime is only considered after an instructions first execution.
+        /// This means that an instruction may be scheuduled to execute in 10 seconds, then after its first execution
+        /// it will repeat every second thereafter.
         /// </summary>
-        #endregion
+        /// <example>
+        /// Setting a CycleTime of 1 means that the instruction will execute ever 1 second after its first execution.
+        /// </example>
         public double CycleTime
         {
             get { return mCycleTime; }
             set { mCycleTime = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets reference to the object that is the target of the Instruction.
         /// </summary>
-        #endregion
         public abstract object Target
         {
             get;

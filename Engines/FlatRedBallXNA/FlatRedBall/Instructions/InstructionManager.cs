@@ -142,6 +142,10 @@ namespace FlatRedBall.Instructions
             }
         }
 
+        /// <summary>
+        /// Adds the argument instruction to the InstructionManager, to be executed when its time is reached.
+        /// </summary>
+        /// <param name="instruction">The instruction to remove</param>
         public static void Add(Instruction instruction)
         {
             mInstructions.Add(instruction);
@@ -507,6 +511,11 @@ namespace FlatRedBall.Instructions
 
         #endregion
 
+        /// <summary>
+        /// Removes the argument instruction from the internal list. A removed instruction will not
+        /// automatically be executed.
+        /// </summary>
+        /// <param name="instruction">The instruction to remove.</param>
         public static void Remove(Instruction instruction)
         {
             mInstructions.Remove(instruction);
@@ -604,12 +613,11 @@ namespace FlatRedBall.Instructions
             return mInterpolators.ContainsKey(type);
         }
 
-        #region XML Docs
         /// <summary>
-        /// Executes contained instructions.
+        /// Performs every-frame updates which include moving queued instructions to the main instruction list and
+        /// executing instructions according to their TimeToExecute.
         /// </summary>
         /// <param name="currentTime">The number of seconds since the start of application execution.</param>
-        #endregion
         public static void Update(double currentTime)
         {
             //Flush();

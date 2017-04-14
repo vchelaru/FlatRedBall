@@ -408,8 +408,12 @@ namespace FlatRedBall.AnimationEditorForms
 
         public void SetTileY(AnimationFrameSave frame, int valueAsInt)
         {
+            if (frame == null)
+            {
+                throw new ArgumentNullException(nameof(frame));
+            }
             TileMapInformation information = TileMapInformation;
-            if (information != null)
+            if (information != null && mTexture != null)
             {
                 int pixelPosition = valueAsInt * information.TileHeight;
                 frame.TopCoordinate = pixelPosition / (float)mTexture.Height;
@@ -420,8 +424,12 @@ namespace FlatRedBall.AnimationEditorForms
 
         public void SetTileX(AnimationFrameSave frame, int valueAsInt)
         {
+            if(frame == null)
+            {
+                throw new ArgumentNullException(nameof(frame));
+            }
             TileMapInformation information = TileMapInformation;
-            if (information != null)
+            if (information != null && mTexture != null)
             {
                 int pixelPosition = valueAsInt * information.TileWidth;
                 frame.LeftCoordinate = pixelPosition / (float)mTexture.Width;
