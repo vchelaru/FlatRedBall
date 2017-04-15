@@ -125,12 +125,6 @@
             Represents the song that is currently playing.  If no song is playing this is null.
             </summary>
         </member>
-        <member name="P:FlatRedBall.Audio.AudioManager.NumberOfSoundEffectPlays">
-            <summary>
-            Reports the total number of sound effects that have been played by the AudioManager since the start of the program's execution.
-            This can be used to count sound effect plays as a rough form of profiling.
-            </summary>
-        </member>
         <member name="M:FlatRedBall.Audio.AudioManager.Play(Microsoft.Xna.Framework.Audio.SoundEffect,System.Single)">
             <summary>
             Plays the argument sound effect.
@@ -1212,37 +1206,16 @@
             SecondsLasting property.
             </summary>
         </member>
-        <member name="P:FlatRedBall.Graphics.Particle.Emitter.BoundedEmission">
-            <summary>
-            If true, restricts this emitter to only emit when its EmissionBoundary is within the camera's view. This defaults to false, which means the emitter
-            will ignore camera bounds when attempting to emit.
-            </summary>
-            <remarks>
-            BoundedEmission can be used to improve the performance of your game, by reducing the number of off-screen particles which the engine has to manage.
-            </remarks>
-            <seealso cref="P:FlatRedBall.Graphics.Particle.Emitter.EmissionBoundary"/>
-        </member>
-        <member name="P:FlatRedBall.Graphics.Particle.Emitter.AreaEmission">
-            <summary>
-            Sets the area which defines where new particles can appear. 
-            By default this is set to Point, which means
-            emitted particles will appear at the Emitter's Position.
-            </summary>
-            <remarks>
-            If the AreaEmission is set to Rectangle or Cube, then the ScaleX, ScaleY, and ScaleZ values are used.
-            </remarks>
-        </member>
         <member name="P:FlatRedBall.Graphics.Particle.Emitter.SecondsLasting">
             <summary>
             Specifies the number of seconds that particles will remain on the screen and in memory.  This is only considered
             if the RemovalEvent is set to RemovalEventType.TIMED;
             </summary>
         </member>
-        <member name="P:FlatRedBall.Graphics.Particle.Emitter.RemovalEvent">
+        <member name="F:FlatRedBall.Graphics.Particle.Emitter.mRemovalEvent">
             <summary>
-            Specifies the type of logic to perform for removing the particle.
+            This is used only in the ParticleEditor.  
             </summary>
-            <seealso cref="P:FlatRedBall.Graphics.Particle.Emitter.SecondsLasting"/>
         </member>
         <member name="M:FlatRedBall.Graphics.Particle.Emitter.Emit(FlatRedBall.SpriteList)">
             <summary>
@@ -1264,14 +1237,6 @@
             </remarks>
             <param name="spriteList">The list of Sprites (which can be null) to add all Sprites created
             by this call.</param>
-        </member>
-        <member name="M:FlatRedBall.Graphics.Particle.Emitter.TimedEmit(FlatRedBall.SpriteList)">
-            <summary>
-            Checks if the emitter is ready to emit, and if so, performs an emit. This method will only emit if 
-            TimedEmission is set to true. Emitters which have TimedEmission set to true will typically have TimedEmit
-            called every frame.
-            </summary>
-            <param name="spriteList"></param>
         </member>
         <member name="T:FlatRedBall.Graphics.Particle.EmitterList">
             <summary>
@@ -2938,11 +2903,6 @@
             <exception cref="T:System.ComponentModel.ObjectDisposedException">
             The instance has been disposed of.
             </exception>
-        </member>
-        <member name="F:FlatRedBall.IO.Csv.CsvReader._allocStack">
-            <summary>
-            Contains the stack when the object was allocated.
-            </summary>
         </member>
         <member name="F:FlatRedBall.IO.Csv.CsvReader._isDisposed">
             <summary>
@@ -5875,7 +5835,7 @@
         </member>
         <member name="P:FlatRedBall.Instructions.Instruction.TimeToExecute">
             <summary>
-            The game time to check for execution.
+            The system time to execute the instruction at.
             </summary>
             <remarks>
             The TimeManager.CurrentTime property is used for comparisons.
@@ -5883,14 +5843,9 @@
         </member>
         <member name="P:FlatRedBall.Instructions.Instruction.CycleTime">
             <summary>
-            The amount of time between executions for an instruction that cycles. If this value is 0, the
-            instruction does not cycle. CycleTime is only considered after an instructions first execution.
-            This means that an instruction may be scheuduled to execute in 10 seconds, then after its first execution
-            it will repeat every second thereafter.
+            The amount of time to add to the instruction for cycled execution.  Default of 0 
+            instructs the executing logic to not cycle the Instruction.
             </summary>
-            <example>
-            Setting a CycleTime of 1 means that the instruction will execute ever 1 second after its first execution.
-            </example>
         </member>
         <member name="P:FlatRedBall.Instructions.Instruction.Target">
             <summary>
@@ -5973,19 +5928,6 @@
             Whether the (automatically called) Update method executes instructions.  Default true.
             </summary>
         </member>
-        <member name="M:FlatRedBall.Instructions.InstructionManager.Add(FlatRedBall.Instructions.Instruction)">
-            <summary>
-            Adds the argument instruction to the InstructionManager, to be executed when its time is reached.
-            </summary>
-            <param name="instruction">The instruction to remove</param>
-        </member>
-        <member name="M:FlatRedBall.Instructions.InstructionManager.Remove(FlatRedBall.Instructions.Instruction)">
-            <summary>
-            Removes the argument instruction from the internal list. A removed instruction will not
-            automatically be executed.
-            </summary>
-            <param name="instruction">The instruction to remove.</param>
-        </member>
         <member name="M:FlatRedBall.Instructions.InstructionManager.UncastedSetMember(System.Object,System.String,System.Object)">
             <summary>
             Sets a member on an uncasted object.  If the type of objectToSetOn is known, use
@@ -5997,8 +5939,7 @@
         </member>
         <member name="M:FlatRedBall.Instructions.InstructionManager.Update(System.Double)">
             <summary>
-            Performs every-frame updates which include moving queued instructions to the main instruction list and
-            executing instructions according to their TimeToExecute.
+            Executes contained instructions.
             </summary>
             <param name="currentTime">The number of seconds since the start of application execution.</param>
         </member>
@@ -7382,14 +7323,6 @@
             </summary>
             <param name="point1">The first Point.</param>
             <param name="point2">The second Point.</param>
-        </member>
-        <member name="M:FlatRedBall.Math.Geometry.Segment.DistanceTo(FlatRedBall.Math.Geometry.Polygon)">
-            <summary>
-            Returns the distance from this segment to the argument polygon's edges. If the segment is "inside" the polygon, it will still return the distance to the edge.
-            In other words, the polygon is not considered "filled in" when performing these checks.
-            </summary>
-            <param name="polygon">The polygon to check against.</param>
-            <returns>The distance from this segment to the polygon, or float.MaxValue if the polygon does not have any vertices.</returns>
         </member>
         <member name="M:FlatRedBall.Math.Geometry.Segment.DistanceTo(FlatRedBall.Math.Geometry.Point,Microsoft.Xna.Framework.Vector3@)">
             <summary>

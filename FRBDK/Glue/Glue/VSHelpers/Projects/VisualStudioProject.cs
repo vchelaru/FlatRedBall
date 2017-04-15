@@ -653,7 +653,14 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             // all text.
 
             bool shouldSave = false;
-            using (var stringWriter = new UnicodeStringWriter())
+            
+            // April 14, 2017:
+            // I used to use a Unicode
+            // StringWriter, but it saved
+            // the projects with utf-16 encoding
+            // (in the XML). Switching to a UTF8...
+            //using (var stringWriter = new UnicodeStringWriter())
+            using (var stringWriter = new Utf8StringWriter())
             {
                 mProject.Save(stringWriter);
 
@@ -664,7 +671,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 {
                     RaiseSaving(FullFileName);
 
-                    System.IO.File.WriteAllText(FullFileName, newText, Encoding.Unicode);
+                    System.IO.File.WriteAllText(FullFileName, newText, stringWriter.Encoding);
                 }
             }
         }
@@ -959,5 +966,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
     public sealed class UnicodeStringWriter : System.IO.StringWriter
     {
         public override Encoding Encoding => Encoding.Unicode;
+    }
+
+    public sealed class Utf8StringWriter : System.IO.StringWriter
+    {
+        public override Encoding Encoding => Encoding.UTF8;
     }
 }
