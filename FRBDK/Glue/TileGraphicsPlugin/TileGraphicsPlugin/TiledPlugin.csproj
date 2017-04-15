@@ -244,19 +244,19 @@
   <PropertyGroup>
     <PostBuildEvent>echo PostBuild
 
-IF NOT EXIST %25AppData%25\FRBDK\Plugins\TiledPlugin\ MD %25AppData%25\FRBDK\Plugins\TiledPlugin\
+IF NOT EXIST "%25AppData%25\FRBDK\Plugins\TiledPlugin\" MD "%25AppData%25\FRBDK\Plugins\TiledPlugin\"
 
 echo 1
-copy $(TargetDir)\TiledPlugin.dll %25AppData%25\FRBDK\Plugins\TiledPlugin\TiledPlugin.dll
+copy "$(TargetDir)\TiledPlugin.dll" "%25AppData%25\FRBDK\Plugins\TiledPlugin\TiledPlugin.dll"
 
 echo 2
-copy $(TargetDir)\TiledPlugin.pdb %25AppData%25\FRBDK\Plugins\TiledPlugin\TiledPlugin.pdb
+copy "$(TargetDir)\TiledPlugin.pdb" "%25AppData%25\FRBDK\Plugins\TiledPlugin\TiledPlugin.pdb"
 
 echo 3
-copy $(TargetDir)\TmxEditor.exe %25AppData%25\FRBDK\Plugins\TiledPlugin\TmxEditor.exe
+copy "$(TargetDir)\TmxEditor.exe" "%25AppData%25\FRBDK\Plugins\TiledPlugin\TmxEditor.exe"
 
 echo 4
-copy $(TargetDir)\TmxGlueLib.dll %25AppData%25\FRBDK\Plugins\TiledPlugin\TmxGlueLib.dll</PostBuildEvent>
+copy "$(TargetDir)\TmxGlueLib.dll" "%25AppData%25\FRBDK\Plugins\TiledPlugin\TmxGlueLib.dll"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

@@ -123,13 +123,13 @@
   <PropertyGroup>
     <PostBuildEvent>echo PostBuild
 
-IF NOT EXIST %25AppData%25\FRBDK\Plugins\PlatformerPlugin\ MD %25AppData%25\FRBDK\Plugins\PlatformerPlugin\
+IF NOT EXIST "%25AppData%25\FRBDK\Plugins\PlatformerPlugin\" MD "%25AppData%25\FRBDK\Plugins\PlatformerPlugin\"
 
 echo 1
-copy $(TargetDir)\PlatformerPlugin.dll %25AppData%25\FRBDK\Plugins\PlatformerPlugin\PlatformerPlugin.dll
+copy "$(TargetDir)\PlatformerPlugin.dll" "%25AppData%25\FRBDK\Plugins\PlatformerPlugin\PlatformerPlugin.dll"
 
 echo 2
-copy $(TargetDir)\PlatformerPlugin.pdb %25AppData%25\FRBDK\Plugins\PlatformerPlugin\PlatformerPlugin.pdb
+copy "$(TargetDir)\PlatformerPlugin.pdb" "%25AppData%25\FRBDK\Plugins\PlatformerPlugin\PlatformerPlugin.pdb"
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
