@@ -103,7 +103,17 @@ namespace GumPlugin.Managers
         {
             mCodeAdder = new CodeBuildItemAdder();
             mCodeAdder.OutputFolderInProject = "GumCore";
-            mCodeAdder.AddFileBehavior = AddFileBehavior.IfOutOfDate;
+            // April 14, 2017
+            // Used to only copy
+            // if out of date, but
+            // this plugin is updated
+            // so frequently, and if we
+            // don't force copy, then starter
+            // projects will aywas be out of date
+            // because their modified date is newer
+            // than the plugin.
+            //mCodeAdder.AddFileBehavior = AddFileBehavior.IfOutOfDate;
+            mCodeAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
 
             mCodeAdder.Add("GumPlugin/Embedded/ContentManagerWrapper.cs");
 

@@ -48,8 +48,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
             return project is IosMonogameProject || 
                 project is Windows8MonoGameProject ||
                 project is AndroidProject ||
-                project is UwpProject ||
-                project is DesktopGlProject
+                project is UwpProject 
                 ;
 
         }
@@ -96,8 +95,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
         public bool ShouldAssociatedXnbBeCopied(string fileName, ProjectBase project)
         {
             // On Android we (currently) only copy WAV's. MP3s work fine without XNB:
-            // On DesktopGL we handle audio ourselves...
-            if (project is AndroidProject || project is DesktopGlProject)
+            if (project is AndroidProject )
             {
                 return FileManager.GetExtension(fileName) == "wav";
 

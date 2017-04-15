@@ -442,7 +442,8 @@ namespace GumPlugin.CodeGeneration
             {
                 variableValue = variableValue.Replace("\\", "\\\\");
                 variableValue = variableValue.Replace("\"", "\\\"");
-
+                // do this after replacing the backslashes up above
+                variableValue = variableValue.Replace("\n", "\\n");
                 variableValue = "\"" + variableValue + "\"";
              
             }

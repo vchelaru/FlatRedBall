@@ -44,5 +44,31 @@ namespace OfficialPlugins.MonoGameContent
         {
             return $"/outputDir:{OutputDirectory} /intermediateDir:{IntermediateDirectory} /platform:{Platform} /importer:{Importer} /processor:{Processor} /processorParam:{ProcessorParameters} /build:{BuildFileName}";
         }
+
+        internal static ContentItem CreateWavBuild()
+        {
+            var toReturn = new ContentItem();
+
+            toReturn.Importer = "WavImporter";
+            toReturn.Processor = "SoundEffectProcessor";
+            toReturn.ProcessorParameters = "Quality=Best";
+
+            return toReturn;
+        }
+
+        internal IEnumerable<string> GetBuiltExtensions()
+        {
+            switch(Processor)
+            {
+                case "SoundEffectProcessor":
+                    yield return "xnb";
+                    break;
+                case "SongProcessor":
+                    // does this depend on platform?
+                    yield return "xnb";
+                    yield return "ogg";
+                    break;
+            }
+        }
     }
 }
