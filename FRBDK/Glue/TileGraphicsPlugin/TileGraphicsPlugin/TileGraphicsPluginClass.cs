@@ -61,7 +61,9 @@ namespace TileGraphicsPlugin
             // 1.0.11.3 
             // - Fixed crash occurring when the Object layer .object property is null
             // - Upped to .NET 4.5.2
-            get { return new Version(1, 0, 11, 3); }
+            // 1.0.11.4
+            // - Shapes now have their Z value set according to the object layer index, which may be used to position entities properly.
+            get { return new Version(1, 0, 11, 4); }
         }
 
 

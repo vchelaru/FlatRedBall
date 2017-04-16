@@ -435,12 +435,12 @@ namespace FlatRedBall.TileGraphics
 
             if (rtmi.NumberCellsWide > rtmi.NumberCellsTall)
             {
-                quads = reducedLayerInfo.Quads.OrderBy(item => item.LeftQuadCoordinate);
+                quads = reducedLayerInfo.Quads.OrderBy(item => item.LeftQuadCoordinate).ToList();
                 toReturn.mSortAxis = SortAxis.X;
             }
             else
             {
-                quads = reducedLayerInfo.Quads.OrderBy(item => item.BottomQuadCoordinate);
+                quads = reducedLayerInfo.Quads.OrderBy(item => item.BottomQuadCoordinate).ToList();
                 toReturn.mSortAxis = SortAxis.Y;
             }
 

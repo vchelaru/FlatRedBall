@@ -11,7 +11,7 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Label Content="{Binding Name, FallbackValue=ProjectName}" VerticalAlignment="Center"></Label>
+        <Label Content="{Binding DisplayName, FallbackValue=ProjectName}" VerticalAlignment="Center"></Label>
 
         <StackPanel Orientation="Horizontal" Grid.Column="1">
             <Button Click="ViewErrorsClicked" Visibility="{Binding ErrorVisibility}">

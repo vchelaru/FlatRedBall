@@ -38,7 +38,14 @@ namespace FlatRedBall.TileGraphics
 
         #region Properties
 
-        public Dictionary<string, List<NamedValue>> Properties
+        public Dictionary<string, List<NamedValue>> TileProperties
+        {
+            get;
+            private set;
+        } = new Dictionary<string, List<NamedValue>>();
+
+
+        public Dictionary<string, List<NamedValue>> ShapeProperties
         {
             get;
             private set;
@@ -190,7 +197,7 @@ namespace FlatRedBall.TileGraphics
 
         public IEnumerable<string> TileNamesWith(string propertyName)
         {
-            foreach (var item in Properties.Values)
+            foreach (var item in TileProperties.Values)
             {
                 if (item.Any(item2 => item2.Name == propertyName))
                 {
@@ -346,9 +353,14 @@ namespace FlatRedBall.TileGraphics
 
             foreach (var mapObjectgroup in tms.objectgroup)
             {
+                int indexInAllLayers = tms.MapLayers.IndexOf(mapObjectgroup);
+
                 var shapeCollection = tms.ToShapeCollection(mapObjectgroup.Name);
                 if (shapeCollection != null && shapeCollection.IsEmpty == false)
                 {
+                    // This makes all shapes have the same Z as the index layer, which is useful if instantiating objects, so they're layered properly
+                    shapeCollection.Shift(new Microsoft.Xna.Framework.Vector3(0, 0, indexInAllLayers));
+
                     shapeCollection.Name = mapObjectgroup.Name;
                     toReturn.ShapeCollections.Add(shapeCollection);
                 }
@@ -388,7 +400,7 @@ namespace FlatRedBall.TileGraphics
                     {
                         // this needs a name:
                         string name = tile.properties.FirstOrDefault(item => item.StrippedName.ToLowerInvariant() == "name")?.value;
-                        AddPropertiesToMap(tms, toReturn, tile.properties, name);
+                        AddPropertiesToMap(tms, toReturn.TileProperties, tile.properties, name);
                     }
                 }
             }
@@ -404,8 +416,16 @@ namespace FlatRedBall.TileGraphics
                             string name = objectInstance.Name;
                             var properties = objectInstance.properties;
 
-                            AddPropertiesToMap(tms, toReturn, properties, name);
+                            var objectInstanceIsTile = objectInstance.gid != null;
 
+                            if (objectInstanceIsTile)
+                            {
+                                AddPropertiesToMap(tms, toReturn.TileProperties, properties, name);
+                            }
+                            else
+                            {
+                                AddPropertiesToMap(tms, toReturn.ShapeProperties, properties, name);
+                            }
                         }
                     }
                 }
@@ -485,7 +505,7 @@ namespace FlatRedBall.TileGraphics
             return toReturn;
         }
 
-        private static void AddPropertiesToMap(TiledMapSave tms, LayeredTileMap toReturn, List<property> properties, string name)
+        private static void AddPropertiesToMap(TiledMapSave tms, Dictionary<string, List<NamedValue>> dictionaryToAddTo, List<property> properties, string name)
         {
             if (!string.IsNullOrEmpty(name))
             {
@@ -498,7 +518,7 @@ namespace FlatRedBall.TileGraphics
 
 
 #if DEBUG
-                if (toReturn.Properties.Any(item => item.Key == name))
+                if (dictionaryToAddTo.Any(item => item.Key == name))
                 {
                     // Assume it was a duplicate tile name, but it may not be
                     string message = $"The tileset contains more than one tile with the name {name}. Names must be unique in a tileset.";
@@ -511,7 +531,7 @@ namespace FlatRedBall.TileGraphics
                 }
 #endif
 
-                toReturn.Properties.Add(name, namedValues);
+                dictionaryToAddTo.Add(name, namedValues);
 
             }
         }

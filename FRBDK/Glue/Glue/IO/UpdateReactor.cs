@@ -36,8 +36,10 @@ namespace FlatRedBall.Glue.IO
                 
                 handled = TryHandleProjectFileChanges(changedFile);
 
-                var standardizedGlux = FileManager.RemoveExtension(FileManager.Standardize(ProjectManager.ProjectBase.FullFileName).ToLower()) + ".glux";
-                var partialGlux = FileManager.RemoveExtension(FileManager.Standardize(ProjectManager.ProjectBase.FullFileName).ToLower()) + @"\..*\.generated\.glux";
+                string projectFileName = ProjectManager.ProjectBase.FullFileName;
+
+                var standardizedGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + ".glux";
+                var partialGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + @"\..*\.generated\.glux";
                 var partialGluxRegex = new Regex(partialGlux);
                 if(!handled && ((changedFile.ToLower() == standardizedGlux) || partialGluxRegex.IsMatch(changedFile.ToLower())))
                 {

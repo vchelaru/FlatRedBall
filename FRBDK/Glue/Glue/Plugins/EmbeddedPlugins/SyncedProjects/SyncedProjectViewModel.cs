@@ -28,11 +28,18 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
             }
         }
 
-        public string Name
+        public string DisplayName
         {
             get
             {
-                return ProjectBase?.Name;
+                if(ProjectBase != null)
+                {
+                    return $"{ProjectBase.Name} - {ProjectBase.ProjectId}";
+                }
+                else
+                {
+                    return "";
+                }
             }
         }
 
