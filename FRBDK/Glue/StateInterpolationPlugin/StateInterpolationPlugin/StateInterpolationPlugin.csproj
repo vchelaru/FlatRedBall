@@ -126,9 +126,9 @@
   <PropertyGroup>
     <PostBuildEvent>IF NOT EXIST %25AppData%25\FRBDK\Plugins\StateInterpolation\ MD %25AppData%25\FRBDK\Plugins\StateInterpolation\
 
-copy $(TargetDir)\StateInterpolationPlugin.dll %25AppData%25\FRBDK\Plugins\StateInterpolation\StateInterpolationPlugin.dll
+copy "$(TargetDir)\StateInterpolationPlugin.dll" "%25AppData%25\FRBDK\Plugins\StateInterpolation\StateInterpolationPlugin.dll"
 
-copy $(TargetDir)\StateInterpolationPlugin.pdb %25AppData%25\FRBDK\Plugins\StateInterpolation\StateInterpolationPlugin.pdb</PostBuildEvent>
+copy "$(TargetDir)\StateInterpolationPlugin.pdb" "%25AppData%25\FRBDK\Plugins\StateInterpolation\StateInterpolationPlugin.pdb"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
