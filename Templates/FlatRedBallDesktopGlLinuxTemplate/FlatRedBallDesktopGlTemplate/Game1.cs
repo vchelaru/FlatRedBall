@@ -8,7 +8,7 @@ using FlatRedBall.Screens;
 using Microsoft.Xna.Framework;
 
 using System.Linq;
-
+using FlatRedBall.IO;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -53,6 +53,7 @@ namespace FlatRedBallDesktopGlTemplate
 			#endif
 		
             FlatRedBallServices.InitializeFlatRedBall(this, graphics);
+            FileManager.PreserveCase = true;
 
             //ScreenManager.Start(typeof(SomeScreen).FullName);
 
