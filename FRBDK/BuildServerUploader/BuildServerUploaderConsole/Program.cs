@@ -55,9 +55,12 @@ namespace BuildServerUploaderConsole
 
                 
             }
-            else
+            else // I think this is used for debugging only
             {
-                CreateCopyToInstallerSteps(true);
+                //CreateUploadProcessSteps("DailyBuild");
+                CreateCopyToTemplatesSteps();
+
+                //CreateCopyToInstallerSteps(true);
             }
 
             ExecuteSteps();
