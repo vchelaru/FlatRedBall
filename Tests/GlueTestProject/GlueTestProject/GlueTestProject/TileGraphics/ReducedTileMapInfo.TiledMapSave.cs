@@ -167,9 +167,25 @@ namespace TMXGlueLib.DataTypes
 
                 if (currentLayer is mapObjectgroup)
                 {
-                    var objectInstance = (currentLayer as mapObjectgroup).@object[indexInLayer];
+                    var asMapObjectGroup = currentLayer as mapObjectgroup;
+                    var objectInstance = asMapObjectGroup.@object[indexInLayer];
 
-                    if (objectInstance.properties.Count != 0)
+                    // skip over any non-sprite objects:
+                    while (objectInstance.gid == null)
+                    {
+                        indexInLayer++;
+                        if (indexInLayer >= asMapObjectGroup.@object.Length)
+                        {
+                            objectInstance = null;
+                            break;
+                        }
+                        else
+                        {
+                            objectInstance = asMapObjectGroup.@object[indexInLayer];
+                        }
+                    }
+
+                    if (objectInstance != null && objectInstance.properties.Count != 0)
                     {
                         var nameProperty = objectInstance.properties.FirstOrDefault(item => item.StrippedNameLower == "name");
                         if (nameProperty != null)

@@ -23,12 +23,12 @@ namespace FlatRedBall.TileEntities
         {
             var entitiesToRemove = new List<string>();
 
-            CreateEntitiesFrom(entitiesToRemove, mapLayer, layeredTileMap.Properties);
+            CreateEntitiesFrom(entitiesToRemove, mapLayer, layeredTileMap.TileProperties);
 
             foreach (var entityToRemove in entitiesToRemove)
             {
                 string remove = entityToRemove;
-                mapLayer.RemoveTiles(t => t.Any(item => item.Name == "EntityToCreate" && item.Value as string == remove), layeredTileMap.Properties);
+                mapLayer.RemoveTiles(t => t.Any(item => item.Name == "EntityToCreate" && item.Value as string == remove), layeredTileMap.TileProperties);
             }
 
         }
@@ -39,12 +39,12 @@ namespace FlatRedBall.TileEntities
 
             foreach (var layer in layeredTileMap.MapLayers)
             {
-                CreateEntitiesFrom(entitiesToRemove, layer, layeredTileMap.Properties);
+                CreateEntitiesFrom(entitiesToRemove, layer, layeredTileMap.TileProperties);
             }
             foreach (var entityToRemove in entitiesToRemove)
             {
                 string remove = entityToRemove;
-                layeredTileMap.RemoveTiles(t => t.Any(item => item.Name == "EntityToCreate" && item.Value as string == remove), layeredTileMap.Properties);
+                layeredTileMap.RemoveTiles(t => t.Any(item => item.Name == "EntityToCreate" && item.Value as string == remove), layeredTileMap.TileProperties);
             }
             foreach (var shapeCollection in layeredTileMap.ShapeCollections)
             {
@@ -52,9 +52,9 @@ namespace FlatRedBall.TileEntities
                 for (int i = polygons.Count - 1; i > -1; i--)
                 {
                     var polygon = polygons[i];
-                    if (!string.IsNullOrEmpty(polygon.Name) && layeredTileMap.Properties.ContainsKey(polygon.Name))
+                    if (!string.IsNullOrEmpty(polygon.Name) && layeredTileMap.ShapeProperties.ContainsKey(polygon.Name))
                     {
-                        var properties = layeredTileMap.Properties[polygon.Name];
+                        var properties = layeredTileMap.ShapeProperties[polygon.Name];
                         var entityAddingProperty = properties.FirstOrDefault(item => item.Name == "EntityToCreate");
 
                         var entityType = entityAddingProperty.Value as string;
@@ -64,6 +64,7 @@ namespace FlatRedBall.TileEntities
 
                             var entity = factory.CreateNew(null) as PositionedObject;
 
+                            entity.Name = polygon.Name;
                             ApplyPropertiesTo(entity, properties, polygon.Position);
                             shapeCollection.Polygons.Remove(polygon);
 

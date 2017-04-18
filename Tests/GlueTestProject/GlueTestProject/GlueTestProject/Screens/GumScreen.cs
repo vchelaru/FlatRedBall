@@ -54,6 +54,11 @@ namespace GlueTestProject.Screens
                 throw new Exception("Setting a state on an instance in a screen does not result in the state being set on the runtime.");
             }
 
+            if( (OutlineTextInstance.RenderableComponent as RenderingLibrary.Graphics.Text).BitmapFont == null)
+            {
+                throw new Exception("Outlined text objects are not getting their fonts set.");
+            }
+
 		}
 
 		void CustomActivity(bool firstTimeCalled)

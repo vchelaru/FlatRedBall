@@ -112,6 +112,30 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>int</Type>
+      <Name>OutlineTextInstance.OutlineThickness</Name>
+      <Value xsi:type="xsd:int">1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>OutlineTextInstance.Text</Name>
+      <Value xsi:type="xsd:string">I am some outlined text</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>OutlineTextInstance.X</Name>
+      <Value xsi:type="xsd:float">202.5</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>OutlineTextInstance.Y</Name>
+      <Value xsi:type="xsd:float">25</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>float</Type>
       <Name>ParentStateComponentInstance.X</Name>
       <Value xsi:type="xsd:float">385</Value>
@@ -236,5 +260,9 @@
   <Instance>
     <Name>StateComponentInstance</Name>
     <BaseType>StateComponent</BaseType>
+  </Instance>
+  <Instance>
+    <Name>OutlineTextInstance</Name>
+    <BaseType>Text</BaseType>
   </Instance>
 </ScreenSave>

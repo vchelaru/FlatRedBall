@@ -31,7 +31,7 @@ namespace FlatRedBall.AI.Pathfinding
                 directionalType);
 
 
-            var properties = layeredTileMap.Properties;
+            var properties = layeredTileMap.TileProperties;
 
             foreach (var kvp in properties)
             {

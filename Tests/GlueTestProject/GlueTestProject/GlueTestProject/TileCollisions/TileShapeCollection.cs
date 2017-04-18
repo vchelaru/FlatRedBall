@@ -400,7 +400,7 @@ namespace FlatRedBall.TileCollisions
         public static void AddCollisionFrom(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap,
             Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate)
         {
-            var properties = layeredTileMap.Properties;
+            var properties = layeredTileMap.TileProperties;
 
             foreach (var kvp in properties)
             {
@@ -441,7 +441,7 @@ namespace FlatRedBall.TileCollisions
         public static void AddMergedCollisionFrom(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap,
             Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate)
         {
-            var properties = layeredTileMap.Properties;
+            var properties = layeredTileMap.TileProperties;
             float dimension = layeredTileMap.WidthPerTile.Value;
 
             Dictionary<int, List<int>> rectangleIndexes = new Dictionary<int, List<int>>();
@@ -615,7 +615,7 @@ namespace FlatRedBall.TileCollisions
             LayeredTileMap layeredTileMap)
         {
 
-            var tilesWithCollision = layeredTileMap.Properties
+            var tilesWithCollision = layeredTileMap.TileProperties
                 .Where(item => item.Value.Any(property => property.Name == "HasCollision" && (string)property.Value == "True"))
                 .Select(item => item.Key).ToList();
 

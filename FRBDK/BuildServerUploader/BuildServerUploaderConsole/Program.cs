@@ -30,6 +30,12 @@ namespace BuildServerUploaderConsole
 
             _defaultDirectory = Directory.GetCurrentDirectory();
 
+            // This app is executed 3 times during a build. The three steps, 
+            // in order, but not consecutively executed, are:
+            // * Change Versions
+            // * Copy DLLs to Templates
+            // * Upload
+
             if (args.Length > 0)
             {
                 switch (args[0])

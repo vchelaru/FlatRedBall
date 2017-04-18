@@ -234,66 +234,40 @@ namespace GumPlugin.Managers
 
             Gum.DataTypes.RecursiveVariableFinder rvf = new RecursiveVariableFinder(state);
 
-            foreach (var fontNameVariable in state.Variables.Where(item => item.GetRootName() == "Font"))
+            foreach (var variable in state.Variables.Where(item => 
+                item.GetRootName() == "Font" && item.Value != null ||
+                item.GetRootName() == "FontSize" && item.Value != null
+                ))
             {
-                string fontSizeVariableName = null;
-
                 string prefix = null;
 
-                if (fontNameVariable.Name.Contains('.'))
+                if (variable.Name.Contains('.'))
                 {
-                    prefix = FileManager.RemoveExtension(fontNameVariable.Name) + ".";
+                    prefix = FileManager.RemoveExtension(variable.Name) + ".";
                 }
 
                 bool useCustomFont = rvf.GetValue<bool>(prefix + "UseCustomFont");
                 if (!useCustomFont)
                 {
-                    fontSizeVariableName = prefix + "FontSize";
+                    var fontSizeVariableName = prefix + "FontSize";
+                    var fontNameVariableName = prefix + "Font";
+                    var fontOutlineVariableName = prefix + "OutlineThickness";
 
                     int fontSizeValue = rvf.GetValue<int>(fontSizeVariableName);
-                    var fontSizeVariable = state.Variables.FirstOrDefault(item => item.Name == fontSizeVariableName);
-
-                    string fontNameValue = fontNameVariable.Value as string;
-
-                    TryAddFontFromSizeAndName(topLevelOrRecursive, listToFill, fontSizeValue, fontNameValue);
-                }
-            }
-
-            foreach (var fontSizeVariable in state.Variables.Where(item => item.GetRootName() == "FontSize" && item.Value != null))
-            {
-                string fontNameVariableName = null;
-
-                string prefix = null;
-
-                if (fontSizeVariable.Name.Contains('.'))
-                {
-                    prefix = FileManager.RemoveExtension(fontSizeVariable.Name) + ".";
-                }
-
-                bool useCustomFont = rvf.GetValue<bool>(prefix + "UseCustomFont");
-                if (!useCustomFont)
-                {
-                    fontNameVariableName = prefix + "Font";
-
                     string fontNameValue = rvf.GetValue<string>(fontNameVariableName);
+                    int outlineThickness = rvf.GetValue<int>(fontOutlineVariableName);
 
-                    var fontNameVariable = state.Variables.FirstOrDefault(item => item.Name == fontNameVariableName);
-
-
-                    int fontSizeValue = (int)fontSizeVariable.Value;
-
-                    TryAddFontFromSizeAndName(topLevelOrRecursive, listToFill, fontSizeValue, fontNameValue);
+                    TryAddFontFromSizeAndName(topLevelOrRecursive, listToFill, fontSizeValue, fontNameValue, outlineThickness);
                 }
             }
         }
 
-        private static void TryAddFontFromSizeAndName(TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, int fontSizeValue, string fontNameValue)
+        private static void TryAddFontFromSizeAndName(TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, int fontSizeValue, string fontNameValue, int outlineThickness)
         {
             if (!string.IsNullOrEmpty(fontNameValue))
             {
-                int fontSize = fontSizeValue;
+                string fontFileName = global::RenderingLibrary.Graphics.Fonts.BmfcSave.GetFontCacheFileNameFor(fontSizeValue, fontNameValue, outlineThickness);
 
-                string fontFileName = "Font" + fontSize.ToString() + fontNameValue + ".fnt";
                 fontFileName = FileManager.RelativeDirectory + "FontCache\\" + fontFileName;
 
                 listToFill.Add(fontFileName);
