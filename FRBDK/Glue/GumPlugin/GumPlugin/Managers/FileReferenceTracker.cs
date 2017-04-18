@@ -235,8 +235,10 @@ namespace GumPlugin.Managers
             Gum.DataTypes.RecursiveVariableFinder rvf = new RecursiveVariableFinder(state);
 
             foreach (var variable in state.Variables.Where(item => 
-                item.GetRootName() == "Font" && item.Value != null ||
-                item.GetRootName() == "FontSize" && item.Value != null
+                (item.GetRootName() == "Font" ||
+                    item.GetRootName() == "FontSize" || 
+                    item.GetRootName() == "OutlineThickness" ) 
+                && item.Value != null
                 ))
             {
                 string prefix = null;
@@ -268,7 +270,7 @@ namespace GumPlugin.Managers
             {
                 string fontFileName = global::RenderingLibrary.Graphics.Fonts.BmfcSave.GetFontCacheFileNameFor(fontSizeValue, fontNameValue, outlineThickness);
 
-                fontFileName = FileManager.RelativeDirectory + "FontCache\\" + fontFileName;
+                fontFileName = FileManager.RelativeDirectory + fontFileName;
 
                 listToFill.Add(fontFileName);
 

@@ -76,6 +76,8 @@ namespace GumPlugin
             // 0.8.3.2
             // - Fixed absolute file path issue with custom fonts
             // - Core files are always copied instead of only if newer - so starter projects will always get the latest
+            // - Fixed fonts with outlines not being referenced in content proj.
+            // - Fixed interpolation of states not working properly because the wrong Name was assigned to the new state (spaces were removed)
             get { return new Version(0, 8, 3, 2); }
         }
 

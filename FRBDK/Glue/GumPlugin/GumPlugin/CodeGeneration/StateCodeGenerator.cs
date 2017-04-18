@@ -472,9 +472,16 @@ namespace GumPlugin.CodeGeneration
                             {
                                 instantiatorBlock.Line("SetsValue = true,");
 
-                                instantiatorBlock.Line("Name = \"" + memberNameInCode + "\",");
+                                // Don't use memberNameInCode - states from the XML files will not, and we want this
+                                // to behave the same so merging (used in interpolation) works properly
+                                //instantiatorBlock.Line("Name = \"" + memberNameInCode + "\",");
+                                instantiatorBlock.Line("Name = \"" + variable.Name + "\",");
+
+                                instantiatorBlock.Line($"Type = \"{variable.Type}\",");
 
                                 string valueString = "Value = " + memberNameInCode + "";
+
+
                                 if(addValues && IsVariableNumeric(variable))
                                 {
                                     
