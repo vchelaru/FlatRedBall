@@ -23,6 +23,7 @@ using Gum.Managers;
 using System.Drawing;
 using Gum.DataTypes.Behaviors;
 using FlatRedBall.Glue.Events;
+using FlatRedBall.Glue.Managers;
 
 namespace GumPlugin
 {
@@ -79,7 +80,8 @@ namespace GumPlugin
             // - Fixed fonts with outlines not being referenced in content proj.
             // - Fixed interpolation of states not working properly because the wrong Name was assigned to the new state (spaces were removed)
             // - Added support for "Instant" interpolation type
-            get { return new Version(0, 8, 3, 2); }
+            // 0.8.3.3 - Fixed threading issue when fixing projects.
+            get { return new Version(0, 8, 3, 3); }
         }
 
         #endregion
@@ -279,7 +281,7 @@ namespace GumPlugin
 
                     EventsManager.Self.RefreshEvents();
 
-                    FileReferenceTracker.Self.RemoveUnreferencedMissingFilesFromVsProject();
+                    TaskManager.Self.AddSync(FileReferenceTracker.Self.RemoveUnreferencedMissingFilesFromVsProject, "Removing unreferenced files for Gum project");
                 }
                 else if(extension == BehaviorReference.Extension)
                 {
@@ -331,7 +333,8 @@ namespace GumPlugin
 
             CodeGeneratorManager.Self.GenerateAllBehaviors();
 
-            FileReferenceTracker.Self.RemoveUnreferencedMissingFilesFromVsProject();
+
+            TaskManager.Self.AddSync(FileReferenceTracker.Self.RemoveUnreferencedMissingFilesFromVsProject, "Removing unreerenced files for Gum project");
 
             UpdateMenuItemVisibility();
         }
