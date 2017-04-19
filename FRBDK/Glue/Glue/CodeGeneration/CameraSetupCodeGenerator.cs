@@ -259,6 +259,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                         resetMethod.Line($"FlatRedBall.Camera.Main.Orthogonal = true;");
                         resetMethod.Line($"FlatRedBall.Camera.Main.OrthogonalHeight = {displaySettings.ResolutionHeight};");
                         resetMethod.Line($"FlatRedBall.Camera.Main.OrthogonalWidth = {displaySettings.ResolutionWidth};");
+
+                        // Even though we reset the camera, we want to make sure the aspect ratio matches the destination rect...
+                        // Because the user may not have forced an aspect ratio setting in the settings:
+                        resetMethod.Line($"FlatRedBall.Camera.Main.FixAspectRatioYConstant();");
                     }
 
                     if(displaySettings.FixedAspectRatio)
