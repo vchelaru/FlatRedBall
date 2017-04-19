@@ -470,11 +470,10 @@ namespace FlatRedBall.Screens
             return PauseAdjustedCurrentTime - time;
         }
 
-        #region XML Docs
         /// <summary>Tells the screen that we are done and wish to move to the
-        /// supplied screen</summary>
+        /// the screen with the matching (fully qualified) name.
+        /// </summary>
         /// <param>Fully Qualified Type of the screen to move to</param>
-        #endregion
         public void MoveToScreen(string screenClass)
         {
             IsActivityFinished = true;

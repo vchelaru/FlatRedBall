@@ -40,9 +40,10 @@ namespace OfficialPlugins.StateInterpolation
             get { return "State Interpolation Plugin"; }
         }
 
+        // 1.2.0 - Added instant interpolation type
         public override Version Version
         {
-            get { return new Version(1, 1, 2); }
+            get { return new Version(1, 2, 0); }
         }
 
         public override void StartUp()
@@ -56,6 +57,7 @@ namespace OfficialPlugins.StateInterpolation
             mItemAdder.Add("StateInterpolationPlugin.Cubic.cs");
             mItemAdder.Add("StateInterpolationPlugin.Elastic.cs");
             mItemAdder.Add("StateInterpolationPlugin.Exponential.cs");
+            mItemAdder.Add("StateInterpolationPlugin.Instant.cs");
             mItemAdder.Add("StateInterpolationPlugin.Linear.cs");
             mItemAdder.Add("StateInterpolationPlugin.Quadratic.cs");
             mItemAdder.Add("StateInterpolationPlugin.Quartic.cs");

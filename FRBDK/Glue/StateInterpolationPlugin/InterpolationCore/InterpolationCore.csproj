@@ -80,6 +80,9 @@
     <Compile Include="..\StateInterpolationPlugin\Exponential.cs">
       <Link>Exponential.cs</Link>
     </Compile>
+    <Compile Include="..\StateInterpolationPlugin\Instant.cs">
+      <Link>Instant.cs</Link>
+    </Compile>
     <Compile Include="..\StateInterpolationPlugin\Linear.cs">
       <Link>Linear.cs</Link>
     </Compile>
