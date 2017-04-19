@@ -78,6 +78,7 @@ namespace GumPlugin
             // - Core files are always copied instead of only if newer - so starter projects will always get the latest
             // - Fixed fonts with outlines not being referenced in content proj.
             // - Fixed interpolation of states not working properly because the wrong Name was assigned to the new state (spaces were removed)
+            // - Added support for "Instant" interpolation type
             get { return new Version(0, 8, 3, 2); }
         }
 

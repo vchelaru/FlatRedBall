@@ -90,6 +90,9 @@
     <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\InvisibleRenderable.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\InvisibleRenderable.cs</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\StateInterpolationPlugin\StateInterpolationPlugin\Instant.cs">
+      <Link>Embedded\StateInterpolation\Instant.cs</Link>
+    </EmbeddedResource>
     <Compile Include="CodeGeneration\BehaviorCodeGenerator.cs" />
     <Compile Include="CodeGeneration\EventCodeGenerator.cs" />
     <Compile Include="DataGeneration\BehaviorGenerator.cs" />

@@ -592,10 +592,22 @@ namespace GumPlugin.Managers
                 gumProject.StandardElements.OfType<ElementSave>()).Concat(
                 gumProject.Screens.OfType<ElementSave>());
 
+            var runtimeFolder = GlueState.Self.CurrentGlueProjectDirectory + "GumRuntimes/";
+
             foreach (var buildItem in project)
             {
-                if (buildItem.UnevaluatedInclude != null && buildItem.UnevaluatedInclude.ToLower().EndsWith("runtime.generated.cs") &&
-                    FileManager.GetDirectory(buildItem.UnevaluatedInclude, RelativeType.Relative) == "GumRuntimes/")
+                bool isRuntimeGenerated = buildItem.UnevaluatedInclude != null && buildItem.UnevaluatedInclude.ToLower().EndsWith("runtime.generated.cs");
+                string includeDirectory = null;
+
+                if(isRuntimeGenerated)
+                {
+                    includeDirectory = FileManager.GetDirectory(buildItem.UnevaluatedInclude);
+                }
+                    
+
+                bool isInGumRuntimes = includeDirectory == runtimeFolder;
+
+                if ( isRuntimeGenerated && isInGumRuntimes)
                 {
                     // is there an element with this name?
 

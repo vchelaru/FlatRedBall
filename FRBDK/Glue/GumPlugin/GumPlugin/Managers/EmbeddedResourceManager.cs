@@ -83,6 +83,7 @@ namespace GumPlugin.Managers
             mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Cubic.cs");
             mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Elastic.cs");
             mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Exponential.cs");
+            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Instant.cs");
             mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Linear.cs");
             mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Quadratic.cs");
             mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Quartic.cs");
