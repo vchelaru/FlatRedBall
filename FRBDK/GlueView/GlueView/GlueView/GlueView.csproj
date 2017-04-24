@@ -190,6 +190,9 @@
     <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Exponential.cs">
       <Link>States\Exponential.cs</Link>
     </Compile>
+    <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Instant.cs">
+      <Link>States\Instant.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\Glue\StateInterpolationPlugin\StateInterpolationPlugin\Linear.cs">
       <Link>States\Linear.cs</Link>
     </Compile>
