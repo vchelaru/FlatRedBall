@@ -24,7 +24,21 @@ namespace FlatRedBall.Glue.Managers
 
                 if (ProjectManager.ContentProject != null)
                 {
-                    contentDirectory = ProjectManager.ContentProject.Directory + "GlobalContent/";
+                    if(ProjectManager.ContentProject == ProjectManager.ProjectBase && !string.IsNullOrEmpty(ProjectManager.ContentProject.ContentDirectory)) 
+                    {
+                        // It's the same project, so we need to append the content folder, since the project itself
+                        // doesn't have "content/"
+
+                        var contentProject = ProjectManager.ContentProject;
+
+                        contentDirectory = contentProject.Directory + contentProject.ContentDirectory + "GlobalContent/";
+                    }
+                    else
+                    {
+                        contentDirectory = ProjectManager.ContentProject.Directory + "GlobalContent/";
+                    }
+
+
                 }
 
                 string returnValue = contentDirectory;
