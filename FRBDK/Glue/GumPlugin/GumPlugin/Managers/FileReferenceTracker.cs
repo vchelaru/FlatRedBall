@@ -526,7 +526,7 @@ namespace GumPlugin.Managers
             }
         }
 
-        internal void RemoveUnreferencedMissingFilesFromVsProject()
+        internal void RemoveUnreferencedFilesFromVsProject()
         {
             var gumProject = ObjectFinder.Self.GumProjectSave;
 
@@ -630,72 +630,175 @@ namespace GumPlugin.Managers
         }
 
         /// <summary>
-        /// This checks if the project has any screens, components, or standard elements which
-        /// are no longer referenced by the Gum project but are still part of the VS project.
-        /// It can only check these because these are the only file types that *must* be referenced
-        /// by a .gumx file to be referenced in a project. It will not check files like PNGs because
-        /// PNGs can be used by other plugins or even in code.
+        /// Obtains a list of files which can be removed from the Gum project. These include:
+        ///  - Gum screens
+        ///  - Gum components
+        ///  - Gum standard elements
+        ///  - Gum fonts
+        ///  - Gum referenced files (so long as the .gumx file is in its own dedicated folder)
         /// </summary>
         /// <param name="gumProject">The Gum project to check.</param>
         /// <param name="toRemove">A list of which files to remove. The method populates this.</param>
         /// <param name="contentProject">The content project to check inside of for orphan references.</param>
         private static void FillWithContentBuildItemsToRemove(GumProjectSave gumProject, List<ProjectItem> toRemove, ProjectBase contentProject)
+
         {
+            string fontCacheFolder = FileManager.GetDirectory(gumProject.FullFileName) + "FontCache/";
+
+            var referencedGumFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(gumProject.FullFileName, TopLevelOrRecursive.Recursive)
+                .Select(item=>FileManager.Standardize(item).ToLowerInvariant())
+                .ToArray();
+
+            var gumProjectFolder = FileManager.GetDirectory(gumProject.FullFileName);
+            var glueContentFolder = FileManager.GetDirectory(contentProject.FullFileName);
+            var gumFolderRelative = FileManager.MakeRelative(gumProjectFolder, glueContentFolder);
+
+            bool isGumProjectInOwnFolder = glueContentFolder != gumProjectFolder && FileManager.MakeRelative(gumProjectFolder, glueContentFolder).Contains("..") == false;
+
             foreach (var buildItem in contentProject)
             {
-                string extension = FileManager.GetExtension(buildItem.UnevaluatedInclude);
 
+                bool shouldRemove = GetIfShouldRemoveFontFile(toRemove, buildItem, fontCacheFolder, contentProject, referencedGumFiles);
 
-                var gumProjectFolder = FileManager.GetDirectory(gumProject.FullFileName);
-                var contentFolder = FileManager.GetDirectory( contentProject.FullFileName );
-                var gumFolderRelative = FileManager.MakeRelative(gumProjectFolder, contentFolder);
-
-                // is it a standard element?
-                if (extension == GumProjectSave.StandardExtension)
+                if (shouldRemove)
                 {
-                    var standardFolder = gumFolderRelative + ElementReference.StandardSubfolder + "/";
-
-                    string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, standardFolder))
-                        .Replace("/", "\\");
-
-                    bool exists = gumProject.StandardElements.Any(item => item.Name.ToLowerInvariant() == elementName.ToLowerInvariant());
-
-                    if (!exists)
-                    {
-                        toRemove.Add(buildItem);
-                    }
+                    toRemove.Add(buildItem);
                 }
-                // or is it a component?
-                else if (extension == GumProjectSave.ComponentExtension)
+
+                if(!shouldRemove && isGumProjectInOwnFolder)
                 {
-                    var componentFolder = gumFolderRelative + ElementReference.ComponentSubfolder + "/";
-
-                    string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, componentFolder))
-                        .Replace("/", "\\");
-
-                    bool exists = gumProject.Components.Any(item => item.Name.ToLowerInvariant() == elementName.ToLowerInvariant());
-
-                    if (!exists)
-                    {
-                        toRemove.Add(buildItem);
-                    }
+                    shouldRemove = GetIfShouldRemoveGumRelativeFile(gumProject, buildItem, glueContentFolder, referencedGumFiles);
                 }
-                // or is it a screen?
-                else if (extension == GumProjectSave.ScreenExtension)
+
+                if(!shouldRemove)
                 {
-                    var screenFolder = gumFolderRelative + ElementReference.ScreenSubfolder + "/";
+                    shouldRemove = GetIfShouldRemoveStandardElement(gumProject, toRemove, buildItem, gumFolderRelative);
+                }
 
-                    string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, screenFolder))
-                        .Replace("/", "\\");
+                if(!shouldRemove)
+                {
+                    shouldRemove = GetIfShouldRemoveComponent(gumProject, buildItem, gumFolderRelative);
+                }
 
-                    bool exists = gumProject.Screens.Any(item => item.Name.ToLowerInvariant() == elementName.ToLowerInvariant());
+                if(!shouldRemove)
+                {
+                    shouldRemove = GetIfShouldRemoveScreen(gumProject, buildItem, gumFolderRelative);
+                }
 
-                    if (!exists)
-                    {
-                        toRemove.Add(buildItem);
-                    }
+                if (shouldRemove)
+                {
+                    toRemove.Add(buildItem);
                 }
             }
+        }
+
+        private static bool GetIfShouldRemoveGumRelativeFile(GumProjectSave gumProject, ProjectItem buildItem, string glueContentFolder, string[] referencedGumFiles)
+        {
+            string contentFullFileName = FileManager.Standardize(glueContentFolder + buildItem.UnevaluatedInclude).ToLowerInvariant();
+
+            string gumFolder = FileManager.GetDirectory(gumProject.FullFileName);
+
+            string fileRelativeToGum = FileManager.MakeRelative(contentFullFileName, gumFolder);
+
+            bool isFileInGumContent = fileRelativeToGum.Contains("..") == false;
+
+            if(isFileInGumContent && !referencedGumFiles.Contains(contentFullFileName) && FileManager.GetExtension(fileRelativeToGum) != "gumx")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static bool GetIfShouldRemoveFontFile(List<ProjectItem> toRemove, ProjectItem buildItem, string fontCacheFolder, ProjectBase contentProject, string[] fileReferencedByGumx)
+        {
+            string contentFullFileName = FileManager.GetDirectory(contentProject.FullFileName) + buildItem.UnevaluatedInclude;
+
+            bool isFontCacheFile = FileManager.IsRelativeTo(contentFullFileName, fontCacheFolder);
+
+            if(isFontCacheFile)
+            {
+                var invariant = FileManager.Standardize(contentFullFileName).ToLowerInvariant();
+
+                bool isReferenced = fileReferencedByGumx.Contains(invariant);
+
+                return !isReferenced;
+
+            }
+
+            return false;
+        }
+
+        private static bool GetIfShouldRemoveStandardElement(GumProjectSave gumProject, List<ProjectItem> toRemove, ProjectItem buildItem, string gumFolderRelative)
+        {
+            bool shouldRemove = false;
+
+            string extension = FileManager.GetExtension(buildItem.UnevaluatedInclude);
+
+            if (extension == GumProjectSave.StandardExtension)
+            {
+                var standardFolder = gumFolderRelative + ElementReference.StandardSubfolder + "/";
+
+                string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, standardFolder))
+                    .Replace("/", "\\");
+
+                bool exists = gumProject.StandardElements.Any(item => item.Name.ToLowerInvariant() == elementName.ToLowerInvariant());
+
+                if (!exists)
+                {
+                    toRemove.Add(buildItem);
+                }
+            }
+
+            return shouldRemove;
+        }
+
+        private static bool GetIfShouldRemoveComponent(GumProjectSave gumProject, ProjectItem buildItem, string gumFolderRelative)
+        {
+            bool shouldRemove = false;
+
+            string extension = FileManager.GetExtension(buildItem.UnevaluatedInclude);
+
+            if (extension == GumProjectSave.ComponentExtension)
+            {
+                var componentFolder = gumFolderRelative + ElementReference.ComponentSubfolder + "/";
+
+                string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, componentFolder))
+                    .Replace("/", "\\");
+
+                bool exists = gumProject.Components.Any(item => item.Name.ToLowerInvariant() == elementName.ToLowerInvariant());
+
+                if (!exists)
+                {
+                    shouldRemove = true;
+                }
+            }
+
+            return shouldRemove;
+        }
+
+        private static bool GetIfShouldRemoveScreen(GumProjectSave gumProject, ProjectItem buildItem, string gumFolderRelative)
+        {
+            bool shouldRemove = false;
+
+            string extension = FileManager.GetExtension(buildItem.UnevaluatedInclude);
+
+            if (extension == GumProjectSave.ScreenExtension)
+            {
+                var screenFolder = gumFolderRelative + ElementReference.ScreenSubfolder + "/";
+
+                string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, screenFolder))
+                    .Replace("/", "\\");
+
+                bool exists = gumProject.Screens.Any(item => item.Name.ToLowerInvariant() == elementName.ToLowerInvariant());
+
+                shouldRemove = !exists;
+
+            }
+
+            return shouldRemove;
         }
     }
 }

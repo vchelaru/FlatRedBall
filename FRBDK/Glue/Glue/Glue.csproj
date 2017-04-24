@@ -143,8 +143,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Ionic.Zlib.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\MSBuild\v14.0\Microsoft.Build.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\MSBuild\v14.0\Microsoft.Build.Framework.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
@@ -936,6 +942,12 @@
     <Content Include="Libraries\ICSharpCode.NRefactory.xml" />
     <Content Include="Libraries\Ionic.Zip.dll" />
     <Content Include="Libraries\Ionic.Zlib.dll" />
+    <Content Include="Libraries\MSBuild\v14.0\Microsoft.Build.Conversion.Core.dll" />
+    <Content Include="Libraries\MSBuild\v14.0\Microsoft.Build.dll" />
+    <Content Include="Libraries\MSBuild\v14.0\Microsoft.Build.Engine.dll" />
+    <Content Include="Libraries\MSBuild\v14.0\Microsoft.Build.Framework.dll" />
+    <Content Include="Libraries\MSBuild\v14.0\Microsoft.Build.Tasks.Core.dll" />
+    <Content Include="Libraries\MSBuild\v14.0\Microsoft.Build.Utilities.Core.dll" />
     <Content Include="Plugins\FRBDKUpdater\FRBDKUpdater.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

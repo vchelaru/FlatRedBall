@@ -840,16 +840,8 @@ namespace FlatRedBall.Input
             return returnValue;
 
         }
-
-
-        public bool ButtonRepeatRate(Button button)
-        {
-            // Ignoring is performed inside this call.
-            return ButtonRepeatRate(button, .35, .12);
-        }
-
-
-        public bool ButtonRepeatRate(Button button, double timeAfterPush, double timeBetweenRepeating)
+        
+        public bool ButtonRepeatRate(Button button, double timeAfterPush = .35, double timeBetweenRepeating = .12)
         {
             if (mButtonsIgnoredForThisFrame[(int)button])
                 return false;
@@ -877,6 +869,11 @@ namespace FlatRedBall.Input
 
         }
 
+        /// <summary>
+        /// Returns an Xbox360ButtonReference from the argument Button.
+        /// </summary>
+        /// <param name="button">The button, such as Button.A</param>
+        /// <returns>The reference, which can then be used to check for input.</returns>
         public Xbox360ButtonReference GetButton(Button button)
         {
             var toReturn = new Xbox360ButtonReference();

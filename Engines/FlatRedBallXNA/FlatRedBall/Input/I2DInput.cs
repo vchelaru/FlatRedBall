@@ -75,6 +75,13 @@ namespace FlatRedBall.Input
 
     }
 
+    /// <summary>
+    /// Provides a single I2DInput implementation which can read from multiple I2DInputs at once.
+    /// </summary>
+    /// <remarks>
+    /// This is useful for games which want to read from multiple devices, such as letting all controllers
+    /// control one character, or letting keyboard and gamepad control a character at the same time.
+    /// </remarks>
     public class Multiple2DInputs : I2DInput
     {
         public float X
@@ -157,6 +164,15 @@ namespace FlatRedBall.Input
             }
         }
         
+        /// <summary>
+        /// Contains the list of inputs to read from. Any number of inputs can be added to this using the Add method.
+        /// </summary>
+        /// <example>
+        /// // Assuming that keyboard2DInput and gamepad2DInput exist:
+        /// var multipleInputs = new Multiple2DInputs();
+        /// multipleInputs.Inputs.Add(keyboard2DInput);
+        /// multipleInputs.Inputs.Add(gamepad2DInput);
+        /// </example>
         public List<I2DInput> Inputs
         {
             get;

@@ -281,7 +281,7 @@ namespace GumPlugin
 
                     EventsManager.Self.RefreshEvents();
 
-                    TaskManager.Self.AddSync(FileReferenceTracker.Self.RemoveUnreferencedMissingFilesFromVsProject, "Removing unreferenced files for Gum project");
+                    TaskManager.Self.AddSync(FileReferenceTracker.Self.RemoveUnreferencedFilesFromVsProject, "Removing unreferenced files for Gum project");
                 }
                 else if(extension == BehaviorReference.Extension)
                 {
@@ -334,7 +334,7 @@ namespace GumPlugin
             CodeGeneratorManager.Self.GenerateAllBehaviors();
 
 
-            TaskManager.Self.AddSync(FileReferenceTracker.Self.RemoveUnreferencedMissingFilesFromVsProject, "Removing unreerenced files for Gum project");
+            TaskManager.Self.AddSync(FileReferenceTracker.Self.RemoveUnreferencedFilesFromVsProject, "Removing unreerenced files for Gum project");
 
             UpdateMenuItemVisibility();
         }
