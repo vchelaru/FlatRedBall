@@ -1042,6 +1042,12 @@ namespace FlatRedBall.Math
 
         }
 
+        /// <summary>
+        /// Returns a value which has been rounded to the nearest mulitple of the mulipleOf value.
+        /// </summary>
+        /// <param name="valueToRound">The value to round, such as the position of an object.</param>
+        /// <param name="multipleOf">The multiple of value, such as the size of a tile.</param>
+        /// <returns>The rounded value.</returns>
         public static float RoundFloat(float valueToRound, float multipleOf)
         {
 
