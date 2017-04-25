@@ -263,6 +263,22 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
+        public string GetAbsoluteContentFolder()
+        {
+            if(this.ContentProject != this)
+            {
+                return this.ContentProject.Directory;
+            }
+            else if(!string.IsNullOrEmpty( this.ContentProject.ContentDirectory))
+            {
+                return this.Directory + this.ContentDirectory;
+            }
+            else
+            {
+                return this.Directory;
+            }
+        }
+
         public bool RemoveItem(string itemName)
         {
             itemName = StandardizeItemName(itemName);

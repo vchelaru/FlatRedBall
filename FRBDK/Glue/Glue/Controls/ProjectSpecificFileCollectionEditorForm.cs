@@ -195,8 +195,9 @@ namespace FlatRedBall.Glue.Controls
             if (openFileDialog.ShowDialog() != DialogResult.OK) return;
 
 
+            
 
-            string projectDirectory = FileManager.GetDirectory(ProjectManager.ContentProject.FullFileName);
+            string projectDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
             string directoryThatFileShouldBeRelativeTo = ProjectManager.ContentDirectory + FileManager.GetDirectoryKeepRelative(Rfs.Name);
             string fileToAdd;
 
@@ -211,7 +212,7 @@ namespace FlatRedBall.Glue.Controls
 
             else
             {
-                fileToAdd = FileManager.MakeRelative(openFileDialog.FileName, ProjectManager.ContentProject.Directory + ProjectManager.ContentProject.ContentDirectory);
+                fileToAdd = FileManager.MakeRelative(openFileDialog.FileName, ProjectManager.ContentProject.GetAbsoluteContentFolder());
             }
 
             var psf = new ProjectSpecificFile

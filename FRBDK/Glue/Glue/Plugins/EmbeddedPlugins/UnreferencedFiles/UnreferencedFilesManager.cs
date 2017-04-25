@@ -122,7 +122,7 @@ namespace FlatRedBall.Glue.Managers
 
                     mUnreferencedFiles.Clear();
 
-                    string contentDirectory = ProjectManager.ContentProject.Directory;
+                    string contentDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
 
 
                     List<string> referencedFiles = null;
@@ -199,13 +199,13 @@ namespace FlatRedBall.Glue.Managers
 
                 if (itemName.StartsWith(".."))
                 {
-                    itemName = FileManager.Standardize(item.UnevaluatedInclude, project.ContentProject.Directory).ToLower();
-                    if (itemName.ToLower().StartsWith(ProjectManager.ContentProject.Directory.ToLower() + ProjectManager.ContentProject.ContentDirectory.ToLower()))
-                        itemName = itemName.Replace(ProjectManager.ContentProject.Directory.ToLower() + ProjectManager.ContentProject.ContentDirectory.ToLower(), "");
+                    itemName = FileManager.Standardize(item.UnevaluatedInclude, project.ContentProject.GetAbsoluteContentFolder()).ToLower();
+                    if (itemName.ToLower().StartsWith(ProjectManager.ContentProject.GetAbsoluteContentFolder().ToLower()))
+                        itemName = itemName.Replace(ProjectManager.ContentProject.GetAbsoluteContentFolder().ToLower(), "");
 
                     nameToInclude = FileManager.Standardize(item.UnevaluatedInclude, project.ContentProject.Directory);
-                    if (nameToInclude.ToLower().StartsWith(ProjectManager.ContentProject.Directory.ToLower() + ProjectManager.ContentProject.ContentDirectory.ToLower()))
-                        nameToInclude = nameToInclude.Substring((ProjectManager.ContentProject.Directory + ProjectManager.ContentProject.ContentDirectory).Length);
+                    if (nameToInclude.ToLower().StartsWith(ProjectManager.ContentProject.GetAbsoluteContentFolder().ToLower()))
+                        nameToInclude = nameToInclude.Substring((ProjectManager.ContentProject.GetAbsoluteContentFolder()).Length);
                 }
 
                 //if (nameToInclude.StartsWith(ContentProject.Directory + ContentProject.ContentDirectory))
@@ -216,7 +216,7 @@ namespace FlatRedBall.Glue.Managers
                 bool isContent = ProjectManager.IsContent(itemName);
 
                 isUnreferenced = isContent &&
-                    File.Exists(ProjectManager.ContentProject.Directory + ProjectManager.ContentProject.ContentDirectory + nameToInclude) &&
+                    File.Exists(ProjectManager.ContentProject.GetAbsoluteContentFolder() + nameToInclude) &&
                     !referencedFiles.Contains(itemName);
 
             }
@@ -230,7 +230,7 @@ namespace FlatRedBall.Glue.Managers
 
             if (isUnreferenced)
             {
-                nameToInclude = ProjectManager.ContentProject.Directory + ProjectManager.ContentProject.ContentDirectory + nameToInclude;
+                nameToInclude = ProjectManager.ContentProject.GetAbsoluteContentFolder() + nameToInclude;
                 nameToInclude = nameToInclude.Replace(@"/", @"\");
 
                 if (!mListBeforeAddition.Contains(nameToInclude.ToLower()))

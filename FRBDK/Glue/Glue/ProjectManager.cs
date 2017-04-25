@@ -109,7 +109,7 @@ namespace FlatRedBall.Glue
         {
             get
             {
-                return ContentProject == null ? "" : ContentProject.FullContentPath;
+                return ProjectBase?.GetAbsoluteContentFolder();
             }
         }
 
@@ -1201,7 +1201,7 @@ namespace FlatRedBall.Glue
 
         private static bool ShouldFileBeInContentProject(string fileToAddAbsolute)
         {
-            bool toReturn = FileManager.IsRelativeTo(fileToAddAbsolute, FileManager.GetDirectory(ContentProject.FullFileName));
+            bool toReturn = FileManager.IsRelativeTo(fileToAddAbsolute, ContentProject.GetAbsoluteContentFolder());
 
             // If this is a .cs file and the content project is the same project as the main project, then it's actually a code file
             if (toReturn && ContentProject.FullFileName == ProjectBase.FullFileName && FileManager.GetExtension(fileToAddAbsolute) == "cs")

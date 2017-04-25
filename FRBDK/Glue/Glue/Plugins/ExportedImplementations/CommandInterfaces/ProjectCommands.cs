@@ -81,7 +81,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 string rootDirectory = FileManager.RelativeDirectory;
                 if (ProjectManager.ContentProject != null)
                 {
-                    rootDirectory = ProjectManager.ContentProject.Directory;
+                    rootDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
                 }
 
                 string directory = rootDirectory + "GlobalContent/" + folderName;

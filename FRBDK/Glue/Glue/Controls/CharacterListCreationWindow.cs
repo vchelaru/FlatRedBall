@@ -22,7 +22,7 @@ namespace FlatRedBall.Glue.Controls
                 string directoryToMakeRelativeTo = FileManager.RelativeDirectory;
                 if (ProjectManager.ContentProject != null)
                 {
-                    directoryToMakeRelativeTo = ProjectManager.ContentProject.Directory;
+                    return ProjectManager.ContentProject.GetAbsoluteContentFolder();
                 }
 
                 return directoryToMakeRelativeTo;

@@ -301,7 +301,7 @@ namespace FlatRedBall.Glue.IO
                 if (!FileManager.IsRelativeTo(fileName, FileManager.RelativeDirectory))
                 {
                     if (ProjectManager.ContentProject == null ||
-                        !FileManager.IsRelativeTo(fileName, ProjectManager.ContentProject.Directory))
+                        !FileManager.IsRelativeTo(fileName, ProjectManager.ProjectBase.GetAbsoluteContentFolder()))
                     {
                         reason = IgnoreReason.OutsideOfProject;
                         isIgnored = true;

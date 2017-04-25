@@ -20,30 +20,8 @@ namespace FlatRedBall.Glue.Managers
         {
             get
             {
-                string contentDirectory = GlueState.Self.CurrentGlueProjectDirectory + "GlobalContent/";
-
-                if (ProjectManager.ContentProject != null)
-                {
-                    if(ProjectManager.ContentProject == ProjectManager.ProjectBase && !string.IsNullOrEmpty(ProjectManager.ContentProject.ContentDirectory)) 
-                    {
-                        // It's the same project, so we need to append the content folder, since the project itself
-                        // doesn't have "content/"
-
-                        var contentProject = ProjectManager.ContentProject;
-
-                        contentDirectory = contentProject.Directory + contentProject.ContentDirectory + "GlobalContent/";
-                    }
-                    else
-                    {
-                        contentDirectory = ProjectManager.ContentProject.Directory + "GlobalContent/";
-                    }
-
-
-                }
-
-                string returnValue = contentDirectory;
-
-                return returnValue;
+                return ProjectManager.ProjectBase.GetAbsoluteContentFolder() + "GlobalContent/";
+                
             }
         }
 
@@ -62,7 +40,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else if (ProjectManager.ContentProject != null)
             {
-                relativeToProject = FileManager.MakeRelative(relativeToProject, ProjectManager.ContentProject.Directory);
+                relativeToProject = FileManager.MakeRelative(relativeToProject, ProjectManager.ContentProject.GetAbsoluteContentFolder());
             }
 
             if (relativeToProject.StartsWith("content/globalcontent") || relativeToProject.StartsWith("globalcontent")
@@ -87,7 +65,7 @@ namespace FlatRedBall.Glue.Managers
 
                 if (ProjectManager.ContentProject != null)
                 {
-                    subdirectory = ProjectManager.ContentProject.Directory;
+                    subdirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
                 }
                 subdirectory += "GlobalContent/";
 

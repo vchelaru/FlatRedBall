@@ -731,7 +731,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
 
-            if (ProjectManager.IsContent(referencedFileToRemove.GetRelativePath()))
+            if (ProjectManager.IsContent(referencedFileToRemove.Name))
             {
 
                 UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);

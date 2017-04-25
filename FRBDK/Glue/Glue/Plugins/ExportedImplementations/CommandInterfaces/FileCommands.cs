@@ -55,7 +55,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             FillAllFilesWithFilesInList(allFiles, allRfses, TopLevelOrRecursive.Recursive, ProjectOrDisk.Disk);
 
-            string contentProjectDirectory = ProjectManager.ContentProject.Directory.ToLowerInvariant();
+            string contentProjectDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder().ToLowerInvariant();
 
             for (int i = 0; i < allFiles.Count; i++)
             {
@@ -95,7 +95,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             
             FillAllFilesWithFilesInList(allFiles, allRfses, topLevelOrRecursive, ProjectOrDisk.Project);
 
-            string contentProjectDirectory = ProjectManager.ContentProject.Directory.ToLowerInvariant();
+            string contentProjectDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder().ToLowerInvariant();
 
             for (int i = 0; i < allFiles.Count; i++)
             {

@@ -164,6 +164,9 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         //[ReadOnlyAttribute(true)]
+        /// <summary>
+        /// The name of the file name, relative to the Content folder.
+        /// </summary>
         public string Name
         {
             get { return mName; }

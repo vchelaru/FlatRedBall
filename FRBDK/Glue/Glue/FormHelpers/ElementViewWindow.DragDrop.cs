@@ -528,7 +528,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
 
 
-            string newNodeText = FlatRedBall.IO.FileManager.MakeRelative(targetDirectory, ProjectManager.ContentProject.Directory) + FileManager.RemovePath(referencedFileSave.Name);
+            string newNodeText = FlatRedBall.IO.FileManager.MakeRelative(targetDirectory, ProjectManager.ProjectBase.GetAbsoluteContentFolder()) + FileManager.RemovePath(referencedFileSave.Name);
             newNodeText = newNodeText.Replace("/", "\\");
 
             string oldFileName = ProjectManager.MakeAbsolute(referencedFileSave.Name, true);

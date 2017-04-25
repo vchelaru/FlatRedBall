@@ -833,7 +833,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (ProjectManager.ContentProject != null)
             {
-                contentDirectory = ProjectManager.ContentProject.Directory;
+                contentDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
             }
 
             AddDirectoryNodes(contentDirectory + "GlobalContent/", mGlobalContentNode);

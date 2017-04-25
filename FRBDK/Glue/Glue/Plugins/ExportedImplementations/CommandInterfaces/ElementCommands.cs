@@ -192,9 +192,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         string directoryThatFileShouldBeRelativeTo = GetFullPathContentDirectory(containerForFile, directoryInsideContainer);
 
-                        string projectDirectory = projectDirectory = FileManager.GetDirectory(ProjectManager.ContentProject.FullFileName);
+                        string projectDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
 
-                        string fileToAdd = GetNameOfFileRelativeToProject(absoluteFileName, directoryThatFileShouldBeRelativeTo, projectDirectory);
+                        string fileToAdd = GetNameOfFileRelativeToContentFolder(absoluteFileName, directoryThatFileShouldBeRelativeTo, projectDirectory);
 
                         BuildToolAssociation bta = null;
 
@@ -254,7 +254,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return referencedFileSaveToReturn;
         }
 
-        private static string GetNameOfFileRelativeToProject(string absoluteSourceFileName, string directoryThatFileShouldBeRelativeTo, string projectDirectory)
+        private static string GetNameOfFileRelativeToContentFolder(string absoluteSourceFileName, string directoryThatFileShouldBeRelativeTo, string projectDirectory)
         {
             string fileToAdd = "";
 
@@ -277,7 +277,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 //else
                 {
                     fileToAdd = directoryThatFileShouldBeRelativeTo + FileManager.RemovePath(absoluteSourceFileName);
-                    fileToAdd = FileManager.MakeRelative(fileToAdd, ProjectManager.ContentProject.Directory + ProjectManager.ContentProject.ContentDirectory);
+                    fileToAdd = FileManager.MakeRelative(fileToAdd, ProjectManager.ContentProject.GetAbsoluteContentFolder());
                     FileHelper.RecursivelyCopyContentTo(absoluteSourceFileName,
                         FileManager.GetDirectory(absoluteSourceFileName),
                         directoryThatFileShouldBeRelativeTo);
@@ -291,11 +291,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (rfs != null)
                 {
-                    fileToAdd = rfs.GetRelativePath();
+                    fileToAdd = rfs.Name;
                 }
                 else
                 {
-                    fileToAdd = FileManager.MakeRelative(absoluteSourceFileName, ProjectManager.ContentProject.Directory + ProjectManager.ContentProject.ContentDirectory);
+                    fileToAdd = FileManager.MakeRelative(absoluteSourceFileName, ProjectManager.ContentProject.GetAbsoluteContentFolder());
                 }
             }
             return fileToAdd;
