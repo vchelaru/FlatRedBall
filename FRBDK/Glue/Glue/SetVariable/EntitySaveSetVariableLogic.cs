@@ -205,6 +205,7 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 FactoryCodeGenerator.AddGeneratedPerformanceTypes();
                 FactoryCodeGenerator.UpdateFactoryClass(entitySave);
+                ProjectManager.SaveProjects();
             }
             else
             {
