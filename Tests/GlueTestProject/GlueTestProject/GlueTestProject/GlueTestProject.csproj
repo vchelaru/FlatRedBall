@@ -808,6 +808,10 @@
     <Compile Include="GumRuntimes\StateComponentRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\SwitchRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\TestComponentRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\TestRectangleRuntime.cs" />
+    <Compile Include="GumRuntimes\TestRectangleRuntime.Generated.cs">
+      <DependentUpon>TestRectangleRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\TestScreenRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\TextRuntime.cs" />
     <Compile Include="GumRuntimes\TextRuntime.Generated.cs">
@@ -1029,6 +1033,7 @@
     <Compile Include="StateInterpolation\Cubic.cs" />
     <Compile Include="StateInterpolation\Elastic.cs" />
     <Compile Include="StateInterpolation\Exponential.cs" />
+    <Compile Include="StateInterpolation\Instant.cs" />
     <Compile Include="StateInterpolation\Linear.cs" />
     <Compile Include="StateInterpolation\Quadratic.cs" />
     <Compile Include="StateInterpolation\Quartic.cs" />

@@ -1515,17 +1515,16 @@
       <Link>GumRuntimes\SwitchRuntime.Generated.cs</Link>
       <DependentUpon>SwitchRuntime.cs</DependentUpon>
     </Compile>
-    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\TestComponent2Runtime.Generated.cs">
-      <Link>GumRuntimes\TestComponent2Runtime.Generated.cs</Link>
-      <DependentUpon>TestComponent2Runtime.cs</DependentUpon>
-    </Compile>
-    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\TestComponent3Runtime.Generated.cs">
-      <Link>GumRuntimes\TestComponent3Runtime.Generated.cs</Link>
-      <DependentUpon>TestComponent3Runtime.cs</DependentUpon>
-    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\TestComponentRuntime.Generated.cs">
       <Link>GumRuntimes\TestComponentRuntime.Generated.cs</Link>
       <DependentUpon>TestComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\TestRectangleRuntime.cs">
+      <Link>GumRuntimes\TestRectangleRuntime.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\TestRectangleRuntime.Generated.cs">
+      <Link>GumRuntimes\TestRectangleRuntime.Generated.cs</Link>
+      <DependentUpon>TestRectangleRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\TestScreenRuntime.Generated.cs">
       <Link>GumRuntimes\TestScreenRuntime.Generated.cs</Link>
@@ -1929,6 +1928,9 @@
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Exponential.cs">
       <Link>StateInterpolation\Exponential.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Instant.cs">
+      <Link>StateInterpolation\Instant.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Linear.cs">
       <Link>StateInterpolation\Linear.cs</Link>
@@ -2459,6 +2461,10 @@
       <Name>TestComponent</Name>
       <Link>Content\GumProject\Components\TestComponent.gucx</Link>
     </Content>
+    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\Components\TestRectangle.gucx">
+      <Name>TestRectangle</Name>
+      <Link>Content\GumProject\Components\TestRectangle.gucx</Link>
+    </Content>
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\Components\TextureSettingInStateComponent.gucx">
       <Name>TextureSettingInStateComponent</Name>
       <Link>Content\GumProject\Components\TextureSettingInStateComponent.gucx</Link>
@@ -2502,6 +2508,10 @@
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\GumProject.gumx">
       <Name>GumProject</Name>
       <Link>Content\GumProject\GumProject.gumx</Link>
+    </Content>
+    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\GumUI.png">
+      <Name>GumUI</Name>
+      <Link>Content\GumProject\GumUI.png</Link>
     </Content>
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\Screens\TestScreen.gusx">
       <Name>TestScreen</Name>

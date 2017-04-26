@@ -477,6 +477,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TestComponent</Name>
     </None>
+    <None Include="GumProject\Components\TestRectangle.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TestRectangle</Name>
+    </None>
     <None Include="GumProject\Components\TextureSettingInStateComponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TextureSettingInStateComponent</Name>

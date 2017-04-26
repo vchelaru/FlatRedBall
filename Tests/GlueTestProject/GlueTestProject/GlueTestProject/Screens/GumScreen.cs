@@ -59,6 +59,14 @@ namespace GlueTestProject.Screens
                 throw new Exception("Outlined text objects are not getting their fonts set.");
             }
 
+            this.TestRectangleInstance.Visible = false;
+            bool isAbsoluteVisible = 
+                (this.TestRectangleInstance.Sprite as RenderingLibrary.Graphics.IVisible).AbsoluteVisible;
+            if (isAbsoluteVisible)
+            {
+                throw new Exception("Making a component invisible is not making its contained objects that are attahe to containers also invisible.");
+            }
+
 		}
 
 		void CustomActivity(bool firstTimeCalled)

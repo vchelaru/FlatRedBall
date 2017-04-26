@@ -56,6 +56,10 @@
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
+    <Name>TestRectangle</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>TextureSettingInStateComponent</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
@@ -63,6 +67,10 @@
     <Name>UsedToInheritFromTextComponent</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
+  <StandardElementReference>
+    <Name>Circle</Name>
+    <ElementType>Standard</ElementType>
+  </StandardElementReference>
   <StandardElementReference>
     <Name>ColoredRectangle</Name>
     <ElementType>Standard</ElementType>
@@ -80,19 +88,15 @@
     <ElementType>Standard</ElementType>
   </StandardElementReference>
   <StandardElementReference>
+    <Name>Rectangle</Name>
+    <ElementType>Standard</ElementType>
+  </StandardElementReference>
+  <StandardElementReference>
     <Name>Sprite</Name>
     <ElementType>Standard</ElementType>
   </StandardElementReference>
   <StandardElementReference>
     <Name>Text</Name>
-    <ElementType>Standard</ElementType>
-  </StandardElementReference>
-  <StandardElementReference>
-    <Name>Circle</Name>
-    <ElementType>Standard</ElementType>
-  </StandardElementReference>
-  <StandardElementReference>
-    <Name>Rectangle</Name>
     <ElementType>Standard</ElementType>
   </StandardElementReference>
 </GumProjectSave>

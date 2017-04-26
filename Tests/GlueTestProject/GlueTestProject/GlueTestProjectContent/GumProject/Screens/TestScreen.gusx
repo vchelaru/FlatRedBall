@@ -191,6 +191,18 @@
     </Variable>
     <Variable>
       <Type>float</Type>
+      <Name>TestRectangleInstance.X</Name>
+      <Value xsi:type="xsd:float">279</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TestRectangleInstance.Y</Name>
+      <Value xsi:type="xsd:float">181</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
       <Name>TopButton.Y</Name>
       <Value xsi:type="xsd:float">42</Value>
       <SetsValue>true</SetsValue>
@@ -264,5 +276,9 @@
   <Instance>
     <Name>OutlineTextInstance</Name>
     <BaseType>Text</BaseType>
+  </Instance>
+  <Instance>
+    <Name>TestRectangleInstance</Name>
+    <BaseType>TestRectangle</BaseType>
   </Instance>
 </ScreenSave>

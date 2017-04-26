@@ -1463,6 +1463,13 @@
       <Link>GumRuntimes\TestComponentRuntime.Generated.cs</Link>
       <DependentUpon>TestComponentRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\TestRectangleRuntime.cs">
+      <Link>GumRuntimes\TestRectangleRuntime.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\TestRectangleRuntime.Generated.cs">
+      <Link>GumRuntimes\TestRectangleRuntime.Generated.cs</Link>
+      <DependentUpon>TestRectangleRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\TestScreenRuntime.Generated.cs">
       <Link>GumRuntimes\TestScreenRuntime.Generated.cs</Link>
       <DependentUpon>TestScreenRuntime.cs</DependentUpon>
@@ -1869,6 +1876,9 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Exponential.cs">
       <Link>StateInterpolation\Exponential.cs</Link>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Instant.cs">
+      <Link>StateInterpolation\Instant.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\Linear.cs">
       <Link>StateInterpolation\Linear.cs</Link>
     </Compile>
@@ -1981,6 +1991,10 @@
       <Name>StateComponent</Name>
       <Link>Assets\content\gumproject\components\statecomponent.gucx</Link>
     </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\testrectangle.gucx">
+      <Name>TestRectangle</Name>
+      <Link>Assets\content\gumproject\components\testrectangle.gucx</Link>
+    </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\fontcache\font18arial_o1.fnt">
       <Name>Font18Arial_o1</Name>
       <Link>Assets\content\gumproject\fontcache\font18arial_o1.fnt</Link>
@@ -1996,6 +2010,10 @@
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\fontcache\fontcache\font22arial.fnt">
       <Name>Font22Arial</Name>
       <Link>Assets\content\gumproject\fontcache\fontcache\font22arial.fnt</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\gumui.png">
+      <Name>GumUI</Name>
+      <Link>Assets\content\gumproject\gumui.png</Link>
     </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\circle.gutx">
       <Name>Circle</Name>
