@@ -17,7 +17,7 @@ namespace TileGraphicsPlugin.Managers
         {
             mTileGraphicsAdder = new CodeBuildItemAdder();
             mTileGraphicsAdder.OutputFolderInProject = "TileGraphics";
-            mTileGraphicsAdder.AddFileBehavior = AddFileBehavior.IfOutOfDate;
+            mTileGraphicsAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
             mTileGraphicsAdder.Add("TileGraphicsPlugin.AnimationChainContainer.cs");
             // Are we still supporting this?
             //mItemAdder.Add("TileGraphicsPlugin.CulledMapDrawableBatch.cs");
@@ -50,12 +50,12 @@ namespace TileGraphicsPlugin.Managers
 
             mTileCollisionAdder = new CodeBuildItemAdder();
             mTileCollisionAdder.OutputFolderInProject = "TileCollisions";
-            mTileCollisionAdder.AddFileBehavior = AddFileBehavior.IfOutOfDate;
+            mTileCollisionAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
             mTileCollisionAdder.Add("TileGraphicsPlugin.TileShapeCollection.cs");
 
             mTileEntityAdder = new CodeBuildItemAdder();
             mTileEntityAdder.OutputFolderInProject = "TileEntities";
-            mTileEntityAdder.AddFileBehavior = AddFileBehavior.IfOutOfDate;
+            mTileEntityAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
             mTileEntityAdder.Add("TileGraphicsPlugin.TileEntityInstantiator.cs");
         }
 

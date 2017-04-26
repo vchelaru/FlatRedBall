@@ -16,6 +16,7 @@ using FlatRedBall.Math.Splines;
 using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
 using FlatRedBall.Localization;
+using System.Linq;
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -42,6 +43,16 @@ namespace GlueTestProject.Screens
                     {
                     }
                 }
+            }
+
+            if (CreatedByTiledList.Count == 0)
+            {
+                throw new Exception("Entities created from tiled are not appearing in the screen's list");
+            }
+
+            if(CreatedByTiledList.Count(item=>item.Z == 2) == 0)
+            {
+                throw new Exception("Entities created from tiled object layers are not appearing in the screen's list with the right Z.");
             }
 		}
 

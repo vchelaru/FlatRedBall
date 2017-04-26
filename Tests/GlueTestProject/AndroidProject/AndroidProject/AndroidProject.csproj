@@ -328,6 +328,13 @@
       <Link>Entities\ContainerOfFactoryEntityList.Generated.cs</Link>
       <DependentUpon>ContainerOfFactoryEntityList.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CreatedByTiled.cs">
+      <Link>Entities\CreatedByTiled.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CreatedByTiled.Generated.cs">
+      <Link>Entities\CreatedByTiled.Generated.cs</Link>
+      <DependentUpon>CreatedByTiled.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\CsvEntity.cs">
       <Link>Entities\CsvEntity.cs</Link>
     </Compile>
@@ -1090,6 +1097,9 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\ChildOfPositioningEntityFactory.Generated.cs">
       <Link>Factories\ChildOfPositioningEntityFactory.Generated.cs</Link>
       <DependentUpon>ChildOfPositioningEntityFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\CreatedByTiledFactory.Generated.cs">
+      <Link>Factories\CreatedByTiledFactory.Generated.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\DerivedPooledFromNotPooledFactory.Generated.cs">
       <Link>Factories\DerivedPooledFromNotPooledFactory.Generated.cs</Link>

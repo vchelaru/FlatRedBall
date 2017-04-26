@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="21" tilewidth="16" tileheight="16" backgroundcolor="#4688ba" nextobjectid="1">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="21" tilewidth="16" tileheight="16" backgroundcolor="#4688ba" nextobjectid="2">
  <tileset firstgid="1" name="PlatformerTiles" tilewidth="16" tileheight="16" tilecount="512" columns="32">
   <image source="../Tilesets/PlatformerTiles.png" width="512" height="256"/>
   <tile id="0">
@@ -20,6 +20,11 @@
     <frame tileid="55" duration="100"/>
    </animation>
   </tile>
+  <tile id="256">
+   <properties>
+    <property name="EntityToCreate" value="CreatedByTiled"/>
+   </properties>
+  </tile>
  </tileset>
  <layer name="BackgroundLayer1" width="32" height="21">
   <data encoding="base64" compression="gzip">
@@ -28,9 +33,16 @@
  </layer>
  <layer name="GameplayLayer" width="32" height="21">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+2TUQqDMBBEV6HYg6gf3kLw31P0HvmrN7HH7KxZbShxG4NEKFl4GAV3MpnNSEQdkaHENYMXGC/Sf4LpQv3sP/vP/sP176CRZyvrSt5j6qj/Htw89JFn9y/5Iwuz5sA8QG2/q3WW/9hcUs8/n1PtkDr/AgzQ+SaVPjTYq/Gw6PPMuFT0maOQedqrwmI0/dKeBWlwD85Q5nvLUfbHd8DNd7kHrfjufuiHwD32MvSw7bs8UV/pofbU/n0DgnX944AKAAA=
+   H4sIAAAAAAAAC+2TUQqDMBBEJ0KxB7F+eAuh/56i98hfe5P2mJ01qQ0lbtMgEUoWHkbBnUxmMwEYAIvCdScPMu2kfyW3HfWr/+q/+k/XNwY48XkkPdy69e859av/kRwijJln9y/5Mwv7ykG4kM59V2sr/7m5lJ5/OacuoHT+vD44U+eTUvrUEK82wqwvMxPS4j1HKfO0VsZhNf3GnQU0pIdk6Od7ydHvT+5AmO98D3rve/iin4L0WMswwrLvZkN9pYfaU/v3CXt1TteACgAA
   </data>
  </layer>
+ <objectgroup name="EntityObjectLayer">
+  <object id="1" name="InObjectLayer1" gid="257" x="272" y="64" width="16" height="16">
+   <properties>
+    <property name="EntityToCreate" value="CreatedByTiled"/>
+   </properties>
+  </object>
+ </objectgroup>
  <layer name="ForegroundLayer" width="32" height="21">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAC2NgGAWjYBSMglEwCkYBvYAyEKsMtCNGwSgYYAAAQyFEJYAKAAA=
