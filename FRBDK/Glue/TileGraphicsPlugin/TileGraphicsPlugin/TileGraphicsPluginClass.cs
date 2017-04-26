@@ -63,7 +63,9 @@ namespace TileGraphicsPlugin
             // - Upped to .NET 4.5.2
             // 1.0.11.4
             // - Shapes now have their Z value set according to the object layer index, which may be used to position entities properly.
-            get { return new Version(1, 0, 11, 4); }
+            // 1.0.11.5
+            // - Fixed a bug where the Name property for tiled sprites was being ignored.
+            get { return new Version(1, 0, 11, 5); }
         }
 
 

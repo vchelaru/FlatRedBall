@@ -414,6 +414,11 @@ namespace FlatRedBall.TileGraphics
                         if (objectInstance.properties.Count != 0)
                         {
                             string name = objectInstance.Name;
+                            // if name is null, check the properties:
+                            if (string.IsNullOrEmpty(name))
+                            {
+                                name = objectInstance.properties.FirstOrDefault(item => item.StrippedNameLower == "name")?.value;
+                            }
                             var properties = objectInstance.properties;
 
                             var objectInstanceIsTile = objectInstance.gid != null;
