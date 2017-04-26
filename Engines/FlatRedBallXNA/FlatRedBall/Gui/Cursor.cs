@@ -2306,7 +2306,12 @@ namespace FlatRedBall.Gui
             UpdateObjectGrabbedPosition(null);
         }
 
-        public void UpdateObjectGrabbedPosition(Layer layer)
+        public void UpdateObjectGrabbedPosition(int xOffset, int yOffset)
+        {
+            UpdateObjectGrabbedPosition(null, xOffset, yOffset);
+        }
+
+        public void UpdateObjectGrabbedPosition(Layer layer, int xOffset = 0, int yOffset = 0)
         {
             if (mObjectGrabbed != null)
             {
@@ -2330,8 +2335,8 @@ namespace FlatRedBall.Gui
                 {
 
                     GetCursorPositionForSprite(ref outX, ref outY, mObjectGrabbed.Z, layer);
-                    mObjectGrabbed.X = outX;
-                    mObjectGrabbed.Y = outY;
+                    mObjectGrabbed.X = outX + xOffset;
+                    mObjectGrabbed.Y = outY + yOffset;
                 }
             }
 
