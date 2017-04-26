@@ -567,7 +567,7 @@ namespace NewProjectCreator
             // We want to be careful doing a pure copy/paste 
             // replace in .csproj files, because .csproj files
             // can reference .dlls which have names that contain
-            // the 
+            // the old namespace
             foreach (string fileName in filesToFix)
             {
                 string contents = FileManager.FromFileText(fileName);
@@ -590,6 +590,21 @@ namespace NewProjectCreator
                 System.IO.File.WriteAllText(fileName, contents, Encoding.UTF8);
 
             }
+
+            filesToFix.Clear();
+            filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "contentproj"));
+            foreach (string fileName in filesToFix)
+            {
+                string contents = FileManager.FromFileText(fileName);
+
+                string whatToReplace = $"\\{stringToReplace}\\Libraries\\";
+                string whatToReplaceWith = $"\\{stringToReplaceWith}\\Libraries\\";
+
+                contents = contents.Replace(whatToReplace, whatToReplaceWith);
+
+                System.IO.File.WriteAllText(fileName, contents, Encoding.UTF8);
+            }
+
 
             filesToFix.Clear();
             filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "glux"));
