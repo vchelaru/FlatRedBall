@@ -81,7 +81,8 @@ namespace GumPlugin
             // - Fixed interpolation of states not working properly because the wrong Name was assigned to the new state (spaces were removed)
             // - Added support for "Instant" interpolation type
             // 0.8.3.3 - Fixed threading issue when fixing projects.
-            get { return new Version(0, 8, 3, 3); }
+            // 0.8.3.4 - Fixed children of containers not becoming invisible when they should
+            get { return new Version(0, 8, 3, 4); }
         }
 
         #endregion

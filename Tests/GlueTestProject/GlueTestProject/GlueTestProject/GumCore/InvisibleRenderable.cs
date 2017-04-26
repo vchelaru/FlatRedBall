@@ -73,11 +73,6 @@ namespace RenderingLibrary.Graphics
 
         IVisible IVisible.Parent { get { return Parent as IVisible; } }
 
-        public InvisibleRenderable()
-        {
-
-        }
-
         public void PreRender()
         {
         }
