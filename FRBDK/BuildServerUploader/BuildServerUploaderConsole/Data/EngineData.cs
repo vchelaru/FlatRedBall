@@ -26,5 +26,10 @@ namespace BuildServerUploaderConsole.Data
                 return TemplateFolder.Substring(0, firstIndex);
             }
         }
+
+        public override string ToString()
+        {
+            return $"{TemplateFolder}{TemplateName}";
+        }
     }
 }

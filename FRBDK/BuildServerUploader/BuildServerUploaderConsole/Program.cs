@@ -64,7 +64,8 @@ namespace BuildServerUploaderConsole
             else // I think this is used for debugging only
             {
                 //CreateUploadProcessSteps("DailyBuild");
-                CreateCopyToTemplatesSteps();
+                ProcessSteps.Add(new ZipTemplates(Results));
+
 
                 //CreateCopyToInstallerSteps(true);
             }

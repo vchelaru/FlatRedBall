@@ -10,6 +10,11 @@ namespace BuildServerUploaderConsole.Processes
         {
             public string ZipDirectory;
             public string ZipFileName;
+
+            public override string ToString()
+            {
+                return $"{ZipDirectory}{ZipFileName}";
+            }
         }
 
         static string mDestinationDirectory = DirectoryHelper.ReleaseDirectory;

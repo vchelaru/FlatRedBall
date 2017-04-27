@@ -60,5 +60,19 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
 
         }
+
+        public override string ProcessInclude(string path)
+        {
+            var returnValue = base.ProcessInclude(path);
+
+            return returnValue.ToLowerInvariant();
+        }
+
+        public override string ProcessLink(string path)
+        {
+            var returnValue = base.ProcessLink(path);
+            // Linux is case-sensitive
+            return returnValue.ToLower();
+        }
     }
 }

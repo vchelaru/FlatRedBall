@@ -535,7 +535,7 @@ namespace FlatRedBall.Content
 				#endregion
 
 				#region Image
-#if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
 				else if (typeof(T) == typeof(Image))
 				{
 

@@ -562,14 +562,12 @@ namespace FlatRedBall.IO
         
 
 #if !WINDOWS_8
-#region XML Docs
         /// <summary>
         /// Searches the passed directory and all subdirectories for the passed file.
         /// </summary>
         /// <param name="fileToFind">The name of the file including extension.</param>
         /// <param name="directory">The directory to search in, including all subdirectories.</param>
         /// <returns>The full path of the first file found matching the name, or an empty string if none is found.</returns>
-#endregion
         public static string FindFileInDirectory(string fileToFind, string directory)
         {
 

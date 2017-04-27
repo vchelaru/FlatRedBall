@@ -116,21 +116,22 @@ namespace BuildServerUploaderConsole.Data
             }
 
             {
-                var engine = new EngineData();
+                // I think we can use the regular desktopgl instead of a linux specific
+                //var engine = new EngineData();
 
-                engine.RelativeToLibrariesDebugFolder = @"DesktopGl\Debug";
-                engine.RelativeToLibrariesReleaseFolder = @"DesktopGl\Release";
-                // This template is a copy of the regular DesktopGL template, so it uses FlatRedBallDesktopGlTemplate as an internal folder
-                //engine.TemplateFolder = @"FlatRedBallDesktopGlLinuxTemplate\FlatRedBallDesktopGlLinuxTemplate\";
-                engine.TemplateFolder = @"FlatRedBallDesktopGlLinuxTemplate\FlatRedBallDesktopGlTemplate\";
+                //engine.RelativeToLibrariesDebugFolder = @"DesktopGl\Debug";
+                //engine.RelativeToLibrariesReleaseFolder = @"DesktopGl\Release";
+                //// This template is a copy of the regular DesktopGL template, so it uses FlatRedBallDesktopGlTemplate as an internal folder
+                ////engine.TemplateFolder = @"FlatRedBallDesktopGlLinuxTemplate\FlatRedBallDesktopGlLinuxTemplate\";
+                //engine.TemplateFolder = @"FlatRedBallDesktopGlLinuxTemplate\FlatRedBallDesktopGlTemplate\";
 
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Debug\FlatRedBallDesktopGL.dll");
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Debug\FlatRedBallDesktopGL.pdb");
+                //engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Debug\FlatRedBallDesktopGL.dll");
+                //engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Debug\FlatRedBallDesktopGL.pdb");
 
-                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Release\FlatRedBallDesktopGL.dll");
-                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Release\FlatRedBallDesktopGL.pdb");
+                //engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Release\FlatRedBallDesktopGL.dll");
+                //engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Release\FlatRedBallDesktopGL.pdb");
 
-                Engines.Add(engine);
+                //Engines.Add(engine);
 
             }
 

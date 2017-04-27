@@ -5658,6 +5658,13 @@
             <param name="button">The button to check.</param>
             <returns>true if the button is pressed, otherwise false</returns>
         </member>
+        <member name="M:FlatRedBall.Input.Xbox360GamePad.GetButton(FlatRedBall.Input.Xbox360GamePad.Button)">
+            <summary>
+            Returns an Xbox360ButtonReference from the argument Button.
+            </summary>
+            <param name="button">The button, such as Button.A</param>
+            <returns>The reference, which can then be used to check for input.</returns>
+        </member>
         <member name="M:FlatRedBall.Input.Xbox360GamePad.Clear">
             <summary>
             Clears the input on this controller for this frame. This includes
@@ -5741,6 +5748,26 @@
             var jumpInput = new MultiplePressableInputs();
             jumpInput.Inputs.Add(InputManager.Keyboard.GetKey(Keys.Space));
             jumpInput.Inputs.Add(InputManager.Keyboard.GetKey(Keys.Enter));
+            </example>
+        </member>
+        <member name="T:FlatRedBall.Input.Multiple2DInputs">
+            <summary>
+            Provides a single I2DInput implementation which can read from multiple I2DInputs at once.
+            </summary>
+            <remarks>
+            This is useful for games which want to read from multiple devices, such as letting all controllers
+            control one character, or letting keyboard and gamepad control a character at the same time.
+            </remarks>
+        </member>
+        <member name="P:FlatRedBall.Input.Multiple2DInputs.Inputs">
+            <summary>
+            Contains the list of inputs to read from. Any number of inputs can be added to this using the Add method.
+            </summary>
+            <example>
+            // Assuming that keyboard2DInput and gamepad2DInput exist:
+            var multipleInputs = new Multiple2DInputs();
+            multipleInputs.Inputs.Add(keyboard2DInput);
+            multipleInputs.Inputs.Add(gamepad2DInput);
             </example>
         </member>
         <member name="T:FlatRedBall.Input.DirectionalKeyGroup">
@@ -8148,6 +8175,14 @@
             <param name="pointToRotate">Point to rotate (changes position).</param>
             <param name="radiansToChangeBy">Radians to rotate by.</param>
         </member>
+        <member name="M:FlatRedBall.Math.MathFunctions.RoundFloat(System.Single,System.Single)">
+            <summary>
+            Returns a value which has been rounded to the nearest mulitple of the mulipleOf value.
+            </summary>
+            <param name="valueToRound">The value to round, such as the position of an object.</param>
+            <param name="multipleOf">The multiple of value, such as the size of a tile.</param>
+            <returns>The rounded value.</returns>
+        </member>
         <member name="M:FlatRedBall.Math.MathFunctions.NormalizeAngle(System.Single)">
             <summary>
             Wraps an angle from 0 to TwoPi
@@ -9208,7 +9243,8 @@
         </member>
         <member name="M:FlatRedBall.Screens.Screen.MoveToScreen(System.String)">
             <summary>Tells the screen that we are done and wish to move to the
-            supplied screen</summary>
+            the screen with the matching (fully qualified) name.
+            </summary>
             <param>Fully Qualified Type of the screen to move to</param>
         </member>
         <member name="M:FlatRedBall.Screens.Screen.MoveToState(System.Int32)">
