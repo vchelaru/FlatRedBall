@@ -336,11 +336,11 @@ namespace FlatRedBall.Glue.Factories
 
         private static void AddResetVariablesForSpriteOrSpriteFrame(NamedObjectSave nos, List<string> variables)
         {
-            string fullFile = ProjectManager.MakeAbsolute(nos.SourceFile);
 
             // todo - support resetting animation chains on Sprites that aren't using a .scnx
             if (nos.SourceType == SourceType.File && !string.IsNullOrEmpty(nos.SourceFile))
             {
+                string fullFile = ProjectManager.MakeAbsolute(nos.SourceFile);
                 SpriteEditorScene ses = SpriteEditorScene.FromFile(fullFile);
 
                 int endingIndex = nos.SourceName.LastIndexOf('(');

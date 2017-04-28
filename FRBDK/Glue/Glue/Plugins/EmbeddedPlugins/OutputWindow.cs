@@ -21,7 +21,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins
     public partial class OutputWindow : UserControl
     {
         List<ColoredText> mBuffer = new List<ColoredText>();
-        const int MaxLength = 800000;
+        // Used to be 800,000, but increasing slightly to get more output
+        const int MaxLength = 900000;
         const int LengthToReduceTo = 700000;
 
         Timer mTimer;

@@ -172,6 +172,7 @@ namespace FlatRedBall.Gui
             set;
         }
 
+        [Obsolete("Set the native cursor visibility using FlatRedBallServices.Game.IsMouseVisible")]
 		public static bool DrawCursorEvenIfThereIsNoUI
 		{
 			get;

@@ -29,7 +29,7 @@ namespace FlatRedBall.Glue.VSHelpers
 
         List<string> mFilesToAdd = new List<string>();
 
-        const bool IsVerbose = false;
+        public bool IsVerbose { get; set; } = false;
 
         #endregion
 
@@ -156,12 +156,17 @@ namespace FlatRedBall.Glue.VSHelpers
                 if (shouldAdd)
                 {
                     SaveResource(assembly, filesToAddToProject, resourceName, destinationDirectory, destination);
+
+                    if(IsVerbose)
+                    {
+                        PluginManager.ReceiveOutput("Updating file: " + destination);
+                    }
                 }
                 else
                 {
                     if (IsVerbose)
                     {
-                        PluginManager.ReceiveOutput("Skipping adding of file: " + destination);
+                        PluginManager.ReceiveOutput("Skipping updating of file: " + destination);
                     }
                 }
             }

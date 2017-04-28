@@ -15,7 +15,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.VSHelpers;
-
+using FlatRedBall.Glue.Managers;
 
 namespace OfficialPlugins.StateInterpolation
 {
@@ -51,6 +51,8 @@ namespace OfficialPlugins.StateInterpolation
             // We need this to happen when the glux is loaded
             //UpdateCodeInProjectPresence();
             mItemAdder = new CodeBuildItemAdder();
+            mItemAdder.IsVerbose = true;
+
             mItemAdder.Add("StateInterpolationPlugin.Back.cs");
             mItemAdder.Add("StateInterpolationPlugin.Bounce.cs");
             mItemAdder.Add("StateInterpolationPlugin.Circular.cs");
@@ -99,8 +101,13 @@ namespace OfficialPlugins.StateInterpolation
 
         private void UpdateCodeInProjectPresence()
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            mItemAdder.PerformAddAndSave(assembly);
+            TaskManager.Self.AddSync(
+                () =>
+                {
+                    PluginManager.ReceiveOutput("Adding state interpolation plugin code files");
+                    Assembly assembly = Assembly.GetExecutingAssembly();
+                    mItemAdder.PerformAddAndSave(assembly);
+                }, "Adding state interpolation plugin code files");
         }
 
 
