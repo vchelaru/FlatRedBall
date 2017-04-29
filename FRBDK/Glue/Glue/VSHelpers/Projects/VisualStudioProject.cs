@@ -222,7 +222,17 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     buildItem = mProject.AddItem(DefaultContentAction, itemInclude).FirstOrDefault();
                     mProject.ReevaluateIfNecessary();
                     if (ContentCopiedToOutput)
-                        buildItem.SetMetadataValue("CopyToOutputDirectory", "PreserveNewest");
+                    {
+                        try
+                        {
+                            buildItem.SetMetadataValue("CopyToOutputDirectory", "PreserveNewest");
+                        }
+                        catch(Exception exception)
+                        {
+                            throw new Exception("Error trying to add build item " + buildItem + " to project: " + exception.ToString());
+                        }
+
+                    }
                 }
 
                 #endregion
@@ -706,7 +716,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         private void AddContentFileItemsFrom(ProjectBase projectBase)
         {
             var contentItemsToSync =
-                projectBase.ContentProject.EvaluatedItems.Where(item => !SkipContentBuildItem(item, projectBase.ContentProject)).ToList();
+                projectBase.ContentProject.EvaluatedItems.Where(item => IsContentFile(item, projectBase.ContentProject))
+                .ToList();
 
             foreach (var bi in contentItemsToSync)
             {
@@ -797,7 +808,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
-        private bool SkipContentBuildItem(ProjectItem bi, ProjectBase containingProject)
+        private bool IsContentFile(ProjectItem bi, ProjectBase containingProject)
         {
             bool shouldSkipContent = false;
 
@@ -835,6 +846,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 {
                     shouldSkipContent = true;
                 }
+
+                if (bi.ItemType == "Compile" && extension == "cs")
+                {
+                    shouldSkipContent = true;
+                }
             }
 
 
@@ -851,7 +867,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
 
 
-            return shouldSkipContent;
+            return !shouldSkipContent;
         }
 
         protected override ProjectItem AddCodeBuildItem(string fileName, bool isSyncedProject, string nameRelativeToThisProject)
@@ -905,19 +921,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 mBuildItemDictionaries.Add(fileNameToLower, item);
 
-                /* Kevin : This code seems to be outdated, when using this code a file is copied that does not exist yet because Glue has yet to make it
-                     * this only happens for FSB, when commenting out the code, everything seems to work because the entity/screen can be created. 
-                     * 
-                     * if (ProjectType == ProjectType.Fsb)
-                    {
-                        string sourceProjectFileName = FullFileName;
-                        if (fileName.StartsWith("/") || fileName.StartsWith("\\"))
-                        {
-                            fileName = fileName.Substring(1);
-                        }
-
-                        CopyFileToProjectRelativeLocation(FileManager.GetDirectory(sourceProjectFileName) + fileName, fileName);
-                    }*/
                 return item;
             }
         }
