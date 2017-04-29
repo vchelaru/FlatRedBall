@@ -1421,6 +1421,12 @@
       <Link>GumRuntimes\ComponentContainingSpriteRuntime.Generated.cs</Link>
       <DependentUpon>ComponentContainingSpriteRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\componentfolder\InFolder1Runtime.Generated.cs">
+      <Link>GumRuntimes\componentfolder\InFolder1Runtime.Generated.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\ContainerOfInFolderRuntime.Generated.cs">
+      <Link>GumRuntimes\ContainerOfInFolderRuntime.Generated.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\ContainerRuntime.Generated.cs">
       <Link>GumRuntimes\ContainerRuntime.Generated.cs</Link>
       <DependentUpon>ContainerRuntime.cs</DependentUpon>
@@ -1996,6 +2002,14 @@
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
       <Name>TmxFile</Name>
       <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\componentfolder\infolder1.gucx">
+      <Name>InFolder1</Name>
+      <Link>Assets\content\gumproject\components\componentfolder\infolder1.gucx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\containerofinfolder.gucx">
+      <Name>ContainerOfInFolder</Name>
+      <Link>Assets\content\gumproject\components\containerofinfolder.gucx</Link>
     </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\statecomponent.gucx">
       <Name>StateComponent</Name>

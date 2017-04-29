@@ -233,11 +233,13 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateExposedVariableProperties(ElementSave elementSave, ICodeBlock currentBlock)
         {
-            // Get all exposed variables and make properties otu of them.
+            // Get all exposed variables and make properties out of them.
+            // All other properties should be handled by the base type
             if (elementSave.DefaultState != null)
             {
-                var allVariablesToProcess =
-                    elementSave.DefaultState.Variables.Where(item => !string.IsNullOrEmpty(item.ExposedAsName));
+                var allVariablesToProcess = elementSave.DefaultState.Variables
+                    .Where(item => !string.IsNullOrEmpty(item.ExposedAsName))
+                    .ToList();
 
                 foreach (var variable in allVariablesToProcess)
                 {
@@ -321,7 +323,7 @@ namespace GumPlugin.CodeGeneration
                     // Not sure why this was returning CurrentVariableState, as that is the property name,
                     // not the property type, and here we want the property type.  
                     //variableType = elementSave.Name + "Runtime.CurrentVariableState";
-                    variableType = elementSave.Name + "Runtime.VariableState";
+                    variableType = FlatRedBall.IO.FileManager.RemovePath(elementSave.Name) + "Runtime.VariableState";
                 }
                 else if( variableSave.Type.EndsWith("State"))
                 {
@@ -330,7 +332,7 @@ namespace GumPlugin.CodeGeneration
                     if (foundCategory != null)
                     {
 
-                        variableType = elementSave.Name + "Runtime." + foundCategory.Name ;
+                        variableType = FlatRedBall.IO.FileManager.RemovePath(elementSave.Name) + "Runtime." + foundCategory.Name ;
                     }
                 }
             }

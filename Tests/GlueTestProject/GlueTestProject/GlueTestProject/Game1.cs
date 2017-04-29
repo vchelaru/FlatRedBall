@@ -46,7 +46,7 @@ namespace GlueTestProject
 
             CustomInitialize();
 
-			FlatRedBall.Screens.ScreenManager.Start(typeof(GlueTestProject.Screens.TiledLevelScreen));
+			FlatRedBall.Screens.ScreenManager.Start(typeof(GlueTestProject.Screens.FirstScreen));
 
             base.Initialize();
         }

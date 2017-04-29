@@ -445,6 +445,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ComponentContainingSprite</Name>
     </None>
+    <None Include="GumProject\Components\componentfolder\InFolder1.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>InFolder1</Name>
+    </None>
+    <None Include="GumProject\Components\ContainerOfInFolder.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ContainerOfInFolder</Name>
+    </None>
     <None Include="GumProject\Components\NineSliceButton.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>NineSliceButton</Name>

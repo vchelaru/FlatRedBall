@@ -212,6 +212,9 @@ namespace FlatRedBall.Glue.Projects
                         File.Delete(newProjectBase.Directory + "Game1.cs");
                     }
 
+                    // This line is slow. Not sure why..maybe the project is saving after every file is added?
+                    // I could make it an async call but I want to figure out why it's slow at the core.
+                    newProjectBase.SyncTo(ProjectManager.ProjectBase, false);
 
                     ProjectManager.SaveProjects();
                 }

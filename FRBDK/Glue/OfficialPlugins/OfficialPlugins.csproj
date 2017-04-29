@@ -322,9 +322,8 @@
 if not exist "$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\" md "$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\"
 copy "$(TargetDir)OfficialPlugins.dll" "$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\OfficialPlugins.dll"
 
-echo Needed for installer
+echo Needed for installer, but causes a warning in Glue. Oh well...
 copy "$(TargetDir)FlatRedBall.dll" "$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\FlatRedBall.dll"
-
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

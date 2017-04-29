@@ -972,9 +972,6 @@
     <Content Include="Plugins\FRBDKUpdater\HowDidTheseGetHere.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Plugins\FRBDKUpdater\Ionic.Zip.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Resources\IWindowCode\IWindowTemplate.txt" />
     <Compile Include="Resources\PoolList.cs" />
     <Compile Include="Resources\Resource1.Designer.cs">

@@ -82,7 +82,8 @@ namespace GumPlugin
             // - Added support for "Instant" interpolation type
             // 0.8.3.3 - Fixed threading issue when fixing projects.
             // 0.8.3.4 - Fixed children of containers not becoming invisible when they should
-            get { return new Version(0, 8, 3, 4); }
+            // 0.8.3.5 - Fixed codegen bug when exposing a state in a component in a folder
+            get { return new Version(0, 8, 3, 5); }
         }
 
         #endregion

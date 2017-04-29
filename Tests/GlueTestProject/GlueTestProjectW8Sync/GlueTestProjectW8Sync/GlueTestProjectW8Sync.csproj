@@ -1477,6 +1477,12 @@
       <Link>GumRuntimes\ComponentContainingSpriteRuntime.Generated.cs</Link>
       <DependentUpon>ComponentContainingSpriteRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\componentfolder\InFolder1Runtime.Generated.cs">
+      <Link>GumRuntimes\componentfolder\InFolder1Runtime.Generated.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\ContainerOfInFolderRuntime.Generated.cs">
+      <Link>GumRuntimes\ContainerOfInFolderRuntime.Generated.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\ContainerRuntime.Generated.cs">
       <Link>GumRuntimes\ContainerRuntime.Generated.cs</Link>
       <DependentUpon>ContainerRuntime.cs</DependentUpon>
@@ -2438,6 +2444,14 @@
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\Components\ComponentContainingSprite.gucx">
       <Name>ComponentContainingSprite</Name>
       <Link>Content\GumProject\Components\ComponentContainingSprite.gucx</Link>
+    </Content>
+    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\Components\componentfolder\InFolder1.gucx">
+      <Name>InFolder1</Name>
+      <Link>Content\GumProject\Components\componentfolder\InFolder1.gucx</Link>
+    </Content>
+    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\Components\ContainerOfInFolder.gucx">
+      <Name>ContainerOfInFolder</Name>
+      <Link>Content\GumProject\Components\ContainerOfInFolder.gucx</Link>
     </Content>
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\Components\NineSliceButton.gucx">
       <Name>NineSliceButton</Name>

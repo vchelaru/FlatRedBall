@@ -391,42 +391,42 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         protected virtual void AddCodeBuildItems(ProjectBase sourceProjectBase)
         {
 #if GLUE
-            foreach (var bi in sourceProjectBase.EvaluatedItems)
-            {
-                if (bi.UnevaluatedInclude.EndsWith(".cs"))
-                {
-                    string fileName;
+            var sourceCodeFiles = sourceProjectBase.EvaluatedItems
+                .Where(item => item.UnevaluatedInclude.EndsWith(".cs") && !ShouldIgnoreFile(item.UnevaluatedInclude))
+                .ToList();
 
+            foreach (var bi in sourceCodeFiles)
+            {
+                string fileName;
+
+                if (SaveAsAbsoluteSyncedProject)
+                {
+                    fileName = FileManager.GetDirectory(sourceProjectBase.FullFileName) + bi.UnevaluatedInclude;
+                }
+                else if (SaveAsRelativeSyncedProject)
+                {
+                    fileName = FileManager.MakeRelative(FileManager.GetDirectory(sourceProjectBase.FullFileName), FileManager.GetDirectory(FullFileName)) + bi.UnevaluatedInclude;
+                }
+                else
+                {
+                    fileName = bi.UnevaluatedInclude;
+                }
+
+
+                if (!IsFilePartOfProject(fileName, BuildItemMembershipType.CompileOrContentPipeline) && 
+                    !IsFilePartOfProject(bi.UnevaluatedInclude, BuildItemMembershipType.CompileOrContentPipeline))
+                {
                     if (SaveAsAbsoluteSyncedProject)
                     {
-                        fileName = FileManager.GetDirectory(sourceProjectBase.FullFileName) + bi.UnevaluatedInclude;
+                        AddCodeBuildItem(fileName, true, bi.UnevaluatedInclude);
                     }
                     else if (SaveAsRelativeSyncedProject)
                     {
-                        fileName = FileManager.MakeRelative(FileManager.GetDirectory(sourceProjectBase.FullFileName), FileManager.GetDirectory(FullFileName)) + bi.UnevaluatedInclude;
+                        AddCodeBuildItem(fileName, true, bi.UnevaluatedInclude);
                     }
                     else
                     {
-                        fileName = bi.UnevaluatedInclude;
-                    }
-
-
-                    if (!IsFilePartOfProject(fileName, BuildItemMembershipType.CompileOrContentPipeline) && 
-                        !IsFilePartOfProject(bi.UnevaluatedInclude, BuildItemMembershipType.CompileOrContentPipeline) &&
-                        !ShouldIgnoreFile(bi.UnevaluatedInclude))
-                    {
-                        if (SaveAsAbsoluteSyncedProject)
-                        {
-                            AddCodeBuildItem(fileName, true, bi.UnevaluatedInclude);
-                        }
-                        else if (SaveAsRelativeSyncedProject)
-                        {
-                            AddCodeBuildItem(fileName, true, bi.UnevaluatedInclude);
-                        }
-                        else
-                        {
-                            AddCodeBuildItem(bi.UnevaluatedInclude);
-                        }
+                        AddCodeBuildItem(bi.UnevaluatedInclude);
                     }
                 }
             }

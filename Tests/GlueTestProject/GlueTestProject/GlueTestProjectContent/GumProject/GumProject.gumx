@@ -6,6 +6,7 @@
   <DefaultCanvasHeight>600</DefaultCanvasHeight>
   <ShowOutlines>true</ShowOutlines>
   <RestrictToUnitValues>false</RestrictToUnitValues>
+  <RestrictFileNamesForAndroid>false</RestrictFileNamesForAndroid>
   <Guides />
   <ScreenReference>
     <Name>TestScreen</Name>
@@ -25,6 +26,14 @@
   </ComponentReference>
   <ComponentReference>
     <Name>ComponentContainingSprite</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>componentfolder\InFolder1</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>ContainerOfInFolder</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>

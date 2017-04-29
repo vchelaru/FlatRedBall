@@ -208,14 +208,7 @@ copy $(TargetDir)AnimationEditorPlugin.dll "%25appdata%25\FRBDK\plugins\animatio
 copy $(TargetDir)AnimationEditorPlugin.pdb "%25appdata%25\FRBDK\plugins\animationeditor\AnimationEditorPlugin.pdb"
 
 copy $(TargetDir)FlatRedBall.AnimationEditorForms.dll "%25appdata%25\FRBDK\plugins\animationeditor\FlatRedBall.AnimationEditorForms.dll"
-copy $(TargetDir)FlatRedBall.AnimationEditorForms.pdb "%25appdata%25\FRBDK\plugins\animationeditor\FlatRedBall.AnimationEditorForms.pdb"
-
-copy $(TargetDir)RemotingHelper.dll "%25appdata%25\FRBDK\plugins\animationeditor\RemotingHelper.dll"
-copy $(TargetDir)RemotingHelper.pdb "%25appdata%25\FRBDK\plugins\animationeditor\RemotingHelper.pdb"
-
-copy $(TargetDir)SelectionInterface.dll "%25appdata%25\FRBDK\plugins\animationeditor\SelectionInterface.dll"
-copy $(TargetDir)SelectionInterface.pdb "%25appdata%25\FRBDK\plugins\animationeditor\SelectionInterface.pdb"
-</PostBuildEvent>
+copy $(TargetDir)FlatRedBall.AnimationEditorForms.pdb "%25appdata%25\FRBDK\plugins\animationeditor\FlatRedBall.AnimationEditorForms.pdb"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -13256,7 +13256,7 @@
     <string>../../GlueTestProjectW8Sync/GlueTestProjectW8Sync/GlueTestProjectW8Sync.csproj</string>
     <string>../../AndroidProject/AndroidProject/AndroidProject.csproj</string>
   </SyncedProjects>
-  <StartUpScreen>Screens\TiledLevelScreen</StartUpScreen>
+  <StartUpScreen>Screens\FirstScreen</StartUpScreen>
   <ResolutionPresets />
   <PerformanceSettingsSave>
     <ThrowExceptionOnPostInitializeContentLoad>true</ThrowExceptionOnPostInitializeContentLoad>
