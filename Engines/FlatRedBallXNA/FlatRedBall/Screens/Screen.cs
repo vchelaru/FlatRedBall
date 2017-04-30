@@ -189,8 +189,6 @@ namespace FlatRedBall.Screens
             set { mNextScreen = value; }
         }
 
-        public bool IsMovingBack { get; set; }
-
         protected bool UnloadsContentManagerWhenDestroyed
         {
             get;

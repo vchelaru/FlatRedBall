@@ -21,9 +21,7 @@ using FlatRedBall.Graphics;
 
 namespace FlatRedBall.Input
 {
-#if !FRB_MDX
     public delegate void ModifyMouseState(ref MouseState mouseState);
-#endif
 
     public class Mouse : IEquatable<Mouse>
     {
@@ -47,30 +45,8 @@ namespace FlatRedBall.Input
         public const float MaximumSecondsBetweenClickForDoubleClick = .25f;
         #endregion
 
-
-
-        #region XNA and MDX-type Fields
-
-#if !XBOX360
-
         MouseState mMouseState;
         MouseState mLastFrameMouseState = new MouseState();
-
-#if SILVERLIGHT
-        MouseState mTemporaryMouseState = new MouseState();
-#endif
-
-#endif
-
-#if FRB_MDX
-        BufferedDataCollection mMouseBufferedData;
-        MouseOffset[] mMouseOffset;
-        Device mMouseDevice;
-
-        System.Windows.Forms.Control mOwner;
-#endif
-
-        #endregion
 
         Dictionary<MouseButtons, DelegateBasedPressableInput> mButtons = new Dictionary<MouseButtons, DelegateBasedPressableInput>();
 
@@ -90,10 +66,6 @@ namespace FlatRedBall.Input
         double[] mLastPushTime;
         bool[] mDoubleClick;
         bool[] mDoublePush;
-#if FRB_MDX
-        static bool[] mMouseButtonClicked;
-        static bool[] mMouseButtonPushed;
-#endif
 
         bool mWindowsCursorVisible = true;
 
@@ -179,9 +151,6 @@ namespace FlatRedBall.Input
         {
             get
             {
-#if FRB_MDX
-                throw new NotImplementedException();
-#else
                 if(scrollWheel == null)
                 {
                     scrollWheel = new DelegateBased1DInput(
@@ -191,7 +160,6 @@ namespace FlatRedBall.Input
                         );
                 }
                 return scrollWheel;
-#endif
             }
         }
 
