@@ -43,7 +43,7 @@ namespace FlatRedBall.Input
         {
             get;
             private set;
-        }
+        } = new List<I1DInput>();
 
         public float Value
         {
