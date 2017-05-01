@@ -393,7 +393,7 @@ namespace FlatRedBall.Glue.SetVariable
             #endregion
 
 
-            else if (namedObjectSave.GetCustomVariable(changedMember) != null)
+            else if (namedObjectSave?.GetCustomVariable(changedMember) != null)
             {
                 // See if this variable is tunneled into in this element.
                 // If so, set that value too.

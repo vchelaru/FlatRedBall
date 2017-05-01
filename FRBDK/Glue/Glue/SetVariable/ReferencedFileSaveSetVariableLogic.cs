@@ -16,6 +16,7 @@ using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -150,7 +151,17 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 updateTreeView = false;
                 bool oldValueAsBool = (bool)oldValue;
-                bool newValue = (bool)rfs.IsDatabaseForLocalizing;
+                bool newValue = rfs.IsDatabaseForLocalizing;
+
+                if(newValue)
+                {
+                    TaskManager.Self.AddSync(() => RemoveCodeForCsv(rfs), "Removing old CSV");
+
+                }
+                else
+                {
+                    CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
+                }
 
                 // Let's revert the change just to see if 
                 // things have changed project-wide, and if
@@ -409,16 +420,39 @@ namespace FlatRedBall.Glue.SetVariable
             // We'll remove the old file from the project, delete it, then have the RFS regenerate/add the new one to the project
 
             //////////////Early Out///////////////////
-            
+
             if (!rfs.IsCsvOrTreatedAsCsv || UsesAlterntaiveClass(rfs))
             {
                 return;
             }
             ////////////End Early Out/////////////////
-            string className = rfs.GetTypeForCsvFile(oldName);
+            RemoveCodeForCsv(rfs, oldName);
+
+            CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
+        }
+
+        private static void RemoveCodeForCsv(ReferencedFileSave rfs, string alternativeName = null, bool saveProject = true)
+        {
+            if(alternativeName == null)
+            {
+                alternativeName = rfs.Name;
+            }
+            string className = rfs.GetTypeForCsvFile(alternativeName);
+
+            // the class name will be fully qualified, but we don't want that, we want just the end:
+            if(className.Contains("."))
+            {
+                // provides the name after the dot:
+                className = FileManager.GetExtension(className);
+            }
 
             string whatToRemove = "DataTypes/" + className + ".Generated.cs";
-            ProjectManager.ProjectBase.RemoveItem(whatToRemove);
+
+
+            if (ProjectManager.ProjectBase.RemoveItem(whatToRemove) && saveProject)
+            {
+                ProjectManager.SaveProjects();
+            }
             string fileToDelete = whatToRemove;
             fileToDelete = ProjectManager.MakeAbsolute(fileToDelete);
             if (System.IO.File.Exists(fileToDelete))
@@ -432,8 +466,6 @@ namespace FlatRedBall.Glue.SetVariable
                     GlueGui.ShowMessageBox("Could not delete the file " + fileToDelete + "\n\nThe file is no longer referneced by the project so it is not necessary to delete this file manually.");
                 }
             }
-
-            CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
         }
 
         private static bool UsesAlterntaiveClass(ReferencedFileSave rfs)
