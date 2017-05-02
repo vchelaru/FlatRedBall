@@ -693,32 +693,43 @@ namespace FlatRedBall
             viewport.Height = System.Math.Min(viewport.Height, maxHeightAllowed);
         }
 
-        public Viewport GetViewport(LayerCameraSettings lcs)
+        public Viewport GetViewport(LayerCameraSettings lcs, RenderTarget2D renderTarget = null)
         {
             Viewport viewport = Renderer.GraphicsDevice.Viewport;
 
-            if (lcs == null ||
-                lcs.TopDestination < 0 ||
-                lcs.BottomDestination < 0 ||
-                lcs.LeftDestination < 0 ||
-                lcs.RightDestination < 0)
-            {
-                // Viewport is a struct, so we can start with the current viewport
-                viewport.X = DestinationRectangle.X;
-                viewport.Y = DestinationRectangle.Y;
-                viewport.Width = DestinationRectangle.Width;
-                viewport.Height = DestinationRectangle.Height;
-            }
-            else
+            bool explicitlySetsDestination = lcs != null &&
+                lcs.TopDestination >= 0 &&
+                lcs.BottomDestination >= 0 &&
+                lcs.LeftDestination >= 0 &&
+                lcs.RightDestination >= 0;
+
+            if(explicitlySetsDestination)
             {
                 viewport.X = (int)lcs.LeftDestination;
                 viewport.Y = (int)lcs.TopDestination;
                 viewport.Width = (int)(lcs.RightDestination - lcs.LeftDestination);
                 viewport.Height = (int)(lcs.BottomDestination - lcs.TopDestination);
             }
-
+            else
+            {
+                // borrow the size from whatever it's tied to, which could be a camera or a render target
+                if(renderTarget != null)
+                {
+                    viewport.X = 0;
+                    viewport.Y = 0;
+                    viewport.Width = renderTarget.Width;
+                    viewport.Height = renderTarget.Height;
+                }
+                else
+                {
+                    viewport.X = DestinationRectangle.X;
+                    viewport.Y = DestinationRectangle.Y;
+                    viewport.Width = DestinationRectangle.Width;
+                    viewport.Height = DestinationRectangle.Height;
+                }
+            }
             // Debug should *NEVER* be more tolerant of bad settings:
-//#if DEBUG
+            //#if DEBUG
 
 
             if (ShouldRestrictViewportToResolution)

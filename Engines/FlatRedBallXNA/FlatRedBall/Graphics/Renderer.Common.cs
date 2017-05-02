@@ -152,7 +152,7 @@ namespace FlatRedBall.Graphics
 
                 if (layer.LayerCameraSettings != null)
                 {
-                    layer.LayerCameraSettings.ApplyValuesToCamera(camera, SetCameraOptions.PerformZRotation, null);
+                    layer.LayerCameraSettings.ApplyValuesToCamera(camera, SetCameraOptions.PerformZRotation, null, layer.RenderTarget);
                     hasLayerModifiedCamera = true;
                 }
 
@@ -195,7 +195,8 @@ namespace FlatRedBall.Graphics
                 // with the overriding field of view pattern so a better decision can be made.
                 if (hasLayerModifiedCamera)
                 {
-                    mOldCameraLayerSettings.ApplyValuesToCamera(camera, SetCameraOptions.ApplyMatrix, layer.LayerCameraSettings);
+                    // use the render target here, because it may not have been unset yet.
+                    mOldCameraLayerSettings.ApplyValuesToCamera(camera, SetCameraOptions.ApplyMatrix, layer.LayerCameraSettings, layer.RenderTarget);
                     camera.Position = oldPosition;
                     camera.UpVector = oldUpVector;
                 }

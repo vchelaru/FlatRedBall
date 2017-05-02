@@ -132,9 +132,10 @@ namespace FlatRedBall.Graphics
 
 
 
-        public void ApplyValuesToCamera(Camera camera, SetCameraOptions options, LayerCameraSettings lastToModify)
+        public void ApplyValuesToCamera(Camera camera, SetCameraOptions options, LayerCameraSettings lastToModify, RenderTarget2D renderTarget = null)
         {
-            var viewport = camera.GetViewport(this);
+            var viewport = camera.GetViewport(this, renderTarget);
+
             Renderer.GraphicsDevice.Viewport = viewport;
 
             camera.Orthogonal = Orthogonal;
