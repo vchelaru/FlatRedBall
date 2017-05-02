@@ -865,7 +865,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 }
             }
 
+            if(!shouldSkipContent)
+            {
+                string containingProjectContent = FileManager.Standardize(containingProject.ContentDirectory).ToLowerInvariant();
+                string standardUnevaluatedInclude = FileManager.Standardize(bi.UnevaluatedInclude).ToLowerInvariant();
 
+                shouldSkipContent = standardUnevaluatedInclude.StartsWith(containingProjectContent) == false;
+            }
 
             return !shouldSkipContent;
         }

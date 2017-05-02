@@ -1417,17 +1417,11 @@ namespace FlatRedBall.Graphics
 
         internal static void ForceSetBlendOperation()
         {
-#if XNA4 || MONOGAME
-
             switch (mBlendOperation)
             {
                 case FlatRedBall.Graphics.BlendOperation.Add:
-#if MONOGAME
-                    throw new NotImplementedException("Add color operation not supported in MonoGame");
-#else
                     mGraphics.GraphicsDevice.BlendState = BlendState.Additive;
 					break;
-#endif
                 case FlatRedBall.Graphics.BlendOperation.Regular:
 
 //		#if ANDROID
@@ -1469,31 +1463,6 @@ namespace FlatRedBall.Graphics
                     throw new NotImplementedException("Blend operation not implemented: " + mBlendOperation);
                     //break;
             }
-#else
-            switch (mBlendOperation)
-            {
-                case BlendOperation.Add:
-                    mGraphics.GraphicsDevice.RenderState.SourceBlend = Blend.SourceAlpha;
-                    mGraphics.GraphicsDevice.RenderState.DestinationBlend = Blend.One;
-
-                    break;
-                case BlendOperation.Modulate:
-                    mGraphics.GraphicsDevice.RenderState.SourceBlend = Blend.DestinationColor;
-                    mGraphics.GraphicsDevice.RenderState.DestinationBlend = Blend.Zero;
-
-                    break;
-                case BlendOperation.Modulate2X:
-                    mGraphics.GraphicsDevice.RenderState.SourceBlend = Blend.DestinationColor;
-                    mGraphics.GraphicsDevice.RenderState.DestinationBlend = Blend.SourceColor;
-                    break;
-
-                case BlendOperation.Regular:
-                    mGraphics.GraphicsDevice.RenderState.SourceBlend = Blend.SourceAlpha;
-                    mGraphics.GraphicsDevice.RenderState.DestinationBlend = Blend.InverseSourceAlpha;
-                    break;
-            }
-
-#endif
         }
 
 
