@@ -66,6 +66,7 @@ namespace FlatRedBall.Glue.Parsing
                 if (!nos.InstantiatedByBase &&
                     nos.SourceType == SourceType.FlatRedBallType &&
                     nos.IsList &&
+                    nos.IsDisabled == false &&
                     !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
                     (nos.SourceClassGenericType.StartsWith("Entities\\") || nos.SourceClassGenericType.StartsWith("Entities/")))
                 {

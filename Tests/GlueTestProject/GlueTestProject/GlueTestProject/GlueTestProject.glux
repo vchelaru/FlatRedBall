@@ -500,6 +500,39 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <NextScreen>Screens\SpriteSortScreen</NextScreen>
+      <Name>Screens\DisabledObjectScreen</Name>
+      <NamedObjects>
+        <NamedObjectSave>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>PositionedObjectList&lt;T&gt;</SourceClassType>
+          <SourceClassGenericType>Entities\FactoryEntity</SourceClassGenericType>
+          <InstanceName>PositionedObjectListInstance</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IsDisabled>true</IsDisabled>
+          <ContainedObjects>
+            <NamedObjectSave>
+              <SourceType>Entity</SourceType>
+              <SourceClassType>Entities\FactoryEntity</SourceClassType>
+              <InstanceName>Instance1</InstanceName>
+              <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
+              <IsDisabled>true</IsDisabled>
+              <IndependentOfCamera>true</IndependentOfCamera>
+            </NamedObjectSave>
+          </ContainedObjects>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+      </NamedObjects>
+    </ScreenSave>
+    <ScreenSave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Events>
         <EventResponseSave>
           <EventName>EventEntityInstanceAfterCircleXSet</EventName>
@@ -708,7 +741,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
-      <NextScreen>Screens\SpriteSortScreen</NextScreen>
+      <NextScreen>Screens\DisabledObjectScreen</NextScreen>
       <Name>Screens\FirstScreen</Name>
     </ScreenSave>
     <ScreenSave>

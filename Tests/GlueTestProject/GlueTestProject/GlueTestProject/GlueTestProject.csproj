@@ -887,6 +887,10 @@
     <Compile Include="Screens\DerivedScreen.Generated.cs">
       <DependentUpon>DerivedScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="Screens\DisabledObjectScreen.cs" />
+    <Compile Include="Screens\DisabledObjectScreen.Generated.cs">
+      <DependentUpon>DisabledObjectScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Screens\EventScreen.cs" />
     <Compile Include="Screens\EventScreen.Event.cs">
       <DependentUpon>EventScreen.cs</DependentUpon>

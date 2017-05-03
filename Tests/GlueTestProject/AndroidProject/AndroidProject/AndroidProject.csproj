@@ -1618,6 +1618,20 @@
       <Link>Screens\DerivedScreen.Generated.cs</Link>
       <DependentUpon>DerivedScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\DisabledObjectScreen.cs">
+      <Link>Screens\DisabledObjectScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\DisabledObjectScreen.Generated.cs">
+      <Link>Screens\DisabledObjectScreen.Generated.cs</Link>
+      <DependentUpon>DisabledObjectScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\DisabledScreen.cs">
+      <Link>Screens\DisabledScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\DisabledScreen.Generated.cs">
+      <Link>Screens\DisabledScreen.Generated.cs</Link>
+      <DependentUpon>DisabledScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\EventScreen.cs">
       <Link>Screens\EventScreen.cs</Link>
     </Compile>

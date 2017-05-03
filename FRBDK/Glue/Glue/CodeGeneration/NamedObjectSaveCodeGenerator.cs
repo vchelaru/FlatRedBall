@@ -210,7 +210,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         private bool ShouldGeneratePreDestroyMakeOneWay(NamedObjectSave nos)
         {
             // right now we'll make all lists one-way - do we want to make them two way later?
-            return nos.IsFullyDefined && !nos.SetByContainer && !nos.SetByDerived && nos.IsList;
+            return nos.IsFullyDefined && !nos.SetByContainer && !nos.SetByDerived && nos.IsList && !nos.IsDisabled;
         }
 
         public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.IElement element)

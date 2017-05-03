@@ -2467,7 +2467,16 @@ namespace FlatRedBall.Glue.Parsing
 
                 NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, item);
                 NamedObjectSaveCodeGenerator.AssignInstanceVaraiblesOn(element, item, codeBlock);
-                GenerateAssignmentForListOfObjects(codeBlock, element, ifCallOnContainedElements, item.ContainedObjects);
+
+                var containedItems = item.ContainedObjects.Where(containedObject =>
+                    containedObject.IsFullyDefined &&
+                    !containedObject.IsDisabled &&
+                    containedObject.Instantiate &&
+                    !containedObject.SetByContainer &&
+                    !containedObject.SetByDerived
+                    ).ToList();
+
+                GenerateAssignmentForListOfObjects(codeBlock, element, ifCallOnContainedElements, containedItems);
                 NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, item);
 
             }
