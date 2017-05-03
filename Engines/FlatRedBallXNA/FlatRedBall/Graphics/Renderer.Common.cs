@@ -260,7 +260,7 @@ namespace FlatRedBall.Graphics
                 Sprite sprite = spriteListUnfiltered[i];
                 bool isVisible = sprite.AbsoluteVisible && 
                     (sprite.ColorOperation == ColorOperation.InterpolateColor || sprite.Alpha > .0001) &&
-                    camera.IsSpriteInView(sprite, false);
+                    camera.IsSpriteInView(sprite, relativeToCamera);
 
                 if (isVisible)
                 {
@@ -271,7 +271,7 @@ namespace FlatRedBall.Graphics
             for (int i = 0; i < textListUnfiltered.Count; i++)
             {
                 Text text = textListUnfiltered[i];
-                if (text.AbsoluteVisible && text.Alpha > .0001 && camera.IsTextInView(text))
+                if (text.AbsoluteVisible && text.Alpha > .0001 && camera.IsTextInView(text, relativeToCamera))
                 {
                     mVisibleTexts.Add(text);
                 }

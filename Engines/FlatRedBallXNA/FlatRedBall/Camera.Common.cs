@@ -435,12 +435,8 @@ namespace FlatRedBall
                             // Multiply by 1.5 to increase the range in case the Camera is rotated
                             if (relativeToCamera)
                             {
-#if FRB_MDX
-                                mDistanceFromCamera = (sprite.Z) / 100.0f;
-
-#else
                                 mDistanceFromCamera = (-sprite.Z) / 100.0f;
-#endif
+
                                 if (System.Math.Abs(sprite.X) - mLongestDimension > mXEdge * 1.5f * mDistanceFromCamera)
                                 {
                                     return false;
@@ -452,12 +448,8 @@ namespace FlatRedBall
                             }
                             else
                             {
-#if FRB_MDX
-                                mDistanceFromCamera = (sprite.Z - Z) / 100.0f;
-
-#else
                                 mDistanceFromCamera = (Z - sprite.Z) / 100.0f;
-#endif
+
                                 if (System.Math.Abs(X - sprite.X) - mLongestDimension > mXEdge * 1.5f * mDistanceFromCamera)
                                 {
                                     return false;
@@ -477,15 +469,30 @@ namespace FlatRedBall
 
         }
 
-        public bool IsTextInView(Text text)
+        public bool IsTextInView(Text text, bool relativeToCamera)
         {
             if(this.CameraCullMode == Graphics.CameraCullMode.UnrotatedDownZ)
             {
-                float cameraLeft = this.AbsoluteLeftXEdgeAt(text.Z);
-                float cameraRight = this.AbsoluteRightXEdgeAt(text.Z);
-                float cameraTop = this.AbsoluteTopYEdgeAt(text.Z);
-                float cameraBottom = this.AbsoluteBottomYEdgeAt(text.Z);
+                float cameraLeft;
+                float cameraRight;
+                float cameraTop;
+                float cameraBottom;
 
+                if(relativeToCamera)
+                {
+                    cameraLeft = this.AbsoluteLeftXEdgeAt(text.Z);
+                    cameraRight = this.AbsoluteRightXEdgeAt(text.Z);
+                    cameraTop = this.AbsoluteTopYEdgeAt(text.Z);
+                    cameraBottom = this.AbsoluteBottomYEdgeAt(text.Z);
+                }
+                else
+                {
+                    cameraLeft = -this.RelativeXEdgeAt(text.Z);
+                    cameraRight = this.RelativeXEdgeAt(text.Z);
+                    cameraTop = this.RelativeYEdgeAt(text.Z);
+                    cameraBottom = -this.RelativeYEdgeAt(text.Z);
+
+                }
                 float textVerticalCenter = text.VerticalCenter;
                 float textHorizontalCenter = text.HorizontalCenter;
 
