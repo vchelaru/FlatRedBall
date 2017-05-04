@@ -1437,13 +1437,14 @@ namespace FlatRedBall.Graphics
                     break;
                 case FlatRedBall.Graphics.BlendOperation.Modulate:
                     {
-                        // Alpha doesn't draw correctly.
                         BlendState blendState = new BlendState();
                         blendState.AlphaSourceBlend = Blend.DestinationColor;
-                        // Reach profile requires ColorSourceBlend to be the same as AlphaSourceBlend
                         blendState.ColorSourceBlend = Blend.DestinationColor;
 
                         blendState.AlphaDestinationBlend = Blend.Zero;
+                        blendState.ColorDestinationBlend = Blend.InverseSourceAlpha;
+                        blendState.ColorBlendFunction = BlendFunction.Add;
+
                         mGraphics.GraphicsDevice.BlendState = blendState;
                     }
                     break;

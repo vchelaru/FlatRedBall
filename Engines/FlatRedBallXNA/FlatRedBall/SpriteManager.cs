@@ -475,13 +475,18 @@ namespace FlatRedBall
 
 
         /// <summary>
-        /// A layer which is drawn on top of all other layers. This is drawn on every camera, obeying the camera's DestinationRectangle.
+        /// A layer which is drawn on top of all other layers. 
+        /// This is drawn on every camera, obeying the camera's DestinationRectangle.
         /// </summary>
         public static Layer TopLayer
         {
             get { return mTopLayer; }
         }
 
+        /// <summary>
+        /// A layer which is drawn underneath all other layers, and under unlayered objects. 
+        /// This is drawn on every camera, obeying the camera's DestinationRectangle.
+        /// </summary>
         public static Layer UnderAllDrawnLayer
         {
             get
@@ -490,13 +495,11 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the sorting type used on Sprites, Text objects, and DrawableBatches
         /// in the world (not on layers). For sorting visual objects on layers, see the Layer's
         /// SortType property.
         /// </summary>
-        #endregion
         public static SortType OrderedSortType
         {
             get { return mOrderedSortType; }

@@ -254,12 +254,6 @@ namespace FlatRedBall.Graphics
             {
                 case FlatRedBall.Graphics.BlendOperation.Add:
                     return "ADD";
-                    /*
-                case "ALPHAADD":
-                    // TODO:  Add ALPHAADD
-                    //throw new System.NotImplementedException("ALPHAADD is currently not supported in FlatRedBall XNA");
-                    return FlatRedBall.Graphics.BlendOperation.Add;
-                    */
                 case FlatRedBall.Graphics.BlendOperation.Modulate:
                     return "MODULATE";
                     
