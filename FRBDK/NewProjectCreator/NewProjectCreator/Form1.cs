@@ -58,7 +58,6 @@ namespace NewProjectCreator
 
             UseDifferentNamespaceCheckBoxChanged(null, null);
 
-            ((System.Windows.Controls.Control)WpfHost.Child).DataContext = viewModel;
         }
 
         private void ProcessCommandLineArguments()
@@ -103,6 +102,8 @@ namespace NewProjectCreator
         {
             FileManager.PreserveCase = true;
 
+
+            ((System.Windows.Controls.Control)WpfHost.Child).DataContext = viewModel;
         }
 
         private void HandleSelectLocationClick(object sender, EventArgs e)
