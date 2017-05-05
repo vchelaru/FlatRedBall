@@ -42,6 +42,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Instructions\Reflection\LateBinder.cs" />
+    <Compile Include="Instructions\Reflection\PropertyValuePair.cs" />
+    <Compile Include="IO\Csv\CsvFileManager.cs" />
+    <Compile Include="IO\Csv\CsvReader.cs" />
+    <Compile Include="IO\Csv\CsvReader.DataReaderValidations.cs" />
+    <Compile Include="IO\Csv\CsvReader.RecordEnumerator.cs" />
+    <Compile Include="IO\Csv\Events\ParseErrorEventArgs.cs" />
+    <Compile Include="IO\Csv\MemberTypeIndexPair.cs" />
+    <Compile Include="IO\Csv\MissingFieldAction.cs" />
+    <Compile Include="IO\Csv\ParseErrorAction.cs" />
+    <Compile Include="IO\Csv\RuntimeCsvRepresentation.cs" />
     <Compile Include="IO\FileManager.cs" />
     <Compile Include="IO\Remote\FtpManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

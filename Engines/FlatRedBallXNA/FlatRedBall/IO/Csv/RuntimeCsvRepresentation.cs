@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace FlatRedBall.IO.Csv
 {
-    #region CsvHeader Class
+#region CsvHeader Class
 
     public struct CsvHeader : IEquatable<CsvHeader>
     {
@@ -78,7 +78,7 @@ namespace FlatRedBall.IO.Csv
             }
         }
 
-        #region IEquatable<CsvHeader> Members
+#region IEquatable<CsvHeader> Members
 
         public bool Equals(CsvHeader other)
         {
@@ -87,7 +87,7 @@ namespace FlatRedBall.IO.Csv
                 MemberTypes == other.MemberTypes;
         }
 
-        #endregion
+#endregion
 
 		public static string GetClassNameFromHeader(string memberName)
 		{
@@ -134,23 +134,23 @@ namespace FlatRedBall.IO.Csv
         }
     }
 
-    #endregion
+#endregion
 
-    #region XML Docs
+#region XML Docs
     /// <summary>
     /// Represents the raw data loaded from a csv file.  This is
     /// used if the data must be processed or converted by hand to
     /// other object types.
     /// </summary>
-    #endregion
+#endregion
     public class RuntimeCsvRepresentation
     {
-        #region Fields
+#region Fields
 
         public CsvHeader[] Headers;
         public List<string[]> Records;
 
-        #endregion
+#endregion
 
         public string GetFirstDuplicateHeader
         {
@@ -600,7 +600,7 @@ namespace FlatRedBall.IO.Csv
 
         public void CreateObjectList(Type typeOfElement, IList listToPopulate, string contentManagerName)
         {
-            #region If primitive or string
+#region If primitive or string
 
 #if WINDOWS_8 || UWP
             bool isPrimitive = typeOfElement.IsPrimitive();
@@ -623,7 +623,7 @@ namespace FlatRedBall.IO.Csv
                     throw new NotImplementedException();
                 }
             }
-            #endregion
+#endregion
 
             else if (typeOfElement == typeof(List<string>))
             {
@@ -645,12 +645,12 @@ namespace FlatRedBall.IO.Csv
 
             }
 
-            #region Not primitive or string (class/struct)
+#region Not primitive or string (class/struct)
             else
             {
                 CreateNonPrimitiveList(typeOfElement, listToPopulate, contentManagerName);
             }
-            #endregion
+#endregion
 
 
         }
@@ -669,7 +669,7 @@ namespace FlatRedBall.IO.Csv
             {
                 throw new InvalidOperationException("Can't create dictionaries of primitives or strings because they don't have a key");
             }
-#endif   
+#endif
 
             MemberTypeIndexPair[] memberTypeIndexPairs;
             IEnumerable<PropertyInfo> propertyInfosEnumerable;
@@ -679,7 +679,7 @@ namespace FlatRedBall.IO.Csv
             List<PropertyInfo> propertyInfos = new List<PropertyInfo>(propertyInfosEnumerable);
             List<FieldInfo> fieldInfos = new List<FieldInfo>(fieldInfosEnumerable);
 
-            #region Get the required header which we'll use for the key
+#region Get the required header which we'll use for the key
 
             CsvHeader csvHeaderForKey = CsvHeader.Empty;
 
@@ -701,7 +701,7 @@ namespace FlatRedBall.IO.Csv
                     "For example \"Name (string, required)\"");
             }
 
-            #endregion
+#endregion
 
             int numberOfColumns = Headers.Length;
 

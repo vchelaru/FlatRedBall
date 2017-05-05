@@ -3,25 +3,23 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using System.Reflection;
+#if FRB_XNA
+
 using FlatRedBall.Instructions.Reflection;
+#endif
 using System.IO;
 
 #if FRB_XNA
 using Microsoft.Xna.Framework;
 #endif
 
-#if SILVERLIGHT
-using System.Windows.Resources;
-#endif
-
-
 namespace FlatRedBall.IO.Csv
 {
-    #region XML Docs
+#region XML Docs
     /// <summary>
     /// Class providing methods for interacting with .CSV spreadsheet files.
     /// </summary>
-    #endregion
+#endregion
     public static class CsvFileManager
     {
         public static char Delimiter = ',';
@@ -90,9 +88,9 @@ namespace FlatRedBall.IO.Csv
                 fileName = FileManager.MakeAbsolute(fileName);
             }
 
-			#if ANDROID || IOS
+#if ANDROID || IOS
 			fileName = fileName.ToLowerInvariant();
-			#endif
+#endif
 
             FileManager.ThrowExceptionIfFileDoesntExist(fileName);
 
@@ -121,6 +119,7 @@ namespace FlatRedBall.IO.Csv
                 }
 #endif
             }
+#if FRB_XNA
             else
             {
                 if (extension != String.Empty)
@@ -133,7 +132,7 @@ namespace FlatRedBall.IO.Csv
                 }
                 runtimeCsvRepresentation = FlatRedBallServices.Load<T>(fileName);
             }
-
+#endif
             return runtimeCsvRepresentation;
         }
 

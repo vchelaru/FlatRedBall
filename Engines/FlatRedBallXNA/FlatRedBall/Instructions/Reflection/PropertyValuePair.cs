@@ -5,8 +5,10 @@ using System.Reflection;
 using FlatRedBall.Utilities;
 using System.Globalization;
 using FlatRedBall.IO;
+#if FRB_XNA
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+#endif
 
 namespace FlatRedBall.Instructions.Reflection
 {
@@ -59,7 +61,7 @@ namespace FlatRedBall.Instructions.Reflection
             Type typeToConvertTo = value.GetType();
 
             // Do the conversion
-            #region Convert To String
+#region Convert To String
 
             if (typeToConvertTo == typeof(bool))
             {
@@ -86,7 +88,7 @@ namespace FlatRedBall.Instructions.Reflection
                 return (string)value;
             }
 
-        #if !FRB_RAW
+#if !FRB_RAW
             if (typeToConvertTo == typeof(Texture2D))
             {
                 return ((Texture2D)value).Name;
@@ -156,7 +158,7 @@ namespace FlatRedBall.Instructions.Reflection
                     ConvertTypeToString(v.Z) + "," +
                     ConvertTypeToString(v.W);
             }
-        #endif
+#endif
 #if WINDOWS_8 || UWP
             if (typeToConvertTo.IsEnum())
 #else
@@ -166,7 +168,7 @@ namespace FlatRedBall.Instructions.Reflection
                 return value.ToString();
             }
 
-            #endregion
+#endregion
 
             
 
@@ -224,7 +226,7 @@ namespace FlatRedBall.Instructions.Reflection
             }
 
             // Do the conversion
-            #region Convert To Object
+#region Convert To Object
 
             // String needs to be first because it could contain equals and
             // we don't want to cause problems 
@@ -246,7 +248,7 @@ namespace FlatRedBall.Instructions.Reflection
             {
 
 
-                #region bool
+#region bool
 
                 if (desiredType == typeof(bool).FullName)
                 {
@@ -262,9 +264,9 @@ namespace FlatRedBall.Instructions.Reflection
                     handled = true;
                 }
 
-                #endregion
+#endregion
 
-                #region int, Int32, Int16, uint, long
+#region int, Int32, Int16, uint, long
 
                 else if (desiredType == typeof(int).FullName || desiredType == typeof(Int32).FullName || desiredType == typeof(Int16).FullName ||
                     desiredType == typeof(uint).FullName || desiredType == typeof(long).FullName || desiredType == typeof(byte).FullName)
@@ -283,6 +285,7 @@ namespace FlatRedBall.Instructions.Reflection
                     }
 
                     #region uint
+#if FRB_XNA
                     if (desiredType == typeof(uint).FullName)
                     {
                         if (indexOfDecimal == -1)
@@ -295,9 +298,12 @@ namespace FlatRedBall.Instructions.Reflection
                             return (uint)(Math.MathFunctions.RoundToInt(float.Parse(value, CultureInfo.InvariantCulture)));
                         }
                     }
-                    #endregion
+#endif
+#endregion
 
-                    #region byte
+#region byte
+#if FRB_XNA
+
                     if (desiredType == typeof(byte).FullName)
                     {
                         if (indexOfDecimal == -1)
@@ -310,9 +316,10 @@ namespace FlatRedBall.Instructions.Reflection
                             return (byte)(Math.MathFunctions.RoundToInt(float.Parse(value, CultureInfo.InvariantCulture)));
                         }
                     }
-                    #endregion
+#endif
+#endregion
 
-                    #region long
+#region long
                     if (desiredType == typeof(long).FullName)
                     {
                         if (indexOfDecimal == -1)
@@ -320,15 +327,18 @@ namespace FlatRedBall.Instructions.Reflection
                             return long.Parse(value);
 
                         }
+#if FRB_XNA
+
                         else
                         {
                             return (long)(Math.MathFunctions.RoundToInt(float.Parse(value, CultureInfo.InvariantCulture)));
                         }
+#endif
                     }
 
-                    #endregion
+#endregion
 
-                    #region regular int
+#region regular int
                     else
                     {
 
@@ -337,17 +347,20 @@ namespace FlatRedBall.Instructions.Reflection
                             return int.Parse(value);
 
                         }
+#if FRB_XNA
+
                         else
                         {
                             return (int)(Math.MathFunctions.RoundToInt(float.Parse(value, CultureInfo.InvariantCulture)));
                         }
+#endif
                     }
-                    #endregion
+#endregion
                 }
 
-                #endregion
+#endregion
 
-                #region float, Single
+#region float, Single
 
                 else if (desiredType == typeof(float).FullName || desiredType == typeof(Single).FullName)
                 {
@@ -359,9 +372,9 @@ namespace FlatRedBall.Instructions.Reflection
                     return float.Parse(value, CultureInfo.InvariantCulture);
                 }
 
-                #endregion
+#endregion
 
-                #region double
+#region double
 
                 else if (desiredType == typeof(double).FullName)
                 {
@@ -373,7 +386,7 @@ namespace FlatRedBall.Instructions.Reflection
                     return double.Parse(value, CultureInfo.InvariantCulture);
                 }
 
-                #endregion
+#endregion
 
 
 
@@ -381,7 +394,7 @@ namespace FlatRedBall.Instructions.Reflection
 
 #if !FRB_RAW
 
-                #region Texture2D
+#region Texture2D
 
                 else if (desiredType == typeof(Texture2D).FullName)
                 {
@@ -430,9 +443,9 @@ namespace FlatRedBall.Instructions.Reflection
 #endif
                 }
 
-                #endregion
+#endregion
 
-                #region Matrix
+#region Matrix
 
                 else if (desiredType == typeof(Matrix).FullName)
                 {
@@ -470,9 +483,9 @@ namespace FlatRedBall.Instructions.Reflection
                     return m;
                 }
 
-                #endregion
+#endregion
 
-                #region Vector2
+#region Vector2
 
                 else if (desiredType == typeof(Vector2).FullName)
                 {
@@ -502,9 +515,9 @@ namespace FlatRedBall.Instructions.Reflection
                     return new Vector2(values[0], values[1]);
                 }
 
-                #endregion
+#endregion
 
-                #region Vector3
+#region Vector3
 
                 else if (desiredType == typeof(Vector3).FullName)
                 {
@@ -535,9 +548,9 @@ namespace FlatRedBall.Instructions.Reflection
                     return new Vector3(values[0], values[1], values[2]);
                 }
 
-                #endregion
+#endregion
 
-                #region Vector4
+#region Vector4
 
                 else if (desiredType == typeof(Vector4).FullName)
                 {
@@ -567,9 +580,9 @@ namespace FlatRedBall.Instructions.Reflection
                     return new Vector4(values[0], values[1], values[2], values[3]);
                 }
 
-                #endregion
+#endregion
 #endif
-                #region enum
+#region enum
                 else if (IsEnum(desiredType))
                 {
 #if DEBUG
@@ -597,9 +610,10 @@ namespace FlatRedBall.Instructions.Reflection
                     //return StringEnum.Parse(typeToConvertTo, value);
                 }
 
-                #endregion
+#endregion
 
-                #region Color
+#region Color
+#if FRB_XNA
 
                 else if (desiredType == typeof(Color).FullName)
                 {
@@ -626,10 +640,10 @@ namespace FlatRedBall.Instructions.Reflection
                     handled = true;
                 }
 
+#endif
+#endregion
 
-                #endregion
-
-                #endregion
+#endregion
 
                 // Why do we catch exceptions here?  That seems baaaad
                 //catch (Exception)
@@ -837,11 +851,13 @@ namespace FlatRedBall.Instructions.Reflection
             // This may be run from a tool.  If so
             // then there is no Game class, so we shouldn't
             // try to use it.
+#if FRB_XNA
+
             if (FlatRedBallServices.Game != null)
             {
                 foundType = TryToGetTypeFromAssembly(typeAfterNewString, FlatRedBallServices.Game.GetType().Assembly);
             }
-
+#endif
             if (foundType == null)
             {
                 foreach (var assembly in AdditionalAssemblies)
@@ -864,10 +880,13 @@ namespace FlatRedBall.Instructions.Reflection
                 foundType = TryToGetTypeFromAssembly(typeAfterNewString, Assembly.GetEntryAssembly());
 #endif
             }
+#if FRB_XNA
+
             if(foundType == null)
             {
                 foundType = TryToGetTypeFromAssembly(typeAfterNewString, typeof(Vector3).Assembly);
             }
+#endif
 #endif
 
             if (foundType == null)
