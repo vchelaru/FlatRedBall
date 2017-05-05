@@ -362,6 +362,14 @@ namespace FlatRedBall.Graphics
             Filter = TextureFilter.Linear
         };
 
+        static readonly SamplerState AnisotropicMirror = new SamplerState
+        {
+            AddressU = TextureAddressMode.Mirror,
+            AddressV = TextureAddressMode.Mirror,
+            AddressW = TextureAddressMode.Mirror,
+            Filter = TextureFilter.Anisotropic
+        };
+
         internal void ForceRefreshSamplerState() { ForceRefreshSamplerState(0); }
         internal void ForceRefreshSamplerState(int index)
         {
@@ -375,6 +383,10 @@ namespace FlatRedBall.Graphics
                     else if (mTextureFilter == Microsoft.Xna.Framework.Graphics.TextureFilter.Linear)
                     {
                         Renderer.GraphicsDevice.SamplerStates[index] = SamplerState.LinearClamp;
+                    }
+                    else if(mTextureFilter == TextureFilter.Anisotropic)
+                    {
+                        Renderer.GraphicsDevice.SamplerStates[index] = SamplerState.AnisotropicClamp;
                     }
                     else
                     {
@@ -391,6 +403,10 @@ namespace FlatRedBall.Graphics
                     {
                         Renderer.GraphicsDevice.SamplerStates[index] = LinearMirror;
                     }
+                    else if(mTextureFilter == TextureFilter.Anisotropic)
+                    {
+                        Renderer.GraphicsDevice.SamplerStates[index] = AnisotropicMirror;
+                    }
                     else
                     {
                         throw new NotSupportedException();
@@ -404,6 +420,10 @@ namespace FlatRedBall.Graphics
                     else if (mTextureFilter == Microsoft.Xna.Framework.Graphics.TextureFilter.Linear)
                     {
                         Renderer.GraphicsDevice.SamplerStates[index] = SamplerState.LinearWrap;
+                    }
+                    else if(mTextureFilter == TextureFilter.Anisotropic)
+                    {
+                        Renderer.GraphicsDevice.SamplerStates[index] = SamplerState.AnisotropicWrap;
                     }
                     else
                     {
