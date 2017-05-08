@@ -60,6 +60,14 @@ namespace FlatRedBall.Screens
 
         internal Screen mNextScreenToLoadAsync;
 
+        /// <summary>
+        /// Stores the names and values of variables which should be preserved on the next
+        /// restart. These values are recorded prior to the screen being destroyed, then applied
+        /// after the construction of the next screen.
+        /// </summary>
+        static Dictionary<string, object> RestartVariableValues { get; set; } = new Dictionary<string, object>();
+        protected static List<string> RestartVariables { get; private set; } = new List<string>();
+
 #if !FRB_MDX
         Action ActivatingAction;
         Action DeactivatingAction;
@@ -490,7 +498,108 @@ namespace FlatRedBall.Screens
             {
                 UnloadsContentManagerWhenDestroyed = false;
             }
+            StoreRestartVariableValues();
+
             MoveToScreen(this.GetType());
+        }
+
+        private void StoreRestartVariableValues()
+        {
+            RestartVariableValues.Clear();
+
+            foreach (var variableName in RestartVariables)
+            {
+                var value = GetValueForVariableName(variableName);
+                RestartVariableValues.Add(variableName, value);
+            }
+
+            RestartVariables.Clear();
+        }
+
+        internal void ApplyRestartVariables()
+        {
+            foreach(var kvp in RestartVariableValues)
+            {
+                ApplyRestartVariable(kvp.Key, kvp.Value);
+            }
+        }
+
+        private void ApplyRestartVariable(string variableName, object value, object container = null)
+        {
+            if (variableName.Contains("."))
+            {
+                string afterDot;
+                object instance;
+                GetInstance(variableName, container, out afterDot, out instance);
+
+                ApplyRestartVariable(afterDot, value, instance);
+            }
+            else
+            {
+                FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(container, variableName, value);
+                //return FlatRedBall.Instructions.Reflection.LateBinder.GetValueStatic(container, variableName);
+            }
+        }
+
+        private void GetInstance(string variableName, object container, out string afterDot, out object instance)
+        {
+            var indexOfDot = variableName.IndexOf(".");
+
+            var beforeDot = variableName.Substring(0, indexOfDot);
+            afterDot = variableName.Substring(indexOfDot + 1);
+            instance = null;
+            if (beforeDot == "this")
+            {
+                instance = this;
+            }
+            else if (container != null)
+            {
+                if (beforeDot.Contains("["))
+                {
+                    var openBracketIndex = beforeDot.IndexOf("[");
+                    var closeBracketInex = beforeDot.IndexOf("]");
+                    var startOfInt = openBracketIndex + 1;
+                    var length = closeBracketInex - startOfInt;
+
+                    var asString = beforeDot.Substring(startOfInt, length);
+
+                    var index = int.Parse(asString);
+
+                    string memberName = beforeDot.Substring(0, openBracketIndex);
+
+                    instance = FlatRedBall.Instructions.Reflection.LateBinder.GetValueStatic(container, memberName);
+
+                    var listType = instance.GetType();
+                    var method = listType.GetMethod("get_Item");
+
+                    instance = method.Invoke(instance, new object[] { index });
+
+                }
+                else
+                {
+                    instance = FlatRedBall.Instructions.Reflection.LateBinder.GetValueStatic(container, beforeDot);
+                }
+            }
+            else
+            {
+                throw new Exception("Variable must start with \"this\"");
+            }
+        }
+
+        private object GetValueForVariableName(string variableName, object container = null)
+        {
+            if(variableName.Contains("."))
+            {
+                string afterDot;
+                object instance;
+                GetInstance(variableName, container, out afterDot, out instance);
+
+                return GetValueForVariableName(afterDot, instance);
+            }
+            else
+            {
+                return FlatRedBall.Instructions.Reflection.LateBinder.GetValueStatic(container, variableName);
+            }
         }
 
         #endregion

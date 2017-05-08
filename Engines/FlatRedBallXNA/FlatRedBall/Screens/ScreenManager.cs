@@ -270,10 +270,7 @@ namespace FlatRedBall.Screens
             }
             else
             {
-#if !FRB_MDX
                 StateManager.Current.Initialize();
-
-#endif
 
                 if (ShouldActivateScreen && RehydrateAction != null)
                 {
@@ -285,6 +282,8 @@ namespace FlatRedBall.Screens
 
                     ShouldActivateScreen = false;
                 }
+
+                
             }
         }
 
@@ -341,6 +340,9 @@ namespace FlatRedBall.Screens
 
             newScreen.Initialize(true);
 
+            newScreen.ApplyRestartVariables();
+
+
             newScreen.Activity(true);
 
             newScreen.ActivityCallCount++;
@@ -389,6 +391,8 @@ namespace FlatRedBall.Screens
                         mCurrentScreen = newScreen;
                     }
                     newScreen.Initialize(addToManagers);
+
+                    newScreen.ApplyRestartVariables();
                 }
                 mSuppressStatePush = false;
 
