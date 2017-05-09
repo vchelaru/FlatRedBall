@@ -65,7 +65,9 @@ namespace TileGraphicsPlugin
             // - Shapes now have their Z value set according to the object layer index, which may be used to position entities properly.
             // 1.0.11.5
             // - Fixed a bug where the Name property for tiled sprites was being ignored.
-            get { return new Version(1, 0, 11, 5); }
+            // 1.1.0 
+            // - Introduces a MUCH faster loading system - approximately 4x as fast on large maps (680x1200)
+            get { return new Version(1, 1, 0, 0); }
         }
 
 

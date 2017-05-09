@@ -155,10 +155,11 @@ namespace TileGraphicsPlugin.Controllers
             var id = (uint)(AppState.Self.CurrentMapTilesetTile.id + currentTileset.Firstgid);
 
 
-            AppState.Self.CurrentTiledMapSave.SetSpriteTextureCoordinates(
+            TMXGlueLib.TiledMapSave.SetSpriteTextureCoordinates(
                 id,
                 spriteSave,
-                currentTileset);
+                currentTileset,
+                AppState.Self.CurrentTiledMapSave.orientation);
 
             NamedObjectSave nos = new NamedObjectSave();
             nos.SourceType = SourceType.FlatRedBallType;
