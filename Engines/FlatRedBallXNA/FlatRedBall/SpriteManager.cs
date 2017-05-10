@@ -3203,6 +3203,11 @@ namespace FlatRedBall
 
         #region Private Methods
 
+        /// <summary>
+        /// Returns a new Sprite instance from the particle pool, but does not add it to the SpriteManager.
+        /// </summary>
+        /// <param name="texture">The texture to assign on the sprite.</param>
+        /// <returns>The new sprite.</returns>
         public static Sprite CreateParticleSprite(Texture2D texture)
         {
             if (texture != null && texture.IsDisposed)
