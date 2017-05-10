@@ -132,7 +132,8 @@ namespace FlatRedBall.TileEntities
         private static void ApplyPropertiesTo(PositionedObject entity, MapDrawableBatch layer, int tileIndex, List<NamedValue> propertiesToAssign)
         {
             int vertexIndex = tileIndex * 4;
-            var dimension = layer.Vertices[vertexIndex + 1].Position.X - layer.Vertices[vertexIndex].Position.X;
+            var dimension =
+                (layer.Vertices[vertexIndex + 1].Position - layer.Vertices[vertexIndex].Position).Length();
 
             float dimensionHalf = dimension / 2.0f;
 
