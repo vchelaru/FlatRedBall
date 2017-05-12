@@ -83,13 +83,24 @@ namespace GlueView.Facades
         {
             ElementRuntime currentElement = GluxManager.CurrentElement;
 
+            var highlighted = GlueViewState.Self.HighlightedElementRuntime;
+            
+
             NamedObjectSave mFirstNos = first.AssociatedNamedObjectSave;
             NamedObjectSave mSecondNos = second.AssociatedNamedObjectSave;
 
             string firstLayer = mFirstNos.LayerOn;
             string secondLayer = mSecondNos.LayerOn;
 
-            if (string.IsNullOrEmpty(firstLayer) && !string.IsNullOrEmpty(secondLayer))
+            if(highlighted == first)
+            {
+                return -1;
+            }
+            else if(highlighted == second)
+            {
+                return 1;
+            }
+            else if (string.IsNullOrEmpty(firstLayer) && !string.IsNullOrEmpty(secondLayer))
             {
                 // second is not on a layer, so that should come first
                 return 1;

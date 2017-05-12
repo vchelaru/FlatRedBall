@@ -68,7 +68,16 @@ namespace FlatRedBall.AI.Pathfinding
 
         }
 
-        public TileNodeNetwork(float xSeed, float ySeed, float gridSpacing, int numberOfXTiles,
+        /// <summary>
+        /// Creates a new, empty TileNodeNetwork matching the arguments.
+        /// </summary>
+        /// <param name="xOrigin">The X position of the left-most nodes. This, along with the ySeed, define the bottom-left of the node network.</param>
+        /// <param name="yOrigin">The y position of the bottom-most nodes. This, along with xSeed, define the bottom-left of the node network.</param>
+        /// <param name="gridSpacing">The X and Y distance between each node.</param>
+        /// <param name="numberOfXTiles">The number of nodes vertically.</param>
+        /// <param name="numberOfYTiles">The number of nodes horizontally.</param>
+        /// <param name="directionalType">Whether to create a Four-way or Eight-way node network. Eight creates diagonal links, enabling diagonal movement when following the node network.</param>
+        public TileNodeNetwork(float xOrigin, float yOrigin, float gridSpacing, int numberOfXTiles,
             int numberOfYTiles, DirectionalType directionalType)
         {
             mCosts = new float[PropertyIndexSize]; // Maybe expand this to 64 if we ever move to a long bit field?
@@ -78,8 +87,8 @@ namespace FlatRedBall.AI.Pathfinding
             mNumberOfXTiles = numberOfXTiles;
             mNumberOfYTiles = numberOfYTiles;
             mDirectionalType = directionalType;
-            mXSeed = xSeed;
-            mYSeed = ySeed;
+            mXSeed = xOrigin;
+            mYSeed = yOrigin;
             mGridSpacing = gridSpacing;
 
             // Do an initial loop to create the arrays so that
@@ -143,6 +152,10 @@ namespace FlatRedBall.AI.Pathfinding
             return node;
         }
 
+        /// <summary>
+        /// Populates every possible space on the grid with a node and creates links betwen adjacent links. Diagonal links are created only if
+        /// the DirectionalType is set to DirectionalType.Eight.
+        /// </summary>
         public void FillCompletely()
         {
             for (int x = 0; x < mNumberOfXTiles; x++)

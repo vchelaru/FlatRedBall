@@ -67,7 +67,10 @@ namespace TileGraphicsPlugin
             // - Fixed a bug where the Name property for tiled sprites was being ignored.
             // 1.1.0 
             // - Introduces a MUCH faster loading system - approximately 4x as fast on large maps (680x1200)
-            get { return new Version(1, 1, 0, 0); }
+            // 1.1.1.0
+            // - Fixed offset issues with instantiating entities from objects
+            // - Added support for rotated entities 
+            get { return new Version(1, 1, 1, 0); }
         }
 
 

@@ -240,18 +240,6 @@ namespace EditorObjects
             }
         }
 
-        public static void SetStartPosition(IStaticPositionable newlyGrabbedObject)
-        {
-            Cursor cursor = GuiManager.Cursor;
-
-            mOriginalGrabPosition = new Vector3(newlyGrabbedObject.X, newlyGrabbedObject.Y, newlyGrabbedObject.Z);
-
-            mGrabOffset = new Vector3(
-                cursor.WorldXAt(newlyGrabbedObject.Z) - newlyGrabbedObject.X,
-                cursor.WorldYAt(newlyGrabbedObject.Z) - newlyGrabbedObject.Y,
-                0);
-        }
-
         #endregion
 
         #endregion

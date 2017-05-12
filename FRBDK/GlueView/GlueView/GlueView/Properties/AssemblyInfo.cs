@@ -37,4 +37,6 @@ using System.Runtime.InteropServices;
 //  - Adds camera bounds
 //  - Moves camera and localization to plugins
 //  - GlueView now remembers collapsed states.
-[assembly: AssemblyVersion("1.2.0.0")]
+// 1.2.1.0
+//  - Cursor selection now prioritizes already-selected objects.
+[assembly: AssemblyVersion("1.2.1.0")]
