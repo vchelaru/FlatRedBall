@@ -131,9 +131,9 @@ namespace FlatRedBall.TileEntities
 
         private static void ApplyPropertiesTo(PositionedObject entity, MapDrawableBatch layer, int tileIndex, List<NamedValue> propertiesToAssign)
         {
-
             int vertexIndex = tileIndex * 4;
-            var dimension = layer.Vertices[vertexIndex + 1].Position.X - layer.Vertices[vertexIndex].Position.X;
+            var dimension =
+                (layer.Vertices[vertexIndex + 1].Position - layer.Vertices[vertexIndex].Position).Length();
 
             float dimensionHalf = dimension / 2.0f;
 
@@ -141,7 +141,24 @@ namespace FlatRedBall.TileEntities
             float left;
             float bottom;
             layer.GetBottomLeftWorldCoordinateForOrderedTile(tileIndex, out left, out bottom);
-            Microsoft.Xna.Framework.Vector3 position = new Microsoft.Xna.Framework.Vector3(left + dimensionHalf, bottom + dimensionHalf, layer.Z);
+            Microsoft.Xna.Framework.Vector3 position = new Microsoft.Xna.Framework.Vector3(left, bottom, layer.Z);
+
+            var bottomRight = layer.Vertices[tileIndex * 4 + 1].Position;
+
+            float xDifference = bottomRight.X - left;
+            float yDifference = bottomRight.Y - bottom;
+
+            if (yDifference != 0 || xDifference < 0)
+            {
+                float angle = (float)System.Math.Atan2(yDifference, xDifference);
+
+                entity.RotationZ = angle;
+
+            }
+
+            position += entity.RotationMatrix.Right * dimensionHalf;
+            position += entity.RotationMatrix.Up * dimensionHalf;
+
             ApplyPropertiesTo(entity, propertiesToAssign, position);
         }
 

@@ -97,16 +97,19 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
 
         private static string[] GetAvailableFrbClasses()
         {
-                List<string> toReturnAsList = new List<string>();
-                foreach (var ati in AvailableAssetTypes.Self.AllAssetTypes)
+            List<string> toReturnAsList = new List<string>();
+
+            var availableTypes = AvailableAssetTypes.Self.AllAssetTypes.ToList();
+
+            foreach (var ati in availableTypes)
+            {
+                if (ati.CanBeObject)
                 {
-                    if (ati.CanBeObject)
-                    {
-                        toReturnAsList.Add(ati.RuntimeTypeName);
-                    }
+                    toReturnAsList.Add(ati.RuntimeTypeName);
                 }
-                FlatRedBall.Utilities.StringFunctions.RemoveDuplicates(toReturnAsList);
-                return toReturnAsList.ToArray();
+            }
+            FlatRedBall.Utilities.StringFunctions.RemoveDuplicates(toReturnAsList);
+            return toReturnAsList.ToArray();
         } 
     }
 }

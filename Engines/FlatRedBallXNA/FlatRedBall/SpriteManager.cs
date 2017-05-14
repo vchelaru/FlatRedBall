@@ -2345,8 +2345,6 @@ namespace FlatRedBall
             {
                 spriteToRemove.RemoveSelfFromListsBelongingTo();
             }
-
-            spriteToRemove.ClearCollision();
         }
 
         public static void RemoveSpriteAtTime(Sprite spriteToRemove, double secondsPastCurrentTime)

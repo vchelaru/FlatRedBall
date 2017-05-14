@@ -10,6 +10,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Instructions.Reflection;
 using ModelEditor.SaveClasses;
 using System.Xml.Serialization;
+using FlatRedBall.Glue.SaveClasses;
 
 #if !GLUE
 using FlatRedBall.Instructions;
@@ -131,7 +132,17 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 		public string FriendlyName;
-		public List<string> AddToManagersMethod = new List<string>();
+        /// <summary>
+        /// Func which can be used to provide a custom AddToManagers method. The parameters are
+        /// the containing element (screen or entity), NamedObjectSave, ReferencedFileSave, and the name of the layer (such as "layerToAddTo")
+        /// </summary>
+        [XmlIgnore]
+        public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> AddToManagersFunc;
+        [XmlIgnore]
+        public Func<IElement, NamedObjectSave, ReferencedFileSave, string> ConstructorFunc;
+
+        public List<string> AddToManagersMethod = new List<string>();
+
 		public List<string> LayeredAddToManagersMethod = new List<string>();
         public string MakeManuallyUpdatedMethod;
         public string ActivityMethod;
@@ -228,11 +239,14 @@ namespace FlatRedBall.Glue.Elements
             get { return mSaveType; }
         }
 
+        // Returns whether this type has to be instantiated by the engine (like Layer), 
+        // so it will stay null until AddToManagers
         public bool IsInstantiatedInAddToManagers
         {
             get
             {
                 return 
+
                     AddToManagersMethod.Count != 0 &&
                     !string.IsNullOrEmpty(AddToManagersMethod[0]) &&
                     AddToManagersMethod[0].StartsWith("this =");

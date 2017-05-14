@@ -83,7 +83,8 @@ namespace GumPlugin
             // 0.8.3.3 - Fixed threading issue when fixing projects.
             // 0.8.3.4 - Fixed children of containers not becoming invisible when they should
             // 0.8.3.5 - Fixed codegen bug when exposing a state in a component in a folder
-            get { return new Version(0, 8, 3, 5); }
+            // 0.8.3.6 - Added ThreadStatic to the IsLayoutSuspended static bool so async loading will not interrupt foreground layout calls
+            get { return new Version(0, 8, 3, 6); }
         }
 
         #endregion

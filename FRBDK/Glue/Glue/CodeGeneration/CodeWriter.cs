@@ -1059,7 +1059,11 @@ namespace FlatRedBall.Glue.Parsing
                         }
 
 
-                        if (ati.LayeredAddToManagersMethod.Count != 0)
+                        if(ati.AddToManagersFunc != null)
+                        {
+                            currentBlock.Line(ati.AddToManagersFunc(saveObject, null, null, "layerToAddTo"));
+                        }
+                        else if (ati.LayeredAddToManagersMethod.Count != 0)
                         {
                             // just use the method as-is, because the template is already using "this"
                             currentBlock.Line(ati.LayeredAddToManagersMethod[addMethodIndex].Replace("mLayer", "layerToAddTo") + ";");

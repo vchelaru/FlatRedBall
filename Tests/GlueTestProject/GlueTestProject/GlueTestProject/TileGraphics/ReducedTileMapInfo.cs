@@ -34,6 +34,8 @@ namespace TMXGlueLib.DataTypes
 
         public string Name;
 
+        public float RotationDegrees;
+
         public List<NamedValue> QuadSpecificProperties
         {
             get;

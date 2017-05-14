@@ -1319,7 +1319,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                 string typeName = ati.RuntimeTypeName;
                 string variableName = referencedFile.GetInstanceName();
 
-                if (BaseElementTreeNode.IsOnOwnLayer(mSaveObject) && ati.LayeredAddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0]))
+                if(ati.AddToManagersFunc != null)
+                {
+                    currentBlock.Line(ati.AddToManagersFunc(mSaveObject, null, referencedFile, "layerToAddTo"));
+                }
+                else if (BaseElementTreeNode.IsOnOwnLayer(mSaveObject) && ati.LayeredAddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0]))
                 {
                     string layerAddToManagersMethod = ati.LayeredAddToManagersMethod[0];
                     if (mSaveObject is EntitySave)
@@ -1361,6 +1365,9 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 AssetTypeInfo ati = referencedFile.GetAssetTypeInfo();
 
+                bool hasAddToManagersCode = ati?.AddToManagersFunc != null ||
+                    (ati != null && ati.AddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.AddToManagersMethod[0]));
+
                 // We don't want to add shared static stuff to the manager - it's just used to pull and clone objects out of.
                 // Update September 12, 2012
                 // We actually do want to add
@@ -1368,7 +1375,8 @@ namespace FlatRedBall.Glue.CodeGeneration
                 // of a Screen.
                 shouldAddToManagers = ati != null &&
                     (!referencedFile.IsSharedStatic || saveObject is ScreenSave) &&
-                    ati.AddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.AddToManagersMethod[0]) && referencedFile.AddToManagers;
+                    hasAddToManagersCode && 
+                    referencedFile.AddToManagers;
             }
             return shouldAddToManagers;
         }

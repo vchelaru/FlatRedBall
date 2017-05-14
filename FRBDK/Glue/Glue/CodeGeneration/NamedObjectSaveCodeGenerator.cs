@@ -323,7 +323,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         private static bool GenerateInstantiationOrAssignment(NamedObjectSave namedObject, IElement saveObject, 
             ICodeBlock codeBlock, string overridingName, List<string[]> referencedFilesAlreadyUsingFullFile)
         {
-            AssetTypeInfo nosAti = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType);
+            AssetTypeInfo nosAti = namedObject.GetAssetTypeInfo();
 
             string objectName = namedObject.FieldName;
 
@@ -407,8 +407,14 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             else if (namedObject.SourceType == SourceType.FlatRedBallType)
             {
+                if(nosAti?.ConstructorFunc != null)
+                {
+                    string line = nosAti.ConstructorFunc(saveObject, namedObject, null);
+                    codeBlock.Line(line);
+                }
                 // We treat Cameras in a special way:
-                if (namedObject.ClassType == "Camera")
+                // Eventually we should move this to an ATI that uses custom code (like in the if-statement above)
+                else if (namedObject.ClassType == "Camera")
                 {
                     if (namedObject.IsNewCamera)
                     {
@@ -1848,9 +1854,27 @@ namespace FlatRedBall.Glue.CodeGeneration
                         #region There is an ATI - it's a type defined in the ContentTypes.csv file in Glue
                         if (ati != null)
                         {
-                            if ((BaseElementTreeNode.IsOnOwnLayer(element)
-                                || !string.IsNullOrEmpty(namedObject.LayerOn))
-                                && ati.LayeredAddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0]))
+                            bool isLayered = BaseElementTreeNode.IsOnOwnLayer(element)
+                                || !string.IsNullOrEmpty(namedObject.LayerOn);
+
+                            if(ati.AddToManagersFunc != null)
+                            {
+                                string line = null;
+                                if(isLayered)
+                                {
+                                    line = ati.AddToManagersFunc(element, namedObject, null, layerName);
+                                }
+                                else
+                                {
+                                    line = ati.AddToManagersFunc(element, namedObject, null, null);
+
+                                }
+
+                                codeBlock.Line(line);
+
+                            }
+
+                            else if (isLayered && ati.LayeredAddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0]))
                             {
                                 string layerAddToManagersMethod = DecideOnLineToAdd(namedObject, ati, true);
 
@@ -1935,24 +1959,36 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // but I think we want this
                     // added to a Layer even if it
                     // an entire file.
+
+                    bool hasAddToManagersCode =
+                        ati != null &&
+                        ((ati.LayeredAddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0])) ||
+                        ati.AddToManagersFunc != null);
+
                     bool shouldAddToLayer = (!namedObject.AddToManagers || isAddedToManagerByFile) && !string.IsNullOrEmpty(namedObject.LayerOn) &&
                         namedObject.SourceType == SourceType.File &&
                         namedObject.SourceName != null &&
                         //namedObject.SourceName.Contains("Entire ") && 
-                        ati != null &&
-                        ati.LayeredAddToManagersMethod.Count != 0 &&
-                        !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0]);
+                        hasAddToManagersCode;
 
                     if (shouldAddToLayer)
                     {
-                        string layerAddToManagersMethod = ati.LayeredAddToManagersMethod[0];
-
                         string layerName = GetNamedObjectLayerName(namedObject);
 
-                        layerAddToManagersMethod = layerAddToManagersMethod.Replace("mLayer", layerName);
+                        if (ati.AddToManagersFunc != null)
+                        {
+                            codeBlock.Line(ati.AddToManagersFunc(element, namedObject, null, layerName));
+                        }
+                        else
+                        {
+                            string layerAddToManagersMethod = ati.LayeredAddToManagersMethod[0];
 
 
-                        codeBlock.Line(layerAddToManagersMethod.Replace("this", objectName) + ";");
+                            layerAddToManagersMethod = layerAddToManagersMethod.Replace("mLayer", layerName);
+
+
+                            codeBlock.Line(layerAddToManagersMethod.Replace("this", objectName) + ";");
+                        }
                     }
                     #endregion
 

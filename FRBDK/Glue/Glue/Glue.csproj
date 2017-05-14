@@ -405,6 +405,7 @@
     <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\IndividualProjectSetting.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\MainPlugin.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\ProjectMembershipManager.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\RenderTargetPlugin\MainPlugin.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\BuildItemViewModel.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\Controls\ToolbarControl.xaml.cs">
       <DependentUpon>ToolbarControl.xaml</DependentUpon>

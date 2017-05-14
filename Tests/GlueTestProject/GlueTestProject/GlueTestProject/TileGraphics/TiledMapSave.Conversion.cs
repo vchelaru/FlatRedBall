@@ -155,10 +155,10 @@ namespace TMXGlueLib
                     this.objectgroup.Where(
                         og =>
                         layerName == null ||
-                        (((AbstractMapLayer) og).Name != null && ((AbstractMapLayer) og).Name.Equals(layerName, StringComparison.OrdinalIgnoreCase)))
-                        .SelectMany(o => o.@object, (o, c) => new { group = o, obj = c, X = c.x, Y = c.y })     
-                        .Where(o => o.obj.gid != null)               
-                        .ToList()                        
+                        (((AbstractMapLayer)og).Name != null && ((AbstractMapLayer)og).Name.Equals(layerName, StringComparison.OrdinalIgnoreCase)))
+                        .SelectMany(o => o.@object, (o, c) => new { group = o, obj = c, X = c.x, Y = c.y })
+                        .Where(o => o.obj.gid != null)
+                        .ToList()
                         .ForEach(o => WriteValuesFromDictionary(sb, o.group.PropertyDictionary, o.obj.PropertyDictionary, columnNames, null));
                     break;
             }
@@ -214,7 +214,7 @@ namespace TMXGlueLib
                 {
                     if (@object.gid != null)
                     {
-                        WriteValuesFromDictionary(sb, null, @object.PropertyDictionary, columnNames, null); 
+                        WriteValuesFromDictionary(sb, null, @object.PropertyDictionary, columnNames, null);
                     }
                 }
             }
@@ -575,12 +575,12 @@ namespace TMXGlueLib
                     if (@object.gid != null)
                     {
                         addedGroup = true;
-                        toReturn.AddRange(@object.PropertyDictionary.Keys); 
+                        toReturn.AddRange(@object.PropertyDictionary.Keys);
                     }
                 }
                 if (addedGroup)
                 {
-                    toReturn.AddRange(group.PropertyDictionary.Keys); 
+                    toReturn.AddRange(group.PropertyDictionary.Keys);
                 }
             }
 
@@ -629,45 +629,45 @@ namespace TMXGlueLib
                 MapLayer mLayer = mapLayer;
                 int mLayerCount = layercount;
                 Parallel.For(0, mapLayer.data[0].tiles.Count, count =>
+                {
+                    uint gid = mLayer.data[0].tiles[count];
+
+                    Tileset tileSet = GetTilesetForGid(gid);
+                    if (tileSet != null || !requireTile)
                     {
-                        uint gid = mLayer.data[0].tiles[count];
+                        var node = new PositionedNode();
 
-                        Tileset tileSet = GetTilesetForGid(gid);
-                        if (tileSet != null || !requireTile)
+                        //int tileWidth = requireTile ? tileSet.tilewidth : tilewidth;
+                        //int tileHeight = requireTile ? tileSet.tileheight : tileheight;
+                        int x = count % this.Width;
+                        int y = count / this.Width;
+
+                        float nodex;
+                        float nodey;
+                        float nodez;
+
+                        CalculateWorldCoordinates(mLayerCount, count, tilewidth, tileheight, mLayer.width, out nodex, out nodey, out nodez);
+
+                        node.X = nodex;
+                        node.Y = nodey;
+                        node.Z = nodez;
+
+                        lock (allNodes)
                         {
-                            var node = new PositionedNode();
-
-                            //int tileWidth = requireTile ? tileSet.tilewidth : tilewidth;
-                            //int tileHeight = requireTile ? tileSet.tileheight : tileheight;
-                            int x = count % this.Width;
-                            int y = count / this.Width;
-
-                            float nodex;
-                            float nodey;
-                            float nodez;
-
-                            CalculateWorldCoordinates(mLayerCount, count, tilewidth, tileheight, mLayer.width, out nodex, out nodey, out nodez);
-
-                            node.X = nodex;
-                            node.Y = nodey;
-                            node.Z = nodez;
-
-                            lock (allNodes)
+                            if (!allNodes[mLayerCount].ContainsKey(x))
                             {
-                                if (!allNodes[mLayerCount].ContainsKey(x))
-                                {
-                                    allNodes[mLayerCount][x] = new Dictionary<int, PositionedNode>();
-                                }
+                                allNodes[mLayerCount][x] = new Dictionary<int, PositionedNode>();
+                            }
 
-                                allNodes[mLayerCount][x][y] = node;
-                            }
-                            node.Name = string.Format("Node {0}", count);
-                            lock (toReturn)
-                            {
-                                toReturn.AddNode(node);
-                            }
+                            allNodes[mLayerCount][x][y] = node;
                         }
-                    });
+                        node.Name = string.Format("Node {0}", count);
+                        lock (toReturn)
+                        {
+                            toReturn.AddNode(node);
+                        }
+                    }
+                });
                 SetupNodeLinks(linkHorizontally, linkVertically, linkDiagonally, allNodes[layercount]);
 
                 RemoveExcludedNodesViaPolygonLayer(toReturn, mapLayer, allNodes[layercount]);
@@ -804,7 +804,7 @@ namespace TMXGlueLib
                     for (int i = 0; i < mapLayer.data[0].tiles.Count; i++)
                     {
                         uint gid = mLayer.data[0].tiles[i];
-                        if(gid > 0)
+                        if (gid > 0)
                         {
                             Tileset tileSet = GetTilesetForGid(gid);
                             if (tileSet != null)
@@ -838,13 +838,13 @@ namespace TMXGlueLib
                     }
                 }
             }
-            
+
             return toReturn;
         }
 
         private SpriteSave CreateSpriteSaveFromObject(float scale, mapObjectgroupObject @object, int layerCount, FileReferenceType referenceType = FileReferenceType.NoDirectory)
         {
-            
+
             if (@object.gid == null)
             {
                 throw new NotSupportedException("CreateSpriteSaveFromObject called on a non image object. gid not set.");
@@ -923,7 +923,7 @@ namespace TMXGlueLib
             {
                 sprite.Name = @object.Name;
             }
-            SetSpriteTextureCoordinates(gid, sprite, tileSet);
+            SetSpriteTextureCoordinates(gid, sprite, tileSet, this.orientation);
 
             //CalculateWorldCoordinates(layercount, tileIndex, tileWidth, tileHeight, this.Width, out sprite.X, out sprite.Y, out sprite.Z);
             sprite.X = (float)@object.x;
@@ -1027,7 +1027,7 @@ namespace TMXGlueLib
             //    sprite.Name = "Unnamed" + gid;
             //}
 
-            SetSpriteTextureCoordinates(gid, sprite, tileSet);
+            SetSpriteTextureCoordinates(gid, sprite, tileSet, this.orientation);
             CalculateWorldCoordinates(layercount, tileIndex, tileWidth, tileHeight, this.Width, out sprite.X, out sprite.Y, out sprite.Z);
 
             sprite.ScaleX = tileWidth / 2.0f;
@@ -1060,14 +1060,14 @@ namespace TMXGlueLib
             return property.GetStrippedName(key).ToLower() == "name";
         }
 
-        public void CalculateWorldCoordinates(int layercount, int count, int tileWidth, int tileHeight, int layerWidth, out float x, out float y, out float z)
+        public void CalculateWorldCoordinates(int layerIndex, int tileIndex, int tileWidth, int tileHeight, int layerWidth, out float x, out float y, out float z)
         {
-            int normalizedX = count % this.Width;
-            int normalizedY = count / this.Width;
-            CalculateWorldCoordinates(layercount, normalizedX, normalizedY, tileWidth, tileHeight, layerWidth, out x, out y, out z);
+            int normalizedX = tileIndex % this.Width;
+            int normalizedY = tileIndex / this.Width;
+            CalculateWorldCoordinates(layerIndex, normalizedX, normalizedY, tileWidth, tileHeight, layerWidth, out x, out y, out z);
         }
 
-        public void CalculateWorldCoordinates(int layercount, float normalizedX, float normalizedY, int tileWidth, int tileHeight, int layerWidth, out float x, out float y, out float z)
+        public void CalculateWorldCoordinates(int layerIndex, float normalizedX, float normalizedY, int tileWidth, int tileHeight, int layerWidth, out float x, out float y, out float z)
         {
             if (this.orientation == null || this.orientation.Equals("orthogonal"))
             {
@@ -1075,7 +1075,7 @@ namespace TMXGlueLib
                 x += (tileWidth - this.tilewidth) / 2.0f;
                 y = -(normalizedY * this.tileheight) - (this.tileheight / 2.0f);
                 y += (tileHeight - this.tileheight) / 2.0f;
-                z = layercount;
+                z = layerIndex;
             }
             else if (this.orientation != null && this.orientation.Equals("isometric"))
             {
@@ -1083,7 +1083,7 @@ namespace TMXGlueLib
                 y += tileHeight / 2.0f;
                 x = -((normalizedY * this.tilewidth / 2.0f) - (normalizedX * this.tileheight / 2.0f) * 2);
                 x += tileWidth / 2.0f;
-                z = ((normalizedY * layerWidth + normalizedX) * .000001f) + layercount;
+                z = ((normalizedY * layerWidth + normalizedX) * .000001f) + layerIndex;
             }
             else
             {
@@ -1095,7 +1095,7 @@ namespace TMXGlueLib
             z += Offset.Item3;
         }
 
-        public void SetSpriteTextureCoordinates(uint gid, SpriteSave sprite, Tileset tileSet)
+        public static void SetSpriteTextureCoordinates(uint gid, SpriteSave sprite, Tileset tileSet, string orientation)
         {
             int imageWidth = tileSet.Images[0].width;
             int imageHeight = tileSet.Images[0].height;
@@ -1145,7 +1145,7 @@ namespace TMXGlueLib
             // Calculate relative texture coordinates based on pixel coordinates
             var changeVal = LessOrGreaterDesired.Greater;
 
-            if (this.orientation != null && this.orientation.Equals("isometric"))
+            if (orientation == "isometric")
             {
                 changeVal = LessOrGreaterDesired.NoChange;
             }
@@ -1154,7 +1154,7 @@ namespace TMXGlueLib
             sprite.LeftTextureCoordinate = GetTextureCoordinate(leftPixelCoord, imageWidth, changeVal);
 
             changeVal = LessOrGreaterDesired.Less;
-            if (this.orientation != null && this.orientation.Equals("isometric"))
+            if (orientation == "isometric")
             {
                 changeVal = LessOrGreaterDesired.NoChange;
             }
@@ -1239,7 +1239,7 @@ namespace TMXGlueLib
             return null;
         }
 
-        private float GetTextureCoordinate(int pixelCoord, int dimension, LessOrGreaterDesired lessOrGreaterDesired)
+        private static float GetTextureCoordinate(int pixelCoord, int dimension, LessOrGreaterDesired lessOrGreaterDesired)
         {
             float asFloat = pixelCoord / (float)dimension;
 
@@ -1257,7 +1257,7 @@ namespace TMXGlueLib
             }
         }
 
-        private static int CalculateYCoordinate(uint gid, int imageWidth, int tileWidth, int tileHeight, int spacing, int margin)
+        public static int CalculateYCoordinate(uint gid, int imageWidth, int tileWidth, int tileHeight, int spacing, int margin)
         {
 
             int tilesWide = TilesetExtensionMethods.GetNumberOfTilesWide(
@@ -1269,7 +1269,7 @@ namespace TMXGlueLib
             return pixely;
         }
 
-        private static int CalculateXCoordinate(uint gid, int imageWidth, int tileWidth, int spacing, int margin)
+        public static int CalculateXCoordinate(uint gid, int imageWidth, int tileWidth, int spacing, int margin)
         {
             var tilesWide = TilesetExtensionMethods.GetNumberOfTilesWide(
                 imageWidth, margin, tileWidth, spacing);
@@ -1328,5 +1328,4 @@ namespace TMXGlueLib
 
         }
     }
-
 }

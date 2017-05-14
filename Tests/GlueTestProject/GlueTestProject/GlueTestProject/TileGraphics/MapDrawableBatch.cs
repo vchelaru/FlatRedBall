@@ -501,7 +501,26 @@ namespace FlatRedBall.TileGraphics
                 //    listToAdd.Add(new NamedValue { Name = "Name", Value = quad.Name });
                 //    owner.Properties.Add(quad.Name, listToAdd);
                 //}
+                if (quad.RotationDegrees != 0)
+                {
+                    // Tiled rotates clockwise :(
+                    var rotationRadians = -MathHelper.ToRadians(quad.RotationDegrees);
 
+                    Vector3 bottomLeftPos = toReturn.Vertices[tileIndex * 4].Position;
+
+                    Vector3 vertPos = toReturn.Vertices[tileIndex * 4 + 1].Position;
+                    MathFunctions.RotatePointAroundPoint(bottomLeftPos, ref vertPos, rotationRadians);
+                    toReturn.Vertices[tileIndex * 4 + 1].Position = vertPos;
+
+                    vertPos = toReturn.Vertices[tileIndex * 4 + 2].Position;
+                    MathFunctions.RotatePointAroundPoint(bottomLeftPos, ref vertPos, rotationRadians);
+                    toReturn.Vertices[tileIndex * 4 + 2].Position = vertPos;
+
+                    vertPos = toReturn.Vertices[tileIndex * 4 + 3].Position;
+                    MathFunctions.RotatePointAroundPoint(bottomLeftPos, ref vertPos, rotationRadians);
+                    toReturn.Vertices[tileIndex * 4 + 3].Position = vertPos;
+
+                }
 
                 toReturn.RegisterName(quad.Name, tileIndex);
             }

@@ -90,20 +90,53 @@ namespace OfficialPlugins.VariableDisplay
 
         private static void CreateCategoriesAndVariables(NamedObjectSave instance, IElement container, List<MemberCategory> categories, AssetTypeInfo ati)
         {
-            for (int i = 0; i < instance.TypedMembers.Count; i++)
+            // May 13, 2017
+            // I'd like to get
+            // completely rid of 
+            // TypedMembers and move
+            // to using the custom variables.
+            // We'll try this out:
+            if (ati?.VariableDefinitions != null && ati.VariableDefinitions.Count > 0)
             {
-
-                TypedMemberBase typedMember = instance.TypedMembers[i];
-                InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati);
-
-                var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember);
-
-                if (instanceMember != null)
+                foreach(var variableDefinition in ati.VariableDefinitions)
                 {
-                    categoryToAddTo.Members.Add(instanceMember);
+                    try
+                    {
+                        var type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
+                        TypedMemberBase typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
+
+                        InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati);
+
+
+                        if (instanceMember != null)
+                        {
+                            var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember);
+                            categoryToAddTo.Members.Add(instanceMember);
+                        }
+                    }
+                    catch
+                    {
+                        // this new code isn't working with some things like generics. Until I fix that, let's fall back:
+
+                        var typedMember = instance.TypedMembers.FirstOrDefault(item => item.MemberName == variableDefinition.Name);
+
+                        if(typedMember != null)
+                        {
+                            AddForTypedMember(instance, container, categories, ati, typedMember);
+                        }
+
+
+                    }
                 }
             }
-
+            else
+            {
+                for (int i = 0; i < instance.TypedMembers.Count; i++)
+                {
+                    TypedMemberBase typedMember = instance.TypedMembers[i];
+                    AddForTypedMember(instance, container, categories, ati, typedMember);
+                }
+            }
             bool shouldAddSourceNameVariable = instance.SourceType == SourceType.File &&
                 !string.IsNullOrEmpty(instance.SourceFile);
 
@@ -111,6 +144,18 @@ namespace OfficialPlugins.VariableDisplay
             {
                 AddSourceNameVariable(instance, categories);
 
+            }
+        }
+
+        private static void AddForTypedMember(NamedObjectSave instance, IElement container, List<MemberCategory> categories, AssetTypeInfo ati, TypedMemberBase typedMember)
+        {
+            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati);
+
+            var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember);
+
+            if (instanceMember != null)
+            {
+                categoryToAddTo.Members.Add(instanceMember);
             }
         }
 
