@@ -63,6 +63,18 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.IDrawableBatch
 
         }
 
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        {
+            if (ShouldGenerate(element))
+            {
+                codeBlock.Line(
+                    "FlatRedBall.SpriteManager.RemoveDrawableBatch(this);");
+            }
+
+            return codeBlock;
+
+        }
+
         public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
         {
             if (element is EntitySave && ((EntitySave)element).ImplementsIDrawableBatch)

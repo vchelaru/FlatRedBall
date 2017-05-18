@@ -17,14 +17,12 @@ namespace FlatRedBall.Content.AnimationChain
     public class AnimationFrameSave : AnimationFrameSaveBase
     {
 
-#if !FRB_MDX
         [XmlIgnore]
         [ExternalInstance]
 #if !WINDOWS_PHONE && !WINDOWS_8 && !UWP
         [NonSerialized]
 #endif
         internal Texture2D mTextureInstance;
-#endif
 
 
         public AnimationFrameSave() { }
@@ -70,11 +68,6 @@ namespace FlatRedBall.Content.AnimationChain
 
             if (loadTexture)
             {
-#if FRB_MDX
-            frame.Texture = FlatRedBallServices.Load<Texture2D>(TextureName, contentManagerName);
-
-#else
-
                 if (mTextureInstance != null)
                 {
                     frame.Texture = mTextureInstance;
@@ -90,7 +83,6 @@ namespace FlatRedBall.Content.AnimationChain
                     
                 }
                 //frame.Texture = FlatRedBallServices.Load<Texture2D>(TextureName, contentManagerName);
-#endif
             }
             frame.FlipHorizontal = FlipHorizontal;
             frame.FlipVertical = FlipVertical;

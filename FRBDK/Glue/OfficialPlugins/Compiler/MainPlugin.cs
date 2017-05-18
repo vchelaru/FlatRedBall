@@ -35,7 +35,9 @@ namespace OfficialPlugins.Compiler
                 // - multicore building
                 // - Removed warnings and information when building - now we just show start, end, and errors
                 // - If an error occurs, a popup appears telling the user that the game crashed, and to open Visual Studio
-                return new Version(0, 4);
+                // 0.5
+                // - Support for running content-only builds
+                return new Version(0, 5);
             }
         }
 
@@ -95,11 +97,33 @@ namespace OfficialPlugins.Compiler
                 Compile();
             };
 
+            control.BuildContentClicked += delegate
+            {
+                Action<bool> after = (succeeded) =>
+                {
+                    if(succeeded)
+                    {
+                        control.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build succeeded");
+                    }
+                    else
+                    {
+                        control.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build failed");
+
+                    }
+                };
+                BuildContent(after);
+            };
+
             control.RunClicked += delegate
             {
                 runner.Run();
 
             };
+        }
+
+        private void BuildContent(Action<bool> afterCompile = null)
+        {
+            compiler.BuildContent(control.PrintOutput, control.PrintOutput, afterCompile, viewModel.Configuration);
         }
 
         private void Compile(Action<bool> afterCompile = null)

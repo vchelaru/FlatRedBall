@@ -13,7 +13,6 @@ using FlatRedBall.Instructions;
 
 namespace FlatRedBall.Graphics.Animation
 {
-    #region XML Docs
     /// <summary>
     /// Stores information about one frame in a texture-flipping animation.
     /// </summary>
@@ -23,7 +22,6 @@ namespace FlatRedBall.Graphics.Animation
     /// the length of time to show the Texture2D for, texture coordinates (for sprite sheets), and
     /// relative positioning.
     /// </remarks>
-    #endregion
     public class AnimationFrame :  IEquatable<AnimationFrame>
     {
         #region Fields
@@ -73,30 +71,34 @@ namespace FlatRedBall.Graphics.Animation
 
         #region XML Docs
         /// <summary>
-        /// The left coordinate in texture coordinates of the AnimationFrame.  Default is 0.
+        /// The left coordinate in texture coordinates of the AnimationFrame.  Default is 0. 
+        /// This value is in texture coordinates, not pixels. A value of 1 represents the right-side
+        /// of the texture.
         /// </summary>
         #endregion
         public float LeftCoordinate;
 
-        #region XML Docs
         /// <summary>
         /// The right coordinate in texture coordinates of the AnimationFrame.  Default is 1.
+        /// This value is in texture coordinates, not pixels. A value of 1 represents the right-side
+        /// of the texture.
         /// </summary>
-        #endregion
         public float RightCoordinate = 1;
 
         #region XML Docs
         /// <summary>
         /// The top coordinate in texture coordinates of the AnimationFrame.  Default is 0.
+        /// This value is in texture coordinates, not pixels. A value of 1 represents the bottom
+        /// of the texture;
         /// </summary>
         #endregion
         public float TopCoordinate;
 
-        #region XML Docs
         /// <summary>
         /// The bottom coordinate in texture coordinates of the AnimationFrame.  Default is 1.
+        /// This value is in texture coordinates, not pixels. A value of 1 represents the bottom
+        /// of the texture;
         /// </summary>
-        #endregion
         public float BottomCoordinate = 1;
 
         #region XML Docs

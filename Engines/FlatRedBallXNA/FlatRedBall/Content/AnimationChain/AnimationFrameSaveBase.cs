@@ -5,11 +5,9 @@ using System.Text;
 namespace FlatRedBall.Content.AnimationChain
 {
 
-    #region XML Docs
     /// <summary>
     /// The base class for AnimationFrameSave and AnimationFrameSaveContent.
     /// </summary>
-    #endregion
 #if !UWP && !WINDOWS_8
     [Serializable]
 #endif
@@ -54,32 +52,28 @@ namespace FlatRedBall.Content.AnimationChain
         #endregion
         public float FrameLength;
 
-        #region XML Docs
         /// <summary>
         /// The left coordinate in texture coordinates of the AnimationFrame.  Default is 0.
+        /// This may be in UV coordinates or pixel coordinates.
         /// </summary>
-        #endregion
         public float LeftCoordinate;
 
-        #region XML Docs
         /// <summary>
         /// The right coordinate in texture coordinates of the AnimationFrame.  Default is 1.
+        /// This may be in UV coordinates or pixel coordinates.
         /// </summary>
-        #endregion
         public float RightCoordinate = 1;
 
-        #region XML Docs
         /// <summary>
         /// The top coordinate in texture coordinates of the AnimationFrame.  Default is 0.
+        /// This may be in UV coordinates or pixel coordinates.
         /// </summary>
-        #endregion
         public float TopCoordinate;
 
-        #region XML Docs
         /// <summary>
         /// The bottom coordinate in texture coordinates of the AnimationFrame.  Default is 1.
+        /// This may be in UV coordinates or pixel coordinates.
         /// </summary>
-        #endregion
         public float BottomCoordinate = 1;
 
         #region XML Docs

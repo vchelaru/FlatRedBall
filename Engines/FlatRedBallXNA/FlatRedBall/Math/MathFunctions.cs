@@ -1066,6 +1066,11 @@ namespace FlatRedBall.Math
             return ((int)( System.Math.Sign(valueToRound) * .5 + valueToRound  / multipleOf)) * multipleOf;
         }
 
+        /// <summary>
+        /// Rounds the argument floatToRound to an integer.
+        /// </summary>
+        /// <param name="floatToRound"></param>
+        /// <returns></returns>
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public static int RoundToInt(float floatToRound)
         {

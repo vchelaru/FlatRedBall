@@ -11,41 +11,51 @@ namespace OfficialPlugins.Compiler
 {
     class Compiler
     {
+        const string msBuildExecutable = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
+
         internal void Compile(Action<string> printOutput, Action<string> printError, Action<bool> afterBuilt = null, 
             string configuration = "Debug")
         {
             TaskManager.Self.AddAsyncTask(() =>
             {
                 var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
-                string executable = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
 
-                // For info on parameters:
-                // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
-                // \m uses multiple cores
-                string arguments = $"\"{projectFileName}\" " + 
-                    $"/p:Configuration=\"{configuration}\" " + 
-                    "/m " + 
-                    "/nologo " + 
-                    "/verbosity:minimal";
-
-                Process process = CreateProcess("\"" + executable + "\"", arguments);
-
-                printOutput("Build started at " + DateTime.Now.ToLongTimeString());
-                // This is noisy and technical. Reducing output window verbosity
-                //printOutput(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
-
-
-                var errorString = RunProcess(printOutput, printError, executable, process);
-                bool succeeded = true;
-                if (!string.IsNullOrEmpty(errorString))
-                {
-                    printError(errorString);
-                    succeeded = false;
-                }
+                bool succeeded = RunMsBuildOnProject(printOutput, printError, configuration, projectFileName);
 
                 afterBuilt?.Invoke(succeeded);
             },
             "Building project");
+        }
+
+        private static bool RunMsBuildOnProject(Action<string> printOutput, Action<string> printError, string configuration, string projectFileName)
+        {
+            // For info on parameters:
+            // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
+            // \m uses multiple cores
+            string arguments = $"\"{projectFileName}\" " +
+                $"/p:Configuration=\"{configuration}\" " +
+                $"/p:XNAContentPipelineTargetPlatform=\"Windows\" " +
+                $"/p:XNAContentPipelineTargetProfile=\"HiDef\" " +
+                "/m " +
+                "/nologo " +
+                "/verbosity:minimal";
+
+            Process process = CreateProcess("\"" + msBuildExecutable + "\"", arguments);
+
+            printOutput("Build started at " + DateTime.Now.ToLongTimeString());
+            // This is noisy and technical. Reducing output window verbosity
+            //printOutput(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
+
+
+            var errorString = RunProcess(printOutput, printError, msBuildExecutable, process);
+            bool succeeded = true;
+            if (!string.IsNullOrEmpty(errorString))
+            {
+                printError(errorString);
+                succeeded = false;
+            }
+
+            return succeeded;
         }
 
         private static string RunProcess(Action<string> printOutput, Action<string> printError, string executable, Process process)
@@ -110,6 +120,29 @@ namespace OfficialPlugins.Compiler
                 }
             }
             return errorString;
+        }
+
+        internal void BuildContent(Action<string> printOutput, Action<string> printError, Action<bool> afterBuilt = null, string configuration = "Debug")
+        {
+            TaskManager.Self.AddAsyncTask(() =>
+            {
+                bool succeeded = false;
+
+                if(GlueState.Self.CurrentMainProject == GlueState.Self.CurrentMainProject.ContentProject)
+                {
+                    // eventually use the MG build here...
+                    printOutput("Project does not have a dedicated content project");
+                }
+                else
+                {
+                    var projectFileName = GlueState.Self.CurrentMainProject.ContentProject.FullFileName;
+
+                    succeeded = RunMsBuildOnProject(printOutput, printError, configuration, projectFileName);
+                }
+
+                afterBuilt?.Invoke(succeeded);
+
+            }, "Building Content");
         }
 
         private static Process CreateProcess(string executable, string arguments)

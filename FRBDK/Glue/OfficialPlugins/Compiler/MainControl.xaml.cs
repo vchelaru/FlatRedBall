@@ -23,6 +23,7 @@ namespace OfficialPlugins.Compiler
         OutputParser outputParser;
 
         public event EventHandler BuildClicked;
+        public event EventHandler BuildContentClicked;
         public event EventHandler RunClicked;
 
         public MainControl()
@@ -37,6 +38,13 @@ namespace OfficialPlugins.Compiler
         {
             TextBox.Clear();
             BuildClicked?.Invoke(this, null);
+        }
+
+        private void HandleBuildContentClick(object sender, RoutedEventArgs e)
+        {
+
+            TextBox.Clear();
+            BuildContentClicked?.Invoke(this, null);
         }
 
         private void HandleRunClick(object sender, RoutedEventArgs e)
