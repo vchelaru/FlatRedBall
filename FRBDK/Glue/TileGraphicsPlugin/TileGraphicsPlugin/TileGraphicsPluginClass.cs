@@ -70,7 +70,9 @@ namespace TileGraphicsPlugin
             // 1.1.1.0
             // - Fixed offset issues with instantiating entities from objects
             // - Added support for rotated entities 
-            get { return new Version(1, 1, 1, 0); }
+            // 1.1.1.1
+            // - Fixed animations not setting the right and bottom texture coordinates according to offset values
+            get { return new Version(1, 1, 1, 1); }
         }
 
 
