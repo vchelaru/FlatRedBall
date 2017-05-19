@@ -20,7 +20,13 @@ namespace FlatRedBall.Content.AnimationChain
         [XmlIgnore]
         protected string mFileName;
 
-        // By default we want this to be true for portability
+        /// <summary>
+        /// Whether files (usually image files) referenced by this object (and .achx) are
+        /// relative to the .achx itself. If false, then file references will be stored as absolute. 
+        /// If true, then file reference,s will be stored relative to the .achx itself. This value should
+        /// be true so that a .achx can be moved to a different file system or computer and still
+        /// have valid references.
+        /// </summary>
         public bool FileRelativeTextures = true;
 
         public FlatRedBall.TimeMeasurementUnit TimeMeasurementUnit;

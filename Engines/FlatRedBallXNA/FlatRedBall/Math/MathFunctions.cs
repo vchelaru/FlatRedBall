@@ -1069,8 +1069,8 @@ namespace FlatRedBall.Math
         /// <summary>
         /// Rounds the argument floatToRound to an integer.
         /// </summary>
-        /// <param name="floatToRound"></param>
-        /// <returns></returns>
+        /// <param name="floatToRound">The float value.</param>
+        /// <returns>The integer of the rounded.</returns>
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public static int RoundToInt(float floatToRound)
         {

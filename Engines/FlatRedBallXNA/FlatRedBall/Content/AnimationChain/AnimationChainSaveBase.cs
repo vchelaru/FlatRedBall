@@ -18,8 +18,6 @@ namespace FlatRedBall.Content.AnimationChain
         #region Fields
 
         public string Name;
-        public uint ColorKey;
-
 
         /// <summary>
         /// This is used if the AnimationChain actually comes from 

@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,6 +30,9 @@ namespace OfficialPlugins.Compiler
 
         private static bool RunMsBuildOnProject(Action<string> printOutput, Action<string> printError, string configuration, string projectFileName)
         {
+
+            string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
+
             // For info on parameters:
             // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
             // \m uses multiple cores
@@ -36,6 +40,7 @@ namespace OfficialPlugins.Compiler
                 $"/p:Configuration=\"{configuration}\" " +
                 $"/p:XNAContentPipelineTargetPlatform=\"Windows\" " +
                 $"/p:XNAContentPipelineTargetProfile=\"HiDef\" " +
+                $"/p:OutDir=\"{outputDirectory}\" " +
                 "/m " +
                 "/nologo " +
                 "/verbosity:minimal";

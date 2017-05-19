@@ -69,13 +69,11 @@ namespace FlatRedBall.Graphics.Animation
         #endregion
         public float FrameLength;
 
-        #region XML Docs
         /// <summary>
         /// The left coordinate in texture coordinates of the AnimationFrame.  Default is 0. 
         /// This value is in texture coordinates, not pixels. A value of 1 represents the right-side
         /// of the texture.
         /// </summary>
-        #endregion
         public float LeftCoordinate;
 
         /// <summary>
@@ -85,13 +83,11 @@ namespace FlatRedBall.Graphics.Animation
         /// </summary>
         public float RightCoordinate = 1;
 
-        #region XML Docs
         /// <summary>
         /// The top coordinate in texture coordinates of the AnimationFrame.  Default is 0.
         /// This value is in texture coordinates, not pixels. A value of 1 represents the bottom
         /// of the texture;
         /// </summary>
-        #endregion
         public float TopCoordinate;
 
         /// <summary>

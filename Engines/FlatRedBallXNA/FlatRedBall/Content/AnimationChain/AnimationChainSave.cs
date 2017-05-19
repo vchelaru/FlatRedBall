@@ -241,9 +241,6 @@ namespace FlatRedBall.Content.AnimationChain
                     case "Name":
                         toReturn.Name = subElement.Value;
                         break;
-                    case "ColorKey":
-                        toReturn.ColorKey = AsUint(subElement);
-                        break;
                     case "Frame":
                         toReturn.Frames.Add(AnimationFrameSave.FromXElement(subElement));
                         break;
