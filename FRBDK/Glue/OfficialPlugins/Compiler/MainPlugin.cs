@@ -7,12 +7,16 @@ using System.Threading.Tasks;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using System.ComponentModel.Composition;
 using OfficialPlugins.Compiler.ViewModels;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Managers;
 
 namespace OfficialPlugins.Compiler
 {
     [Export(typeof(PluginBase))]
     public class MainPlugin : PluginBase
     {
+        #region Fields/Properties
+
         MainControl control;
 
         Compiler compiler;
@@ -41,10 +45,7 @@ namespace OfficialPlugins.Compiler
             }
         }
 
-        public override bool ShutDown(PluginShutDownReason shutDownReason)
-        {
-            return true;
-        }
+        #endregion
 
         public override void StartUp()
         {
@@ -52,9 +53,26 @@ namespace OfficialPlugins.Compiler
 
             CreateToolbar();
 
+            this.ReactToFileChangeHandler += HandleFileChanged;
+
             compiler = new Compiler();
             runner = new Runner();
 
+        }
+
+        private void HandleFileChanged(string fileName)
+        {
+            bool shouldBuildContent = viewModel.AutoBuildContent &&
+                GlueState.Self.CurrentMainProject != GlueState.Self.CurrentMainContentProject &&
+                GlueState.Self.CurrentMainContentProject.IsFilePartOfProject(fileName);
+
+            if(shouldBuildContent)
+            {
+                control.PrintOutput($"{DateTime.Now.ToLongTimeString()} Building for changed file {fileName}");
+
+                BuildContent(OutputSuccessOrFailure);
+            }
+            
         }
 
         private void CreateToolbar()
@@ -99,19 +117,7 @@ namespace OfficialPlugins.Compiler
 
             control.BuildContentClicked += delegate
             {
-                Action<bool> after = (succeeded) =>
-                {
-                    if(succeeded)
-                    {
-                        control.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build succeeded");
-                    }
-                    else
-                    {
-                        control.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build failed");
-
-                    }
-                };
-                BuildContent(after);
+                BuildContent(OutputSuccessOrFailure);
             };
 
             control.RunClicked += delegate
@@ -119,6 +125,19 @@ namespace OfficialPlugins.Compiler
                 runner.Run();
 
             };
+        }
+
+        private void OutputSuccessOrFailure(bool succeeded)
+        {
+            if (succeeded)
+            {
+                control.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build succeeded");
+            }
+            else
+            {
+                control.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build failed");
+
+            }
         }
 
         private void BuildContent(Action<bool> afterCompile = null)
@@ -129,6 +148,11 @@ namespace OfficialPlugins.Compiler
         private void Compile(Action<bool> afterCompile = null)
         {
             compiler.Compile(control.PrintOutput, control.PrintOutput, afterCompile, viewModel.Configuration);
+        }
+
+        public override bool ShutDown(PluginShutDownReason shutDownReason)
+        {
+            return true;
         }
     }
 }
