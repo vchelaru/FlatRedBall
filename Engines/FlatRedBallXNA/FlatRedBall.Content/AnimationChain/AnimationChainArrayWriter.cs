@@ -72,7 +72,7 @@ namespace FlatRedBall.Content.AnimationChain
                 output.Write(value.Name);
             else
                 output.Write("");
-            output.Write(value.ColorKey);
+
             if (value.ParentFile != null)
                 output.Write(value.ParentFile);
             else

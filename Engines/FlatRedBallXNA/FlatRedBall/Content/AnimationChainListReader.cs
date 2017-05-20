@@ -100,8 +100,7 @@ namespace FlatRedBall.Content
         {
             FlatRedBall.Content.AnimationChain.AnimationChainSave newObject = new FlatRedBall.Content.AnimationChain.AnimationChainSave();
             newObject.Name = input.ReadString();
-            //newObject.ColorKey = input.ReadUInt32();
-            var throwaway = input.ReadUInt32();
+
             newObject.ParentFile = input.ReadString();
             int FramesCount = input.ReadInt32();
             for (int i = 0; i < FramesCount; i++)
