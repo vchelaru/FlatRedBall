@@ -734,6 +734,20 @@ namespace FlatRedBall
 
             if (ShouldRestrictViewportToResolution)
             {
+                int destinationWidth;
+                int destinationHeight;
+
+                if(renderTarget == null)
+                {
+                    destinationWidth = FlatRedBallServices.GraphicsOptions.ResolutionWidth;
+                    destinationHeight = FlatRedBallServices.GraphicsOptions.ResolutionHeight;
+                }
+                else
+                {
+                    destinationWidth = renderTarget.Width;
+                    destinationHeight = renderTarget.Height;
+                }
+
                 // September 24, 2012
                 // There is currently a 
                 // bug if the user starts
@@ -749,22 +763,22 @@ namespace FlatRedBall
                 // This code can throw an exception when resizing a window.
                 // But the user didn't do anything wrong - the engine just hasn't
                 // gotten a chance to reset the device yet.  So we'll tolerate it:
-                if (viewport.Y + viewport.Height > FlatRedBallServices.GraphicsOptions.ResolutionHeight)
+                if (viewport.Y + viewport.Height > destinationHeight)
                 {
 
                     //throw new Exception("The pixel height resolution of the display is " +
                     //    FlatRedBallServices.GraphicsOptions.ResolutionHeight +
                     //    " but the LayerCameraSettings' BottomDestination is " + (viewport.Y + viewport.Height));
-                    int amountToSubtract = (viewport.Y + viewport.Height) - FlatRedBallServices.GraphicsOptions.ResolutionHeight;
+                    int amountToSubtract = (viewport.Y + viewport.Height) - destinationHeight;
                     viewport.Height -= amountToSubtract;
                 }
 
-                if (viewport.X + viewport.Width > FlatRedBallServices.GraphicsOptions.ResolutionWidth)
+                if (viewport.X + viewport.Width > destinationWidth)
                 {
                     //throw new Exception("The pixel width resolution of the display is " +
                     //    FlatRedBallServices.GraphicsOptions.ResolutionWidth +
                     //    " but the LayerCameraSettings' RightDestination is " + (viewport.X + viewport.Width));
-                    int amountToSubtract = (viewport.X + viewport.Width) - FlatRedBallServices.GraphicsOptions.ResolutionWidth;
+                    int amountToSubtract = (viewport.X + viewport.Width) - destinationWidth;
                     viewport.Width -= amountToSubtract;
                 }
                 //#endif

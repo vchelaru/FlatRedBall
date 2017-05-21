@@ -279,12 +279,18 @@ namespace FlatRedBall
 
         #region IScalable
 
+        /// <summary>
+        /// The distance from the center of the Sprite to its edge, which is equal to Width / 2.
+        /// </summary>
         public float ScaleX
         {
             get { return mScaleX; }
             set { mScaleX = value; }
         }
 
+        /// <summary>
+        /// The distance from the center of the Sprite to its edge, which is equal to Height / 2. 
+        /// </summary>
         public float ScaleY
         {
             get { return mScaleY; }
@@ -364,7 +370,8 @@ namespace FlatRedBall
         }
 
         /// <summary>
-        /// The Sprite's Width in absolute world coordinates.
+        /// The Sprite's Width in absolute world coordinates. This value may be set according
+        /// to the currently displayed texture and texture coordinates if TextureScale is greater than 0.
         /// </summary>
         public float Width
         {
@@ -379,7 +386,8 @@ namespace FlatRedBall
         }
 
         /// <summary>
-        /// The Sprite's Height in absolute world coordinates.
+        /// The Sprite's Height in absolute world coordinates. This value may be set according
+        /// to the currently displayed texture and texture coordinates if TextureScale is greater than 0.
         /// </summary>
         public float Height
         {

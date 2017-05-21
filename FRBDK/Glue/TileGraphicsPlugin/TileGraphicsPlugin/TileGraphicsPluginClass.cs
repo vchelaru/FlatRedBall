@@ -72,7 +72,10 @@ namespace TileGraphicsPlugin
             // - Added support for rotated entities 
             // 1.1.1.1
             // - Fixed animations not setting the right and bottom texture coordinates according to offset values
-            get { return new Version(1, 1, 1, 1); }
+            // 1.1.1.2
+            // - Fixed attempting to set the EntityToCreate property on new entities in TileEntityInstantiator
+            // - Name property is set even if property is lower-case "name"
+            get { return new Version(1, 1, 1, 2); }
         }
 
 

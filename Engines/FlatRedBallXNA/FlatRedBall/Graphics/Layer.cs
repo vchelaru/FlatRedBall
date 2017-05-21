@@ -573,7 +573,7 @@ namespace FlatRedBall.Graphics
         /// it.
         /// </summary>
         /// <remarks>
-        /// If a Layer uses a RenderTarge, it will clear the render target if:
+        /// If a Layer uses a RenderTarget, it will clear the render target if:
         /// - It is the UnderAll layer
         /// - It is the first Layer on a camera
         /// - It uses a different RenderTarget than the previous Layer.

@@ -152,6 +152,7 @@ namespace FlatRedBall.Graphics
 
                 if (layer.LayerCameraSettings != null)
                 {
+
                     layer.LayerCameraSettings.ApplyValuesToCamera(camera, SetCameraOptions.PerformZRotation, null, layer.RenderTarget);
                     hasLayerModifiedCamera = true;
                 }

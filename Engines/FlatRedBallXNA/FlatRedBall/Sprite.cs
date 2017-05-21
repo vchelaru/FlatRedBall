@@ -475,6 +475,13 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// The relationship between the displayed portion of the Sprite's texture and 
+        /// its Width/Height. If this value is less than or equal to 0, then Width and Height
+        /// values are not set according to the displayed portion of the Sprite's texture. Otherwise,
+        /// the displayed portion of the texture are multiplied by this value to determine the Sprite's
+        /// Width and Height.
+        /// </summary>
         public float TextureScale
         {
             get
