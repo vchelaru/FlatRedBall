@@ -2117,6 +2117,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                             codeBlock.Line(objectName + ".LayerCameraSettings.RightDestination = " + FlatRedBall.Math.MathFunctions.RoundToInt(rightDestination ) + ";");
                             codeBlock.Line(objectName + ".LayerCameraSettings.BottomDestination = " + FlatRedBall.Math.MathFunctions.RoundToInt(bottomDestination ) + ";");
 
+                            codeBlock.Line("// For layers which are 2D, have specified a destination rectangle, and use Pixel coordinate types, the ortho values match the destination rectangle. This can be changed in custom code.");
                             codeBlock.Line(objectName + ".LayerCameraSettings.OrthogonalWidth = " + FlatRedBall.Math.MathFunctions.RoundToInt(namedObject.DestinationRectangle.Value.Width ) + ";");
                             codeBlock.Line(objectName + ".LayerCameraSettings.OrthogonalHeight = " + FlatRedBall.Math.MathFunctions.RoundToInt(namedObject.DestinationRectangle.Value.Height ) + ";");
                         }

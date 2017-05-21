@@ -163,7 +163,7 @@ namespace FlatRedBall.Graphics
 
                 bool offsetOrthogonal = Orthogonal;
 
-                // But don't do this if we're on a render target, because render targets render full-creen:
+                // But don't do this if we're on a render target, because render targets render full-screen:
                 if (offsetOrthogonal && renderTarget == null)
                 {
                     int differenceX;
