@@ -163,7 +163,8 @@ namespace FlatRedBall.Graphics
 
                 bool offsetOrthogonal = Orthogonal;
 
-                if (offsetOrthogonal)
+                // But don't do this if we're on a render target, because render targets render full-creen:
+                if (offsetOrthogonal && renderTarget == null)
                 {
                     int differenceX;
                     int differenceY;
@@ -178,7 +179,7 @@ namespace FlatRedBall.Graphics
                 bool offsetOrthogonal = lastToModify.Orthogonal;
 
                 // Undo what we did before
-                if (offsetOrthogonal)
+                if (offsetOrthogonal && renderTarget == null)
                 {
                     int differenceX;
                     int differenceY;

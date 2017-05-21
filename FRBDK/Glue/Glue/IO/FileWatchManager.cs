@@ -110,6 +110,13 @@ namespace FlatRedBall.Glue.IO
             mChangedProjectFiles.ClearIgnores();
         }
 
+        /// <summary>
+        /// Loops through all files that have been changed since the last flush, allowing
+        /// Glue (and plugins) to react to these changed files. 
+        /// </summary>
+        /// <remarks>
+        /// The handling of the system event is in ChangedFileGroup.
+        /// </remarks>
         public static void Flush()
         {
             lock (FileWatchManager.LockObject)
