@@ -61,10 +61,11 @@ namespace FlatRedBall.Glue.IO
                 {
                     ReferencedFileSave rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(changedFile);
 
+                    bool shouldGenerate = rfs != null &&
+                        (extension == "csv" || rfs.TreatAsCsv) &&
+                        rfs.IsDatabaseForLocalizing == false;
 
-
-                    if (rfs != null && (extension == "csv" ||
-                        rfs.TreatAsCsv))
+                    if (shouldGenerate)
                     {
                         try
                         {
