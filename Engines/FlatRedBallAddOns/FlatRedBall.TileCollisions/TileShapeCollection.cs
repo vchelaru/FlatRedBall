@@ -443,76 +443,38 @@ namespace FlatRedBall.TileCollisions
         {
             var properties = layeredTileMap.TileProperties;
             float dimension = layeredTileMap.WidthPerTile.Value;
+            float dimensionHalf = dimension / 2.0f;
+            tileShapeCollection.GridSize = dimension;
 
             Dictionary<int, List<int>> rectangleIndexes = new Dictionary<int, List<int>>();
 
-            foreach (var kvp in properties)
+            foreach (var layer in layeredTileMap.MapLayers)
             {
-                string name = kvp.Key;
-                var namedValues = kvp.Value;
-
-                if (predicate(namedValues))
-                {
-                    float dimensionHalf = dimension / 2.0f;
-                    tileShapeCollection.GridSize = dimension;
-
-                    foreach (var layer in layeredTileMap.MapLayers)
-                    {
-                        var dictionary = layer.NamedTileOrderedIndexes;
-
-                        if (dictionary.ContainsKey(name))
-                        {
-                            var indexList = dictionary[name];
-
-                            foreach (var index in indexList)
-                            {
-                                float left;
-                                float bottom;
-                                layer.GetBottomLeftWorldCoordinateForOrderedTile(index, out left, out bottom);
-
-                                var centerX = left + dimensionHalf;
-                                var centerY = bottom + dimensionHalf;
-
-                                int key;
-                                int value;
-
-                                if (tileShapeCollection.SortAxis == Axis.X)
-                                {
-                                    key = (int)(centerX / dimension);
-                                    value = (int)(centerY / dimension);
-                                }
-                                else if (tileShapeCollection.SortAxis == Axis.Y)
-                                {
-                                    key = (int)(centerY / dimension);
-                                    value = (int)(centerX / dimension);
-                                }
-                                else
-                                {
-                                    throw new NotImplementedException("Cannot add tile collision on z-sorted shape collections");
-                                }
-
-                                List<int> listToAddTo = null;
-                                if (rectangleIndexes.ContainsKey(key) == false)
-                                {
-                                    listToAddTo = new List<int>();
-                                    rectangleIndexes.Add(key, listToAddTo);
-                                }
-                                else
-                                {
-                                    listToAddTo = rectangleIndexes[key];
-                                }
-                                listToAddTo.Add(value);
-
-                            }
-                        }
-                    }
-                }
+                AddCollisionFromLayerInternal(tileShapeCollection, predicate, properties, dimension, dimensionHalf, rectangleIndexes, layer);
             }
 
+            ApplyMerging(tileShapeCollection, dimension, rectangleIndexes);
+        }
+
+        public static void AddMergedCollisionFromLayer(this TileShapeCollection tileShapeCollection, MapDrawableBatch layer, LayeredTileMap layeredTileMap,
+            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate)
+        {
+            var properties = layeredTileMap.TileProperties;
+            float dimension = layeredTileMap.WidthPerTile.Value;
+            float dimensionHalf = dimension / 2.0f;
+            tileShapeCollection.GridSize = dimension;
+
+            Dictionary<int, List<int>> rectangleIndexes = new Dictionary<int, List<int>>();
+
+            AddCollisionFromLayerInternal(tileShapeCollection, predicate, properties, dimension, dimensionHalf, rectangleIndexes, layer);
+
+            ApplyMerging(tileShapeCollection, dimension, rectangleIndexes);
+        }
+
+        private static void ApplyMerging(TileShapeCollection tileShapeCollection, float dimension, Dictionary<int, List<int>> rectangleIndexes)
+        {
             foreach (var kvp in rectangleIndexes.OrderBy(item => item.Key))
             {
-
-
                 var rectanglePositionList = kvp.Value.OrderBy(item => item).ToList();
 
                 var firstValue = rectanglePositionList[0];
@@ -536,7 +498,67 @@ namespace FlatRedBall.TileCollisions
                 }
 
                 CloseRectangle(tileShapeCollection, kvp.Key, dimension, firstValue, currentValue);
+            }
+        }
 
+        private static void AddCollisionFromLayerInternal(TileShapeCollection tileShapeCollection, Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate, Dictionary<string, List<TMXGlueLib.DataTypes.NamedValue>> properties, float dimension, float dimensionHalf, Dictionary<int, List<int>> rectangleIndexes, MapDrawableBatch layer)
+        {
+            foreach (var kvp in properties)
+            {
+                string name = kvp.Key;
+                var namedValues = kvp.Value;
+
+                if (predicate(namedValues))
+                {
+
+                    var dictionary = layer.NamedTileOrderedIndexes;
+
+                    if (dictionary.ContainsKey(name))
+                    {
+                        var indexList = dictionary[name];
+
+                        foreach (var index in indexList)
+                        {
+                            float left;
+                            float bottom;
+                            layer.GetBottomLeftWorldCoordinateForOrderedTile(index, out left, out bottom);
+
+                            var centerX = left + dimensionHalf;
+                            var centerY = bottom + dimensionHalf;
+
+                            int key;
+                            int value;
+
+                            if (tileShapeCollection.SortAxis == Axis.X)
+                            {
+                                key = (int)(centerX / dimension);
+                                value = (int)(centerY / dimension);
+                            }
+                            else if (tileShapeCollection.SortAxis == Axis.Y)
+                            {
+                                key = (int)(centerY / dimension);
+                                value = (int)(centerX / dimension);
+                            }
+                            else
+                            {
+                                throw new NotImplementedException("Cannot add tile collision on z-sorted shape collections");
+                            }
+
+                            List<int> listToAddTo = null;
+                            if (rectangleIndexes.ContainsKey(key) == false)
+                            {
+                                listToAddTo = new List<int>();
+                                rectangleIndexes.Add(key, listToAddTo);
+                            }
+                            else
+                            {
+                                listToAddTo = rectangleIndexes[key];
+                            }
+                            listToAddTo.Add(value);
+
+                        }
+                    }
+                }
             }
         }
 

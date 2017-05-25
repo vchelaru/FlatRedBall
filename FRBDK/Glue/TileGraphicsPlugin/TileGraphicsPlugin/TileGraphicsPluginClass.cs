@@ -75,7 +75,9 @@ namespace TileGraphicsPlugin
             // 1.1.1.2
             // - Fixed attempting to set the EntityToCreate property on new entities in TileEntityInstantiator
             // - Name property is set even if property is lower-case "name"
-            get { return new Version(1, 1, 1, 2); }
+            // 1.1.1.3
+            // - Added method to add collision in a TileShapeCollection from a single layer in the MapDrawableBatch
+            get { return new Version(1, 1, 1, 3); }
         }
 
 
