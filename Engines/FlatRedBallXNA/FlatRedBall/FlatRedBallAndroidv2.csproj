@@ -63,6 +63,7 @@
     <Compile Include="Graphics\Animation\AnimationChain.Gif.cs" />
     <Compile Include="Graphics\EffectCache.cs" />
     <Compile Include="Graphics\EffectContainer.cs" />
+    <Compile Include="Input\AndroidGamePad.cs" />
     <Compile Include="IO\ICSharpCode.SharpZLib\Checksums\Adler32.cs" />
     <Compile Include="IO\ICSharpCode.SharpZLib\Checksums\IChecksum.cs" />
     <Compile Include="IO\ICSharpCode.SharpZLib\SharpZipBaseException.cs" />

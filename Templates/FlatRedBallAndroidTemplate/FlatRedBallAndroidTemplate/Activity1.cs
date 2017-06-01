@@ -12,7 +12,7 @@ namespace FlatRedBallAndroidTemplate
         , Icon = "@drawable/icon"
         , Theme = "@style/Theme.Splash"
         , AlwaysRetainTaskState = true
-        , LaunchMode = Android.Content.PM.LaunchMode.SingleInstance
+        , LaunchMode = LaunchMode.SingleInstance
         , ScreenOrientation = ScreenOrientation.SensorLandscape
         , ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden)]
     public class Activity1 : Microsoft.Xna.Framework.AndroidGameActivity
@@ -21,9 +21,39 @@ namespace FlatRedBallAndroidTemplate
         {
             base.OnCreate(bundle);
             var g = new Game1();
-            SetContentView((View)g.Services.GetService(typeof(View)));
+
+            var view = (OpenTK.Platform.Android.AndroidGameView)g.Services.GetService(typeof(View));
+
+            view.KeyPress += HandleKeyPress;
+            view.GenericMotion += HandleGenericMotion;
+            SetContentView(view);
             g.Run();
         }
+
+        private void HandleGenericMotion(object sender, View.GenericMotionEventArgs e)
+        {
+            if ((e.Event.Source & InputSourceType.Gamepad) == InputSourceType.Gamepad ||
+                (e.Event.Source & InputSourceType.Joystick) == InputSourceType.Joystick)
+            {
+                AndroidGamePadManager.OnGenericMotionEvent(e.Event);
+            }
+        }
+
+        private void HandleKeyPress(object sender, View.KeyEventArgs e)
+        {
+            if ((e.Event.Source & InputSourceType.Gamepad) == InputSourceType.Gamepad)
+            {
+                if (e.Event.Action == KeyEventActions.Down)
+                {
+                    AndroidGamePadManager.OnKeyDown(e.KeyCode, e.Event);
+                }
+                if (e.Event.Action == KeyEventActions.Up)
+                {
+                    AndroidGamePadManager.OnKeyUp(e.KeyCode, e.Event);
+                }
+            }
+        }
+
     }
 }
 

@@ -1,6 +1,4 @@
-#if !SILVERLIGHT
 #define SUPPORTS_XBOX_GAMEPADS
-#endif
 
 using System;
 using System.Collections.Generic;
@@ -30,15 +28,7 @@ namespace FlatRedBall.Input
 #endif
         static bool mUpdateXbox360GamePads = true;
 
-
-
-
-
-#if !XBOX360
         static TouchScreen mTouchScreen;
-#endif
-
-
 
         #endregion
 
@@ -84,9 +74,6 @@ namespace FlatRedBall.Input
         }
 #endif
 
-
-
-#if !XBOX360
         public static TouchScreen TouchScreen
         {
             get
@@ -94,7 +81,6 @@ namespace FlatRedBall.Input
                 return mTouchScreen;
             }
         }
-#endif
 
         #endregion
 
@@ -156,10 +142,8 @@ namespace FlatRedBall.Input
 
         private static void InitializeTouchScreen()
         {
-#if !XBOX360
             mTouchScreen = new TouchScreen();
             mTouchScreen.Initialize();
-#endif
         }
 
         private static void ClearXbox360GamePadInput()
@@ -192,6 +176,8 @@ namespace FlatRedBall.Input
             mControllerConnectedStatus.Add(3, false);
         }
 
+        static partial void PlatformSpecificXbox360GamePadUpdate();
+
         private static void PerformXbox360GamePadUpdate()
         {
             CheckControllerConnectionChange();
@@ -208,6 +194,9 @@ namespace FlatRedBall.Input
                 mXbox360GamePads[3].Update();
 #endif
 #endif
+
+                PlatformSpecificXbox360GamePadUpdate();
+
 
             }
         }
