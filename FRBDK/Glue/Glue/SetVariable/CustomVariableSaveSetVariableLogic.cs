@@ -99,13 +99,16 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 customVariable.FixEnumerationTypes();
 
+                var currentElement = GlueState.Self.CurrentElement;
+
                 if (!string.IsNullOrEmpty(customVariable.SourceObject))
                 {
+
                     // See if the source NamedObjectSave has
                     // this variable exposed, and if so, set that 
                     // variable too so the two mirror each other...
                     // or make it null if this is a recasted variable.
-                    NamedObjectSave nos = EditorLogic.CurrentElement.GetNamedObjectRecursively(customVariable.SourceObject);
+                    NamedObjectSave nos = currentElement.GetNamedObjectRecursively(customVariable.SourceObject);
 
                     if (nos != null)
                     {
@@ -127,6 +130,8 @@ namespace FlatRedBall.Glue.SetVariable
 
                     }
                 }
+
+                Plugins.PluginManager.ReactToElementVariableChange(currentElement, customVariable);
             }
 
             #endregion

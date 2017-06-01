@@ -11,6 +11,7 @@ using FlatRedBall.Utilities;
 using WpfDataUi;
 using WpfDataUi.DataTypes;
 using FlatRedBall.Glue.SetVariable;
+using FlatRedBall.Glue.Plugins;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -79,6 +80,8 @@ namespace OfficialPlugins.VariableDisplay
 
                     EditorObjects.IoC.Container.Get<CustomVariableSaveSetVariableLogic>().ReactToCustomVariableChangedValue(
                         "DefaultValue", customVariable, oldValue);
+
+
 
                     GlueCommands.Self.GluxCommands.SaveGlux();
 

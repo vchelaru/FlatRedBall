@@ -95,6 +95,8 @@ namespace FlatRedBall.Glue.Plugins
         public Action<IElement, ReferencedFileSave> ReactToFileRemoved { get; protected set; }
         public Action<IElement, EventResponseSave> ReactToEventRemoved { get; protected set; }
 
+        public Action<IElement, CustomVariable> ReactToElementVariableChange { get; protected set; }
+
         public Action<string> SelectItemInCurrentFile { get; protected set; }
 
         public Action ReactToLoadedGluxEarly { get; protected set; }
@@ -143,6 +145,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public Func<IElement, NamedObjectSave, TypedMemberBase, TypeConverter> GetTypeConverter { get; protected set; }
         public Action<NamedObjectSave, ICodeBlock, InstructionSave> WriteInstanceVariableAssignment { get; protected set; }
+
 
         #endregion
 

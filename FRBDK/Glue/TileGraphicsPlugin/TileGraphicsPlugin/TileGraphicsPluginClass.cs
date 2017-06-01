@@ -43,8 +43,9 @@ namespace TileGraphicsPlugin
 
         TmxEditor.TmxEditorControl mControl;
 
-        
         CommandLineViewModel mCommandLineViewModel;
+
+        TiledObjectTypeCreator tiledObjectTypeCreator;
         #endregion
 
         #region Properties
@@ -77,7 +78,9 @@ namespace TileGraphicsPlugin
             // - Name property is set even if property is lower-case "name"
             // 1.1.1.3
             // - Added method to add collision in a TileShapeCollection from a single layer in the MapDrawableBatch
-            get { return new Version(1, 1, 1, 3); }
+            // 1.1.1.4
+            // - Fixed crash thich can occur sometimes when clicking on a TMX file due to a collection changed 
+            get { return new Version(1, 1, 1, 4); }
         }
 
 
@@ -129,7 +132,6 @@ namespace TileGraphicsPlugin
 
             InitializeTab();
 
-
             AddEvents();
 
             SaveTemplateTmx();
@@ -170,13 +172,20 @@ namespace TileGraphicsPlugin
 
         private void AddEvents()
         {
+            tiledObjectTypeCreator = new TiledObjectTypeCreator();
 
             this.TryHandleCopyFile += HandleCopyFile;
 
             this.ReactToLoadedGluxEarly += HandleGluxLoadEarly;
 
-            this.ReactToLoadedGlux += HandleGluxLoad;
-            
+            this.ReactToLoadedGlux += () =>
+            {
+                HandleGluxLoad();
+                tiledObjectTypeCreator.RefreshFile();
+            };
+
+
+
             this.AdjustDisplayedReferencedFile += HandleAdjustDisplayedReferencedFile;
 
             this.ReactToItemSelectHandler += HandleItemSelect;
@@ -190,6 +199,22 @@ namespace TileGraphicsPlugin
                 EntityListManager.Self.OnEntityAssociationsChanged;
 
             TilesetController.Self.GetTsxDirectoryRelativeToTmx = () => "../Tilesets/";
+
+            this.ReactToChangedPropertyHandler += (changedMember, oldalue) =>
+            {
+                if (changedMember == nameof(EntitySave.CreatedByOtherEntities))
+                {
+                    tiledObjectTypeCreator.RefreshFile();
+                }
+            };
+
+            this.ReactToElementVariableChange += (element, variable) =>
+            {
+                if ((element as EntitySave)?.CreatedByOtherEntities == true)
+                {
+                    tiledObjectTypeCreator.RefreshFile();
+                }
+            };
         }
 
         private void HandleGluxLoadEarly()

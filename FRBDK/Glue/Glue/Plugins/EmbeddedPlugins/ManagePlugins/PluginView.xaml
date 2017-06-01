@@ -9,5 +9,6 @@
     <StackPanel>
         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding LoadOnStartup}">Load on startup</CheckBox>
         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding RequiredByProject}">Required by project</CheckBox>
+        <TextBlock TextWrapping="Wrap" Text="{Binding LastUpdatedText}"></TextBlock>
     </StackPanel>
 </UserControl>

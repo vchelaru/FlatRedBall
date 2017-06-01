@@ -161,7 +161,12 @@ namespace TileGraphicsPlugin.Managers
 
             List<string> foundFiles = new List<string>();
 
-            foreach (var rfs in GlueState.Self.CurrentElement.ReferencedFiles.Where(item => IsTmx(item)))
+            var tmxFiles =
+                GlueState.Self.CurrentElement.ReferencedFiles
+                .Where(item => IsTmx(item))
+                .ToList();
+
+            foreach (var rfs in tmxFiles)
             {
                 string fullFile = FlatRedBall.Glue.ProjectManager.MakeAbsolute(GetTsxFileFor(rfs), true);
 

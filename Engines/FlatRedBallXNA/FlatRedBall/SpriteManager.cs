@@ -466,8 +466,12 @@ namespace FlatRedBall
 
         /// <summary>
         /// A read-only, ordered list of layers. This does not contain camera-specific layers.
-        /// Layers with a higher index will be drawn on top of layers with a lower index.
+        /// Layers with a higher index will be drawn on top of layers with a lower index. Layers
+        /// will appear in this list in the order that they are added.
         /// </summary>
+        /// <seealso cref="SpriteManager.MoveLayerAboveLayer(Layer, Layer)"/>
+        /// <seealso cref="SpriteManager.MoveToBack(Layer)"/>
+        /// <seealso cref="SpriteManager.MoveToFront(Layer)"/>
         public static ReadOnlyCollection<Layer> Layers
         {
             get { return mLayersReadOnly; }

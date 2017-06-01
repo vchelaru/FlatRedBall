@@ -30,22 +30,18 @@
         {
             this.ListBox = new System.Windows.Forms.CheckedListBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.RightSideSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.PluginView = new System.Windows.Forms.Integration.ElementHost();
+            this.pluginView1 = new FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.PluginView();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.RemoteActionButton = new System.Windows.Forms.Button();
             this.RemoteActionButton2 = new System.Windows.Forms.Button();
             this.LastUpdatedValueLabel = new System.Windows.Forms.Label();
             this.LastUpdatedTitleLabel = new System.Windows.Forms.Label();
-            this.PluginView = new System.Windows.Forms.Integration.ElementHost();
-            this.pluginView1 = new FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.PluginView();
-            this.DetailsTextBox = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.RightSideSplitContainer)).BeginInit();
-            this.RightSideSplitContainer.Panel1.SuspendLayout();
-            this.RightSideSplitContainer.Panel2.SuspendLayout();
-            this.RightSideSplitContainer.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // ListBox
@@ -71,93 +67,69 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.RightSideSplitContainer);
+            this.splitContainer1.Panel2.Controls.Add(this.PluginView);
+            this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Size = new System.Drawing.Size(425, 273);
             this.splitContainer1.SplitterDistance = 133;
             this.splitContainer1.TabIndex = 1;
             // 
-            // RightSideSplitContainer
+            // PluginView
             // 
-            this.RightSideSplitContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.RightSideSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.RightSideSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.RightSideSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.RightSideSplitContainer.Name = "RightSideSplitContainer";
-            this.RightSideSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.PluginView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PluginView.Location = new System.Drawing.Point(0, 85);
+            this.PluginView.Name = "PluginView";
+            this.PluginView.Size = new System.Drawing.Size(288, 188);
+            this.PluginView.TabIndex = 4;
+            this.PluginView.Text = "elementHost1";
+            this.PluginView.Child = this.pluginView1;
             // 
-            // RightSideSplitContainer.Panel1
+            // panel1
             // 
-            this.RightSideSplitContainer.Panel1.Controls.Add(this.RemoteActionButton);
-            this.RightSideSplitContainer.Panel1.Controls.Add(this.RemoteActionButton2);
-            this.RightSideSplitContainer.Panel1.Controls.Add(this.LastUpdatedValueLabel);
-            this.RightSideSplitContainer.Panel1.Controls.Add(this.LastUpdatedTitleLabel);
-            // 
-            // RightSideSplitContainer.Panel2
-            // 
-            this.RightSideSplitContainer.Panel2.Controls.Add(this.DetailsTextBox);
-            this.RightSideSplitContainer.Panel2.Controls.Add(this.PluginView);
-            this.RightSideSplitContainer.Size = new System.Drawing.Size(288, 273);
-            this.RightSideSplitContainer.SplitterDistance = 79;
-            this.RightSideSplitContainer.TabIndex = 1;
-            this.RightSideSplitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.RightSideSplitContainer_SplitterMoved);
+            this.panel1.Controls.Add(this.RemoteActionButton);
+            this.panel1.Controls.Add(this.RemoteActionButton2);
+            this.panel1.Controls.Add(this.LastUpdatedValueLabel);
+            this.panel1.Controls.Add(this.LastUpdatedTitleLabel);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(288, 85);
+            this.panel1.TabIndex = 5;
             // 
             // RemoteActionButton
             // 
-            this.RemoteActionButton.Location = new System.Drawing.Point(6, 23);
+            this.RemoteActionButton.Location = new System.Drawing.Point(6, 25);
             this.RemoteActionButton.Name = "RemoteActionButton";
             this.RemoteActionButton.Size = new System.Drawing.Size(275, 23);
-            this.RemoteActionButton.TabIndex = 2;
+            this.RemoteActionButton.TabIndex = 6;
             this.RemoteActionButton.Text = "View on GlueVault";
             this.RemoteActionButton.UseVisualStyleBackColor = true;
-            this.RemoteActionButton.Click += new System.EventHandler(this.RemoteActionButton_Click);
             // 
             // RemoteActionButton2
             // 
-            this.RemoteActionButton2.Location = new System.Drawing.Point(5, 50);
+            this.RemoteActionButton2.Location = new System.Drawing.Point(5, 52);
             this.RemoteActionButton2.Name = "RemoteActionButton2";
             this.RemoteActionButton2.Size = new System.Drawing.Size(275, 23);
-            this.RemoteActionButton2.TabIndex = 3;
+            this.RemoteActionButton2.TabIndex = 7;
             this.RemoteActionButton2.Text = "Install Latest Version";
             this.RemoteActionButton2.UseVisualStyleBackColor = true;
-            this.RemoteActionButton2.Click += new System.EventHandler(this.RemoteActionButton2_Click);
             // 
             // LastUpdatedValueLabel
             // 
             this.LastUpdatedValueLabel.AutoSize = true;
-            this.LastUpdatedValueLabel.Location = new System.Drawing.Point(83, 7);
+            this.LastUpdatedValueLabel.Location = new System.Drawing.Point(83, 9);
             this.LastUpdatedValueLabel.Name = "LastUpdatedValueLabel";
             this.LastUpdatedValueLabel.Size = new System.Drawing.Size(82, 13);
-            this.LastUpdatedValueLabel.TabIndex = 1;
+            this.LastUpdatedValueLabel.TabIndex = 5;
             this.LastUpdatedValueLabel.Text = "March 21, 1981";
             // 
             // LastUpdatedTitleLabel
             // 
             this.LastUpdatedTitleLabel.AutoSize = true;
-            this.LastUpdatedTitleLabel.Location = new System.Drawing.Point(3, 7);
+            this.LastUpdatedTitleLabel.Location = new System.Drawing.Point(3, 9);
             this.LastUpdatedTitleLabel.Name = "LastUpdatedTitleLabel";
             this.LastUpdatedTitleLabel.Size = new System.Drawing.Size(74, 13);
-            this.LastUpdatedTitleLabel.TabIndex = 0;
+            this.LastUpdatedTitleLabel.TabIndex = 4;
             this.LastUpdatedTitleLabel.Text = "Last Updated:";
-            // 
-            // PluginView
-            // 
-            this.PluginView.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PluginView.Location = new System.Drawing.Point(0, 0);
-            this.PluginView.Name = "PluginView";
-            this.PluginView.Size = new System.Drawing.Size(284, 33);
-            this.PluginView.TabIndex = 2;
-            this.PluginView.Text = "elementHost1";
-            this.PluginView.Child = this.pluginView1;
-            // 
-            // DetailsTextBox
-            // 
-            this.DetailsTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.DetailsTextBox.Location = new System.Drawing.Point(0, 33);
-            this.DetailsTextBox.Name = "DetailsTextBox";
-            this.DetailsTextBox.ReadOnly = true;
-            this.DetailsTextBox.Size = new System.Drawing.Size(284, 153);
-            this.DetailsTextBox.TabIndex = 0;
-            this.DetailsTextBox.Text = "";
             // 
             // PluginsWindow
             // 
@@ -170,11 +142,8 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.RightSideSplitContainer.Panel1.ResumeLayout(false);
-            this.RightSideSplitContainer.Panel1.PerformLayout();
-            this.RightSideSplitContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.RightSideSplitContainer)).EndInit();
-            this.RightSideSplitContainer.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -183,13 +152,12 @@
 
         private System.Windows.Forms.CheckedListBox ListBox;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.RichTextBox DetailsTextBox;
-        private System.Windows.Forms.SplitContainer RightSideSplitContainer;
-        private System.Windows.Forms.Button RemoteActionButton;
-        private System.Windows.Forms.Label LastUpdatedValueLabel;
-        private System.Windows.Forms.Label LastUpdatedTitleLabel;
-        private System.Windows.Forms.Button RemoteActionButton2;
         private System.Windows.Forms.Integration.ElementHost PluginView;
         private Plugins.EmbeddedPlugins.ManagePlugins.PluginView pluginView1;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button RemoteActionButton;
+        private System.Windows.Forms.Button RemoteActionButton2;
+        private System.Windows.Forms.Label LastUpdatedValueLabel;
+        private System.Windows.Forms.Label LastUpdatedTitleLabel;
     }
 }

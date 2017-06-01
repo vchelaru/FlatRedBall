@@ -886,7 +886,25 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-
+        internal static void ReactToElementVariableChange(IElement element, CustomVariable variable)
+        {
+            foreach (PluginManager pluginManager in mInstances)
+            {
+                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToElementVariableChange != null);
+                foreach (var plugin in plugins)
+                {
+                    var container = pluginManager.mPluginContainers[plugin];
+                    if (container.IsEnabled)
+                    {
+                        PluginBase plugin1 = plugin;
+                        PluginCommand(() =>
+                        {
+                            plugin1.ReactToElementVariableChange(element, variable);
+                        }, container, "Failed in ReactToNewObject");
+                   }
+                }
+            }
+        }
 
         internal static void ReactToNewObject(NamedObjectSave newObject)
         {
@@ -1507,6 +1525,13 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+        /// <summary>
+        /// Notifies all contained plugins that a property has changed. A propert, not
+        /// to be confused with a variable, is a value that is usually not related to the
+        /// type of object, and is not controlled by the user. 
+        /// </summary>
+        /// <param name="changedMember">The member that has changed</param>
+        /// <param name="oldValue">The value of the member before the change</param>
         internal static void ReactToChangedProperty(string changedMember, object oldValue)
         {
             foreach (PluginManager pluginManager in mInstances)

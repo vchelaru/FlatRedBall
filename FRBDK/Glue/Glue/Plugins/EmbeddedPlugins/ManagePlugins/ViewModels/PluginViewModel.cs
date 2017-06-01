@@ -31,6 +31,19 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels
             }
         }
 
+        string lastUpdatedText;
+        public string LastUpdatedText
+        {
+            get
+            {
+                return lastUpdatedText;
+            }
+            set
+            {
+                base.ChangeAndNotify(ref lastUpdatedText, value);
+            }
+        }
+
         bool requiredByProject;
         public bool RequiredByProject
         {

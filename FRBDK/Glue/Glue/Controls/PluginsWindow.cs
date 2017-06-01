@@ -95,6 +95,7 @@ namespace FlatRedBall.Glue.Controls
 
                     toReturn.LoadOnStartup = IsLoadedOnStartup(SelectedPlugin);
                     toReturn.RequiredByProject = IsRequiredByProject(SelectedPlugin);
+                    toReturn.LastUpdatedText = GetInfoForContainer(SelectedPlugin);
 
                     toReturn.PropertyChanged += HandlePluginPropertyChanged;
 
@@ -228,16 +229,13 @@ namespace FlatRedBall.Glue.Controls
 
             if (container != null)
             {
-                string text = GetInfoForContainer(container);
-
-                DetailsTextBox.Text = text;
                 PluginView.Visible = true;
                 (PluginView.Child as System.Windows.Controls.UserControl).DataContext =
                     SelectedPluginViewModel;
             }
             else
             {
-                DetailsTextBox.Text = null;
+                this.SelectedPluginViewModel.LastUpdatedText = null;
                 PluginView.Visible = false;
             }
 

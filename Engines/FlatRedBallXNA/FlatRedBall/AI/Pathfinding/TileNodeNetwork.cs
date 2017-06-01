@@ -128,7 +128,7 @@ namespace FlatRedBall.AI.Pathfinding
             }
             else
             {
-                node = AddNode();
+                node = base.AddNode();
                 mTiledNodes[x][y] = node;
 
             }
@@ -150,6 +150,32 @@ namespace FlatRedBall.AI.Pathfinding
             }
 
             return node;
+        }
+
+        /// <summary>
+        /// Adds an already-positioned node to the node network.
+        /// </summary>
+        /// <remarks>
+        /// This method adds a node to the base nodes list, as well as to the 
+        /// 2D array of node. The position of the node is used to add the node, so it
+        /// should already be in its final position prior to calling this method.
+        /// </remarks>
+        /// <param name="nodeToAdd">The node to add.</param>
+        public override void AddNode(PositionedNode nodeToAdd)
+        {
+            int xIndex;
+            int yIndex;
+
+            WorldToIndex(nodeToAdd.X, nodeToAdd.Y, out xIndex, out yIndex);
+
+            if(mTiledNodes[xIndex][yIndex] != null)
+            {
+                throw new InvalidOperationException($"There is already a node at index ({xIndex}, {yIndex})");
+            }
+
+            mTiledNodes[xIndex][yIndex] = nodeToAdd;
+
+            base.AddNode(nodeToAdd);
         }
 
         /// <summary>
