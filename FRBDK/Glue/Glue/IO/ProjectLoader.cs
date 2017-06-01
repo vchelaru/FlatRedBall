@@ -174,6 +174,11 @@ namespace FlatRedBall.Glue.IO
                 if (!FileManager.FileExists(glueProjectFile))
                 {
                     ProjectManager.GlueProjectSave = new GlueProjectSave();
+
+                    // temporary - eventually this will just be done in the .glux itself
+                    Plugins.EmbeddedPlugins.CameraPlugin.CameraMainPlugin.CreateGlueProjectSettingsFor(ProjectManager.GlueProjectSave);
+
+
                     ProjectManager.FindGameClass();
                     GluxCommands.Self.SaveGlux();
 

@@ -41,7 +41,12 @@
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\Android\Debug\MonoGame.Framework.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="OpenTK-1.0" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,14 +54,8 @@
     <Reference Include="Mono.Android">
       <HintPath>Libraries\Mono.Android.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTK">
-      <HintPath>Libraries\Android\OpenTK.dll</HintPath>
-    </Reference>
     <Reference Include="FlatRedBallAndroid">
       <HintPath>Libraries\Android\Debug\FlatRedBallAndroid.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoGame.Framework">
-      <HintPath>Libraries\Android\Debug\MonoGame.Framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

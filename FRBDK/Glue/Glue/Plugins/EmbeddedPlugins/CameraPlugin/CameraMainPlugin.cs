@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.CodeGeneration;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 {
@@ -59,7 +60,29 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             ShowCameraUi();
         }
 
+        public static void CreateGlueProjectSettingsFor(GlueProjectSave project)
+        {
+            DisplaySettings settings = new DisplaySettings();
 
+
+            settings.AllowWindowResizing = false;
+            settings.AspectRatioHeight = 9;
+            settings.AspectRatioWidth = 16;
+
+            settings.Is2D = project.In2D;
+
+            settings.ResizeBehavior = ResizeBehavior.IncreaseVisibleArea;
+
+            settings.ResolutionWidth = project.ResolutionWidth;
+            settings.ResolutionHeight = project.ResolutionHeight;
+
+            settings.RunInFullScreen = false;
+            settings.Scale = 100;
+            settings.SupportLandscape = true;
+            settings.SupportPortrait = false;
+
+            project.DisplaySettings = settings;
+        }
 
         public void ShowCameraUi()
         {

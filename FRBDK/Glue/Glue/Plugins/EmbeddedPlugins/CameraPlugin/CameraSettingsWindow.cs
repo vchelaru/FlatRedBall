@@ -339,26 +339,7 @@ namespace FlatRedBall.Glue.Controls
             }
             else
             {
-                DisplaySettings settings = new DisplaySettings();
-
-
-                settings.AllowWindowResizing = false;
-                settings.AspectRatioHeight = 9;
-                settings.AspectRatioWidth = 16;
-
-                settings.Is2D = project.In2D;
-
-                settings.ResizeBehavior = ResizeBehavior.IncreaseVisibleArea;
-
-                settings.ResolutionWidth = project.ResolutionWidth;
-                settings.ResolutionHeight = project.ResolutionHeight;
-
-                settings.RunInFullScreen = false;
-                settings.Scale = 100;
-                settings.SupportLandscape = true;
-                settings.SupportPortrait = false;
-
-                project.DisplaySettings = settings;
+                CameraMainPlugin.CreateGlueProjectSettingsFor(project);
 
                 GlueCommands.Self.GluxCommands.SaveGlux();
 
@@ -367,5 +348,7 @@ namespace FlatRedBall.Glue.Controls
                 CameraMainPlugin.Self.ShowCameraUi();
             }
         }
+
+
     }
 }

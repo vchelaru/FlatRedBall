@@ -116,6 +116,11 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Properties
 
+        // This is a new class added in early 2017 to give more control over cameras.
+        // But we don't want to automatically update all projects to this.
+        // If this is null, then Glue knows to use the old settings. If this is not null,
+        // Glue knows to use the new settings. Eventually we'll just "new" this right here, but
+        // in the meantime, Glue code will new it in ProjectLoader.
         public DisplaySettings DisplaySettings { get; set; }
 
         [XmlIgnore]
