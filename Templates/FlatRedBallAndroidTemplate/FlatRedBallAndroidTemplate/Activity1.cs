@@ -35,7 +35,7 @@ namespace FlatRedBallAndroidTemplate
             if ((e.Event.Source & InputSourceType.Gamepad) == InputSourceType.Gamepad ||
                 (e.Event.Source & InputSourceType.Joystick) == InputSourceType.Joystick)
             {
-                AndroidGamePadManager.OnGenericMotionEvent(e.Event);
+                FlatRedBallAndroid.Input.AndroidGamePadManager.OnGenericMotionEvent(e.Event);
             }
         }
 
@@ -45,11 +45,11 @@ namespace FlatRedBallAndroidTemplate
             {
                 if (e.Event.Action == KeyEventActions.Down)
                 {
-                    AndroidGamePadManager.OnKeyDown(e.KeyCode, e.Event);
+                    FlatRedBallAndroid.Input.AndroidGamePadManager.OnKeyDown(e.KeyCode, e.Event);
                 }
                 if (e.Event.Action == KeyEventActions.Up)
                 {
-                    AndroidGamePadManager.OnKeyUp(e.KeyCode, e.Event);
+                    FlatRedBallAndroid.Input.AndroidGamePadManager.OnKeyUp(e.KeyCode, e.Event);
                 }
             }
         }
