@@ -151,11 +151,23 @@ namespace FlatRedBall.Instructions
             mInstructions.Add(instruction);
         }
 
+        /// <summary>
+        /// Attempts to execute instructions held by the argument instructable according to the TimeManager.CurrentTime.
+        /// Executed instructions will either be removed or cycled if the CycleTime is greater than 0.
+        /// </summary>
+        /// <param name="instructable">The instructable to execute instructions on.</param>
         public static void ExecuteInstructionsOnConsideringTime(IInstructable instructable)
         {
             ExecuteInstructionsOnConsideringTime(instructable, TimeManager.CurrentTime);
         }
 
+
+        /// <summary>
+        /// Attempts to execute instructions held by the argument instructable according to the currentTime value.
+        /// Executed instructions will either be removed or cycled if the CycleTime is greater than 0.
+        /// </summary>
+        /// <param name="instructable">The instructable to execute instructions on.</param>
+        /// <param name="currentTime">The time to compare to instructions in the instructable instance.</param>
         public static void ExecuteInstructionsOnConsideringTime(IInstructable instructable, double currentTime)
         {
             Instructions.Instruction instruction;
