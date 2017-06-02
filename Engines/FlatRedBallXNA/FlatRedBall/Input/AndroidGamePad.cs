@@ -298,8 +298,12 @@ namespace FlatRedBallAndroid.Input
 
             gamePad._leftStick = new Vector2(e.GetAxisValue(Axis.X), -e.GetAxisValue(Axis.Y));
             gamePad._rightStick = new Vector2(e.GetAxisValue(Axis.Z), -e.GetAxisValue(Axis.Rz));
-            gamePad._leftTrigger = e.GetAxisValue(Axis.Ltrigger);
-            gamePad._rightTrigger = e.GetAxisValue(Axis.Rtrigger);
+
+            // The code I got from a gist from the monogame community used Ltrigger and Rtrigger,
+            // but on my GameSir controller the Gas and Brake were the triggers, so I'm going to do 
+            // a math.max to pick up the max value:
+            gamePad._leftTrigger = Math.Max( e.GetAxisValue(Axis.Ltrigger), e.GetAxisValue(Axis.Brake));
+            gamePad._rightTrigger = Math.Max( e.GetAxisValue(Axis.Rtrigger), e.GetAxisValue(Axis.Gas));
 
             return true;
         }
