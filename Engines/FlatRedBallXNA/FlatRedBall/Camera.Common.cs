@@ -480,18 +480,18 @@ namespace FlatRedBall
 
                 if(relativeToCamera)
                 {
-                    cameraLeft = this.AbsoluteLeftXEdgeAt(text.Z);
-                    cameraRight = this.AbsoluteRightXEdgeAt(text.Z);
-                    cameraTop = this.AbsoluteTopYEdgeAt(text.Z);
-                    cameraBottom = this.AbsoluteBottomYEdgeAt(text.Z);
-                }
-                else
-                {
                     cameraLeft = -this.RelativeXEdgeAt(text.Z);
                     cameraRight = this.RelativeXEdgeAt(text.Z);
                     cameraTop = this.RelativeYEdgeAt(text.Z);
                     cameraBottom = -this.RelativeYEdgeAt(text.Z);
 
+                }
+                else
+                {
+                    cameraLeft = this.AbsoluteLeftXEdgeAt(text.Z);
+                    cameraRight = this.AbsoluteRightXEdgeAt(text.Z);
+                    cameraTop = this.AbsoluteTopYEdgeAt(text.Z);
+                    cameraBottom = this.AbsoluteBottomYEdgeAt(text.Z);
                 }
                 float textVerticalCenter = text.VerticalCenter;
                 float textHorizontalCenter = text.HorizontalCenter;
