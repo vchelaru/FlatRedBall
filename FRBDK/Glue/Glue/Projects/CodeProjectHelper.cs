@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Projects
 {
@@ -25,6 +26,9 @@ namespace FlatRedBall.Glue.Projects
                 string parentFile = withoutPath.Substring(0, firstPeriod);
 
                 ProjectManager.ProjectBase.MakeBuildItemNested(item, parentFile + ".cs");
+
+                // This used to not save the main project, not sure why...
+                GlueCommands.Self.ProjectCommands.SaveProjects();
 
                 // todo:  Gotta get this working on synced projects
             }

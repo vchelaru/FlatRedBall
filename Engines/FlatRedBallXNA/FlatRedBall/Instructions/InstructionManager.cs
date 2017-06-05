@@ -163,7 +163,8 @@ namespace FlatRedBall.Instructions
 
 
         /// <summary>
-        /// Attempts to execute instructions held by the argument instructable according to the currentTime value.
+        /// Attempts to execute instructions held by the argument instruct
+        /// able according to the currentTime value.
         /// Executed instructions will either be removed or cycled if the CycleTime is greater than 0.
         /// </summary>
         /// <param name="instructable">The instructable to execute instructions on.</param>

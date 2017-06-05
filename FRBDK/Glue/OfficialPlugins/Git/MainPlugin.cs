@@ -86,6 +86,8 @@ namespace OfficialPlugins.Git
 
             yield return "*.csvSettings";
 
+            yield return "*.sln.metaproj";
+
             yield return $"{gameName}/{gameName}/bin/";
 
             yield return $"{gameName}/{gameName}/obj/";
