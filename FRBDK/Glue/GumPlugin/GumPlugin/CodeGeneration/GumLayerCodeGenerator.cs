@@ -32,15 +32,6 @@ namespace GumPlugin.CodeGeneration
         {
             return element.AllNamedObjects.Where(item => item.IsLayer &&
                 NamedObjectSaveCodeGenerator.GetFieldCodeGenerationType(item) == CodeGenerationType.Full);
-
-            //foreach (var layer in )
-            //{
-            //    // We used to only return layers that contained Gum objects
-            //    // in Glue, but we want to allow the user to move Gum objects
-            //    // between Layers, so we'll use all Layers:
-                
-            //     yield return layer;
-            //}
         }
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
@@ -60,20 +51,6 @@ namespace GumPlugin.CodeGeneration
         {
             if (ShouldGenerate)
             {
-                // Creates Gum layers for every FRB layer, so that objects can be moved between layers at runtime, and so code gen
-                // can use these for objects that are placed on layers in Glue.
-                foreach (var layer in GetObjectsForGumLayers(element))
-                {
-                    var rfs = GetScreenRfsIn(element);
-                    if (rfs != null)
-                    {
-
-                        codeBlock.Line(layer.InstanceName + "Gum = RenderingLibrary.SystemManagers.Default.Renderer.AddLayer();");
-
-
-                        codeBlock.Line(rfs.GetInstanceName() + ".AddGumLayerToFrbLayer(" + layer.InstanceName + "Gum, " + layer.InstanceName + ");");
-                    }
-                }
                 bool wasAnythingMovedToALayer = false;
                 // todo:  Need to register the layer here
                 foreach (var item in element.AllNamedObjects.Where(item =>
@@ -93,15 +70,6 @@ namespace GumPlugin.CodeGeneration
             }
             return base.GenerateAddToManagers(codeBlock, element);
         }
-
-        private ReferencedFileSave GetScreenRfsIn(IElement element)
-        {
-            return element.ReferencedFiles.FirstOrDefault(item =>
-                FileManager.GetExtension(item.Name) == GumProjectSave.ScreenExtension);
-        }
-
-
-
 
     }
 }

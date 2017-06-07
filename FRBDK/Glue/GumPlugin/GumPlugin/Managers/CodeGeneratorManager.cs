@@ -29,6 +29,7 @@ namespace GumPlugin.Managers
         GumPluginCodeGenerator mGumPluginCodeGenerator;
         GueDerivingClassCodeGenerator mGueDerivingClassCodeGenerator;
         GumLayerCodeGenerator mGumLayerCodeGenerator;
+        GumLayerAssociationCodeGenerator gumLayerAssociationCodeGenerator;
         BehaviorCodeGenerator behaviorCodeGenerator;
 
         #endregion
@@ -304,6 +305,9 @@ namespace GumPlugin.Managers
 
             mGumLayerCodeGenerator = new GumLayerCodeGenerator();
             FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Add(mGumLayerCodeGenerator);
+
+            gumLayerAssociationCodeGenerator = new GumLayerAssociationCodeGenerator();
+            FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Add(gumLayerAssociationCodeGenerator);
         }
 
         internal void RemoveCodeGenerators()
@@ -321,6 +325,11 @@ namespace GumPlugin.Managers
             if (FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Contains(mGumLayerCodeGenerator))
             {
                 FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Remove(mGumLayerCodeGenerator);
+            }
+
+            if (FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Contains(gumLayerAssociationCodeGenerator))
+            {
+                FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Remove(gumLayerAssociationCodeGenerator);
             }
 
         }

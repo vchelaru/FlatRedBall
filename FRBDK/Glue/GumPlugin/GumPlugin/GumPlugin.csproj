@@ -95,6 +95,7 @@
     </EmbeddedResource>
     <Compile Include="CodeGeneration\BehaviorCodeGenerator.cs" />
     <Compile Include="CodeGeneration\EventCodeGenerator.cs" />
+    <Compile Include="CodeGeneration\GumLayerAssociationCodeGenerator.cs" />
     <Compile Include="DataGeneration\BehaviorGenerator.cs" />
     <Compile Include="Managers\AppCommands.cs" />
     <Compile Include="Managers\GumxPropertiesManager.cs" />

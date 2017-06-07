@@ -85,7 +85,10 @@ namespace GumPlugin
             // 0.8.3.5 - Fixed codegen bug when exposing a state in a component in a folder
             // 0.8.3.6 - Added ThreadStatic to the IsLayoutSuspended static bool so async loading will not interrupt foreground layout calls
             // 0.8.3.7 - Fixed relative file bug when loading BitmapFont files.
-            get { return new Version(0, 8, 3, 7); }
+            // 0.8.3.8 - Fixed codegen assuming .gumx file is called GumProject.
+            // 0.8.3.9 - Fixed path issues on Mac
+            // 0.8.4.0 - Added support for components in Entities to be added to FRB/Gum layers
+            get { return new Version(0, 8, 4, 0); }
         }
 
         #endregion
@@ -230,8 +233,17 @@ namespace GumPlugin
         private void HandleNewFile(ReferencedFileSave newFile)
         {
             string extension = FileManager.GetExtension(newFile.Name);
+            
+            if(extension == GumProjectSave.ProjectExtension)
+            {
+                bool isInGlobalContent = GlueState.Self.CurrentGlueProject.GlobalFiles.Contains(newFile);
+                if (!isInGlobalContent)
+                {
+                    MessageBox.Show("The Gum project file (.gumx) should be added to global content. Not doing so may cause runtime errors.");
+                }
+            }
             // If it's a component then assign the specific type:
-            if(extension == GumProjectSave.ComponentExtension)
+            else if(extension == GumProjectSave.ComponentExtension)
             {
                 string componentName = FileManager.RemovePath(FileManager.RemoveExtension(newFile.Name));
 

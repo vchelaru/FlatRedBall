@@ -944,7 +944,8 @@ namespace FlatRedBall.Glue.Parsing
 
             PerformancePluginCodeGenerator.GenerateStart("General AddToManagers code");
 
-            foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
+            foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators
+                .OrderBy(item => (int)item.CodeLocation))
             {
                 codeGenerator.GenerateAddToManagers(currentBlock, saveObject);
             }

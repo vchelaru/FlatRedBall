@@ -103,6 +103,7 @@
             this.RemoteActionButton.TabIndex = 6;
             this.RemoteActionButton.Text = "View on GlueVault";
             this.RemoteActionButton.UseVisualStyleBackColor = true;
+            this.RemoteActionButton.Click += new System.EventHandler(this.RemoteActionButton_Click);
             // 
             // RemoteActionButton2
             // 
@@ -112,6 +113,7 @@
             this.RemoteActionButton2.TabIndex = 7;
             this.RemoteActionButton2.Text = "Install Latest Version";
             this.RemoteActionButton2.UseVisualStyleBackColor = true;
+            this.RemoteActionButton2.Click += new System.EventHandler(this.RemoteActionButton2_Click);
             // 
             // LastUpdatedValueLabel
             // 

@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Gum.DataTypes;
@@ -32,8 +33,18 @@ namespace GumPlugin.CodeGeneration
                 codeBlock.Line("contentManagerWrapper.ContentManagerName = contentManagerName;");
                 codeBlock.Line("RenderingLibrary.Content.LoaderManager.Self.ContentLoader = contentManagerWrapper;");
 
-                codeBlock.Line("// Access the GumProject just in case it's async loaded");
-                codeBlock.Line("var throwaway = GlobalContent.GumProject;");
+                var gumProject = GlueState.Self.CurrentGlueProject.GlobalFiles.FirstOrDefault(item => item.Name.EndsWith(".gumx"));
+                if(gumProject != null)
+                {
+                    codeBlock.Line("// Access the GumProject just in case it's async loaded");
+                    codeBlock.Line($"var throwaway = GlobalContent.{gumProject.GetInstanceName()};");
+                }
+                else
+                {
+                    codeBlock.Line("// Normally we'd access the Gum project here to force async loading, but Glue couldn't find one. Gum components may not load until a Gum project is added to Global Content Files.");
+                    codeBlock.Line("//var throwaway = GlobalContent.GumProject;");
+
+                }
             }
 
             return codeBlock;
