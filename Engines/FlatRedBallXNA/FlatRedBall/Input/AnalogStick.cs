@@ -26,9 +26,14 @@ namespace FlatRedBall.Input
         double mMagnitude;
         double mAngle;
 
+        AnalogButton leftAsButton;
+        AnalogButton rightAsButton;
+        AnalogButton upAsButton;
+        AnalogButton downAsButton;
+
         #region XML Docs
         /// <summary>
-        /// The mDPadOnValue and mDPadOffValue
+        /// The DPadOnValue and DPadOffValue
         /// values are used to simulate D-Pad control
         /// with the analog stick.  When the user is above
         /// the absolute value of the mDPadOnValue then it is
@@ -38,8 +43,8 @@ namespace FlatRedBall.Input
         /// and get rapid on/off values due to the inaccuracy of the analog stick. 
         /// </summary>
         #endregion
-        float mDPadOnValue = .550f;
-        float mDPadOffValue = .450f;
+        internal const float DPadOnValue = .550f;
+        internal const float DPadOffValue = .450f;
 
         bool[] mLastDPadDown = new bool[4];
         bool[] mCurrentDPadDown = new bool[4];
@@ -55,6 +60,26 @@ namespace FlatRedBall.Input
         #endregion
 
         #region Properties
+
+        public AnalogButton LeftAsButton
+        {
+            get { return leftAsButton; }
+        }
+
+        public AnalogButton RightAsButton
+        {
+            get { return rightAsButton; }
+        }
+
+        public AnalogButton UpAsButton
+        {
+            get { return upAsButton; }
+        }
+
+        public AnalogButton DownAsButton
+        {
+            get { return downAsButton; }
+        }
 
         #region XML Docs
         /// <summary>
@@ -97,6 +122,14 @@ namespace FlatRedBall.Input
 
         #region Methods
 
+        public AnalogStick()
+        {
+            leftAsButton = new AnalogButton();
+            rightAsButton = new AnalogButton();
+            upAsButton = new AnalogButton();
+            downAsButton = new AnalogButton();
+        }
+
         public bool AsDPadDown(Xbox360GamePad.DPadDirection direction)
         {
             switch (direction)
@@ -105,11 +138,11 @@ namespace FlatRedBall.Input
 
                     if (mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Left])
                     {
-                        return mPosition.X < -mDPadOffValue;
+                        return mPosition.X < -DPadOffValue;
                     }
                     else
                     {
-                        return mPosition.X < -mDPadOnValue;
+                        return mPosition.X < -DPadOnValue;
                     }
 
                     //break;
@@ -118,11 +151,11 @@ namespace FlatRedBall.Input
 
                     if (mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Right])
                     {
-                        return mPosition.X > mDPadOffValue;
+                        return mPosition.X > DPadOffValue;
                     }
                     else
                     {
-                        return mPosition.X > mDPadOnValue;
+                        return mPosition.X > DPadOnValue;
                     }
 
                     //break;
@@ -131,11 +164,11 @@ namespace FlatRedBall.Input
 
                     if (mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Up])
                     {
-                        return mPosition.Y > mDPadOffValue;
+                        return mPosition.Y > DPadOffValue;
                     }
                     else
                     {
-                        return mPosition.Y > mDPadOnValue;
+                        return mPosition.Y > DPadOnValue;
                     }
 
                     //break;
@@ -144,11 +177,11 @@ namespace FlatRedBall.Input
 
                     if (mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Down])
                     {
-                        return mPosition.Y < -mDPadOffValue;
+                        return mPosition.Y < -DPadOffValue;
                     }
                     else
                     {
-                        return mPosition.Y < -mDPadOnValue;
+                        return mPosition.Y < -DPadOnValue;
                     }
 
                     //break;
@@ -227,6 +260,12 @@ namespace FlatRedBall.Input
                     mLastDPadPush[i] = TimeManager.CurrentTime;
                 }
             }
+
+            leftAsButton.Update(-System.Math.Min(0, mPosition.X));
+            rightAsButton.Update(System.Math.Max(0, mPosition.X));
+
+            downAsButton.Update(-System.Math.Min(0, mPosition.Y));
+            upAsButton.Update(System.Math.Max(0, mPosition.Y));
         }
 
         private void UpdateAccordingToPosition()
