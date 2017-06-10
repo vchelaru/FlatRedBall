@@ -281,6 +281,51 @@ namespace GumPlugin.CodeGeneration
                 return true;
 
             }
+
+
+
+            if (elementSave.Name == "Circle" || elementSave.Name == "Rectangle")
+            {
+                string containedObject;
+
+                if (elementSave.Name == "Circle")
+                {
+                    containedObject = "ContainedCircle";
+                }
+                else
+                {
+                    containedObject = "ContainedRectangle";
+                }
+
+                string colorComponent = null;
+
+                if (variable.Name == "Alpha")
+                {
+                    colorComponent = "A";
+                }
+                else if (variable.Name == "Red")
+                {
+                    colorComponent = "R";
+                }
+                else if (variable.Name == "Green")
+                {
+                    colorComponent = "G";
+                }
+                else if (variable.Name == "Blue")
+                {
+                    colorComponent = "B";
+                }
+
+                if(!string.IsNullOrEmpty(colorComponent))
+                {
+
+                    setter.Line($"var color = {containedObject}.Color;");
+                    setter.Line($"color.{colorComponent} = (byte)value;");
+                    setter.Line($"{containedObject}.Color = color;");
+                    return true;
+                }
+            }
+
             return false;
         }
 
@@ -317,7 +362,41 @@ namespace GumPlugin.CodeGeneration
 
                 return true;
             }
+            // handle colors:
 
+            if (elementSave.Name == "Circle" || elementSave.Name == "Rectangle")
+            {
+                string containedObject;
+                
+                if(elementSave.Name == "Circle")
+                {
+                    containedObject = "ContainedCircle";
+                }
+                else
+                {
+                    containedObject = "ContainedRectangle";
+                }
+                if(variable.Name == "Alpha")
+                {
+                    getter.Line($"return {containedObject}.Color.A;");
+                    return true;
+                }
+                else if (variable.Name == "Red")
+                {
+                    getter.Line($"return {containedObject}.Color.R;");
+                    return true;
+                }
+                else if (variable.Name == "Green")
+                {
+                    getter.Line($"return {containedObject}.Color.G;");
+                    return true;
+                }
+                else if (variable.Name == "Blue")
+                {
+                    getter.Line($"return {containedObject}.Color.B;");
+                    return true;
+                }
+            }
             return false;
         }
 

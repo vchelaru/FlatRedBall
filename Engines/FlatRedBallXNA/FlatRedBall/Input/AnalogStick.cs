@@ -61,21 +61,57 @@ namespace FlatRedBall.Input
 
         #region Properties
 
+        /// <summary>
+        /// Returns the left direction of the analog stick as an AnalogButton instance.
+        /// </summary>
+        /// <remarks>
+        /// Value range is 0 to 1.
+        /// Value if analog stick is held all the way to the left is 1. Note that
+        /// the value is positive in this case, which is the opposite of the AnalogStick's Position.X.
+        /// Value if analog stick is in neutral position is 0.
+        /// Value if analog stick is held all the way to the right is still 0.
+        /// </remarks>
         public AnalogButton LeftAsButton
         {
             get { return leftAsButton; }
         }
 
+        /// <summary>
+        /// Returns the right direction of the analog stick as an AnalogButton instance.
+        /// </summary>
+        /// <remarks>
+        /// Value range is 0 to 1.
+        /// Value if analog stick is held all the way to the left is 0.
+        /// Value if analog stick is in neutral position is 0.
+        /// Value if analog stick is held all the way to the right is 1.
+        /// </remarks>
         public AnalogButton RightAsButton
         {
             get { return rightAsButton; }
         }
 
+        /// <summary>
+        /// Returns the up direction of the analog stick as an AnalogButton instance.
+        /// </summary>
+        /// <remarks>
+        /// Value range is 0 to 1.
+        /// Value if analog stick is held all the way downward is 0.
+        /// Value if analog stick is in neutral position is 0.
+        /// Value if analog stick is held all the way upward is 1.
+        /// </remarks>
         public AnalogButton UpAsButton
         {
             get { return upAsButton; }
         }
 
+        /// <summary>
+        /// Returns the down direction of the analog stick as an AnalogButton instance.
+        /// </summary>
+        /// Value range is 0 to 1.
+        /// Value if analog stick is held all the way downward is 1. Note that 
+        /// the value is positive, which is the opposite of the AnalogStick's Position.Y.
+        /// Value if analog stick is in neutral position is 0.
+        /// Value if analog stick is held all the way upward is 0.
         public AnalogButton DownAsButton
         {
             get { return downAsButton; }

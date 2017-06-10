@@ -4,11 +4,10 @@ using System.Text;
 
 namespace FlatRedBall.Input
 {
-    #region XML Docs
     /// <summary>
-    /// A button or single-axis input device which can return a range of values like the shoulder triggers.
+    /// A button or single-axis input device which can return a range of values.
+    /// Common examples include shoulder triggers on the Xbox360GamePad.
     /// </summary>
-    #endregion
     public class AnalogButton : I1DInput, IPressableInput
     {
         #region Fields
