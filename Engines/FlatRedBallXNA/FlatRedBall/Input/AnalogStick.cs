@@ -352,5 +352,19 @@ namespace FlatRedBall.Input
                 return horizontal;
             }
         }
+
+        I1DInput vertical;
+        public I1DInput Vertical
+        {
+            get
+            {
+                if(vertical == null)
+                {
+                    vertical = new AnalogStickVertical(this);
+                }
+
+                return vertical;
+            }
+        }
     }
 }

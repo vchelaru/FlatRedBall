@@ -132,6 +132,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Gui\WindowArray.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\AnalogButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\AnalogStick.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\AnalogStickVertical.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\ButtonMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\ICursorSelectable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\IMouseOver.cs" />
