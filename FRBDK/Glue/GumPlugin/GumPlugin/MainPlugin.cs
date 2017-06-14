@@ -87,8 +87,10 @@ namespace GumPlugin
             // 0.8.3.7 - Fixed relative file bug when loading BitmapFont files.
             // 0.8.3.8 - Fixed codegen assuming .gumx file is called GumProject.
             // 0.8.3.9 - Fixed path issues on Mac
-            // 0.8.4.0 - Added support for components in Entities to be added to FRB/Gum layers
-            get { return new Version(0, 8, 4, 0); }
+            // 0.8.4.1 
+            //  - Added support for components in Entities to be added to FRB/Gum layers
+            //  - Added color values to rectangle and circle
+            get { return new Version(0, 8, 4, 1); }
         }
 
         #endregion

@@ -34,8 +34,20 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
             catch (Microsoft.Build.Exceptions.InvalidProjectFileException exception)
             {
-                throw new Exception($"Could not load the project {fileName}\n" +
-                    $"Usually this occurs if the Visual Studio XNA plugin is not installed", exception);
+                bool isMissingMonoGame = exception.Message.Contains("MonoGame.Content.Builder.targets\" was not found");
+                string message;
+                if(isMissingMonoGame)
+                {
+                    message = $"Could not load the project {fileName}\nbecause MonoGame files are missing. Try installing MonoGame, then try opening the project in Glue again.\n\n";
+                }
+                else
+                {
+                    message = $"Could not load the project {fileName}\n" +
+                        $"Usually this occurs if the Visual Studio XNA plugin is not installed\n\n";
+
+                }
+
+                throw new Exception(message, exception);
             }
 
             ProjectBase toReturn = CreatePlatformSpecificProject(coreVisualStudioProject, fileName);
