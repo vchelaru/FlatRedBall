@@ -139,8 +139,18 @@ namespace FlatRedBall
 
                 if (wasChangd)
                 {
-                    mTimeIntoAnimation = 0;
+                    // June 20, 2017
+                    // Not sure why we
+                    // reset the mTimeIntoAnimation
+                    // here. Instead, we should be setting
+                    // it to preserve the frame. That is, we
+                    // should either reset both the frame and
+                    // mTimeIntoAnimation to 0, or we should preserve
+                    // both. I'm going to preserve both because that seems
+                    // to be the intended behavior of the engine, historically:
+                    //mTimeIntoAnimation = 0;
                     UpdateToCurrentAnimationFrame();
+                    UpdateTimeBasedOffOfAnimationFrame();
                 }
             }
         }

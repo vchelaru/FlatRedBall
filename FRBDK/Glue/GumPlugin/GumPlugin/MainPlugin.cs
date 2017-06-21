@@ -90,7 +90,9 @@ namespace GumPlugin
             // 0.8.4.1 
             //  - Added support for components in Entities to be added to FRB/Gum layers
             //  - Added color values to rectangle and circle
-            get { return new Version(0, 8, 4, 1); }
+            // 0.8.4.2
+            //  - Fixed texture loading (for sprites) on the Mac
+            get { return new Version(0, 8, 4, 2); }
         }
 
         #endregion

@@ -1376,6 +1376,13 @@ namespace FlatRedBall
             return newParticleSprite;
         }
 
+        /// <summary>
+        /// Returns a particle Sprite which is not managed internally by the engine. This is the most
+        /// efficient type of Sprite in FlatRedBall because it is pooled and the engine does not internally
+        /// update the sprite. 
+        /// </summary>
+        /// <param name="texture">The texture to assign to the sprite.</param>
+        /// <returns>The sprite, which may be returned from a pool of sprites.</returns>
         public static Sprite AddManualParticleSprite(Texture2D texture)
         {
             Sprite newParticleSprite = CreateParticleSprite(texture);

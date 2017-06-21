@@ -279,6 +279,11 @@ namespace FlatRedBall.Input
             }
         }
 
+        /// <summary>
+        /// Returns whether the current Xbox360GamePad hardware is connected, or if 
+        /// the FakeIsConnected property is set to true.
+        /// </summary>
+        /// <seealso cref="FakeIsConnected"/>
         public bool IsConnected
         {
             get
@@ -294,14 +299,13 @@ namespace FlatRedBall.Input
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// This value can force an Xbox360GamePad's 
         /// IsConnected to be true even if the controller
-        /// is not connected.  This can be used if game logic
-        /// requires a certain number of GamePads to be connected.
+        /// is not connected.  This can be used to simulate
+        /// multiple connected controllers.
         /// </summary>
-        #endregion
+        /// <seealso cref="IsConnected"/>
         public bool FakeIsConnected
         {
             set;
