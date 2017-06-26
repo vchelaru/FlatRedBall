@@ -45,6 +45,27 @@ namespace FlatRedBall.Input
         }
     }
 
+    public static class IPressableInputExtensions
+    {
+        public static MultiplePressableInputs Or(this IPressableInput thisInput, IPressableInput input)
+        {
+            MultiplePressableInputs toReturn;
+            if(thisInput is MultiplePressableInputs)
+            {
+                toReturn = (MultiplePressableInputs)thisInput;
+            }
+            else
+            {
+                toReturn = new MultiplePressableInputs();
+            }
+
+            toReturn.Inputs.Add(input);
+
+            return toReturn;
+        }
+
+    }
+
     /// <summary>
     /// An IPressableInput interface which can contain multiple IPressableInputs. This is useful if a particular action can be
     /// performed with multiple inputs, such as both the space bar and a game pad's A button being used to make a character jump.
@@ -70,8 +91,6 @@ namespace FlatRedBall.Input
         {
             Inputs = new List<IPressableInput>();
         }
-
-
 
         public bool IsDown
         {

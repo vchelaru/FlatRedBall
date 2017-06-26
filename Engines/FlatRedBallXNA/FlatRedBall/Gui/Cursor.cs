@@ -618,39 +618,6 @@ namespace FlatRedBall.Gui
 		}
 
 
-        // Phasing out the Sprite instance from the cursor as the controller of position
-#if !XNA4
-		#region XML Docs
-		/// <summary>
-		/// The change in x since last frame in world units at 100 units away from the camera.
-		/// </summary>
-		/// <remarks>
-		/// Cursor velocity properties do not counsider bounds; that is, a cursor will still have an xVelocity
-		/// even if it is pressed against the right side of the screen and being moved to the right.
-		/// </remarks>
-		#endregion
-		public float XVelocity
-		{
-			get{	return si.XVelocity;	}
-			set{	si.XVelocity = value;	}
-		}
-		
-		#region XML Docs
-		/// <summary>
-        /// The change in y since last frame in world units at 100 units away from the camera.
-		/// </summary>
-		/// <remarks>
-		/// Cursor velocity properties do not counsider bounds; that is, a cursor will still have an xVelocity
-		/// even if it is pressed against the right side of the screen and being moved to the right.
-		/// </remarks>
-		#endregion
-		public float YVelocity
-		{
-			get{	return si.YVelocity;	}
-			set{	si.YVelocity = value;	}
-		}
-#endif
-
 		/// <summary>
 		/// The movement rate of the controlling input (usually mouse) on the z axis. For the mouse this refers to the scroll wheel.
 		/// </summary>
@@ -675,18 +642,6 @@ namespace FlatRedBall.Gui
                 return WindowPushed != null && mSidesGrabbed == Sides.BottomRight;
             }
         }
-
-#if !SILVERLIGHT
-        public bool UsingMouse
-        {
-            get { return mUsingMouse; }
-            // added for unit tests, but may
-            // be used later to create custom
-            // Cursor behavior.
-            set { mUsingMouse = value; }
-        }
-
-#endif
 
         /// <summary>
         /// The number of pixels between the left of the screen and the cursor. Note that this does not consider
@@ -799,17 +754,7 @@ namespace FlatRedBall.Gui
                 mWindowPushed = value; 
             }
         }
-
-#if SUPPORTS_FRB_DRAWN_GUI
-        public Window WindowMiddleButtonPushed
-        {
-            get;
-            set;
-        }
-#endif
-
-#if !SILVERLIGHT
-
+        
         #region XML Docs
         /// <summary>
         /// Assigns the ObjectGrabbed and calculates the relative position of the
@@ -827,7 +772,6 @@ namespace FlatRedBall.Gui
                 SetObjectRelativePosition(mObjectGrabbed);
             }
         }
-#endif
 
         #endregion
 
@@ -2836,21 +2780,6 @@ namespace FlatRedBall.Gui
 
                     TryHandleStaticPosition ();
 
-
-#if FRB_MDX
-                    // Vic says:  I don't think we need this
-                    //MathFunctions.ScreenToAbsolute(
-                    //    System.Windows.Forms.Cursor.Position.X,
-                    //    System.Windows.Forms.Cursor.Position.Y,
-                    //    ref newX,
-                    //    ref newY,
-                    //    mCamera.Z + 100,
-                    //    mCamera, this.mOwner,
-                    //    SpriteManager.settings.fullScreen);
-                    mScreenX = mOwner.PointToClient(System.Windows.Forms.Cursor.Position).X;
-                    mScreenY = mOwner.PointToClient(System.Windows.Forms.Cursor.Position).Y;
-#else
-
                     bool handled = false;
 
 #if SUPPORTS_TOUCH_SCREEN
@@ -2896,8 +2825,7 @@ namespace FlatRedBall.Gui
                         mScreenX = mLastXFromHardware;
                         mScreenY = mLastYFromHardware;
                     }
-
-#endif
+                    
 
 
                     ZVelocity = InputManager.Mouse.ScrollWheelChange;
@@ -3223,8 +3151,7 @@ namespace FlatRedBall.Gui
                 mWindowGrabbed.OnDragging();
             }
         }
-
-#if !XBOX360
+        
         private void GetPushDownClickFromMouse()
         {
             PrimaryDown |= InputManager.Mouse.ButtonDown(FlatRedBall.Input.Mouse.MouseButtons.LeftButton);
@@ -3246,7 +3173,6 @@ namespace FlatRedBall.Gui
             MiddleClick |= InputManager.Mouse.ButtonReleased(Mouse.MouseButtons.MiddleButton) &&
                 IgnoreNextClick == false;
         }
-#endif
 
         #endregion
 

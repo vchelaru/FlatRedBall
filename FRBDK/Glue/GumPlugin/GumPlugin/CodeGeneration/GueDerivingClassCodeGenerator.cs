@@ -449,9 +449,14 @@ namespace GumPlugin.CodeGeneration
                 variableValue = "\"" + variableValue + "\"";
              
             }
-            else if (variableSave.Type == "float" && variableValue.Contains('.'))
+            else if (variableSave.Type == "float")
             {
-                variableValue = variableValue + "f";
+                //variableValue = variableValue + "f";
+                // convert this using the current language:
+
+                var value = Convert.ToSingle(variableValue, System.Globalization.CultureInfo.CurrentCulture);
+                variableValue = value.ToString(System.Globalization.CultureInfo.InvariantCulture) + "f";
+
             }
             else if (variableSave.Type == "bool")
             {

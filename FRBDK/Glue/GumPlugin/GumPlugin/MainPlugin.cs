@@ -92,7 +92,11 @@ namespace GumPlugin
             //  - Added color values to rectangle and circle
             // 0.8.4.2
             //  - Fixed texture loading (for sprites) on the Mac
-            get { return new Version(0, 8, 4, 2); }
+            // 0.8.5.0
+            //  - Added setting the content manager even if there is no Gum screen, simplifying code-only Gum creation
+            // 0.8.5.1
+            //  - Fixed float parsing/code gen in languages that use comma for the digit separator.
+            get { return new Version(0, 8, 5, 1); }
         }
 
         #endregion

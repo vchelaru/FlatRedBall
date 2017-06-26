@@ -403,6 +403,8 @@ namespace GumPlugin.CodeGeneration
                             // where block doesn't debug well for some reason, so I unrolled it...
                             if (GetIfShouldGenerateStateVariable(variable, container))
                             {
+                                // Note that this could return values like "1,2" instead of "1.2" depending
+                                // on the current language, so the AdjustVariableValueIfNecessary needs to account for that.
                                 string variableValue = variable.Value.ToString();
                                 bool isEntireAssignment;
 
