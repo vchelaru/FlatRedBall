@@ -57,6 +57,7 @@ namespace FlatRedBall.Input
             else
             {
                 toReturn = new MultiplePressableInputs();
+                toReturn.Inputs.Add(thisInput);
             }
 
             toReturn.Inputs.Add(input);
