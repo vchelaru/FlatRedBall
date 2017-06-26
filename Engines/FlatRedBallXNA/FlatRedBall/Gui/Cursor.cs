@@ -643,6 +643,14 @@ namespace FlatRedBall.Gui
             }
         }
 
+        public bool UsingMouse
+        {
+            get { return mUsingMouse; }
+            // added for unit tests, but may
+            // be used later to create custom
+            // Cursor behavior.
+            set { mUsingMouse = value; }
+        }
         /// <summary>
         /// The number of pixels between the left of the screen and the cursor. Note that this does not consider
         /// the camera's position, orientation, or perspective - it will always return 0 at the left-edge of the screen.
