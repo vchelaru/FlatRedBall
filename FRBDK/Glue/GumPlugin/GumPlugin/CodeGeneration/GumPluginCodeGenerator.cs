@@ -45,11 +45,24 @@ namespace GumPlugin.CodeGeneration
             {
                 // Create a generic Gum IDB to support in-code creation of Gum objects:
                 codeBlock.Line("gumIdb = new FlatRedBall.Gum.GumIdb();");
-                codeBlock.Line("FlatRedBall.SpriteManager.AddDrawableBatch(gumIdb);");
             }
 
             return codeBlock;
 
+        }
+
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        {
+            bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
+            bool hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
+
+            if (isGlueScreen && !hasGumScreen)
+            {
+                // Create a generic Gum IDB to support in-code creation of Gum objects:
+                codeBlock.Line("FlatRedBall.SpriteManager.AddDrawableBatch(gumIdb);");
+            }
+
+            return codeBlock;
         }
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)

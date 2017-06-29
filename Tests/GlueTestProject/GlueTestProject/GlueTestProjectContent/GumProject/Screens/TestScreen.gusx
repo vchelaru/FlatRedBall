@@ -202,6 +202,24 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>string</Type>
+      <Name>UnderAllLayerText.Text</Name>
+      <Value xsi:type="xsd:string">Under All Layer Text</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>UnderAllLayerText.X</Name>
+      <Value xsi:type="xsd:float">219.5</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>UnderAllLayerText.Y</Name>
+      <Value xsi:type="xsd:float">440.5</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>float</Type>
       <Name>TopButton.Y</Name>
       <Value xsi:type="xsd:float">42</Value>
@@ -280,5 +298,9 @@
   <Instance>
     <Name>TestRectangleInstance</Name>
     <BaseType>TestRectangle</BaseType>
+  </Instance>
+  <Instance>
+    <Name>UnderAllLayerText</Name>
+    <BaseType>Text</BaseType>
   </Instance>
 </ScreenSave>

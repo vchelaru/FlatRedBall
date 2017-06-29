@@ -455,6 +455,11 @@ namespace FlatRedBall.TileGraphics
 
 
                 var textureValues = new Vector4();
+
+                // The purpose of CoordinateAdjustment is to bring the texture values "in", to reduce the chance of adjacent
+                // tiles drawing on a given tile quad. If we don't do this, we can get slivers of adjacent colors appearing, causing
+                // lines or grid patterns.
+                // To bring the values "in" we have to consider rotated quads. 
                 textureValues.X = CoordinateAdjustment + (float)quad.LeftTexturePixel / (float)texture.Width; // Left
                 textureValues.Y = -CoordinateAdjustment + (float)(quad.LeftTexturePixel + tileDimensionWidth) / (float)texture.Width; // Right
                 textureValues.Z = CoordinateAdjustment + (float)quad.TopTexturePixel / (float)texture.Height; // Top
@@ -680,6 +685,13 @@ namespace FlatRedBall.TileGraphics
 
         }
 
+        /// <summary>
+        /// Sets the left and top texture coordiantes of the tile represented by orderedTileIndex. The right and bottom texture coordaintes
+        /// are set automatically according to the tileset dimensions.
+        /// </summary>
+        /// <param name="orderedTileIndex">The ordered tile index.</param>
+        /// <param name="textureXCoordinate">The left texture coordiante (in UV coordinates)</param>
+        /// <param name="textureYCoordinate">The top texture coordainte (in UV coordinates)</param>
         public void PaintTileTextureCoordinates(int orderedTileIndex, float textureXCoordinate, float textureYCoordinate)
         {
             int currentVertex = orderedTileIndex * 4; // 4 vertices per tile
@@ -691,6 +703,31 @@ namespace FlatRedBall.TileGraphics
             mVertices[currentVertex + 2].TextureCoordinate = coords[2];
             mVertices[currentVertex + 3].TextureCoordinate = coords[3];
         }
+
+        public void PaintTileTextureCoordinates(int orderedTileIndex, float leftCoordinate, float topCoordinate, float rightCoordinate, float bottomCoordinate)
+        {
+            int currentVertex = orderedTileIndex * 4; // 4 vertices per tile
+
+            // Coords are
+            // 3   2
+            //
+            // 0   1
+
+            mVertices[currentVertex + 0].TextureCoordinate.X = leftCoordinate;
+            mVertices[currentVertex + 0].TextureCoordinate.Y = bottomCoordinate;
+
+            mVertices[currentVertex + 1].TextureCoordinate.X = rightCoordinate;
+            mVertices[currentVertex + 1].TextureCoordinate.Y = bottomCoordinate;
+
+            mVertices[currentVertex + 2].TextureCoordinate.X = rightCoordinate;
+            mVertices[currentVertex + 2].TextureCoordinate.Y = topCoordinate;
+
+            mVertices[currentVertex + 3].TextureCoordinate.X = leftCoordinate;
+            mVertices[currentVertex + 3].TextureCoordinate.Y = topCoordinate;
+        }
+
+
+
 
         // Swaps the top-right for the bottom-left verts
         public void ApplyDiagonalFlip(int orderedTileIndex)

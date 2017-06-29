@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.FormHelpers.StringConverters;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Gum.DataTypes;
@@ -13,6 +14,11 @@ namespace GumPlugin.CodeGeneration
 {
     class GumLayerCodeGenerator : ElementComponentCodeGenerator
     {
+        const string TopLayerGumName = "AboveEverythingLayerGum";
+        const string UnderEverythingLayerGumName = "UnderEverythingLayerGum";
+
+
+
         bool ShouldGenerate
         {
             get
@@ -42,7 +48,26 @@ namespace GumPlugin.CodeGeneration
                 {
                     codeBlock.Line("global::RenderingLibrary.Graphics.Layer " + layer.InstanceName + "Gum;");
                 }
+
+                // We also need to generate a gum layer for the under-all layer if there is one:
+                bool anyOnUnderAllLayer = element.NamedObjects
+                    .Any(item => item.LayerOn == AvailableLayersTypeConverter.UnderEverythingLayerName);
+
+                if(anyOnUnderAllLayer)
+                {
+                    codeBlock.Line($"global::RenderingLibrary.Graphics.Layer {UnderEverythingLayerGumName};");
+                }
+
+                bool anyOnAboveAllLayer = element.NamedObjects
+                    .Any(item => item.LayerOn == AvailableLayersTypeConverter.TopLayerName);
+
+                if(anyOnAboveAllLayer)
+                {
+                    codeBlock.Line($"global::RenderingLibrary.Graphics.Layer {TopLayerGumName};");
+                }
             }
+
+
             return codeBlock;
         }
 
@@ -58,8 +83,22 @@ namespace GumPlugin.CodeGeneration
                     !string.IsNullOrEmpty(item.LayerOn) &&
                     NamedObjectSaveCodeGenerator.GetFieldCodeGenerationType(item) == CodeGenerationType.Full))
                 {
+                    string frbLayerName = item.LayerOn;
+                    string gumLayerName = $"{item.LayerOn}Gum";
 
-                    codeBlock.Line($"{item.FieldName}.MoveToFrbLayer({item.LayerOn}, {item.LayerOn}Gum);");
+                    if(item.LayerOn == AvailableLayersTypeConverter.UnderEverythingLayerName)
+                    {
+                        frbLayerName = AvailableLayersTypeConverter.UnderEverythingLayerCode;
+                        gumLayerName = UnderEverythingLayerGumName;
+                    }
+
+                    if (item.LayerOn == AvailableLayersTypeConverter.TopLayerName)
+                    {
+                        frbLayerName = AvailableLayersTypeConverter.TopLayerName;
+                        gumLayerName = TopLayerGumName;
+                    }
+
+                    codeBlock.Line($"{item.FieldName}.MoveToFrbLayer({frbLayerName}, {gumLayerName});");
                     wasAnythingMovedToALayer = true;
                 }
 

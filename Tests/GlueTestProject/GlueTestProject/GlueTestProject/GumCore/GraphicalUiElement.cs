@@ -2638,9 +2638,18 @@ namespace Gum.Wireframe
             bool handled = false;
 
             // First try special-casing.  
+            
             if (mContainedObjectAsIpso is Text)
             {
                 handled = TrySetPropertyOnText(propertyName, value);
+            }
+            else if(mContainedObjectAsIpso is LineCircle)
+            {
+                handled = TrySetPropertyOnLineCircle(propertyName, value);
+            }
+            else if(mContainedObjectAsIpso is LineRectangle)
+            {
+                handled = TrySetPropertyOnLineRectangle(propertyName, value);
             }
             else if (mContainedObjectAsIpso is SolidRectangle)
             {
@@ -2789,6 +2798,116 @@ namespace Gum.Wireframe
             }
         }
 
+        private bool TrySetPropertyOnLineRectangle(string propertyName, object value)
+        {
+            bool handled = false;
+
+            if (propertyName == "Alpha")
+            {
+                int valueAsInt = (int)value;
+
+                var color =
+                    ((LineRectangle)mContainedObjectAsIpso).Color;
+                color.A = (byte)valueAsInt;
+
+                ((LineRectangle)mContainedObjectAsIpso).Color = color;
+                handled = true;
+            }
+
+            else if (propertyName == "Red")
+            {
+                int valueAsInt = (int)value;
+
+                var color =
+                    ((LineRectangle)mContainedObjectAsIpso).Color;
+                color.R = (byte)valueAsInt;
+
+                ((LineRectangle)mContainedObjectAsIpso).Color = color;
+                handled = true;
+            }
+
+            else if (propertyName == "Green")
+            {
+                int valueAsInt = (int)value;
+
+                var color =
+                    ((LineRectangle)mContainedObjectAsIpso).Color;
+                color.G = (byte)valueAsInt;
+
+                ((LineRectangle)mContainedObjectAsIpso).Color = color;
+                handled = true;
+            }
+
+            else if (propertyName == "Blue")
+            {
+                int valueAsInt = (int)value;
+
+                var color =
+                    ((LineRectangle)mContainedObjectAsIpso).Color;
+                color.B = (byte)valueAsInt;
+
+                ((LineRectangle)mContainedObjectAsIpso).Color = color;
+                handled = true;
+            }
+
+            return handled;
+        }
+
+        private bool TrySetPropertyOnLineCircle(string propertyName, object value)
+        {
+            bool handled = false;
+
+            if (propertyName == "Alpha")
+            {
+                int valueAsInt = (int)value;
+
+                var color =
+                    ((LineCircle)mContainedObjectAsIpso).Color;
+                color.A = (byte)valueAsInt;
+
+                ((LineCircle)mContainedObjectAsIpso).Color = color;
+                handled = true;
+            }
+
+            else if (propertyName == "Red")
+            {
+                int valueAsInt = (int)value;
+
+                var color =
+                    ((LineCircle)mContainedObjectAsIpso).Color;
+                color.R = (byte)valueAsInt;
+
+                ((LineCircle)mContainedObjectAsIpso).Color = color;
+                handled = true;
+            }
+
+            else if (propertyName == "Green")
+            {
+                int valueAsInt = (int)value;
+
+                var color =
+                    ((LineCircle)mContainedObjectAsIpso).Color;
+                color.G = (byte)valueAsInt;
+
+                ((LineCircle)mContainedObjectAsIpso).Color = color;
+                handled = true;
+            }
+
+            else if (propertyName == "Blue")
+            {
+                int valueAsInt = (int)value;
+
+                var color =
+                    ((LineCircle)mContainedObjectAsIpso).Color;
+                color.B = (byte)valueAsInt;
+
+                ((LineCircle)mContainedObjectAsIpso).Color = color;
+                handled = true;
+            }
+
+            return handled;
+        }
+
         private bool AssignSourceFileOnSprite(object value, Sprite sprite)
         {
             bool handled;
@@ -2927,7 +3046,7 @@ namespace Gum.Wireframe
                 {
                     string fontName = global::RenderingLibrary.Graphics.Fonts.BmfcSave.GetFontCacheFileNameFor(FontSize, Font, OutlineThickness);
 
-                    string fullFileName = ToolsUtilities.FileManager.RelativeDirectory + fontName;
+                    string fullFileName = ToolsUtilities.FileManager.Standardize(fontName, false, true);
 
 #if ANDROID || IOS
                     fullFileName = fullFileName.ToLowerInvariant();

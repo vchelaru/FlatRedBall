@@ -96,7 +96,11 @@ namespace GumPlugin
             //  - Added setting the content manager even if there is no Gum screen, simplifying code-only Gum creation
             // 0.8.5.1
             //  - Fixed float parsing/code gen in languages that use comma for the digit separator.
-            get { return new Version(0, 8, 5, 1); }
+            // 0.8.5.2
+            //  - Fixed crash when trying to delete a Gum IDB
+            //  - Fixed GumIDB being added to managers ininitialize rather than in AddToManagers, causing a crash on async loaded screens
+            //  - Gum now generates Gum layers for under-all and top layer if any Gum instances are on those layers, instead of generating code that doesn't compile.
+            get { return new Version(0, 8, 5, 2); }
         }
 
         #endregion

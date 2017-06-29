@@ -1446,6 +1446,16 @@
         <NamedObjectSave>
           <SourceType>File</SourceType>
           <SourceFile>GumProject/Screens/TestScreen.gusx</SourceFile>
+          <SourceName>UnderAllLayerText (GlueTestProject.GumRuntimes.TextRuntime)</SourceName>
+          <InstanceName>UnderAllLayerText</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+          <LayerOn>Under Everything (Engine Layer)</LayerOn>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>File</SourceType>
+          <SourceFile>GumProject/Screens/TestScreen.gusx</SourceFile>
           <SourceName>NineSliceInstance (GlueTestProject.GumRuntimes.NineSliceRuntime)</SourceName>
           <InstanceName>NineSliceInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
