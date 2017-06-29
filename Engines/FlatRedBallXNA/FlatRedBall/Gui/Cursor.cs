@@ -1064,13 +1064,17 @@ namespace FlatRedBall.Gui
             y += ObjectGrabbedRelativeY;
         }
 
-        public void GetCursorPositionForSprite(ref float x, ref float y, float absoluteZ, Layer layer)
+        public void GetCursorPositionForSprite(ref float x, ref float y, float absoluteZ, Layer layer, bool useRelativePosition = true)
         {
             x = WorldXAt(absoluteZ, layer);
             y = WorldYAt(absoluteZ, layer);
 
-            x += ObjectGrabbedRelativeX;
-            y += ObjectGrabbedRelativeY;
+            if (useRelativePosition)
+            {
+                x += ObjectGrabbedRelativeX;
+                y += ObjectGrabbedRelativeY;
+            }
+            
         }
 
         #region XML Docs
@@ -2258,12 +2262,12 @@ namespace FlatRedBall.Gui
             UpdateObjectGrabbedPosition(null);
         }
 
-        public void UpdateObjectGrabbedPosition(int xOffset, int yOffset)
+        public void UpdateObjectGrabbedPosition(int xOffset, int yOffset, bool useCursorRelativePosition)
         {
-            UpdateObjectGrabbedPosition(null, xOffset, yOffset);
+            UpdateObjectGrabbedPosition(null, xOffset, yOffset, useCursorRelativePosition);
         }
 
-        public void UpdateObjectGrabbedPosition(Layer layer, int xOffset = 0, int yOffset = 0)
+        public void UpdateObjectGrabbedPosition(Layer layer, int xOffset = 0, int yOffset = 0, bool useCursorRelativePosition = true)
         {
             if (mObjectGrabbed != null)
             {
@@ -2286,7 +2290,7 @@ namespace FlatRedBall.Gui
                 //else
                 {
 
-                    GetCursorPositionForSprite(ref outX, ref outY, mObjectGrabbed.Z, layer);
+                    GetCursorPositionForSprite(ref outX, ref outY, mObjectGrabbed.Z, layer, useCursorRelativePosition);
                     mObjectGrabbed.X = outX + xOffset;
                     mObjectGrabbed.Y = outY + yOffset;
                 }
