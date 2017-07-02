@@ -10,6 +10,11 @@
       <SetsValue>false</SetsValue>
     </Variable>
     <Variable>
+      <Type>Category2State</Type>
+      <Name>Category2State</Name>
+      <SetsValue>false</SetsValue>
+    </Variable>
+    <Variable>
       <Type>ChildrenLayout</Type>
       <Name>Children Layout</Name>
       <Value xsi:type="xsd:int">0</Value>
@@ -142,6 +147,15 @@
     </State>
     <State>
       <Name>Categorized2</Name>
+    </State>
+  </Category>
+  <Category>
+    <Name>Category2</Name>
+    <State>
+      <Name>CategorizedA</Name>
+    </State>
+    <State>
+      <Name>CategorizedB</Name>
     </State>
   </Category>
   <Behaviors />

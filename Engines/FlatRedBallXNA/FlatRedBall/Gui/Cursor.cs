@@ -1,12 +1,4 @@
-#if !SILVERLIGHT && !XBOX360 && !FRB_MDX
 #define SUPPORTS_TOUCH_SCREEN
-#endif
-
-#if FRB_MDX || XNA3
-#define SUPPORTS_FRB_DRAWN_GUI
-#endif
-
-
 
 using System;
 using System.Collections.Generic;
@@ -19,18 +11,14 @@ using FlatRedBall.Graphics;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Input;
 
-#if FRB_MDX
-using Microsoft.DirectX;
 
-using Texture2D = FlatRedBall.Texture2D;
-#else//if FRB_XNA || SILVERLIGHT
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-#endif
 
 
 namespace FlatRedBall.Gui
 {
+    #region Enums
 
     // This is going to be a field so we can use
     // both cursor and touch screen simultaneously.
@@ -40,11 +28,13 @@ namespace FlatRedBall.Gui
         Mouse = 2
     }
 
-	/// <summary>
-	/// The cursor is a controllable graphical icon which can interact with FRB elements and
-	/// stores information about mouse activity.
-	/// </summary>
-	public partial class Cursor
+    #endregion
+
+    /// <summary>
+    /// The cursor is a controllable graphical icon which can interact with FRB elements and
+    /// stores information about mouse activity.
+    /// </summary>
+    public partial class Cursor
     {
         #region Fields
 
@@ -363,6 +353,13 @@ namespace FlatRedBall.Gui
 
 		#region Properties
 
+        /// <summary>
+        /// The Primary button (usually left mouse button) which can be tested for clicks, pushes, and if it is held down.
+        /// </summary>
+        /// <remarks>
+        /// This object is internally created only once, and that same reference is returned on subsequent calls to keep 
+        /// allocation low.
+        /// </remarks>
         public IPressableInput PrimaryButton
         {
             get
