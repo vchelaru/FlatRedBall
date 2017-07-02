@@ -981,13 +981,12 @@ namespace FlatRedBall.Graphics
         {
             int lineHeight = 0;
 
-#if SILVERLIGHT || XNA4
             if (this.SpriteFont != null)
             {
                 lineHeight = SpriteFont.LineSpacing;
             }
             else
-#endif
+            {
                 if (mFont != null)
                 {
                     lineHeight = mFont.LineHeightInPixels;
@@ -996,9 +995,20 @@ namespace FlatRedBall.Graphics
                 {
                     return;
                 }
+            }
+
+            var pixelsPerUnit = camera.PixelsPerUnitAt(ref this.Position);
+
+#if DEBUG
+            if(pixelsPerUnit == 0 || float.IsPositiveInfinity(pixelsPerUnit) || float.IsNegativeInfinity(pixelsPerUnit))
+            {
+                throw new Exception(
+                    $"Could not set pixel perfect scale because of invalid pixelsPerUnit:{pixelsPerUnit}. camera position:{camera.Position}, text position:{this.Position}");
+            }
+#endif
 
             Scale = .5f *
-                mFont.LineHeightInPixels / camera.PixelsPerUnitAt(ref this.Position);
+                mFont.LineHeightInPixels / pixelsPerUnit;
             Spacing = Scale;
 
 
