@@ -71,7 +71,10 @@ namespace OfficialPlugins.VariableDisplay
 
                 GlueCommands.Self.GlueViewCommands.SendRefreshVariablesCommand();
 
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
+                if(currentElement != null)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
+                }
 
             },
             "Saving .glux and regenerating the code for the current element");

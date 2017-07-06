@@ -10,6 +10,13 @@ namespace FlatRedBall.Glue.CodeGeneration
     {
         public static void GenerateElement(IElement element)
         {
+#if DEBUG
+            if(element == null)
+            {
+                throw new ArgumentNullException(nameof(element));
+            }
+#endif
+
             CodeWriter.GenerateCode(element);
         }
 
