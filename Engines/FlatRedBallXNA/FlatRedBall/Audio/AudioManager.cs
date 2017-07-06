@@ -230,7 +230,9 @@ namespace FlatRedBall.Audio
         /// </summary>
         /// <param name="soundEffect">The sound effect to play</param>
         /// <param name="volume">Volume, ranging from 0.0f (silence) to 1.0f (full volume). 1.0f is full volume</param>
-        public static void Play(SoundEffect soundEffect, float volume)
+        /// <param name="pitch">Pitch, ranging from -1.0f (one octave down) to 1.0f (one octave up). 0.0f means no change </param>
+        /// <param name="pan">Volume, ranging from -1.0f (full left) to 1.0f (full right). 0.0f is centered </param>
+        public static void Play(SoundEffect soundEffect, float volume, float pitch = 0, float pan = 0)
         {
 #if DEBUG
 #if !SILVERLIGHT && !MONOGAME
@@ -253,14 +255,14 @@ namespace FlatRedBall.Audio
 #endif
 
 
-					#if ANDROID && !DEBUG
+#if ANDROID && !DEBUG
 
 					try
 					{
-						if (volume < 1)
-						{
-							soundEffect.Play(volume, 0, 0);
-						}
+						if (volume < 1 || pitch != 0.0f || pan != 0.0f)
+					    {
+						    soundEffect.Play(volume, pitch, pan);
+					    }
 						else
 						{
 							soundEffect.Play();
@@ -277,10 +279,10 @@ namespace FlatRedBall.Audio
 					}
 
 
-					#else
-					if (volume < 1)
+#else
+                    if (volume < 1 || pitch != 0.0f || pan != 0.0f)
 					{
-						soundEffect.Play(volume, 0, 0);
+						soundEffect.Play(volume, pitch, pan);
 					}
 					else
 					{
