@@ -33,173 +33,176 @@ namespace FlatRedBall.Glue.IO
                 
             lock (mUpdateFileLock)
             {
-                
-                handled = TryHandleProjectFileChanges(changedFile);
-
-                string projectFileName = ProjectManager.ProjectBase.FullFileName;
-
-                var standardizedGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + ".glux";
-                var partialGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + @"\..*\.generated\.glux";
-                var partialGluxRegex = new Regex(partialGlux);
-                if(!handled && ((changedFile.ToLower() == standardizedGlux) || partialGluxRegex.IsMatch(changedFile.ToLower())))
+                if(ProjectManager.ProjectBase != null)
                 {
-                    TaskManager.Self.OnUiThread( ReloadGlux);
-                    handled = true;
-                }
 
-                if (ProjectManager.IsContent(changedFile))
-                {
-                    PluginManager.ReactToChangedFile(changedFile);
-                }
+                    handled = TryHandleProjectFileChanges(changedFile);
 
-                #region If it's a CSV, then re-generate the code for the objects
+                    string projectFileName = ProjectManager.ProjectBase.FullFileName;
 
-                string extension = FileManager.GetExtension(changedFile);
-
-                if (extension == "csv" ||
-                    extension == "txt")
-                {
-                    ReferencedFileSave rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(changedFile);
-
-                    bool shouldGenerate = rfs != null &&
-                        (extension == "csv" || rfs.TreatAsCsv) &&
-                        rfs.IsDatabaseForLocalizing == false;
-
-                    if (shouldGenerate)
+                    var standardizedGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + ".glux";
+                    var partialGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + @"\..*\.generated\.glux";
+                    var partialGluxRegex = new Regex(partialGlux);
+                    if(!handled && ((changedFile.ToLower() == standardizedGlux) || partialGluxRegex.IsMatch(changedFile.ToLower())))
                     {
-                        try
-                        {
-                            CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
+                        TaskManager.Self.OnUiThread( ReloadGlux);
+                        handled = true;
+                    }
 
-                            shouldSave = true;
-                        }
-                        catch(Exception e)
+                    if (ProjectManager.IsContent(changedFile))
+                    {
+                        PluginManager.ReactToChangedFile(changedFile);
+                    }
+
+                    #region If it's a CSV, then re-generate the code for the objects
+
+                    string extension = FileManager.GetExtension(changedFile);
+
+                    if (extension == "csv" ||
+                        extension == "txt")
+                    {
+                        ReferencedFileSave rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(changedFile);
+
+                        bool shouldGenerate = rfs != null &&
+                            (extension == "csv" || rfs.TreatAsCsv) &&
+                            rfs.IsDatabaseForLocalizing == false;
+
+                        if (shouldGenerate)
                         {
-                            MessageBox.Show("Error saving Class from CSV " + rfs.Name);
+                            try
+                            {
+                                CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
+
+                                shouldSave = true;
+                            }
+                            catch(Exception e)
+                            {
+                                MessageBox.Show("Error saving Class from CSV " + rfs.Name);
+                            }
                         }
                     }
-                }
 
 
-                #endregion
+                    #endregion
 
-                #region If it's a file that references other content we may need to update the project
+                    #region If it's a file that references other content we may need to update the project
 
-                if (FileHelper.DoesFileReferenceContent(changedFile))
-                {
-                    ReferencedFileSave rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(changedFile);
-
-
-                    if (rfs != null)
+                    if (FileHelper.DoesFileReferenceContent(changedFile))
                     {
-                        string error;
-                        rfs.RefreshSourceFileCache(false, out error);
+                        ReferencedFileSave rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(changedFile);
 
-                        if (!string.IsNullOrEmpty(error))
+
+                        if (rfs != null)
                         {
-                            ErrorReporter.ReportError(rfs.Name, error, false);
+                            string error;
+                            rfs.RefreshSourceFileCache(false, out error);
+
+                            if (!string.IsNullOrEmpty(error))
+                            {
+                                ErrorReporter.ReportError(rfs.Name, error, false);
+                            }
+                            else
+                            {
+                                handled = true;
+                            }
+
+                            handled |= ProjectManager.UpdateFileMembershipInProject(rfs);
+                            shouldSave = true;
+
+                            MainGlueWindow.Self.Invoke((MethodInvoker)delegate
+                            {
+                                if (rfs.GetContainerType() == ContainerType.Entity)
+                                {
+                                    if (EditorLogic.CurrentEntityTreeNode != null)
+                                    {
+                                        if (EditorLogic.CurrentEntitySave == rfs.GetContainer())
+                                        {
+                                            PluginManager.RefreshCurrentElement();
+                                        }
+                                    }
+                                }
+                                else if (rfs.GetContainerType() == ContainerType.Screen)
+                                {
+                                    if (EditorLogic.CurrentScreenTreeNode != null)
+                                    {
+                                        if (EditorLogic.CurrentScreenSave == rfs.GetContainer())
+                                        {
+                                            PluginManager.RefreshCurrentElement();
+                                        }
+                                    }
+                                }
+                            });
                         }
                         else
                         {
-                            handled = true;
+                            // There may not be a RFS for this in Glue, but even if there's not,
+                            // this file may be referenced by other RFS's.  I don't want to do a full
+                            // project scan, so we'll just see if this file is part of Visual Studio.  If so
+                            // then let's add its children
+
+                            if (ProjectManager.ContentProject.IsFilePartOfProject(changedFile))
+                            {
+                                string relativePath = ProjectManager.MakeRelativeContent(changedFile);
+
+                                shouldSave |= ProjectManager.UpdateFileMembershipInProject(
+                                    ProjectManager.ProjectBase, relativePath, false, false);
+                                handled |= shouldSave;
+
+                            }
+                            
                         }
+                    }
 
-                        handled |= ProjectManager.UpdateFileMembershipInProject(rfs);
-                        shouldSave = true;
+                    #endregion
 
-                        MainGlueWindow.Self.Invoke((MethodInvoker)delegate
+                    #region If it's a .cs file, we should see if we've added a new .cs file, and if so refresh the Element for it
+                    if (extension == "cs")
+                    {
+                        TaskManager.Self.OnUiThread(()=>ReactToChangedCodeFile(changedFile));
+
+                    }
+
+
+                    #endregion
+
+                    #region Maybe it's a directory that was added or removed
+
+                    if (FileManager.GetExtension(changedFile) == "")
+                    {
+                        ElementViewWindow.Invoke((MethodInvoker)delegate
                         {
-                            if (rfs.GetContainerType() == ContainerType.Entity)
-                            {
-                                if (EditorLogic.CurrentEntityTreeNode != null)
-                                {
-                                    if (EditorLogic.CurrentEntitySave == rfs.GetContainer())
-                                    {
-                                        PluginManager.RefreshCurrentElement();
-                                    }
-                                }
-                            }
-                            else if (rfs.GetContainerType() == ContainerType.Screen)
-                            {
-                                if (EditorLogic.CurrentScreenTreeNode != null)
-                                {
-                                    if (EditorLogic.CurrentScreenSave == rfs.GetContainer())
-                                    {
-                                        PluginManager.RefreshCurrentElement();
-                                    }
-                                }
-                            }
+                            // It's a directory, so let's just rebuild our directory TreeNodes
+                            ElementViewWindow.AddDirectoryNodes();
                         });
                     }
-                    else
+
+                    #endregion
+
+
+                    #region Check for broken references to objects in file - like an Entity may reference an object in a file but it may have been removed
+
+                    if (ObjectFinder.Self.GetReferencedFileSaveFromFile(changedFile) != null)
                     {
-                        // There may not be a RFS for this in Glue, but even if there's not,
-                        // this file may be referenced by other RFS's.  I don't want to do a full
-                        // project scan, so we'll just see if this file is part of Visual Studio.  If so
-                        // then let's add its children
-
-                        if (ProjectManager.ContentProject.IsFilePartOfProject(changedFile))
-                        {
-                            string relativePath = ProjectManager.MakeRelativeContent(changedFile);
-
-                            shouldSave |= ProjectManager.UpdateFileMembershipInProject(
-                                ProjectManager.ProjectBase, relativePath, false, false);
-                            handled |= shouldSave;
-
-                        }
-                            
+                        // This is a file that is part of the project, so let's see if any named objects are missing references
+                        CheckForBrokenReferencesToObjectsInFile(changedFile);
                     }
-                }
 
-                #endregion
+                    #endregion
 
-                #region If it's a .cs file, we should see if we've added a new .cs file, and if so refresh the Element for it
-                if (extension == "cs")
-                {
-                    TaskManager.Self.OnUiThread(()=>ReactToChangedCodeFile(changedFile));
+                    // This could be an externally built file:
 
-                }
+                    ProjectManager.UpdateExternallyBuiltFile(changedFile);
 
-
-                #endregion
-
-                #region Maybe it's a directory that was added or removed
-
-                if (FileManager.GetExtension(changedFile) == "")
-                {
-                    ElementViewWindow.Invoke((MethodInvoker)delegate
+                    if (handled)
                     {
-                        // It's a directory, so let's just rebuild our directory TreeNodes
-                        ElementViewWindow.AddDirectoryNodes();
-                    });
-                }
+                        PluginManager.ReceiveOutput("Handled changed file: " + changedFile);
 
-                #endregion
+                    }
 
-
-                #region Check for broken references to objects in file - like an Entity may reference an object in a file but it may have been removed
-
-                if (ObjectFinder.Self.GetReferencedFileSaveFromFile(changedFile) != null)
-                {
-                    // This is a file that is part of the project, so let's see if any named objects are missing references
-                    CheckForBrokenReferencesToObjectsInFile(changedFile);
-                }
-
-                #endregion
-
-                // This could be an externally built file:
-
-                ProjectManager.UpdateExternallyBuiltFile(changedFile);
-
-                if (handled)
-                {
-                    PluginManager.ReceiveOutput("Handled changed file: " + changedFile);
-
-                }
-
-                if (shouldSave)
-                {
-                    ProjectManager.SaveProjects();
+                    if (shouldSave)
+                    {
+                        ProjectManager.SaveProjects();
+                    }
                 }
 
             }

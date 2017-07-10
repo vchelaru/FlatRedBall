@@ -34,7 +34,7 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
-        IEnumerable<NamedObjectSave> GetObjectsForGumLayers(IElement element)
+        public static IEnumerable<NamedObjectSave> GetObjectsForGumLayers(IElement element)
         {
             return element.AllNamedObjects.Where(item => item.IsLayer &&
                 NamedObjectSaveCodeGenerator.GetFieldCodeGenerationType(item) == CodeGenerationType.Full);
@@ -42,40 +42,56 @@ namespace GumPlugin.CodeGeneration
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
         {
+            List<string> gumLayerNames = GetGumLayerNames(element);
+
+            foreach (var layerName in gumLayerNames)
+            {
+                codeBlock.Line($"global::RenderingLibrary.Graphics.Layer {layerName};");
+
+            }
+
+            return codeBlock;
+        }
+
+        private List<string> GetGumLayerNames(IElement element)
+        {
+            List<string> gumLayerNames = new List<string>();
+
             if (ShouldGenerate)
             {
                 foreach (var layer in GetObjectsForGumLayers(element))
                 {
-                    codeBlock.Line("global::RenderingLibrary.Graphics.Layer " + layer.InstanceName + "Gum;");
+                    gumLayerNames.Add(layer.InstanceName + "Gum");
                 }
 
                 // We also need to generate a gum layer for the under-all layer if there is one:
                 bool anyOnUnderAllLayer = element.NamedObjects
                     .Any(item => item.LayerOn == AvailableLayersTypeConverter.UnderEverythingLayerName);
 
-                if(anyOnUnderAllLayer)
+                if (anyOnUnderAllLayer)
                 {
-                    codeBlock.Line($"global::RenderingLibrary.Graphics.Layer {UnderEverythingLayerGumName};");
+                    gumLayerNames.Add(UnderEverythingLayerGumName);
                 }
 
                 bool anyOnAboveAllLayer = element.NamedObjects
                     .Any(item => item.LayerOn == AvailableLayersTypeConverter.TopLayerName);
 
-                if(anyOnAboveAllLayer)
+                if (anyOnAboveAllLayer)
                 {
-                    codeBlock.Line($"global::RenderingLibrary.Graphics.Layer {TopLayerGumName};");
+                    gumLayerNames.Add(TopLayerGumName);
                 }
             }
 
-
-            return codeBlock;
+            return gumLayerNames;
         }
-
 
         public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
         {
             if (ShouldGenerate)
             {
+
+
+
                 bool wasAnythingMovedToALayer = false;
                 // todo:  Need to register the layer here
                 foreach (var item in element.AllNamedObjects.Where(item =>

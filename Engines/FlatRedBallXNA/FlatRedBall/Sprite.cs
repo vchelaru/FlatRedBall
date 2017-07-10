@@ -531,6 +531,10 @@ namespace FlatRedBall
             set { mFlipVertical = value; }
         }
 
+        /// <summary>
+        /// The top coordinate in texture coordinates on the sprite. Default is 0.
+        /// This value is in texture coordinates, not pixels. A value of 1 represents the bottom-side of the texture.
+        /// </summary>
         [ExportOrder(2)]
         public float TopTextureCoordinate
         {
@@ -544,7 +548,10 @@ namespace FlatRedBall
             }
         }
 
-
+        /// <summary>
+        /// The top pixel displayed on the sprite. Default is 0.
+        /// This value is in pixel coordiantes, so it typically ranges from 0 to the height of the referenced texture.
+        /// </summary>
         [ExportOrder(2)]
         public float TopTexturePixel
         {
@@ -571,6 +578,7 @@ namespace FlatRedBall
                 }
             }
         }
+
 
         [ExportOrder(2)]
         public float BottomTextureCoordinate
@@ -889,6 +897,19 @@ namespace FlatRedBall
             SpriteManager.ManualUpdate(this);
         }
 
+        /// <summary>
+        /// Updates the sprite according to its current AnimationChain and AnimationFrame. Specifically this updates
+        ///  - Texture
+        ///  - Texture coordiantes
+        ///  - Flip Horizontal (if IgnoreAnimationChainTextureFlip is true)
+        ///  - Relative X and Y (if UseAnimationRelativePosition is true
+        ///  - Executes AnimationFrame instructions
+        ///  - Adjusts the size of the sprite if its TextureScale
+        /// </summary>
+        /// <remarks>
+        /// This method is automatically called for sprites which are automatically updated (default) and which are using
+        /// an AnimationChain. This can be manually called after assigning the AnimationFrame and AnimationChain.
+        /// </remarks>
         public void UpdateToCurrentAnimationFrame()
         {
             if (mAnimationChains != null && mAnimationChains.Count > mCurrentChainIndex && mCurrentChainIndex != -1 && 
@@ -927,11 +948,8 @@ namespace FlatRedBall
                     instruction.Execute();
                 }
 
-                if (mPixelSize > 0 && mTexture != null)
-                {
-                    mScaleX = mTexture.Width * mPixelSize * (mVertices[1].TextureCoordinate.X - mVertices[0].TextureCoordinate.X);
-                    mScaleY = mTexture.Height * mPixelSize * (mVertices[2].TextureCoordinate.Y - mVertices[1].TextureCoordinate.Y);
-                }
+                UpdateScale();
+                
             }
         }
 

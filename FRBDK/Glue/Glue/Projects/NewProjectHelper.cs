@@ -228,12 +228,29 @@ namespace FlatRedBall.Glue.Projects
             string output = process.StandardOutput.ReadToEnd();
 
             output = output.Replace("\r\n", "");
+            string projectName = FileManager.RemovePath(output);
 
             List<string> csProjFiles = FileManager.GetAllFilesInDirectory(output, "csproj");
 
             if (csProjFiles.Count != 0)
             {
-                return csProjFiles[0];
+                // This may contain a synced project, which would have multiple .csproj files.
+                // to find which we want, let's find any .csproj that may have a matching name:
+                var fileName = csProjFiles.FirstOrDefault(item =>
+                {
+                    var name = FileManager.RemovePath(FileManager.RemoveExtension(item));
+
+                    return name == projectName;
+                });
+
+                if(string.IsNullOrEmpty(fileName))
+                {
+                    return csProjFiles[0];
+                }
+                else
+                {
+                    return fileName;
+                }
             }
             else
             {

@@ -100,7 +100,10 @@ namespace GumPlugin
             //  - Fixed crash when trying to delete a Gum IDB
             //  - Fixed GumIDB being added to managers ininitialize rather than in AddToManagers, causing a crash on async loaded screens
             //  - Gum now generates Gum layers for under-all and top layer if any Gum instances are on those layers, instead of generating code that doesn't compile.
-            get { return new Version(0, 8, 5, 2); }
+            // 0.8.5.3
+            //  - Gum layers now set their own name at runtime
+            //  - Removed a bit of memory allocation which occurred automatically in the Gum renderer
+            get { return new Version(0, 8, 5, 3); }
         }
 
         #endregion
