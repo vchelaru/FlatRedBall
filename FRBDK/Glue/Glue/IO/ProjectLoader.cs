@@ -69,6 +69,10 @@ namespace FlatRedBall.Glue.IO
 
         public void LoadProject(string projectFileName, InitializationWindow initializationWindow)
         {
+            // turn off task processing while this is loading, so that no background tasks are running while plugins are starting up:
+            TaskManager.Self.IsTaskProcessingEnabled = false;
+
+
             TimeManager.Initialize();
             var topSection = Section.GetAndStartContextAndTime("All");
             ////////////////// EARLY OUT!!!!!!!!!
@@ -247,6 +251,9 @@ namespace FlatRedBall.Glue.IO
             
             
             Section.EndContextAndTime();
+
+            TaskManager.Self.IsTaskProcessingEnabled = true;
+
             // If we ever want to make things go faster, turn this back on and let's see what's going on.
             //topSection.Save("Sections.xml");
         }

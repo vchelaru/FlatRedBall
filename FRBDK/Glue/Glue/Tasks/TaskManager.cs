@@ -70,6 +70,10 @@ namespace FlatRedBall.Glue.Managers
             {
                 string toReturn = "";
 
+                if(IsTaskProcessingEnabled == false)
+                {
+                    toReturn += "Task processing disabled, next task when re-enabled:\n";
+                }
 
                 if (mActiveAsyncTasks.Count != 0)
                 {
@@ -103,6 +107,25 @@ namespace FlatRedBall.Glue.Managers
 
 
                 return toReturn;
+            }
+        }
+
+        bool isTaskProcessingEnabled;
+        /// <summary>
+        /// Whether to process tasks - if this is false, then tasks will not be processed.
+        /// </summary>
+        public bool IsTaskProcessingEnabled
+        {
+            get { return isTaskProcessingEnabled; }
+            set
+            {
+                bool turnedOn = value == true && isTaskProcessingEnabled == false;
+                isTaskProcessingEnabled = value;
+                if(turnedOn)
+                {
+                    ProcessNextSync();
+
+                }
             }
         }
 
@@ -184,7 +207,7 @@ namespace FlatRedBall.Glue.Managers
                 glueTask.Action = action;
                 glueTask.DisplayInfo = displayInfo;
                 mSyncedActions.Add(glueTask);
-                shouldProcess = mSyncedActions.Count == 1;
+                shouldProcess = mSyncedActions.Count == 1 && IsTaskProcessingEnabled;
             }
             CallTaskAddedOrRemoved();
             if (shouldProcess)
@@ -220,7 +243,7 @@ namespace FlatRedBall.Glue.Managers
                     }
 
                     CallTaskAddedOrRemoved();
-                    if (mSyncedActions.Count > 0)
+                    if (mSyncedActions.Count > 0 && IsTaskProcessingEnabled)
                     {
                         ProcessNextSync();
                     }
