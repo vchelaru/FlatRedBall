@@ -40,7 +40,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
         public static void ReactToRightClick()
         {
             #region Get the context menu
-            PropertyGrid propertyGrid = MainGlueWindow.Self.PropertyGrid;
+            System.Windows.Forms.PropertyGrid propertyGrid = MainGlueWindow.Self.PropertyGrid;
             mHighlightedCustomVariable = null;
 
             if (propertyGrid.ContextMenu == null)
@@ -227,7 +227,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
         private static void ExposeVariableClick(object sender, EventArgs e)
         {
-            PropertyGrid propertyGrid = MainGlueWindow.Self.PropertyGrid;
+            System.Windows.Forms.PropertyGrid propertyGrid = MainGlueWindow.Self.PropertyGrid;
 
             string label = propertyGrid.SelectedGridItem.Label;
 

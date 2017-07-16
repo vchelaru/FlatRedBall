@@ -103,7 +103,9 @@ namespace GumPlugin
             // 0.8.5.3
             //  - Gum layers now set their own name at runtime
             //  - Removed a bit of memory allocation which occurred automatically in the Gum renderer
-            get { return new Version(0, 8, 5, 3); }
+            // 0.8.6.4
+            //  - Fixed rendering library by pulling in latest gum rendering code
+            get { return new Version(0, 8, 6, 4); }
         }
 
         #endregion

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
-using FlatRedBall.Instructions.Reflection;
+using FlatRedBall.PropertyGrid;
 
 namespace FlatRedBall.Glue.GuiDisplay
 {

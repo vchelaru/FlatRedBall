@@ -54,10 +54,30 @@ namespace FlatRedBallProfiler.Controls
 
             CreateHorizontalLines();
 
+            CreateCountLabels();
+
             this.DataContextChanged += HandleDataContextChanged;
 
             this.DataContext = new RenderBreakHistoryViewModel();
 
+        }
+
+        private void CreateCountLabels()
+        {
+            for(int i = 1; i < 20; i++)
+            {
+                int renderBreakCount = i * 10;
+
+                var y = CountToY(renderBreakCount);
+
+                var text = new TextBlock();
+                Canvas.SetLeft(text, 5);
+                Canvas.SetTop(text, y);
+                text.Text = renderBreakCount.ToString();
+                MainCanvas.Children.Add(text);
+
+                text.RenderTransform = new ScaleTransform(1, -1);
+            }
         }
 
         private void CreateHorizontalLines()
@@ -166,7 +186,7 @@ namespace FlatRedBallProfiler.Controls
         private void ExtendExistingLineFor(FrameRecordViewModel newFrame)
         {
             var lastLine = lineList.LastOrDefault();
-
+            const int buffer = 120;
             if(lastLine != null)
             {
                 lastLine.X2 = ViewModel.TimeToX(newFrame.Time);
@@ -174,12 +194,12 @@ namespace FlatRedBallProfiler.Controls
 
                 if(double.IsNaN( MainCanvas.Height) || lastLine.Y2 > MainCanvas.Height)
                 {
-                    MainCanvas.Height = lastLine.Y2;
+                    MainCanvas.Height = lastLine.Y2 + buffer;
                 }
 
                 if (lastLine.X2 > MainCanvas.Width || double.IsNaN(MainCanvas.Width))
                 {
-                    MainCanvas.Width = lastLine.X2;
+                    MainCanvas.Width = lastLine.X2 + buffer;
                     this.ScrollViewer.ScrollToRightEnd();
                 }
             }

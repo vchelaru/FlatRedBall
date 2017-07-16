@@ -170,10 +170,28 @@ namespace FlatRedBall.Glue.VSHelpers
             }
             #endregion
 
+
+
+
             if (string.IsNullOrEmpty(solutionFileName))
             {
-                throw new FileNotFoundException();
+                throw new FileNotFoundException("Could not find a .sln file for the argument project");
             }
+            else
+            {
+                // open it to make sure it actually references the .csproj, because it may not...
+                var contents = System.IO.File.ReadAllText(solutionFileName);
+
+                var whatToSearchFor = (baseFile + ".csproj").ToLowerInvariant();
+
+                bool doesReferenceProject = contents.ToLowerInvariant().Contains(whatToSearchFor);
+
+                if(!doesReferenceProject)
+                {
+                    throw new FileNotFoundException($"Found the .sln file \"{solutionFileName}\" but it does not reference the project \"{baseFile}.csproj\"");
+                }
+            }
+
 
             return solutionFileName;
 

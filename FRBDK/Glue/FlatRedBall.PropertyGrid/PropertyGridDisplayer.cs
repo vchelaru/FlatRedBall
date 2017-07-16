@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using FlatRedBall.Instructions.Reflection;
 
 namespace FlatRedBall.Glue.GuiDisplay
 {
@@ -118,7 +117,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
             else
             {
-                LateBinder.GetInstance(args.Owner.GetType()).SetValue( args.Owner, args.Member, args.Value);
+                PropertyGrid.LateBinder.GetInstance(args.Owner.GetType()).SetValue( args.Owner, args.Member, args.Value);
             }
             if(AfterMemberChange != null)
             {
@@ -162,7 +161,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         protected object mInstance;
 
-        PropertyGrid mPropertyGrid;
+        System.Windows.Forms.PropertyGrid mPropertyGrid;
 
         Timer mTimer;
         bool mRefreshOnTimer = true;
@@ -217,7 +216,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
 
 
-        public virtual PropertyGrid PropertyGrid
+        public virtual System.Windows.Forms.PropertyGrid PropertyGrid
         {
             get
             {

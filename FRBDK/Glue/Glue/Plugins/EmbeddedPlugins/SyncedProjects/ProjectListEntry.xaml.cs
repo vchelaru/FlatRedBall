@@ -6,6 +6,7 @@ using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,16 +50,27 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
         public static void OpenInVisualStudio(ProjectBase project)
         {
-            string solutionName = ProjectSyncer.LocateSolution(project.FullFileName);
+            string solutionName = null;
+
+            try
+            {
+                solutionName = ProjectSyncer.LocateSolution(project.FullFileName);
+            }
+            catch(FileNotFoundException fnfe)
+            {
+                MessageBox.Show(fnfe.Message);
+            }
 
             string fileToOpen = null;
 
             if (string.IsNullOrEmpty(solutionName))
             {
-                if (!PluginManager.OpenProject(project.FullFileName))
-                {
-                    fileToOpen = ProjectManager.ProjectBase.FullFileName;
-                }
+                // I don't think we should do anything here. This could confuse users if
+                // the solution isn't found. Let LocateSolution do its job, dont' second guess it...
+                //if (!PluginManager.OpenProject(project.FullFileName))
+                //{
+                //    fileToOpen = ProjectManager.ProjectBase.FullFileName;
+                //}
             }
             else
             {

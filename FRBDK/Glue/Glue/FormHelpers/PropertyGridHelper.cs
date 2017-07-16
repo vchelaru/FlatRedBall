@@ -31,7 +31,7 @@ namespace FlatRedBall.Glue.FormHelpers
 	{
 		#region Fields
 
-		private static PropertyGrid mPropertyGrid;
+		private static System.Windows.Forms.PropertyGrid mPropertyGrid;
 
         private static NamedObjectPropertyGridDisplayer mNosDisplayer = new NamedObjectPropertyGridDisplayer();
         private static StateSavePropertyGridDisplayer mStateSaveDisplayer = new StateSavePropertyGridDisplayer();
@@ -46,7 +46,7 @@ namespace FlatRedBall.Glue.FormHelpers
 		#endregion
 
 
-		public static void Initialize(PropertyGrid propertyGrid)
+		public static void Initialize(System.Windows.Forms.PropertyGrid propertyGrid)
         {
 
             mNosDisplayer.RefreshOnTimer = false;

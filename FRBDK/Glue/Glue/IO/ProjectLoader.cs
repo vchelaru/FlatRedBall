@@ -69,8 +69,7 @@ namespace FlatRedBall.Glue.IO
 
         public void LoadProject(string projectFileName, InitializationWindow initializationWindow)
         {
-            // turn off task processing while this is loading, so that no background tasks are running while plugins are starting up:
-            TaskManager.Self.IsTaskProcessingEnabled = false;
+
 
 
             TimeManager.Initialize();
@@ -87,8 +86,12 @@ namespace FlatRedBall.Glue.IO
 
             bool closeInitWindow = PrepareInitializationWindow(initializationWindow);
 
+            // close the project before turning off task processing...
             ClosePreviousProject(projectFileName);
 
+            // turn off task processing while this is loading, so that no background tasks are running while plugins are starting up.
+            // Do this *after* closing previous project, because closing previous project waits for all tasks to finish.
+            TaskManager.Self.IsTaskProcessingEnabled = false;
 
             SetInitWindowText("Loading code project");
 

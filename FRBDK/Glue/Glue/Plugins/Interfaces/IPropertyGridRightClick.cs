@@ -8,6 +8,6 @@ namespace FlatRedBall.Glue.Plugins.Interfaces
 {
     public interface IPropertyGridRightClick : IPlugin
     {
-        void ReactToRightClick(PropertyGrid rightClickedPropertyGrid, ContextMenu menuToModify);
+        void ReactToRightClick(System.Windows.Forms.PropertyGrid rightClickedPropertyGrid, ContextMenu menuToModify);
     }
 }

@@ -26,7 +26,7 @@ namespace FlatRedBall.Glue.SetVariable
     public class SetVariableLogic
     {
 
-        public void PropertyValueChanged(PropertyValueChangedEventArgs e, PropertyGrid mPropertyGrid)
+        public void PropertyValueChanged(PropertyValueChangedEventArgs e, System.Windows.Forms.PropertyGrid mPropertyGrid)
         {
             UnreferencedFilesManager.Self.ProcessRefreshOfUnreferencedFiles();
 

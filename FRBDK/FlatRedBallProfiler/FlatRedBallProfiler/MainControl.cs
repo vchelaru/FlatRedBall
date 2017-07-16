@@ -136,17 +136,17 @@ namespace FlatRedBallProfiler
 
             string message = null;
 
-            if (screen == null)
-            {
-                message = "No screen is available";
-            }
-            else
+            if (screen != null)
             {
                 var screenType = screen.GetType();
                 fieldInfo = screenType.GetField("mSection", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
             }
 
-            if(fieldInfo == null)
+            if(screen == null)
+            {
+                message = "No screen is available";
+            }
+            else if(fieldInfo == null)
             {
                 message = "Screen has no \"mSection\" field. You need to turn this on in Glue to see load sections";
             }

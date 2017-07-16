@@ -1182,7 +1182,7 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        internal static void ReactToPropertyGridRightClick(PropertyGrid rightClickedPropertyGrid, ContextMenu menuToModify)
+        internal static void ReactToPropertyGridRightClick(System.Windows.Forms.PropertyGrid rightClickedPropertyGrid, ContextMenu menuToModify)
         {
             foreach (PluginManager pluginManager in mInstances)
             {
