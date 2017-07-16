@@ -152,19 +152,16 @@ namespace FlatRedBall.Graphics
             LayerName = Renderer.CurrentLayerName ;
 
 
-#if WINDOWS_PHONE || MONOGAME
+            Red = 1;
+            Green = 1;
+            Blue = 1;
+#if MONOGAME
 
             if (text.ColorOperation != Graphics.ColorOperation.Texture)
             {
                 Red = text.Red;
                 Green = text.Green;
                 Blue = text.Blue;
-            }
-            else
-            {
-                Red = 1;
-                Green = 1;
-                Blue = 1;
             }
 #endif
 
@@ -221,12 +218,9 @@ namespace FlatRedBall.Graphics
             TextureFilter = FlatRedBallServices.GraphicsOptions.TextureFilter;
             _originalTextureFilter = TextureFilter.Linear;
 
-#if MONOGAME
             Red = 0;
             Green = 0;
             Blue = 0;
-
-#endif
         }
         
 
