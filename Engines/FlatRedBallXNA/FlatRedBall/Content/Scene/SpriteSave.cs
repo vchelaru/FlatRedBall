@@ -564,12 +564,11 @@ namespace FlatRedBall.Content.Scene
             GraphicalEnumerations.SetColors(sprite, TintRed, TintGreen, TintBlue, ColorOperation);
 
             // If the Texture is null, we may want to use "Color" instead of "ColorTextureAlpha"
-#if !FRB_MDX
+
             if (sprite.Texture == null && sprite.ColorOperation == FlatRedBall.Graphics.ColorOperation.ColorTextureAlpha)
             {
                 sprite.ColorOperation = FlatRedBall.Graphics.ColorOperation.Color;
             }
-#endif    
 
             sprite.mOrdered = Ordered;
 

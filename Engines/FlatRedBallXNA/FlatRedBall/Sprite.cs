@@ -156,7 +156,7 @@ namespace FlatRedBall
             }
         }
 
-#if WINDOWS_PHONE || XNA4
+#if XNA4
         private void UpdateColorsAccordingToAlpha()
         {
 
@@ -234,7 +234,7 @@ namespace FlatRedBall
         {
             get
             {
-#if WINDOWS_PHONE || XNA4
+#if XNA4
                 return mRed;
 #else
                 return mVertices[0].Color.X;
@@ -247,7 +247,7 @@ namespace FlatRedBall
                 value =
                     System.Math.Max(-FlatRedBall.Graphics.GraphicalEnumerations.MaxColorComponentValue, value);
 
-#if WINDOWS_PHONE || XNA4
+#if XNA4
                 mRed = value;
 
                 UpdateColorsAccordingToAlpha();
@@ -265,7 +265,7 @@ namespace FlatRedBall
         {
             get
             {
-#if WINDOWS_PHONE || XNA4
+#if XNA4
                 return mGreen;
 #else
                 return mVertices[0].Color.Y;
@@ -278,7 +278,7 @@ namespace FlatRedBall
                 value =
                     System.Math.Max(-FlatRedBall.Graphics.GraphicalEnumerations.MaxColorComponentValue, value);
 
-#if WINDOWS_PHONE || XNA4
+#if XNA4
                 mGreen = value;
 
                 UpdateColorsAccordingToAlpha();
@@ -296,7 +296,7 @@ namespace FlatRedBall
         {
             get
             {
-#if WINDOWS_PHONE || XNA4
+#if XNA4
                 return mBlue;
 #else
                 return mVertices[0].Color.Z; 
@@ -309,7 +309,7 @@ namespace FlatRedBall
                 value =
                     System.Math.Max(-FlatRedBall.Graphics.GraphicalEnumerations.MaxColorComponentValue, value);
 
-#if WINDOWS_PHONE || XNA4
+#if XNA4
                 mBlue = value;
 
                 UpdateColorsAccordingToAlpha();
@@ -349,11 +349,8 @@ namespace FlatRedBall
             }
         }
 
-#if FRB_MDX
-        public Microsoft.DirectX.Direct3D.TextureOperation ColorOperation
-#else
+
         public ColorOperation ColorOperation
-#endif
         {
             get { return mColorOperation; }
             set 
@@ -378,7 +375,7 @@ namespace FlatRedBall
 
 
                 mColorOperation = value;
-#if WINDOWS_PHONE || WINDOWS_8 || XNA4
+#if WINDOWS_8 || XNA4
                 UpdateColorsAccordingToAlpha();
 #endif
             }
@@ -391,7 +388,7 @@ namespace FlatRedBall
             { 
                 mBlendOperation = value;
 
-#if WINDOWS_PHONE || WINDOWS_8 || XNA4
+#if WINDOWS_8 || XNA4
                 UpdateColorsAccordingToAlpha();
 #endif
             }

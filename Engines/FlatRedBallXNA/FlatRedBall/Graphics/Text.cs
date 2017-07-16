@@ -710,40 +710,20 @@ namespace FlatRedBall.Graphics
             mAdjustedText = "";
 
             mVisible = true;
-#if FRB_MDX
-            mColorOperation = Microsoft.DirectX.Direct3D.TextureOperation.SelectArg2;
-#else
+
             mColorOperation = ColorOperation.ColorTextureAlpha;
 
-#endif
             mBlendOperation = BlendOperation.Regular;
             mNewLineDistance = 1.4f;
 
             mScale = 1;
             mSpacing = 1;
 
-#if FRB_MDX
-            if (GraphicsOptions.UseXnaColors)
-            {
-                mRed = 1;
-                mGreen = 1;
-                mBlue = 1;
-                mAlpha = 1;
-            }
-            else
-            {
 
-                mRed = 255;
-                mGreen = 255;
-                mBlue = 255;
-                mAlpha = 255;
-            }
-#else
             mRed = 1;
             mGreen = 1;
             mBlue = 1;
             mAlpha = 1;
-#endif
 
             mMaxWidth = float.PositiveInfinity;
         }

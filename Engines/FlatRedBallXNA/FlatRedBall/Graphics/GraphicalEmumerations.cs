@@ -448,11 +448,7 @@ namespace FlatRedBall.Graphics
                     return ColorOperation.Color;
                 case "SelectArg2":
                 case "ColorTextureAlpha":
-#if MONODROID
-                    return FlatRedBall.Graphics.ColorOperation.Color;
-#else
                     return FlatRedBall.Graphics.ColorOperation.ColorTextureAlpha;
-#endif
                 //break;
                 case "Subtract":
                     return FlatRedBall.Graphics.ColorOperation.Subtract;

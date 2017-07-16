@@ -1289,7 +1289,7 @@ namespace FlatRedBall.Graphics
 
 
 
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME
             switch (value)
             {
                 case FlatRedBall.Graphics.ColorOperation.Texture:
@@ -1322,11 +1322,13 @@ namespace FlatRedBall.Graphics
                 case FlatRedBall.Graphics.ColorOperation.ColorTextureAlpha:
                     mCurrentEffect.TextureEnabled = true;
                     mCurrentEffect.VertexColorEnabled = true;
-#if MONOGAME
-                    mCurrentEffect.FogEnabled = true;
-                    mCurrentEffect.FogStart = 0;
-                    mCurrentEffect.FogEnd = 1;
-#endif
+
+                    // Since MonoGame doesn't use custom shaders, we have to hack this
+                    // using Fog. It works...but it's slow and introduces a lot of render breaks. 
+                    // At some point in the future we should try to fix this.
+                        mCurrentEffect.FogEnabled = true;
+                        mCurrentEffect.FogStart = 0;
+                        mCurrentEffect.FogEnd = 1;
                     break;
 
                 case FlatRedBall.Graphics.ColorOperation.Modulate:
@@ -1423,15 +1425,8 @@ namespace FlatRedBall.Graphics
                     mGraphics.GraphicsDevice.BlendState = BlendState.Additive;
 					break;
                 case FlatRedBall.Graphics.BlendOperation.Regular:
-
-//		#if ANDROID
-//				mGraphics.GraphicsDevice.BlendState = BlendState.NonPremultiplied;
-//
-//			#else
                     mGraphics.GraphicsDevice.BlendState = BlendState.AlphaBlend;
-//		#endif
                     break;
-
                 case FlatRedBall.Graphics.BlendOperation.NonPremultipliedAlpha:
                     mGraphics.GraphicsDevice.BlendState = BlendState.NonPremultiplied;
                     break;

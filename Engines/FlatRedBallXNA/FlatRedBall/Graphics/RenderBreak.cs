@@ -56,21 +56,14 @@ namespace FlatRedBall.Graphics
             }
 
         }
-
 #endif
-
-#if WINDOWS_PHONE || MONOGAME
+        
         public float Red;
         public float Green;
         public float Blue;
-#endif
 
-#if FRB_MDX
-        TextureOperation ColorOperation;
-#else
         public ColorOperation ColorOperation;
 
-#endif
         public BlendOperation BlendOperation;
 
         public TextureFilter TextureFilter;
@@ -118,7 +111,6 @@ namespace FlatRedBall.Graphics
                 BlendOperation = sprite.BlendOperation;
                 TextureFilter = sprite.TextureFilter.HasValue ? sprite.TextureFilter.Value : FlatRedBallServices.GraphicsOptions.TextureFilter;
 
-#if FRB_XNA
                 if (sprite.Texture == null)
                 {
 
@@ -126,34 +118,25 @@ namespace FlatRedBall.Graphics
                     TextureAddressMode = Microsoft.Xna.Framework.Graphics.TextureAddressMode.Clamp;
                 }
                 else
-#endif
                 {
                     TextureAddressMode = sprite.TextureAddressMode;
                 }
 
 
-#if WINDOWS_PHONE || MONOGAME
-
                 Red = sprite.Red;
                 Green = sprite.Green;
                 Blue = sprite.Blue;
-#endif
-
             }
             else
             {
-#if WINDOWS_PHONE || MONOGAME
                 Red = 0;
                 Green = 0;
                 Blue = 0;
-#endif
 
                 mTexture = null;
-#if FRB_MDX
-                ColorOperation = TextureOperation.SelectArg1;
-#else
+
                 ColorOperation = ColorOperation.None;
-#endif
+
                 BlendOperation = BlendOperation.Regular;
                 TextureAddressMode = TextureAddressMode.Clamp;
                 TextureFilter = FlatRedBallServices.GraphicsOptions.TextureFilter;
@@ -254,21 +237,30 @@ namespace FlatRedBall.Graphics
         public bool DiffersFrom(Sprite sprite)
         {
 
+            // Some explanation on why we are doing this:
+            // ColorTextureAlpha is implemented using a custom
+            // shader on FRB XNA. FRB MonoGame doesn't (yet) use
+            // custom shaders, so it has to rely on fixed function-
+            // equivalent code (technically it is using shaders, just
+            // not ones we wrote for FRB). Therefore, when using this color
+            // operation, we have to change states on any color change. But to
+            // make this more efficient we'll only do this if in ColorTExtureAlpha.
+            // Even though FlatRedBall XNA doesn't require a state change here, we want
+            // all engines to beave the same if the user uses FRB XNA for performance measurements.
+            // Therefore, we'll inject a render break here on PC and eat the performance penalty to 
+            // get identical behavior across platforms.
+            bool isColorChangingOnColorTextureAlpha =
+                (sprite.Red != Red ||
+                sprite.Green != Green ||
+                sprite.Blue != Blue) && sprite.ColorOperation == ColorOperation.ColorTextureAlpha;
+
             return sprite.Texture != Texture ||
                 sprite.ColorOperation != ColorOperation ||
                 sprite.BlendOperation != BlendOperation ||
                 sprite.TextureAddressMode != TextureAddressMode ||
-                (sprite.TextureFilter != null && 
-                sprite.TextureFilter != TextureFilter)
-#if WINDOWS_PHONE || MONOGAME
-                ||
-                sprite.Red != Red ||
-                sprite.Green != Green ||
-                sprite.Blue != Blue
-#endif
-                
-                
-                ;
+                (sprite.TextureFilter != null &&
+                sprite.TextureFilter != TextureFilter) ||
+                isColorChangingOnColorTextureAlpha;
         }
 
         public bool DiffersFrom(Text text)
@@ -292,17 +284,7 @@ namespace FlatRedBall.Graphics
         {
             //if (Renderer.RendererDiagnosticSettings.RenderBreaksPerformStateChanges)
             {
-#if FRB_MDX
-                if (Texture != null)
-                    Renderer.Texture = Texture.texture;
-                else
-                    Renderer.Texture = null;
 
-                if (Texture == null && ColorOperation == TextureOperation.SelectArg1)
-                {
-                    ColorOperation = TextureOperation.SelectArg2;
-                }
-#else
                 if (ColorOperation != Graphics.ColorOperation.Color)
                 {
                     Renderer.Texture = Texture;
@@ -312,7 +294,6 @@ namespace FlatRedBall.Graphics
                 {
                     ColorOperation = ColorOperation.Color;
                 }
-#endif
 
                 Renderer.ColorOperation = ColorOperation;
                 Renderer.BlendOperation = BlendOperation;
@@ -321,41 +302,16 @@ namespace FlatRedBall.Graphics
                 if (TextureFilter != FlatRedBallServices.GraphicsOptions.TextureFilter)
                     FlatRedBallServices.GraphicsOptions.TextureFilter = TextureFilter;
 
-#if WINDOWS_PHONE || MONOGAME
-            if (ColorOperation == Graphics.ColorOperation.ColorTextureAlpha)
-            {
-                Renderer.SetFogForColorOperation(Red, Green, Blue);
-            }
-            // Vic says - can we do add?  Do we have to use dual texturing?  Crappy!
-            //if (ColorOperation == Graphics.ColorOperation.Add)
-            //{
-            //    BasicEffect effect = Renderer.CurrentEffect as BasicEffect;
-
-                
-
-            //    effect.LightingEnabled = true;
-                
-            //    effect.AmbientLightColor = Microsoft.Xna.Framework.Vector3.One;
-
-            //    effect.DirectionalLight0.Enabled = true;
-            //    effect.DirectionalLight0.DiffuseColor = new Microsoft.Xna.Framework.Vector3(Red, Green, Blue);
-            //    //effect.EmissiveColor = new Microsoft.Xna.Framework.Vector3(Red, Green, Blue);
-
-
-            //}
-            //else
-            //{
-            //    BasicEffect effect = Renderer.CurrentEffect as BasicEffect;
-
-            //    effect.EmissiveColor = new Microsoft.Xna.Framework.Vector3(0, 0, 0);
-
-
-            //}
+#if MONOGAME
+                if (ColorOperation == Graphics.ColorOperation.ColorTextureAlpha)
+                {
+                    Renderer.SetFogForColorOperation(Red, Green, Blue);
+                }
 #endif
             }
         }
 
-#if !FRB_MDX
+
         public void SetStates(Effect effect)
         {
             //if (Renderer.RendererDiagnosticSettings.RenderBreaksPerformStateChanges)
@@ -376,7 +332,7 @@ namespace FlatRedBall.Graphics
                     FlatRedBallServices.GraphicsOptions.TextureFilter = TextureFilter;
             }
         }
-#endif
+
 
         public override string ToString()
         {

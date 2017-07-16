@@ -794,6 +794,15 @@ namespace FlatRedBall
 
         }
 
+        /// <summary>
+        /// Adds the argument batchToAdd to the argument layerToAddTo.
+        /// If layerToAddTo is null, then this is the same as calling AddDrawableBatch(batchToAdd).
+        /// If batchToAdd has already been added to the SpriteManager as an un-layered IDrawableBatch,
+        /// this method will remove the IDrawableBatch from the unlayered list, and add it to the layer (so it draws only one time).
+        /// Calling this method multiple times with multiple layers, however, will result in batchToAdd being part of multiple layers.
+        /// </summary>
+        /// <param name="batchToAdd">The IDrawableBatch to add.</param>
+        /// <param name="layerToAddTo">The layer to add to, which can be null.</param>
         public static void AddToLayer(IDrawableBatch batchToAdd, Layer layerToAddTo)
         {
 #if DEBUG
@@ -2229,6 +2238,10 @@ namespace FlatRedBall
             mLayers.Insert(0, layer);
         }
 
+        /// <summary>
+        /// Moves the argument layer so it appears in front (drawn after) all other layers.
+        /// </summary>
+        /// <param name="layer">The layer to move.</param>
         public static void MoveToFront(Layer layer)
         {
             // Last layers appear on top (front)
@@ -2236,6 +2249,11 @@ namespace FlatRedBall
             mLayers.Add(layer);
         }
 
+        /// <summary>
+        /// Reorders the argument layerToMove so that it is drawn immediately after the relativeTo layer.
+        /// </summary>
+        /// <param name="layerToMove">Which layer to move.</param>
+        /// <param name="relativeTo">The layer to move in front of.</param>
         public static void MoveLayerAboveLayer(Layer layerToMove, Layer relativeTo)
         {
             int index = mLayers.IndexOf(relativeTo);
