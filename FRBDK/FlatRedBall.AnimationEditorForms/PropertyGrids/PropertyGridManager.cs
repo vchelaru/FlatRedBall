@@ -19,7 +19,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         static PropertyGridManager mSelf;
 
-        PropertyGrid mPropertyGrid;
+        System.Windows.Forms.PropertyGrid mPropertyGrid;
         TileMapInfoWindow mTileMapInfoWindow;
 
         #endregion
@@ -61,7 +61,7 @@ namespace FlatRedBall.AnimationEditorForms
             mAnimationChainDisplayer = new AnimationChainDisplayer();
         }
 
-        public void Initialize(PropertyGrid propertyGrid, TileMapInfoWindow tileMapInfoWindow)
+        public void Initialize(System.Windows.Forms.PropertyGrid propertyGrid, TileMapInfoWindow tileMapInfoWindow)
         {
             mPropertyGrid = propertyGrid;
             mTileMapInfoWindow = tileMapInfoWindow;
