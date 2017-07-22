@@ -143,8 +143,6 @@ namespace FlatRedBall.Math
                 throw new InvalidOperationException("Can't add the following object twice: " + attachable.Name);
             }
 #endif
-            if (attachable == null)
-                return;
 
             // January 4, 2012
             // Victor Chelaru

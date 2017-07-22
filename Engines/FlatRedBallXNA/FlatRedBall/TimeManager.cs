@@ -1,11 +1,6 @@
-
-using System;
 using System.Collections.Generic;
 
-#if !FRB_MDX
 using Microsoft.Xna.Framework;
-#endif
-
 using System.Text;
 
 using System.Threading;
@@ -58,11 +53,7 @@ namespace FlatRedBall
 
         static double mCurrentTimeForTimedSections;
 
-#if SILVERLIGHT
-        static long mStartingTicks;
-#else
         static System.Diagnostics.Stopwatch stopWatch;
-#endif
 
         static List<double> sections = new List<double>();
         static List<string> sectionLabels = new List<string>();
@@ -83,9 +74,7 @@ namespace FlatRedBall
 
         static bool mIsPersistentTiming = false;
 
-#if !FRB_MDX
         static GameTime mLastUpdateGameTime;
-#endif
 
 		static TimeMeasurementUnit mTimedSectionReportngUnit = TimeMeasurementUnit.Millisecond;
 
@@ -135,12 +124,10 @@ namespace FlatRedBall
             set { mTimeFactor = value; }
         }
 
-#if FRB_XNA
         public static GameTime LastUpdateGameTime
         {
             get { return mLastUpdateGameTime; }
         }
-#endif
 
 		public static TimeMeasurementUnit TimedSectionReportingUnit
         {
@@ -169,12 +156,7 @@ namespace FlatRedBall
         {
             get 
             { 
-#if SILVERLIGHT
-                return TimeSpan.FromTicks(System.DateTime.Now.Ticks - mStartingTicks).TotalSeconds;
-#else
-                
                 return stopWatch.Elapsed.TotalSeconds; 
-#endif
             }
 
         }
@@ -222,21 +204,18 @@ namespace FlatRedBall
         {
             stringBuilder = new StringBuilder(200);
 
-#if SILVERLIGHT
-            mStartingTicks = System.DateTime.Now.Ticks;
-#else
             InitializeStopwatch();
-
-#endif
         }
 
-#if !SILVERLIGHT
         public static void InitializeStopwatch()
         {
-            stopWatch = new System.Diagnostics.Stopwatch();
-            stopWatch.Start();
+            if(stopWatch == null)
+            {
+                // This may be initialized outside of FRB if the user is trying to time pre-FRB calls
+                stopWatch = new System.Diagnostics.Stopwatch();
+                stopWatch.Start();
+            }
         }
-#endif
 
         #region TimeSection code
 

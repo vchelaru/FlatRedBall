@@ -105,7 +105,9 @@ namespace GumPlugin
             //  - Removed a bit of memory allocation which occurred automatically in the Gum renderer
             // 0.8.6.4
             //  - Fixed rendering library by pulling in latest gum rendering code
-            get { return new Version(0, 8, 6, 4); }
+            // 0.8.6.5
+            //  - Added support to set single pixel texture and single pixel destination rectangle on the renderer.
+            get { return new Version(0, 8, 6, 5); }
         }
 
         #endregion

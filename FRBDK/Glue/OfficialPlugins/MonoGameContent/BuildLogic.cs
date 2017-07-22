@@ -130,41 +130,45 @@ namespace OfficialPlugins.MonoGameContent
                 TaskManager.Self.AddSync(
                 () =>
                 {
-                    var process = new Process();
-
-                    process.StartInfo.Arguments = commandLine;
-                    process.StartInfo.UseShellExecute = false;
-                    process.StartInfo.FileName = commandLineBuildExe;
-                    process.StartInfo.WorkingDirectory = contentDirectory;
-                    process.StartInfo.RedirectStandardError = true;
-                    process.StartInfo.RedirectStandardInput = true;
-                    process.StartInfo.RedirectStandardOutput = true;
-
-                    process.StartInfo.CreateNoWindow = true;
-
-                    process.Start();
-
-                    var errorString = process.StandardError.ReadToEnd() + "\n\n" + process.StandardOutput.ReadToEnd();
-
-                    PluginManager.ReceiveOutput($"Building: {commandLineBuildExe} {commandLine}");
-
-                    while (process.HasExited == false)
+                    // If the user closes the project while the startup is happening, just skip the task - no need to build
+                    if(GlueState.Self.CurrentGlueProject != null)
                     {
-                        System.Threading.Thread.Sleep(100);
-                    }
+                        var process = new Process();
 
-                    string relativeToAddNoExtension =
-                        FileManager.RemoveExtension(referencedFile.Name);
+                        process.StartInfo.Arguments = commandLine;
+                        process.StartInfo.UseShellExecute = false;
+                        process.StartInfo.FileName = commandLineBuildExe;
+                        process.StartInfo.WorkingDirectory = contentDirectory;
+                        process.StartInfo.RedirectStandardError = true;
+                        process.StartInfo.RedirectStandardInput = true;
+                        process.StartInfo.RedirectStandardOutput = true;
 
-                    string absoluteToAddNoExtension = destinationDirectory +
-                        FileManager.RemovePath(FileManager.RemoveExtension(referencedFile.Name));
+                        process.StartInfo.CreateNoWindow = true;
 
-                    foreach(var extension in contentItem.GetBuiltExtensions())
-                    {
-                        AddFileToProject(project, 
-                            absoluteToAddNoExtension + "." + extension, 
-                            relativeToAddNoExtension + "." + extension);
+                        process.Start();
 
+                        var errorString = process.StandardError.ReadToEnd() + "\n\n" + process.StandardOutput.ReadToEnd();
+
+                        PluginManager.ReceiveOutput($"Building: {commandLineBuildExe} {commandLine}");
+
+                        while (process.HasExited == false)
+                        {
+                            System.Threading.Thread.Sleep(100);
+                        }
+
+                        string relativeToAddNoExtension =
+                            FileManager.RemoveExtension(referencedFile.Name);
+
+                        string absoluteToAddNoExtension = destinationDirectory +
+                            FileManager.RemovePath(FileManager.RemoveExtension(referencedFile.Name));
+
+                        foreach(var extension in contentItem.GetBuiltExtensions())
+                        {
+                            AddFileToProject(project, 
+                                absoluteToAddNoExtension + "." + extension, 
+                                relativeToAddNoExtension + "." + extension);
+
+                        }
                     }
                 },
                 "Building MonoGame Content " + fullFileName);

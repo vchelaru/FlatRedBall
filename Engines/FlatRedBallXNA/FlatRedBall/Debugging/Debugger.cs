@@ -98,6 +98,7 @@ namespace FlatRedBall.Debugging
             if (mText == null)
             {
                 mText = TextManager.AddText("");
+                mText.Name = "Debugger rendering text";
                 mLayer = SpriteManager.TopLayer;
                 TextManager.AddToLayer(mText, mLayer);
                 mText.AttachTo(SpriteManager.Camera, false);

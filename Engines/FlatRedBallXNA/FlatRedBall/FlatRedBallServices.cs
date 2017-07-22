@@ -608,7 +608,7 @@ namespace FlatRedBall
             mClientWidth = mGraphicsOptions.ResolutionWidth;
             mClientHeight = mGraphicsOptions.ResolutionHeight;
 
-#if !WINDOWS_PHONE && !WINDOWS_8
+#if !WINDOWS_8
             mGraphics.PreferredBackBufferWidth = mClientWidth;
             mGraphics.PreferredBackBufferHeight = mClientHeight;
 #endif
@@ -813,7 +813,7 @@ namespace FlatRedBall
         {
             // All InitializeFlatRedBall methods call this one
 
-#if !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
             PngLoader.Initialize();
 #endif
 
@@ -826,8 +826,10 @@ namespace FlatRedBall
             fontTexture = FlatRedBall.Content.ContentManager.GetDefaultFontTexture(graphics.GraphicsDevice);
             
             fontTexture.Name = "Default Font Texture";
-            TextManager.DefaultFont = new BitmapFont(fontTexture,
-                DefaultFontDataColors.GetFontPattern());
+
+            var fontPattern = DefaultFontDataColors.GetFontPattern();
+            TextManager.DefaultFont = new BitmapFont(fontTexture, fontPattern);
+
 #elif WINDOWS_8
             Assembly assembly = typeof(Sprite).GetTypeInfo().Assembly;
             
@@ -882,34 +884,14 @@ namespace FlatRedBall
             InitializeShaders();
 
             mIsInitialized = true;
-            // TODO [msmith] Get this working once we add the files to the assets folder.
-            /*  MDS_TEMP
-#if MONODROID
-            //Load font for MonoGame after initializing
 
-            fontTexture = Load<Texture2D>(@"defaulttext");
-            //new ContentManager(mServices).Load<Texture2D>("Content/Textures/defaultText");
 
-            fontTexture.Name = "Default Font Texture";
 
-            string s = "";
-            using (var rdr = new StreamReader(Game.Activity.Assets.Open(@"defaultfont.txt")))
-            {
-                s = rdr.ReadToEnd();
-            }
 
-            TextManager.DefaultFont = new BitmapFont(fontTexture,
-                s);
-#endif
-
-*/
             GuiManager.Initialize(fontTexture, new Cursor(SpriteManager.Camera));
 
-            // Reset graphics device now that everything is loaded
-            //mGraphicsOptions.ResetDevice();
-            //Window_ClientSizeChanged(null, new EventArgs());
 
-
+            
         }
 
         public const string ShaderContentManager = "InternalShaderContentManager";

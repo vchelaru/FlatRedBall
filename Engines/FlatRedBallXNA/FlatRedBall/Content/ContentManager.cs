@@ -49,6 +49,7 @@ using System.IO;
 using Color = Microsoft.Xna.Framework.Color;
 using Microsoft.Xna.Framework.Media;
 using FlatRedBall.Content.ContentLoaders;
+using FlatRedBall.Performance.Measurement;
 
 namespace FlatRedBall.Content
 {
@@ -90,27 +91,46 @@ namespace FlatRedBall.Content
         #region Default Content
 
         #region Default Font Texture Data
-#if !FRB_MDX && !SILVERLIGHT
         public static Texture2D GetDefaultFontTexture(GraphicsDevice graphicsDevice)
         {
+#if ANDROID
+            var activity = FlatRedBallServices.Game.Services.GetService<Android.App.Activity>();
+            Android.Content.Res.AssetManager androidAssetManager = activity.Assets;
+            Texture2D texture;
+
+            try
+            {
+
+                using (var stream = androidAssetManager.Open("content/defaultfonttexture.png"))
+                {
+                    texture = Texture2D.FromStream(graphicsDevice, stream);
+                }
+            }
+            catch
+            {
+                throw new Exception("The file defaultfonttexture.png in the game's content folder is missing. If you are missing this file, look at the default Android template to see where it should be added (in Assets/content/)");
+            }
+
+#else
+
+
             var colors = DefaultFontDataColors.GetColorArray();
 
             Texture2D texture = new Texture2D(graphicsDevice, 256, 128);
-#if XNA3
-            texture.SetData<Microsoft.Xna.Framework.Graphics.Color>(colors);
-#else
+
 			texture.SetData<Microsoft.Xna.Framework.Color>(colors);
+
 #endif
+
             return texture;
         }
-#endif
-        #endregion
+#endregion
 
 
 
-        #endregion
+#endregion
 
-        #region Properties
+#region Properties
 
         public IEnumerable<IDisposable> DisposableObjects
         {
@@ -161,11 +181,11 @@ namespace FlatRedBall.Content
         }
 #endif
 
-		#endregion
+#endregion
 
-		#region Methods
+#region Methods
 
-		#region Constructors
+#region Constructors
 
 		public ContentManager(string name, IServiceProvider serviceProvider)
 			: base(serviceProvider)
@@ -185,9 +205,9 @@ namespace FlatRedBall.Content
 			ManualResetEventList = new List<ManualResetEvent>();
 		}
 
-		#endregion
+#endregion
 
-		#region Public Methods
+#region Public Methods
 
 		public void AddDisposable(string disposableName, IDisposable disposable)
 		{
@@ -324,7 +344,7 @@ namespace FlatRedBall.Content
 			// in the project.
 			string extension = FileManager.GetExtension(assetName);
 
-			#region If there is an extension, loading from file or returning an already-loaded asset
+#region If there is an extension, loading from file or returning an already-loaded asset
 			assetName = FileManager.Standardize(assetName);
 
 			if (extension != String.Empty)
@@ -332,9 +352,9 @@ namespace FlatRedBall.Content
 				return LoadFromFile<T>(assetName);
 			}
 
-			#endregion
+#endregion
 
-			#region Else there is no extension, so the file is already part of the project.  Use a ContentManager
+#region Else there is no extension, so the file is already part of the project.  Use a ContentManager
 			else
 			{
 #if PROFILE
@@ -358,7 +378,7 @@ namespace FlatRedBall.Content
 
 				return LoadFromProject<T>(assetName);
 			}
-			#endregion
+#endregion
 
 		}
 
@@ -371,16 +391,16 @@ namespace FlatRedBall.Content
 
 
 
-        #if DEBUG
+#if DEBUG
 
 			bool shouldCheckForXnb = true;
 
-		#if ANDROID 
+#if ANDROID
 			if(typeof(T) == typeof(Song))
 			{
 				shouldCheckForXnb = false;
 			}
-		#endif
+#endif
 
 
 			string fileToCheckFor = assetName + ".xnb";
@@ -390,7 +410,7 @@ namespace FlatRedBall.Content
 			{
 				string errorString = "Could not find the file " + fileToCheckFor + "\n";
 
-        #if !WINDOWS_8
+#if !WINDOWS_8
 				List<string> filesInDirectory = FileManager.GetAllFilesInDirectory(FileManager.GetDirectory(assetName), null, 0);
 
 				errorString += "Found the following files:\n\n";
@@ -401,20 +421,20 @@ namespace FlatRedBall.Content
 					errorString += FileManager.RemovePath(s) + "\n";
 				}
 
-        #endif
+#endif
 				throw new FileNotFoundException(errorString);
 			}
-        #endif
+#endif
 
-        #if XNA4 && !MONOGAME
+#if XNA4 && !MONOGAME
 			if (!FileManager.IsRelative(assetName))
 			{
 				assetName = FileManager.MakeRelative(
 					assetName, System.Windows.Forms.Application.StartupPath + "/");
 			}
-        #endif
+#endif
 
-        #if USES_DOT_SLASH_ABOLUTE_FILES
+#if USES_DOT_SLASH_ABOLUTE_FILES
 
             T asset;
 
@@ -427,9 +447,9 @@ namespace FlatRedBall.Content
 				asset = base.Load<T>(assetName);
 
 			}
-        #else
+#else
 			T asset = base.Load<T>(assetName);
-        #endif
+#endif
 			if (!mAssets.ContainsKey(assetName))
 			{
 				mAssets.Add(assetName, asset);
@@ -498,7 +518,7 @@ namespace FlatRedBall.Content
 					loadedAsset = textureContentLoader.Load(assetName);
 				}
 
-				#region Scene
+#region Scene
 
 				else if (typeof(T) == typeof(FlatRedBall.Scene))
 				{
@@ -516,9 +536,9 @@ namespace FlatRedBall.Content
 					return (T)sceneAsObject;
 				}
 
-				#endregion
+#endregion
 
-				#region EmitterList
+#region EmitterList
 
 				else if (typeof(T) == typeof(EmitterList))
 				{
@@ -532,9 +552,9 @@ namespace FlatRedBall.Content
 
 				}
 
-				#endregion
+#endregion
 
-				#region Image
+#region Image
 #if !MONOGAME
 				else if (typeof(T) == typeof(Image))
 				{
@@ -549,9 +569,9 @@ namespace FlatRedBall.Content
 
 				}
 #endif
-				#endregion
+#endregion
 
-				#region BitmapList
+#region BitmapList
 #if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME
 
 				else if (typeof(T) == typeof(BitmapList))
@@ -561,9 +581,9 @@ namespace FlatRedBall.Content
 				}
 #endif
 
-				#endregion
+#endregion
 
-				#region NodeNetwork
+#region NodeNetwork
 				else if (typeof(T) == typeof(NodeNetwork))
 				{
 					NodeNetwork nodeNetwork = NodeNetworkSave.FromFile(assetName).ToNodeNetwork();
@@ -572,9 +592,9 @@ namespace FlatRedBall.Content
 
 					return (T)((object)nodeNetwork);
 				}
-				#endregion
+#endregion
 
-				#region ShapeCollection
+#region ShapeCollection
 
 				else if (typeof(T) == typeof(ShapeCollection))
 				{
@@ -585,9 +605,9 @@ namespace FlatRedBall.Content
 
 					return (T)((object)shapeCollection);
 				}
-				#endregion
+#endregion
 
-				#region PositionedObjectList<Polygon>
+#region PositionedObjectList<Polygon>
 
 				else if (typeof(T) == typeof(PositionedObjectList<FlatRedBall.Math.Geometry.Polygon>))
 				{
@@ -597,9 +617,9 @@ namespace FlatRedBall.Content
 					return (T)((object)polygons);
 				}
 
-				#endregion
+#endregion
 
-				#region AnimationChainList
+#region AnimationChainList
 
 				else if (typeof(T) == typeof(AnimationChainList))
 				{
@@ -626,7 +646,7 @@ namespace FlatRedBall.Content
 					mNonDisposableDictionary.Add(fullNameWithType, loadedAsset);
 				}
 
-				#endregion
+#endregion
 
 				else if(typeof(T) == typeof(Song))
 				{
@@ -653,7 +673,7 @@ namespace FlatRedBall.Content
                 }
 #endif
 
-                #region RuntimeCsvRepresentation
+#region RuntimeCsvRepresentation
 
 #if !SILVERLIGHT
                 else if (typeof(T) == typeof(RuntimeCsvRepresentation))
@@ -668,9 +688,9 @@ namespace FlatRedBall.Content
 #endif
 
 
-                #endregion
+#endregion
 
-                #region SplineList
+#region SplineList
 
                 else if (typeof(T) == typeof(List<Spline>))
                 {
@@ -691,9 +711,9 @@ namespace FlatRedBall.Content
                     return (T)asObject;
                 }
 
-                #endregion
+#endregion
 
-                #region BitmapFont
+#region BitmapFont
 
                 else if (typeof(T) == typeof(BitmapFont))
                 {
@@ -709,19 +729,19 @@ namespace FlatRedBall.Content
                     return (T)bitmapFontAsObject;
                 }
 
-                #endregion
+#endregion
 
 
-                #region Text
+#region Text
 
                 else if (typeof(T) == typeof(string))
                 {
                     return (T)((object)FileManager.FromFileText(assetName));
                 }
 
-                #endregion
+#endregion
 
-                #region Catch mistakes
+#region Catch mistakes
 
 #if DEBUG
                 else if (typeof(T) == typeof(Spline))
@@ -736,9 +756,9 @@ namespace FlatRedBall.Content
                 }
 #endif
 
-                #endregion
+#endregion
 
-                #region else, exception!
+#region else, exception!
 
                 else
                 {
@@ -748,7 +768,7 @@ namespace FlatRedBall.Content
                         "name.");
                 }
 
-				#endregion
+#endregion
 
 				if (loadedAsset != null)
 				{
@@ -793,7 +813,7 @@ namespace FlatRedBall.Content
 
 		public void UnloadAsset<T>(T assetToUnload)
 		{
-			#region Remove from non-disposables if the non-disposables containes the assetToUnload
+#region Remove from non-disposables if the non-disposables containes the assetToUnload
 			if (this.mNonDisposableDictionary.ContainsValue(assetToUnload))
 			{
 				string assetName = "";
@@ -810,9 +830,9 @@ namespace FlatRedBall.Content
 				mNonDisposableDictionary.Remove(assetName);
 
 			}
-			#endregion
+#endregion
 
-			#region If it's an IDisposable, then remove it from the disposable dictionary
+#region If it's an IDisposable, then remove it from the disposable dictionary
 			if (assetToUnload is IDisposable)
 			{
 				IDisposable asDisposable = assetToUnload as IDisposable;
@@ -842,7 +862,7 @@ namespace FlatRedBall.Content
 						"loaded from the project must be loaded by unloading an entire Content Manager");
 				}
 			}
-			#endregion
+#endregion
 		}
 
 		public new void Unload()
@@ -911,9 +931,9 @@ namespace FlatRedBall.Content
 
 #endif
 
-		#endregion
+#endregion
 
-		#region Internal Methods
+#region Internal Methods
 
 		// Vic says: I don't think we need this anymore
 		internal void RefreshTextureOnDeviceLost()
@@ -935,9 +955,9 @@ namespace FlatRedBall.Content
 			//kvp.Value.Clear();
 		}
 
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 
 		private T AdjustNewAsset<T>(T asset, string assetName)
 		{
@@ -985,8 +1005,8 @@ namespace FlatRedBall.Content
 
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 	}
 }

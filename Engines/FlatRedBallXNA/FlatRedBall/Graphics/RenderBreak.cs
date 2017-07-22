@@ -25,6 +25,10 @@ namespace FlatRedBall.Graphics
 
 #if DEBUG
         public object ObjectCausingBreak;
+
+        /// <summary>
+        /// Debug only: Returns detailed information about this render break.
+        /// </summary>
         public string Details
         {
             get

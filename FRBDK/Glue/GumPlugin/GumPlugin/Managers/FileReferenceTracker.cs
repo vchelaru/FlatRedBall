@@ -530,7 +530,7 @@ namespace GumPlugin.Managers
         {
             var gumProject = ObjectFinder.Self.GumProjectSave;
 
-            if (gumProject != null && FileManager.FileExists(gumProject.FullFileName))
+            if (gumProject != null && FileManager.FileExists(gumProject.FullFileName) && GlueState.Self.CurrentGlueProject != null)
             {
 
                 var codeProject = GlueState.Self.CurrentMainProject;

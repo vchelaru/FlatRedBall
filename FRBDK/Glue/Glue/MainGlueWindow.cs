@@ -659,6 +659,10 @@ namespace Glue
             while (TaskManager.Self.AreAllAsyncTasksDone == false)
             {
                 System.Threading.Thread.Sleep(50);
+
+                // pump events
+                Application.DoEvents();
+
             }
 
 

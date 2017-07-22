@@ -99,8 +99,11 @@ namespace GumPlugin.Managers
                     TaskManager.Self.AddAsyncTask(
                         () =>
                         {
-                            ProjectManager.UpdateFileMembershipInProject(gumRfs);
-                            GlueCommands.Self.ProjectCommands.SaveProjects();
+                            bool wasAnythingAdded = ProjectManager.UpdateFileMembershipInProject(gumRfs);
+                            if(wasAnythingAdded)
+                            {
+                                GlueCommands.Self.ProjectCommands.SaveProjects();
+                            }
                         },
                         $"Refreshing files in content project for {gumRfs.Name}"); 
                 }

@@ -93,7 +93,15 @@ namespace FlatRedBall.Glue.VSHelpers
 
             foreach (string resourceName in mFilesToAdd)
             {
-                succeeded = SaveResourceFileToProject(assembly, succeeded, filesToAddToProject, resourceName);
+                // User may have shut down the project:
+                if (ProjectManager.ProjectBase != null)
+                {
+                    succeeded = SaveResourceFileToProject(assembly, succeeded, filesToAddToProject, resourceName);
+                }
+                else
+                {
+                    succeeded = false;
+                }
 
                 if (!succeeded)
                 {

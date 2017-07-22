@@ -705,8 +705,10 @@ namespace FlatRedBall.Glue.FormHelpers
             // view file order, viewfileorder, view files, viewfiles, viewfilelist, view file list
             ReferencedFileFlatListWindow rfflw = new ReferencedFileFlatListWindow();
             rfflw.Show(MainGlueWindow.Self);
-
-            rfflw.PopulateFrom(ProjectManager.GlueProjectSave.GlobalFiles);
+            if(GlueState.Self.CurrentGlueProject != null)
+            {
+                rfflw.PopulateFrom(ProjectManager.GlueProjectSave.GlobalFiles);
+            }
         }
 
 
@@ -1760,75 +1762,85 @@ namespace FlatRedBall.Glue.FormHelpers
 
         internal static void ViewInExplorerClick()
         {
-            // view in explorer
-            string locationToShow = "";
 
-            if (EditorLogic.CurrentReferencedFile != null)
+            if(GlueState.Self.CurrentGlueProject == null)
             {
-                ReferencedFileSave rfs = EditorLogic.CurrentReferencedFile;
-
-                locationToShow = ProjectManager.MakeAbsolute(rfs.Name);
-
-            }
-            else if (EditorLogic.CurrentTreeNode.IsDirectoryNode() || EditorLogic.CurrentTreeNode == ElementViewWindow.GlobalContentFileNode)
-            {
-                locationToShow = ProjectManager.MakeAbsolute(EditorLogic.CurrentTreeNode.GetRelativePath(), true);
-            }
-            else if (EditorLogic.CurrentTreeNode.IsFilesContainerNode() || EditorLogic.CurrentTreeNode.IsFolderInFilesContainerNode())
-            {
-                string relativePath = EditorLogic.CurrentTreeNode.GetRelativePath();
-
-                // Victor Chelaru April 11, 2013
-                // RelativePath already includes "Screens/"
-                // So I'm not sure why I was prepending that
-                // here.
-                //if (EditorLogic.CurrentScreenSave != null)
-                //{
-                //    relativePath = "Screens/" + relativePath;
-                //}
-
-                locationToShow = ProjectManager.MakeAbsolute(relativePath, true);
-
-                // If the user hasn't put any files in this element, then this directory may not exist.  Therefore,
-                // let's create it.
-                if (!Directory.Exists(locationToShow))
-                {
-                    Directory.CreateDirectory(locationToShow);
-                }
-            }
-            else if (EditorLogic.CurrentTreeNode.Text.EndsWith(".cs"))
-            {
-                locationToShow = ProjectManager.MakeAbsolute(EditorLogic.CurrentTreeNode.GetRelativePath(), false);
-
-            }
-
-            string extension = FileManager.GetExtension(locationToShow);
-            bool isFile = !string.IsNullOrEmpty(extension);
-            if (isFile)
-            {
-                if (!File.Exists(locationToShow))
-                {
-                    locationToShow = FileManager.GetDirectory(locationToShow);
-                }
+                MessageBox.Show("You must first load or create a Glue project");
             }
             else
             {
-                // the location may not exis if it's something like global content, so let's try the parent
-                if (!Directory.Exists(locationToShow))
+
+
+                // view in explorer
+                string locationToShow = "";
+
+                if (EditorLogic.CurrentReferencedFile != null)
                 {
-                    locationToShow = FileManager.GetDirectory(locationToShow);
+                    ReferencedFileSave rfs = EditorLogic.CurrentReferencedFile;
+
+                    locationToShow = ProjectManager.MakeAbsolute(rfs.Name);
+
                 }
+                else if (EditorLogic.CurrentTreeNode.IsDirectoryNode() || EditorLogic.CurrentTreeNode == ElementViewWindow.GlobalContentFileNode)
+                {
+                    locationToShow = ProjectManager.MakeAbsolute(EditorLogic.CurrentTreeNode.GetRelativePath(), true);
+                }
+                else if (EditorLogic.CurrentTreeNode.IsFilesContainerNode() || EditorLogic.CurrentTreeNode.IsFolderInFilesContainerNode())
+                {
+                    string relativePath = EditorLogic.CurrentTreeNode.GetRelativePath();
+
+                    // Victor Chelaru April 11, 2013
+                    // RelativePath already includes "Screens/"
+                    // So I'm not sure why I was prepending that
+                    // here.
+                    //if (EditorLogic.CurrentScreenSave != null)
+                    //{
+                    //    relativePath = "Screens/" + relativePath;
+                    //}
+
+                    locationToShow = ProjectManager.MakeAbsolute(relativePath, true);
+
+                    // If the user hasn't put any files in this element, then this directory may not exist.  Therefore,
+                    // let's create it.
+                    if (!Directory.Exists(locationToShow))
+                    {
+                        Directory.CreateDirectory(locationToShow);
+                    }
+                }
+                else if (EditorLogic.CurrentTreeNode.Text.EndsWith(".cs"))
+                {
+                    locationToShow = ProjectManager.MakeAbsolute(EditorLogic.CurrentTreeNode.GetRelativePath(), false);
+
+                }
+
+                string extension = FileManager.GetExtension(locationToShow);
+                bool isFile = !string.IsNullOrEmpty(extension);
+                if (isFile)
+                {
+                    if (!File.Exists(locationToShow))
+                    {
+                        locationToShow = FileManager.GetDirectory(locationToShow);
+                    }
+                }
+                else
+                {
+                    // the location may not exis if it's something like global content, so let's try the parent
+                    if (!Directory.Exists(locationToShow))
+                    {
+                        locationToShow = FileManager.GetDirectory(locationToShow);
+                    }
+                }
+
+                //fileToShow = @"d:/Projects";
+                // The file might begin with something like c:\.  Make sure it shows "c:\" and not "c:/"
+                locationToShow = locationToShow.Replace("/", "\\");
+
+                // Make sure the quites are
+                // added after everything else.
+                locationToShow = "\"" + locationToShow + "\"";
+
+                Process.Start("explorer.exe", "/select," + locationToShow);
             }
-
-            //fileToShow = @"d:/Projects";
-            // The file might begin with something like c:\.  Make sure it shows "c:\" and not "c:/"
-            locationToShow = locationToShow.Replace("/", "\\");
-
-            // Make sure the quites are
-            // added after everything else.
-            locationToShow = "\"" + locationToShow + "\"";
-
-            Process.Start("explorer.exe", "/select," + locationToShow);
 
 
 

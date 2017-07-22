@@ -141,7 +141,7 @@ namespace AtlasPlugin.Managers
             if (shouldContinue)
             {
                 // Let's get all the available Screens:
-                tpsRfs = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().FirstOrDefault
+                tpsRfs = GlueState.Self.CurrentGlueProject?.GetAllReferencedFiles().FirstOrDefault
                     (item => FileManager.GetExtension(item.Name) == "tps");
 
                 shouldContinue = tpsRfs != null;

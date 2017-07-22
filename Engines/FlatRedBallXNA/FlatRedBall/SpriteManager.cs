@@ -583,9 +583,8 @@ namespace FlatRedBall
         #region Constructor / Initialize
 
         /// <summary>
-        /// Creates a new SpriteManager.  Also creates a new FileManager, TextureManager, and Renderer.
+        /// Creates a new SpriteManager.
         /// </summary>
-        /// <param name="game"></param>
         static SpriteManager()
         {
             #region Create all lists and name them
@@ -643,11 +642,7 @@ namespace FlatRedBall
 
             SetNumberOfThreadsToUse(numberOfUpdaters);
 
-            #region Create the particles
-
             MaxParticleCount = 2900;
-
-            #endregion
 
             mTopLayer = new Layer();
             mTopLayer.Name = "Top Layer";
@@ -670,14 +665,8 @@ namespace FlatRedBall
             }
         }
 
-#if SILVERLIGHT
-        public static void Initialize(GraphicsDevice graphicsDevice)
-#else
-        static public void Initialize()
 
-#endif
-
-
+        public static void Initialize()
         {
             mCameras = new PositionedObjectList<Camera>();
 
@@ -3303,7 +3292,11 @@ namespace FlatRedBall
                     tempSprite.mEmpty = true;
                     tempSprite.mParticleIndex = i;
 
-                    mParticleSprites.Add(tempSprite);
+                    // We can skip contains checks and a few other checks by 
+                    // directly accessing internal objects:
+                    //mParticleSprites.Add(tempSprite);
+                    tempSprite.ListsBelongingTo.Add(mParticleSprites);
+                    mParticleSprites.mInternalList.Add(tempSprite);
                 }
 
 				//26 October 2011 - Niall Muldoon
