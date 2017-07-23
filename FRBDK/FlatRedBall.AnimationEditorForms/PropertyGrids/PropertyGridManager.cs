@@ -89,7 +89,7 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 AnimationFrameChange(this, null);
 
-                if(e.ChangedItem.PropertyDescriptor.Name == "TextureName")
+                if(e?.ChangedItem?.PropertyDescriptor?.Name == "TextureName")
                 {
                     // The texture changed, so let the displayer know:
                     mAnimationFrameDisplayer.SetFrame(SelectedState.Self.SelectedFrame,
