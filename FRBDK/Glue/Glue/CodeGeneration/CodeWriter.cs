@@ -1858,7 +1858,7 @@ namespace FlatRedBall.Glue.Parsing
                 if (!(saveObject as EntitySave).UseGlobalContent)
                 {
                     var ifBlock = curBlock.If("registerUnload && ContentManagerName != FlatRedBall.FlatRedBallServices.GlobalContentManager");
-                    ReferencedFileSaveCodeGenerator.AppendAddUnloadMethod(ifBlock, saveObject.Name);
+                    ReferencedFileSaveCodeGenerator.AppendAddUnloadMethod(ifBlock, saveObject);
                 }
             }
 

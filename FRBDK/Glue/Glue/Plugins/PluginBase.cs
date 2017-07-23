@@ -146,6 +146,8 @@ namespace FlatRedBall.Glue.Plugins
         public Func<IElement, NamedObjectSave, TypedMemberBase, TypeConverter> GetTypeConverter { get; protected set; }
         public Action<NamedObjectSave, ICodeBlock, InstructionSave> WriteInstanceVariableAssignment { get; protected set; }
 
+        public Action<string, object> ReactToReferencedFileChangedValueHandler { get;  protected set;}
+
 
         #endregion
 

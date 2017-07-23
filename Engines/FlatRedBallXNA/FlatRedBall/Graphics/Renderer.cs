@@ -2333,7 +2333,7 @@ namespace FlatRedBall.Graphics
 
             if (TextManager.UseNativeTextRendering)
             {
-#if XNA4 || SILVERLIGHT
+#if XNA4
                 TextManager.DrawTexts(texts, startIndex, numToDraw, camera);
 #endif
             }

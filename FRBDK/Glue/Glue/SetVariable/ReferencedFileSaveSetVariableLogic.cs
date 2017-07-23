@@ -17,6 +17,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -303,6 +304,8 @@ namespace FlatRedBall.Glue.SetVariable
             }
 
             #endregion
+
+            PluginManager.ReactToReferencedFileChangedValue(changedMember, oldValue);
         }
 
         public static void RenameReferencedFile(string oldName, string newName, ReferencedFileSave rfs, IElement container)

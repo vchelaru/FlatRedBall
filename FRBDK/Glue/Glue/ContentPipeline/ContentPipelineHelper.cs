@@ -123,12 +123,14 @@ namespace FlatRedBall.Glue.ContentPipeline
                 projectBase = ProjectManager.ProjectBase;
             }
 
-            bool usesContentPipeline = AddOrRemoveIndividualRfs(rfs, filesInModifiedRfs, ref shouldRemoveAndAdd, projectBase);
+
+            AddOrRemoveIndividualRfs(rfs, filesInModifiedRfs, ref shouldRemoveAndAdd, projectBase);
 
             if (shouldRemoveAndAdd)
             {
                 List<ReferencedFileSave> rfses = new List<ReferencedFileSave>();
                 rfses.Add(rfs);
+                bool usesContentPipeline = rfs.UseContentPipeline || rfs.GetAssetTypeInfo() != null && rfs.GetAssetTypeInfo().MustBeAddedToContentPipeline;
                 AddAndRemoveModifiedRfsFiles(rfses, filesInModifiedRfs, projectBase, usesContentPipeline);
             }
         }
@@ -150,7 +152,9 @@ namespace FlatRedBall.Glue.ContentPipeline
             
             foreach(ReferencedFileSave rfs in rfses)
             {
-                usesContentPipeline |= AddOrRemoveIndividualRfs(rfs, filesInModifiedRfs, ref shouldRemoveAndAdd, projectBase);
+                usesContentPipeline |= rfs.UseContentPipeline || rfs.GetAssetTypeInfo() != null && rfs.GetAssetTypeInfo().MustBeAddedToContentPipeline;
+
+                AddOrRemoveIndividualRfs(rfs, filesInModifiedRfs, ref shouldRemoveAndAdd, projectBase);
             }
 
             if (shouldRemoveAndAdd)
@@ -282,7 +286,7 @@ namespace FlatRedBall.Glue.ContentPipeline
             #endregion
         }
 
-        private static bool AddOrRemoveIndividualRfs(ReferencedFileSave rfs, List<string> filesInModifiedRfs, ref bool shouldRemoveAndAdd, ProjectBase projectBase)
+        private static void AddOrRemoveIndividualRfs(ReferencedFileSave rfs, List<string> filesInModifiedRfs, ref bool shouldRemoveAndAdd, ProjectBase projectBase)
         {
 
             List<ProjectBase> projectsAlreadyModified = new List<ProjectBase>();
@@ -349,7 +353,6 @@ namespace FlatRedBall.Glue.ContentPipeline
                     }
                 }
             }
-            return usesContentPipeline;
         }
 
         public static void UpdateTextureFormatFor(ReferencedFileSave rfs)

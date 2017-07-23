@@ -106,16 +106,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 return this.Name;
             }
         }
-
-        /// <summary>
-        /// This is only used for code gen
-        /// </summary>
-        public string ContainedFilePrefix
-        {
-            get;
-            set;
-        }
-
+        
         public virtual string ContentDirectory
         {
             get { return ""; }
@@ -144,6 +135,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 #if GLUE
         public bool SaveAsRelativeSyncedProject;
         public bool SaveAsAbsoluteSyncedProject;
+
         /// <summary>
         /// Adds the argument absoluteFile to the project. This method will not first check
         /// if the file is already part of the project or not. See IsFilePartOfProject for
@@ -151,9 +143,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// </summary>
         /// <param name="absoluteFile">The absolute file name to add.</param>
         /// <returns>The ProjectItem which was created and added to the project.</returns>
-        public abstract ProjectItem AddContentBuildItem(string absoluteFile);
-
-        public abstract ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType, bool forceToContentPipeline);
+        public abstract ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Contained, bool forceToContentPipeline = false);
         public abstract void UpdateContentFile(string sourceFileName);
 #endif
         public abstract string FolderName { get; }

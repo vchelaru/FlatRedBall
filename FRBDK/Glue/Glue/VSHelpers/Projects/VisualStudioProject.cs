@@ -45,12 +45,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         #region Properties
 
-
-        protected List<string> ExtensionsToIgnore
-        {
-            get { return mExtensionsToIgnore; }
-        }
-
         public override IEnumerable<ProjectItem> EvaluatedItems
         {
             get 
@@ -142,17 +136,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         #endregion
 
 #if GLUE
-
-        public override ProjectItem AddContentBuildItem(string absoluteFile)
-        {
-            return AddContentBuildItem(absoluteFile, SyncedProjectRelativeType.Contained, false);
-        }
-
-        public override ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Linked, bool forceToContentPipeline = false)
+        public override ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Contained, bool forceToContentPipeline = false)
         {
             /////////////////////////Early Out////////////////////////////
             string extension = FileManager.GetExtension(absoluteFile);
-            if(ExtensionsToIgnore.Contains(extension))
+            var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(absoluteFile);
+            bool handledByContentPipelinePlugin = Plugins.EmbeddedPlugins.SyncedProjects.SyncedProjectLogic.Self.GetIfHandledByContentPipelinePlugin(this, extension, rfs);
+            if (handledByContentPipelinePlugin)
             {
                 return null;
             }
@@ -692,7 +682,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         }
 
 
-        protected virtual bool CanBeContentType { get { return true; } }
         protected virtual bool NeedToSaveContentProject { get { return true; } }
 
         public override void SyncTo(ProjectBase projectBase, bool performTranslation)
@@ -702,7 +691,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             AddCodeBuildItems(projectBase);
 
-            AddContentFileItemsFrom(projectBase);
+            Plugins.EmbeddedPlugins.SyncedProjects.SyncedProjectLogic.Self.SyncContentFromTo(projectBase, this);
 
             if (NeedToSaveContentProject)
             {
@@ -711,169 +700,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             Save(FullFileName);
 #endif
-        }
-
-        private void AddContentFileItemsFrom(ProjectBase projectBase)
-        {
-            var contentItemsToSync =
-                projectBase.ContentProject.EvaluatedItems.Where(item => IsContentFile(item, projectBase.ContentProject))
-                .ToList();
-
-            foreach (var bi in contentItemsToSync)
-            {
-                string absoluteFileName = projectBase.ContentProject.MakeAbsolute(bi.UnevaluatedInclude);
-
-                bool forceToContent = false;
-                if (projectBase.ContentCopiedToOutput)
-                {
-                    forceToContent = !bi.HasMetadata("CopyToOutputDirectory") &&
-                        CanBeContentType;
-                }
-
-                BuildItemMembershipType buildItemMembershipType = DefaultContentBuildType;
-                if (forceToContent)
-                {
-                    buildItemMembershipType = BuildItemMembershipType.CompileOrContentPipeline;
-                }
-                else if (DefaultContentAction == "Content")
-                {
-                    buildItemMembershipType = BuildItemMembershipType.Content;
-                }
-
-                if (!ContentProject.IsFilePartOfProject(absoluteFileName, buildItemMembershipType, true))
-                {
-                    if (ContentProject.GetItem(absoluteFileName) != null)
-                    {
-                        ContentProject.RemoveItem(absoluteFileName);
-                        
-                    }
-
-                    ContentProject.AddContentBuildItem(absoluteFileName, SyncedProjectRelativeType.Linked, forceToContent);
-
-                }
-
-
-                var biOnThis = this.GetItem(absoluteFileName);
-                // Let's process the path to make sure it's matching the latest standards - like
-                // if we add additional restrictions at some point in Glue
-                if (biOnThis != null)
-                {
-                    string includeBefore = biOnThis.UnevaluatedInclude;
-                    string includeAfter = ProcessInclude(biOnThis.UnevaluatedInclude);
-                    if (includeBefore != includeAfter)
-                    {
-                        // simply changing the Include doesn't make a project
-                        // dirty, and we only want to make it dirty if we really
-                        // did change something so that we don't unnecessarily save
-                        // projects.
-                        biOnThis.UnevaluatedInclude = includeAfter;
-                        this.IsDirty = true;
-                    }
-
-                    string linkBefore = biOnThis.GetLink();
-                    if (!string.IsNullOrEmpty(linkBefore))
-                    {
-                        string linkAfter = ProcessLink(linkBefore);
-
-                        // If the original project is linking a file outside of
-                        // its own file structure, then the Link value assigned on
-                        // this BuildItem will include "..\". This is an invalid link
-                        // value, so we'll instead try to use the same link as in the original
-                        // file:
-                        {
-                            var linkOnOriginalBuildItem = bi.GetLink();
-                            if(string.IsNullOrEmpty(linkOnOriginalBuildItem) == false  )
-                            {
-                                // first let's make the link relative to the main project's content folder
-                                var relativeToProject = FileManager.MakeRelative(linkOnOriginalBuildItem, projectBase.ContentProject.ContentDirectory);
-
-                                linkAfter = this.ContentDirectory + relativeToProject;
-                                linkAfter = ProcessLink(linkAfter);
-                            }
-                        }
-
-
-                        if (linkBefore != linkAfter)
-                        {
-                            // simply changing the Link doesn't make a project
-                            // dirty, and we only want to make it dirty if we really
-                            // did change something so that we don't unnecessarily save
-                            // projects.
-                            biOnThis.SetLink(linkAfter);
-                            this.IsDirty = true;
-                        }
-                    }
-                }
-
-            }
-        }
-
-        private bool IsContentFile(ProjectItem bi, ProjectBase containingProject)
-        {
-            bool shouldSkipContent = false;
-
-            if (bi.ItemType == "Folder" || bi.ItemType == "_DebugSymbolsOutputPath" || bi.ItemType == "Reference")
-            {
-                // Skip trying to add the folder.  We don't need to do this because if it
-                // contains anything, then the contained objects will automatically put themselves in a folder
-                shouldSkipContent = true;
-
-            }
-
-            if (!shouldSkipContent)
-            {
-                if (bi.ItemType != "Compile" && bi.ItemType != "None")
-                {
-                    // but wait, the containing project may embed its content, so if so we need to check that
-                    if (containingProject is CombinedEmbeddedContentProject &&
-                        ((CombinedEmbeddedContentProject)containingProject).DefaultContentAction == bi.ItemType)
-                    {
-                        // Looks like it really is content
-                        shouldSkipContent = false;
-                    }
-                    else
-                    {
-                        shouldSkipContent = true;
-                    }
-                }
-            }
-
-            if (!shouldSkipContent)
-            {
-                string extension = FileManager.GetExtension(bi.UnevaluatedInclude);
-
-                if (ExtensionsToIgnore.Contains(extension))
-                {
-                    shouldSkipContent = true;
-                }
-
-                if (bi.ItemType == "Compile" && extension == "cs")
-                {
-                    shouldSkipContent = true;
-                }
-            }
-
-
-            // Now that we have checked if we should process this, we want to check if we should exclude it
-            if(!shouldSkipContent)
-            {
-                var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(bi.UnevaluatedInclude);
-
-                if(rfs != null && rfs.ProjectsToExcludeFrom.Contains(this.Name))
-                {
-                    shouldSkipContent = true;
-                }
-            }
-
-            if(!shouldSkipContent)
-            {
-                string containingProjectContent = FileManager.Standardize(containingProject.ContentDirectory).ToLowerInvariant();
-                string standardUnevaluatedInclude = FileManager.Standardize(bi.UnevaluatedInclude).ToLowerInvariant();
-
-                shouldSkipContent = standardUnevaluatedInclude.StartsWith(containingProjectContent) == false;
-            }
-
-            return !shouldSkipContent;
         }
 
         protected override ProjectItem AddCodeBuildItem(string fileName, bool isSyncedProject, string nameRelativeToThisProject)

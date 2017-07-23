@@ -419,6 +419,7 @@
     <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\ProjectListEntry.xaml.cs">
       <DependentUpon>ProjectListEntry.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\SyncedProjectLogic.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\SyncedProjectsViewModel.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\SyncedProjectViewModel.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\ProjectReferencesWindow.xaml.cs">

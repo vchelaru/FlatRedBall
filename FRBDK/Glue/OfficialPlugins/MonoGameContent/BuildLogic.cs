@@ -55,18 +55,57 @@ namespace OfficialPlugins.MonoGameContent
 
         public void TryHandleReferencedFile(ProjectBase project, ReferencedFileSave referencedFile)
         {
-            ///////////////early out////////////////
-            if (IsBuiltByContentPipeline(referencedFile) == false)
+            bool isBuilt = IsBuiltByContentPipeline(referencedFile);
+
+            if(isBuilt)
             {
-                return;
+                TryPerformBuildAndAdd(referencedFile, project);
             }
-            /////////////end early out////////////
+            else
+            {
+                TryRemoveXnbReferences(project, referencedFile);
 
-            TryPerformBuild(referencedFile, project);
-
+            }
         }
 
-        private static ContentItem GetContentItem(ReferencedFileSave referencedFileSave)
+        private static void TryRemoveXnbReferences(ProjectBase project, ReferencedFileSave referencedFile)
+        {
+            ContentItem contentItem = GetContentItem(referencedFile, project, createEvenIfProjectTypeNotSupported:true);
+
+            var fullFileName = GlueCommands.Self.FileCommands.GetFullFileName(referencedFile);
+            string destinationDirectory = GetDestinationDirectory(fullFileName);
+
+            string absoluteToAddNoExtension = destinationDirectory +
+                FileManager.RemovePath(FileManager.RemoveExtension(referencedFile.Name));
+
+            TaskManager.Self.AddSync(() =>
+           {
+
+               bool didRemove = false;
+
+
+               foreach (string extension in contentItem.GetBuiltExtensions())
+               {
+                   var absoluteFile = absoluteToAddNoExtension + "." + extension;
+
+                    // remove any built file from the project if referenced - cleanup in case the user switched between content pipeline or not.
+                    var item = project.GetItem(absoluteFile, true);
+
+                   if (item != null)
+                   {
+                       project.RemoveItem(item);
+                       didRemove = true;
+                   }
+               }
+
+               if (didRemove)
+               {
+                   GlueCommands.Self.TryMultipleTimes(project.Save, 5);
+               }
+           }, $"Removing XNB references for {referencedFile}");
+        }
+
+        private static ContentItem GetContentItem(ReferencedFileSave referencedFileSave, ProjectBase project, bool createEvenIfProjectTypeNotSupported)
         {
             string extension = FileManager.GetExtension(referencedFileSave.Name);
 
@@ -76,16 +115,48 @@ namespace OfficialPlugins.MonoGameContent
             {
                 contentItem = ContentItem.CreateMp3Build();
             }
-            if(extension == "wav")
+            else if(extension == "wav")
             {
                 contentItem = ContentItem.CreateWavBuild();
             }
-            
+            else if(extension == "png")
+            {
+                contentItem = ContentItem.CreateTextureBuild();
+            }
+
+
+            if (contentItem != null)
+            {
+                // According to docs, the following are available:
+                // Windows
+                // iOS
+                // Android
+                // DesktopGL
+                // MacOSX
+                // WindowsStoreApp
+                // NativeClient
+                // PlayStation4
+                // WindowsPhone8
+                // RaspberryPi
+                // PSVita
+                // XboxOne
+                // Switch
+                if (project is DesktopGlProject)
+                {
+                    contentItem.Platform = "DesktopGL";
+                }
+                else if (project is AndroidProject)
+                {
+                    contentItem.Platform = "Android";
+                }
+                else if (createEvenIfProjectTypeNotSupported == false)
+                {
+                    contentItem = null;
+                }
+            }
 
             if(contentItem != null)
-            { 
-                contentItem.Platform = "DesktopGL"; // todo = change this for different platforms
-
+            {
                 string contentDirectory = FlatRedBall.Glue.ProjectManager.ContentDirectory;
                 string projectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
                 string builtXnbRoot = FileManager.RemoveDotDotSlash(projectDirectory + "../BuiltXnbs/");
@@ -112,20 +183,21 @@ namespace OfficialPlugins.MonoGameContent
             return destinationDirectory;
         }
 
-        private void TryPerformBuild(ReferencedFileSave referencedFile, ProjectBase project)
+        private void TryPerformBuildAndAdd(ReferencedFileSave referencedFile, ProjectBase project)
         {
             ContentItem contentItem;
-            contentItem = GetContentItem(referencedFile);
+            contentItem = GetContentItem(referencedFile, project, createEvenIfProjectTypeNotSupported:false);
 
+            var fullFileName = GlueCommands.Self.FileCommands.GetFullFileName(referencedFile);
+            string destinationDirectory = GetDestinationDirectory(fullFileName);
+
+            // The monogame content builder seems to be doing an incremental build - 
+            // it's being told to do so through the command line params, and it's not replacing
+            // files unless they're actually built, but it's SLOW!!! We can put our own check here
+            // and make it much faster
             if(contentItem != null)
             {
 
-                string commandLine = contentItem.GenerateCommandLine();
-
-                string contentDirectory = FlatRedBall.Glue.ProjectManager.ContentDirectory;
-                string workingDirectory = contentDirectory;
-                var fullFileName = GlueCommands.Self.FileCommands.GetFullFileName(referencedFile);
-                string destinationDirectory = GetDestinationDirectory(fullFileName);
 
                 TaskManager.Self.AddSync(
                 () =>
@@ -133,27 +205,10 @@ namespace OfficialPlugins.MonoGameContent
                     // If the user closes the project while the startup is happening, just skip the task - no need to build
                     if(GlueState.Self.CurrentGlueProject != null)
                     {
-                        var process = new Process();
 
-                        process.StartInfo.Arguments = commandLine;
-                        process.StartInfo.UseShellExecute = false;
-                        process.StartInfo.FileName = commandLineBuildExe;
-                        process.StartInfo.WorkingDirectory = contentDirectory;
-                        process.StartInfo.RedirectStandardError = true;
-                        process.StartInfo.RedirectStandardInput = true;
-                        process.StartInfo.RedirectStandardOutput = true;
-
-                        process.StartInfo.CreateNoWindow = true;
-
-                        process.Start();
-
-                        var errorString = process.StandardError.ReadToEnd() + "\n\n" + process.StandardOutput.ReadToEnd();
-
-                        PluginManager.ReceiveOutput($"Building: {commandLineBuildExe} {commandLine}");
-
-                        while (process.HasExited == false)
+                        if(contentItem.GetIfNeedsBuild(destinationDirectory))
                         {
-                            System.Threading.Thread.Sleep(100);
+                            PerformBuild(contentItem);
                         }
 
                         string relativeToAddNoExtension =
@@ -176,13 +231,53 @@ namespace OfficialPlugins.MonoGameContent
 
         }
 
-        
+        private static void PerformBuild(ContentItem contentItem)
+        {
+            string contentDirectory = FlatRedBall.Glue.ProjectManager.ContentDirectory;
+            string workingDirectory = contentDirectory;
+
+            string commandLine = contentItem.GenerateCommandLine();
+            var process = new Process();
+
+            process.StartInfo.Arguments = commandLine;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.FileName = commandLineBuildExe;
+            process.StartInfo.WorkingDirectory = contentDirectory;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.RedirectStandardOutput = true;
+
+            process.StartInfo.CreateNoWindow = true;
+
+            process.Start();
+
+            var errorString = process.StandardError.ReadToEnd() + "\n\n" + process.StandardOutput.ReadToEnd();
+            PluginManager.ReceiveOutput($"Building: {commandLineBuildExe} {commandLine}");
+
+            while (process.HasExited == false)
+            {
+                System.Threading.Thread.Sleep(100);
+            }
+        }
+
 
         private bool IsBuiltByContentPipeline(ReferencedFileSave file)
         {
             string extension = FileManager.GetExtension(file.Name);
 
-            return extension == "mp3" || extension == "ogg" || extension == "wav";
+            bool isRequired = extension == "mp3" ||
+                extension == "ogg" ||
+                extension == "wav";
+
+            if (isRequired)
+            {
+                return true;
+            }
+            else if (file.UseContentPipeline)
+            {
+                return extension == "png";
+            }
+            return false;
         }
 
         private void AddFileToProject(ProjectBase project, string absoluteFile, string link)
@@ -201,7 +296,7 @@ namespace OfficialPlugins.MonoGameContent
                 {
                     link = "Assets\\" + link;
                 }
-
+                link = project.ProcessLink(link);
                 item.SetLink(link.Replace("/", "\\"));
 
                 GlueCommands.Self.TryMultipleTimes(project.Save, 5);

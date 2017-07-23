@@ -21,7 +21,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         }
 
-        protected override bool CanBeContentType { get { return false; } }
         protected override bool NeedToSaveContentProject { get { return false; } }
         public override bool ContentCopiedToOutput { get { return false; } }
 

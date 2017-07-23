@@ -1525,6 +1525,26 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+        internal static void ReactToReferencedFileChangedValue(string changedMember, object oldValue)
+        {
+            foreach (PluginManager pluginManager in mInstances)
+            {
+                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToReferencedFileChangedValueHandler != null);
+                foreach (var plugin in plugins)
+                {
+                    var container = pluginManager.mPluginContainers[plugin];
+                    if (container.IsEnabled)
+                    {
+                        PluginBase plugin1 = plugin;
+                        PluginCommand(() =>
+                        {
+                            plugin1.ReactToReferencedFileChangedValueHandler(changedMember, oldValue);
+                        }, container, "Failed in ReactToReferencedFileChangedValue");
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Notifies all contained plugins that a property has changed. A propert, not
         /// to be confused with a variable, is a value that is usually not related to the

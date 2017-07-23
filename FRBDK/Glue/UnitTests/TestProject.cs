@@ -70,12 +70,7 @@ namespace UnitTests
         {
             throw new NotImplementedException();
         }
-
-        public override Microsoft.Build.Evaluation.ProjectItem AddContentBuildItem(string absoluteFile)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public override Microsoft.Build.Evaluation.ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType, bool forceToContentPipeline)
         {
             throw new NotImplementedException();

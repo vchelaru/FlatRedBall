@@ -18,6 +18,8 @@ namespace OfficialPlugins.MonoGameContent
     [Export(typeof (PluginBase))]
     public class MainPlugin : PluginBase
     {
+        #region Fields/Properties
+
         public override string FriendlyName
         {
             get
@@ -34,6 +36,8 @@ namespace OfficialPlugins.MonoGameContent
             }
         }
 
+        #endregion
+
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
             return true;
@@ -45,21 +49,36 @@ namespace OfficialPlugins.MonoGameContent
             this.ReactToLoadedGlux += HandleLoadedGlux;
             this.ReactToLoadedSyncedProject += HandleLoadedSyncedProject;
             this.ReactToNewFileHandler += HandleNewFile;
+            this.ReactToReferencedFileChangedValueHandler += HandleReferencedFileValueChanged;
+        }
+
+        private void HandleReferencedFileValueChanged(string memberName, object oldValue)
+        {
+            if(memberName == nameof(ReferencedFileSave.UseContentPipeline))
+            {
+                BuildLogic.Self.TryHandleReferencedFile(GlueState.Self.CurrentMainProject, GlueState.Self.CurrentReferencedFileSave);
+            }
         }
 
         private void HandleNewFile(ReferencedFileSave newFile)
         {
-            if(GlueState.Self.CurrentMainProject is DesktopGlProject)
+
+            if(GetIfShouldBuild( GlueState.Self.CurrentMainProject ))
             {
                 BuildLogic.Self.TryHandleReferencedFile(GlueState.Self.CurrentMainProject, newFile);
             }
             foreach(var project in GlueState.Self.SyncedProjects)
             {
-                if(project is DesktopGlProject)
+                if(GetIfShouldBuild( project ))
                 {
                     BuildLogic.Self.TryHandleReferencedFile(project, newFile);
                 }
             }
+        }
+
+        private bool GetIfShouldBuild(ProjectBase project)
+        {
+            return project is DesktopGlProject;
         }
 
         private void HandleLoadedGlux()

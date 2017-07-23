@@ -22,14 +22,18 @@ namespace AtlasPlugin.TypeConverters
         {
             List<string> availableValues = new List<string>();
 
-            foreach (var rfs in GlueState.Self.CurrentGlueProject.GetAllReferencedFiles()
-                .Where(item=>FileManager.GetExtension(item.Name) == "atlas"))
+            if(GlueState.Self.CurrentGlueProject != null)
             {
-                var absoluteFile = GlueCommands.Self.GetAbsoluteFileName(rfs);
 
-                if(File.Exists(absoluteFile))
+                foreach (var rfs in GlueState.Self.CurrentGlueProject.GetAllReferencedFiles()
+                    .Where(item=>FileManager.GetExtension(item.Name) == "atlas"))
                 {
-                    AddFilesFromAtlasToList(absoluteFile, availableValues);
+                    var absoluteFile = GlueCommands.Self.GetAbsoluteFileName(rfs);
+
+                    if(File.Exists(absoluteFile))
+                    {
+                        AddFilesFromAtlasToList(absoluteFile, availableValues);
+                    }
                 }
             }
 

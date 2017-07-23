@@ -83,12 +83,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 throw new NotImplementedException();
             }
         }
-
-        public override ProjectItem AddContentBuildItem(string absoluteFile)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public override ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType, bool forceToContentPipeline)
         {
             throw new NotImplementedException();

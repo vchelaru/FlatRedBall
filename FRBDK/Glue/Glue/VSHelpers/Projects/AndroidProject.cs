@@ -7,8 +7,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
     {
         public AndroidProject(Project project) : base(project)
         {
-            // See comments in IosMonogameProject
-            this.ExtensionsToIgnore.Add("wav");
         }
 
         public override string FolderName

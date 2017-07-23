@@ -1046,7 +1046,7 @@ namespace FlatRedBall.Glue
         /// </summary>
         /// <param name="project"></param>
         /// <param name="fileRelativeToProject"></param>
-        /// <param name="useContentPipeline"></param>
+        /// <param name="useContentPipeline">Whether this file must be part of the content pipeline. See internal notes on this variable.</param>
         /// <param name="shouldLink"></param>
         /// <param name="parentFile"></param>
         /// <returns>Whether the file was added.</returns>
@@ -1067,6 +1067,23 @@ namespace FlatRedBall.Glue
             bool needsToBeInContentProject = ShouldFileBeInContentProject(fileToAddAbsolute);
 
             BuildItemMembershipType bimt = BuildItemMembershipType.CopyIfNewer;
+
+            // useContentPipeline can come from one of two places:
+            // 1. If the file is being called directly on a ReferencedFileSave and the ReferencedFileSave has UseContentPipeline set to true, then this value will be true
+            // 2. If the file is referenced by another file, and the parent file is *not* using the content pipeline, this one may still use the content pipeline if the file
+            //    has been independently added to the project and explicitly set to use the content pipeline. This kind of mixing was not allowed prior to July 23, 2017 but now
+            //    it's supported by "aliases" created through the FlatRedBallServices.AddNonDisposable
+            if(!useContentPipeline)
+            {
+                // grab the RFS and see if the rfs forces it
+                var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(fileToAddAbsolute);
+
+                if(rfs != null && rfs.UseContentPipeline)
+                {
+                    useContentPipeline = true;
+                }
+            }
+
             if (useContentPipeline)
             {
                 bimt = BuildItemMembershipType.CompileOrContentPipeline;

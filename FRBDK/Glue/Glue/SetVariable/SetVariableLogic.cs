@@ -176,7 +176,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
             else
             {
-                ProjectManager.SaveProjects();
+                TaskManager.Self.AddSync(ProjectManager.SaveProjects, "Saving due to variable change");
             }
 
             mPropertyGrid.Refresh();

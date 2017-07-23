@@ -179,7 +179,7 @@ namespace FlatRedBall.Glue.Parsing
             {
                 ReferencedFileSave rfs = ProjectManager.GlueProjectSave.GlobalFiles[i];
 
-                ReferencedFileSaveCodeGenerator.AppendFieldOrPropertyForReferencedFile(currentBlock, rfs, GlobalContentContainerName, null);
+                ReferencedFileSaveCodeGenerator.AppendFieldOrPropertyForReferencedFile(currentBlock, rfs, null);
             }
 
             const bool inheritsFromElement = false;
@@ -219,9 +219,9 @@ namespace FlatRedBall.Glue.Parsing
             // why we want to load it before we even start our async loading.
             foreach (ReferencedFileSave rfs in ProjectManager.GlueProjectSave.GlobalFiles)
             {
-                if (IsRfsHighPriority(rfs))
+                if (ReferencedFileSaveCodeGenerator.IsRfsHighPriority(rfs))
                 {
-                    ReferencedFileSaveCodeGenerator.GetInitializationForReferencedFile(rfs, null, initializeFunction, true, LoadType.CompleteLoad);
+                    ReferencedFileSaveCodeGenerator.GetInitializationForReferencedFile(rfs, null, initializeFunction, LoadType.CompleteLoad);
                 }
             }
 
@@ -239,7 +239,7 @@ namespace FlatRedBall.Glue.Parsing
 
             foreach (ReferencedFileSave rfs in ProjectManager.GlueProjectSave.GlobalFiles)
             {
-                if (!IsRfsHighPriority(rfs) && rfs.LoadedAtRuntime)
+                if (!ReferencedFileSaveCodeGenerator.IsRfsHighPriority(rfs) && rfs.LoadedAtRuntime)
                 {
                     var blockToUse = initializeFunction;
 
@@ -250,7 +250,7 @@ namespace FlatRedBall.Glue.Parsing
                     }
 
 
-                    ReferencedFileSaveCodeGenerator.GetInitializationForReferencedFile(rfs, null, blockToUse, true, LoadType.CompleteLoad);
+                    ReferencedFileSaveCodeGenerator.GetInitializationForReferencedFile(rfs, null, blockToUse, LoadType.CompleteLoad);
 
                     if (loadAsync)
                     {
@@ -368,7 +368,7 @@ namespace FlatRedBall.Glue.Parsing
 
             foreach (ReferencedFileSave rfs in ProjectManager.GlueProjectSave.GlobalFiles)
             {
-                if (!IsRfsHighPriority(rfs) && !rfs.LoadedOnlyWhenReferenced && rfs.LoadedAtRuntime)
+                if (!ReferencedFileSaveCodeGenerator.IsRfsHighPriority(rfs) && !rfs.LoadedOnlyWhenReferenced && rfs.LoadedAtRuntime)
                 {
                     currentBlock.Line("namedDelegate.Name = \"" + rfs.Name + "\";");
                     currentBlock.Line("namedDelegate.LoadMethod = Load" + rfs.Name.Replace("/", "_").Replace(".", "_") + ";");
@@ -403,63 +403,11 @@ namespace FlatRedBall.Glue.Parsing
             {
                 var ifInReload = reloadFunction.If("whatToReload == " + rfs.GetInstanceName());
                 {
-                    ReferencedFileSaveCodeGenerator.GetReload(rfs, null, ifInReload, true, LoadType.MaintainInstance);
+                    ReferencedFileSaveCodeGenerator.GetReload(rfs, null, ifInReload, LoadType.MaintainInstance);
 
                 }
 
             }
-        }
-
-        static bool IsRfsHighPriority(ReferencedFileSave rfs)
-        {
-            return rfs.IsDatabaseForLocalizing;
-        }
-
-
-        public static ICodeBlock GetLoadCallsForRfs(ReferencedFileSave referencedFile, string fileName, AssetTypeInfo ati, string variableName, ICodeBlock codeBlock, bool useGlobalContent, bool isContentPipeline)
-        {
-            var currentBlock = codeBlock;
-            if (referencedFile.IsCsvOrTreatedAsCsv == false)
-            {
-                string modifiedFileName = fileName.ToLower();
-
-                string contentManagerString = GetContentManagerString(referencedFile);
-
-                string fileNameToLoad = ProjectBase.AccessContentDirectory + modifiedFileName;
-
-                // If the file isn't part of the content pipeline we have
-                // to manually unload it
-                if (!useGlobalContent && !isContentPipeline)
-                {
-                    currentBlock = currentBlock
-                        .If(string.Format("!FlatRedBall.FlatRedBallServices.IsLoaded<{2}>(@\"{0}\", {1})", ProjectBase.AccessContentDirectory + modifiedFileName, contentManagerString, ati.QualifiedRuntimeTypeName.QualifiedType));
-                    if (referencedFile.GetContainerType() == ContainerType.Entity)
-                    {
-                        currentBlock.Line("registerUnload = true;");
-                    }
-
-                    currentBlock = currentBlock.End();
-                }
-
-                ReferencedFileSaveCodeGenerator.GetLoadCallForAtiFile(referencedFile,  ati, variableName, contentManagerString, fileNameToLoad, codeBlock);
-            }
-            return currentBlock;
-        }
-
-     
-
-        private static string GetContentManagerString(ReferencedFileSave referencedFile)
-        {
-            string contentManagerString = "ContentManagerName";
-            // If the referencedFile is shared static, then this is needed in LoadStaticContent
-            if (referencedFile.GetContainerType() == ContainerType.Screen && referencedFile.IsSharedStatic)
-            {
-                // If the referenced file is part of a screen, then we need to use the "contentManagerName" (which is an argument to the
-                // LoadStaticContent method) instead of the "ContentManagerName" which is a member of the Screen.  The reason is that the
-                // content manager for a screen is not static.  
-                contentManagerString = "contentManagerName";
-            }
-            return contentManagerString;
         }
 
         #endregion

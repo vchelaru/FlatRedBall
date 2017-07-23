@@ -107,7 +107,9 @@ namespace GumPlugin
             //  - Fixed rendering library by pulling in latest gum rendering code
             // 0.8.6.5
             //  - Added support to set single pixel texture and single pixel destination rectangle on the renderer.
-            get { return new Version(0, 8, 6, 5); }
+            // 0.8.7.1
+            //  - Updated to latest Gum rendering engine, addressing text rendering when using font scale
+            get { return new Version(0, 8, 7, 1); }
         }
 
         #endregion
