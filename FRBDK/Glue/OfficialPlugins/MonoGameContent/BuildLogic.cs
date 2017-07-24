@@ -36,14 +36,15 @@ namespace OfficialPlugins.MonoGameContent
 
             allReferencedFileSaves = allReferencedFileSaves.Distinct((a, b) => a.Name == b.Name).ToList();
 
-            bool needsMonoGameFilesBuilt = project is DesktopGlProject;
+            bool needsMonoGameFilesBuilt = project is DesktopGlProject ||
+                project is AndroidProject;
 
             if (needsMonoGameFilesBuilt)
             {
 
-                var musicFiles = allReferencedFileSaves.Where(item => IsBuiltByContentPipeline(item)).ToList();
+                var filesToBeBuilt = allReferencedFileSaves.Where(item => IsBuiltByContentPipeline(item)).ToList();
 
-                foreach (var musicFile in musicFiles)
+                foreach (var musicFile in filesToBeBuilt)
                 {
                     TryHandleReferencedFile(project, musicFile);
                 }

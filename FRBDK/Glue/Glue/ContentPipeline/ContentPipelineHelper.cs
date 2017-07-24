@@ -132,6 +132,8 @@ namespace FlatRedBall.Glue.ContentPipeline
                 rfses.Add(rfs);
                 bool usesContentPipeline = rfs.UseContentPipeline || rfs.GetAssetTypeInfo() != null && rfs.GetAssetTypeInfo().MustBeAddedToContentPipeline;
                 AddAndRemoveModifiedRfsFiles(rfses, filesInModifiedRfs, projectBase, usesContentPipeline);
+
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }
 
@@ -166,7 +168,6 @@ namespace FlatRedBall.Glue.ContentPipeline
 
         private static void AddAndRemoveModifiedRfsFiles(List<ReferencedFileSave> rfses, List<string> filesInModifiedRfs, ProjectBase projectBase, bool usesContentPipeline)
         {
-            #region If the modified file has files it references, we may need to add or remove them.  Do that here
 
             if (filesInModifiedRfs.Count != 0)
             {
@@ -267,23 +268,6 @@ namespace FlatRedBall.Glue.ContentPipeline
                 #endregion
             }
 
-            #endregion
-
-            #region Save the synced projects
-
-            foreach (ProjectBase syncedProject in ProjectManager.SyncedProjects)
-            {
-
-                ProjectBase syncedContentProjectBase = syncedProject;
-                if (syncedProject.ContentProject != null)
-                {
-                    syncedContentProjectBase = syncedProject.ContentProject;
-                }
-
-                syncedContentProjectBase.Save();
-            }
-
-            #endregion
         }
 
         private static void AddOrRemoveIndividualRfs(ReferencedFileSave rfs, List<string> filesInModifiedRfs, ref bool shouldRemoveAndAdd, ProjectBase projectBase)

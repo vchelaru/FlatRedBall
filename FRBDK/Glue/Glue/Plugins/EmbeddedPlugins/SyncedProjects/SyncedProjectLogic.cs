@@ -186,7 +186,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             // this depends on the type of project:
             if(targetProject is AndroidProject)
             {
-                return extension == "wav";
+                return extension == "wav" ||
+                    (extension == "png" && rfs != null && rfs.UseContentPipeline);
             }
             else if(targetProject is DesktopGlLinuxProject || targetProject is DesktopGlProject)
             {

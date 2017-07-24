@@ -109,6 +109,7 @@ namespace GumPlugin
             //  - Added support to set single pixel texture and single pixel destination rectangle on the renderer.
             // 0.8.7.1
             //  - Updated to latest Gum rendering engine, addressing text rendering when using font scale
+            //  - More fixes to loading files using aliases (for content pipeline)
             get { return new Version(0, 8, 7, 1); }
         }
 
