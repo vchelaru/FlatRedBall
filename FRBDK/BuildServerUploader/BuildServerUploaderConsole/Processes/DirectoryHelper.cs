@@ -85,5 +85,21 @@ namespace BuildServerUploaderConsole.Processes
                 return FileManager.MakeAbsolute("../../../../../../FRBDK/");
             }
         }
+
+        public static string GumRootDirectory
+        {
+            get
+            {
+                return FileManager.MakeAbsolute("../../../../../../../Gum/");
+            }
+        }
+
+        public static string GumBuildDirectory
+        {
+            get
+            {
+                return GumRootDirectory + "Gum/bin/Debug/";
+            }
+        }
     }
 }

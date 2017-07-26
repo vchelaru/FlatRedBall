@@ -10,6 +10,8 @@ using BuildServerUploaderConsole.Sftp;
 
 namespace BuildServerUploaderConsole.Processes
 {
+    #region enums
+
     public enum UploadType
     {
         DailyBuild,
@@ -17,8 +19,12 @@ namespace BuildServerUploaderConsole.Processes
         Weekly
     }
 
+    #endregion
+
     public class UploadFilesToFrbServer : ProcessStep
     {
+        #region Fields/Properties
+
         static string absolutePath = @"C:\FlatRedBallProjects\UploadInfo.txt";
 
         static string cachedPassword = null;
@@ -36,7 +42,8 @@ namespace BuildServerUploaderConsole.Processes
                     }
                     else
                     {
-                        throw new Exception($"Could not find the file {absolutePath}. This file is needed and should contain the password to the FRB server.");
+                        throw new Exception($"Could not find the file {absolutePath}. " + 
+                            "This file is needed and should contain the password to the FRB server.");
                     }
                 }
 
@@ -59,7 +66,8 @@ namespace BuildServerUploaderConsole.Processes
                     }
                     else
                     {
-                        throw new Exception($"Could not find the file {absolutePath}. This file is needed and should contain the password to the FRB server.");
+                        throw new Exception($"Could not find the file {absolutePath}. " +
+                            "This file is needed and should contain the password to the FRB server.");
                     }
                 }
 
@@ -82,10 +90,17 @@ namespace BuildServerUploaderConsole.Processes
         private readonly string _backupFolder =
                 "files.flatredball.com/content/FrbXnaTemplates/";
         private readonly string _ftpCopyToFolder = null;
+
+        private readonly string gumFolder =
+                "files.flatredball.com/content/Tools/Gum/";
+
+
         //private const string host = "sftp://flatredball.com/";
         private const string host = "files.flatredball.com";
         private const string _backupFile =
             "files.flatredball.com/content/FrbXnaTemplates/BackupFolders.txt";
+
+        #endregion
 
         public UploadFilesToFrbServer(IResults results, UploadType uploadType)
             : base(
@@ -204,12 +219,25 @@ namespace BuildServerUploaderConsole.Processes
             if (_ftpCopyToFolder != null)
             {
                 _ftpFolder = _ftpCopyToFolder;
+                UploadGumFiles();
                 UploadFrbdkFiles();
                 UploadEngineFiles();
                 UploadTemplateFiles();
+
             }
             // this times out, and not sure we really need it anyway...
             //BuildBackupFile();
+        }
+
+        private void UploadGumFiles()
+        {
+            string localFile = DirectoryHelper.GumBuildDirectory + "Gum.zip";
+
+            string targetFile = gumFolder + FileManager.RemovePath(localFile);
+            SftpManager.UploadFile(
+                localFile, host, targetFile, Username, Password);
+
+            Results.WriteMessage(localFile + " uploaded to " + targetFile);
         }
 
         public static void BuildBackupFile()
@@ -296,12 +324,12 @@ namespace BuildServerUploaderConsole.Processes
         {
             string localFile = ZipFrbdk.DestinationFile;
 
-            string fileName = _ftpFolder + FileManager.RemovePath(localFile);
+            string targetFile = _ftpFolder + FileManager.RemovePath(localFile);
 
             SftpManager.UploadFile(
-                localFile, host, fileName, Username, Password);
+                localFile, host, targetFile, Username, Password);
 
-            Results.WriteMessage(localFile + " uploaded to " + fileName);
+            Results.WriteMessage(localFile + " uploaded to " + targetFile);
 
 
         }

@@ -7,11 +7,11 @@ namespace BuildServerUploaderConsole.Processes
 {
     public class ZipHelper
     {
-        public static void CreateZip(IResults results, string destinationDirectory, string directoryWithContentsToZip, string zipFileName)
+        public static void CreateZip(IResults results, string destinationDirectory, string directoryWithContentsToZip, string zipFileNameNoExtension)
         {
             var containedObjects = new List<string>();
 
-            string fullZipFileName = directoryWithContentsToZip + "\\" + zipFileName + ".zip";
+            string fullZipFileName = directoryWithContentsToZip + "\\" + zipFileNameNoExtension + ".zip";
 
             if (File.Exists(fullZipFileName))
             {
@@ -49,10 +49,12 @@ namespace BuildServerUploaderConsole.Processes
 
                 zip.Save(fullZipFileName);
 
-                File.Copy(fullZipFileName, destinationDirectory + zipFileName + ".zip", true);
+                Directory.CreateDirectory(destinationDirectory);
+
+                File.Copy(fullZipFileName, destinationDirectory + zipFileNameNoExtension + ".zip", true);
             }
 
-            results.WriteMessage("Zipped directory " + directoryWithContentsToZip + " into " + zipFileName);
+            results.WriteMessage("Zipped directory " + directoryWithContentsToZip + " into " + zipFileNameNoExtension);
         }
     }
 }

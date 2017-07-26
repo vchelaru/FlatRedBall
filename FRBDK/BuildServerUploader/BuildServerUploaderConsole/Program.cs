@@ -40,9 +40,6 @@ namespace BuildServerUploaderConsole
             {
                 switch (args[0])
                 {
-                    case CommandLineCommands.Upload:
-                        CreateUploadProcessSteps(args[1]);
-                        break;
                     case CommandLineCommands.ChangeVersion:
                         CreateChangeVersionProcessSteps();
                         break;
@@ -51,6 +48,9 @@ namespace BuildServerUploaderConsole
                         break;
                     case CommandLineCommands.CopyDllsToTemplates:
                         CreateCopyToTemplatesSteps();
+                        break;
+                    case CommandLineCommands.Upload:
+                        CreateUploadProcessSteps(args[1]);
                         break;
                     case "":
                         break;
@@ -89,6 +89,7 @@ namespace BuildServerUploaderConsole
             ProcessSteps.Add(new CopyFrbdkToReleaseFolder(Results));
             ProcessSteps.Add(new CopyBuiltEnginesToReleaseFolder(Results));
             ProcessSteps.Add(new ZipFrbdk(Results));
+            ProcessSteps.Add(new ZipGum(Results));
             // No need to zip the engine - we upload each individually.
             //ProcessSteps.Add(new ZipEngine(Results));
             ProcessSteps.Add(new ZipTemplates(Results));
@@ -125,11 +126,12 @@ namespace BuildServerUploaderConsole
 
         private static void ExecuteSteps()
         {
-            foreach (ProcessStep processStep in ProcessSteps)
+            for(int i = 0; i < ProcessSteps.Count; i++)
             {
-                processStep.ExecuteStep();
+                int step1Based = i + 1;
+                Results.WriteMessage($"Processing {step1Based}/{ProcessSteps.Count} : {ProcessSteps[i].Message}");
+                ProcessSteps[i].ExecuteStep();
             }
-
         }
 
         public static string DefaultDirectory
