@@ -231,7 +231,7 @@ namespace BuildServerUploaderConsole.Processes
 
         private void UploadGumFiles()
         {
-            string localFile = DirectoryHelper.GumBuildDirectory + "Gum.zip";
+            string localFile = FileManager.GetDirectory(DirectoryHelper.GumBuildDirectory) + "Gum.zip";
 
             string targetFile = gumFolder + FileManager.RemovePath(localFile);
             SftpManager.UploadFile(
