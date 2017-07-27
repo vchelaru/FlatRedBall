@@ -841,7 +841,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     project = ProjectManager.ProjectBase;
                 }
 
-                string containerName = ContentLoadWriter.GlobalContentContainerName;
+                string containerName = GlobalContentCodeGenerator.GlobalContentContainerName;
                 if (container != null)
                 {
                     containerName = container.Name;

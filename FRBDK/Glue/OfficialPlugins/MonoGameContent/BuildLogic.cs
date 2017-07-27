@@ -79,31 +79,36 @@ namespace OfficialPlugins.MonoGameContent
             string absoluteToAddNoExtension = destinationDirectory +
                 FileManager.RemovePath(FileManager.RemoveExtension(referencedFile.Name));
 
-            TaskManager.Self.AddSync(() =>
-           {
-
-               bool didRemove = false;
+            if(contentItem != null)
+            {
 
 
-               foreach (string extension in contentItem.GetBuiltExtensions())
+                TaskManager.Self.AddSync(() =>
                {
-                   var absoluteFile = absoluteToAddNoExtension + "." + extension;
 
-                    // remove any built file from the project if referenced - cleanup in case the user switched between content pipeline or not.
-                    var item = project.GetItem(absoluteFile, true);
+                   bool didRemove = false;
 
-                   if (item != null)
+
+                   foreach (string extension in contentItem.GetBuiltExtensions())
                    {
-                       project.RemoveItem(item);
-                       didRemove = true;
-                   }
-               }
+                       var absoluteFile = absoluteToAddNoExtension + "." + extension;
 
-               if (didRemove)
-               {
-                   GlueCommands.Self.TryMultipleTimes(project.Save, 5);
-               }
-           }, $"Removing XNB references for {referencedFile}");
+                        // remove any built file from the project if referenced - cleanup in case the user switched between content pipeline or not.
+                        var item = project.GetItem(absoluteFile, true);
+
+                       if (item != null)
+                       {
+                           project.RemoveItem(item);
+                           didRemove = true;
+                       }
+                   }
+
+                   if (didRemove)
+                   {
+                       GlueCommands.Self.TryMultipleTimes(project.Save, 5);
+                   }
+               }, $"Removing XNB references for {referencedFile}");
+            }
         }
 
         private static ContentItem GetContentItem(ReferencedFileSave referencedFileSave, ProjectBase project, bool createEvenIfProjectTypeNotSupported)

@@ -157,7 +157,7 @@ namespace FlatRedBall.Glue.Controls
         {
             PopulateFrom(this.mReferencedFiles);
 
-            ContentLoadWriter.UpdateLoadGlobalContentCode();
+            GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
             GluxCommands.Self.SaveGlux();
         }
@@ -178,7 +178,7 @@ namespace FlatRedBall.Glue.Controls
             this.ListBox.Items.Insert(index, data);
             mReferencedFiles.Insert(index, data);
 
-            ContentLoadWriter.UpdateLoadGlobalContentCode();
+            GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
             GluxCommands.Self.SaveGlux();
         }

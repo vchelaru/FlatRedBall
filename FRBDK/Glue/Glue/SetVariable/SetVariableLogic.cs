@@ -163,7 +163,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
             else if (EditorLogic.CurrentReferencedFile != null)
             {
-                ContentLoadWriter.UpdateLoadGlobalContentCode();
+                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
             }
 
             // UpdateCurrentObjectReferencedTreeNodes

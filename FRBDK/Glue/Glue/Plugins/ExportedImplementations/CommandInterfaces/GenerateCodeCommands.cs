@@ -38,7 +38,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void GenerateGlobalContentCode()
         {
-            ContentLoadWriter.UpdateLoadGlobalContentCode();
+            GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
         }
 
         public string GetNamespaceForElement(IElement element)
@@ -146,7 +146,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             #endregion
 
-            ContentLoadWriter.UpdateLoadGlobalContentCode();
+            GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
 
 

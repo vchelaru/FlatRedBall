@@ -1303,7 +1303,7 @@ namespace FlatRedBall.Glue.FormHelpers
                             }
                             else if (EditorLogic.CurrentReferencedFile != null)
                             {
-                                regenerateAction = ContentLoadWriter.UpdateLoadGlobalContentCode;
+                                regenerateAction = GlobalContentCodeGenerator.UpdateLoadGlobalContentCode;
 
                                 // Vic asks - do we have to do anything else here?  I don't think so...
                             }
@@ -2083,7 +2083,7 @@ namespace FlatRedBall.Glue.FormHelpers
             // re-generate regenerate re generate regenerate code re generate code re-generate code
             if (EditorLogic.CurrentTreeNode.IsGlobalContentContainerNode())
             {
-                ContentLoadWriter.UpdateLoadGlobalContentCode();
+                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
             }
 
             #region This is a content file
@@ -2095,7 +2095,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 if (FileManager.GetExtension(rfs.Name) == "csv" || (FileManager.GetExtension(rfs.Name) == "txt" && rfs.TreatAsCsv))
                 {
                     CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
-                    ContentLoadWriter.UpdateLoadGlobalContentCode();
+                    GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
                     ProjectManager.SaveProjects();
                     GluxCommands.Self.SaveGlux();
                 }

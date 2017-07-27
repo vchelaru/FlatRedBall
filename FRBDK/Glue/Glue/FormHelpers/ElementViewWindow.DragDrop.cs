@@ -633,7 +633,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
                 else
                 {
-                    ContentLoadWriter.UpdateLoadGlobalContentCode();
+                    GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
                 }
 
 
@@ -715,7 +715,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     bool useFullPathAsName = true;
                     ElementCommands.Self.AddReferencedFileToGlobalContent(referencedFileSave.Name, useFullPathAsName);
 
-                    ContentLoadWriter.UpdateLoadGlobalContentCode();
+                    GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
                     ProjectManager.SaveProjects();
                     GluxCommands.Self.SaveGlux();
@@ -805,7 +805,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     }
                     else
                     {
-                        ContentLoadWriter.UpdateLoadGlobalContentCode();
+                        GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
                     }
                     ProjectManager.SaveProjects();
                     GluxCommands.Self.SaveGlux();

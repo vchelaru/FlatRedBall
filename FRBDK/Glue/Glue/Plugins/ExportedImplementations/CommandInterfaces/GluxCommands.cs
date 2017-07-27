@@ -671,7 +671,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     );
 
 
-                ContentLoadWriter.UpdateLoadGlobalContentCode();
+                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
                 List<IElement> elements = ObjectFinder.Self.GetAllElementsReferencingFile(referencedFileToRemove.Name);
 

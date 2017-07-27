@@ -861,7 +861,7 @@
     <Compile Include="Navigation\TreeNodeStackManager.cs" />
     <Compile Include="Parsing\CodeParser.cs" />
     <Compile Include="CodeGeneration\CodeWriter.cs" />
-    <Compile Include="Parsing\ContentLoadWriter.cs" />
+    <Compile Include="CodeGeneration\GlobalContentCodeGenerator.cs" />
     <Compile Include="Parsing\CsvCodeGenerator.cs" />
     <Compile Include="Parsing\FactoryCodeGenerator.cs" />
     <Compile Include="Parsing\ParsedClass.cs" />

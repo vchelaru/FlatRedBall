@@ -16,7 +16,7 @@ namespace FlatRedBall.Glue.SetVariable
             //    ElementViewWindow.GenerateGlobalContentFileCode();
             //}
 
-            ContentLoadWriter.UpdateLoadGlobalContentCode();
+            GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
         }
     }
 }

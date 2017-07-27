@@ -497,7 +497,7 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             else if (EditorLogic.CurrentReferencedFile != null)
             {
-                ContentLoadWriter.UpdateLoadGlobalContentCode();
+                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
                 // Vic asks - do we have to do anything else here?  I don't think so...
             }
@@ -513,7 +513,7 @@ namespace FlatRedBall.Glue.FormHelpers
             else if (EditorLogic.CurrentReferencedFile != null)
             {
                 ReferencedFileSave rfs = EditorLogic.CurrentReferencedFile;
-                ContentLoadWriter.UpdateLoadGlobalContentCode();
+                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
                 if (rfs.IsCsvOrTreatedAsCsv)
                 {
@@ -970,7 +970,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
 
 
-                ContentLoadWriter.UpdateLoadGlobalContentCode();
+                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
                 ProjectManager.SaveProjects();
                 GluxCommands.Self.SaveGlux();
@@ -1220,7 +1220,7 @@ namespace FlatRedBall.Glue.FormHelpers
             if (ProjectManager.GlueProjectSave.GlobalContentHasChanged)
             {
                 UpdateGlobalContentTreeNodes(true);
-                ContentLoadWriter.UpdateLoadGlobalContentCode();
+                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
             }
         }
     }

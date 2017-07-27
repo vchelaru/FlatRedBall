@@ -56,7 +56,13 @@ namespace OfficialPlugins.MonoGameContent
         {
             if(memberName == nameof(ReferencedFileSave.UseContentPipeline))
             {
-                BuildLogic.Self.TryHandleReferencedFile(GlueState.Self.CurrentMainProject, GlueState.Self.CurrentReferencedFileSave);
+                var rfs = GlueState.Self.CurrentReferencedFileSave;
+                BuildLogic.Self.TryHandleReferencedFile(GlueState.Self.CurrentMainProject, rfs);
+
+                foreach(var syncedProject in GlueState.Self.SyncedProjects)
+                {
+                    BuildLogic.Self.TryHandleReferencedFile(syncedProject, rfs);
+                }
             }
         }
 

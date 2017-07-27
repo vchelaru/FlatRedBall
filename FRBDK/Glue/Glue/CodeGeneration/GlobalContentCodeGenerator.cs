@@ -18,7 +18,7 @@ namespace FlatRedBall.Glue.Parsing
 
     // I think this is an old class which is being replaced by the ReferencedFileSaveCodeGenerator.  We should get rid of this eventually
 
-    public static class ContentLoadWriter
+    public static class GlobalContentCodeGenerator
     {
         #region Fields
 
@@ -227,7 +227,7 @@ namespace FlatRedBall.Glue.Parsing
 
             bool loadAsync = GenerateLoadAsyncCode(classLevelBlock, initializeFunction);
 
-            if (ContentLoadWriter.SuppressGlobalContentDictionaryRefresh == false)
+            if (GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh == false)
             {
                 ReferencedFileSaveCodeGenerator.RefreshGlobalContentDictionary();
             }

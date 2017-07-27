@@ -375,7 +375,7 @@ namespace FlatRedBall.Glue.IO
 
                 SetInitWindowText("Refreshing global content dictionary...");
                 ReferencedFileSaveCodeGenerator.RefreshGlobalContentDictionary();
-                ContentLoadWriter.SuppressGlobalContentDictionaryRefresh = true;
+                GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh = true;
 
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("Screens");
@@ -421,7 +421,7 @@ namespace FlatRedBall.Glue.IO
                 // to be explicitly made:
                 UpdateGlobalContentFileProjectMembership();
 
-                ContentLoadWriter.UpdateLoadGlobalContentCode();
+                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
                 #endregion
                 Section.EndContextAndTime();
@@ -469,7 +469,7 @@ namespace FlatRedBall.Glue.IO
                 SetInitWindowText("Generating all code");
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 Section.EndContextAndTime();
-                ContentLoadWriter.SuppressGlobalContentDictionaryRefresh = false;
+                GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh = false;
             }
         }
 

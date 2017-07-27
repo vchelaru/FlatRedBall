@@ -196,7 +196,7 @@ namespace FlatRedBall.Glue.Parsing
                 CodeGeneratorPluginMethods.CallCodeGenerationStart(pluginManager, element);
             }
 
-            if (ContentLoadWriter.SuppressGlobalContentDictionaryRefresh == false)
+            if (GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh == false)
             {
                 ReferencedFileSaveCodeGenerator.RefreshGlobalContentDictionary();
             }
