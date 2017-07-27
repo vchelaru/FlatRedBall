@@ -116,7 +116,7 @@ namespace FlatRedBall.Glue.Controls
 
 #endregion
 
-#region Constructor
+        #region Constructor
 
         public PluginsWindow()
         {

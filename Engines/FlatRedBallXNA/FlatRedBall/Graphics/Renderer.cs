@@ -587,6 +587,10 @@ namespace FlatRedBall.Graphics
         }
 
         static bool mRecordRenderBreaks;
+        /// <summary>
+        /// Tells the renderer to record and keep track of render breaks so they
+        /// can be used when optimizing rendering. This value defaults to false
+        /// </summary>
         public static bool RecordRenderBreaks
         {
             get
@@ -607,6 +611,10 @@ namespace FlatRedBall.Graphics
             }
         }
 
+        /// <summary>
+        /// Contains the list of Render Breaks from the previous frame. This is updated every time
+        /// FlatRedBall is drawn.
+        /// </summary>
         public static List<RenderBreak> LastFrameRenderBreakList
         {
             get;

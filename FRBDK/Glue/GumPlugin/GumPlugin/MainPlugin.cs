@@ -110,7 +110,9 @@ namespace GumPlugin
             // 0.8.7.1
             //  - Updated to latest Gum rendering engine, addressing text rendering when using font scale
             //  - More fixes to loading files using aliases (for content pipeline)
-            get { return new Version(0, 8, 7, 1); }
+            // 0.8.7.2
+            //  - Fixed color on Text objects not rendering properly.
+            get { return new Version(0, 8, 7, 2); }
         }
 
         #endregion

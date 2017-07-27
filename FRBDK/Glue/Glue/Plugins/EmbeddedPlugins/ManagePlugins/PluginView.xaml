@@ -7,6 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel>
+
         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding LoadOnStartup}">Load on startup</CheckBox>
         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding RequiredByProject}">Required by project</CheckBox>
         <TextBlock TextWrapping="Wrap" Text="{Binding LastUpdatedText}"></TextBlock>
