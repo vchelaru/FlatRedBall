@@ -112,29 +112,31 @@ namespace FlatRedBall.Glue.ContentPipeline
 
         public static void ReactToUseContentPipelineChange(ReferencedFileSave rfs)
         {
-            
-            List<string> filesInModifiedRfs = new List<string>();
-            bool shouldRemoveAndAdd = false;
-
-
-            ProjectBase projectBase = ProjectManager.ContentProject;
-            if (projectBase == null)
+            TaskManager.Self.AddSync(() =>
             {
-                projectBase = ProjectManager.ProjectBase;
-            }
-
-
-            AddOrRemoveIndividualRfs(rfs, filesInModifiedRfs, ref shouldRemoveAndAdd, projectBase);
-
-            if (shouldRemoveAndAdd)
-            {
-                List<ReferencedFileSave> rfses = new List<ReferencedFileSave>();
-                rfses.Add(rfs);
-                bool usesContentPipeline = rfs.UseContentPipeline || rfs.GetAssetTypeInfo() != null && rfs.GetAssetTypeInfo().MustBeAddedToContentPipeline;
-                AddAndRemoveModifiedRfsFiles(rfses, filesInModifiedRfs, projectBase, usesContentPipeline);
-
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-            }
+                List<string> filesInModifiedRfs = new List<string>();
+                bool shouldRemoveAndAdd = false;
+     
+     
+                ProjectBase projectBase = ProjectManager.ContentProject;
+                if (projectBase == null)
+                {
+                    projectBase = ProjectManager.ProjectBase;
+                }
+     
+     
+                AddOrRemoveIndividualRfs(rfs, filesInModifiedRfs, ref shouldRemoveAndAdd, projectBase);
+     
+                if (shouldRemoveAndAdd)
+                {
+                    List<ReferencedFileSave> rfses = new List<ReferencedFileSave>();
+                    rfses.Add(rfs);
+                    bool usesContentPipeline = rfs.UseContentPipeline || rfs.GetAssetTypeInfo() != null && rfs.GetAssetTypeInfo().MustBeAddedToContentPipeline;
+                    AddAndRemoveModifiedRfsFiles(rfses, filesInModifiedRfs, projectBase, usesContentPipeline);
+     
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                }
+            }, "Reacting to changing UseContentPipeline");
         }
 
         public static void ReactToUseContentPipelineChange(List<ReferencedFileSave> rfses)

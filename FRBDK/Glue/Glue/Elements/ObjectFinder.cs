@@ -67,10 +67,8 @@ namespace FlatRedBall.Glue.Elements
         public ReferencedFileSave GetReferencedFileSaveFromFile(string fileName)
         {
             ////////////////Early Out//////////////////////////////////
-            var invalidPathChars = Path.GetInvalidFileNameChars();
-            var invalidFileChars = Path.GetInvalidFileNameChars();
-            if(invalidPathChars.Any( item => fileName.Contains(item)) ||
-                invalidFileChars.Any(item => fileName.Contains(item)))
+            var invalidPathChars = Path.GetInvalidPathChars();
+            if(invalidPathChars.Any( item => fileName.Contains(item)))
             {
                 // This isn't a RFS, because it's got a bad path. Early out here so that FileManager.IsRelative doesn't throw an exception
                 return null;
