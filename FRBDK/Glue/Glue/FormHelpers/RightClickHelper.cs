@@ -1150,18 +1150,25 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         else if (EditorLogic.CurrentReferencedFile != null)
                         {
+                            // the GluxCommand handles saving and regenerate internally, no need to do it twice
+                            saveAndRegenerate = false;
                             var toRemove = EditorLogic.CurrentReferencedFile;
-                            IElement element = GlueState.Self.CurrentElement;
 
-                            // this could happen at the same time as file flushing, which can cause locks.  Therefore we need to add this as a task:
-                            TaskManager.Self.AddSync(() =>
+                            if(GlueState.Self.Find.IfReferencedFileSaveIsReferenced(toRemove))
                             {
-                                GluxCommands.Self.RemoveReferencedFile(toRemove, filesToRemove, saveAndRegenerate);
-                                PluginManager.ReactToFileRemoved(element, toRemove);
+                                IElement element = GlueState.Self.CurrentElement;
 
-                            },
-                            "Remove file " + toRemove.ToString());
-                            //ProjectManager.RemoveReferencedFile(EditorLogic.CurrentReferencedFile);
+                                // this could happen at the same time as file flushing, which can cause locks.  Therefore we need to add this as a task:
+                                TaskManager.Self.AddSync(() =>
+                                {
+                                    GluxCommands.Self.RemoveReferencedFile(toRemove, filesToRemove, saveAndRegenerate);
+                                    PluginManager.ReactToFileRemoved(element, toRemove);
+
+                                },
+                                "Remove file " + toRemove.ToString());
+
+                            }
+                            
                         }
                         #endregion
 

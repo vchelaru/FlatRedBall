@@ -572,14 +572,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode)
         {
+
+            var isContained = GlueState.Self.Find.IfReferencedFileSaveIsReferenced(referencedFileToRemove);
+            /////////////////////////Early Out//////////////////////////////
+            if(!isContained)
+            {
+                return;
+            }
+            ////////////////////////End Early Out/////////////////////////////
+
+
+
             // There are some things that need to happen:
             // 1.  Remove the ReferencedFileSave from the Glue project (GLUX)
             // 2.  Remove the GUI item
             // 3.  Remove the item from the Visual Studio project.
+            IElement container = referencedFileToRemove.GetContainer();
 
             #region Remove the file from the current Screen or Entity if there is a current Screen or Entity
-
-            IElement container = referencedFileToRemove.GetContainer();
 
             if (container != null)
             {
@@ -655,13 +665,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 Action refreshUiAction = () =>
                 {
                     TreeNode treeNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(referencedFileToRemove);
-
-                    if (treeNode.Tag != referencedFileToRemove)
+                    if(treeNode != null)
                     {
-                        throw new Exception("Error removing the tree node - the selected tree node doesn't reference the file being removed");
-                    }
+                        // treeNode can be null if the user presses delete + enter really really fast, stacking 2 remove
+                        // actions
+                        if (treeNode.Tag != referencedFileToRemove)
+                        {
+                            throw new Exception("Error removing the tree node - the selected tree node doesn't reference the file being removed");
+                        }
 
-                    treeNode.Parent.Nodes.Remove(treeNode);
+                        treeNode.Parent.Nodes.Remove(treeNode);
+                    }
                 };
 
                 MainGlueWindow.Self.Invoke((MethodInvoker)delegate

@@ -13,6 +13,8 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
         public void Initialize(ContentPipelineControl control)
         {
+            this.control = control;
+
             settings = SaveLoadLogic.LoadSettings();
             if(settings == null)
             {

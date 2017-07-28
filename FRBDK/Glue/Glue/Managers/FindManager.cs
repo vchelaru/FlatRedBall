@@ -443,6 +443,24 @@ namespace FlatRedBall.Glue.Managers
 
         }
 
+        public bool IfReferencedFileSaveIsReferenced(ReferencedFileSave referencedFileSave)
+        {
+            IElement container = referencedFileSave.GetContainer();
+
+            bool isContained = false;
+            if (container != null)
+            {
+                isContained = container.GetAllReferencedFileSavesRecursively().Contains(referencedFileSave);
+            }
+            else
+            {
+                isContained = ProjectManager.GlueProjectSave.GlobalFiles.Contains(referencedFileSave);
+
+            }
+
+            return isContained;
+
+        }
     }
 
 

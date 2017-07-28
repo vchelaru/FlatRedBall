@@ -198,7 +198,8 @@ namespace FlatRedBall.Glue.Managers
         /// </summary>
         /// <param name="action">The action to execute.</param>
         /// <param name="displayInfo">The details of the task, to de bisplayed in the tasks window.</param>
-        public void AddSync(Action action, string displayInfo)
+        /// <param name="isHighPriority">Whether to attempt to run the action immediately - useful for UI tasks</param>
+        public void AddSync(Action action, string displayInfo, bool isHighPriority = false)
         {
             bool shouldProcess = false;
             lock (mSyncLockObject)
@@ -206,7 +207,23 @@ namespace FlatRedBall.Glue.Managers
                 var glueTask = new GlueTask();
                 glueTask.Action = action;
                 glueTask.DisplayInfo = displayInfo;
-                mSyncedActions.Add(glueTask);
+
+                if(isHighPriority)
+                {
+                    if(mSyncedActions.Count > 0)
+                    {
+                        // don't insert at 0, finish the current task, but insert at 1:
+                        mSyncedActions.Insert(1, glueTask);
+                    }                    
+                    else
+                    {
+                        mSyncedActions.Add(glueTask);
+                    }
+                }
+                else
+                {
+                    mSyncedActions.Add(glueTask);
+                }
                 shouldProcess = mSyncedActions.Count == 1 && IsTaskProcessingEnabled;
             }
             CallTaskAddedOrRemoved();
