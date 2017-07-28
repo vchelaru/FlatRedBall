@@ -196,9 +196,9 @@
     <Compile Include="GlobalContentManagerPlugin\PluginForm.Designer.cs">
       <DependentUpon>PluginForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MonoGameContent\BuildLogic.cs" />
-    <Compile Include="MonoGameContent\ContentItem.cs" />
-    <Compile Include="MonoGameContent\MainPlugin.cs" />
+    <Compile Include="ContentPipelinePlugin\BuildLogic.cs" />
+    <Compile Include="ContentPipelinePlugin\ContentItem.cs" />
+    <Compile Include="ContentPipelinePlugin\MainPlugin.cs" />
     <Compile Include="MoveToLayerPlugin\MoveToLayerComponentGenerator.cs" />
     <Compile Include="MoveToLayerPlugin\MoveToLayerContainer.cs" />
     <Compile Include="PointEditingPlugin\MainPlugin.cs" />

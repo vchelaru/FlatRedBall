@@ -69,47 +69,7 @@ namespace FlatRedBall.Glue.ContentPipeline
                 MessageBox.Show("Done converting " + count + " files to load from file.");
             }
         }
-
-        public static void SetAllFromContentPipeline()
-        {
-            DialogResult result = MessageBox.Show("Are you sure you want to set all files to load through the content pipeline?  You " +
-                "should probably close Visual Studio while this is running", "Change all to use the content pipeline?",
-                MessageBoxButtons.YesNo);
-
-            if (result == DialogResult.Yes)
-            {
-
-                List<ReferencedFileSave> allReferencedFiles = ObjectFinder.Self.GetAllReferencedFiles();
-                int count = 0;
-                foreach (ReferencedFileSave rfs in allReferencedFiles)
-                {
-                    if (rfs.GetAssetTypeInfo() != null && !string.IsNullOrEmpty(rfs.GetAssetTypeInfo().ContentProcessor))
-                    {
-                        bool valueBefore = rfs.UseContentPipeline;
-
-                        rfs.UseContentPipeline = true;
-                        if (valueBefore != rfs.UseContentPipeline)
-                        {
-                            count++;
-                            ReactToUseContentPipelineChange(rfs);
-                        }
-                    }
-                }
-
-                GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
-
-
-                MainGlueWindow.Self.PropertyGrid.Refresh();
-
-
-                ProjectManager.SaveProjects();
-                GluxCommands.Self.SaveGlux();
-
-                MessageBox.Show("Done converting " + count + " files to use the content pipeline.");
-            }
-
-        }
-
+        
         public static void ReactToUseContentPipelineChange(ReferencedFileSave rfs)
         {
             TaskManager.Self.AddSync(() =>
@@ -138,36 +98,7 @@ namespace FlatRedBall.Glue.ContentPipeline
                 }
             }, "Reacting to changing UseContentPipeline");
         }
-
-        public static void ReactToUseContentPipelineChange(List<ReferencedFileSave> rfses)
-        {
-
-            List<string> filesInModifiedRfs = new List<string>();
-            bool shouldRemoveAndAdd = false;
-
-
-            ProjectBase projectBase = ProjectManager.ContentProject;
-            if (projectBase == null)
-            {
-                projectBase = ProjectManager.ProjectBase;
-            }
-
-            bool usesContentPipeline = false;
-            
-            foreach(ReferencedFileSave rfs in rfses)
-            {
-                usesContentPipeline |= rfs.UseContentPipeline || rfs.GetAssetTypeInfo() != null && rfs.GetAssetTypeInfo().MustBeAddedToContentPipeline;
-
-                AddOrRemoveIndividualRfs(rfs, filesInModifiedRfs, ref shouldRemoveAndAdd, projectBase);
-            }
-
-            if (shouldRemoveAndAdd)
-            {
-
-                AddAndRemoveModifiedRfsFiles(rfses, filesInModifiedRfs, projectBase, usesContentPipeline);
-            }
-        }
-
+        
         private static void AddAndRemoveModifiedRfsFiles(List<ReferencedFileSave> rfses, List<string> filesInModifiedRfs, ProjectBase projectBase, bool usesContentPipeline)
         {
 

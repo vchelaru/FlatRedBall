@@ -81,7 +81,6 @@
     <Compile Include="Bookmark\ucBookmark.Designer.cs">
       <DependentUpon>ucBookmark.cs</DependentUpon>
     </Compile>
-    <Compile Include="FileOperations\FileOperationsPlugin.cs" />
     <Compile Include="FileReferenceList\FileReferenceList.cs" />
     <Compile Include="PluginClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
