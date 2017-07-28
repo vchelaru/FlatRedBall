@@ -12,6 +12,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Managers;
 using System.Diagnostics;
+using OfficialPlugins.ContentPipelinePlugin;
 
 namespace OfficialPlugins.MonoGameContent
 {
@@ -19,6 +20,8 @@ namespace OfficialPlugins.MonoGameContent
     public class MainPlugin : PluginBase
     {
         #region Fields/Properties
+
+        ContentPipelineControl control;
 
         public override string FriendlyName
         {
@@ -45,11 +48,32 @@ namespace OfficialPlugins.MonoGameContent
 
         public override void StartUp()
         {
+            this.AddMenuItemTo("Content Pipeline Settings", HandleContentPipelineSettings, "Content");
+
+            AssignEvents();
+        }
+        private void AssignEvents()
+        {
             this.ReactToFileChangeHandler += HandleFileChanged;
             this.ReactToLoadedGlux += HandleLoadedGlux;
             this.ReactToLoadedSyncedProject += HandleLoadedSyncedProject;
             this.ReactToNewFileHandler += HandleNewFile;
             this.ReactToReferencedFileChangedValueHandler += HandleReferencedFileValueChanged;
+        }
+
+
+        private void HandleContentPipelineSettings(object sender, EventArgs e)
+        {
+            if(control == null)
+            {
+                control = new ContentPipelinePlugin.ContentPipelineControl();
+                AddToTab(PluginManager.LeftTab, control, "Content Pipeline");
+
+            }
+            else
+            {
+                AddTab();
+            }
         }
 
         private void HandleReferencedFileValueChanged(string memberName, object oldValue)

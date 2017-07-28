@@ -158,6 +158,12 @@
       <DependentUpon>RunnerToolbar.xaml</DependentUpon>
     </Compile>
     <Compile Include="Compiler\ViewModels\CompilerViewModel.cs" />
+    <Compile Include="ContentPipelinePlugin\ContentPipelineControl.xaml.cs">
+      <DependentUpon>ContentPipelineControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ContentPipelinePlugin\ContentPipelineController.cs" />
+    <Compile Include="ContentPipelinePlugin\SaveLoadLogic.cs" />
+    <Compile Include="ContentPipelinePlugin\SettingsSave.cs" />
     <Compile Include="FilesPlugin\Controls\FileReferenceControl.xaml.cs">
       <DependentUpon>FileReferenceControl.xaml</DependentUpon>
     </Compile>
@@ -304,6 +310,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Compiler\RunnerToolbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ContentPipelinePlugin\ContentPipelineControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

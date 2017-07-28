@@ -29,7 +29,8 @@ namespace FlatRedBall.Glue.CodeGeneration
         // file in the element shouldn't load itself, but just reference the property
         // in GlobalContent.  This allows users to put files both in GlobalContent as well
         // as in an Element to take advantage of GlobalContent async loading.
-        [ThreadStatic]
+        // This used to be ThreadStatic but not sure why, I think we want all threads to access this
+        //[ThreadStatic]
         public static Dictionary<string, ReferencedFileSave> GlobalContentFilesDictionary = 
             new Dictionary<string, ReferencedFileSave>();
 
