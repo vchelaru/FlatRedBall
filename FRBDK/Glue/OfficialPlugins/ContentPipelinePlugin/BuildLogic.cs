@@ -60,7 +60,7 @@ namespace OfficialPlugins.MonoGameContent
 
             if(isBuilt)
             {
-                TryPerformBuildAndAdd(referencedFile, project);
+                TryAddXnbReferencesAndBuild(referencedFile, project, save:true);
             }
             else
             {
@@ -69,51 +69,66 @@ namespace OfficialPlugins.MonoGameContent
             }
         }
 
-        private static void TryRemoveXnbReferences(ProjectBase project, ReferencedFileSave referencedFile)
+        private void TryRemoveXnbReferences(ProjectBase project, ReferencedFileSave referencedFile)
         {
-            ContentItem contentItem = GetContentItem(referencedFile, project, createEvenIfProjectTypeNotSupported:true);
-
             var fullFileName = GlueCommands.Self.FileCommands.GetFullFileName(referencedFile);
+            TryRemoveXnbReferences(project, fullFileName);
+        }
+
+        public void TryRemoveXnbReferences(ProjectBase project, string fullFileName, bool save = true)
+        {
             string destinationDirectory = GetDestinationDirectory(fullFileName);
 
-            string absoluteToAddNoExtension = destinationDirectory +
-                FileManager.RemovePath(FileManager.RemoveExtension(referencedFile.Name));
+            ContentItem contentItem = GetContentItem(fullFileName, project, createEvenIfProjectTypeNotSupported: true);
 
-            if(contentItem != null)
+            string absoluteToAddNoExtension = destinationDirectory +
+                FileManager.RemovePath(FileManager.RemoveExtension(fullFileName));
+
+            if (contentItem != null)
             {
 
 
                 TaskManager.Self.AddSync(() =>
-               {
+                {
 
-                   bool didRemove = false;
+                    bool didRemove = false;
 
 
-                   foreach (string extension in contentItem.GetBuiltExtensions())
-                   {
-                       var absoluteFile = absoluteToAddNoExtension + "." + extension;
+                    foreach (string extension in contentItem.GetBuiltExtensions())
+                    {
+                        var absoluteFile = absoluteToAddNoExtension + "." + extension;
 
                         // remove any built file from the project if referenced - cleanup in case the user switched between content pipeline or not.
                         var item = project.GetItem(absoluteFile, true);
 
-                       if (item != null)
-                       {
-                           project.RemoveItem(item);
-                           didRemove = true;
-                       }
-                   }
+                        if (item != null)
+                        {
+                            project.RemoveItem(item);
+                            didRemove = true;
+                        }
+                    }
 
-                   if (didRemove)
-                   {
-                       GlueCommands.Self.TryMultipleTimes(project.Save, 5);
-                   }
-               }, $"Removing XNB references for {referencedFile}");
+                    if (didRemove && save)
+                    {
+                        GlueCommands.Self.TryMultipleTimes(project.Save, 5);
+                    }
+                }, $"Removing XNB references for {fullFileName}");
             }
         }
 
         private static ContentItem GetContentItem(ReferencedFileSave referencedFileSave, ProjectBase project, bool createEvenIfProjectTypeNotSupported)
         {
-            string extension = FileManager.GetExtension(referencedFileSave.Name);
+            var fullFileName = GlueCommands.Self.FileCommands.GetFullFileName(referencedFileSave);
+            return GetContentItem(fullFileName, project, createEvenIfProjectTypeNotSupported);
+        }
+
+        private static ContentItem GetContentItem(string fullFileName, ProjectBase project, bool createEvenIfProjectTypeNotSupported)
+        {
+            var contentDirectory = GlueState.Self.ContentDirectory;
+
+            var relativeToContent = FileManager.MakeRelative(fullFileName, contentDirectory);
+
+            string extension = FileManager.GetExtension(fullFileName);
 
             ContentItem contentItem = null;
 
@@ -121,11 +136,11 @@ namespace OfficialPlugins.MonoGameContent
             {
                 contentItem = ContentItem.CreateMp3Build();
             }
-            else if(extension == "wav")
+            else if (extension == "wav")
             {
                 contentItem = ContentItem.CreateWavBuild();
             }
-            else if(extension == "png")
+            else if (extension == "png")
             {
                 contentItem = ContentItem.CreateTextureBuild();
             }
@@ -161,19 +176,16 @@ namespace OfficialPlugins.MonoGameContent
                 }
             }
 
-            if(contentItem != null)
+            if (contentItem != null)
             {
-                string contentDirectory = FlatRedBall.Glue.ProjectManager.ContentDirectory;
                 string projectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
                 string builtXnbRoot = FileManager.RemoveDotDotSlash(projectDirectory + "../BuiltXnbs/");
-                var fullFileName = GlueCommands.Self.FileCommands.GetFullFileName(referencedFileSave);
                 contentItem.BuildFileName = fullFileName;
-                GetDestinationDirectory(fullFileName);
 
                 // remove the trailing slash:
                 contentItem.OutputDirectory = builtXnbRoot;
                 contentItem.IntermediateDirectory = builtXnbRoot + "obj/" +
-                    FileManager.RemoveExtension(referencedFileSave.Name);
+                    FileManager.RemoveExtension(relativeToContent);
             }
             return contentItem;
         }
@@ -189,19 +201,30 @@ namespace OfficialPlugins.MonoGameContent
             return destinationDirectory;
         }
 
-        private void TryPerformBuildAndAdd(ReferencedFileSave referencedFile, ProjectBase project)
+        private void TryAddXnbReferencesAndBuild(ReferencedFileSave referencedFile, ProjectBase project, bool save)
         {
-            ContentItem contentItem;
-            contentItem = GetContentItem(referencedFile, project, createEvenIfProjectTypeNotSupported:false);
-
             var fullFileName = GlueCommands.Self.FileCommands.GetFullFileName(referencedFile);
+
+            TryAddXnbReferencesAndBuild(fullFileName, project, save);
+
+        }
+
+        public void TryAddXnbReferencesAndBuild(string fullFileName, ProjectBase project, bool save)
+        {
+            var contentDirectory = GlueState.Self.ContentDirectory;
+
+            var relativeToContent = FileManager.MakeRelative(fullFileName, contentDirectory);
+
+            ContentItem contentItem;
+            contentItem = GetContentItem(fullFileName, project, createEvenIfProjectTypeNotSupported: false);
+
             string destinationDirectory = GetDestinationDirectory(fullFileName);
 
             // The monogame content builder seems to be doing an incremental build - 
             // it's being told to do so through the command line params, and it's not replacing
             // files unless they're actually built, but it's SLOW!!! We can put our own check here
             // and make it much faster
-            if(contentItem != null)
+            if (contentItem != null)
             {
 
 
@@ -209,32 +232,32 @@ namespace OfficialPlugins.MonoGameContent
                 () =>
                 {
                     // If the user closes the project while the startup is happening, just skip the task - no need to build
-                    if(GlueState.Self.CurrentGlueProject != null)
+                    if (GlueState.Self.CurrentGlueProject != null)
                     {
 
-                        if(contentItem.GetIfNeedsBuild(destinationDirectory))
+                        if (contentItem.GetIfNeedsBuild(destinationDirectory))
                         {
                             PerformBuild(contentItem);
                         }
 
                         string relativeToAddNoExtension =
-                            FileManager.RemoveExtension(referencedFile.Name);
+                            FileManager.RemoveExtension(relativeToContent);
 
                         string absoluteToAddNoExtension = destinationDirectory +
-                            FileManager.RemovePath(FileManager.RemoveExtension(referencedFile.Name));
+                            FileManager.RemovePath(FileManager.RemoveExtension(relativeToContent));
 
-                        foreach(var extension in contentItem.GetBuiltExtensions())
+                        foreach (var extension in contentItem.GetBuiltExtensions())
                         {
-                            AddFileToProject(project, 
-                                absoluteToAddNoExtension + "." + extension, 
-                                relativeToAddNoExtension + "." + extension);
+                            AddFileToProject(project,
+                                absoluteToAddNoExtension + "." + extension,
+                                relativeToAddNoExtension + "." + extension,
+                                save);
 
                         }
                     }
                 },
                 "Building MonoGame Content " + fullFileName);
             }
-
         }
 
         private static void PerformBuild(ContentItem contentItem)
@@ -286,7 +309,7 @@ namespace OfficialPlugins.MonoGameContent
             return false;
         }
 
-        private void AddFileToProject(ProjectBase project, string absoluteFile, string link)
+        private void AddFileToProject(ProjectBase project, string absoluteFile, string link, bool save)
         {
             //project.AddContentBuildItem(file, SyncedProjectRelativeType.Linked, false);
 
@@ -305,12 +328,10 @@ namespace OfficialPlugins.MonoGameContent
                 link = project.ProcessLink(link);
                 item.SetLink(link.Replace("/", "\\"));
 
-                GlueCommands.Self.TryMultipleTimes(project.Save, 5);
-
-                // save?
-
-                //    PluginManager.ReceiveOutput("Added " + buildItem.EvaluatedInclude + " through the file " + whatToAddToProject);
-                //    wasAnythingChanged = true;
+                if(save)
+                {
+                    GlueCommands.Self.TryMultipleTimes(project.Save, 5);
+                }
             }
 
         }

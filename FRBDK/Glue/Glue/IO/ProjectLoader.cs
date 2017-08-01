@@ -478,7 +478,7 @@ namespace FlatRedBall.Glue.IO
             bool wasAnythingAdded = false;
             foreach(var file in GlueState.Self.CurrentGlueProject.GlobalFiles)
             {
-                if (ProjectManager.UpdateFileMembershipInProject(file))
+                if (GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(file))
                 {
                     wasAnythingAdded = true;
                 }

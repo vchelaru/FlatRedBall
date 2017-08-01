@@ -21,6 +21,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
     public partial class ContentPipelineControl : UserControl
     {
         public event EventHandler CheckBoxClicked;
+        public event EventHandler RefreshClicked;
 
         public bool UseContentPipeline
         {
@@ -42,6 +43,11 @@ namespace OfficialPlugins.ContentPipelinePlugin
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             CheckBoxClicked?.Invoke(this, null);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshClicked?.Invoke(this, null);
         }
     }
 }

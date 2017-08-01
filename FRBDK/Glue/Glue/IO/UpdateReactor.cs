@@ -106,7 +106,7 @@ namespace FlatRedBall.Glue.IO
                                 handled = true;
                             }
 
-                            handled |= ProjectManager.UpdateFileMembershipInProject(rfs);
+                            handled |= GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs);
                             shouldSave = true;
 
                             MainGlueWindow.Self.Invoke((MethodInvoker)delegate
@@ -144,7 +144,7 @@ namespace FlatRedBall.Glue.IO
                             {
                                 string relativePath = ProjectManager.MakeRelativeContent(changedFile);
 
-                                shouldSave |= ProjectManager.UpdateFileMembershipInProject(
+                                shouldSave |= GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(
                                     ProjectManager.ProjectBase, relativePath, false, false);
                                 handled |= shouldSave;
 
@@ -171,8 +171,17 @@ namespace FlatRedBall.Glue.IO
                     {
                         ElementViewWindow.Invoke((MethodInvoker)delegate
                         {
-                            // It's a directory, so let's just rebuild our directory TreeNodes
-                            ElementViewWindow.AddDirectoryNodes();
+                            try
+                            {
+                                // It's a directory, so let's just rebuild our directory TreeNodes
+                                ElementViewWindow.AddDirectoryNodes();
+                            }
+                            catch(System.IO.IOException)
+                            {
+                                // this could be because something else is accessing the directory, so sleep, try again
+                                System.Threading.Thread.Sleep(100);
+                                ElementViewWindow.AddDirectoryNodes();
+                            }
                         });
                     }
 

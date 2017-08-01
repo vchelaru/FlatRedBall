@@ -20,56 +20,7 @@ namespace FlatRedBall.Glue.ContentPipeline
 {
     public class ContentPipelineHelper
     {
-        public static void SetAllFromFile()
-        {
-            DialogResult result = MessageBox.Show("Are you sure you want to set all files to load from-file?  You " +
-                "should probably close Visual Studio while this is running", "Change all to from-file?",
-                MessageBoxButtons.YesNo);
-
-            if (result == DialogResult.Yes)
-            {
-
-                List<ReferencedFileSave> allReferencedFiles = ObjectFinder.Self.GetAllReferencedFiles();
-
-                
-                FlatRedBall.Glue.Controls.InitializationWindow messageWindow = new Controls.InitializationWindow();
-                messageWindow.Show(MainGlueWindow.Self);
-
-                messageWindow.Message = "Switching Files...";
-                Application.DoEvents();
-
-                int count = 0;
-
-                foreach (ReferencedFileSave rfs in allReferencedFiles)
-                {
-                    if (rfs.GetAssetTypeInfo() == null || rfs.GetAssetTypeInfo().MustBeAddedToContentPipeline == false)
-                    {
-                        bool valueBefore = rfs.UseContentPipeline;
-
-                        rfs.UseContentPipeline = false;
-                        if (valueBefore != rfs.UseContentPipeline)
-                        {
-                            messageWindow.SubMessage = "Converting " + rfs.Name;
-                            Application.DoEvents();
-
-                            count++;
-                            ReactToUseContentPipelineChange(rfs);
-                        }
-                    }
-                }
-
-                GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
-
-                MainGlueWindow.Self.PropertyGrid.Refresh();
-
-
-                ProjectManager.SaveProjects();
-                GluxCommands.Self.SaveGlux();
-
-                MessageBox.Show("Done converting " + count + " files to load from file.");
-            }
-        }
-        
+       
         public static void ReactToUseContentPipelineChange(ReferencedFileSave rfs)
         {
             TaskManager.Self.AddSync(() =>

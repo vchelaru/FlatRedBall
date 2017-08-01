@@ -180,75 +180,75 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else
             {
-                    Zipper.UnzipAndModifyFileIfZip(ref absoluteFileName);
-                    string extension = FileManager.GetExtension(absoluteFileName);
+                Zipper.UnzipAndModifyFileIfZip(ref absoluteFileName);
+                string extension = FileManager.GetExtension(absoluteFileName);
                     
-                    bool isValidExtensionOrIsConfirmedByUser;
-                    bool isUnknownType;
-                    CheckAndWarnAboutUnknownFileTypes(unknownTypeHandle, extension, out isValidExtensionOrIsConfirmedByUser, out isUnknownType);
+                bool isValidExtensionOrIsConfirmedByUser;
+                bool isUnknownType;
+                CheckAndWarnAboutUnknownFileTypes(unknownTypeHandle, extension, out isValidExtensionOrIsConfirmedByUser, out isUnknownType);
 
-                    if (isValidExtensionOrIsConfirmedByUser)
+                if (isValidExtensionOrIsConfirmedByUser)
+                {
+
+                    string directoryThatFileShouldBeRelativeTo = GetFullPathContentDirectory(containerForFile, directoryInsideContainer);
+
+                    string projectDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
+
+                    string fileToAdd = GetNameOfFileRelativeToContentFolder(absoluteFileName, directoryThatFileShouldBeRelativeTo, projectDirectory);
+
+                    BuildToolAssociation bta = null;
+
+                    if (ati != null && !string.IsNullOrEmpty(ati.CustomBuildToolName))
                     {
+                        bta =
+                            BuildToolAssociationManager.Self.GetBuilderToolAssociationByName(ati.CustomBuildToolName);
+                    }
 
-                        string directoryThatFileShouldBeRelativeTo = GetFullPathContentDirectory(containerForFile, directoryInsideContainer);
+                    if (containerForFile != null)
+                    {
+                        referencedFileSaveToReturn = containerForFile.AddReferencedFile(fileToAdd, ati, bta);
+                    }
+                    else
+                    {
+                        bool useFullPathAsName = false;
+                        // todo - support built files here
+                        referencedFileSaveToReturn = AddReferencedFileToGlobalContent(fileToAdd, useFullPathAsName);
+                    }
 
-                        string projectDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
 
-                        string fileToAdd = GetNameOfFileRelativeToContentFolder(absoluteFileName, directoryThatFileShouldBeRelativeTo, projectDirectory);
 
-                        BuildToolAssociation bta = null;
-
-                        if (ati != null && !string.IsNullOrEmpty(ati.CustomBuildToolName))
-                        {
-                            bta =
-                                BuildToolAssociationManager.Self.GetBuilderToolAssociationByName(ati.CustomBuildToolName);
-                        }
-
+                    // This will be null if there was an error above in creating this file
+                    if (referencedFileSaveToReturn != null)
+                    {
                         if (containerForFile != null)
+                            containerForFile.HasChanged = true;
+
+                        if (fileToAdd.EndsWith(".csv"))
                         {
-                            referencedFileSaveToReturn = containerForFile.AddReferencedFile(fileToAdd, ati, bta);
+                            string fileToAddAbsolute = ProjectManager.MakeAbsolute(fileToAdd);
+                            CsvCodeGenerator.GenerateAndSaveDataClass(referencedFileSaveToReturn, referencedFileSaveToReturn.CsvDelimiter);
                         }
-                        else
+                        if (isUnknownType)
                         {
-                            bool useFullPathAsName = false;
-                            // todo - support built files here
-                            referencedFileSaveToReturn = AddReferencedFileToGlobalContent(fileToAdd, useFullPathAsName);
+                            referencedFileSaveToReturn.LoadedAtRuntime = false;
                         }
 
+                        GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(referencedFileSaveToReturn);
 
+                        PluginManager.ReactToNewFile(referencedFileSaveToReturn);
+                        GluxCommands.Self.SaveGlux();
+                        ProjectManager.SaveProjects();
+                        UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);
 
-                        // This will be null if there was an error above in creating this file
-                        if (referencedFileSaveToReturn != null)
+                        string error;
+                        referencedFileSaveToReturn.RefreshSourceFileCache(false, out error);
+
+                        if (!string.IsNullOrEmpty(error))
                         {
-                            if (containerForFile != null)
-                                containerForFile.HasChanged = true;
-
-                            if (fileToAdd.EndsWith(".csv"))
-                            {
-                                string fileToAddAbsolute = ProjectManager.MakeAbsolute(fileToAdd);
-                                CsvCodeGenerator.GenerateAndSaveDataClass(referencedFileSaveToReturn, referencedFileSaveToReturn.CsvDelimiter);
-                            }
-                            if (isUnknownType)
-                            {
-                                referencedFileSaveToReturn.LoadedAtRuntime = false;
-                            }
-
-                            ProjectManager.UpdateFileMembershipInProject(referencedFileSaveToReturn);
-
-                            PluginManager.ReactToNewFile(referencedFileSaveToReturn);
-                            GluxCommands.Self.SaveGlux();
-                            ProjectManager.SaveProjects();
-                            UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);
-
-                            string error;
-                            referencedFileSaveToReturn.RefreshSourceFileCache(false, out error);
-
-                            if (!string.IsNullOrEmpty(error))
-                            {
-                                ErrorReporter.ReportError(referencedFileSaveToReturn.Name, error, false);
-                            }
+                            ErrorReporter.ReportError(referencedFileSaveToReturn.Name, error, false);
                         }
                     }
+                }
             }
 
             return referencedFileSaveToReturn;
@@ -420,7 +420,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             ProjectManager.GlueProjectSave.GlobalFiles.Add(referencedFileSave);
             ProjectManager.GlueProjectSave.GlobalContentHasChanged = true;
 
-            ProjectManager.UpdateFileMembershipInProject(referencedFileSave);
+            GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(referencedFileSave);
 
 
             // Update any element that may reference this file because now it may mean the element

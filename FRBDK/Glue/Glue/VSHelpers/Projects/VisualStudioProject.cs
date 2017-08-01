@@ -662,6 +662,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             //using (var stringWriter = new UnicodeStringWriter())
             using (var stringWriter = new Utf8StringWriter())
             {
+                mProject.ReevaluateIfNecessary();
+
                 mProject.Save(stringWriter);
 
                 string newText = stringWriter.ToString();

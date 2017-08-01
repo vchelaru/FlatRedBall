@@ -23,6 +23,8 @@ namespace OfficialPlugins.MonoGameContent
 
         ContentPipelineControl control;
 
+        ContentPipelineController controller;
+
         public override string FriendlyName
         {
             get
@@ -50,23 +52,51 @@ namespace OfficialPlugins.MonoGameContent
         {
             this.AddMenuItemTo("Content Pipeline Settings", HandleContentPipelineSettings, "Content");
 
+            CreateController();
+
             AssignEvents();
         }
+
+        private void CreateController()
+        {
+            controller = new ContentPipelineController();
+
+        }
+
         private void AssignEvents()
         {
             this.ReactToFileChangeHandler += HandleFileChanged;
-            this.ReactToLoadedGlux += HandleLoadedGlux;
+            this.ReactToLoadedGluxEarly += HandleLoadedGlux;
+            this.ReactToUnloadedGlux += HandleGluxUnloaded;
             this.ReactToLoadedSyncedProject += HandleLoadedSyncedProject;
             this.ReactToNewFileHandler += HandleNewFile;
             this.ReactToReferencedFileChangedValueHandler += HandleReferencedFileValueChanged;
+            this.GetIfUsesContentPipeline += HandleGetIfUsesContentPipeline;
         }
 
+        private void HandleGluxUnloaded()
+        {
+            controller?.UnassignEvents();
+        }
+
+        private bool HandleGetIfUsesContentPipeline(string absoluteFileName)
+        {
+            if(controller?.Settings != null)
+            {
+                var extension = FileManager.GetExtension(absoluteFileName);
+                return extension == "png" && controller.Settings.UseContentPipelineOnAllPngs;
+            }
+
+            return false;
+        }
 
         private void HandleContentPipelineSettings(object sender, EventArgs e)
         {
             if(control == null)
             {
                 control = new ContentPipelinePlugin.ContentPipelineControl();
+                controller.SetControl(control);
+
                 AddToTab(PluginManager.LeftTab, control, "Content Pipeline");
 
             }
@@ -113,6 +143,7 @@ namespace OfficialPlugins.MonoGameContent
 
         private void HandleLoadedGlux()
         {
+            controller.LoadOrCreateSettings();
             BuildLogic.Self.RefreshBuiltFilesFor(GlueState.Self.CurrentMainProject);
         }
 

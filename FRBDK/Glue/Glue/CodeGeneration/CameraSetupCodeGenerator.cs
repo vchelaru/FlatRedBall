@@ -70,7 +70,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             FileManager.SaveText(newContents, fileName);
 
             // Now, verify that this thing is part of the project.
-            bool wasAdded = ProjectManager.UpdateFileMembershipInProject(ProjectManager.ProjectBase, fileName, false, false);
+            bool wasAdded = GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(ProjectManager.ProjectBase, fileName, false, false);
 
             if (wasAdded)
             {

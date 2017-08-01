@@ -148,6 +148,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action<string, object> ReactToReferencedFileChangedValueHandler { get;  protected set;}
 
+        public Func<string, bool> GetIfUsesContentPipeline { get; protected set; }
 
         #endregion
 

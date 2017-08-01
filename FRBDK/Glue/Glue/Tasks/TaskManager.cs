@@ -14,13 +14,8 @@ namespace FlatRedBall.Glue.Managers
     public class TaskManager : Singleton<TaskManager>
     {
 
-
-
-
-
-        int asyncTasks;
-
         #region Fields
+        int asyncTasks;
 
         List<GlueTask> mSyncedActions = new List<GlueTask>();
         static object mSyncLockObject = new object();
@@ -192,6 +187,11 @@ namespace FlatRedBall.Glue.Managers
         }
 
 
+        public void AddSync(Action action, string displayInfo)
+        {
+            AddSync(action, displayInfo, isHighPriority: false);
+        }
+
         /// <summary>
         /// Adds an action to be executed, guaranteeing that no other actions will be executed at the same time as this.
         /// Actions added will be executed in the order they were added (fifo).
@@ -199,15 +199,16 @@ namespace FlatRedBall.Glue.Managers
         /// <param name="action">The action to execute.</param>
         /// <param name="displayInfo">The details of the task, to de bisplayed in the tasks window.</param>
         /// <param name="isHighPriority">Whether to attempt to run the action immediately - useful for UI tasks</param>
-        public void AddSync(Action action, string displayInfo, bool isHighPriority = false)
+        public void AddSync(Action action, string displayInfo, bool isHighPriority)
         {
+            var glueTask = new GlueTask();
+            glueTask.Action = action;
+            glueTask.DisplayInfo = displayInfo;
+
             bool shouldProcess = false;
+
             lock (mSyncLockObject)
             {
-                var glueTask = new GlueTask();
-                glueTask.Action = action;
-                glueTask.DisplayInfo = displayInfo;
-
                 if(isHighPriority)
                 {
                     if(mSyncedActions.Count > 0)
@@ -250,6 +251,8 @@ namespace FlatRedBall.Glue.Managers
                 {
                     toProcess();
 
+                    bool shouldProcess = false;
+
                     lock (mSyncLockObject)
                     {
 
@@ -257,10 +260,12 @@ namespace FlatRedBall.Glue.Managers
                         {
                             mSyncedActions.RemoveAt(0);
                         }
-                    }
 
+                        shouldProcess = mSyncedActions.Count > 0 && IsTaskProcessingEnabled;
+                    }
                     CallTaskAddedOrRemoved();
-                    if (mSyncedActions.Count > 0 && IsTaskProcessingEnabled)
+
+                    if (shouldProcess)
                     {
                         ProcessNextSync();
                     }

@@ -168,7 +168,7 @@ namespace FlatRedBall.Glue.Controls
 
                 Value.Add(psf);
                 Rfs.ProjectSpecificFiles = Value;
-                ProjectManager.UpdateFileMembershipInProject(Rfs);
+                GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(Rfs);
                 ProjectManager.SaveProjects();
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
@@ -223,7 +223,7 @@ namespace FlatRedBall.Glue.Controls
 
             Value.Add(psf);
             Rfs.ProjectSpecificFiles = Value;
-            ProjectManager.UpdateFileMembershipInProject(Rfs);
+            GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(Rfs);
             ProjectManager.SaveProjects();
             GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
             RefreshList();

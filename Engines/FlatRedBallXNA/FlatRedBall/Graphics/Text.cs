@@ -951,12 +951,10 @@ namespace FlatRedBall.Graphics
 
         }
 
-        #region XML Docs
         /// <summary>
         /// Sets the Scale and Spacing such that the Text is drawn pixel-perfect at its given Z position.
         /// </summary>
         /// <param name="camera">Reference to the camera to use when calculating the Scale and Spacing.</param>
-        #endregion
         public void SetPixelPerfectScale(Camera camera)
         {
             int lineHeight = 0;

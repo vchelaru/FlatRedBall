@@ -1992,6 +1992,30 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+        internal static bool? GetIfUsesContentPipeline(string fileAbsolute)
+        {
+            bool? toReturn = null;
+
+            foreach (PluginManager pluginManager in mInstances)
+            {
+                var plugins = pluginManager.ImportedPlugins.Where(x => x.GetIfUsesContentPipeline != null);
+                foreach (var plugin in plugins)
+                {
+                    var container = pluginManager.mPluginContainers[plugin];
+                    if (container.IsEnabled)
+                    {
+                        PluginBase plugin1 = plugin;
+                        PluginCommand(() =>
+                        {
+                            toReturn = plugin1.GetIfUsesContentPipeline(fileAbsolute);
+                        }, container, "Failed in GetIfUsesContentPipeline");
+                    }
+                }
+            }
+
+            return toReturn;
+        }
+
         #endregion
 
         internal static void PrintPreInitializeOutput()

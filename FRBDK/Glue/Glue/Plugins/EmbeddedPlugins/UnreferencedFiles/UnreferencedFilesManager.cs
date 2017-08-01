@@ -182,6 +182,8 @@ namespace FlatRedBall.Glue.Managers
                         }
 
                     }
+
+                    mUnreferencedFiles = mUnreferencedFiles.OrderBy(item => item.FilePath.ToLowerInvariant()).ToList();
                 }
             }
         }
@@ -190,9 +192,21 @@ namespace FlatRedBall.Glue.Managers
         {
             bool isUnreferenced = false;
 
-            string itemName = item.UnevaluatedInclude.ToLower().Replace(@"\", @"/");
-            nameToInclude = item.UnevaluatedInclude;
+            var link = item.GetLink();
 
+            string itemName;
+
+            if(string.IsNullOrEmpty(link))
+            {
+                itemName = item.UnevaluatedInclude.ToLower().Replace(@"\", @"/");
+                nameToInclude = item.UnevaluatedInclude;
+            }
+            else
+            {
+                itemName = link.ToLower().Replace(@"\", @"/");
+                nameToInclude = link;
+
+            }
             // no extensions are unsupported.  What do we do with the content pipeline?
             if (!string.IsNullOrEmpty(FileManager.GetExtension(itemName)))
             {

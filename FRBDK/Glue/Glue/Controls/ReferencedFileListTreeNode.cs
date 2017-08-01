@@ -8,6 +8,7 @@ using FlatRedBall.IO;
 
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -131,7 +132,7 @@ namespace FlatRedBall.Glue.Controls
 
                     if (FileManager.FileExists(fullFile))
                     {
-                        ProjectManager.UpdateFileMembershipInProject(referencedFiles[i]);
+                        GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(referencedFiles[i]);
                     }
                     else
                     {

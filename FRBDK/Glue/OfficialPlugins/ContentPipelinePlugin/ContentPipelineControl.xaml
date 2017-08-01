@@ -7,6 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel>
-        <CheckBox x:Name="CheckBox" VerticalContentAlignment="Center" Checked="CheckBox_Checked">Load all PNGs using Content Pipeline</CheckBox>
+        <CheckBox x:Name="CheckBox" VerticalContentAlignment="Center" Checked="CheckBox_Checked" Unchecked="CheckBox_Checked">Load all PNGs using Content Pipeline</CheckBox>
+        <Button Click="Button_Click">Refresh</Button>
     </StackPanel>
 </UserControl>

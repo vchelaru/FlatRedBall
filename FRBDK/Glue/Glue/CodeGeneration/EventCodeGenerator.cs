@@ -324,7 +324,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             else
             {
                 // Make sure the file is part of the project
-                ProjectManager.UpdateFileMembershipInProject(ProjectManager.ProjectBase, fullGeneratedFileName, false, false);
+                GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(ProjectManager.ProjectBase, fullGeneratedFileName, false, false);
             }
 
             ICodeBlock codeBlock = GenerateEventGeneratedCodeFile(element);
