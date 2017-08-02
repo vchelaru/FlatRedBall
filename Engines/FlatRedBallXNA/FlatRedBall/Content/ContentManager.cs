@@ -74,6 +74,7 @@ namespace FlatRedBall.Content
         /// </summary>
         public static bool LoadFromGlobalIfExists = true;
 
+        public static Dictionary<string, string> FileAliases { get; private set; } = new Dictionary<string, string>();
 		
 #if FRB_XNA && !WINDOWS_PHONE && !MONOGAME
 		internal Effect mFirstEffect = null;
@@ -90,7 +91,6 @@ namespace FlatRedBall.Content
 
         #region Default Content
 
-        #region Default Font Texture Data
         public static Texture2D GetDefaultFontTexture(GraphicsDevice graphicsDevice)
         {
 #if ANDROID
@@ -124,13 +124,10 @@ namespace FlatRedBall.Content
 
             return texture;
         }
-#endregion
 
+        #endregion
 
-
-#endregion
-
-#region Properties
+        #region Properties
 
         public IEnumerable<IDisposable> DisposableObjects
         {
@@ -183,7 +180,7 @@ namespace FlatRedBall.Content
 
 #endregion
 
-#region Methods
+        #region Methods
 
 #region Constructors
 
@@ -340,11 +337,18 @@ namespace FlatRedBall.Content
 		// Load of XNA's ContentManager.  But if FRB calls it, it'll call the "new" version.  Problem solved.
 		public new T Load<T>(string assetName)
 		{
+            var standardized = FileManager.Standardize(assetName);
+
+            if(FileAliases.ContainsKey(standardized))
+            {
+                assetName = FileAliases[standardized];
+            }
+
 			// Assets can be loaded either from file or from assets referenced
 			// in the project.
 			string extension = FileManager.GetExtension(assetName);
 
-#region If there is an extension, loading from file or returning an already-loaded asset
+            #region If there is an extension, loading from file or returning an already-loaded asset
 			assetName = FileManager.Standardize(assetName);
 
 			if (extension != String.Empty)
@@ -354,7 +358,7 @@ namespace FlatRedBall.Content
 
 #endregion
 
-#region Else there is no extension, so the file is already part of the project.  Use a ContentManager
+            #region Else there is no extension, so the file is already part of the project.  Use a ContentManager
 			else
 			{
 #if PROFILE
