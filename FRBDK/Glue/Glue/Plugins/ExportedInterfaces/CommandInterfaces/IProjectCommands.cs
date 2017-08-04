@@ -16,6 +16,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="code"></param>
         void CreateAndAddPartialFile(IElement element, string partialName, string code);
 
+        void CreateAndAddCodeFile(string relativeFileName);
+
         void AddContentFileToProject(string absoluteFileName, bool saveProjects = true);
 
         void CopyToBuildFolder(ReferencedFileSave rfs);

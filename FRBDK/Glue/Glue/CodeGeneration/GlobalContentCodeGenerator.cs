@@ -205,7 +205,11 @@ namespace FlatRedBall.Glue.Parsing
             currentBlock = initializeFunction
                     ._();
 
-            
+            foreach (var generator in CodeWriter.GlobalContentCodeGenerators)
+            {
+                generator.GenerateInitializeStart(initializeFunction);
+            }
+
 
             //stringBuilder.AppendLine("\t\t\tstring ContentManagerName = \"Global\";");
 

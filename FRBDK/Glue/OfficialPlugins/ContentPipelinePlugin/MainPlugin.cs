@@ -13,6 +13,8 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Managers;
 using System.Diagnostics;
 using OfficialPlugins.ContentPipelinePlugin;
+using FlatRedBall.Glue.Parsing;
+using System.ComponentModel;
 
 namespace OfficialPlugins.MonoGameContent
 {
@@ -22,6 +24,8 @@ namespace OfficialPlugins.MonoGameContent
         #region Fields/Properties
 
         ContentPipelineControl control;
+        ControlViewModel viewModel;
+        AliasCodeGenerator aliasCodeGenerator;
 
         ContentPipelineController controller;
 
@@ -48,13 +52,44 @@ namespace OfficialPlugins.MonoGameContent
             return true;
         }
 
+        #region Constructor/Initialize
+
+        public MainPlugin()
+        {
+            viewModel = new ContentPipelinePlugin.ControlViewModel();
+            viewModel.PropertyChanged += HandleViewModelPropertyChanged;
+        }
+
+        private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var propertyName = e.PropertyName;
+
+            switch(propertyName)
+            {
+                case nameof(ControlViewModel.UseContentPipelineOnPngs):
+                    // so handling file changes will probably do this but let's force it so we know it happens:
+                    aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
+                    break;
+            }
+        }
+
         public override void StartUp()
         {
             this.AddMenuItemTo("Content Pipeline Settings", HandleContentPipelineSettings, "Content");
 
             CreateController();
 
+            // must come after the controller
+            CreateAliasCodeGenerator();
+
             AssignEvents();
+        }
+
+        private void CreateAliasCodeGenerator()
+        {
+            aliasCodeGenerator = new AliasCodeGenerator();
+            aliasCodeGenerator.Initialize(controller);
+            CodeWriter.GlobalContentCodeGenerators.Add(aliasCodeGenerator);
         }
 
         private void CreateController()
@@ -74,9 +109,11 @@ namespace OfficialPlugins.MonoGameContent
             this.GetIfUsesContentPipeline += HandleGetIfUsesContentPipeline;
         }
 
+        #endregion
+
         private void HandleGluxUnloaded()
         {
-            controller?.UnassignEvents();
+            viewModel.IsProjectLoaded = false;
         }
 
         private bool HandleGetIfUsesContentPipeline(string absoluteFileName)
@@ -95,7 +132,8 @@ namespace OfficialPlugins.MonoGameContent
             if(control == null)
             {
                 control = new ContentPipelinePlugin.ContentPipelineControl();
-                controller.SetControl(control);
+                control.DataContext = viewModel;
+                controller.SetControl(control, viewModel);
 
                 AddToTab(PluginManager.LeftTab, control, "Content Pipeline");
 
@@ -143,7 +181,13 @@ namespace OfficialPlugins.MonoGameContent
 
         private void HandleLoadedGlux()
         {
+            viewModel.IsProjectLoaded = true;
             controller.LoadOrCreateSettings();
+            viewModel.UseContentPipelineOnPngs = controller.Settings.UseContentPipelineOnAllPngs;
+            if(viewModel.UseContentPipelineOnPngs)
+            {
+                aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
+            }
             BuildLogic.Self.RefreshBuiltFilesFor(GlueState.Self.CurrentMainProject);
         }
 
@@ -154,7 +198,7 @@ namespace OfficialPlugins.MonoGameContent
 
         private void HandleFileChanged(string fileName)
         {
-            // todo - build?
+            aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
         }
     }
 }

@@ -350,6 +350,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             PluginManager.ReceiveOutput("Added " + relativeFileName + " to project as content");
         }
 
+        public void CreateAndAddCodeFile(string relativeFileName)
+        {
+            // see if the file exists. If not, create it:
+            var absoluteFileName = GlueState.Self.CurrentGlueProjectDirectory + relativeFileName;
+
+            if(System.IO.File.Exists(absoluteFileName) == false)
+            {
+                // will get back in later
+                System.IO.File.WriteAllText(absoluteFileName, "");
+            }
+
+            var mainProject = GlueState.Self.CurrentMainProject;
+            if(mainProject.IsFilePartOfProject(absoluteFileName) == false)
+            {
+                mainProject.AddCodeBuildItem(absoluteFileName);
+                mainProject.Save();
+                // do we need to project sync?
+            }
+        }
+
 
         public void CopyToBuildFolder(ReferencedFileSave rfs)
         {

@@ -10,6 +10,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Managers;
 using OfficialPlugins.MonoGameContent;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using System.ComponentModel;
 
 namespace OfficialPlugins.ContentPipelinePlugin
 {
@@ -17,6 +18,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
     {
         SettingsSave settings;
         ContentPipelineControl control;
+        ControlViewModel viewModel;
 
         public SettingsSave Settings
         {
@@ -32,29 +34,44 @@ namespace OfficialPlugins.ContentPipelinePlugin
             }
         }
 
-        public void SetControl(ContentPipelineControl control)
+        public void SetControl(ContentPipelineControl control, ControlViewModel viewModel)
         {
             this.control = control;
-
-            control.CheckBoxClicked += HandleCheckBoxClicked;
             control.RefreshClicked += HandleRefreshClicked;
-            control.CheckBox.IsChecked = settings.UseContentPipelineOnAllPngs;
 
+            this.viewModel = viewModel;
+            viewModel.PropertyChanged += HandleViewModelPropertyChanged;
+            if(settings != null)
+            {
+                viewModel.UseContentPipelineOnPngs = settings.UseContentPipelineOnAllPngs;
+            }
+            else
+            {
+                viewModel.UseContentPipelineOnPngs = false;
+            }
+        }
+
+        private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var parameterName = e.PropertyName;
+
+            switch(parameterName)
+            {
+                case nameof(ControlViewModel.UseContentPipelineOnPngs):
+
+                    settings.UseContentPipelineOnAllPngs = viewModel.UseContentPipelineOnPngs;
+                    SaveLoadLogic.SaveSettings(settings);
+
+                    RefreshProjects();
+                    break;
+            }
         }
 
         private void HandleRefreshClicked(object sender, EventArgs e)
         {
             RefreshProjects();
         }
-
-        private void HandleCheckBoxClicked(object sender, EventArgs e)
-        {
-            settings.UseContentPipelineOnAllPngs = control.UseContentPipeline;
-            SaveLoadLogic.SaveSettings(settings);
-
-            RefreshProjects();
-        }
-
+        
         private void RefreshProjects()
         {
             // store it locally so the task has the same value when executing:
@@ -169,22 +186,24 @@ namespace OfficialPlugins.ContentPipelinePlugin
         private void RefreshAllFileMembership(bool useContentPipeline)
         {
             var referencedPngs = GetReferencedPngs();
-            
+
+            var projectCommands = GlueCommands.Self.ProjectCommands;
+            var mainProject = GlueState.Self.CurrentMainProject;
 
             foreach (var referencedPng in referencedPngs)
             {
-                GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, referencedPng, useContentPipeline: useContentPipeline, shouldLink: false);
+                projectCommands.UpdateFileMembershipInProject(mainProject, referencedPng, useContentPipeline: useContentPipeline, shouldLink: false);
 
                 foreach(var project in GlueState.Self.SyncedProjects)
                 {
-                    GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(
+                    projectCommands.UpdateFileMembershipInProject(
                         project, referencedPng, useContentPipeline: useContentPipeline, shouldLink: true);
                 }
             }
 
         }
 
-        private string[] GetReferencedPngs()
+        public static string[] GetReferencedPngs()
         {
             List<string> referencedFileNames = new List<string>();
 
@@ -213,7 +232,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
             return referencedPngs;
         }
 
-        private void AddReferencedFilesRecursively(string absoluteFileName, List<string> referencedFileNames)
+        private static void AddReferencedFilesRecursively(string absoluteFileName, List<string> referencedFileNames)
         {
             var referencedFiles =
                 FileReferenceManager.Self.GetFilesReferencedBy(absoluteFileName, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
@@ -228,15 +247,6 @@ namespace OfficialPlugins.ContentPipelinePlugin
                 }
 
             }
-        }
-
-        internal void UnassignEvents()
-        {
-            if (control != null)
-            {
-                control.CheckBoxClicked -= HandleCheckBoxClicked;
-            }
-
         }
     }
 }

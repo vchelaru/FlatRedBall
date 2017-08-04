@@ -12,6 +12,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public override string ProjectId { get { return "DesktopGl"; } }
         public override string PrecompilerDirective { get { return "DESKTOP_GL"; } }
 
+        public override bool AllowContentCompile
+        {
+            get { return false; }
+        }
+
         public override List<string> LibraryDlls
         {
             get

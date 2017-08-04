@@ -9,6 +9,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 {
     public class GlobalContentCodeGeneratorBase
     {
+        public virtual void GenerateInitializeStart(ICodeBlock codeBlock)
+        {
+
+        }
+
+
         public virtual void GenerateInitializeEnd(ICodeBlock codeBlock)
         {
 
