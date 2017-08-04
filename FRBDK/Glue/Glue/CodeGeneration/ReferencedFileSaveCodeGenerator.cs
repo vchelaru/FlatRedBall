@@ -564,7 +564,11 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
 
             string variableName = null;
-            if (NeedsFullProperty(rfs, container))
+
+            // if container is null, set the property to force a MRE reset if it's async loadedWriteAssignmentAndMreSet
+            bool shouldAssignField = container != null && NeedsFullProperty(rfs, container);
+
+            if(shouldAssignField)
             {
                 variableName = "m" + rfs.GetInstanceName();
             }

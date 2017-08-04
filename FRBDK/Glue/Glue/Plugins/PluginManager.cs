@@ -1996,24 +1996,40 @@ namespace FlatRedBall.Glue.Plugins
         {
             bool? toReturn = null;
 
-            foreach (PluginManager pluginManager in mInstances)
+            var plugins = mInstances
+                .Select(item => (PluginManager)item)
+                .SelectMany(item => item.ImportedPlugins.Where(x => x.GetIfUsesContentPipeline != null))
+                .ToArray();
+
+            foreach (var plugin in plugins)
             {
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.GetIfUsesContentPipeline != null);
-                foreach (var plugin in plugins)
+                var container = GetContainerFor(plugin);
+
+                
+                if (container.IsEnabled)
                 {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
+                    PluginBase plugin1 = plugin;
+                    PluginCommand(() =>
                     {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                        {
-                            toReturn = plugin1.GetIfUsesContentPipeline(fileAbsolute);
-                        }, container, "Failed in GetIfUsesContentPipeline");
-                    }
+                        toReturn = plugin1.GetIfUsesContentPipeline(fileAbsolute);
+                    }, container, "Failed in GetIfUsesContentPipeline");
                 }
             }
 
             return toReturn;
+        }
+
+        private static PluginContainer GetContainerFor(PluginBase plugin)
+        {
+            for(int i = 0; i < mInstances.Count; i++)
+            {
+                if(mInstances[i].PluginContainers.ContainsKey(plugin))
+                {
+                    return mInstances[i].PluginContainers[plugin];
+                }
+
+            }
+            return null;
         }
 
         #endregion
