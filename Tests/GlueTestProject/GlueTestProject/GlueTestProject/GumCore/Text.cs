@@ -32,21 +32,31 @@ namespace RenderingLibrary.Graphics
 
     #endregion
 
+    public enum TextRenderingMode
+    {
+        RenderTarget,
+        CharacterByCharacter
+    }
+
+
     public class Text : IRenderableIpso, IVisible
     {
         #region Fields
 
         /// <summary>
-        /// Stores the width of the text object's texture before it has had a chance to render.
+        /// Stores the width of the text object's texture before it has had a chance to render, not including
+        /// the FontScale.
         /// </summary>
         /// <remarks>
-        /// A Texture can have a width that depends on its texture.  However, its texture will not 
-        /// be rendered created until the entire engine is rendered.  This will be used until that render
-        /// occurs if not null.
+        /// A text object may need to be positioned according to its dimensions. Normally this would
+        /// use a text's render target texture. In some situations (before the render pass has occurred,
+        /// or when using character-by-character rendering), the text may not have a render target texture.
+        /// Therefore, the pre-rendered values provide size information.
         /// </remarks>
         int? mPreRenderWidth;
         /// <summary>
-        /// Stores the height of the text object's texture before it has had a chance to render.
+        /// Stores the height of the text object's texture before it has had a chance to render, not including
+        /// the FontScale.
         /// </summary>
         /// <remarks>
         /// See mPreRenderWidth for more information about this member.
@@ -55,7 +65,20 @@ namespace RenderingLibrary.Graphics
 
         public Vector2 Position;
 
-        public Color Color = Color.White;
+        public Color Color
+        {
+            get
+            {
+                return new Color(mRed, mGreen, mBlue, mAlpha);
+            }
+            set
+            {
+                mRed = value.R;
+                mGreen = value.G;
+                mBlue = value.B;
+                mAlpha = value.A;
+            }
+        }
 
         string mRawText;
         List<string> mWrappedText = new List<string>();
@@ -82,6 +105,12 @@ namespace RenderingLibrary.Graphics
         SystemManagers mManagers;
 
         bool mNeedsBitmapFontRefresh = true;
+
+        // For now this is going to be app-wide, but...maybe we want to make this instance-based?  I'm not sure, but
+        // I don't want to inflate each text object to support something that may not be used, so we'll start with a static.
+        // It'll break code but it won't be hard to respond to.
+        // As of 0.8.7, CharacterByCharacter is the standard in Gum tool
+        public static TextRenderingMode TextRenderingMode = TextRenderingMode.CharacterByCharacter;
 
         #endregion
 
@@ -162,6 +191,8 @@ namespace RenderingLibrary.Graphics
                 mWidth = value;
                 UpdateWrappedText();
                 UpdateLinePrimitive();
+                UpdatePreRenderDimensions();
+
             }
         }
 
@@ -350,6 +381,8 @@ namespace RenderingLibrary.Graphics
                 mFontScale = System.Math.Max(0, value);
                 UpdateWrappedText();
                 mNeedsBitmapFontRefresh = true;
+                UpdatePreRenderDimensions();
+
             }
         }
 
@@ -586,7 +619,7 @@ namespace RenderingLibrary.Graphics
 
         public void UpdateTextureToRender()
         {
-            if (!mIsTextureCreationSuppressed)
+            if (!mIsTextureCreationSuppressed && TextRenderingMode == TextRenderingMode.RenderTarget)
             {
                 BitmapFont fontToUse = mBitmapFont;
                 if (mBitmapFont == null)
@@ -670,29 +703,89 @@ namespace RenderingLibrary.Graphics
                     LineRectangle.RenderLinePrimitive(mBounds, spriteRenderer, this, managers, false);
                 }
 
-                if (mTextureToRender == null)
+                if(TextRenderingMode == TextRenderingMode.CharacterByCharacter)
                 {
-                    RenderUsingSpriteFont(spriteRenderer);
+                    RenderCharacterByCharacter(spriteRenderer);
                 }
-                else
+                else // RenderTarget
                 {
-                    RenderUsingBitmapFont(spriteRenderer, managers);
+                    if (mTextureToRender == null)
+                    {
+                        RenderUsingSpriteFont(spriteRenderer);
+                    }
+                    else
+                    {
+                        RenderUsingBitmapFont(spriteRenderer, managers);
+                    }
                 }
+            }
+        }
+
+        private void RenderCharacterByCharacter(SpriteRenderer spriteRenderer)
+        {
+            BitmapFont fontToUse = mBitmapFont;
+            if (mBitmapFont == null)
+            {
+                fontToUse = LoaderManager.Self.DefaultBitmapFont;
+            }
+
+
+            if (fontToUse != null)
+            {
+                // todo: reduce allocs by using a static here (static is prob okay since it can't be multithreaded)
+                List<int> widths = new List<int>();
+                int requiredWidth;
+                int requiredHeight;
+                fontToUse.GetRequiredWidthAndHeight(WrappedText, out requiredWidth, out requiredHeight, widths);
+
+                UpdateIpsoForRendering();
+
+                fontToUse.DrawTextLines(WrappedText, HorizontalAlignment, this,
+                    requiredWidth, widths, spriteRenderer, Color, mTempForRendering.GetAbsoluteLeft(), mTempForRendering.GetAbsoluteTop(), Rotation, FontScale, FontScale);
             }
         }
 
         private void RenderUsingBitmapFont(SpriteRenderer spriteRenderer, SystemManagers managers)
         {
+            UpdateIpsoForRendering();
+
+            if (mBitmapFont?.AtlasedTexture != null)
+            {
+                mBitmapFont.RenderAtlasedTextureToScreen(mWrappedText, this.HorizontalAlignment, mTextureToRender.Height,
+                    new Color(mRed, mGreen, mBlue, mAlpha), Rotation, mFontScale, managers, spriteRenderer, this);
+            }
+            else
+            {
+                Sprite.Render(managers, spriteRenderer, mTempForRendering, mTextureToRender,
+                    new Color(mRed, mGreen, mBlue, mAlpha), null, false, false, Rotation, treat0AsFullDimensions: false,
+                    objectCausingRenering: this);
+
+            }
+        }
+
+        private void UpdateIpsoForRendering()
+        {
             if (mTempForRendering == null)
             {
-                mTempForRendering = new LineRectangle(managers);
+                // Why do we need managers?
+                //mTempForRendering = new LineRectangle(managers);
+                // And why do we even need a line rectangle?
+                mTempForRendering = new InvisibleRenderable();
             }
 
             mTempForRendering.X = this.X;
             mTempForRendering.Y = this.Y;
-            mTempForRendering.Width = this.mTextureToRender.Width * mFontScale;
-            mTempForRendering.Height = this.mTextureToRender.Height * mFontScale;
 
+            if (mPreRenderWidth.HasValue)
+            {
+                mTempForRendering.Width = this.mPreRenderWidth.Value * mFontScale;
+                mTempForRendering.Height = this.mPreRenderHeight.Value * mFontScale;
+            }
+            else
+            {
+                mTempForRendering.Width = this.mTextureToRender.Width * mFontScale;
+                mTempForRendering.Height = this.mTextureToRender.Height * mFontScale;
+            }
             //mTempForRendering.Parent = this.Parent;
 
             float widthDifference = this.EffectiveWidth - mTempForRendering.Width;
@@ -715,24 +808,11 @@ namespace RenderingLibrary.Graphics
                 mTempForRendering.Y += this.EffectiveHeight - mTempForRendering.Height;
             }
 
-            if(this.Parent != null)
+            if (this.Parent != null)
             {
                 mTempForRendering.X += Parent.GetAbsoluteX();
                 mTempForRendering.Y += Parent.GetAbsoluteY();
 
-            }
-
-            if (mBitmapFont?.AtlasedTexture != null)
-            {
-                mBitmapFont.RenderAtlasedTextureToScreen(mWrappedText, this.HorizontalAlignment, mTextureToRender.Height,
-                    new Color(mRed, mGreen, mBlue, mAlpha), Rotation, mFontScale, managers,spriteRenderer, this);
-            }
-            else
-            {
-                Sprite.Render(managers, spriteRenderer, mTempForRendering, mTextureToRender,
-                    new Color(mRed, mGreen, mBlue, mAlpha), null, false, false, Rotation, treat0AsFullDimensions: false,
-                    objectCausingRenering: this);
-                
             }
         }
 
@@ -832,13 +912,12 @@ namespace RenderingLibrary.Graphics
 
                 if (this.mRawText != null)
                 {
-                    string[] lines = this.mRawText.Replace("\r", "").Split('\n');
-
-                    mBitmapFont.GetRequiredWithAndHeight(lines, out requiredWidth, out requiredHeight);
+                    
+                    mBitmapFont.GetRequiredWidthAndHeight(this.WrappedText, out requiredWidth, out requiredHeight);
                 }
 
-                mPreRenderWidth = (int)(requiredWidth * FontScale + .5f);
-                mPreRenderHeight = (int)(requiredHeight * FontScale + .5f);
+                mPreRenderWidth = (int)(requiredWidth + .5f);
+                mPreRenderHeight = (int)(requiredHeight + .5f);
             }
         }
         #endregion

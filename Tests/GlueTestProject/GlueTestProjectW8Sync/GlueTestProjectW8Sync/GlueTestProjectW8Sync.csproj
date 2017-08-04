@@ -1197,6 +1197,9 @@
       <Link>Factories\TextInheritingEntityFactory.Generated.cs</Link>
       <DependentUpon>TextInheritingEntityFactory.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\FileAliases.Generated.cs">
+      <Link>FileAliases.Generated.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Game1.cs">
       <Link>Game1.cs</Link>
     </Compile>
@@ -2358,10 +2361,6 @@
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GlobalContent\arrow01.png">
       <Name>arrow01</Name>
       <Link>Content\GlobalContent\arrow01.png</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GlobalContent\BearContentPipeline.png">
-      <Name>BearContentPipeline</Name>
-      <Link>Content\GlobalContent\BearContentPipeline.png</Link>
     </Content>
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GlobalContent\Book.png">
       <Name>Book</Name>

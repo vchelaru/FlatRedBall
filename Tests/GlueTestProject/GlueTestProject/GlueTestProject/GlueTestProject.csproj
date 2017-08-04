@@ -698,6 +698,7 @@
     <Compile Include="Factories\RecyclableEntityFactory.Generated.cs" />
     <Compile Include="Factories\ShapeEntityCreatedByOtherEntitiesFactory.Generated.cs" />
     <Compile Include="Factories\TextInheritingEntityFactory.Generated.cs" />
+    <Compile Include="FileAliases.Generated.cs" />
     <Compile Include="Game1.Custom.cs">
       <DependentUpon>Game1.cs</DependentUpon>
     </Compile>

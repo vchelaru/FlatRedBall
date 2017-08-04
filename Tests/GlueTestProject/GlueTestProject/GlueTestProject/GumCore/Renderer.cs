@@ -94,7 +94,18 @@ namespace RenderingLibrary.Graphics
 #endif
                 return mSinglePixelTexture;
             }
+            set
+            {
+                // Setter added to support rendering from sprite sheet.
+                mSinglePixelTexture = value;
+            }
         }
+
+        /// <summary>
+        /// The rectangle to use when rendering single-pixel texture objects, such as ColoredRectangles.
+        /// By default this is null, indicating the entire texture is used.
+        /// </summary>
+        public Rectangle? SinglePixelSourceRectangle = null;
 
         public Texture2D DottedLineTexture
         {
@@ -124,11 +135,14 @@ namespace RenderingLibrary.Graphics
         {
             get
             {
-                if (mSelf == null)
-                {
-                    mSelf = new Renderer();
-                }
-                return mSelf;
+                // Why is this using a singleton instead of system managers default? This seems bad...
+
+                //if (mSelf == null)
+                //{
+                //    mSelf = new Renderer();
+                //}
+                //return mSelf;
+                return SystemManagers.Default.Renderer;
 
             }
         }
@@ -301,24 +315,30 @@ namespace RenderingLibrary.Graphics
             spriteRenderer.EndSpriteBatch();
         }
 
-        private void PreRender(IEnumerable<IRenderableIpso> renderables)
+        private void PreRender(IList<IRenderableIpso> renderables)
         {
+#if DEBUG
             if(renderables == null)
             {
                 throw new ArgumentNullException("renderables");
             }
+#endif
 
-            foreach(var renderable in renderables)
+            var count = renderables.Count;
+            for(int i = 0; i < count; i++)
             {
+                var renderable = renderables[i];
                 renderable.PreRender();
                 PreRender(renderable.Children);
             }
         }
 
-        private void Render(IEnumerable<IRenderableIpso> whatToRender, SystemManagers managers, Layer layer)
+        private void Render(IList<IRenderableIpso> whatToRender, SystemManagers managers, Layer layer)
         {
-            foreach(var renderable in whatToRender)
+            var count = whatToRender.Count;
+            for (int i = 0; i < count; i++)
             {
+                var renderable = whatToRender[i];
                 var oldClip = mRenderStateVariables.ClipRectangle;
                 AdjustRenderStates(mRenderStateVariables, layer, renderable);
                 bool didClipChange = oldClip != mRenderStateVariables.ClipRectangle;
@@ -331,7 +351,7 @@ namespace RenderingLibrary.Graphics
                     Render(renderable.Children, managers, layer);
                 }
 
-                if(didClipChange)
+                if (didClipChange)
                 {
                     mRenderStateVariables.ClipRectangle = oldClip;
                     spriteRenderer.BeginSpriteBatch(mRenderStateVariables, layer, BeginType.Begin, mCamera);
@@ -408,11 +428,14 @@ namespace RenderingLibrary.Graphics
 
             if (renderBlendState == null)
             {
-                renderBlendState = BlendState.NonPremultiplied;
+                renderBlendState = Renderer.NormalBlendState;
             }
             if (renderState.BlendState != renderBlendState)
             {
-                renderState.BlendState = renderable.BlendState;
+                // This used to set this, but not sure why...I think it should set the renderBlendState:
+                //renderState.BlendState = renderable.BlendState;
+                renderState.BlendState = renderBlendState;
+
                 shouldResetStates = true;
 
             }

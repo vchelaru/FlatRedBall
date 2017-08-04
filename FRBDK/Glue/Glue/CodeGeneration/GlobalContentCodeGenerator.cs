@@ -324,6 +324,7 @@ namespace FlatRedBall.Glue.Parsing
                                 .Line("LoadMethodList.RemoveAt(index);")
                                 .Line("LoadMethodList.Insert(0, delegateToShuffle);")
                             .End()
+
                         .End()
                     .End();
                 classLevelBlock.Line("#endif");

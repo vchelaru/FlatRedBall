@@ -582,8 +582,12 @@ namespace FlatRedBall.Glue.CodeGeneration
             string fileNameToLoad = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(rfs, ati);
 
             // If the file isn't part of the content pipeline we have
-            // to manually unload it
-            if (!useGlobalContent && rfs.GetContainerType() == ContainerType.Entity && !rfs.UseContentPipeline)
+            // to manually unload it.
+            if (!useGlobalContent && rfs.GetContainerType() == ContainerType.Entity && !rfs.UseContentPipeline
+                // We may want to register unloads when loading from property (loaded only when referenced) but codegen doesn't
+                // support that yet
+                && !rfs.LoadedOnlyWhenReferenced
+                )
             {
                 codeBlock = codeBlock
                     .If(string.Format("!FlatRedBall.FlatRedBallServices.IsLoaded<{2}>(@\"{0}\", {1})", fileNameToLoad, contentManagerString, ati.QualifiedRuntimeTypeName.QualifiedType));
@@ -1070,7 +1074,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
 
             codeBlock.Line(
-                string.Format("LocalizationManager.AddDatabase(\"{0}\", '{1}');", "content/" + fileName, delimiter));
+                string.Format("LocalizationManager.AddDatabase(\"{0}\", '{1}');", fileName, delimiter));
         }
 
         private static void GenerateCsvDeserializationCode(ReferencedFileSave referencedFile, ICodeBlock codeBlock,  string variableName, string fileName, LoadType loadType)
@@ -1140,7 +1144,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 }
                 // CsvFileManager.CsvDeserializeDictionary<string, CarData>("Content/CarData.csv", carDataDictionary);
-                block.Line(string.Format("FlatRedBall.IO.Csv.CsvFileManager.CsvDeserializeDictionary<{2}, {3}>(\"{0}\", {1});", ProjectBase.AccessContentDirectory + fileName,
+                block.Line(string.Format("FlatRedBall.IO.Csv.CsvFileManager.CsvDeserializeDictionary<{2}, {3}>(\"{0}\", {1});", fileName,
                                   whatToLoadInto, keyType, valueType));
             }
             else
@@ -1148,7 +1152,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 string elementType = referencedFile.GetTypeForCsvFile();
 
                 block.Line(string.Format("FlatRedBall.IO.Csv.CsvFileManager.CsvDeserializeList(typeof({0}), \"{1}\", {2});",
-                                         elementType, ProjectBase.AccessContentDirectory + fileName, whatToLoadInto));
+                                         elementType, fileName, whatToLoadInto));
             }
 
             #endregion

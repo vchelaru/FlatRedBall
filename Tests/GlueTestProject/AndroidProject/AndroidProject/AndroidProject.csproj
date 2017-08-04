@@ -1141,6 +1141,9 @@
       <Link>Factories\TextInheritingEntityFactory.Generated.cs</Link>
       <DependentUpon>TextInheritingEntityFactory.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\FileAliases.Generated.cs">
+      <Link>FileAliases.Generated.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Game1.cs">
       <Link>Game1.cs</Link>
     </Compile>
@@ -2005,6 +2008,54 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\entities\globalcontententity\burnorb.xnb">
+      <Name>burnOrb</Name>
+      <Link>Assets\content\entities\globalcontententity\burnorb.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\entities\pausingentity\soundeffectfile.xnb">
+      <Name>SoundEffectFile</Name>
+      <Link>Assets\content\entities\pausingentity\soundeffectfile.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\entities\soundeffectentity\dogbarksoundeffect.xnb">
+      <Name>DogBarkSoundEffect</Name>
+      <Link>Assets\content\entities\soundeffectentity\dogbarksoundeffect.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\entities\soundeffectentity\dogbarksoundeffect2.xnb">
+      <Name>DogBarkSoundEffect2</Name>
+      <Link>Assets\content\entities\soundeffectentity\dogbarksoundeffect2.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\entities\soundeffectentity\soundeffectinstancefile.xnb">
+      <Name>SoundEffectInstanceFile</Name>
+      <Link>Assets\content\entities\soundeffectentity\soundeffectinstancefile.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\globalcontent\bearcontentpipeline.xnb">
+      <Name>BearContentPipeline</Name>
+      <Link>Assets\content\globalcontent\bearcontentpipeline.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\globalcontent\dogbarksoundeffect.xnb">
+      <Name>DogBarkSoundEffect</Name>
+      <Link>Assets\content\globalcontent\dogbarksoundeffect.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\globalcontent\dogbarksoundeffect2.xnb">
+      <Name>DogBarkSoundEffect2</Name>
+      <Link>Assets\content\globalcontent\dogbarksoundeffect2.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\screens\audioscreen\boom.xnb">
+      <Name>boom</Name>
+      <Link>Assets\content\screens\audioscreen\boom.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\screens\globalcontentscreen\menusong.ogg">
+      <Name>MenuSong</Name>
+      <Link>Assets\content\screens\globalcontentscreen\menusong.ogg</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\screens\globalcontentscreen\menusong.xnb">
+      <Name>MenuSong</Name>
+      <Link>Assets\content\screens\globalcontentscreen\menusong.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\screens\pausescreen\soundeffectinstancefile.xnb">
+      <Name>SoundEffectInstanceFile</Name>
+      <Link>Assets\content\screens\pausescreen\soundeffectinstancefile.xnb</Link>
+    </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\textentity\bitmapfontfile_0.png">
       <Name>BitmapFontFile_0</Name>
       <Link>Assets\content\entities\textentity\bitmapfontfile_0.png</Link>
@@ -2678,10 +2729,6 @@
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\globalcontentscreen\backgroundemitters.emix">
       <Name>BackgroundEmitters</Name>
       <Link>Assets\content\screens\globalcontentscreen\backgroundemitters.emix</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\globalcontentscreen\menusong.mp3">
-      <Name>MenuSong</Name>
-      <Link>Assets\content\screens\globalcontentscreen\menusong.mp3</Link>
     </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\screens\globalcontentscreen\particle_bubble.png">
       <Name>particle_bubble</Name>
