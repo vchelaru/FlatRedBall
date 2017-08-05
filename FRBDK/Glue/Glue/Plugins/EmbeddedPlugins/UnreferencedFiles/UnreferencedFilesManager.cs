@@ -119,11 +119,9 @@ namespace FlatRedBall.Glue.Managers
                         mListBeforeAddition.Add(mUnreferencedFiles[i].FilePath.ToLower());
                     }
 
-
                     mUnreferencedFiles.Clear();
 
                     string contentDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
-
 
                     List<string> referencedFiles = null;
 
@@ -196,41 +194,20 @@ namespace FlatRedBall.Glue.Managers
 
             string itemName;
 
-            if(string.IsNullOrEmpty(link))
-            {
-                itemName = item.UnevaluatedInclude.ToLower().Replace(@"\", @"/");
-                nameToInclude = item.UnevaluatedInclude;
-            }
-            else
-            {
-                itemName = link.ToLower().Replace(@"\", @"/");
-                nameToInclude = link;
+            itemName = item.UnevaluatedInclude.ToLower().Replace(@"\", @"/");
+            nameToInclude = item.UnevaluatedInclude;
 
-            }
             // no extensions are unsupported.  What do we do with the content pipeline?
             if (!string.IsNullOrEmpty(FileManager.GetExtension(itemName)))
             {
 
-                if (itemName.StartsWith(".."))
-                {
-                    itemName = FileManager.Standardize(item.UnevaluatedInclude, project.ContentProject.GetAbsoluteContentFolder()).ToLower();
-                    if (itemName.ToLower().StartsWith(ProjectManager.ContentProject.GetAbsoluteContentFolder().ToLower()))
-                        itemName = itemName.Replace(ProjectManager.ContentProject.GetAbsoluteContentFolder().ToLower(), "");
-
-                    nameToInclude = FileManager.Standardize(item.UnevaluatedInclude, project.ContentProject.Directory);
-                    if (nameToInclude.ToLower().StartsWith(ProjectManager.ContentProject.GetAbsoluteContentFolder().ToLower()))
-                        nameToInclude = nameToInclude.Substring((ProjectManager.ContentProject.GetAbsoluteContentFolder()).Length);
-                }
-
-                //if (nameToInclude.StartsWith(ContentProject.Directory + ContentProject.ContentDirectory))
-                //{
-                //    nameToInclude = nameToInclude.Substring((ContentProject.Directory + ContentProject.ContentDirectory).Length);
-                //}
-
                 bool isContent = ProjectManager.IsContent(itemName);
 
+                string absoluteFile =
+                    FileManager.GetDirectory(project.ContentProject.FullFileName) + nameToInclude;
+
                 isUnreferenced = isContent &&
-                    File.Exists(ProjectManager.ContentProject.GetAbsoluteContentFolder() + nameToInclude) &&
+                    File.Exists(absoluteFile) &&
                     !referencedFiles.Contains(itemName);
 
             }
