@@ -1074,7 +1074,9 @@ namespace FlatRedBall
 
         public static void AddNonDisposable(string objectName, object objectToAdd, string contentManagerName)
         {
-            GetContentManagerByName(contentManagerName).AddNonDisposable(objectName, objectToAdd);
+            var contentManager = GetContentManagerByName(contentManagerName);
+
+            contentManager.AddNonDisposable(objectName, objectToAdd);
         }
 
         public static bool CanLoadType(Type type)

@@ -234,7 +234,25 @@ namespace FlatRedBall.Content
 
 			string modifiedName = objectName + objectToAdd.GetType().Name;
 
-			mNonDisposableDictionary.Add(modifiedName, objectToAdd);
+            bool shouldAdd = true;
+
+            if(mNonDisposableDictionary.ContainsKey(modifiedName))
+            {
+                var existing = objectToAdd;
+                if(existing != objectToAdd)
+                {
+                    throw new InvalidOperationException($"The name {objectName} is already taken by {objectToAdd}");
+                }
+                else
+                {
+                    shouldAdd = false;
+                }
+            }
+
+            if(shouldAdd)
+            {
+                mNonDisposableDictionary.Add(modifiedName, objectToAdd);
+            }
 		}
 
 		public void AddUnloadMethod(string uniqueID, Action unloadMethod)
