@@ -1,11 +1,16 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AndroidProject", "AndroidProject\AndroidProject.csproj", "{F46A8B17-6B24-4D23-832E-36EE3C679DCF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallAndroidv2", "..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallAndroidv2.csproj", "{F842215C-BCE1-472D-A4A0-7BAB70B428B3}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{f842215c-bce1-472d-a4a0-7bab70b428b3}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

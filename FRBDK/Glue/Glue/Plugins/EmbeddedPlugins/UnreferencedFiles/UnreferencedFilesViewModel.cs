@@ -299,7 +299,7 @@ namespace FlatRedBall.Glue.UnreferencedFiles
                    // Do a last-minute clear in case this somehow runs multiple times
                    UnreferencedFiles.Clear();
 
-                   foreach (string file in unreferenced)
+                   foreach (string file in unreferenced.OrderBy(item =>item.ToLowerInvariant()))
                    {
                        string processedFile = file;
                        if (FileManager.IsRelativeTo(file, contentDirectory))
@@ -368,19 +368,29 @@ namespace FlatRedBall.Glue.UnreferencedFiles
                 UnreferencedFilesManager.Self.RefreshUnreferencedFiles(async: false);
                 var contentDirectory = GlueState.Self.ContentDirectory;
 
+                var projectSpecificFileList = UnreferencedFilesManager.Self.UnreferencedFiles
+                    .Select(item =>
+                    {
+                        string processedFile = item.FilePath;
+                        if (FileManager.IsRelativeTo(processedFile, contentDirectory))
+                        {
+                            processedFile = FileManager.MakeRelative(processedFile, contentDirectory);
+                        }
+                        return new ProjectSpecificFile { FilePath = processedFile, ProjectId = item.ProjectId };
+                    })
+                    .OrderBy(item =>item.FilePath)
+                    .ToList();
+
                 TaskManager.Self.OnUiThread(() =>
                 {
                     // Do a last-minute clear in case this somehow runs multiple times
                     UnreferencedFiles.Clear();
 
-                    foreach (var file in UnreferencedFilesManager.Self.UnreferencedFiles)
+
+
+                    foreach (var file in projectSpecificFileList)
                     {
-                        string processedFile = file.FilePath;
-                        if (FileManager.IsRelativeTo(processedFile, contentDirectory))
-                        {
-                            processedFile = FileManager.MakeRelative(processedFile, contentDirectory);
-                        }
-                        UnreferencedFiles.Add(new ProjectSpecificFile { FilePath = processedFile, ProjectId=file.ProjectId });
+                        UnreferencedFiles.Add(file);
                     }
                     IsStillScanning = false;
 

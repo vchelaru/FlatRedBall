@@ -1155,9 +1155,10 @@ namespace FlatRedBall.IO
                 return true;
             }
 #else
-			// .net considers a path relative if it doesn't start with a separator
-			// or windows drive identifier
-			return !Path.IsPathRooted(fileName);
+            // .net considers a path relative if it doesn't start with a separator
+            // or windows drive identifier
+
+            return !Path.IsPathRooted(fileName);
 #endif
 		}
 

@@ -194,7 +194,7 @@ namespace FlatRedBall.Glue.Managers
 
             string itemName;
 
-            itemName = item.UnevaluatedInclude.ToLower().Replace(@"\", @"/");
+            itemName =  item.UnevaluatedInclude.ToLower().Replace(@"\", @"/");
             nameToInclude = item.UnevaluatedInclude;
 
             // no extensions are unsupported.  What do we do with the content pipeline?
@@ -205,6 +205,13 @@ namespace FlatRedBall.Glue.Managers
 
                 string absoluteFile =
                     FileManager.GetDirectory(project.ContentProject.FullFileName) + nameToInclude;
+
+                // the referencedFiles list is the list of files that are referenced relative to the main content project, but the project
+                // may not be the content project. We want to get the name relative to the main content project before checking.
+                if(isContent && project.ContentProject != GlueState.Self.CurrentMainContentProject)
+                {
+                    itemName = FileManager.MakeRelative(itemName, FileManager.GetDirectory(GlueState.Self.CurrentMainContentProject.FullFileName));
+                }
 
                 isUnreferenced = isContent &&
                     File.Exists(absoluteFile) &&

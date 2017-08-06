@@ -163,10 +163,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>BearClaws_attack</Name>
     </None>
-    <None Include="Entities\FileReferencingEntity\Folder1\book.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>book</Name>
-    </None>
     <None Include="Entities\FileReferencingEntity\Folder1\EmptyTmx.scnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>EmptyTmx</Name>
@@ -300,10 +296,6 @@
       <Name>BitmapFontFile</Name>
     </None>
     <None Include="Entities\TextEntity\BitmapFontFile_0.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>BitmapFontFile_0</Name>
-    </None>
-    <None Include="Entities\TextEntity\BitmapFontFile_0.tga">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>BitmapFontFile_0</Name>
     </None>

@@ -2060,10 +2060,6 @@
       <Name>BitmapFontFile_0</Name>
       <Link>Assets\content\entities\textentity\bitmapfontfile_0.png</Link>
     </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\textentity\bitmapfontfile_0.tga">
-      <Name>BitmapFontFile_0</Name>
-      <Link>Assets\content\entities\textentity\bitmapfontfile_0.tga</Link>
-    </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\tileentity\tmxfile.tmx">
       <Name>TmxFile</Name>
       <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
@@ -2241,10 +2237,6 @@
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\filereferencingentity\bearclaws_attack.png">
       <Name>BearClaws_attack</Name>
       <Link>Assets\content\entities\filereferencingentity\bearclaws_attack.png</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\filereferencingentity\folder1\book.png">
-      <Name>book</Name>
-      <Link>Assets\content\entities\filereferencingentity\folder1\book.png</Link>
     </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\entities\filereferencingentity\folder1\emptytmx.scnx">
       <Name>EmptyTmx</Name>

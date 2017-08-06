@@ -45,7 +45,7 @@
       <Drag>0</Drag>
       <ScaleX>1</ScaleX>
       <ScaleY>1</ScaleY>
-      <ScaleXRange>0</ScaleXRange>
+      <ScaleXRange>1</ScaleXRange>
       <ScaleYRange>0</ScaleYRange>
       <ScaleXVelocity>0</ScaleXVelocity>
       <ScaleYVelocity>0</ScaleYVelocity>
@@ -64,6 +64,7 @@
       <BlendOperation>Modulate2X</BlendOperation>
       <ColorOperation>SelectArg1</ColorOperation>
       <Animate>false</Animate>
+      <Texture>redball.bmp</Texture>
       <Instructions>
         <Instructions />
       </Instructions>
@@ -103,9 +104,7 @@
     </EmissionBoundary>
     <Name>Emitter0</Name>
     <ParticleBlueprint>
-      <Name />
       <Texture>redball.bmp</Texture>
-      <Animate>true</Animate>
     </ParticleBlueprint>
     <RemovalEvent>Timed</RemovalEvent>
     <SecondFrequency>0.2</SecondFrequency>
@@ -183,11 +182,11 @@
       <BlendOperation>NonPremultipliedAlpha</BlendOperation>
       <ColorOperation />
       <Animate>false</Animate>
+      <Texture>redball.bmp</Texture>
     </EmissionSettings>
     <BoundedEmission>false</BoundedEmission>
     <Name>NonPremultipliedAlphaEmitter</Name>
     <ParticleBlueprint>
-      <Name />
       <Texture>redball.bmp</Texture>
     </ParticleBlueprint>
     <RemovalEvent>Timed</RemovalEvent>

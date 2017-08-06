@@ -35,7 +35,7 @@
       <RotationZVelocity>0</RotationZVelocity>
       <RotationZRange>0</RotationZRange>
       <RotationZVelocityRange>0</RotationZVelocityRange>
-      <XAcceleration>0</XAcceleration>
+      <XAcceleration>1</XAcceleration>
       <YAcceleration>0</YAcceleration>
       <ZAcceleration>0</ZAcceleration>
       <XAccelerationRange>0</XAccelerationRange>
@@ -51,6 +51,7 @@
       <ScaleXVelocityRange>0</ScaleXVelocityRange>
       <ScaleYVelocityRange>0</ScaleYVelocityRange>
       <MatchScaleXToY>false</MatchScaleXToY>
+      <TextureScale>1</TextureScale>
       <Fade>1</Fade>
       <TintRed>0</TintRed>
       <TintGreen>0</TintGreen>
@@ -65,10 +66,7 @@
     </EmissionSettings>
     <BoundedEmission>false</BoundedEmission>
     <Name>FirstEmitter</Name>
-    <ParticleBlueprint>
-      <Name />
-      <ConstantPixelSize>0</ConstantPixelSize>
-    </ParticleBlueprint>
+    <ParticleBlueprint />
     <SecondFrequency>0</SecondFrequency>
     <NumberPerEmission>0</NumberPerEmission>
     <TimedEmission>false</TimedEmission>

@@ -52,6 +52,7 @@
       <ScaleXVelocityRange>0</ScaleXVelocityRange>
       <ScaleYVelocityRange>0</ScaleYVelocityRange>
       <MatchScaleXToY>false</MatchScaleXToY>
+      <TextureScale>1</TextureScale>
       <Fade>0</Fade>
       <TintRed>0</TintRed>
       <TintGreen>0</TintGreen>
@@ -63,6 +64,7 @@
       <BlendOperation>REGULAR</BlendOperation>
       <ColorOperation>SelectArg1</ColorOperation>
       <Animate>false</Animate>
+      <Texture>redball.bmp</Texture>
       <Instructions>
         <Instructions />
       </Instructions>
@@ -102,10 +104,7 @@
     </EmissionBoundary>
     <Name>Emitter0</Name>
     <ParticleBlueprint>
-      <Name />
       <Texture>redball.bmp</Texture>
-      <Animate>true</Animate>
-      <ConstantPixelSize>0</ConstantPixelSize>
     </ParticleBlueprint>
     <RemovalEvent>Timed</RemovalEvent>
     <SecondFrequency>0.2</SecondFrequency>

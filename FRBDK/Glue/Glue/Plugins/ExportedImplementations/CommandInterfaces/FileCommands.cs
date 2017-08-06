@@ -72,12 +72,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return allFiles;
         }
 
-        IEnumerable<ReferencedFileSave> GetAllRfses()
+        ReferencedFileSave[] GetAllRfses()
         {
-            IEnumerable<ReferencedFileSave> allRfses =
+            var allRfses =
                 GlueProject.Entities.SelectMany(item => item.ReferencedFiles)
                 .Concat(GlueProject.Screens.SelectMany(item2 => item2.ReferencedFiles))
-                .Concat(GlueProject.GlobalFiles);
+                .Concat(GlueProject.GlobalFiles)
+                .ToArray();
 
             return allRfses;
         }
@@ -159,7 +160,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        private void FillAllFilesWithFilesInList(List<string> allFiles, IEnumerable<ReferencedFileSave> referencedFileList, 
+        private void FillAllFilesWithFilesInList(List<string> allFiles, ReferencedFileSave[] referencedFileList, 
             TopLevelOrRecursive topLevelOrRecursive, ProjectOrDisk projectOrFile)
         {
             foreach(var rfs in referencedFileList)

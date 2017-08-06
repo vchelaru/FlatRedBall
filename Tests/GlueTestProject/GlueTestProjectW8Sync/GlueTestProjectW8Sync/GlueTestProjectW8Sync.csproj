@@ -2178,10 +2178,6 @@
       <Name>BearClaws_attack</Name>
       <Link>Content\Entities\FileReferencingEntity\BearClaws_attack.png</Link>
     </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\FileReferencingEntity\Folder1\book.png">
-      <Name>book</Name>
-      <Link>Content\Entities\FileReferencingEntity\Folder1\book.png</Link>
-    </Content>
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\FileReferencingEntity\Folder1\EmptyTmx.scnx">
       <Name>EmptyTmx</Name>
       <Link>Content\Entities\FileReferencingEntity\Folder1\EmptyTmx.scnx</Link>
@@ -2317,10 +2313,6 @@
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TextEntity\BitmapFontFile_0.png">
       <Name>BitmapFontFile_0</Name>
       <Link>Content\Entities\TextEntity\BitmapFontFile_0.png</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TextEntity\BitmapFontFile_0.tga">
-      <Name>BitmapFontFile_0</Name>
-      <Link>Content\Entities\TextEntity\BitmapFontFile_0.tga</Link>
     </Content>
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\Entities\TextEntity\nesfontTexture.png">
       <Name>nesfontTexture</Name>

@@ -40,7 +40,7 @@
       <YAcceleration>0</YAcceleration>
       <ZAcceleration>0</ZAcceleration>
       <XAccelerationRange>0</XAccelerationRange>
-      <YAccelerationRange>0</YAccelerationRange>
+      <YAccelerationRange>1</YAccelerationRange>
       <ZAccelerationRange>0</ZAccelerationRange>
       <Drag>0</Drag>
       <ScaleX>1</ScaleX>
@@ -52,6 +52,7 @@
       <ScaleXVelocityRange>0</ScaleXVelocityRange>
       <ScaleYVelocityRange>0</ScaleYVelocityRange>
       <MatchScaleXToY>true</MatchScaleXToY>
+      <TextureScale>1</TextureScale>
       <Fade>220</Fade>
       <TintRed>0</TintRed>
       <TintGreen>0</TintGreen>
@@ -63,6 +64,7 @@
       <BlendOperation>REGULAR</BlendOperation>
       <ColorOperation>SelectArg1</ColorOperation>
       <Animate>false</Animate>
+      <Texture>particle_bubble.png</Texture>
       <Instructions>
         <Instructions />
       </Instructions>
@@ -102,10 +104,7 @@
     </EmissionBoundary>
     <Name>Water</Name>
     <ParticleBlueprint>
-      <Name />
       <Texture>particle_bubble.png</Texture>
-      <Animate>true</Animate>
-      <ConstantPixelSize>0</ConstantPixelSize>
     </ParticleBlueprint>
     <RemovalEvent>Timed</RemovalEvent>
     <SecondFrequency>0.75</SecondFrequency>
@@ -172,6 +171,7 @@
       <ScaleXVelocityRange>0</ScaleXVelocityRange>
       <ScaleYVelocityRange>0</ScaleYVelocityRange>
       <MatchScaleXToY>true</MatchScaleXToY>
+      <TextureScale>1</TextureScale>
       <Fade>225</Fade>
       <TintRed>0</TintRed>
       <TintGreen>0</TintGreen>
@@ -183,6 +183,7 @@
       <BlendOperation>REGULAR</BlendOperation>
       <ColorOperation>SelectArg1</ColorOperation>
       <Animate>false</Animate>
+      <Texture>particle_leaves.png</Texture>
       <Instructions>
         <Instructions />
       </Instructions>
@@ -222,10 +223,7 @@
     </EmissionBoundary>
     <Name>Earth</Name>
     <ParticleBlueprint>
-      <Name />
       <Texture>particle_leaves.png</Texture>
-      <Animate>true</Animate>
-      <ConstantPixelSize>0</ConstantPixelSize>
     </ParticleBlueprint>
     <RemovalEvent>Fadeout</RemovalEvent>
     <SecondFrequency>0.25</SecondFrequency>
@@ -292,6 +290,7 @@
       <ScaleXVelocityRange>0</ScaleXVelocityRange>
       <ScaleYVelocityRange>0</ScaleYVelocityRange>
       <MatchScaleXToY>true</MatchScaleXToY>
+      <TextureScale>1</TextureScale>
       <Fade>230</Fade>
       <TintRed>0</TintRed>
       <TintGreen>0</TintGreen>
@@ -303,6 +302,7 @@
       <BlendOperation>REGULAR</BlendOperation>
       <ColorOperation>SelectArg1</ColorOperation>
       <Animate>false</Animate>
+      <Texture>particle_smoke.png</Texture>
       <Instructions>
         <Instructions />
       </Instructions>
@@ -342,10 +342,7 @@
     </EmissionBoundary>
     <Name>Fire</Name>
     <ParticleBlueprint>
-      <Name />
       <Texture>particle_smoke.png</Texture>
-      <Animate>true</Animate>
-      <ConstantPixelSize>0</ConstantPixelSize>
     </ParticleBlueprint>
     <RemovalEvent>Fadeout</RemovalEvent>
     <SecondFrequency>0.15</SecondFrequency>
@@ -412,6 +409,7 @@
       <ScaleXVelocityRange>40</ScaleXVelocityRange>
       <ScaleYVelocityRange>100</ScaleYVelocityRange>
       <MatchScaleXToY>false</MatchScaleXToY>
+      <TextureScale>1</TextureScale>
       <Fade>234.6</Fade>
       <TintRed>0</TintRed>
       <TintGreen>0</TintGreen>
@@ -423,6 +421,7 @@
       <BlendOperation>REGULAR</BlendOperation>
       <ColorOperation>SelectArg1</ColorOperation>
       <Animate>false</Animate>
+      <Texture>particle_wind.png</Texture>
       <Instructions>
         <Instructions />
       </Instructions>
@@ -462,10 +461,7 @@
     </EmissionBoundary>
     <Name>Wind</Name>
     <ParticleBlueprint>
-      <Name />
       <Texture>particle_wind.png</Texture>
-      <Animate>true</Animate>
-      <ConstantPixelSize>0</ConstantPixelSize>
     </ParticleBlueprint>
     <RemovalEvent>Fadeout</RemovalEvent>
     <SecondFrequency>0.1</SecondFrequency>
@@ -532,6 +528,7 @@
       <ScaleXVelocityRange>0</ScaleXVelocityRange>
       <ScaleYVelocityRange>0</ScaleYVelocityRange>
       <MatchScaleXToY>true</MatchScaleXToY>
+      <TextureScale>1</TextureScale>
       <Fade>200</Fade>
       <TintRed>0</TintRed>
       <TintGreen>0</TintGreen>
@@ -543,13 +540,12 @@
       <BlendOperation>Regular</BlendOperation>
       <ColorOperation />
       <Animate>false</Animate>
+      <Texture>particle_star.png</Texture>
     </EmissionSettings>
     <BoundedEmission>false</BoundedEmission>
     <Name>Stars</Name>
     <ParticleBlueprint>
-      <Name />
       <Texture>particle_star.png</Texture>
-      <ConstantPixelSize>0</ConstantPixelSize>
     </ParticleBlueprint>
     <RemovalEvent>Alpha0</RemovalEvent>
     <SecondFrequency>1</SecondFrequency>
