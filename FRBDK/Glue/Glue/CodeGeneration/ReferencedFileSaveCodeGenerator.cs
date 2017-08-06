@@ -836,11 +836,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // The reason for this is because a user could
                     // create a synced project that targets the same
                     // platform.  
-                    project = ProjectManager.GetProjectByName(referencedFile.ProjectSpecificFiles[i - 1].ProjectId);
-                    if (project == null)
-                    {
-                        project = ProjectManager.GetProjectByTypeId(referencedFile.ProjectSpecificFiles[i - 1].ProjectId);
-                    }
+                    project = ProjectManager.GetProjectByName(referencedFile.ProjectSpecificFiles[i - 1].ProjectName);
                 }
                 else
                 {

@@ -236,7 +236,7 @@ namespace FlatRedBall.Glue.Managers
                     var projectSpecificFile = new ProjectSpecificFile()
                     {
                         FilePath = nameToInclude.ToLower(),
-                        ProjectId = project.ProjectId
+                        ProjectName = project.Name
                     };
 
                     lock (mLastAddedUnreferencedFiles)
@@ -247,7 +247,7 @@ namespace FlatRedBall.Glue.Managers
                 unreferencedFiles.Add(new ProjectSpecificFile()
                 {
                     FilePath = nameToInclude,
-                    ProjectId = project.ProjectId
+                    ProjectName = project.Name
                 });
             }
         }
@@ -274,7 +274,7 @@ namespace FlatRedBall.Glue.Managers
 
                         if (result == DialogResult.Yes)
                         {
-                            ProjectManager.GetProjectByTypeId(projectSpecificFile.ProjectId).ContentProject.RemoveItem(
+                            ProjectManager.GetProjectByName(projectSpecificFile.ProjectName).ContentProject.RemoveItem(
                                 projectSpecificFile.FilePath);
 
                             FileHelper.DeleteFile(ProjectManager.MakeAbsolute(projectSpecificFile.FilePath));
@@ -313,7 +313,7 @@ namespace FlatRedBall.Glue.Managers
 
                 if (result != DialogResult.Yes) continue;
 
-                ProjectManager.GetProjectByTypeId(projectSpecificFile.ProjectId).ContentProject.RemoveItem(
+                ProjectManager.GetProjectByName(projectSpecificFile.ProjectName).ContentProject.RemoveItem(
                     projectSpecificFile.FilePath);
 
                 FileHelper.DeleteFile(ProjectManager.MakeAbsolute(projectSpecificFile.FilePath));

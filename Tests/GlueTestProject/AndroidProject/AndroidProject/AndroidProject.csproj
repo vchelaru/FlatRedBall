@@ -2064,6 +2064,10 @@
       <Name>TmxFile</Name>
       <Link>Assets\content\entities\tileentity\tmxfile.tmx</Link>
     </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\folderinglobalcontent\book.png">
+      <Name>book</Name>
+      <Link>Assets\content\globalcontent\folderinglobalcontent\book.png</Link>
+    </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\componentfolder\infolder1.gucx">
       <Name>InFolder1</Name>
       <Link>Assets\content\gumproject\components\componentfolder\infolder1.gucx</Link>
@@ -2429,10 +2433,6 @@
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\csvfolder\spreadsheetfile2.csv">
       <Name>SpreadsheetFile2</Name>
       <Link>Assets\content\globalcontent\csvfolder\spreadsheetfile2.csv</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\folderinglobalcontent\book.png">
-      <Name>book</Name>
-      <Link>Assets\content\globalcontent\folderinglobalcontent\book.png</Link>
     </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\folderinglobalcontent\emptytmx.scnx">
       <Name>EmptyTmx</Name>

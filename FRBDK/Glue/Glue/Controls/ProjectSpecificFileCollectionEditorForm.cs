@@ -78,7 +78,7 @@ namespace FlatRedBall.Glue.Controls
 
             var item = (ProjectSpecificFile)lbFiles.SelectedItem;
 
-            ProjectManager.RemoveItemFromProject(ProjectManager.GetProjectByName(item.ProjectId), item.FilePath);
+            ProjectManager.RemoveItemFromProject(ProjectManager.GetProjectByName(item.ProjectName), item.FilePath);
             Value.Remove(item);
             Rfs.ProjectSpecificFiles = Value;
             UnreferencedFilesManager.Self.NeedsRefreshOfUnreferencedFiles = true;
@@ -162,7 +162,7 @@ namespace FlatRedBall.Glue.Controls
 
                 var psf = new ProjectSpecificFile
                 {
-                    ProjectId = cboProjectType.Text,
+                    ProjectName = cboProjectType.Text,
                     FilePath = createdFile
                 };
 
@@ -217,7 +217,7 @@ namespace FlatRedBall.Glue.Controls
 
             var psf = new ProjectSpecificFile
                           {
-                              ProjectId = cboProjectType.Text,
+                              ProjectName = cboProjectType.Text,
                               FilePath = fileToAdd
                           };
 

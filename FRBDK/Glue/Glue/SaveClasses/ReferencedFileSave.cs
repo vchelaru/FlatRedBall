@@ -71,20 +71,31 @@ namespace FlatRedBall.Glue.SaveClasses
     [TypeConverter(typeof(ProjectSpecificFileConverter))]
     public class ProjectSpecificFile
     {
-        public string ProjectId { get; set; }
+        [Obsolete("This was sometimes used to mean the ID like Android, and sometimes name. ID can be misleading because multiple projects can have the same ID, so we shouldn't use this. Use ProjectName instead")]
+        public string ProjectId
+        {
+            get { return ProjectName; }
+            set { ProjectName = value; }
+        }
+
+        public string ProjectName
+        {
+            get; set;
+        }
+
         public string FilePath { get; set; }
 
         public string Display
         {
             get
             {
-                return FilePath + " (" + ProjectId + ")";
+                return FilePath + " (" + ProjectName + ")";
             }
         }
 
         public override string ToString()
         {
-            return FilePath + " (" + ProjectId + ")";
+            return FilePath + " (" + ProjectName + ")";
         }
     }
     #endregion

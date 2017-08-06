@@ -158,7 +158,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             get
             {
                 ProjectSpecificFile projectSpecificFile = this.collection[index];
-                return projectSpecificFile.ProjectId;
+                return projectSpecificFile.ProjectName;
             }
         }
 

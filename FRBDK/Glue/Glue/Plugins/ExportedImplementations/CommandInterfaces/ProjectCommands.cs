@@ -72,7 +72,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 foreach (ProjectSpecificFile projectSpecificFile in referencedFileSave.ProjectSpecificFiles)
                 {
-                    wasAnythingAdded |= UpdateFileMembershipInProject(ProjectManager.GetProjectByTypeId(projectSpecificFile.ProjectId), projectSpecificFile.FilePath, useContentPipeline, true);
+                    wasAnythingAdded |= UpdateFileMembershipInProject(ProjectManager.GetProjectByName(projectSpecificFile.ProjectName), projectSpecificFile.FilePath, useContentPipeline, true);
                 }
                 if (wasAnythingAdded)
                 {
