@@ -11,6 +11,7 @@ using System.Reflection;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins.Rss;
 using System.ComponentModel;
+using GlueSaveClasses;
 
 #if GLUE_VIEW
 using PluginManager = GlueView.Plugin.PluginManager;
@@ -557,14 +558,21 @@ namespace FlatRedBall.Glue.Controls
 
             bool shouldSave = false;
 
-            if(requiredByProject && requiredPlugins.Contains(name) == false)
+            if(requiredByProject && requiredPlugins.Any(item =>item.Name == name) == false)
             {
-                requiredPlugins.Add(name);
+                var pluginToAdd = new PluginRequirement
+                {
+                    Name = name,
+                    Version = pluginContainer.Plugin.Version.ToString()
+                };
+                
+                requiredPlugins.Add(pluginToAdd);
                 shouldSave = true;
             }
-            else if(requiredByProject == false && requiredPlugins.Contains(name))
+            else if(requiredByProject == false && requiredPlugins.Any(item => item.Name == name))
             {
-                requiredPlugins.Remove(name);
+                var toRemove = requiredPlugins.First(item => item.Name == name);
+                requiredPlugins.Remove(toRemove);
                 shouldSave = true;
             }
 
@@ -612,7 +620,7 @@ namespace FlatRedBall.Glue.Controls
         {
             string nameToSearchFor = selectedPlugin.Name;
 
-            return GlueState.Self.CurrentGlueProject.PluginData.RequiredPlugins.Contains(nameToSearchFor);
+            return GlueState.Self.CurrentGlueProject.PluginData.RequiredPlugins.Any(item => item.Name == nameToSearchFor);
         }
 
 

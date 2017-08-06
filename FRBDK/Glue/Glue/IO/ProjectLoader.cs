@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using FlatRedBall.Glue.Data;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Reflection;
+using GlueSaveClasses;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -95,67 +96,10 @@ namespace FlatRedBall.Glue.IO
 
             SetInitWindowText("Loading code project");
 
-            
+
             ProjectManager.ProjectBase = ProjectCreator.CreateProject(projectFileName);
 
-            bool shouldLoad = true;
-
-            if (ProjectManager.ProjectBase == null)
-            {
-                DialogResult result = MessageBox.Show(
-                    "The project\n\n" + projectFileName + "\n\nis an unknown project type.  Would you like more " + 
-                    "info on how to fix this problem?", "Unknown Project Type", MessageBoxButtons.YesNo);
-
-                if (result == DialogResult.Yes)
-                {
-                    System.Diagnostics.Process.Start("http://www.flatredball.com/frb/docs/index.php?title=Glue:Reference:Projects:csproj_File");
-
-                }
-                shouldLoad = false;
-            }
-
-            // see if this project references any plugins that aren't installed:
-            var glueFileName = FileManager.RemoveExtension(projectFileName) + ".glux";
-            if(System.IO.File.Exists(glueFileName))
-            {
-                try
-                {
-                    var tempGlux = GlueProjectSaveExtensions.Load(glueFileName);
-
-                    var requiredPlugins = tempGlux.PluginData.RequiredPlugins;
-
-                    List<string> missingPlugins = new List<string>();
-                    foreach(var requiredPlugin in requiredPlugins)
-                    {
-                        if(PluginManager.AllPluginContainers.Any(item=>item.Name == requiredPlugin) == false)
-                        {
-                            missingPlugins.Add(requiredPlugin);
-                        }
-                    }
-
-                    if(missingPlugins.Count != 0)
-                    {
-                        var message = $"The project {glueFileName} requires the following plugins:";
-
-                        foreach(var item in missingPlugins)
-                        {
-                            message += "\n" + item;
-                        }
-
-                        message += "\nWould you like to load the project anyway? It may not run, or may run incorrectly until all plugins are installed.";
-
-                        var result = MessageBox.Show(message, "Missing Plugins", MessageBoxButtons.YesNo);
-
-                        shouldLoad = result == DialogResult.Yes;
-                    }
-
-                }
-                catch(Exception e)
-                {
-                    GlueGui.ShowMessageBox($"Could not load .glux file {glueFileName}. Error:\n\n{e.ToString()}");
-                    shouldLoad = false;
-                }
-            }
+            bool shouldLoad = DetermineIfShouldLoad(projectFileName);
 
             if (shouldLoad)
             {
@@ -242,10 +186,10 @@ namespace FlatRedBall.Glue.IO
                     GluxCommands.Self.SaveGlux();
                 }
 
-                TaskManager.Self.AddSync( ()=>
+                TaskManager.Self.AddSync(() =>
                 {
                     // Someone may have unloaded the project while it was starting up
-                    if(GlueState.Self.CurrentGlueProject != null)
+                    if (GlueState.Self.CurrentGlueProject != null)
                     {
                         GlueCommands.Self.ProjectCommands.SaveProjects();
                     }
@@ -258,8 +202,8 @@ namespace FlatRedBall.Glue.IO
             {
                 mCurrentInitWindow.Close();
             }
-            
-            
+
+
             Section.EndContextAndTime();
 
             TaskManager.Self.IsTaskProcessingEnabled = true;
@@ -268,6 +212,93 @@ namespace FlatRedBall.Glue.IO
             //topSection.Save("Sections.xml");
         }
 
+        private static bool DetermineIfShouldLoad(string projectFileName)
+        {
+            bool shouldLoad = true;
+
+            if (ProjectManager.ProjectBase == null)
+            {
+                DialogResult result = MessageBox.Show(
+                    "The project\n\n" + projectFileName + "\n\nis an unknown project type.  Would you like more " +
+                    "info on how to fix this problem?", "Unknown Project Type", MessageBoxButtons.YesNo);
+
+                if (result == DialogResult.Yes)
+                {
+                    System.Diagnostics.Process.Start("http://www.flatredball.com/frb/docs/index.php?title=Glue:Reference:Projects:csproj_File");
+
+                }
+                shouldLoad = false;
+            }
+
+            // see if this project references any plugins that aren't installed:
+            var glueFileName = FileManager.RemoveExtension(projectFileName) + ".glux";
+            if (System.IO.File.Exists(glueFileName))
+            {
+                try
+                {
+                    var tempGlux = GlueProjectSaveExtensions.Load(glueFileName);
+
+                    var requiredPlugins = tempGlux.PluginData.RequiredPlugins;
+
+                    List<string> individualPluginMessages = new List<string>();
+
+                    foreach (var requiredPlugin in requiredPlugins)
+                    {
+                        var matchingPlugin = PluginManager.AllPluginContainers.FirstOrDefault(item => item.Name == requiredPlugin.Name);
+
+                        if (matchingPlugin == null)
+                        {
+                            individualPluginMessages.Add(requiredPlugin.Name);
+                        }
+                        else
+                        {
+                            switch (requiredPlugin.VersionRequirement)
+                            {
+                                case VersionRequirement.EqualToOrNewerThan:
+                                    bool isNewerOrEqual = matchingPlugin.Plugin.Version >= new Version(requiredPlugin.Version);
+                                    if (!isNewerOrEqual)
+                                    {
+                                        individualPluginMessages.Add($"{requiredPlugin.Name} must be updated\n\t{requiredPlugin.Version} required\n\t{matchingPlugin.Plugin.Version} installed");
+                                    }
+                                    break;
+                                default: // eventually fill in the rest
+                                    throw new NotImplementedException();
+                                    //break;
+                            }
+                        }
+                    }
+
+                    string missingPluginMessage = null;
+                    if (individualPluginMessages.Count != 0)
+                    {
+                        missingPluginMessage = $"The project {glueFileName} requires the following plugins:\n";
+
+                        foreach (var item in individualPluginMessages)
+                        {
+                            missingPluginMessage += "\n" + item;
+                        }
+
+                        missingPluginMessage += "\n\nWould you like to load the project anyway? It may not run, or may run incorrectly until all plugins are installed/updated.";
+                    }
+
+                    if (!string.IsNullOrEmpty(missingPluginMessage))
+                    {
+                        var result = MessageBox.Show(missingPluginMessage, "Missing Plugins", MessageBoxButtons.YesNo);
+
+                        shouldLoad = result == DialogResult.Yes;
+
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    GlueGui.ShowMessageBox($"Could not load .glux file {glueFileName}. Error:\n\n{e.ToString()}");
+                    shouldLoad = false;
+                }
+            }
+
+            return shouldLoad;
+        }
 
         public void GetCsprojToLoad(out string csprojToLoad)
         {

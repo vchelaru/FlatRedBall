@@ -644,13 +644,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                 string.Format(formattableLine,
                             variableName, ati.QualifiedRuntimeTypeName.QualifiedType, fileNameToLoad, contentManagerString));
 
-            if (rfs.UseContentPipeline)
-            {
-                // Some files, like Gum, reference content using the filename with extensions. But if a file is loaded through the content pipeline, then it doesn't
-                // exist without its extension. This line adds an alias to the file.
-                codeBlock.Line($"FlatRedBall.FlatRedBallServices.AddNonDisposable(@\"{ fileNameToLoad + "." + extension }\", { variableName }, { contentManagerString } );");
-            }
-
             if (shouldAddExtensionOnNonXnaPlatforms)
             {
                 codeBlock.Line("#endif");

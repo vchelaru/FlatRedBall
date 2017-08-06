@@ -53,8 +53,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels
             }
             set
             {
-                requiredByProject = value;
-                base.NotifyPropertyChanged(nameof(RequiredByProject));
+                base.ChangeAndNotify(ref requiredByProject, value);
             }
         }
 

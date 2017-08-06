@@ -34,7 +34,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
             catch (Microsoft.Build.Exceptions.InvalidProjectFileException exception)
             {
-                bool isMissingMonoGame = exception.Message.Contains("MonoGame.Content.Builder.targets\" was not found");
+                var exceptionMessage = exception.Message;
+
+                bool isMissingMonoGame = exceptionMessage.Contains("MonoGame.Content.Builder.targets\" was not found");
                 string message;
                 if(isMissingMonoGame)
                 {

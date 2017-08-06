@@ -175,6 +175,7 @@
     <Compile Include="GlueProjectSaveExtensions.cs" />
     <Compile Include="ITaggable.cs" />
     <Compile Include="GluxPluginData.cs" />
+    <Compile Include="PluginRequirement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReferencedFileReference.cs" />
   </ItemGroup>
