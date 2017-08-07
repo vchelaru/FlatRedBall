@@ -1600,9 +1600,18 @@ namespace Glue
             else
             {
                 whatToView = AvailableAssetTypes.Self.ProjectSpecificContentTypesFolder;
+                // only do this if viewing project specific, as Glue probably can't access the folder where projects are shown
+                Directory.CreateDirectory(whatToView);
             }
-            Directory.CreateDirectory(whatToView);
-            Process.Start(whatToView);
+
+            if(System.IO.Directory.Exists(whatToView))
+            {
+                Process.Start(whatToView);
+            }
+            else
+            {
+                MessageBox.Show("Could not open " + whatToView);
+            }
         }
 
 

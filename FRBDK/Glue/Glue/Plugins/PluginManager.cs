@@ -1998,7 +1998,7 @@ namespace FlatRedBall.Glue.Plugins
 
             var plugins = mInstances
                 .Select(item => (PluginManager)item)
-                .Where(item =>item.ImportedPlugins != null)
+                .Where(item =>item?.ImportedPlugins != null)
                 .SelectMany(item => item.ImportedPlugins.Where(x => x.GetIfUsesContentPipeline != null))
                 .ToArray();
 
