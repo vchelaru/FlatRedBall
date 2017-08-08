@@ -63,8 +63,16 @@ namespace FlatRedBall.Glue.Settings
 
             if (FileManager.FileExists(fileName))
             {
-                GlueLayoutSettings pS = FileManager.XmlDeserialize<GlueLayoutSettings>(fileName);
-                return pS;
+                // If it's corrupt no big deal, we'll just return a new one:
+                try
+                {
+                    GlueLayoutSettings pS = FileManager.XmlDeserialize<GlueLayoutSettings>(fileName);
+                    return pS;
+                }
+                catch
+                {
+                    // no biggie, don't do anything
+                }
             }
             
             return new GlueLayoutSettings();
