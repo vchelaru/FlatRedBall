@@ -27,7 +27,7 @@ namespace GumPlugin.CodeGeneration
             bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
             bool hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
 
-            if(isGlueScreen && !hasGumScreen)
+            if(isGlueScreen && !hasGumScreen && GetIfHasGumProject())
             {
                 // Create a generic Gum IDB to support in-code creation of Gum objects:
                 codeBlock.Line("FlatRedBall.Gum.GumIdb gumIdb;");
@@ -41,7 +41,7 @@ namespace GumPlugin.CodeGeneration
             bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
             bool hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
 
-            if (isGlueScreen && !hasGumScreen)
+            if (isGlueScreen && !hasGumScreen && GetIfHasGumProject())
             {
                 // Create a generic Gum IDB to support in-code creation of Gum objects:
                 codeBlock.Line("gumIdb = new FlatRedBall.Gum.GumIdb();");
@@ -56,7 +56,7 @@ namespace GumPlugin.CodeGeneration
             bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
             bool hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
 
-            if (isGlueScreen && !hasGumScreen)
+            if (isGlueScreen && !hasGumScreen && GetIfHasGumProject())
             {
                 // Create a generic Gum IDB to support in-code creation of Gum objects:
                 codeBlock.Line("FlatRedBall.SpriteManager.AddDrawableBatch(gumIdb);");
@@ -70,7 +70,7 @@ namespace GumPlugin.CodeGeneration
             bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
             bool hasGumScreen = GetIfContainsAnyGumScreenFiles(element);
 
-            if (isGlueScreen && !hasGumScreen)
+            if (isGlueScreen && !hasGumScreen && GetIfHasGumProject())
             {
                 codeBlock.Line("FlatRedBall.SpriteManager.RemoveDrawableBatch(gumIdb);");
             }
@@ -80,12 +80,16 @@ namespace GumPlugin.CodeGeneration
 
         public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, IElement element)
         {
+            bool hasGumProject = GetIfHasGumProject();
+
             // We used to only do this code if the screen had a component, but we will do it if the entire project
             // has a gum file so that users don't have to manually do this 
-            var gumProject = GlueState.Self.CurrentGlueProject.GlobalFiles.FirstOrDefault(item => item.Name.EndsWith(".gumx"));
 
-            if (gumProject != null)
+            if (hasGumProject)
             {
+                var gumProject =
+                    GlueState.Self.CurrentGlueProject.GlobalFiles.FirstOrDefault(item => item.Name.EndsWith(".gumx"));
+
                 codeBlock.Line("// Set the content manager for Gum");
                 codeBlock.Line("var contentManagerWrapper = new FlatRedBall.Gum.ContentManagerWrapper();");
                 codeBlock.Line("contentManagerWrapper.ContentManagerName = contentManagerName;");
@@ -96,6 +100,11 @@ namespace GumPlugin.CodeGeneration
             }
 
             return codeBlock;
+        }
+
+        private static bool GetIfHasGumProject()
+        {
+            return GlueState.Self.CurrentGlueProject.GlobalFiles.FirstOrDefault(item => item.Name.EndsWith(".gumx")) != null;
         }
 
         private bool GetIfContainsAnyGumFilesIn(IElement element)
