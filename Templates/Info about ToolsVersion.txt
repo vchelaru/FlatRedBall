@@ -1,0 +1,13 @@
+The .csproj file format is contained within a <Project> tag. This has a ToolsVersion attribute.
+
+Some older FRB templates, such as Android, use a ToolsVersion of 4.0, which I believe matches the msbuild version packaged with .NET 4.X
+
+Some projects, such as UWP, require a newer version of MSBuild, such as 14.0. However, Visual Studio 2017 is packaged with MSBuild 15.0, and that won't work with projects that need 14.0 or 12.0.
+
+So, for any project that uses MSBuild 4.0, we'll leave it at 4.0 (such as Android or XNA)
+
+For any project that requires a specific version of VS, we'll make it 15.0 (which maps to VS 2017).
+
+The reason for this is because I need to pick *a* version of VS to be tied to.
+
+As an alternative, I could also have the new project creator try to adjust the ToolsVersion but...I don't think I'll bother yet. I'll count this document as progress and up everything to 15.0.
