@@ -187,6 +187,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 bool isUnknownType;
                 CheckAndWarnAboutUnknownFileTypes(unknownTypeHandle, extension, out isValidExtensionOrIsConfirmedByUser, out isUnknownType);
 
+                string fileToAdd = null;
                 if (isValidExtensionOrIsConfirmedByUser)
                 {
 
@@ -194,8 +195,35 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     string projectDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
 
-                    string fileToAdd = GetNameOfFileRelativeToContentFolder(absoluteFileName, directoryThatFileShouldBeRelativeTo, projectDirectory);
+                    bool needsToCopy = !FileManager.IsRelativeTo(absoluteFileName, projectDirectory);
 
+
+                    if (needsToCopy)
+                    {
+                        fileToAdd = directoryThatFileShouldBeRelativeTo + FileManager.RemovePath(absoluteFileName);
+                        fileToAdd = FileManager.MakeRelative(fileToAdd, ProjectManager.ContentProject.GetAbsoluteContentFolder());
+
+                        try
+                        {
+                            FileHelper.RecursivelyCopyContentTo(absoluteFileName,
+                                FileManager.GetDirectory(absoluteFileName),
+                                directoryThatFileShouldBeRelativeTo);
+                        }
+                        catch (System.IO.FileNotFoundException fnfe)
+                        {
+                            errorMessage = "Could not copy the files because of a missing file: " + fnfe.Message;
+                        }
+                    }
+                    else
+                    {
+                        fileToAdd = GetNameOfFileRelativeToContentFolder(absoluteFileName, directoryThatFileShouldBeRelativeTo, projectDirectory);
+
+                    }
+
+                }
+
+                if(string.IsNullOrEmpty(errorMessage))
+                { 
                     BuildToolAssociation bta = null;
 
                     if (ati != null && !string.IsNullOrEmpty(ati.CustomBuildToolName))
@@ -257,46 +285,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         private static string GetNameOfFileRelativeToContentFolder(string absoluteSourceFileName, string directoryThatFileShouldBeRelativeTo, string projectDirectory)
         {
             string fileToAdd = "";
+            var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(absoluteSourceFileName);
 
-
-            if (!FileManager.IsRelativeTo(absoluteSourceFileName, projectDirectory))
+            if (rfs != null)
             {
-                // This function gets the absolute file and if necessary copies it relative to the project.  However,
-                // it seems to also do a search for RFSs with the same name, and doesn't consider folder...this seems bad.
-                // It means that instead of using the file the user added it may use an existing RFS which may be a totally
-                // different file with the same name.   Investigate this...
-                // Yeah, this does seem bad, I'm going to pull it
-                //var referencedFile = ObjectFinder.Self.GetReferencedFileSaveFromFile(
-                //                        FileManager.RemovePath(FileManager.RemoveExtension(absoluteSourceFileName)));
-
-                //if (referencedFile != null)
-                //{
-
-                //    fileToAdd = referencedFile.Name;
-                //}
-                //else
-                {
-                    fileToAdd = directoryThatFileShouldBeRelativeTo + FileManager.RemovePath(absoluteSourceFileName);
-                    fileToAdd = FileManager.MakeRelative(fileToAdd, ProjectManager.ContentProject.GetAbsoluteContentFolder());
-                    FileHelper.RecursivelyCopyContentTo(absoluteSourceFileName,
-                        FileManager.GetDirectory(absoluteSourceFileName),
-                        directoryThatFileShouldBeRelativeTo);
-                }
+                fileToAdd = rfs.Name;
             }
-
-
             else
             {
-                var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(absoluteSourceFileName);
-
-                if (rfs != null)
-                {
-                    fileToAdd = rfs.Name;
-                }
-                else
-                {
-                    fileToAdd = FileManager.MakeRelative(absoluteSourceFileName, ProjectManager.ContentProject.GetAbsoluteContentFolder());
-                }
+                fileToAdd = FileManager.MakeRelative(absoluteSourceFileName, ProjectManager.ContentProject.GetAbsoluteContentFolder());
             }
             return fileToAdd;
         }

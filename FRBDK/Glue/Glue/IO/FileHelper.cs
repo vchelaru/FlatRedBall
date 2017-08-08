@@ -89,8 +89,11 @@ namespace FlatRedBall.Glue.IO
                 //MessageBox.Show("Glue is attempting to copy file " + sourceFile + " which is referenced by game content, but it cannot find this file.");
             }
 
+
             // We also need to copy all of the other content files.
-            List<string> referencedFiles = FileReferenceManager.Self.GetFilesReferencedBy(sourceFile);
+            List<string> referencedFiles = new List<string>();
+
+            referencedFiles = FileReferenceManager.Self.GetFilesReferencedBy(sourceFile);
 
             for (int i = 0; i < referencedFiles.Count; i++)
             {
