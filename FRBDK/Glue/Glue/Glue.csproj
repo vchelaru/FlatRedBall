@@ -943,13 +943,6 @@
     <Content Include="Libraries\ICSharpCode.NRefactory.xml" />
     <Content Include="Libraries\Ionic.Zip.dll" />
     <Content Include="Libraries\Ionic.Zlib.dll" />
-    <Content Include="Libraries\MSBuild\Referenced\System.Threading.Tasks.Dataflow.dll" />
-    <Content Include="Libraries\MSBuild\v14.0\Microsoft.Build.Conversion.Core.dll" />
-    <Content Include="Libraries\MSBuild\v14.0\Microsoft.Build.dll" />
-    <Content Include="Libraries\MSBuild\v14.0\Microsoft.Build.Engine.dll" />
-    <Content Include="Libraries\MSBuild\v14.0\Microsoft.Build.Framework.dll" />
-    <Content Include="Libraries\MSBuild\v14.0\Microsoft.Build.Tasks.Core.dll" />
-    <Content Include="Libraries\MSBuild\v14.0\Microsoft.Build.Utilities.Core.dll" />
     <Content Include="Plugins\FRBDKUpdater\FRBDKUpdater.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1154,6 +1147,7 @@
     <Folder Include="Clamp\" />
     <Folder Include="Content\Csvs\" />
     <Folder Include="Interfaces\" />
+    <Folder Include="Libraries\MSBuild\" />
     <Folder Include="Output\" />
     <Folder Include="Plugins\EmbeddedPlugins\Spline\" />
     <Folder Include="Plugins\EmbeddedPlugins\TaskOutput\" />
