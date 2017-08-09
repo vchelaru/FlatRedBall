@@ -41,7 +41,9 @@ namespace OfficialPlugins.Compiler
                 // - If an error occurs, a popup appears telling the user that the game crashed, and to open Visual Studio
                 // 0.5
                 // - Support for running content-only builds
-                return new Version(0, 5);
+                // 0.6
+                // - Added VS 2017 support
+                return new Version(0, 6);
             }
         }
 

@@ -12,7 +12,29 @@ namespace OfficialPlugins.Compiler
 {
     class Compiler
     {
-        const string msBuildExecutable = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
+        const string visualStudio2015MsBuildExecutable = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
+        const string visualStudio2017MsBuildExecutable = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe";
+
+        string msBuildLocation;
+        string MsBuildLocation
+        {
+            get
+            {
+                if(msBuildLocation == null)
+                {
+                    if(System.IO.File.Exists(visualStudio2017MsBuildExecutable))
+                    {
+                        msBuildLocation = visualStudio2017MsBuildExecutable;
+                    }
+                    else if(System.IO.File.Exists(visualStudio2015MsBuildExecutable))
+                    {
+                        msBuildLocation = visualStudio2015MsBuildExecutable;
+                    }
+                }
+
+                return msBuildLocation;
+            }
+        }
 
         internal void Compile(Action<string> printOutput, Action<string> printError, Action<bool> afterBuilt = null, 
             string configuration = "Debug")
@@ -28,38 +50,45 @@ namespace OfficialPlugins.Compiler
             "Building project");
         }
 
-        private static bool RunMsBuildOnProject(Action<string> printOutput, Action<string> printError, string configuration, string projectFileName)
+        private bool RunMsBuildOnProject(Action<string> printOutput, Action<string> printError, string configuration, string projectFileName)
         {
-
-            string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
-
-            // For info on parameters:
-            // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
-            // \m uses multiple cores
-            string arguments = $"\"{projectFileName}\" " +
-                $"/p:Configuration=\"{configuration}\" " +
-                $"/p:XNAContentPipelineTargetPlatform=\"Windows\" " +
-                $"/p:XNAContentPipelineTargetProfile=\"HiDef\" " +
-                $"/p:OutDir=\"{outputDirectory}\" " +
-                "/m " +
-                "/nologo " +
-                "/verbosity:minimal";
-
-            Process process = CreateProcess("\"" + msBuildExecutable + "\"", arguments);
-
-            printOutput("Build started at " + DateTime.Now.ToLongTimeString());
-            // This is noisy and technical. Reducing output window verbosity
-            //printOutput(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
-
-
-            var errorString = RunProcess(printOutput, printError, msBuildExecutable, process);
             bool succeeded = true;
-            if (!string.IsNullOrEmpty(errorString))
+
+            if(MsBuildLocation != null)
             {
-                printError(errorString);
+                string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
+
+                // For info on parameters:
+                // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
+                // \m uses multiple cores
+                string arguments = $"\"{projectFileName}\" " +
+                    $"/p:Configuration=\"{configuration}\" " +
+                    $"/p:XNAContentPipelineTargetPlatform=\"Windows\" " +
+                    $"/p:XNAContentPipelineTargetProfile=\"HiDef\" " +
+                    $"/p:OutDir=\"{outputDirectory}\" " +
+                    "/m " +
+                    "/nologo " +
+                    "/verbosity:minimal";
+
+                Process process = CreateProcess("\"" + MsBuildLocation + "\"", arguments);
+
+                printOutput("Build started at " + DateTime.Now.ToLongTimeString());
+                // This is noisy and technical. Reducing output window verbosity
+                //printOutput(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
+
+
+                var errorString = RunProcess(printOutput, printError, MsBuildLocation, process);
+                if (!string.IsNullOrEmpty(errorString))
+                {
+                    printError(errorString);
+                    succeeded = false;
+                }
+            }
+            else
+            {
+                printError($"Could not find msbuild.exe. Looked in the following locations\n{visualStudio2017MsBuildExecutable}\n{visualStudio2015MsBuildExecutable}");
                 succeeded = false;
             }
-
             return succeeded;
         }
 
