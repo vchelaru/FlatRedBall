@@ -37,8 +37,10 @@ namespace OfficialPlugins.ContentPipelinePlugin
                 GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile("FileAliases.Generated.cs");
      
                 var absolutePath = GlueState.Self.CurrentGlueProjectDirectory + "FileAliases.Generated.cs";
-     
-                System.IO.File.WriteAllText(absolutePath, codeFileContents);
+
+
+                GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(absolutePath, codeFileContents), 5);
+                
      
             }, "Generating FileAliases for content pipeline.");
         }

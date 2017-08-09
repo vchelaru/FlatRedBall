@@ -77,6 +77,7 @@ namespace FlatRedBall.Input
         #endregion
         float mXAt100Units;
         float mYAt100Units;
+        // Why do we have this instead of just relying on the last state?
         int mLastWheel;
 
         PositionedObject mGrabbedPositionedObject;
@@ -584,40 +585,14 @@ namespace FlatRedBall.Input
 #endif
         #endregion
 
-        //public void ClearUntilNextClick()
-        //{
-        //    Clear();
-
-        //    mClearUntilNextClick = true;
-        //}
-
         public void Clear()
         {
             mWasJustCleared = true;
-#if !XBOX360
 
-#if FRB_MDX
-            for (int i = 0; i < mMouseButtonClicked.Length; i++)
-                mMouseButtonClicked[i] = false;
-            for (int i = 0; i < mMouseButtonPushed.Length; i++)
-                mMouseButtonPushed[i] = false;
-            for (int i = 0; i < mDoubleClick.Length; i++)
-                mDoubleClick[i] = false;
-            for (int i = 0; i < mDoublePush.Length; i++)
-                mDoublePush[i] = false;
-
-            mMouseState = new MouseState();
-            mMouseBufferedData = null;
-#else
             mMouseState = new MouseState();
             mLastFrameMouseState = new MouseState();
 
-#endif
-
-#if SILVERLIGHT
-            mTemporaryMouseState = new MouseState();
-#endif
-#endif
+            mLastWheel = 0;
         }
 
 #if !XBOX360
@@ -645,16 +620,8 @@ namespace FlatRedBall.Input
                 {
                     float angleToRotateBy = -coefficient * XVelocity;
 
-#if FRB_MDX
-                    angleToRotateBy *= -1;
-#endif
-
-#if FRB_MDX
-                    Matrix rotationMatrix = Matrix.RotationAxis(
-                        upVector, angleToRotateBy);
-#else
                     Matrix rotationMatrix = Matrix.CreateFromAxisAngle(upVector, angleToRotateBy);
-#endif
+
                     positionedObject.Position -= orbitCenter;
 
                     MathFunctions.TransformVector(ref positionedObject.Position, ref rotationMatrix);
@@ -676,14 +643,8 @@ namespace FlatRedBall.Input
                 {
                     Vector3 relativePosition = positionedObject.Position - orbitCenter;
 
-#if FRB_MDX
-                    Matrix transformation = Matrix.RotationAxis(
-                        positionedObject.RotationMatrix.Right(), coefficient * YVelocity);
-#else
-
                     Matrix transformation = Matrix.CreateFromAxisAngle(
                         positionedObject.RotationMatrix.Right, coefficient * -YVelocity);
-#endif
 
                     FlatRedBall.Math.MathFunctions.TransformVector(
                         ref relativePosition, ref transformation);

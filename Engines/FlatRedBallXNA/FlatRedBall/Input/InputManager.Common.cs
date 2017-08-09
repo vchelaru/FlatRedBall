@@ -1,10 +1,5 @@
-#if !SILVERLIGHT
 #define SUPPORTS_XBOX_GAMEPADS
-#endif
-
-#if !SILVERLIGHT && !XBOX360
 #define SUPPORTS_TOUCH_SCREEN
-#endif
 
 
 
@@ -152,13 +147,10 @@ namespace FlatRedBall.Input
         public static void ClearAllInput()
         {
             Keyboard.Clear();
-#if !XBOX360
-            Mouse.Clear();
-#endif
 
-#if SUPPORTS_XBOX_GAMEPADS
+            Mouse.Clear();
+
             ClearXbox360GamePadInput();
-#endif
 
             mIgnorePushesNextFrame = true;
         }
@@ -195,14 +187,11 @@ namespace FlatRedBall.Input
             mIgnorePushesThisFrame = mIgnorePushesNextFrame;
             mIgnorePushesNextFrame = false;
 
-
-#if !XBOX360
-
             if (mMouse.Active)
             {
                 mMouse.Update(TimeManager.SecondDifference, TimeManager.CurrentTime);
             }
-#endif
+
             mKeyboard.Update();
 
 

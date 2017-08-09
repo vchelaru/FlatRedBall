@@ -112,7 +112,9 @@ namespace GumPlugin
             //  - More fixes to loading files using aliases (for content pipeline)
             // 0.8.7.2
             //  - Fixed color on Text objects not rendering properly.
-            get { return new Version(0, 8, 7, 2); }
+            // 0.8.7.3
+            //  - Plugin now performs code generation when adding an existing .gumx file to the project
+            get { return new Version(0, 8, 7, 3); }
         }
 
         #endregion
@@ -125,6 +127,20 @@ namespace GumPlugin
 
             AssetTypeInfoManager.Self.AddCommonAtis();
 
+            addGumProjectMenuItem = this.AddMenuItemTo("Add New Gum Project", HandleAddNewGumProject, "Content");
+            //var bmp = new Bitmap(WindowsFormsApplication1.Properties.Resources.myimage);
+            addGumProjectMenuItem.Image = new Bitmap(GumPlugin.Resource1.GumIcon);
+
+            AssignEvents();
+
+            CodeGeneratorManager.Self.CreateElementComponentCodeGenerators();
+
+            Gum.Managers.StandardElementsManager.Self.Initialize();
+
+        }
+
+        private void AssignEvents()
+        {
             this.ReactToLoadedGlux += HandleGluxLoad;
 
             this.ReactToLoadedGluxEarly += HandleGluxLoadEarly;
@@ -139,10 +155,6 @@ namespace GumPlugin
 
             this.TryAddContainedObjects += ContainedObjectsManager.Self.HandleTryAddContainedObjects;
 
-            addGumProjectMenuItem = this.AddMenuItemTo("Add New Gum Project", HandleAddNewGumProject, "Content");
-            //var bmp = new Bitmap(WindowsFormsApplication1.Properties.Resources.myimage);
-            addGumProjectMenuItem.Image = new Bitmap(GumPlugin.Resource1.GumIcon);
-
             this.ReactToTreeViewRightClickHandler += RightClickManager.Self.HandleTreeViewRightClick;
 
             this.ReactToFileChangeHandler += HandleFileChange;
@@ -156,11 +168,6 @@ namespace GumPlugin
             this.ReactToNewScreenCreated += HandleNewScreen;
 
             this.GetEventSignatureArgs += HandleGetEventSignatureArgs;
-
-            CodeGeneratorManager.Self.CreateElementComponentCodeGenerators();
-
-            Gum.Managers.StandardElementsManager.Self.Initialize();
-            
         }
 
         private void HandleGetEventSignatureArgs(NamedObjectSave namedObject, EventResponseSave eventResponseSave, out string type, out string args)
@@ -265,6 +272,12 @@ namespace GumPlugin
                 {
                     MessageBox.Show("The Gum project file (.gumx) should be added to global content. Not doing so may cause runtime errors.");
                 }
+                else
+                {
+                    // in global content, so generate the code files
+                    EmbeddedResourceManager.Self.UpdateCodeInProjectPresence();
+                }
+
             }
             // If it's a component then assign the specific type:
             else if(extension == GumProjectSave.ComponentExtension)
