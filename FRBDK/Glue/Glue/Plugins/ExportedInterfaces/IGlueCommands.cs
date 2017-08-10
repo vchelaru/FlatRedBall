@@ -10,6 +10,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
         void TryMultipleTimes(Action action, int numberOfTimesToTry);
 
+        void PrintOutput(string output);
+
         IGenerateCodeCommands GenerateCodeCommands { get; }
         IGluxCommands GluxCommands { get; }
         IOpenCommands OpenCommands { get; }

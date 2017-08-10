@@ -90,6 +90,8 @@ namespace FlatRedBall.Glue.IO
             // close the project before turning off task processing...
             ClosePreviousProject(projectFileName);
 
+            TaskManager.Self.WaitForAllTasksFinished(pumpEvents:true);
+
             // turn off task processing while this is loading, so that no background tasks are running while plugins are starting up.
             // Do this *after* closing previous project, because closing previous project waits for all tasks to finish.
             TaskManager.Self.IsTaskProcessingEnabled = false;

@@ -114,7 +114,13 @@ namespace GumPlugin
             //  - Fixed color on Text objects not rendering properly.
             // 0.8.7.3
             //  - Plugin now performs code generation when adding an existing .gumx file to the project
-            get { return new Version(0, 8, 7, 3); }
+            // 0.8.7.4
+            //  - Fixed text rendering when using an alpha value less than one, caused by premutiplied alpha.
+            // 0.8.7.5
+            //  - Fixed Gum calling save commands async - it should be sync!
+            // 0.8.7.6
+            //  - Fixed plugin not adding components in folders to the Glue project because of a path issue
+            get { return new Version(0, 8, 7, 6); }
         }
 
         #endregion

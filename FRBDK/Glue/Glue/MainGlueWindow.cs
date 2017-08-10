@@ -744,7 +744,7 @@ namespace Glue
             EditorData.GlueLayoutSettings.Maximized = this.WindowState == FormWindowState.Maximized;
             EditorData.GlueLayoutSettings.SaveSettings();
 
-            TaskManager.Self.WaitForAllTasksFinished();
+            TaskManager.Self.WaitForAllTasksFinished(pumpEvents:true);
 
             PluginManager.ReactToGlueClose();
             CloseProject(true, true);

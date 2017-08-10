@@ -80,7 +80,9 @@ namespace TileGraphicsPlugin
             // - Added method to add collision in a TileShapeCollection from a single layer in the MapDrawableBatch
             // 1.1.1.4
             // - Fixed crash thich can occur sometimes when clicking on a TMX file due to a collection changed 
-            get { return new Version(1, 1, 1, 4); }
+            // 1.1.1.5
+            // - Fixed possible threading issue if the project attempts to save on project startup
+            get { return new Version(1, 1, 1, 5); }
         }
 
 
@@ -438,7 +440,8 @@ namespace TileGraphicsPlugin
         void HandleGluxLoad()
         {
             // Add the .cs files which include the map drawable batch classes
-            CodeItemAdderManager.Self.UpdateCodeInProjectPresence();
+            FlatRedBall.Glue.Managers.TaskManager.Self.AddSync( CodeItemAdderManager.Self.UpdateCodeInProjectPresence,
+                "Adding Tiled .cs files to the project");
 
             // Add the CSV entry so that Glue knows how to load a .scnx into the classes added above
             AssetTypeInfoAdder.Self.UpdateAtiCsvPresence();

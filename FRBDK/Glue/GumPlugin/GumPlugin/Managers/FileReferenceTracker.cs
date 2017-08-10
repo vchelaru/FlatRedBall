@@ -647,6 +647,7 @@ namespace GumPlugin.Managers
 
             var referencedGumFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(gumProject.FullFileName, TopLevelOrRecursive.Recursive)
                 .Select(item=>FileManager.Standardize(item).ToLowerInvariant())
+                .Distinct()
                 .ToArray();
 
             var gumProjectFolder = FileManager.GetDirectory(gumProject.FullFileName);
@@ -744,7 +745,7 @@ namespace GumPlugin.Managers
                 string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, standardFolder))
                     .Replace("/", "\\");
 
-                bool exists = gumProject.StandardElements.Any(item => item.Name.ToLowerInvariant() == elementName.ToLowerInvariant());
+                bool exists = gumProject.StandardElements.Any(item => item.Name.Replace("/", "\\").ToLowerInvariant() == elementName.ToLowerInvariant());
 
                 if (!exists)
                 {
@@ -768,7 +769,7 @@ namespace GumPlugin.Managers
                 string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, componentFolder))
                     .Replace("/", "\\");
 
-                bool exists = gumProject.Components.Any(item => item.Name.ToLowerInvariant() == elementName.ToLowerInvariant());
+                bool exists = gumProject.Components.Any(item => item.Name.Replace("/", "\\").ToLowerInvariant() == elementName.ToLowerInvariant());
 
                 if (!exists)
                 {

@@ -132,7 +132,9 @@ namespace FlatRedBall.Glue.Controls
 
                     if (FileManager.FileExists(fullFile))
                     {
-                        GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(referencedFiles[i]);
+                        var file = referencedFiles[i];
+                        // todo - eventually this shouldn't even be here, but for now we're going to put it on a task so it doesn't stomp on other code making changes to the project:
+                        Managers.TaskManager.Self.AddSync(() => GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(file), $"Refreshing file {file}");
                     }
                     else
                     {

@@ -347,7 +347,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             }
 
-            PluginManager.ReceiveOutput("Added " + relativeFileName + " to project as content");
+            PluginManager.ReceiveOutput("Added " + relativeFileName + $" to {project.Name} as content");
         }
 
         public void CreateAndAddCodeFile(string relativeFileName)

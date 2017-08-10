@@ -9,6 +9,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
     public class GlueCommands : IGlueCommands
     {
+        #region Fields
+
         static GlueCommands mSelf;
         public static GlueCommands Self
         {
@@ -20,6 +22,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 }
                 return mSelf;
             }
+        }
+
+        #endregion
+
+        public void PrintOutput(string output)
+        {
+            PluginManager.ReceiveOutput(output);
         }
 
         public void DoOnUiThread(Action action)

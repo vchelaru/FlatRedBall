@@ -99,7 +99,7 @@ namespace FlatRedBall.Glue.Managers
                 }
             }
 
-            return toReturn;
+            return toReturn.Distinct().ToList();
         }
 
 

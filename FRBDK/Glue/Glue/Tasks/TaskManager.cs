@@ -178,11 +178,16 @@ namespace FlatRedBall.Glue.Managers
         }
 
 
-        internal void WaitForAllTasksFinished()
+        internal void WaitForAllTasksFinished(bool pumpEvents)
         {
             while (!AreAllAsyncTasksDone)
             {
                 System.Threading.Thread.Sleep(50);
+                if(pumpEvents)
+                {
+                    Application.DoEvents();
+                }
+
             }
         }
 
