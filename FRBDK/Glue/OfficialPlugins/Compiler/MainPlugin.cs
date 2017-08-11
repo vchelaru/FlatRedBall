@@ -43,7 +43,9 @@ namespace OfficialPlugins.Compiler
                 // - Support for running content-only builds
                 // 0.6
                 // - Added VS 2017 support
-                return new Version(0, 6);
+                // 0.7
+                // - Added a list of MSBuild locations
+                return new Version(0, 7);
             }
         }
 

@@ -12,9 +12,13 @@ namespace OfficialPlugins.Compiler
 {
     class Compiler
     {
-        const string visualStudio2015MsBuildExecutable = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
-        const string visualStudio2017MsBuildExecutable = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe";
-
+        List<string> AvailableLocations = new List<string>
+        {
+            @"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe",
+            @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe",
+            @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe"
+        };
+        
         string msBuildLocation;
         string MsBuildLocation
         {
@@ -22,13 +26,13 @@ namespace OfficialPlugins.Compiler
             {
                 if(msBuildLocation == null)
                 {
-                    if(System.IO.File.Exists(visualStudio2017MsBuildExecutable))
+                    foreach(var item in AvailableLocations)
                     {
-                        msBuildLocation = visualStudio2017MsBuildExecutable;
-                    }
-                    else if(System.IO.File.Exists(visualStudio2015MsBuildExecutable))
-                    {
-                        msBuildLocation = visualStudio2015MsBuildExecutable;
+                        if(System.IO.File.Exists(item))
+                        {
+                            msBuildLocation = item;
+                            break;
+                        }
                     }
                 }
 
@@ -86,7 +90,15 @@ namespace OfficialPlugins.Compiler
             }
             else
             {
-                printError($"Could not find msbuild.exe. Looked in the following locations\n{visualStudio2017MsBuildExecutable}\n{visualStudio2015MsBuildExecutable}");
+                string message =
+                    $"Could not find msbuild.exe. Looked in the following locations:";
+
+                foreach (var item in AvailableLocations)
+                {
+                    message += $"\n{item}";
+                }
+
+                printError(message);
                 succeeded = false;
             }
             return succeeded;
