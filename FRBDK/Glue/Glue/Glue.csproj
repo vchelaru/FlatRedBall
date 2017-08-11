@@ -173,7 +173,7 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\MSBuild\Referenced\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <HintPath>Libraries\MSBuild\Current\System.Threading.Tasks.Dataflow.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Xaml" />
@@ -950,6 +950,13 @@
     <Content Include="Libraries\ICSharpCode.NRefactory.xml" />
     <Content Include="Libraries\Ionic.Zip.dll" />
     <Content Include="Libraries\Ionic.Zlib.dll" />
+    <Content Include="Libraries\MSBuild\Current\Microsoft.Build.Conversion.Core.dll" />
+    <Content Include="Libraries\MSBuild\Current\Microsoft.Build.dll" />
+    <Content Include="Libraries\MSBuild\Current\Microsoft.Build.Engine.dll" />
+    <Content Include="Libraries\MSBuild\Current\Microsoft.Build.Framework.dll" />
+    <Content Include="Libraries\MSBuild\Current\Microsoft.Build.Tasks.Core.dll" />
+    <Content Include="Libraries\MSBuild\Current\Microsoft.Build.Utilities.Core.dll" />
+    <Content Include="Libraries\MSBuild\Current\System.Threading.Tasks.Dataflow.dll" />
     <Content Include="Plugins\FRBDKUpdater\FRBDKUpdater.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1154,7 +1161,6 @@
     <Folder Include="Clamp\" />
     <Folder Include="Content\Csvs\" />
     <Folder Include="Interfaces\" />
-    <Folder Include="Libraries\MSBuild\" />
     <Folder Include="Output\" />
     <Folder Include="Plugins\EmbeddedPlugins\Spline\" />
     <Folder Include="Plugins\EmbeddedPlugins\TaskOutput\" />
