@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue.Managers
@@ -11,7 +10,7 @@ namespace FlatRedBall.Glue.Managers
     {
         public bool CanContainInstanceOf(IElement container, string typeInQuestion)
         {
-            EntitySave typeAsEntitySave = ObjectFinder.Self.GetEntitySave(typeInQuestion);
+            EntitySave typeAsEntitySave = Elements.ObjectFinder.Self.GetEntitySave(typeInQuestion);
 
             if (typeAsEntitySave != null)
             {
