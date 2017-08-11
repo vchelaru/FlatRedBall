@@ -161,6 +161,10 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\MSBuild\Current\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -956,6 +960,7 @@
     <Content Include="Libraries\MSBuild\Current\Microsoft.Build.Framework.dll" />
     <Content Include="Libraries\MSBuild\Current\Microsoft.Build.Tasks.Core.dll" />
     <Content Include="Libraries\MSBuild\Current\Microsoft.Build.Utilities.Core.dll" />
+    <Content Include="Libraries\MSBuild\Current\System.Collections.Immutable.dll" />
     <Content Include="Libraries\MSBuild\Current\System.Threading.Tasks.Dataflow.dll" />
     <Content Include="Plugins\FRBDKUpdater\FRBDKUpdater.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
