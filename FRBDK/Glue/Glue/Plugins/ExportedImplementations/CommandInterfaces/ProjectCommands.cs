@@ -95,7 +95,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             bool wasProjectModified = false;
             ///////////////////Early Out/////////////////////
-            if (project == null) return wasProjectModified;
+            if (project == null || GlueState.Self.CurrentMainProject == null) return wasProjectModified;
 
             /////////////////End Early Out//////////////////
 
@@ -295,14 +295,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         private static bool ShouldFileBeInContentProject(string fileToAddAbsolute)
         {
-            bool toReturn = FileManager.IsRelativeTo(fileToAddAbsolute, GlueState.Self.CurrentMainContentProject.GetAbsoluteContentFolder());
+            var mainContentProject = GlueState.Self.CurrentMainContentProject;
+            var mainProject = GlueState.Self.CurrentMainProject;
 
-            // If this is a .cs file and the content project is the same project as the main project, then it's actually a code file
-            if (toReturn && GlueState.Self.CurrentMainContentProject.FullFileName == GlueState.Self.CurrentMainProject.FullFileName && FileManager.GetExtension(fileToAddAbsolute) == "cs")
+            bool toReturn = false;
+
+            if(mainContentProject != null && mainProject != null)
             {
-                toReturn = false;
-            }
+                var contentFolder = mainContentProject.GetAbsoluteContentFolder();
 
+                toReturn = FileManager.IsRelativeTo(fileToAddAbsolute, contentFolder);
+
+                // If this is a .cs file and the content project is the same project as the main project, then it's actually a code file
+                if (toReturn && mainContentProject.FullFileName == mainProject.FullFileName && FileManager.GetExtension(fileToAddAbsolute) == "cs")
+                {
+                    toReturn = false;
+                }
+
+            }
             return toReturn;
         }
 
