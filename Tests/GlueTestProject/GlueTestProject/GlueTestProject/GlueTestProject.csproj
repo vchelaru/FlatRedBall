@@ -188,6 +188,10 @@
     <Compile Include="Entities\BaseNotPooled.Generated.cs">
       <DependentUpon>BaseNotPooled.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\BasePooledEntity.cs" />
+    <Compile Include="Entities\BasePooledEntity.Generated.cs">
+      <DependentUpon>BasePooledEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\BasePositioningEntity.cs" />
     <Compile Include="Entities\BasePositioningEntity.Generated.cs">
       <DependentUpon>BasePositioningEntity.cs</DependentUpon>
@@ -299,6 +303,10 @@
     <Compile Include="Entities\DerivedPooledFromNotPooled.cs" />
     <Compile Include="Entities\DerivedPooledFromNotPooled.Generated.cs">
       <DependentUpon>DerivedPooledFromNotPooled.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedPooledFromPooled.cs" />
+    <Compile Include="Entities\DerivedPooledFromPooled.Generated.cs">
+      <DependentUpon>DerivedPooledFromPooled.cs</DependentUpon>
     </Compile>
     <Compile Include="Entities\DerivedPositioningEntity.cs" />
     <Compile Include="Entities\DerivedPositioningEntity.Generated.cs">
@@ -686,9 +694,11 @@
       <DependentUpon>ZBufferedEntity.cs</DependentUpon>
     </Compile>
     <Compile Include="Factories\BaseNotPooledFactory.Generated.cs" />
+    <Compile Include="Factories\BasePooledEntityFactory.Generated.cs" />
     <Compile Include="Factories\ChildOfPositioningEntityFactory.Generated.cs" />
     <Compile Include="Factories\CreatedByTiledFactory.Generated.cs" />
     <Compile Include="Factories\DerivedPooledFromNotPooledFactory.Generated.cs" />
+    <Compile Include="Factories\DerivedPooledFromPooledFactory.Generated.cs" />
     <Compile Include="Factories\EntityInFolderFactory.Generated.cs" />
     <Compile Include="Factories\FactoryEntityDerivedFactory.Generated.cs" />
     <Compile Include="Factories\FactoryEntityFactory.Generated.cs" />

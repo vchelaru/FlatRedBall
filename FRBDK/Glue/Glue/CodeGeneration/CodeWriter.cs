@@ -88,6 +88,8 @@ namespace FlatRedBall.Glue.Parsing
             CodeGenerators.Add(new ErrorCheckingCodeGenerator());
             CodeGenerators.Add(new ScrollableListCodeGenerator());
             CodeGenerators.Add(new StateCodeGenerator());
+
+            CodeGenerators.Add(new FactoryCodeGeneratorEarly());
             CodeGenerators.Add(new FactoryCodeGenerator());
             CodeGenerators.Add(new ReferencedFileSaveCodeGenerator());
             CodeGenerators.Add(new NamedObjectSaveCodeGenerator());
@@ -1204,6 +1206,13 @@ namespace FlatRedBall.Glue.Parsing
             ICodeBlock codeBlock = new CodeDocument(3);
             var currentBlock = codeBlock;
 
+            foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators
+                // eventually split these up:
+                .Where(item => item.CodeLocation == CodeLocation.BeforeStandardGenerated))
+            {
+                codeGenerator.GenerateDestroy(currentBlock, saveObject);
+            }
+
             #region Call base.Destroy if it has a derived object
 
             // The Screen template already includes a call to base.Destroy
@@ -1242,7 +1251,9 @@ namespace FlatRedBall.Glue.Parsing
 
             #endregion
 
-            foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators)
+            foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators
+                // eventually split these up:
+                .Where(item =>item.CodeLocation == CodeLocation.AfterStandardGenerated || item.CodeLocation == CodeLocation.StandardGenerated))
             {
                 codeGenerator.GenerateDestroy(currentBlock, saveObject);
             }
@@ -2368,16 +2379,6 @@ namespace FlatRedBall.Glue.Parsing
                 currentBlock = currentBlock.Function("public virtual void", "RemoveFromManagers", "");
 
             }
-
-            #region Call base.Destroy if it has a derived object
-
-            // The Screen template already includes a call to base.Destroy
-            if (saveObject.InheritsFromEntity())
-            {
-                currentBlock.Line("base.RemoveFromManagers();");
-            }
-
-            #endregion
 
             if (saveObject is EntitySave)
             {

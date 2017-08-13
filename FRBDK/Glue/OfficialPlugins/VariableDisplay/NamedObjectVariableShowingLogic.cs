@@ -103,7 +103,10 @@ namespace OfficialPlugins.VariableDisplay
                     try
                     {
                         var type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
-                        TypedMemberBase typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
+                        TypedMemberBase typedMember = null;
+
+
+                        typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
 
                         InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati);
 
@@ -543,6 +546,15 @@ namespace OfficialPlugins.VariableDisplay
         /// <returns>Whether to skip the variable.</returns>
         private static bool GetIfShouldBeSkipped(TypedMemberBase typedMember, NamedObjectSave instance, AssetTypeInfo ati)
         {
+            ///////////////////Early Out////////////////////////
+            if(typedMember == null)
+            {
+                return true;
+            }
+
+            //////////////////End Early Out//////////////////////
+
+
             var name = typedMember.MemberName;
 
             if (ati != null)

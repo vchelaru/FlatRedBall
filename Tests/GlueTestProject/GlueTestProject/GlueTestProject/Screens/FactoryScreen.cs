@@ -94,9 +94,17 @@ namespace GlueTestProject.Screens
             {
                 throw new Exception("Derived entities with pooling from base entities without are not being removed from the engine on destroy");
             }
+
+
+            BasePooledEntityFactory.CreateNew();
+            DerivedPooledFromPooledFactory.CreateNew().Destroy();
+            // If this throws an exception, that means that the derived Destroy method is modifying the base entity factory.
+            // This should run in debug to throw:
+            BasePooledEntityFactory.CreateNew();
+
         }
 
-		void CustomActivity(bool firstTimeCalled)
+        void CustomActivity(bool firstTimeCalled)
 		{
             if (!firstTimeCalled)
             {

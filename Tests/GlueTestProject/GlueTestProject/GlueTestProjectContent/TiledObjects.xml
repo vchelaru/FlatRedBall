@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <objecttypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <objecttype name="BaseNotPooled" />
+  <objecttype name="BasePooledEntity" />
   <objecttype name="ChildOfPositioningEntity" />
   <objecttype name="CreatedByTiled" />
   <objecttype name="DerivedPooledFromNotPooled" />
+  <objecttype name="DerivedPooledFromPooled" />
   <objecttype name="EntityInFolder" />
   <objecttype name="FactoryEntity">
     <property name="Visible" type="bool" default="true" />

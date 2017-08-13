@@ -12,9 +12,36 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.Interfaces;
 
 namespace FlatRedBall.Glue.Parsing
 {
+    public class FactoryCodeGeneratorEarly : ElementComponentCodeGenerator
+    {
+        public override CodeLocation CodeLocation
+        {
+            get
+            {
+                return CodeLocation.BeforeStandardGenerated;
+            }
+        }
+
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        {
+            // This needs to be before the base.Destroy(); call so that the derived class can make itself unused before the base class get a chance
+            if (element is EntitySave && (element as EntitySave).CreatedByOtherEntities)
+            {
+                codeBlock
+                    .If("Used")
+                        .Line(string.Format("Factories.{0}Factory.MakeUnused(this, false);", FileManager.RemovePath(element.Name)));
+            }
+
+            return codeBlock;
+        }
+
+    }
+
+
     public class FactoryCodeGenerator : ElementComponentCodeGenerator
     {
         static FactoryEntireClassGenerator mEntireClassGenerator = new FactoryEntireClassGenerator();
@@ -118,15 +145,6 @@ namespace FlatRedBall.Glue.Parsing
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
         {
-            if (element is EntitySave && (element as EntitySave).CreatedByOtherEntities)
-            {
-                codeBlock
-                    .If("Used")
-                        .Line(string.Format("Factories.{0}Factory.MakeUnused(this, false);", FileManager.RemovePath(element.Name)));
-            }
-
-
-
             foreach (NamedObjectSave namedObject in element.NamedObjects)
             {
 
