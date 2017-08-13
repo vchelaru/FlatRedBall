@@ -128,6 +128,13 @@ namespace FlatRedBall.Glue.Managers
                     try
                     {
                         referencedFiles = GlueCommands.Self.FileCommands.GetAllReferencedFileNames();
+
+                        // to make debugging a little easier:
+                        referencedFiles = referencedFiles
+                            .Select(item => item.ToLower().Replace('\\', '/'))
+                            .Distinct()
+                            .OrderBy(item => item)
+                            .ToList();
                     }
                     catch
                     {
@@ -147,11 +154,6 @@ namespace FlatRedBall.Glue.Managers
 
                     if (referencedFiles != null)
                     {
-                        for (int i = 0; i < referencedFiles.Count; i++)
-                        {
-                            referencedFiles[i] = referencedFiles[i].ToLower().Replace('\\', '/');
-                        }
-
                         foreach (var evaluatedItem in ProjectManager.ProjectBase.ContentProject.EvaluatedItems)
                         {
                             AddIfUnreferenced(evaluatedItem, ProjectManager.ProjectBase, referencedFiles, mUnreferencedFiles);
@@ -204,7 +206,7 @@ namespace FlatRedBall.Glue.Managers
                 bool isContent = ProjectManager.IsContent(itemName);
 
                 string absoluteFile =
-                    FileManager.GetDirectory(project.ContentProject.FullFileName) + nameToInclude;
+                    FileManager.RemoveDotDotSlash(FileManager.GetDirectory(project.ContentProject.FullFileName) + nameToInclude);
 
                 // the referencedFiles list is the list of files that are referenced relative to the main content project, but the project
                 // may not be the content project. We want to get the name relative to the main content project before checking.
@@ -214,7 +216,10 @@ namespace FlatRedBall.Glue.Managers
                 }
 
                 isUnreferenced = isContent &&
-                    File.Exists(absoluteFile) &&
+                    // Vic asks: This code would only consider a file unreferenced if it exists. Why?
+                    // If a file doesn't exist but it's referenced by a VS project and it's not needed, shouldn't
+                    // we consider it unreferenced?
+                    //File.Exists(absoluteFile) &&
                     !referencedFiles.Contains(itemName);
 
             }

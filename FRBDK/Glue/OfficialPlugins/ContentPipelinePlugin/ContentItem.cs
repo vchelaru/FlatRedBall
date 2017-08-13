@@ -124,11 +124,25 @@ namespace OfficialPlugins.MonoGameContent
                     break;
                 case "SongProcessor":
                     // does this depend on platform?
+                    // Yes it does:
                     yield return "xnb";
-                    yield return "ogg";
+
+                    if(Platform == "Android")
+                    {
+                        yield return "m4a";
+                    }
+                    else
+                    {
+                        // Not sure if other platforms use .ogg, need to test this
+                        yield return "ogg";
+                    }
                     break;
             }
         }
-        
+
+        public override string ToString()
+        {
+            return $"{BuildFileName} {Importer} {Processor}";
+        }
     }
 }

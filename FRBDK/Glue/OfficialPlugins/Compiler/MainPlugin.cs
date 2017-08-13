@@ -9,6 +9,7 @@ using System.ComponentModel.Composition;
 using OfficialPlugins.Compiler.ViewModels;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Managers;
+using System.Windows;
 
 namespace OfficialPlugins.Compiler
 {
@@ -58,10 +59,49 @@ namespace OfficialPlugins.Compiler
             CreateToolbar();
 
             this.ReactToFileChangeHandler += HandleFileChanged;
+            this.ReactToLoadedGlux += HandleGluxLoaded;
+            this.ReactToUnloadedGlux += HandleGluxUnloaded;
 
             compiler = new Compiler();
             runner = new Runner();
 
+        }
+
+        private void HandleGluxUnloaded()
+        {
+            viewModel.CompileContentButtonVisibility = Visibility.Collapsed;
+        }
+
+        private void HandleGluxLoaded()
+        {
+            bool shouldShow = false;
+
+            if (GlueState.Self.CurrentMainProject != null)
+            {
+                shouldShow = GlueState.Self.CurrentMainProject != GlueState.Self.CurrentMainContentProject;
+
+                if(!shouldShow)
+                {
+                    foreach(var mainSyncedProject in GlueState.Self.SyncedProjects)
+                    {
+                        if(mainSyncedProject != mainSyncedProject.ContentProject)
+                        {
+                            shouldShow = true;
+                            break;
+                        }
+                    }
+                }
+
+            }
+
+            if(shouldShow)
+            {
+                viewModel.CompileContentButtonVisibility = Visibility.Visible;
+            }
+            else
+            {
+                viewModel.CompileContentButtonVisibility = Visibility.Collapsed;
+            }
         }
 
         private void HandleFileChanged(string fileName)

@@ -29,13 +29,11 @@
             </Grid.RowDefinitions>
             
             <Button Click="HandleCompileClick" Content="Build All"></Button>
-            <Button Grid.Row="1" Click="HandleBuildContentClick" Content="Build Content"></Button>
+            <Button Grid.Row="1" Click="HandleBuildContentClick" Content="Build Content" Visibility="{Binding CompileContentButtonVisibility}"></Button>
 
-            <CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center" 
+            <CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center"  Visibility="{Binding CompileContentButtonVisibility}"
                       Grid.Row="1" Grid.Column="1" IsChecked="{Binding AutoBuildContent}">
-                <TextBlock 
-                    Text="Auto-build on content change"/>
-
+                <TextBlock Text="Auto-build on content change"/>
             </CheckBox>
             
             <Button Grid.Column="2" Click="HandleRunClick">Run</Button>

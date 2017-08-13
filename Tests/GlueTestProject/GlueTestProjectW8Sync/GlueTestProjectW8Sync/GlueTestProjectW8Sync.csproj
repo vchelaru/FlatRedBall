@@ -2526,14 +2526,6 @@
       <Name>Font22Arial_0</Name>
       <Link>Content\GumProject\FontCache\Font22Arial_0.png</Link>
     </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\FontCache\FontCache\Font18Arial.fnt">
-      <Name>Font18Arial</Name>
-      <Link>Content\GumProject\FontCache\FontCache\Font18Arial.fnt</Link>
-    </Content>
-    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\FontCache\FontCache\Font22Arial.fnt">
-      <Name>Font22Arial</Name>
-      <Link>Content\GumProject\FontCache\FontCache\Font22Arial.fnt</Link>
-    </Content>
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\GumProject.gumx">
       <Name>GumProject</Name>
       <Link>Content\GumProject\GumProject.gumx</Link>

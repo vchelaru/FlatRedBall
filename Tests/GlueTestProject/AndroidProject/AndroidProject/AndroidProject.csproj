@@ -110,10 +110,6 @@
       <Link>DataTypes\HugeCsv.Generated.cs</Link>
       <DependentUpon>HugeCsv.cs</DependentUpon>
     </Compile>
-    <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\Level1Info.Generated.cs">
-      <Link>DataTypes\Level1Info.Generated.cs</Link>
-      <DependentUpon>Level1Info.cs</DependentUpon>
-    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\DataTypes\ListCsv.Generated.cs">
       <Link>DataTypes\ListCsv.Generated.cs</Link>
       <DependentUpon>ListCsv.cs</DependentUpon>
@@ -1512,10 +1508,6 @@
       <Link>Performance\IEntityFactory.Generated.cs</Link>
       <DependentUpon>IEntityFactory.cs</DependentUpon>
     </Compile>
-    <Compile Include="..\..\GlueTestProject\GlueTestProject\Performance\IPoolable.Generated.cs">
-      <Link>Performance\IPoolable.Generated.cs</Link>
-      <DependentUpon>IPoolable.cs</DependentUpon>
-    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Performance\PoolList.Generated.cs">
       <Link>Performance\PoolList.Generated.cs</Link>
       <DependentUpon>PoolList.cs</DependentUpon>
@@ -1627,13 +1619,6 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\DisabledObjectScreen.Generated.cs">
       <Link>Screens\DisabledObjectScreen.Generated.cs</Link>
       <DependentUpon>DisabledObjectScreen.cs</DependentUpon>
-    </Compile>
-    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\DisabledScreen.cs">
-      <Link>Screens\DisabledScreen.cs</Link>
-    </Compile>
-    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\DisabledScreen.Generated.cs">
-      <Link>Screens\DisabledScreen.Generated.cs</Link>
-      <DependentUpon>DisabledScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\EventScreen.cs">
       <Link>Screens\EventScreen.cs</Link>
@@ -2004,7 +1989,6 @@
       <Link>TileGraphics\TilesetExtensionMethods.cs</Link>
     </Compile>
     <Compile Include="Activity1.cs" />
-    <Compile Include="Code" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -2044,9 +2028,9 @@
       <Name>boom</Name>
       <Link>Assets\content\screens\audioscreen\boom.xnb</Link>
     </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\screens\globalcontentscreen\menusong.ogg">
+    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\screens\globalcontentscreen\menusong.m4a">
       <Name>MenuSong</Name>
-      <Link>Assets\content\screens\globalcontentscreen\menusong.ogg</Link>
+      <Link>Assets\content\screens\globalcontentscreen\menusong.m4a</Link>
     </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\builtxnbs\screens\globalcontentscreen\menusong.xnb">
       <Name>MenuSong</Name>
@@ -2091,18 +2075,6 @@
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\fontcache\font18arial_o1_0.png">
       <Name>Font18Arial_o1_0</Name>
       <Link>Assets\content\gumproject\fontcache\font18arial_o1_0.png</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\fontcache\fontcache\font18arial.fnt">
-      <Name>Font18Arial</Name>
-      <Link>Assets\content\gumproject\fontcache\fontcache\font18arial.fnt</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\fontcache\fontcache\font22arial.fnt">
-      <Name>Font22Arial</Name>
-      <Link>Assets\content\gumproject\fontcache\fontcache\font22arial.fnt</Link>
-    </AndroidAsset>
-    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\gumui.png">
-      <Name>GumUI</Name>
-      <Link>Assets\content\gumproject\gumui.png</Link>
     </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\circle.gutx">
       <Name>Circle</Name>
