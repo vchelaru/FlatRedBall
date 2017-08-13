@@ -120,7 +120,9 @@ namespace GumPlugin
             //  - Fixed Gum calling save commands async - it should be sync!
             // 0.8.7.6
             //  - Fixed plugin not adding components in folders to the Glue project because of a path issue
-            get { return new Version(0, 8, 7, 6); }
+            // 0.8.7.7
+            //  - Fixed bug where components attached to a sprite wouldn't get their events raised
+            get { return new Version(0, 8, 7, 7); }
         }
 
         #endregion

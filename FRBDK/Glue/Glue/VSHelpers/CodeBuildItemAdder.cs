@@ -227,8 +227,10 @@ namespace FlatRedBall.Glue.VSHelpers
             {
                 // But after it's been saved we gotta see if it includes any
                 // special string sequences like $PROJECT_NAMESPACE$
-                string contents = System.IO.File.ReadAllText(destination);
 
+                string contents = "";
+                Plugins.ExportedImplementations.GlueCommands.Self.TryMultipleTimes(() => contents = System.IO.File.ReadAllText(destination), 5);
+                
                 if (contents.Contains("$PROJECT_NAMESPACE$"))
                 {
                     contents = contents.Replace("$PROJECT_NAMESPACE$", ProjectManager.ProjectNamespace);
