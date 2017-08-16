@@ -122,7 +122,9 @@ namespace GumPlugin
             //  - Fixed plugin not adding components in folders to the Glue project because of a path issue
             // 0.8.7.7
             //  - Fixed bug where components attached to a sprite wouldn't get their events raised
-            get { return new Version(0, 8, 7, 7); }
+            // 0.8.7.8
+            //  - Fixed overlapping children resulting in the wrong child getting UI events.
+            get { return new Version(0, 8, 7, 8); }
         }
 
         #endregion

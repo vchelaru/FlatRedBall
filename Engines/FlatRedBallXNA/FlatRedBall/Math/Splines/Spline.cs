@@ -250,6 +250,14 @@ namespace FlatRedBall.Math.Splines
             }
         }
 
+        /// <summary>
+        /// Calculates the position along the spline given a time interval. 
+        /// The smaller the time interval, the smoother the spline. The larger the time interval, the
+        /// faster CalculateDistanceTimeRelationships will execute and the less internal memory will be used to store points.
+        /// </summary>
+        /// <param name="timeInterval">The time interval in seconds. 
+        /// For splines which have very sharp curves this value may need to be smaller to give a smoother curve. 
+        /// Trial and error may be required to get a smooth spline, but a value of 0.1 seconds is a good starting point.</param>
         public void CalculateDistanceTimeRelationships(float timeInterval)
         {
             if (this.Count == 0)

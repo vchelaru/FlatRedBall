@@ -339,6 +339,11 @@ namespace Gum.Wireframe
                         if ((asGue.HasEvents || asGue.ExposeChildrenEvents) && asGue.HasCursorOver(cursor))
                         {
                             handledByChild = asGue.TryHandleCursorActivity(cursor);
+
+                            if (handledByChild)
+                            {
+                                break;
+                            }
                         }
                     }
                 }
