@@ -13610,4 +13610,19 @@
   <PluginData>
     <RequiredPlugins />
   </PluginData>
+  <DisplaySettings>
+    <Is2D>true</Is2D>
+    <GenerateDisplayCode>true</GenerateDisplayCode>
+    <ResolutionWidth>800</ResolutionWidth>
+    <ResolutionHeight>600</ResolutionHeight>
+    <FixedAspectRatio>false</FixedAspectRatio>
+    <AspectRatioWidth>16</AspectRatioWidth>
+    <AspectRatioHeight>9</AspectRatioHeight>
+    <SupportLandscape>true</SupportLandscape>
+    <SupportPortrait>false</SupportPortrait>
+    <RunInFullScreen>false</RunInFullScreen>
+    <AllowWindowResizing>false</AllowWindowResizing>
+    <Scale>100</Scale>
+    <ResizeBehavior>StretchVisibleArea</ResizeBehavior>
+  </DisplaySettings>
 </GlueProjectSave>
