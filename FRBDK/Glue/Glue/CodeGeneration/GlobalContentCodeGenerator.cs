@@ -258,7 +258,11 @@ namespace FlatRedBall.Glue.Parsing
 
                     if (loadAsync)
                     {
+                        blockToUse.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
+
                         blockToUse.Line("m" + rfs.GetInstanceName() + "Mre.Set();");
+                        blockToUse.Line("#endif");
+
                         blockToUse.End();
                     }
 

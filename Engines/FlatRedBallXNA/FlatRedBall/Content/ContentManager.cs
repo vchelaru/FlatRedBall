@@ -95,6 +95,16 @@ namespace FlatRedBall.Content
         {
 #if ANDROID
             var activity = FlatRedBallServices.Game.Services.GetService<Android.App.Activity>();
+
+            if(activity == null)
+            {
+                string message =
+                    "As of July 2017, FlatRedBall Android performs a much faster loading of the default font. This requires a change to the Activity1.cs file. You can look at a brand-new Android template to see the required changes.";
+
+                throw new NullReferenceException(message);
+            }
+
+
             Android.Content.Res.AssetManager androidAssetManager = activity.Assets;
             Texture2D texture;
 

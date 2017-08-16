@@ -2120,7 +2120,9 @@
     <None Include="Libraries\Android\Debug\OpenTK.dll" />
     <None Include="Resources\AboutResources.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <AndroidAsset Include="Assets\content\defaultfonttexture.png" />
+  </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\emitterlistfile.emix">
       <Name>EmitterListFile</Name>

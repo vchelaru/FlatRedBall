@@ -21,6 +21,11 @@ namespace GlueTestProject
         {
             base.OnCreate(bundle);
             var g = new Game1();
+
+            // FRB needs access to the activity to load fonts from the content:
+            g.Services.AddService<Activity>(this);
+
+
             SetContentView((View)g.Services.GetService(typeof(View)));
             g.Run();
         }

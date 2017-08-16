@@ -318,8 +318,8 @@ namespace Gum.Wireframe
             bool isOver = HasCursorOver(cursor);
 
 
-
-            if (isOver)
+            // Even though the cursor is over "this", we need to check if the cursor is over any children in case "this" exposes its children events:
+            if (isOver && this.ExposeChildrenEvents)
             {
 
                 #region Try handling by children
@@ -333,19 +333,15 @@ namespace Gum.Wireframe
                         var asGue = child as GraphicalUiElement;
                         // Children should always have the opportunity to handle activity,
                         // even if they are not components, because they may contain components as their children
-                        //if (asGue.IsComponentOrInstanceOfComponent() && asGue.HasCursorOver(cursor))
-                        if (asGue.HasCursorOver(cursor))
+
+                        // If the child either has events or exposes children events, then give it a chance to handle this activity.
+
+                        if ((asGue.HasEvents || asGue.ExposeChildrenEvents) && asGue.HasCursorOver(cursor))
                         {
                             handledByChild = asGue.TryHandleCursorActivity(cursor);
 
-
                             if (handledByChild)
                             {
-                                if (this.ExposeChildrenEvents == false || (child is GraphicalUiElement && ((GraphicalUiElement)child).HasEvents == false))
-                                {
-                                    // we'll break out, but set not handled by child, letting the parent do the logic
-                                    handledByChild = false;
-                                }
                                 break;
                             }
                         }
