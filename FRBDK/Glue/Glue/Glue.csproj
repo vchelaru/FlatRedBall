@@ -941,6 +941,9 @@
     <Content Include="Content\Icons\copyIcon.png" />
     <Content Include="Content\Icons\entity.png" />
     <Content Include="Content\Icons\file.png" />
+    <None Include="Content\Icons\IncreaseArea.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Content\Icons\master_code.png" />
     <Content Include="Content\Icons\master_entity.png" />
     <Content Include="Content\Icons\master_file.png" />
@@ -948,6 +951,9 @@
     <Content Include="Content\Icons\master_screen.png" />
     <Content Include="Content\Icons\object.png" />
     <Content Include="Content\Icons\screen.png" />
+    <None Include="Content\Icons\StretchArea.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Libraries\ICSharpCode.NRefactory.CSharp.dll" />
     <Content Include="Libraries\ICSharpCode.NRefactory.CSharp.xml" />
     <Content Include="Libraries\ICSharpCode.NRefactory.dll" />
