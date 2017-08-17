@@ -50,7 +50,7 @@
                             <TextBox Width="40" Height="18" Text="{Binding Scale}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"></TextBox>
                             <Label>%</Label>
                         </StackPanel>
-                        <TextBlock Visibility="{Binding OnResizeUiVisibility}">On Resize:</TextBlock>
+                        <TextBlock Visibility="{Binding OnResizeUiVisibility}" Margin="0,10,0,-14">On Resize:</TextBlock>
                         <RadioButton Visibility="{Binding OnResizeUiVisibility}" GroupName="1" Margin="18,0,0,0" IsChecked="{Binding UseStretchResizeBehavior}" VerticalContentAlignment="Center" Checked="StretchRadioButtonChecked" >
 
                             <StackPanel>
