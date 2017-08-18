@@ -54,11 +54,29 @@ namespace GlueTestProject.Screens
                 throw new Exception("WorldXAt isn't working");
             }
 
+
+            var expectedLeftHalfRightBound = Camera.Main.DestinationRectangle.Width / 2;
+            if(LeftHalfLayer.LayerCameraSettings.RightDestination != expectedLeftHalfRightBound)
+            {
+                string message = "The LeftHalfLayer should occupy half of the screen. On scaled displays this should scale with the display too." +
+                    $"Expected:{expectedLeftHalfRightBound}, Actual:{LeftHalfLayer.LayerCameraSettings.RightDestination}";
+                throw new Exception(message);
+            }
+
+
             // Do a half-screen X Layer now:
             worldXAt = cursor.WorldXAt(0, LeftHalfLayer);
             worldYAt = cursor.WorldYAt(0, LeftHalfLayer);
+
+            if(worldXAt != -400)
+            {
+                throw new Exception("WorldXAt should be -400");
+
+            }
+
+            var absoluteCameraLeftXEdge = Camera.Main.AbsoluteLeftXEdgeAt(0);
             // Full screen layer:
-            if (System.Math.Abs(worldXAt - Camera.Main.AbsoluteLeftXEdgeAt(0)) > 1)
+            if (System.Math.Abs(worldXAt - absoluteCameraLeftXEdge) > 1)
             {
                 throw new Exception("WorldXAt isn't working when dealing with Layers that do not take up the full screen");
             }

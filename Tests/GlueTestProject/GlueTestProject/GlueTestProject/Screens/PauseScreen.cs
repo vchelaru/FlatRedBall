@@ -99,7 +99,7 @@ namespace GlueTestProject.Screens
             // Actually, it could be stopped too, so let's allow that:
 
             // I had to increase the sleep time as sometimes the sound effect doesn't get enough time to stop
-            const int timeToSleep = 96;
+            const int timeToSleep = 105;
 #if WINDOWS_8
 
             new System.Threading.ManualResetEvent(false).WaitOne(timeToSleep);

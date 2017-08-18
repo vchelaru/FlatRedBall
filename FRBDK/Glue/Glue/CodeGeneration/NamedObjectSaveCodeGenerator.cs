@@ -18,6 +18,7 @@ using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.Particle;
 using Microsoft.Xna.Framework;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -2111,11 +2112,21 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                         if (namedObject.LayerCoordinateUnit == LayerCoordinateUnit.Pixel)
                         {
-                            codeBlock.Line(objectName + ".LayerCameraSettings.LeftDestination = " + FlatRedBall.Math.MathFunctions.RoundToInt( leftDestination ) + ";");
-                            codeBlock.Line(objectName + ".LayerCameraSettings.TopDestination = " + FlatRedBall.Math.MathFunctions.RoundToInt(topDestination ) + ";");
+                            // This could be using a scale value, or it could be on a mobile device where the physical resolution doesn't match the desired camera resolution.
 
-                            codeBlock.Line(objectName + ".LayerCameraSettings.RightDestination = " + FlatRedBall.Math.MathFunctions.RoundToInt(rightDestination ) + ";");
-                            codeBlock.Line(objectName + ".LayerCameraSettings.BottomDestination = " + FlatRedBall.Math.MathFunctions.RoundToInt(bottomDestination ) + ";");
+                            string multiple = null;
+
+                            if(GlueState.Self.CurrentGlueProject.DisplaySettings != null)
+                            {
+                                multiple = $" * FlatRedBall.Camera.Main.DestinationRectangle.Width / {GlueState.Self.CurrentGlueProject.DisplaySettings.ResolutionWidth}f";
+
+                            }
+
+                            codeBlock.Line(objectName + $".LayerCameraSettings.LeftDestination = {FlatRedBall.Math.MathFunctions.RoundToInt( leftDestination )}{multiple};");
+                            codeBlock.Line(objectName + $".LayerCameraSettings.TopDestination = {FlatRedBall.Math.MathFunctions.RoundToInt(topDestination )}{multiple};");
+
+                            codeBlock.Line(objectName + $".LayerCameraSettings.RightDestination = {FlatRedBall.Math.MathFunctions.RoundToInt(rightDestination )}{multiple};");
+                            codeBlock.Line(objectName + $".LayerCameraSettings.BottomDestination = {FlatRedBall.Math.MathFunctions.RoundToInt(bottomDestination )}{multiple};");
 
                             codeBlock.Line("// For layers which are 2D, have specified a destination rectangle, and use Pixel coordinate types, the ortho values match the destination rectangle. This can be changed in custom code.");
                             codeBlock.Line(objectName + ".LayerCameraSettings.OrthogonalWidth = " + FlatRedBall.Math.MathFunctions.RoundToInt(namedObject.DestinationRectangle.Value.Width ) + ";");
