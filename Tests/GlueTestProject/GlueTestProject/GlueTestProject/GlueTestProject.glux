@@ -13613,7 +13613,7 @@
   <DisplaySettings>
     <Is2D>true</Is2D>
     <GenerateDisplayCode>true</GenerateDisplayCode>
-    <ResolutionWidth>800</ResolutionWidth>
+    <ResolutionWidth>1000</ResolutionWidth>
     <ResolutionHeight>600</ResolutionHeight>
     <FixedAspectRatio>true</FixedAspectRatio>
     <AspectRatioWidth>4</AspectRatioWidth>
@@ -13622,7 +13622,7 @@
     <SupportPortrait>false</SupportPortrait>
     <RunInFullScreen>false</RunInFullScreen>
     <AllowWindowResizing>false</AllowWindowResizing>
-    <Scale>200</Scale>
+    <Scale>100</Scale>
     <ResizeBehavior>StretchVisibleArea</ResizeBehavior>
   </DisplaySettings>
 </GlueProjectSave>

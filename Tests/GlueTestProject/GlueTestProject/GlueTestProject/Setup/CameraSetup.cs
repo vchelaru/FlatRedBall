@@ -5,20 +5,20 @@
 	{
 		internal static class CameraSetup
 		{
-			const float Scale = 2f;
+			const float Scale = 1f;
 			internal static void ResetCamera (Camera cameraToReset)
 			{
 				FlatRedBall.Camera.Main.Orthogonal = true;
 				FlatRedBall.Camera.Main.OrthogonalHeight = 600;
-				FlatRedBall.Camera.Main.OrthogonalWidth = 800;
+				FlatRedBall.Camera.Main.OrthogonalWidth = 1000;
 				FlatRedBall.Camera.Main.FixAspectRatioYConstant();
 				SetAspectRatioTo(4 / 3m);
 			}
-			internal static void SetupCamera (Camera cameraToSetUp, Microsoft.Xna.Framework.GraphicsDeviceManager graphicsDeviceManager, int width = 800, int height = 600)
+			internal static void SetupCamera (Camera cameraToSetUp, Microsoft.Xna.Framework.GraphicsDeviceManager graphicsDeviceManager, int width = 1000, int height = 600)
 			{
 				#if WINDOWS || DESKTOP_GL
 				FlatRedBall.FlatRedBallServices.Game.Window.AllowUserResizing = false;
-				FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution((int)(width * Scale), (int)(height * Scale));
+				FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(width, height);
 				#elif IOS || ANDROID
 				FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight);
 				#elif UWP

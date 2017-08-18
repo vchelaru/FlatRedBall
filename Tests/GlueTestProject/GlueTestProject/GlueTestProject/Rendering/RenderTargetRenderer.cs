@@ -64,8 +64,10 @@ namespace FlatRedBall.Graphics
 
         public RenderTargetRenderer(Camera camera, bool generateMipMaps = false)
         {
-            mWidth = camera.DestinationRectangle.Width;
-            mHeight = camera.DestinationRectangle.Height;
+            // The camera may be off-center. Even though the area to the left and above the camera are not used, 
+            // we need to pad the render target renderer so that internally FRB doesn't crash:
+            mWidth = camera.DestinationRectangle.Left + camera.DestinationRectangle.Width;
+            mHeight = camera.DestinationRectangle.Top + camera.DestinationRectangle.Height;
 
             var device = FlatRedBallServices.GraphicsDevice;
             mRenderTarget = new RenderTarget2D(device, mWidth, mHeight,
