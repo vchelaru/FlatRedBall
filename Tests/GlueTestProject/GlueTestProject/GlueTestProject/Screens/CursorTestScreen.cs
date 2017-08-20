@@ -34,8 +34,8 @@ namespace GlueTestProject.Screens
             Cursor cursor = GuiManager.Cursor;
 
 
-            cursor.ScreenX = 0;
-            cursor.ScreenY = 0;
+            cursor.ScreenX = Camera.Main.DestinationRectangle.X;
+            cursor.ScreenY = Camera.Main.DestinationRectangle.Y;
 
             float worldXAt = cursor.WorldXAt(0);
             float worldYAt = cursor.WorldYAt(0);
@@ -55,7 +55,12 @@ namespace GlueTestProject.Screens
             }
 
 
-            var expectedLeftHalfRightBound = Camera.Main.DestinationRectangle.Width / 2;
+            if(LeftHalfLayer.LayerCameraSettings.LeftDestination != Camera.Main.LeftDestination)
+            {
+                throw new Exception("The LeftHalfLayer's left side should be aligned with the left of the Camera destination rectangle");
+            }
+
+            var expectedLeftHalfRightBound = Camera.Main.DestinationRectangle.Left + Camera.Main.DestinationRectangle.Width / 2;
             if(LeftHalfLayer.LayerCameraSettings.RightDestination != expectedLeftHalfRightBound)
             {
                 string message = "The LeftHalfLayer should occupy half of the screen. On scaled displays this should scale with the display too." +

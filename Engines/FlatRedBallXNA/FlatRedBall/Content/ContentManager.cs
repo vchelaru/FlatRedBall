@@ -427,14 +427,6 @@ namespace FlatRedBall.Content
 
 			bool shouldCheckForXnb = true;
 
-#if ANDROID
-			if(typeof(T) == typeof(Song))
-			{
-				shouldCheckForXnb = false;
-			}
-#endif
-
-
 			string fileToCheckFor = assetName + ".xnb";
 
 

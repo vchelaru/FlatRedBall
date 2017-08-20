@@ -182,47 +182,47 @@ namespace GlueTestProject.Screens
             if(!firstTimeCalled)
             {
 
-            }
 
-            if (!mHasCheckedX && this.PauseAdjustedSecondsSince(0) > .21f)
-            {
-                if (SpriteWithInstructions.X != 4.0f)
+                if (!mHasCheckedX && this.PauseAdjustedSecondsSince(0) > .21f)
                 {
-                    throw new Exception("Property instructions are not working");
-                }
-                mHasCheckedX = true;
-            }
-
-            if (!mHasCheckedPosition && this.PauseAdjustedSecondsSince(0) > .51f)
-            {
-                if (SpriteWithInstructions.Position != Vector3.One)
-                {
-                    throw new Exception("Field instructions are not working");
-                }
-                mHasCheckedPosition = true;
-            }
-
-            if (!mHasCheckedTextInterpolation && this.PauseAdjustedSecondsSince(0) > .5f)
-            {
-                if (TestingTextInterpolationInstance.TextInstanceX == 0)
-                {
-                    throw new Exception("Text position interpolation over time doesn't work");
+                    if (SpriteWithInstructions.X != 4.0f)
+                    {
+                        throw new Exception("Property instructions are not working");
+                    }
+                    mHasCheckedX = true;
                 }
 
-                if (TestingTextInterpolationInstance.TextInstanceAlpha == 0)
+                if (!mHasCheckedPosition && this.PauseAdjustedSecondsSince(0) > .51f)
                 {
-                    throw new Exception("Text alpha interpolation over time doesn't work");
+                    if (SpriteWithInstructions.Position != Vector3.One)
+                    {
+                        throw new Exception("Field instructions are not working");
+                    }
+                    mHasCheckedPosition = true;
                 }
 
-                mHasCheckedTextInterpolation = true;
+                if (!mHasCheckedTextInterpolation && this.PauseAdjustedSecondsSince(0) > .5f)
+                {
+                    if (TestingTextInterpolationInstance.TextInstanceX == 0)
+                    {
+                        throw new Exception("Text position interpolation over time doesn't work");
+                    }
 
-            }
+                    if (TestingTextInterpolationInstance.TextInstanceAlpha == 0)
+                    {
+                        throw new Exception("Text alpha interpolation over time doesn't work");
+                    }
 
-            const float secondsToLast = .6f;
+                    mHasCheckedTextInterpolation = true;
 
-            if (this.PauseAdjustedSecondsSince(0) > secondsToLast && this.IDrawableBatchEntityInstance.HasFinishedTests)
-            {
-                IsActivityFinished = true;
+                }
+
+                const float secondsToLast = .66f;
+
+                if (this.PauseAdjustedSecondsSince(0) > secondsToLast && this.IDrawableBatchEntityInstance.HasFinishedTests)
+                {
+                    IsActivityFinished = true;
+                }
             }
 
 		}

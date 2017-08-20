@@ -75,7 +75,17 @@ namespace OfficialPlugins.MonoGameContent
             {
                 stringBuilder.Append($"/processorParam:{ProcessorParameters} ");
             }
-            stringBuilder.Append($"/build:{BuildFileName} /incremental");
+
+            // iOS and Android have case sensitive file systems, so we'll to-lower it here
+
+            string buildArgument = BuildFileName;
+
+            if(Platform == "Android" || Platform == "iOS")
+            {
+                buildArgument = buildArgument.ToLowerInvariant();
+            }
+
+            stringBuilder.Append($"/build:{buildArgument} /incremental");
 
             return stringBuilder.ToString();
         }

@@ -13437,7 +13437,7 @@
     </ReferencedFileSave>
   </GlobalFiles>
   <GlobalContentSettingsSave>
-    <LoadAsynchronously>true</LoadAsynchronously>
+    <LoadAsynchronously>false</LoadAsynchronously>
     <RecordLockContention>false</RecordLockContention>
   </GlobalContentSettingsSave>
   <SyncedProjects>

@@ -463,7 +463,7 @@ namespace FlatRedBall.IO
             }
             else
             {
-#if SILVERLIGHT || USE_ISOLATED_STORAGE
+#if  USE_ISOLATED_STORAGE
                 bool isIsolatedStorageFile = IsInIsolatedStorage(fileName);
 
                 if (isIsolatedStorageFile)
@@ -478,26 +478,18 @@ namespace FlatRedBall.IO
                     fileName = fileName.Replace("\\", "/");
 
 
+                    // I think we can make this to-lower on iOS and Android so we don't have to spread to-lowers everywhere else:
+                    fileName = fileName.ToLowerInvariant();
 
 #if ANDROID
-			// We may be checking for a file outside of the title container
-			if(System.IO.File.Exists(fileName))
-			{
-				return true;
-			}
+                    // We may be checking for a file outside of the title container
+                    if (System.IO.File.Exists(fileName))
+                    {
+                        return true;
+                    }
 #endif
 
 
-
-#if SILVERLIGHT
-
-
-                    Uri uri = new Uri(fileName, UriKind.Relative);
-
-                    StreamResourceInfo sri = Application.GetResourceStream(uri);
-
-                    return sri != null;
-#else
                     Stream stream = null;
                     // This method tells us if a file exists.  I hate that we have 
                     // to do it this way - the TitleContainer should have a FileExists
@@ -527,29 +519,7 @@ namespace FlatRedBall.IO
                     {
                         return false;
                     }
-#endif // SILVERLIGHT
                 }
-
-
-#elif XBOX360
-                if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
-                    fileName = fileName.Substring(2);
-
-
-                if (IsFileNameInUserFolder(fileName))
-                {
-                    using (StorageContainer sc = GetStorageContainer())
-                    {
-                        return System.IO.File.Exists(fileName);
-                    }
-                }
-                else
-                {
-                    
-                    return System.IO.File.Exists(fileName);
-
-                }
-
 #else
                 
 				if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
@@ -1800,7 +1770,7 @@ namespace FlatRedBall.IO
         {
             T objectToReturn = default(T);
 
-#if SILVERLIGHT || WINDOWS_PHONE || (XBOX360 && XNA4) || MONODROID
+#if MONODROID
             if (fileName.Contains(FileManager.IsolatedStoragePrefix) && mHasUserFolderBeenInitialized == false)
             {
                 throw new InvalidOperationException("The user folder hasn't been initialized.  Call FileManager.InitializeUserFolder first");
@@ -1811,9 +1781,8 @@ namespace FlatRedBall.IO
                 fileName = FileManager.RelativeDirectory + fileName;
 
             // Do this check before removing the ./ at the end of the file name
-#if !XBOX360 || XNA4
+
             ThrowExceptionIfFileDoesntExist(fileName);
-#endif
 
 
             bool handled = false;
@@ -1830,12 +1799,6 @@ namespace FlatRedBall.IO
                     objectToReturn = XmlDeserialize<T>(stream);
                 }
             }
-#if XBOX360 //&& !XNA4
-            if (IsFileNameInUserFolder(fileName))
-            {
-                FileManager.DisposeLastStorageContainer();
-            }
-#endif
 
             return objectToReturn;
         }
@@ -1903,6 +1866,10 @@ namespace FlatRedBall.IO
                 fileName = FileManager.RelativeDirectory + fileName;
             }
 
+#if IOS || ANDROID
+            fileName = fileName.ToLowerInvariant();
+#endif
+
 
             if (fileName.StartsWith("./"))
             {
@@ -1916,29 +1883,23 @@ namespace FlatRedBall.IO
 
 
 
-            if (fileName.Contains(IsolatedStoragePrefix))
+            if (fileName.Contains(IsolatedStoragePrefix) || fileName.Contains(IsolatedStoragePrefix.ToLowerInvariant()))
             {
                 fileName = GetIsolatedStorageFileName(fileName);
 
-#if XBOX
-                var storageContainer = GetStorageContainer();
-                stream = storageContainer.OpenFile(fileName, mode);
-#else
-
-#if WINDOWS_8 || UWP
+    #if WINDOWS_8 || UWP
                 throw new NotImplementedException();
-#else
+    #else
                 IsolatedStorageFileStream isfs = new IsolatedStorageFileStream(fileName, mode, mIsolatedStorageFile);
 
                 stream = isfs;
-#endif
-#endif
+    #endif
             }
             else
             {
 
 
-#if MONODROID || WINDOWS_8 || IOS || UWP
+#if ANDROID || WINDOWS_8 || IOS || UWP
                 stream = TitleContainer.OpenStream(fileName);
 #else
 
@@ -1976,7 +1937,7 @@ namespace FlatRedBall.IO
 
             ThrowExceptionIfFileDoesntExist(fileName);
 
-#if XBOX360 || WINDOWS_PHONE || MONODROID
+#if MONODROID
             // Cute, the 360 doesn't like ./ at the start of the file name.
             if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
                 fileName = fileName.Substring(2);
@@ -2186,7 +2147,7 @@ namespace FlatRedBall.IO
             Stream fs = null;
             XmlWriter writer = null;
 
-#if SILVERLIGHT || WINDOWS_PHONE || MONODROID
+#if MONODROID
             IsolatedStorageFileStream isfs = null;
 
 #endif
@@ -2195,7 +2156,7 @@ namespace FlatRedBall.IO
 
 
 
-#if !XBOX360 && !WINDOWS_PHONE && !MONODROID
+#if !MONODROID
             string directory = FileManager.GetDirectory(fileName);
 
 #if WINDOWS_8
@@ -2212,15 +2173,13 @@ namespace FlatRedBall.IO
 #endif
 
 #endif
-#if XBOX360
-            StorageContainer sc = null;
-#endif
+
             try
             {
                 XmlSerializer serializer = GetXmlSerializer(type);
 
 
-#if USE_ISOLATED_STORAGE && !XBOX360 && !IOS
+#if USE_ISOLATED_STORAGE && !IOS
 
 #if WINDOWS_8 || UWP
                 throw new NotImplementedException();
@@ -2238,13 +2197,7 @@ namespace FlatRedBall.IO
 #else
 
                 
-#if XBOX360
-                if (fileName.StartsWith("./"))
-                {
-                    fileName = fileName.Substring(2);
-                }
 
-#endif
                 
 
 
@@ -2252,10 +2205,7 @@ namespace FlatRedBall.IO
 
 
 
-#if XBOX360
-                sc = GetStorageContainer();
-                fs = sc.CreateFile(fileName);
-#else
+
 
                 // I used to call File.Open with the FileMode.Truncate
                 // but that caused the file to be modified twice and this
@@ -2271,7 +2221,6 @@ namespace FlatRedBall.IO
 
                 fs = System.IO.File.Open(fileName, FileMode.OpenOrCreate);
 
-#endif
 
                 XmlWriterSettings settings = new XmlWriterSettings();
                 settings.Indent = true;
@@ -2285,13 +2234,11 @@ namespace FlatRedBall.IO
             {
                 if (fs != null) Close(fs);
 
-#if SILVERLIGHT || WINDOWS_PHONE || MONODROID
+#if  MONODROID
                 if (isfs != null)
                 {
                     isfs.Close();
                 }
-#elif XBOX360
-                FileManager.DisposeLastStorageContainer();
 #endif
             }
         }

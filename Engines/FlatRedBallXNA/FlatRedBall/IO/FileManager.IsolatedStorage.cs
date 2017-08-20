@@ -264,6 +264,12 @@ namespace FlatRedBall.IO
             {
                 modifiedFileName = modifiedFileName.Replace("/", "___");
             }
+
+
+#if IOS || ANDROID
+            modifiedFileName = modifiedFileName.ToLowerInvariant();
+#endif
+
             return modifiedFileName;
         }
 

@@ -84,14 +84,17 @@ namespace GlueTestProject.Screens
 
             ImageData imageData = ImageData.FromTexture2D(renderer.Texture);
 
+            int xOffset = MathFunctions.RoundToInt(Camera.Main.DestinationRectangle.X);
+            int yOffset = MathFunctions.RoundToInt(Camera.Main.DestinationRectangle.Y);
+
             // verify that colors are what they should be:
-            if(imageData.GetPixelColor(1,1).R != 255)
+            if(imageData.GetPixelColor(1 + xOffset,1 + yOffset).R != 255)
             {
                 throw new Exception("Control case failed - top-left pixel is not red");
             }
 
 
-			var pixelColor = imageData.GetPixelColor (1, 11);
+			var pixelColor = imageData.GetPixelColor (1 + xOffset, 11 + yOffset);
 			if(pixelColor.R == 255)
             {
                 throw new Exception("Transparency from PNGs is not rendering correctly");

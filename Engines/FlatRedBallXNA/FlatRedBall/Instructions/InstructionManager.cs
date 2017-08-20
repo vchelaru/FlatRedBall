@@ -55,7 +55,6 @@ namespace FlatRedBall.Instructions
 
         #region Properties
 
-        #region XML Docs
         /// <summary>
         /// Holds instructions which will be executed by the InstructionManager
         /// in its Update method (called automatically by FlatRedBallServices).
@@ -66,7 +65,6 @@ namespace FlatRedBall.Instructions
         /// from referencing removed objects and helps with debugging.  This list should only be used
         /// on un-managed objects or for instructions which do not associate with a particular object.
         /// </remarks>        
-        #endregion
         public static InstructionList Instructions
         {
             get { return mInstructions; }
@@ -88,9 +86,7 @@ namespace FlatRedBall.Instructions
             set { mIsExecutingInstructions = value; }
         }
 
-#if SILVERLIGHT
 
-#else
         public static ReadOnlyCollection<VelocityValueRelationship> VelocityValueRelationships
         {
             get;
@@ -101,7 +97,7 @@ namespace FlatRedBall.Instructions
             get;
             private set;
         }
-#endif
+
         #endregion
 
         #region Methods
