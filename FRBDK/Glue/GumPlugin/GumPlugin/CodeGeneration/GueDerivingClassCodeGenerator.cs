@@ -86,9 +86,20 @@ namespace GumPlugin.CodeGeneration
             }
             else
             {
-                GenerateScreenAndComponentCodeFor(elementSave, currentBlock);
-                // for now always true
-                generated = true;
+                bool doesElementSaveHaveDefaultState = elementSave.DefaultState != null;
+                // If the element has no default state that may mean that the element is referenced 
+                // by the Gum project, but that the file (such as the .gusx or gucx) is missing from
+                // the file system. Therefore we should not try to generate code for it.
+                if(doesElementSaveHaveDefaultState)
+                {
+                    GenerateScreenAndComponentCodeFor(elementSave, currentBlock);
+                    // for now always true
+                    generated = true;
+                }
+                else
+                {
+                    generated = false;
+                }
             }
 
             if (generated)

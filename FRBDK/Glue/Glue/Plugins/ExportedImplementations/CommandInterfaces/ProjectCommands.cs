@@ -13,6 +13,7 @@ using FlatRedBall.Glue.ContentPipeline;
 using FlatRedBall.Glue.Projects;
 using EditorObjects.Parsing;
 using FlatRedBall.Glue.Errors;
+using System.Linq;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -91,7 +92,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         /// <param name="shouldLink"></param>
         /// <param name="parentFile"></param>
         /// <returns>Whether the project was modified.</returns>
-        public bool UpdateFileMembershipInProject(ProjectBase project, string fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true)
+        public bool UpdateFileMembershipInProject(ProjectBase project, string fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null)
         {
             bool wasProjectModified = false;
             ///////////////////Early Out/////////////////////
@@ -199,7 +200,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // Glue is going to assume .cs files can't reference content:
                 if (!fileToAddAbsolute.EndsWith(".cs"))
                 {
-                    listOfReferencedFiles = FileReferenceManager.Self.GetFilesReferencedBy(fileToAddAbsolute, TopLevelOrRecursive.TopLevel);
+                    FileReferenceManager.Self.GetFilesReferencedBy(fileToAddAbsolute, TopLevelOrRecursive.TopLevel, listOfReferencedFiles);
+
+                    if(alreadyReferencedFiles != null)
+                    {
+                        listOfReferencedFiles = listOfReferencedFiles.Except(alreadyReferencedFiles).ToList();
+                    }
                 }
             }
             catch (FileNotFoundException fnfe)
@@ -262,7 +268,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     else
                     {
-                        wasProjectModified |= UpdateFileMembershipInProject(project, file, useContentPipeline, shouldLink, fileToAddAbsolute);
+                        wasProjectModified |= UpdateFileMembershipInProject(project, file, useContentPipeline, shouldLink, fileToAddAbsolute, recursive:true, alreadyReferencedFiles: listOfReferencedFiles);
                     }
                 }
             }

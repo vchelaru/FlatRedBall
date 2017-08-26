@@ -51,6 +51,16 @@ namespace FlatRedBall.Glue.Managers
 
         public List<string> GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
         {
+            List<string> toReturn = new List<string>();
+
+            GetFilesReferencedBy(absoluteName, topLevelOrRecursive, listToFill: toReturn);
+
+
+            return toReturn;
+        }
+
+        public void GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill)
+        { 
             List<string> topLevelOnly = null;
             bool handledByCache = false;
 
@@ -72,34 +82,54 @@ namespace FlatRedBall.Glue.Managers
 
             if (!handledByCache)
             {
-                topLevelOnly = ContentParser.GetFilesReferencedByAsset(absoluteName, TopLevelOrRecursive.TopLevel);
-                PluginManager.GetFilesReferencedBy(absoluteName, TopLevelOrRecursive.TopLevel, topLevelOnly);
-                // let's remove ../ if we can:
-                for (int i = 0; i < topLevelOnly.Count; i++)
+                bool succeeded = false;
+                try
                 {
-                    topLevelOnly[i] = FlatRedBall.IO.FileManager.RemoveDotDotSlash(topLevelOnly[i]);
+                    topLevelOnly = ContentParser.GetFilesReferencedByAsset(absoluteName, TopLevelOrRecursive.TopLevel);
+                    succeeded = true;
+                }
+                // August 26, 2017
+                // I used to have this throw an error when a file was missing, but plugins may not know to handle it, so let's just print
+                // output instead
+                catch(FileNotFoundException e)
+                {
+                    PluginManager.ReceiveError(e.ToString());
                 }
 
-                fileReferences[standardized] = new FileReferenceInformation
+                if(succeeded)
                 {
-                    LastWriteTime = File.Exists(standardized) ? File.GetLastWriteTime(standardized) : DateTime.MinValue,
-                    References = topLevelOnly
-                };
+                    PluginManager.GetFilesReferencedBy(absoluteName, TopLevelOrRecursive.TopLevel, topLevelOnly);
+                    // let's remove ../ if we can:
+                    for (int i = 0; i < topLevelOnly.Count; i++)
+                    {
+                        topLevelOnly[i] = FlatRedBall.IO.FileManager.RemoveDotDotSlash(topLevelOnly[i]);
+                    }
+
+                    fileReferences[standardized] = new FileReferenceInformation
+                    {
+                        LastWriteTime = File.Exists(standardized) ? File.GetLastWriteTime(standardized) : DateTime.MinValue,
+                        References = topLevelOnly
+                    };
+
+                }
             }
 
-
-            List<string> toReturn = new List<string>();
-            toReturn.AddRange(topLevelOnly);
-
-            if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
+            
+            
+            // topLevelOnly could be null if a file wasn't found
+            if(topLevelOnly != null)
             {
-                foreach (var item in topLevelOnly)
+                var newFiles = topLevelOnly.Except(listToFill).ToList();
+                listToFill.AddRange(newFiles);
+
+                if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
                 {
-                    toReturn.AddRange(GetFilesReferencedBy(item, TopLevelOrRecursive.Recursive));
+                    foreach (var item in newFiles)
+                    {
+                        GetFilesReferencedBy(item, TopLevelOrRecursive.Recursive, listToFill);
+                    }
                 }
             }
-
-            return toReturn.Distinct().ToList();
         }
 
 

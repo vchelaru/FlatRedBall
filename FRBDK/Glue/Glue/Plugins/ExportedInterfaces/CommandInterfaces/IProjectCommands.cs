@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
@@ -40,6 +41,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="shouldLink"></param>
         /// <param name="parentFile"></param>
         /// <returns></returns>
-        bool UpdateFileMembershipInProject(ProjectBase project, string fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true);
+        bool UpdateFileMembershipInProject(ProjectBase project, string fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null);
     }
 }

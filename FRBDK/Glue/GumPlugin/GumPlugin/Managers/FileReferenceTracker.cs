@@ -13,6 +13,7 @@ using System.Text;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Plugins;
 using Microsoft.Build.Evaluation;
+using System.IO;
 
 namespace GumPlugin.Managers
 {
@@ -120,35 +121,35 @@ namespace GumPlugin.Managers
                 }
             }
 
-            foreach (var instance in element.Instances)
-            {
-                var type = instance.BaseType;
-
-                // find the element.
-                var referencedElement = AppState.Self.GetElementSave(type);
-
-                if (referencedElement != null)
+                foreach (var instance in element.Instances)
                 {
-                    if (referencedElement is StandardElementSave)
-                    {
-                        listToFill.Add(FileManager.RelativeDirectory + "Standards/" + referencedElement.Name + ".gutx");
-                    }
-                    else if (referencedElement is ComponentSave)
-                    {
-                        listToFill.Add(FileManager.RelativeDirectory + "Components/" + referencedElement.Name + ".gucx");
+                    var type = instance.BaseType;
 
-                    }
-                    else
-                    {
-                        throw new Exception();
-                    }
+                    // find the element.
+                    var referencedElement = AppState.Self.GetElementSave(type);
 
-                    if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
+                    if (referencedElement != null)
                     {
-                        GetFilesReferencedBy(referencedElement, topLevelOrRecursive, listToFill, projectOrDisk);
+                        if (referencedElement is StandardElementSave)
+                        {
+                            listToFill.Add(FileManager.RelativeDirectory + "Standards/" + referencedElement.Name + ".gutx");
+                        }
+                        else if (referencedElement is ComponentSave)
+                        {
+                            listToFill.Add(FileManager.RelativeDirectory + "Components/" + referencedElement.Name + ".gucx");
+
+                        }
+                        else
+                        {
+                            throw new Exception();
+                        }
+
+                        if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
+                        {
+                            GetFilesReferencedBy(referencedElement, topLevelOrRecursive, listToFill, projectOrDisk);
+                        }
                     }
                 }
-            }
 
             StringFunctions.RemoveDuplicates(listToFill);
         }
@@ -645,50 +646,66 @@ namespace GumPlugin.Managers
         {
             string fontCacheFolder = FileManager.GetDirectory(gumProject.FullFileName) + "FontCache/";
 
-            var referencedGumFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(gumProject.FullFileName, TopLevelOrRecursive.Recursive)
-                .Select(item=>FileManager.Standardize(item).ToLowerInvariant())
-                .Distinct()
-                .ToArray();
+            string[] referencedGumFiles = null;
 
-            var gumProjectFolder = FileManager.GetDirectory(gumProject.FullFileName);
-            var glueContentFolder = FileManager.GetDirectory(contentProject.FullFileName);
-            var gumFolderRelative = FileManager.MakeRelative(gumProjectFolder, glueContentFolder);
+            bool hadMissingFile = false;
 
-            bool isGumProjectInOwnFolder = glueContentFolder != gumProjectFolder && FileManager.MakeRelative(gumProjectFolder, glueContentFolder).Contains("..") == false;
-
-            foreach (var buildItem in contentProject)
+            try
             {
+                referencedGumFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(gumProject.FullFileName, TopLevelOrRecursive.Recursive)
+                    .Select(item=>FileManager.Standardize(item).ToLowerInvariant())
+                    .Distinct()
+                    .ToArray();
+            }
+            catch(FileNotFoundException e)
+            {
+                // If an exception occurred here  becaus a file is missing from disk, just spit some output and leave it at that
+                PluginManager.ReceiveError(e.Message);
+                hadMissingFile = true;
+            }
 
-                bool shouldRemove = GetIfShouldRemoveFontFile(toRemove, buildItem, fontCacheFolder, contentProject, referencedGumFiles);
+            if(!hadMissingFile)
+            {
+                var gumProjectFolder = FileManager.GetDirectory(gumProject.FullFileName);
+                var glueContentFolder = FileManager.GetDirectory(contentProject.FullFileName);
+                var gumFolderRelative = FileManager.MakeRelative(gumProjectFolder, glueContentFolder);
 
-                if (shouldRemove)
+                bool isGumProjectInOwnFolder = glueContentFolder != gumProjectFolder && FileManager.MakeRelative(gumProjectFolder, glueContentFolder).Contains("..") == false;
+
+                foreach (var buildItem in contentProject)
                 {
-                    toRemove.Add(buildItem);
-                }
 
-                if(!shouldRemove && isGumProjectInOwnFolder)
-                {
-                    shouldRemove = GetIfShouldRemoveGumRelativeFile(gumProject, buildItem, glueContentFolder, referencedGumFiles);
-                }
+                    bool shouldRemove = GetIfShouldRemoveFontFile(toRemove, buildItem, fontCacheFolder, contentProject, referencedGumFiles);
 
-                if(!shouldRemove)
-                {
-                    shouldRemove = GetIfShouldRemoveStandardElement(gumProject, toRemove, buildItem, gumFolderRelative);
-                }
+                    if (shouldRemove)
+                    {
+                        toRemove.Add(buildItem);
+                    }
 
-                if(!shouldRemove)
-                {
-                    shouldRemove = GetIfShouldRemoveComponent(gumProject, buildItem, gumFolderRelative);
-                }
+                    if(!shouldRemove && isGumProjectInOwnFolder)
+                    {
+                        shouldRemove = GetIfShouldRemoveGumRelativeFile(gumProject, buildItem, glueContentFolder, referencedGumFiles);
+                    }
 
-                if(!shouldRemove)
-                {
-                    shouldRemove = GetIfShouldRemoveScreen(gumProject, buildItem, gumFolderRelative);
-                }
+                    if(!shouldRemove)
+                    {
+                        shouldRemove = GetIfShouldRemoveStandardElement(gumProject, toRemove, buildItem, gumFolderRelative);
+                    }
 
-                if (shouldRemove)
-                {
-                    toRemove.Add(buildItem);
+                    if(!shouldRemove)
+                    {
+                        shouldRemove = GetIfShouldRemoveComponent(gumProject, buildItem, gumFolderRelative);
+                    }
+
+                    if(!shouldRemove)
+                    {
+                        shouldRemove = GetIfShouldRemoveScreen(gumProject, buildItem, gumFolderRelative);
+                    }
+
+                    if (shouldRemove)
+                    {
+                        toRemove.Add(buildItem);
+                    }
                 }
             }
         }

@@ -124,7 +124,11 @@ namespace GumPlugin
             //  - Fixed bug where components attached to a sprite wouldn't get their events raised
             // 0.8.7.8
             //  - Fixed overlapping children resulting in the wrong child getting UI events.
-            get { return new Version(0, 8, 7, 8); }
+            // 0.8.7.9
+            //  - Added GraphicalUiElement.GetAbsoluteWidth and GetAbsoluteHeight
+            // 0.8.8.0
+            // - Plugin no longer crashes if there is a missing screen file
+            get { return new Version(0, 8, 8, 0); }
         }
 
         #endregion
