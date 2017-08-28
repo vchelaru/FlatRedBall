@@ -89,6 +89,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build">
+      <HintPath>..\..\..\Glue\Glue\Libraries\MSBuild\Current\Microsoft.Build.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Build.Engine">
       <HintPath>..\..\..\Glue\Glue\Libraries\MSBuild\Current\Microsoft.Build.Engine.dll</HintPath>
     </Reference>

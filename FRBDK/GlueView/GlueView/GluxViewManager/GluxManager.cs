@@ -18,7 +18,7 @@ using FlatRedBall.Graphics;
 using FlatRedBall.Glue.GuiDisplay.Facades;
 using GluePropertyGridClasses.Interfaces;
 using Microsoft.Build.BuildEngine;
-
+using Microsoft.Build.Evaluation;
 
 namespace FlatRedBall.Glue
 {
@@ -307,9 +307,10 @@ namespace FlatRedBall.Glue
                 
                 mCurrentGlueFile = filename;
 
-                Microsoft.Build.BuildEngine.Project vsProj = new Microsoft.Build.BuildEngine.Project();
+                Microsoft.Build.Evaluation.Project vsProj = new Microsoft.Build.Evaluation.Project();
                 string csProjFileName = FileManager.RemoveExtension(mCurrentGlueFile) + ".csproj";
-                vsProj.Load(csProjFileName, Microsoft.Build.BuildEngine.ProjectLoadSettings.IgnoreMissingImports);
+
+                vsProj = new Microsoft.Build.Evaluation.Project(csProjFileName, null, null, new ProjectCollection());
 
 
                 FindContentDirectory(vsProj);
@@ -319,15 +320,13 @@ namespace FlatRedBall.Glue
                 vsProjectState.DefaultNamespace = null;
                 EditorObjects.IoC.Container.Set<IVsProjectState>(vsProjectState);
 
-                foreach (BuildPropertyGroup bpg in vsProj.PropertyGroups)
+                foreach (var bp in vsProj.Properties)
                 {
-                    foreach (BuildProperty bp in bpg)
+                    if (bp.Name == "RootNamespace")
                     {
-                        if (bp.Name == "RootNamespace")
-                        {
-                            vsProjectState.DefaultNamespace = bp.Value;
-                            break;
-                        }
+                        vsProjectState.DefaultNamespace = bp.EvaluatedValue;
+
+                        break;
                     }
                 }
 
@@ -453,24 +452,25 @@ namespace FlatRedBall.Glue
 		}
 
 
-        public static string GetPreProcessorConstantsFromProject(Microsoft.Build.BuildEngine.Project coreVisualStudioProject)
+        public static string GetPreProcessorConstantsFromProject(Microsoft.Build.Evaluation.Project coreVisualStudioProject)
         {
             string preProcessorConstants = "";
 
-            foreach (Microsoft.Build.BuildEngine.BuildPropertyGroup propertyGroup in coreVisualStudioProject.PropertyGroups)
+            // Victor Chelaru October 20, 2012
+            // We used to just look at the XML and had a broad way of determining the 
+            // patterns.  I decided it was time to clean this up and make it more precise
+            // so now we use the Properties from the project.
+            foreach (var property in coreVisualStudioProject.Properties)
             {
-                foreach (Microsoft.Build.BuildEngine.BuildProperty property in propertyGroup)
+                if (property.Name == "DefineConstants")
                 {
-                    if (property.Name == "DefineConstants")
-                    {
-                        preProcessorConstants += ";" + property.Value;
-                    }
+                    preProcessorConstants += ";" + property.EvaluatedValue;
                 }
             }
             return preProcessorConstants;
         }
 
-        private static void FindContentDirectory(Microsoft.Build.BuildEngine.Project project)
+        private static void FindContentDirectory(Microsoft.Build.Evaluation.Project project)
         {
             AlternativeContentDirectory = null;
             string projectName = FileManager.RemovePath(FileManager.RemoveExtension(mCurrentGlueFile));
