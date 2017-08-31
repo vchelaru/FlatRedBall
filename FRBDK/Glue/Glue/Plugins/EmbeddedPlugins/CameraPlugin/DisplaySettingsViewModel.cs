@@ -160,6 +160,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             }
         }
 
+        Visibility supportedOrientationsLinkVisibility;
+        public Visibility SupportedOrientationsLinkVisibility
+        {
+            get { return supportedOrientationsLinkVisibility; }
+            set
+            {
+                base.ChangeAndNotify(ref supportedOrientationsLinkVisibility, value);
+            }
+        }
+
         public void SetFrom(DisplaySettings displaySettings)
         {
             this.GenerateDisplayCode = displaySettings.GenerateDisplayCode;

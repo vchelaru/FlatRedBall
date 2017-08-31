@@ -10,6 +10,7 @@ using System.ComponentModel;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.VSHelpers.Projects;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 {
@@ -107,6 +108,19 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                     {
                         viewModel.SetFrom(glueProject.DisplaySettings);
 
+                        bool showSupportedOrientationLink =
+                            GetIfSupportsOrientation(GlueState.Self.CurrentMainProject) ||
+                            GlueState.Self.SyncedProjects.Any(item => GetIfSupportsOrientation(item));
+
+                        if(showSupportedOrientationLink)
+                        {
+                            viewModel.SupportedOrientationsLinkVisibility = System.Windows.Visibility.Visible;
+                        }
+                        else
+                        {
+                            viewModel.SupportedOrientationsLinkVisibility = System.Windows.Visibility.Collapsed;
+                        }
+
                         control.DataContext = viewModel;
                     }
                     respondToViewModelChanges = true;
@@ -122,6 +136,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             {
                 GlueGui.ShowMessageBox("You must load or create a project first to set the camera settings.");
             }
+        }
+
+        bool GetIfSupportsOrientation(ProjectBase projectBase)
+        {
+            return projectBase is IosMonogameProject ||
+                projectBase is AndroidProject ||
+                projectBase is UwpProject;
         }
     }
 }

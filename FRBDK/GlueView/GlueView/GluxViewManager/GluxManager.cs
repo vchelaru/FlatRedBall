@@ -307,10 +307,8 @@ namespace FlatRedBall.Glue
                 
                 mCurrentGlueFile = filename;
 
-                Microsoft.Build.Evaluation.Project vsProj = new Microsoft.Build.Evaluation.Project();
                 string csProjFileName = FileManager.RemoveExtension(mCurrentGlueFile) + ".csproj";
-
-                vsProj = new Microsoft.Build.Evaluation.Project(csProjFileName, null, null, new ProjectCollection());
+                var vsProj = new Microsoft.Build.Evaluation.Project(csProjFileName, null, null, new ProjectCollection());
 
 
                 FindContentDirectory(vsProj);

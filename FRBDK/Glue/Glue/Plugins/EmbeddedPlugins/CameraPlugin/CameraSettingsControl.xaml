@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin"
              mc:Ignorable="d" 
              
-             d:DesignHeight="394" d:DesignWidth="230">
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+             d:DesignHeight="460" Width="230">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding GenerateDisplayCode}">Generate Display Code</CheckBox>
             <StackPanel Visibility="{Binding AllPropertiesVisibility}">
@@ -31,13 +31,6 @@
                     </StackPanel>
                 </GroupBox>
 
-                <!--For now this is hidden, until we get everything else sorted out (like layers)-->
-                <GroupBox Header="Mobile" Visibility="Collapsed">
-                    <StackPanel>
-                        <CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" IsChecked="{Binding SupportLandscape}">Landscape</CheckBox>
-                        <CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" IsChecked="{Binding SupportPortrait}">Portrait</CheckBox>
-                    </StackPanel>
-                </GroupBox>
 
                 <GroupBox Header="Desktop">
                     <StackPanel>
@@ -75,6 +68,17 @@
                         
                     </StackPanel>
 
+                </GroupBox>
+                <GroupBox Header="Mobile">
+                    <StackPanel>
+                        <TextBlock Visibility="{Binding SupportedOrientationsLinkVisibility}" TextWrapping="Wrap" >           
+                            <Hyperlink NavigateUri="http://flatredball.com/documentation/api/microsoft-xna-framework/graphicsdevicemanager/supportedorientations/" RequestNavigate="Hyperlink_RequestNavigate">
+                                <Run>See the SupportedOrientations documentation for controlling mobile orientations.</Run>
+                            </Hyperlink>
+                        </TextBlock>
+                        
+                        
+                    </StackPanel>
                 </GroupBox>
 
             </StackPanel>
