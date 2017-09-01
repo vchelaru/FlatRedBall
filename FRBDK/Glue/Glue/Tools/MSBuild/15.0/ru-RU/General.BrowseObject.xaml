@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationGeneralBrowseObject" DisplayName="Общие" PageTemplate="generic" Description="Общие" xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Общие" Description="Общие"/>
+  </Rule.Categories>
+
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="Configuration" HasConfigurationCondition="False"/>
+  </Rule.DataSource>
+
+  <StringProperty Name="ApplicationIcon" DisplayName="Значок приложения"/>
+  <DynamicEnumProperty Name="TargetFrameworkMoniker" DisplayName="Моникер целевой платформы" EnumProvider="TargetFrameworkMoniker"/>
+  <StringProperty Name="AssemblyName" DisplayName="Имя сборки"/>
+  <StringProperty Name="Name" Visible="False"/>
+  <StringProperty Name="RootNamespace" DisplayName="Корневое пространство имен"/>
+  <StringProperty Name="DefaultNamespace" DisplayName="Пространство имен по умолчанию" Visible="False">
+    <StringProperty.DataSource>
+      <DataSource PersistedName="RootNamespace" Persistence="ProjectFile" Label="Configuration" HasConfigurationCondition="false"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="TargetFramework" Visible="False">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="TargetFrameworkMoniker"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="OutputName" Visible="False"/>
+  <EnumProperty Name="OutputType" DisplayName="Тип выходных данных">
+    <EnumValue Name="dll" DisplayName="Библиотека классов"/>
+    <EnumValue Name="exe" DisplayName="Консольное приложение"/>
+    <EnumValue Name="winexe" DisplayName="Приложение Windows"/>
+  </EnumProperty>
+  <StringListProperty Name="AvailablePlatforms" Separator="," Visible="False"/>
+  <StringProperty Name="FileName" DisplayName="Файл проекта" ReadOnly="True">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectFile"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="FullPath" DisplayName="Папка проекта" ReadOnly="True">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectDirectory"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="LocalPath" ReadOnly="True" Visible="False">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectDirectory"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+</Rule>

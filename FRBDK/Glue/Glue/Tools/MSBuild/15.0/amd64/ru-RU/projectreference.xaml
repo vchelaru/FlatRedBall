@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ProjectReference" DisplayName="Ссылка проекта" PageTemplate="generic" Description="Свойства ссылки проекта" xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+    <Rule.DataSource>
+        <DataSource Persistence="ProjectFile" ItemType="ProjectReference" HasConfigurationCondition="False"/>
+    </Rule.DataSource>
+
+    <BoolProperty Name="ReferenceOutputAssembly" DisplayName="Ссылка на выходную сборку" Description="Значение, указывающее, должен ли компилятор включить ссылку на основную выходную сборку целевого проекта."/>
+
+    <BoolProperty Name="Private" DisplayName="Копировать локально" Description="Указывает, должны ли основные выходные данные ссылочной целевой сборки копироваться в выходной каталог проекта, если эти метаданные заданы в неразрешенной ссылке."/>
+
+    <BoolProperty Name="CopyLocalSatelliteAssemblies" DisplayName="Копировать локальные вспомогательные сборки" Description="Указывает, должны ли вспомогательные сборки ссылочной целевой сборки копироваться в выходной каталог проекта."/>
+
+    <BoolProperty Name="LinkLibraryDependencies" Visible="False"/>
+
+    <BoolProperty Name="UseLibraryDependencyInputs" Visible="False"/>
+
+    <StringProperty Name="Project" Visible="False" Description="идентификатор GUID, с помощью которого решение отслеживает ссылочную целевую сборку отдельного проекта"/>
+
+    <StringProperty Name="ReferencedProjectIdentifier" Visible="False" Description="Старый (из бета-версии VS2010) способ хранения идентификатора GUID, с помощью которого решение отслеживает ссылочную целевую сборку отдельного проекта"/>
+
+    <BoolProperty Name="CopyLocal" DisplayName="Копировать локально" Description="Указывает, будет ли ссылочная сборка скопирована в выходной каталог.">
+        <BoolProperty.DataSource>
+            <DataSource Persistence="ProjectFile" ItemType="ProjectReference" HasConfigurationCondition="False" PersistedName="Private"/>
+        </BoolProperty.DataSource>
+    </BoolProperty>
+</Rule>

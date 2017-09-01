@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationGeneral" DisplayName="一般" PageTemplate="generic" Description="一般" xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+  <Rule.Categories>
+    <Category Name="General" DisplayName="一般" Description="一般"/>
+  </Rule.Categories>
+
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="Configuration"/>
+  </Rule.DataSource>
+
+  <StringProperty Name="ApplicationIcon" DisplayName="應用程式圖示"/>
+  <StringListProperty Name="ProjectTypeGuids" Visible="False"/>
+  <StringProperty Name="ProjectGuid" Visible="False">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Globals" HasConfigurationCondition="False"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <DynamicEnumProperty Name="TargetFrameworkMoniker" DisplayName="目標 Framework Moniker" EnumProvider="TargetFrameworkMoniker"/>
+  <StringProperty Name="TargetFrameworkIdentifier" Visible="False"/>
+  <StringProperty Name="TargetFrameworkVersion" Visible="False"/>
+  <StringProperty Name="TargetFrameworkProfile" Visible="False"/>
+  <StringProperty Name="TargetPath" Visible="False"/>
+  <StringProperty Name="DocumentationFile" DisplayName="XML 文件註解檔案"/>
+  <StringProperty Name="AssemblyName"/>
+  <StringProperty Name="Name" Visible="False"/>
+  <StringProperty Name="RootNamespace" DisplayName="根命名空間">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Configuration" HasConfigurationCondition="false"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="OutputName"/>
+  <StringProperty Name="OutputPath" Visible="False"/>
+  <EnumProperty Name="OutputType" Visible="False">
+    <EnumValue Name="dll" DisplayName="類別庫"/>
+    <EnumValue Name="exe" DisplayName="主控台應用程式"/>
+    <EnumValue Name="winexe" DisplayName="Windows 應用程式"/>
+  </EnumProperty>
+  <StringListProperty Name="AvailablePlatforms" Separator="," Visible="False"/>
+  <BoolProperty Name="Optimize" Description="編譯器是否應將輸出最佳化?"/>
+  <StringProperty Name="MSBuildProjectDirectory" Visible="false"/>
+  <StringProperty Name="DefaultPlatform" Visible="false"/>
+  <StringProperty Name="PackageAction" Visible="false" Description="封裝專案時要使用的 MSBuild 目標。"/>
+  <StringProperty Name="DefaultContentType" Visible="false" Description="加入檔案時要使用的預設內容類型名稱。"/>
+  <StringProperty Name="VCInstallDir" Visible="false"/>
+  <StringProperty Name="VSInstallDir" Visible="false"/>
+  <StringProperty Name="Platform" Visible="false"/>
+  <StringProperty Name="Configuration" Visible="false"/>
+  <StringProperty Name="DebuggerSymbolsPath" Visible="false"/>
+  <StringProperty Name="IntDir" Visible="false"/>
+  <StringProperty Name="TargetPlatformWinMDLocation" Visible="false"/>
+  <StringProperty Name="SDKReferenceDirectoryRoot" Visible="false"/>
+  <StringProperty Name="SDKReferenceRegistryRoot" Visible="false"/>
+  <StringProperty Name="TargetPlatformIdentifier" Visible="false"/>
+  <StringProperty Name="TargetPlatformVersion" Visible="false"/>
+  <BoolProperty Name="Immersive" Visible="false"/>
+  <StringProperty Name="AssemblySearchPaths"/>
+  <StringProperty Name="WinRTReferenceTabs" Visible="false"/>
+  <StringProperty Name="AssemblyReferenceTabs" Visible="false"/>
+  <BoolProperty Name="SuppressOutOfDateMessageOnBuild" Visible="false" Description="True 即只建置過期的專案，不提示使用者確認。"/>
+  <BoolProperty Name="ShowAllFiles" Visible="False">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="UserFile" HasConfigurationCondition="False"/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <BoolProperty Name="AutoRefresh" Visible="False">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="UserFile" HasConfigurationCondition="False"/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <StringProperty Name="TargetRuntime" Visible="False"/>
+  <StringProperty Name="FileName" DisplayName="專案檔" ReadOnly="True">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectFile"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="FullPath" DisplayName="專案資料夾" ReadOnly="True">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectDirectory"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="LocalPath" ReadOnly="True" Visible="False">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectDirectory"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+</Rule>

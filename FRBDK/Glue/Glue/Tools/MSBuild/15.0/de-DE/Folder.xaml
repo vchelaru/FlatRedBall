@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="Folder" DisplayName="Allgemein" PageTemplate="generic" Description="Ordnereigenschaften" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFileFolderItems" HasConfigurationCondition="False" ItemType="Folder"/>
+  </Rule.DataSource>
+
+  <StringProperty Name="Identity" Visible="false" ReadOnly="true" Category="Misc"/>
+  <StringProperty Name="FullPath" DisplayName="Vollständiger Pfad" ReadOnly="true" Category="Misc" Description="Speicherort des Ordners"/>
+  <StringProperty Name="FolderName" DisplayName="Ordnername" ReadOnly="true" Category="Misc" Description="Der Name dieses Ordners."/>
+</Rule>

@@ -1,0 +1,10 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+    Windows platform supports C# 4.0, while non-Windows platforms currently support up to C# 3.0.
+    For Windows platform, do not alter the setting.
+    For non-Windows platforms, set it to C# 3.0 if the user has not explicitly set it to something else.
+  -->
+  <PropertyGroup Condition=" '$(XnaPlatform)' != 'Windows' ">
+    <LangVersion Condition=" '$(LangVersion)' == '' ">3</LangVersion>
+  </PropertyGroup>
+</Project>

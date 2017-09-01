@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,9 +15,11 @@ namespace OfficialPlugins.Compiler
     {
         List<string> AvailableLocations = new List<string>
         {
+            $@"{FileManager.GetDirectory(Assembly.GetEntryAssembly().Location)}Tools\MSBuild\15.0\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe",
-            @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe"
+            @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe",
+
         };
         
         string msBuildLocation;
@@ -86,6 +89,10 @@ namespace OfficialPlugins.Compiler
                 {
                     printError(errorString);
                     succeeded = false;
+                }
+                else
+                {
+                    printOutput($"Build succeeded at {DateTime.Now.ToLongTimeString()}");
                 }
             }
             else
@@ -164,6 +171,7 @@ namespace OfficialPlugins.Compiler
                 {
                     errorString += "\n";
                 }
+
             }
             return errorString;
         }

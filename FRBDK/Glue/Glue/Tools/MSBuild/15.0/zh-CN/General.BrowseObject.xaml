@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationGeneralBrowseObject" DisplayName="常规" PageTemplate="generic" Description="常规" xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+  <Rule.Categories>
+    <Category Name="General" DisplayName="常规" Description="常规"/>
+  </Rule.Categories>
+
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="Configuration" HasConfigurationCondition="False"/>
+  </Rule.DataSource>
+
+  <StringProperty Name="ApplicationIcon" DisplayName="应用程序图标"/>
+  <DynamicEnumProperty Name="TargetFrameworkMoniker" DisplayName="目标框架名字对象" EnumProvider="TargetFrameworkMoniker"/>
+  <StringProperty Name="AssemblyName" DisplayName="程序集名称"/>
+  <StringProperty Name="Name" Visible="False"/>
+  <StringProperty Name="RootNamespace" DisplayName="根命名空间"/>
+  <StringProperty Name="DefaultNamespace" DisplayName="默认命名空间" Visible="False">
+    <StringProperty.DataSource>
+      <DataSource PersistedName="RootNamespace" Persistence="ProjectFile" Label="Configuration" HasConfigurationCondition="false"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="TargetFramework" Visible="False">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="TargetFrameworkMoniker"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="OutputName" Visible="False"/>
+  <EnumProperty Name="OutputType" DisplayName="输出类型">
+    <EnumValue Name="dll" DisplayName="类库"/>
+    <EnumValue Name="exe" DisplayName="控制台应用程序"/>
+    <EnumValue Name="winexe" DisplayName="Windows 应用程序"/>
+  </EnumProperty>
+  <StringListProperty Name="AvailablePlatforms" Separator="," Visible="False"/>
+  <StringProperty Name="FileName" DisplayName="项目文件" ReadOnly="True">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectFile"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="FullPath" DisplayName="项目文件夹" ReadOnly="True">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectDirectory"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="LocalPath" ReadOnly="True" Visible="False">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectDirectory"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+</Rule>

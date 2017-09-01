@@ -793,6 +793,378 @@
     </Compile>
     <Compile Include="Wcf\WcfManager.cs" />
     <Compile Include="Wcf\WcfService.cs" />
+    <Content Include="Tools\MSBuild\15.0\1028\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1028\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1028\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1031\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1031\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1031\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1033\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1033\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1033\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1036\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1036\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1036\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1040\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1040\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1040\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1041\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1041\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1041\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1042\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1042\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1042\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1049\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1049\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\1049\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\2052\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\2052\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\2052\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\3082\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\3082\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\3082\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1028\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1028\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1028\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1031\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1031\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1031\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1033\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1033\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1033\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1036\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1036\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1036\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1040\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1040\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1040\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1041\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1041\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1041\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1042\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1042\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1042\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1049\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1049\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\1049\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\2052\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\2052\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\2052\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\3082\FileTracker32UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\3082\FileTracker64UI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\3082\TrackerUI.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\cs\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\cs\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\cs\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\cs\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\cs\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\de\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\de\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\de\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\de\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\de\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\en\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\en\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\en\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\en\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\en\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\es\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\es\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\es\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\es\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\es\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\FileTracker32.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\FileTracker64.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\fr\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\fr\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\fr\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\fr\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\fr\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\it\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\it\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\it\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\it\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\it\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ja\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ja\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ja\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ja\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ja\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ko\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ko\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ko\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ko\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ko\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\Microsoft.Build.Conversion.Core.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\Microsoft.Build.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\Microsoft.Build.Engine.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\Microsoft.Build.Framework.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\Microsoft.Build.Tasks.Core.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\Microsoft.Build.Utilities.Core.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\MSBuild.exe" />
+    <Content Include="Tools\MSBuild\15.0\amd64\MSBuildTaskHost.exe" />
+    <Content Include="Tools\MSBuild\15.0\amd64\pl\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\pl\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\pl\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\pl\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\pl\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\pt-BR\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\pt-BR\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\pt-BR\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\pt-BR\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\pt-BR\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ru\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ru\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ru\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ru\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\ru\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\System.Collections.Immutable.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\System.Threading.Tasks.Dataflow.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\Tracker.exe" />
+    <Content Include="Tools\MSBuild\15.0\amd64\tr\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\tr\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\tr\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\tr\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\tr\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\zh-Hans\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\zh-Hans\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\zh-Hans\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\zh-Hans\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\zh-Hans\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\zh-Hant\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\zh-Hant\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\zh-Hant\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\zh-Hant\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\amd64\zh-Hant\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\cs\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\cs\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\cs\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\cs\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\cs\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\de\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\de\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\de\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\de\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\de\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\en\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\en\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\en\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\en\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\en\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\es\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\es\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\es\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\es\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\es\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\FileTracker32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\FileTracker64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\fr\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\fr\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\fr\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\fr\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\fr\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\it\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\it\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\it\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\it\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\it\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\ja\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\ja\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\ja\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\ja\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\ja\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\ko\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\ko\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\ko\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\ko\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\ko\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\Microsoft.Build.Conversion.Core.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.Build.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.Build.Engine.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.Build.Framework.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.Build.Tasks.Core.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.Build.Utilities.Core.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.Framework.Tools.Packaging.Tasks.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\MSBuild.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\MSBuildTaskHost.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\pl\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\pl\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\pl\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\pl\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\pl\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\pt-BR\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\pt-BR\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\pt-BR\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\pt-BR\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\pt-BR\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\Roslyn\csc.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\csi.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\Microsoft.CodeAnalysis.CSharp.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\Microsoft.CodeAnalysis.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\Microsoft.CodeAnalysis.Scripting.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\Microsoft.CodeAnalysis.VisualBasic.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\Microsoft.DiaSymReader.Native.amd64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\Microsoft.DiaSymReader.Native.x86.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\Microsoft.Win32.Primitives.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.AppContext.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Collections.Immutable.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Console.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Diagnostics.FileVersionInfo.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Diagnostics.Process.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Diagnostics.StackTrace.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.IO.Compression.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.IO.FileSystem.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.IO.FileSystem.DriveInfo.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.IO.FileSystem.Primitives.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.IO.Pipes.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Reflection.Metadata.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Security.AccessControl.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Security.Claims.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Security.Cryptography.Algorithms.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Security.Cryptography.Encoding.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Security.Cryptography.Primitives.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Security.Cryptography.X509Certificates.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Security.Principal.Windows.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Text.Encoding.CodePages.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Threading.Thread.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.ValueTuple.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Xml.ReaderWriter.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Xml.XmlDocument.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Xml.XPath.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\System.Xml.XPath.XDocument.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\vbc.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\VBCSCompiler.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\ru\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\ru\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\ru\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\ru\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\ru\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\System.Collections.Immutable.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\System.Threading.Tasks.Dataflow.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Tracker.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\tr\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\tr\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\tr\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\tr\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\tr\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\zh-Hans\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\zh-Hans\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\zh-Hans\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\zh-Hans\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\zh-Hans\MSBuildTaskHost.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\zh-Hant\Microsoft.Build.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\zh-Hant\Microsoft.Build.Tasks.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\zh-Hant\Microsoft.Build.Utilities.Core.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\zh-Hant\MSBuild.resources.dll" />
+    <Content Include="Tools\MSBuild\15.0\zh-Hant\MSBuildTaskHost.resources.dll" />
     <EmbeddedResource Include="Controls\DownloadPluginProgressWindow.resx">
       <DependentUpon>DownloadPluginProgressWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -922,6 +1294,175 @@
     <None Include="Plugins\Readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.Common.CrossTargeting.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.Common.CurrentVersion.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.Common.overridetasks" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.Common.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.Common.tasks" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.CSharp.CrossTargeting.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.CSharp.CurrentVersion.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.CSharp.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.Data.Entity.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.NetFramework.CurrentVersion.props" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.NetFramework.CurrentVersion.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.NetFramework.props" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.NetFramework.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.ServiceModel.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.VisualBasic.CrossTargeting.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.VisualBasic.CurrentVersion.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.VisualBasic.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.WinFx.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.WorkflowBuildExtensions.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Microsoft.Xaml.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\MSBuild.exe.config" />
+    <None Include="Tools\MSBuild\15.0\amd64\MSBuild.rsp" />
+    <None Include="Tools\MSBuild\15.0\amd64\MSBuildTaskHost.exe.config" />
+    <None Include="Tools\MSBuild\15.0\amd64\MSBuild\Microsoft.Build.CommonTypes.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Tools\MSBuild\15.0\amd64\MSBuild\Microsoft.Build.Core.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Tools\MSBuild\15.0\amd64\Workflow.targets" />
+    <None Include="Tools\MSBuild\15.0\amd64\Workflow.VisualBasic.targets" />
+    <Content Include="Tools\MSBuild\15.0\Microsoft.Common.CrossTargeting.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.Common.CurrentVersion.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.Common.overridetasks">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.Common.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.Common.tasks">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.CSharp.CrossTargeting.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.CSharp.CurrentVersion.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.Data.Entity.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.NetFramework.CurrentVersion.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.NetFramework.CurrentVersion.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.NetFramework.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.NetFramework.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.ServiceModel.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.VisualBasic.CrossTargeting.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.VisualBasic.CurrentVersion.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.VisualBasic.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.WinFx.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.WorkflowBuildExtensions.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft.Xaml.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\MSBuild.exe.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\MSBuild.rsp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\MSBuildTaskHost.exe.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.ContentPipelineExtensions.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.AvailablePlatforms.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Common.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Content.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.ContentPipeline.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.VisualBasic.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Windows.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Xbox 360.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Tools\MSBuild\15.0\MSBuild\Microsoft.Build.CommonTypes.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Tools\MSBuild\15.0\MSBuild\Microsoft.Build.Core.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\csc.exe.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\csc.rsp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\csi.exe.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\csi.rsp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\Microsoft.CSharp.Core.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\Microsoft.VisualBasic.Core.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\vbc.exe.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\vbc.rsp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Roslyn\VBCSCompiler.exe.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Workflow.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MSBuild\15.0\Workflow.VisualBasic.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Resource Include="Content\Icons\CanInterpolate.bmp" />
     <Resource Include="Content\Icons\CantInterpolate.bmp" />
     <Resource Include="Content\Icons\NeedsInterpolateVariable.bmp" />
@@ -1352,6 +1893,2006 @@
     <Page Include="Plugins\EmbeddedPlugins\UnreferencedFiles\UnreferencedFilesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\de-DE\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\en-US\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\es-ES\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\fr-FR\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\it-IT\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ja-JP\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ko-KR\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\ru-RU\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-CN\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\amd64\zh-TW\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\de-DE\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\en-US\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\es-ES\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\fr-FR\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\it-IT\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ja-JP\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ko-KR\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\ru-RU\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-CN\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\AssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\comreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\Content.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\Cpp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\CSharp.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\CSharp.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\CSharp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\Debugger_General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\EmbeddedResource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\Folder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\General.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\General.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\General_File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\projectreference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\ResolvedAssemblyReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\ResolvedCOMReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\ResolvedProjectReference.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\Scc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\SpecialFolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\SubProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\VisualBasic.BrowseObject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\VisualBasic.ProjectItemsSchema.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tools\MSBuild\15.0\zh-TW\VisualBasic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -18,7 +18,7 @@ namespace OfficialPlugins.Compiler
     {
         public OutputType GetOutputType(string text)
         {
-            if(text.Contains(": warning CS"))
+            if(text.Contains("): warning CS"))
             {
                 return OutputType.Warning;
             }

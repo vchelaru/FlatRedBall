@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ProjectReference" DisplayName="Referencia de proyecto" PageTemplate="generic" Description="Propiedades de la referencia de proyecto" xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+    <Rule.DataSource>
+        <DataSource Persistence="ProjectFile" ItemType="ProjectReference" HasConfigurationCondition="False"/>
+    </Rule.DataSource>
+
+    <BoolProperty Name="ReferenceOutputAssembly" DisplayName="Ensamblado de salida de referencia" Description="Valor que indica si el compilador debe incluir una referencia al ensamblado de salida principal del proyecto de destino."/>
+
+    <BoolProperty Name="Private" DisplayName="Copia local" Description="Indica si la salida principal del destino de referencia se debe copiar en el directorio de salida de este proyecto cuando los metadatos están establecidos en una referencia sin resolver."/>
+
+    <BoolProperty Name="CopyLocalSatelliteAssemblies" DisplayName="Copiar ensamblados satélite locales" Description="Indica si los ensamblados satélite del destino de referencia se deben copiar en el directorio de salida de este proyecto."/>
+
+    <BoolProperty Name="LinkLibraryDependencies" Visible="False"/>
+
+    <BoolProperty Name="UseLibraryDependencyInputs" Visible="False"/>
+
+    <StringProperty Name="Project" Visible="False" Description="GUID que la solución usa para realizar un seguimiento de un destino de referencia de un proyecto individual."/>
+
+    <StringProperty Name="ReferencedProjectIdentifier" Visible="False" Description="Método empleado en VS2010 beta para almacenar el GUID que la solución usa para realizar un seguimiento de un destino de referencia de un proyecto individual."/>
+
+    <BoolProperty Name="CopyLocal" DisplayName="Copia local" Description="Indica si la referencia se copiará en el directorio de salida.">
+        <BoolProperty.DataSource>
+            <DataSource Persistence="ProjectFile" ItemType="ProjectReference" HasConfigurationCondition="False" PersistedName="Private"/>
+        </BoolProperty.DataSource>
+    </BoolProperty>
+</Rule>

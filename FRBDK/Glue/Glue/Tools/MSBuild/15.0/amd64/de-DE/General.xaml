@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationGeneral" DisplayName="Allgemein" PageTemplate="generic" Description="Allgemein" xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein" Description="Allgemein"/>
+  </Rule.Categories>
+
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="Configuration"/>
+  </Rule.DataSource>
+
+  <StringProperty Name="ApplicationIcon" DisplayName="Anwendungssymbol"/>
+  <StringListProperty Name="ProjectTypeGuids" Visible="False"/>
+  <StringProperty Name="ProjectGuid" Visible="False">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Globals" HasConfigurationCondition="False"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <DynamicEnumProperty Name="TargetFrameworkMoniker" DisplayName="Zielframeworkmoniker" EnumProvider="TargetFrameworkMoniker"/>
+  <StringProperty Name="TargetFrameworkIdentifier" Visible="False"/>
+  <StringProperty Name="TargetFrameworkVersion" Visible="False"/>
+  <StringProperty Name="TargetFrameworkProfile" Visible="False"/>
+  <StringProperty Name="TargetPath" Visible="False"/>
+  <StringProperty Name="DocumentationFile" DisplayName="XML-Dok-Kommentardatei"/>
+  <StringProperty Name="AssemblyName"/>
+  <StringProperty Name="Name" Visible="False"/>
+  <StringProperty Name="RootNamespace" DisplayName="Stammnamespace">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Configuration" HasConfigurationCondition="false"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="OutputName"/>
+  <StringProperty Name="OutputPath" Visible="False"/>
+  <EnumProperty Name="OutputType" Visible="False">
+    <EnumValue Name="dll" DisplayName="Klassenbibliothek"/>
+    <EnumValue Name="exe" DisplayName="Konsolenanwendung"/>
+    <EnumValue Name="winexe" DisplayName="Windows-Anwendung"/>
+  </EnumProperty>
+  <StringListProperty Name="AvailablePlatforms" Separator="," Visible="False"/>
+  <BoolProperty Name="Optimize" Description="Soll die Ausgabe vom Compiler optimiert werden?"/>
+  <StringProperty Name="MSBuildProjectDirectory" Visible="false"/>
+  <StringProperty Name="DefaultPlatform" Visible="false"/>
+  <StringProperty Name="PackageAction" Visible="false" Description="Das MSBuild-Ziel, das beim Verpacken eines Projekts verwendet werden soll."/>
+  <StringProperty Name="DefaultContentType" Visible="false" Description="Die standardmäßigen Inhaltstypnamen, die beim Hinzufügen von Dateien verwendet werden sollen."/>
+  <StringProperty Name="VCInstallDir" Visible="false"/>
+  <StringProperty Name="VSInstallDir" Visible="false"/>
+  <StringProperty Name="Platform" Visible="false"/>
+  <StringProperty Name="Configuration" Visible="false"/>
+  <StringProperty Name="DebuggerSymbolsPath" Visible="false"/>
+  <StringProperty Name="IntDir" Visible="false"/>
+  <StringProperty Name="TargetPlatformWinMDLocation" Visible="false"/>
+  <StringProperty Name="SDKReferenceDirectoryRoot" Visible="false"/>
+  <StringProperty Name="SDKReferenceRegistryRoot" Visible="false"/>
+  <StringProperty Name="TargetPlatformIdentifier" Visible="false"/>
+  <StringProperty Name="TargetPlatformVersion" Visible="false"/>
+  <BoolProperty Name="Immersive" Visible="false"/>
+  <StringProperty Name="AssemblySearchPaths"/>
+  <StringProperty Name="WinRTReferenceTabs" Visible="false"/>
+  <StringProperty Name="AssemblyReferenceTabs" Visible="false"/>
+  <BoolProperty Name="SuppressOutOfDateMessageOnBuild" Visible="false" Description="&quot;True&quot;, um veraltete Projekte einfach ohne Aufforderung des Benutzers zur Bestätigung zu erstellen."/>
+  <BoolProperty Name="ShowAllFiles" Visible="False">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="UserFile" HasConfigurationCondition="False"/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <BoolProperty Name="AutoRefresh" Visible="False">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="UserFile" HasConfigurationCondition="False"/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <StringProperty Name="TargetRuntime" Visible="False"/>
+  <StringProperty Name="FileName" DisplayName="Projektdatei" ReadOnly="True">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectFile"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="FullPath" DisplayName="Projektordner" ReadOnly="True">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectDirectory"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="LocalPath" ReadOnly="True" Visible="False">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" PersistedName="MSBuildProjectDirectory"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+</Rule>

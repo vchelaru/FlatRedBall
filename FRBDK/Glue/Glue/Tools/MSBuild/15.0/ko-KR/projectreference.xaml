@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ProjectReference" DisplayName="프로젝트 참조" PageTemplate="generic" Description="프로젝트 참조 속성" xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+    <Rule.DataSource>
+        <DataSource Persistence="ProjectFile" ItemType="ProjectReference" HasConfigurationCondition="False"/>
+    </Rule.DataSource>
+
+    <BoolProperty Name="ReferenceOutputAssembly" DisplayName="참조 출력 어셈블리" Description="컴파일러가 대상 프로젝트의 기본 출력 어셈블리에 참조를 포함해야 하는지 여부를 나타내는 값입니다."/>
+
+    <BoolProperty Name="Private" DisplayName="로컬 복사" Description="확인되지 않은 참조에 메타데이터가 설정되어 있을 때 참조 대상의 기본 출력을 이 프로젝트의 출력 디렉터리에 복사해야 하는지 여부를 나타냅니다."/>
+
+    <BoolProperty Name="CopyLocalSatelliteAssemblies" DisplayName="로컬 위성 어셈블리 복사" Description="참조 대상의 위성 어셈블리를 이 프로젝트의 출력 디렉터리에 복사해야 하는지 여부를 나타냅니다."/>
+
+    <BoolProperty Name="LinkLibraryDependencies" Visible="False"/>
+
+    <BoolProperty Name="UseLibraryDependencyInputs" Visible="False"/>
+
+    <StringProperty Name="Project" Visible="False" Description="솔루션이 개별 프로젝트 참조 대상을 추적할 때 사용하는 GUID"/>
+
+    <StringProperty Name="ReferencedProjectIdentifier" Visible="False" Description="솔루션이 개별 프로젝트 참조 대상을 추적할 때 사용하는 GUID를 저장하는 예전의(VS2010 베타) 방법"/>
+
+    <BoolProperty Name="CopyLocal" DisplayName="로컬 복사" Description="참조를 출력 디렉터리로 복사할지 여부를 나타냅니다.">
+        <BoolProperty.DataSource>
+            <DataSource Persistence="ProjectFile" ItemType="ProjectReference" HasConfigurationCondition="False" PersistedName="Private"/>
+        </BoolProperty.DataSource>
+    </BoolProperty>
+</Rule>
