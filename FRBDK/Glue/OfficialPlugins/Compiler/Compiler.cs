@@ -15,10 +15,10 @@ namespace OfficialPlugins.Compiler
     {
         List<string> AvailableLocations = new List<string>
         {
-            $@"{FileManager.GetDirectory(Assembly.GetEntryAssembly().Location)}Tools\MSBuild\15.0\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe",
             @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe",
+            $@"{FileManager.GetDirectory(Assembly.GetEntryAssembly().Location)}Tools\MSBuild\15.0\MSBuild.exe",
 
         };
         
@@ -46,7 +46,11 @@ namespace OfficialPlugins.Compiler
         internal void Compile(Action<string> printOutput, Action<string> printError, Action<bool> afterBuilt = null, 
             string configuration = "Debug")
         {
-            TaskManager.Self.AddAsyncTask(() =>
+            //string whyCantRun = GetWhyCantRun();
+            //do we actually want to do this ?
+
+
+           TaskManager.Self.AddAsyncTask(() =>
             {
                 var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
 
@@ -55,6 +59,22 @@ namespace OfficialPlugins.Compiler
                 afterBuilt?.Invoke(succeeded);
             },
             "Building project");
+        }
+
+        private string GetWhyCantRun()
+        {
+            string whyCantRun = null;
+
+            // check if .NET is installed:
+            const string dotNet452Directory = @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\";
+
+            var directoryExists = System.IO.Directory.Exists(dotNet452Directory);
+            if(directoryExists == false)
+            {
+                whyCantRun = $"Your computer is missing the .NET framework version 4.5.2. Searcing for it in the following location:\n{dotNet452Directory}";
+            }
+
+            return whyCantRun;
         }
 
         private bool RunMsBuildOnProject(Action<string> printOutput, Action<string> printError, string configuration, string projectFileName)

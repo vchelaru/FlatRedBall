@@ -39,4 +39,6 @@ using System.Runtime.InteropServices;
 //  - GlueView now remembers collapsed states.
 // 1.2.1.0
 //  - Cursor selection now prioritizes already-selected objects.
-[assembly: AssemblyVersion("1.2.1.0")]
+// 1.2.1.1
+//  - More MSBuild reference fixes
+[assembly: AssemblyVersion("1.2.1.1")]

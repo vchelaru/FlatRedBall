@@ -123,11 +123,11 @@ namespace GumPlugin.CodeGeneration
 
             GueDerivingClassCodeGenerator.Self.GenerateConstructor(standardElementSave, currentBlock, runtimeClassName);
 
-            string propertyName = CreateContainedObjectMembers(currentBlock, standardElementSave);
+            string containedGraphicalObjectName = CreateContainedObjectMembers(currentBlock, standardElementSave);
 
             GenerateStates(standardElementSave, currentBlock);
 
-            GenerateVariableProperties(standardElementSave, currentBlock, propertyName);
+            GenerateVariableProperties(standardElementSave, currentBlock, containedGraphicalObjectName);
 
             return true;
         }
@@ -137,8 +137,9 @@ namespace GumPlugin.CodeGeneration
             StateCodeGenerator.Self.GenerateEverythingFor(standardElementSave, currentBlock);
         }
 
-        private void GenerateVariableProperties(StandardElementSave standardElementSave, ICodeBlock currentBlock, string propertyName)
+        private void GenerateVariableProperties(StandardElementSave standardElementSave, ICodeBlock currentBlock, string containedGraphicalObjectName)
         {
+            // generate properties on the default state:
             foreach (var variable in standardElementSave.DefaultState.Variables)
             {
                 bool shouldGenerateVariable = GetIfShouldGenerateProperty(variable, standardElementSave);
@@ -146,8 +147,22 @@ namespace GumPlugin.CodeGeneration
                 if (shouldGenerateVariable)
                 {
 
-                    GenerateVariable(currentBlock, propertyName, variable, standardElementSave);
+                    GenerateVariable(currentBlock, containedGraphicalObjectName, variable, standardElementSave);
                 }
+            }
+
+            if(standardElementSave.Name == "Text")
+            {
+                // generate text-specific properties here:
+                GenerateVariable(currentBlock, containedGraphicalObjectName, 
+                    new VariableSave { Name = "BitmapFont", Type = "RenderingLibrary.Graphics.BitmapFont" }, 
+                    standardElementSave);
+                
+                GenerateVariable(currentBlock, containedGraphicalObjectName,
+                    new VariableSave { Name = "WrappedText", Type = "System.Collections.Generic.List<string>" },
+                    standardElementSave,
+                    generateSetter:false);
+
             }
         }
 
@@ -190,7 +205,8 @@ namespace GumPlugin.CodeGeneration
             return true;
         }
 
-        private void GenerateVariable(ICodeBlock currentBlock, string propertyName, Gum.DataTypes.Variables.VariableSave variable, ElementSave elementSave)
+        private void GenerateVariable(ICodeBlock currentBlock, string containedGraphicalObjectName, Gum.DataTypes.Variables.VariableSave variable, ElementSave elementSave, 
+            bool generateSetter = true)
         {
             #region Get Variable Type
             string variableType = variable.Type;
@@ -218,11 +234,14 @@ namespace GumPlugin.CodeGeneration
                 variableName = mStandardVariableNameAliases[variableName.Replace(" ", "")];
             }
 
-            string whatToGetOrSet = propertyName + "." + variableName.Replace(" ", "");
+            string whatToGetOrSet = containedGraphicalObjectName + "." + variableName.Replace(" ", "");
 
-            GenerateGetter(propertyName, variable, property, variableName, whatToGetOrSet, elementSave);
+            GenerateGetter(containedGraphicalObjectName, variable, property, variableName, whatToGetOrSet, elementSave);
 
-            GenerateSetter(propertyName, variable, property, variableName, whatToGetOrSet, elementSave);
+            if(generateSetter)
+            {
+                GenerateSetter(containedGraphicalObjectName, variable, property, variableName, whatToGetOrSet, elementSave);
+            }
         }
 
         private void GenerateSetter(string propertyName, VariableSave variable, ICodeBlock property, string variableName, string whatToGetOrSet, ElementSave elementSave)
