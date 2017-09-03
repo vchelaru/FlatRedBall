@@ -1161,7 +1161,7 @@ namespace FlatRedBall.Glue.FormHelpers
                                 // this could happen at the same time as file flushing, which can cause locks.  Therefore we need to add this as a task:
                                 TaskManager.Self.AddSync(() =>
                                 {
-                                    GluxCommands.Self.RemoveReferencedFile(toRemove, filesToRemove, saveAndRegenerate);
+                                    GluxCommands.Self.RemoveReferencedFile(toRemove, filesToRemove, regenerateCode:true);
                                     PluginManager.ReactToFileRemoved(element, toRemove);
 
                                 },

@@ -128,7 +128,9 @@ namespace GumPlugin
             //  - Added GraphicalUiElement.GetAbsoluteWidth and GetAbsoluteHeight
             // 0.8.8.0
             // - Plugin no longer crashes if there is a missing screen file
-            get { return new Version(0, 8, 8, 0); }
+            // 0.8.8.1
+            // - Added TextRuntime.WrappedLines and TextRuntime.BitmapFont
+            get { return new Version(0, 8, 8, 1); }
         }
 
         #endregion

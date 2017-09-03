@@ -41,7 +41,9 @@ namespace OfficialPlugins.MonoGameContent
         {
             get
             {
-                return new Version(1, 0, 0);
+                // 1.1.0:
+                //  - Fixed bugs bug where adding a new file to an Android primary project would not refresh the csproj
+                return new Version(1, 1, 0);
             }
         }
 
@@ -161,22 +163,17 @@ namespace OfficialPlugins.MonoGameContent
         private void HandleNewFile(ReferencedFileSave newFile)
         {
 
-            if(GetIfShouldBuild( GlueState.Self.CurrentMainProject ))
+            if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( GlueState.Self.CurrentMainProject ))
             {
                 BuildLogic.Self.TryHandleReferencedFile(GlueState.Self.CurrentMainProject, newFile);
             }
             foreach(var project in GlueState.Self.SyncedProjects)
             {
-                if(GetIfShouldBuild( project ))
+                if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( project ))
                 {
                     BuildLogic.Self.TryHandleReferencedFile(project, newFile);
                 }
             }
-        }
-
-        private bool GetIfShouldBuild(ProjectBase project)
-        {
-            return project is DesktopGlProject;
         }
 
         private void HandleLoadedGlux()

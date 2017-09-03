@@ -36,8 +36,7 @@ namespace OfficialPlugins.MonoGameContent
 
             allReferencedFileSaves = allReferencedFileSaves.Distinct((a, b) => a.Name == b.Name).ToList();
 
-            bool needsMonoGameFilesBuilt = project is DesktopGlProject ||
-                project is AndroidProject;
+            bool needsMonoGameFilesBuilt = GetIfNeedsMonoGameFilesBuilt(project);
 
             if (needsMonoGameFilesBuilt)
             {
@@ -51,6 +50,15 @@ namespace OfficialPlugins.MonoGameContent
             }
 
             //foreach (var file in GlueState.Self.CurrentGlueProject.GetAllReferencedFiles())
+        }
+
+        public static bool GetIfNeedsMonoGameFilesBuilt(ProjectBase project)
+        {
+            return project is DesktopGlProject ||
+                project is AndroidProject 
+                // todo: need to support iOS
+                ;
+
         }
 
 

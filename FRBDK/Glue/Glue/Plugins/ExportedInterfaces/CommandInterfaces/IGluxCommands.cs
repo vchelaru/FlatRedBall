@@ -3,6 +3,7 @@ using EditorObjects.SaveClasses;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
+using System.Collections.Generic;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -35,6 +36,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             AddObjectViewModel addObjectViewModel);
 
         ValidationResponse AddNewCustomClass(string className, out CustomClassSave customClassSave);
+
+        void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove);
+        void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode);
+
 
         void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value);
         void SaveSettings();

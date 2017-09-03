@@ -100,35 +100,45 @@ namespace OfficialPlugins.VariableDisplay
             {
                 foreach(var variableDefinition in ati.VariableDefinitions)
                 {
+                    bool fallBackToTypedMember = false;
                     try
                     {
                         var type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
                         TypedMemberBase typedMember = null;
 
-
-                        typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
-
-                        InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati);
-
-
-                        if (instanceMember != null)
+                        if(type == null)
                         {
-                            var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember);
-                            categoryToAddTo.Members.Add(instanceMember);
+                            fallBackToTypedMember = true;
+                        }
+                        else
+                        {
+                            typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
+
+                            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati);
+
+
+                            if (instanceMember != null)
+                            {
+                                var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember);
+                                categoryToAddTo.Members.Add(instanceMember);
+                            }
                         }
                     }
                     catch
+                    {
+                        fallBackToTypedMember = true;
+                    }
+
+                    if(fallBackToTypedMember)
                     {
                         // this new code isn't working with some things like generics. Until I fix that, let's fall back:
 
                         var typedMember = instance.TypedMembers.FirstOrDefault(item => item.MemberName == variableDefinition.Name);
 
-                        if(typedMember != null)
+                        if (typedMember != null)
                         {
                             AddForTypedMember(instance, container, categories, ati, typedMember);
                         }
-
-
                     }
                 }
             }
