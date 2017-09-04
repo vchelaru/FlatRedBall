@@ -43,7 +43,10 @@ namespace OfficialPlugins.MonoGameContent
             {
                 // 1.1.0:
                 //  - Fixed bugs bug where adding a new file to an Android primary project would not refresh the csproj
-                return new Version(1, 1, 0);
+                // 1.2.0:
+                //  - Fixed generation of parameters for wavs
+                //  - Output is now shown in the output window, including as errors if it's an error.
+                return new Version(1, 2, 0);
             }
         }
 

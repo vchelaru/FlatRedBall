@@ -304,10 +304,21 @@ namespace OfficialPlugins.MonoGameContent
                 }
             }
 
+            bool builtCorrectly = process.ExitCode == 0;
+
             string str;
             while ((str = process.StandardOutput.ReadLine()) != null)
             {
-                GlueCommands.Self.PrintOutput(str);
+                // Currently the content pipeline prints errors as normal output instead of error.
+                // We can look at the error code to see if it's an error or not.
+                if(builtCorrectly)
+                {
+                    GlueCommands.Self.PrintOutput(str);
+                }
+                else
+                {
+                    GlueCommands.Self.PrintError(str);
+                }
             }
 
             while ((str = process.StandardError.ReadLine()) != null)
