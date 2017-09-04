@@ -288,13 +288,36 @@ namespace OfficialPlugins.MonoGameContent
 
             process.Start();
 
-            var errorString = process.StandardError.ReadToEnd() + "\n\n" + process.StandardOutput.ReadToEnd();
             PluginManager.ReceiveOutput($"Building: {commandLineBuildExe} {commandLine}");
 
             while (process.HasExited == false)
             {
                 System.Threading.Thread.Sleep(100);
+
+                while (!process.StandardOutput.EndOfStream)
+                {
+                    var line = process.StandardOutput.ReadLine();
+                    if (!string.IsNullOrEmpty(line))
+                    {
+                        GlueCommands.Self.PrintOutput(line);
+                    }
+                }
             }
+
+            string str;
+            while ((str = process.StandardOutput.ReadLine()) != null)
+            {
+                GlueCommands.Self.PrintOutput(str);
+            }
+
+            while ((str = process.StandardError.ReadLine()) != null)
+            {
+                GlueCommands.Self.PrintError(str);
+            }
+
+
+
+
         }
 
 

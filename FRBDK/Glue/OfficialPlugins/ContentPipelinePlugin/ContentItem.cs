@@ -73,7 +73,7 @@ namespace OfficialPlugins.MonoGameContent
             stringBuilder.Append($"/outputDir:{OutputDirectory} /intermediateDir:{IntermediateDirectory} /platform:{Platform} /importer:{Importer} /processor:{Processor} ");
             foreach(var parameter in ProcessorParameters)
             {
-                stringBuilder.Append($"/processorParam:{ProcessorParameters} ");
+                stringBuilder.Append($"/processorParam:{parameter} ");
             }
 
             // iOS and Android have case sensitive file systems, so we'll to-lower it here

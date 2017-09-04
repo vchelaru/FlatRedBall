@@ -31,6 +31,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             PluginManager.ReceiveOutput(output);
         }
 
+
+        public void PrintError(string output)
+        {
+            PluginManager.ReceiveError(output);
+        }
+
         public void DoOnUiThread(Action action)
         {
             MainGlueWindow.Self.Invoke(action);
