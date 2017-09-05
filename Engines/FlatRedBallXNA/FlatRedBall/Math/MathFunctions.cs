@@ -483,19 +483,13 @@ namespace FlatRedBall.Math
 
                 float halfOrthoWidth = camera.OrthogonalWidth / 2.0f;
                 float halfOrthoHeight = camera.OrthogonalHeight / 2.0f;
-#if FRB_MDX
-                ray.Direction = camera.RotationMatrix.Forward();
-                // This may not account for the up vector...need to consider that!
-                ray.Position += normalizedX * camera.RotationMatrix.Right() * halfOrthoWidth;
-                ray.Position += normalizedY * camera.RotationMatrix.Up() * halfOrthoHeight;
-#else
+
                 Matrix rotationMatrix = Matrix.Invert(camera.GetLookAtMatrix(true));
 
                 ray.Direction = rotationMatrix.Forward;
                 // This may not account for the up vector...need to consider that!
                 ray.Position += normalizedX * rotationMatrix.Right * halfOrthoWidth;
                 ray.Position += normalizedY * rotationMatrix.Up * halfOrthoHeight;
-#endif
             }
             else
             {
@@ -513,7 +507,19 @@ namespace FlatRedBall.Math
                 // applied when rendering.  This fixes some ray casting
                 // issues; however, this may need to be migrated above to
                 // the 2D case as well.
-                Matrix rotationMatrix = Matrix.Invert(camera.GetLookAtMatrix(true));
+                //Matrix rotationMatrix = Matrix.Invert(camera.GetLookAtMatrix(false));
+
+                Vector3 cameraTarget = camera.RotationMatrix.Forward;
+
+                Matrix rotationMatrix;
+                var position = Vector3.Zero;
+                Matrix.CreateLookAt(
+                    ref position, // Position of the camera eye
+                    ref cameraTarget,  // Point that the eye is looking at
+                    ref camera.UpVector,
+                    out rotationMatrix);
+
+                rotationMatrix = Matrix.Invert(rotationMatrix);
 
                 MathFunctions.TransformVector(ref untranslatedRelative, ref rotationMatrix);
 
@@ -695,13 +701,9 @@ namespace FlatRedBall.Math
                 #region Do a 3D test since the object might be rotated on all axes
 
                 Vector3 topEdge = new Vector3(1, 0, 0); Vector3 leftEdge = new Vector3(0, -1, 0);
-#if FRB_MDX
-                topEdge.TransformCoordinate(objectToTest.RotationMatrix);
-                leftEdge.TransformCoordinate(objectToTest.RotationMatrix);
-#else
+
                 topEdge = Vector3.Transform(topEdge, objectToTest.RotationMatrix);
                 leftEdge = Vector3.Transform(leftEdge, objectToTest.RotationMatrix);
-#endif
 
                 Vector3 planeNormal = Vector3.Cross(leftEdge, topEdge);
                 Plane spritePlane;
@@ -714,14 +716,9 @@ namespace FlatRedBall.Math
                 float zTCoefLine = mouseRay.Direction.Z;
 
 
-#if FRB_MDX
-                double t = (spritePlane.D - spritePlane.A * mouseRay.Position.X - spritePlane.B * mouseRay.Position.Y - spritePlane.C * mouseRay.Position.Z) /
-                    (spritePlane.A * xTCoefLine + spritePlane.B * yTCoefLine + spritePlane.C * zTCoefLine);
-
-#else
                 double t = (spritePlane.D - spritePlane.Normal.X * mouseRay.Position.X - spritePlane.Normal.Y * mouseRay.Position.Y - spritePlane.Normal.Z * mouseRay.Position.Z) /
                     (spritePlane.Normal.X * xTCoefLine + spritePlane.Normal.Y * yTCoefLine + spritePlane.Normal.Z * zTCoefLine);
-#endif
+
 
                 double xIntersect = mouseRay.Position.X + t * xTCoefLine;
                 double yIntersect = mouseRay.Position.Y + t * yTCoefLine;

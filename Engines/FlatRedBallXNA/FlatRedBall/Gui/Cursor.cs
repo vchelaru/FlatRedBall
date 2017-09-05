@@ -1115,12 +1115,7 @@ namespace FlatRedBall.Gui
             }
 #endif
 
-#if FRB_MDX
-            return MathFunctions.GetRay(mScreenX, mScreenY, 1, SpriteManager.Camera);
-#else
-
             return MathFunctions.GetRay(mScreenX, mScreenY, 1, this.mCamera);
-#endif
         }
 
 
@@ -2296,7 +2291,13 @@ namespace FlatRedBall.Gui
         }
 
 #endif
-
+        /// <summary>
+        /// Returns the X world coordinate of the cursor at the argument Z position. 
+        /// This method requires a Z value to properly work with perspective cameras.
+        /// This method assumes an unrotated camera.
+        /// </summary>
+        /// <param name="zPosition">The world Z to check at.</param>
+        /// <returns>The world X coordinate.</returns>
         public float WorldXAt(float zPosition)
         {
             return Camera.WorldXAt(this.ScreenX, zPosition, Camera.Orthogonal, Camera.OrthogonalWidth);
@@ -2318,7 +2319,13 @@ namespace FlatRedBall.Gui
             return camera.WorldXAt(zPosition, orthogonal, orthogonalWidth, screenRelativeX);
         }
         
-
+        /// <summary>
+        /// Returns the Y world coordiante of the cursor at the argument Z position.
+        /// This method requires a Z value to properly work with perspective cameras.
+        /// This method assumes an unrotated camera.
+        /// </summary>
+        /// <param name="zPosition">The world Z to check at.</param>
+        /// <returns>The world Y coordiante.</returns>
         public float WorldYAt(float zPosition)
         {
             return mCamera.WorldYAt(ScreenY, zPosition, mCamera.Orthogonal, mCamera.OrthogonalHeight);
