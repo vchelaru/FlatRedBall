@@ -129,11 +129,11 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
             foreach (var referencedPng in referencedPngs)
             {
-                BuildLogic.Self.TryAddXnbReferencesAndBuild(referencedPng, mainProject, save: false);
+                BuildLogic.Self.TryAddXnbReferencesAndBuild(referencedPng, mainProject, saveProjectAfterAdd: false);
 
                 foreach (var project in syncedProjects)
                 {
-                    BuildLogic.Self.TryAddXnbReferencesAndBuild(referencedPng, project, save: false);
+                    BuildLogic.Self.TryAddXnbReferencesAndBuild(referencedPng, project, saveProjectAfterAdd: false);
                 }
             }
         }

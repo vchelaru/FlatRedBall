@@ -18,7 +18,7 @@ namespace OfficialPlugins.MonoGameContent
         const string commandLineBuildExe =
             @"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
 
-        public void RefreshBuiltFilesFor(ProjectBase project)
+        public void RefreshBuiltFilesFor(ProjectBase project, bool forcePngsToContentPipeline)
         {
 
 
@@ -41,11 +41,11 @@ namespace OfficialPlugins.MonoGameContent
             if (needsMonoGameFilesBuilt)
             {
 
-                var filesToBeBuilt = allReferencedFileSaves.Where(item => IsBuiltByContentPipeline(item)).ToList();
+                var filesToBeBuilt = allReferencedFileSaves.Where(item => IsBuiltByContentPipeline(item, forcePngsToContentPipeline)).ToList();
 
-                foreach (var musicFile in filesToBeBuilt)
+                foreach (var fileToBeBuilt in filesToBeBuilt)
                 {
-                    TryHandleReferencedFile(project, musicFile);
+                    TryHandleReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline);
                 }
             }
 
@@ -62,9 +62,9 @@ namespace OfficialPlugins.MonoGameContent
         }
 
 
-        public void TryHandleReferencedFile(ProjectBase project, ReferencedFileSave referencedFile)
+        public void TryHandleReferencedFile(ProjectBase project, ReferencedFileSave referencedFile, bool forcePngsToContentPipeline)
         {
-            bool isBuilt = IsBuiltByContentPipeline(referencedFile);
+            bool isBuilt = IsBuiltByContentPipeline(referencedFile, forcePngsToContentPipeline);
 
             if(isBuilt)
             {
@@ -76,6 +76,22 @@ namespace OfficialPlugins.MonoGameContent
 
             }
         }
+
+        public void TryHandleReferencedFile(ProjectBase project, string absoluteFile, bool forcePngsToContentPipeline)
+        {
+            bool isBuilt = IsBuiltByContentPipeline(absoluteFile, false, forcePngsToContentPipeline);
+
+            if (isBuilt)
+            {
+                TryAddXnbReferencesAndBuild(absoluteFile, project, saveProjectAfterAdd: true);
+            }
+            else
+            {
+                TryRemoveXnbReferences(project, absoluteFile, save: true);
+
+            }
+        }
+
 
         private void TryRemoveXnbReferences(ProjectBase project, ReferencedFileSave referencedFile)
         {
@@ -217,7 +233,7 @@ namespace OfficialPlugins.MonoGameContent
 
         }
 
-        public void TryAddXnbReferencesAndBuild(string fullFileName, ProjectBase project, bool save)
+        public void TryAddXnbReferencesAndBuild(string fullFileName, ProjectBase project, bool saveProjectAfterAdd)
         {
             var contentDirectory = GlueState.Self.ContentDirectory;
 
@@ -259,7 +275,7 @@ namespace OfficialPlugins.MonoGameContent
                             AddFileToProject(project,
                                 absoluteToAddNoExtension + "." + extension,
                                 relativeToAddNoExtension + "." + extension,
-                                save);
+                                saveProjectAfterAdd);
 
                         }
                     }
@@ -332,9 +348,14 @@ namespace OfficialPlugins.MonoGameContent
         }
 
 
-        private bool IsBuiltByContentPipeline(ReferencedFileSave file)
+        private bool IsBuiltByContentPipeline(ReferencedFileSave file, bool forcePngsToContentPipeline)
         {
-            string extension = FileManager.GetExtension(file.Name);
+            return IsBuiltByContentPipeline(file.Name, file.UseContentPipeline, forcePngsToContentPipeline);
+        }
+
+        private bool IsBuiltByContentPipeline(string fileName, bool rfsUseContentPipeline, bool forcePngsToContentPipeline)
+        {
+            string extension = FileManager.GetExtension(fileName);
 
             bool isRequired = extension == "mp3" ||
                 extension == "ogg" ||
@@ -344,14 +365,14 @@ namespace OfficialPlugins.MonoGameContent
             {
                 return true;
             }
-            else if (file.UseContentPipeline)
+            else if (rfsUseContentPipeline || forcePngsToContentPipeline)
             {
                 return extension == "png";
             }
             return false;
         }
 
-        private void AddFileToProject(ProjectBase project, string absoluteFile, string link, bool save)
+        private void AddFileToProject(ProjectBase project, string absoluteFile, string link, bool saveProjectAfterAdd)
         {
             //project.AddContentBuildItem(file, SyncedProjectRelativeType.Linked, false);
 
@@ -370,7 +391,7 @@ namespace OfficialPlugins.MonoGameContent
                 link = project.ProcessLink(link);
                 item.SetLink(link.Replace("/", "\\"));
 
-                if(save)
+                if(saveProjectAfterAdd)
                 {
                     GlueCommands.Self.TryMultipleTimes(project.Save, 5);
                 }

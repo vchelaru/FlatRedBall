@@ -1921,6 +1921,10 @@ namespace FlatRedBall.Glue.Plugins
                     }
                     catch (Exception e)
                     {
+                        var version = container.Plugin.Version;
+
+                        message = $"{container.Name} Version {version} {message}";
+
                         container.Fail(e, message);
 
                         ReceiveError(message + "\n" + e.ToString());
@@ -1930,26 +1934,8 @@ namespace FlatRedBall.Glue.Plugins
                 }
                 else
                 {
-                    if (mMenuStrip.IsDisposed == false)
-                    {
                         // Do this on a UI thread
-                        mMenuStrip.Invoke((MethodInvoker)delegate
-                        {
-                            try
-                            {
-                                action();
-                            }
-                            catch (Exception e)
-                            {
-                                container.Fail(e, message);
-
-                                ReceiveError(message + "\n" + e.ToString());
-
-
-                            }
-                        });
-                    }
-                    else
+                    mMenuStrip.Invoke((MethodInvoker)delegate
                     {
                         try
                         {
@@ -1957,13 +1943,17 @@ namespace FlatRedBall.Glue.Plugins
                         }
                         catch (Exception e)
                         {
+                            var version = container.Plugin.Version;
+
+                            message = $"{container.Name} Version {version} {message}";
+
                             container.Fail(e, message);
 
                             ReceiveError(message + "\n" + e.ToString());
 
 
                         }
-                    }
+                    });
                 }
             }
             else

@@ -43,6 +43,10 @@ namespace OfficialPlugins.ContentPipelinePlugin
                 
      
             }, "Generating FileAliases for content pipeline.");
+
+            // This may be the first time the user has set to use content pipeline, so re-gen global content
+            TaskManager.Self.AddSync(GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode,
+                "Generateing global content code");
         }
 
         private static string GetFileAliasLogicFileContents(bool isUsingContentPipeline)

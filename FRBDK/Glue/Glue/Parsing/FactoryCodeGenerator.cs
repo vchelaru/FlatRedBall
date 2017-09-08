@@ -460,6 +460,8 @@ namespace FlatRedBall.Glue.Parsing
 
             ICodeBlock codeBlock = new CodeDocument();
 
+            codeBlock.Line("public static FlatRedBall.Math.Axis? SortAxis { get; set;}");
+
             GetCreateNewFactoryMethod(codeBlock, factoryClassName, poolObjects, baseClassName);
             codeBlock._();
             GetInitializeFactoryMethod(codeBlock, className, poolObjects, "mScreenListReference");
@@ -486,12 +488,12 @@ namespace FlatRedBall.Glue.Parsing
 
             // no tabs needed on first line
             codeBlock
-                .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "")
-                    .Line("return CreateNew(null);")
+                .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "float x = 0, float y = 0")
+                    .Line("return CreateNew(null, x, y);")
                 .End();
 
             codeBlock = codeBlock
-                .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Layer layer")
+                .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Layer layer, float x = 0, float y = 0")
                     .If("string.IsNullOrEmpty(mContentManagerName)")
                         .Line("throw new System.Exception(\"You must first initialize the factory to use it. You can either add PositionedObjectList of type " +
                             className + " (the most common solution) or call Initialize in custom code\");")
@@ -516,6 +518,9 @@ namespace FlatRedBall.Glue.Parsing
                     .Line("instance.AddToManagers(layer);");
             }
 
+            codeBlock.Line("instance.X = x;");
+            codeBlock.Line("instance.Y = y;");
+
             CreateAddToListIfNotNullCode(codeBlock, "mScreenListReference");
 
             if (!string.IsNullOrEmpty(baseEntityName))
@@ -537,7 +542,16 @@ namespace FlatRedBall.Glue.Parsing
         {
             codeBlock
                 .If(listName + " != null")
-                    .Line(listName + ".Add(instance);")
+                    .If("SortAxis == FlatRedBall.Math.Axis.X")
+                        .Line("var index = mScreenListReference.GetFirstAfter(x, Axis.X, 0, mScreenListReference.Count);")
+                        .Line("mScreenListReference.Insert(index, instance);")
+                    .End().ElseIf("SortAxis == FlatRedBall.Math.Axis.Y")
+                        .Line("var index = mScreenListReference.GetFirstAfter(y, Axis.Y, 0, mScreenListReference.Count);")
+                        .Line("mScreenListReference.Insert(index, instance);")
+                    .End().Else()
+                        .Line("// Sort Z not supported")
+                        .Line(listName + ".Add(instance);")
+                    .End()
                 .End();
 
             return codeBlock;
@@ -551,6 +565,7 @@ namespace FlatRedBall.Glue.Parsing
                 .Function("public static void", "Destroy", "")
                     .Line("mContentManagerName = null;")
                     .Line("mScreenListReference = null;")
+                    .Line("SortAxis = null;")
                     .Line("mPool.Clear();")
                     .Line("EntitySpawned = null;")
                 .End();

@@ -46,6 +46,8 @@ namespace OfficialPlugins.MonoGameContent
                 // 1.2.0:
                 //  - Fixed generation of parameters for wavs
                 //  - Output is now shown in the output window, including as errors if it's an error.
+                // 1.3.0
+                //  - If a file changes, the plugin will attempt to rebuild it - even if it's not a RFS
                 return new Version(1, 2, 0);
             }
         }
@@ -154,12 +156,18 @@ namespace OfficialPlugins.MonoGameContent
             if(memberName == nameof(ReferencedFileSave.UseContentPipeline))
             {
                 var rfs = GlueState.Self.CurrentReferencedFileSave;
-                BuildLogic.Self.TryHandleReferencedFile(GlueState.Self.CurrentMainProject, rfs);
 
-                foreach(var syncedProject in GlueState.Self.SyncedProjects)
-                {
-                    BuildLogic.Self.TryHandleReferencedFile(syncedProject, rfs);
-                }
+                HandleRfsChange(rfs);
+            }
+        }
+
+        private void HandleRfsChange(ReferencedFileSave rfs)
+        {
+            BuildLogic.Self.TryHandleReferencedFile(GlueState.Self.CurrentMainProject, rfs, viewModel.UseContentPipelineOnPngs);
+
+            foreach (var syncedProject in GlueState.Self.SyncedProjects)
+            {
+                BuildLogic.Self.TryHandleReferencedFile(syncedProject, rfs, viewModel.UseContentPipelineOnPngs);
             }
         }
 
@@ -168,13 +176,13 @@ namespace OfficialPlugins.MonoGameContent
 
             if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( GlueState.Self.CurrentMainProject ))
             {
-                BuildLogic.Self.TryHandleReferencedFile(GlueState.Self.CurrentMainProject, newFile);
+                BuildLogic.Self.TryHandleReferencedFile(GlueState.Self.CurrentMainProject, newFile, viewModel.UseContentPipelineOnPngs);
             }
             foreach(var project in GlueState.Self.SyncedProjects)
             {
                 if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( project ))
                 {
-                    BuildLogic.Self.TryHandleReferencedFile(project, newFile);
+                    BuildLogic.Self.TryHandleReferencedFile(project, newFile, viewModel.UseContentPipelineOnPngs);
                 }
             }
         }
@@ -188,17 +196,36 @@ namespace OfficialPlugins.MonoGameContent
             {
                 aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
             }
-            BuildLogic.Self.RefreshBuiltFilesFor(GlueState.Self.CurrentMainProject);
+            BuildLogic.Self.RefreshBuiltFilesFor(GlueState.Self.CurrentMainProject, viewModel.UseContentPipelineOnPngs);
         }
 
         private void HandleLoadedSyncedProject(ProjectBase project)
         {
-            BuildLogic.Self.RefreshBuiltFilesFor(project);
+            BuildLogic.Self.RefreshBuiltFilesFor(project, viewModel.UseContentPipelineOnPngs);
         }
 
         private void HandleFileChanged(string fileName)
         {
             aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
+
+            // See if it's a ReferencedFileSave. If so, we might want to look at that for additional properties
+            var rfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GetReferencedFileSaveFromFile(fileName);
+
+            if(rfs != null)
+            {
+                HandleRfsChange(rfs);
+            }
+            else
+            {
+                BuildLogic.Self.TryHandleReferencedFile(GlueState.Self.CurrentMainProject, fileName, viewModel.UseContentPipelineOnPngs);
+
+                foreach (var syncedProject in GlueState.Self.SyncedProjects)
+                {
+                    BuildLogic.Self.TryHandleReferencedFile(syncedProject, fileName, viewModel.UseContentPipelineOnPngs);
+                }
+
+            }
+
         }
     }
 }
