@@ -9,6 +9,7 @@ using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using WpfDataUi;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -62,7 +63,7 @@ namespace OfficialPlugins.VariableDisplay
         {
             if(GlueState.Self.CurrentNamedObjectSave != null)
             {
-                HandleNamedObjectSelect();
+                HandleNamedObjectSelect(GlueState.Self.CurrentNamedObjectSave);
             }
             else if(GlueState.Self.CurrentStateSave != null || GlueState.Self.CurrentStateSaveCategory != null)
             {
@@ -87,34 +88,78 @@ namespace OfficialPlugins.VariableDisplay
 
         private void ShowVariablesForCurrentElement()
         {
-            AddOrShowGrid();
-
-
             if (showSettings)
             {
+                AddOrShowSettingsGrid();
                 settingsGrid.Instance = GlueState.Self.CurrentElement;
             }
 
+            AddOrShowVariableGrid();
             variableGrid.Instance = GlueState.Self.CurrentElement;
-
             ElementVariableShowingLogic.UpdateShownVariables(variableGrid, GlueState.Self.CurrentElement);
         }
 
-        private void HandleNamedObjectSelect()
+        private void HandleNamedObjectSelect(NamedObjectSave namedObject)
         {
-            AddOrShowGrid();
 
             if (showSettings)
             {
-                settingsGrid.Instance = GlueState.Self.CurrentNamedObjectSave;
+                AddOrShowSettingsGrid();
+                settingsGrid.Instance = namedObject;
             }
-            variableGrid.Instance = GlueState.Self.CurrentNamedObjectSave;
 
-            NamedObjectVariableShowingLogic.UpdateShownVariables(variableGrid, GlueState.Self.CurrentNamedObjectSave,
-                GlueState.Self.CurrentElement);
+
+            // If we are showing a NOS that comes from a file, don't show the grid.
+            // Old Glue used to show the grid, but this introduces problems:
+            // 1. This means that the variable showing code has to look at the file to
+            //    get current values, rather than just at the ATI. This means we need new
+            //    functionality in the plugin class for pulling values from files. 
+            // 2. The plugin class has to do some kind of intelligent caching to prevent
+            //    hitting the disk for every property (which would be slow). 
+            // 3. The plugin will also have to respond to file changes and refresh the grid.
+            // 4. This may confuse users who are expecting the changes in Glue to modify the original
+            //    file, instead of them understanding that Glue overrides the file. 
+            // I think I'm going to keep it simple and only show the grid if it doesn't come from file:
+            bool shouldShowVariables = namedObject.SourceType != SourceType.File;
+
+            if(namedObject.SourceType == SourceType.File)
+            {
+                if(variableGrid != null)
+                {
+                    variableGrid.Visibility = System.Windows.Visibility.Collapsed;
+                }
+                if(variableTab != null)
+                {
+                    RemoveTab(variableTab);
+                }
+            }
+            else
+            {
+                AddOrShowVariableGrid();
+                variableGrid.Instance = namedObject;
+                variableGrid.Visibility = System.Windows.Visibility.Visible;
+
+                NamedObjectVariableShowingLogic.UpdateShownVariables(variableGrid, namedObject,
+                    GlueState.Self.CurrentElement);
+            }
         }
 
-        private void AddOrShowGrid()
+        private void AddOrShowSettingsGrid()
+        {
+            if(settingsGrid == null)
+            {
+
+                settingsGrid = new DataUiGrid();
+                settingsTab = this.AddToTab(PluginManager.CenterTab, settingsGrid, "Settings");
+                settingsTab.DrawX = false;
+            }
+            else
+            {
+                this.ShowTab(settingsTab);
+            }
+        }
+
+        private void AddOrShowVariableGrid()
         {
             if(variableGrid == null)
             {
@@ -129,21 +174,10 @@ namespace OfficialPlugins.VariableDisplay
                 tabControl.SelectedTab = variableTab;
                 // This makes it the last tab clicked, which gives it priority:
                 variableTab.LastTimeClicked = DateTime.Now;
-
-                if (showSettings)
-                {
-                    settingsGrid = new DataUiGrid();
-                    settingsTab = this.AddToTab(PluginManager.CenterTab, settingsGrid, "Settings");
-                    settingsTab.DrawX = false;
-                }
             }
             else
             {
                 this.ShowTab(variableTab);
-                if (showSettings)
-                {
-                    this.ShowTab(settingsTab);
-                }
             }
         }
     }
