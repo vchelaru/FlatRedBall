@@ -540,6 +540,10 @@
     <Compile Include="Entities\PooledDontInheritFromThis.Generated.cs">
       <DependentUpon>PooledDontInheritFromThis.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\PooledWithInternalList.cs" />
+    <Compile Include="Entities\PooledWithInternalList.Generated.cs">
+      <DependentUpon>PooledWithInternalList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\PositionedEntity.cs" />
     <Compile Include="Entities\PositionedEntity.Generated.cs">
       <DependentUpon>PositionedEntity.cs</DependentUpon>
@@ -704,6 +708,7 @@
     <Compile Include="Factories\FactoryEntityFactory.Generated.cs" />
     <Compile Include="Factories\IWindowDerivedFromNoIWindowFactory.Generated.cs" />
     <Compile Include="Factories\PooledDontInheritFromThisFactory.Generated.cs" />
+    <Compile Include="Factories\PooledWithInternalListFactory.Generated.cs" />
     <Compile Include="Factories\PositioningEntityFactory.Generated.cs" />
     <Compile Include="Factories\RecyclableEntityFactory.Generated.cs" />
     <Compile Include="Factories\ShapeEntityCreatedByOtherEntitiesFactory.Generated.cs" />

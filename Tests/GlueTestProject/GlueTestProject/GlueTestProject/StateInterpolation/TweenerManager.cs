@@ -10,7 +10,7 @@ using System.Text;
 
 namespace StateInterpolationPlugin
 {
-    public class TweenerManager : IManager
+    public partial class TweenerManager : IManager
     {
         List<Tweener> mTweeners;
 

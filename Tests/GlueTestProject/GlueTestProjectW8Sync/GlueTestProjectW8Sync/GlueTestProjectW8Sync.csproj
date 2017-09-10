@@ -889,6 +889,13 @@
       <Link>Entities\PooledDontInheritFromThis.Generated.cs</Link>
       <DependentUpon>PooledDontInheritFromThis.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PooledWithInternalList.cs">
+      <Link>Entities\PooledWithInternalList.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PooledWithInternalList.Generated.cs">
+      <Link>Entities\PooledWithInternalList.Generated.cs</Link>
+      <DependentUpon>PooledWithInternalList.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PositionedEntity.cs">
       <Link>Entities\PositionedEntity.cs</Link>
     </Compile>
@@ -1200,6 +1207,9 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\PooledDontInheritFromThisFactory.Generated.cs">
       <Link>Factories\PooledDontInheritFromThisFactory.Generated.cs</Link>
       <DependentUpon>PooledDontInheritFromThisFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\PooledWithInternalListFactory.Generated.cs">
+      <Link>Factories\PooledWithInternalListFactory.Generated.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\PositioningEntityFactory.Generated.cs">
       <Link>Factories\PositioningEntityFactory.Generated.cs</Link>
