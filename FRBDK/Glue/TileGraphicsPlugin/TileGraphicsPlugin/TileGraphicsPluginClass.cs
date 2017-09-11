@@ -82,7 +82,9 @@ namespace TileGraphicsPlugin
             // - Fixed crash thich can occur sometimes when clicking on a TMX file due to a collection changed 
             // 1.1.1.5
             // - Fixed possible threading issue if the project attempts to save on project startup
-            get { return new Version(1, 1, 1, 5); }
+            // 1.1.1.6
+            // - Updated tile entity instantiator so that it supports the latest changes to the factory pattern to support X and Y values
+            get { return new Version(1, 1, 1, 6); }
         }
 
 

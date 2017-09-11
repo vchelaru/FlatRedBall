@@ -1417,7 +1417,24 @@ namespace FlatRedBall.Glue.CodeGeneration
                             string.IsNullOrEmpty(nos.SourceFile);
                         if (!shouldSkip)
                         {
+                            // pooled entities have this method called multiple times. We want to make sure
+                            // that instances aren't added multiple times to this list, so we need to add an 
+                            // if-statement if this is pooled.
+                            bool isPooled = element is EntitySave && ((EntitySave)element).PooledByFactory;
+
+                            if(isPooled)
+                            {
+                                codeBlock = codeBlock.If($"!{container.InstanceName}.Contains({nos.InstanceName})");
+                            }
+
+
                             codeBlock.Line(container.InstanceName + ".Add(" + nos.InstanceName + ");");
+
+
+                            if (isPooled)
+                            {
+                                codeBlock = codeBlock.End();
+                            }
                         }
                     }
 

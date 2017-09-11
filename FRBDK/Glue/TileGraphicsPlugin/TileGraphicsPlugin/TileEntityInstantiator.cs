@@ -325,7 +325,7 @@ namespace FlatRedBall.TileEntities
             var factory = factories.FirstOrDefault(item =>
             {
                 var type = item.GetType();
-                var methodInfo = type.GetMethod("CreateNew", new[] { typeof(Layer) });
+                var methodInfo = type.GetMethod("CreateNew", new[] { typeof(Layer), typeof(float), typeof(float) });
                 var returntypeString = methodInfo.ReturnType.Name;
 
                 return entityType == returntypeString || entityType.EndsWith("\\" + returntypeString);
