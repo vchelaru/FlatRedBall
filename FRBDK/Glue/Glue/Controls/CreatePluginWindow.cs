@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -102,54 +103,13 @@ namespace FlatRedBall.Glue.Controls
                 return;   
             }
 
-            if (File.Exists(sfdPlugin.FileName))
-            {
-                FileHelper.DeleteFile(sfdPlugin.FileName);
-            }
-            //Create plugin file
-            using(var zip = new ZipFile())
-            {
-                var directory = new DirectoryInfo(PluginFolder);
+            ExportPluginLogic exportPluginLogic = new ExportPluginLogic();
 
-                //Add files in directory
-                foreach (var fileToAdd in Directory.GetFiles(PluginFolder, "*.*", SearchOption.AllDirectories))
-                {
-                    if (this.AllFilesRadioButton.Checked || mWhatIsConsideredCode.Contains(FileManager.GetExtension(fileToAdd).ToLower()))
-                    {
-                        string relativeDirectory = null;
+            string response = exportPluginLogic.CreatePluginFromDirectory(
+                sourceDirectory: PluginFolder, destinationFileName: sfdPlugin.FileName,
+                includeAllFiles: this.AllFilesRadioButton.Checked);
 
-                        relativeDirectory = FileManager.MakeRelative(FileManager.GetDirectory(fileToAdd), directory.Parent.FullName);
-
-                        if (relativeDirectory.EndsWith("/"))
-                        {
-                            relativeDirectory = relativeDirectory.Substring(0, relativeDirectory.Length - 1);
-                        }
-                        zip.AddFile(fileToAdd, relativeDirectory);
-                    }
-                }
-
-                //Add compatibility file
-                var time = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
-
-
-                if (zip.Entries.Any(item => item.FileName == directory.Name + "/" + "Compatibility.txt"))
-                {
-                    zip.RemoveEntry(directory.Name + "/" + "Compatibility.txt");
-                }
-
-                try
-                {
-
-                    zip.AddFileFromString("Compatibility.txt", directory.Name, time.ToString());
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("The directory already contains a Compatibility.txt file name.  The plugin will still be created but it may not properly include compatibility information.  Consider removing this file and re-creating the plugin.");
-                }
-                zip.Save(sfdPlugin.FileName);
-            }
-
-            MessageBox.Show(@"Successfully created.");
+            MessageBox.Show(response);
 
             System.Diagnostics.Process.Start(FileManager.GetDirectory(sfdPlugin.FileName));
 
