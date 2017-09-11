@@ -1524,6 +1524,9 @@
       <Link>GumRuntimes\GumIdb.Generated.cs</Link>
       <DependentUpon>GumIdb.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\GumScreenLayeredGumRuntime.Generated.cs">
+      <Link>GumRuntimes\GumScreenLayeredGumRuntime.Generated.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\NineSliceButtonRuntime.cs">
       <Link>GumRuntimes\NineSliceButtonRuntime.cs</Link>
     </Compile>
@@ -1774,6 +1777,13 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\GumScreen.Generated.cs">
       <Link>Screens\GumScreen.Generated.cs</Link>
       <DependentUpon>GumScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\GumScreenLayered.cs">
+      <Link>Screens\GumScreenLayered.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\GumScreenLayered.Generated.cs">
+      <Link>Screens\GumScreenLayered.Generated.cs</Link>
+      <DependentUpon>GumScreenLayered.cs</DependentUpon>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\InheritanceScreen.cs">
       <Link>Screens\InheritanceScreen.cs</Link>
@@ -2563,6 +2573,10 @@
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\GumUI.png">
       <Name>GumUI</Name>
       <Link>Content\GumProject\GumUI.png</Link>
+    </Content>
+    <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\Screens\GumScreenLayeredGum.gusx">
+      <Name>GumScreenLayeredGum</Name>
+      <Link>Content\GumProject\Screens\GumScreenLayeredGum.gusx</Link>
     </Content>
     <Content Include="..\..\GlueTestProject\GlueTestProjectContent\GumProject\Screens\TestScreen.gusx">
       <Name>TestScreen</Name>

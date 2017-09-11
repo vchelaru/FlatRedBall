@@ -130,7 +130,9 @@ namespace GumPlugin
             // - Plugin no longer crashes if there is a missing screen file
             // 0.8.8.1
             // - Added TextRuntime.WrappedLines and TextRuntime.BitmapFont
-            get { return new Version(0, 8, 8, 1); }
+            // 0.8.8.2
+            // - Added support for adding an entire screen to a layer.
+            get { return new Version(0, 8, 8, 2); }
         }
 
         #endregion

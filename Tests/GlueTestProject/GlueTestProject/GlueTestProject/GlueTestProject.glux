@@ -1460,7 +1460,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
-      <NextScreen>Screens\FileScreen</NextScreen>
+      <NextScreen>Screens\GumScreenLayered</NextScreen>
       <Name>Screens\GumScreen</Name>
       <ReferencedFiles>
         <ReferencedFileSave>
@@ -1551,6 +1551,54 @@
           <SourceFile>GumProject/Screens/TestScreen.gusx</SourceFile>
           <SourceName>TestRectangleInstance (GlueTestProject.GumRuntimes.TestRectangleRuntime)</SourceName>
           <InstanceName>TestRectangleInstance</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+      </NamedObjects>
+    </ScreenSave>
+    <ScreenSave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
+      <NextScreen>Screens\FileScreen</NextScreen>
+      <Name>Screens\GumScreenLayered</Name>
+      <ReferencedFiles>
+        <ReferencedFileSave>
+          <Name>GumProject/Screens/GumScreenLayeredGum.gusx</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>FlatRedBall.Gum.GumIdb</RuntimeType>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
+      </ReferencedFiles>
+      <NamedObjects>
+        <NamedObjectSave>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>Layer</SourceClassType>
+          <InstanceName>LayerInstance</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+          <Is2D>true</Is2D>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>File</SourceType>
+          <SourceFile>GumProject/Screens/GumScreenLayeredGum.gusx</SourceFile>
+          <SourceName>this (GlueTestProject.GumRuntimes.GumScreenLayeredGumRuntime)</SourceName>
+          <InstanceName>GumScreenLayeredGumRuntime</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+          <LayerOn>LayerInstance</LayerOn>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>File</SourceType>
+          <SourceFile>GumProject/Screens/GumScreenLayeredGum.gusx</SourceFile>
+          <SourceName>ColoredRectangleInstance (GlueTestProject.GumRuntimes.ColoredRectangleRuntime)</SourceName>
+          <InstanceName>ColoredRectangleInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>

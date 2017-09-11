@@ -815,6 +815,7 @@
     <Compile Include="GumRuntimes\ContainerOfInFolderRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\ContainerRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\GumIdb.Generated.cs" />
+    <Compile Include="GumRuntimes\GumScreenLayeredGumRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.cs" />
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.Generated.cs">
       <DependentUpon>NineSliceButtonRuntime.cs</DependentUpon>
@@ -940,6 +941,10 @@
     <Compile Include="Screens\GumScreen.cs" />
     <Compile Include="Screens\GumScreen.Generated.cs">
       <DependentUpon>GumScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\GumScreenLayered.cs" />
+    <Compile Include="Screens\GumScreenLayered.Generated.cs">
+      <DependentUpon>GumScreenLayered.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\InheritanceScreen.cs" />
     <Compile Include="Screens\InheritanceScreen.Generated.cs">

@@ -1464,6 +1464,9 @@
       <Link>GumRuntimes\GumIdb.Generated.cs</Link>
       <DependentUpon>GumIdb.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\GumScreenLayeredGumRuntime.Generated.cs">
+      <Link>GumRuntimes\GumScreenLayeredGumRuntime.Generated.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\NineSliceButtonRuntime.cs">
       <Link>GumRuntimes\NineSliceButtonRuntime.cs</Link>
     </Compile>
@@ -1706,6 +1709,13 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\GumScreen.Generated.cs">
       <Link>Screens\GumScreen.Generated.cs</Link>
       <DependentUpon>GumScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\GumScreenLayered.cs">
+      <Link>Screens\GumScreenLayered.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\GumScreenLayered.Generated.cs">
+      <Link>Screens\GumScreenLayered.Generated.cs</Link>
+      <DependentUpon>GumScreenLayered.cs</DependentUpon>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\InheritanceScreen.cs">
       <Link>Screens\InheritanceScreen.cs</Link>
@@ -2105,6 +2115,10 @@
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\fontcache\font18arial_o1_0.png">
       <Name>Font18Arial_o1_0</Name>
       <Link>Assets\content\gumproject\fontcache\font18arial_o1_0.png</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\screens\gumscreenlayeredgum.gusx">
+      <Name>GumScreenLayeredGum</Name>
+      <Link>Assets\content\gumproject\screens\gumscreenlayeredgum.gusx</Link>
     </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\standards\circle.gutx">
       <Name>Circle</Name>
