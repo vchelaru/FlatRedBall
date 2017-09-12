@@ -8,6 +8,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Utilities;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using System.Globalization;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -157,7 +158,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             var functionBlock = classContents.Function("private static void", "HandleResolutionChange", "object sender, System.EventArgs args");
             {
-                functionBlock.Line($"SetAspectRatioTo({displaySettings.AspectRatioWidth} / {displaySettings.AspectRatioHeight}m);");
+                functionBlock.Line($"SetAspectRatioTo({displaySettings.AspectRatioWidth.ToString(CultureInfo.InvariantCulture)} / {displaySettings.AspectRatioHeight.ToString(CultureInfo.InvariantCulture)}m);");
 
                 if(displaySettings.Is2D && displaySettings.ResizeBehavior == ResizeBehavior.IncreaseVisibleArea)
                 {
@@ -267,7 +268,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     if(displaySettings.FixedAspectRatio)
                     {
-                        resetMethod.Line($"SetAspectRatioTo({displaySettings.AspectRatioWidth} / {displaySettings.AspectRatioHeight}m);");
+                        resetMethod.Line(
+                            $"SetAspectRatioTo({displaySettings.AspectRatioWidth.ToString(CultureInfo.InvariantCulture)} / {displaySettings.AspectRatioHeight.ToString(CultureInfo.InvariantCulture)}m);");
                     }
                 }
             }

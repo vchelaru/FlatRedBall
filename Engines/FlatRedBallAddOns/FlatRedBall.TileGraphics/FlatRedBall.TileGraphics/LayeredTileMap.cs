@@ -17,7 +17,7 @@ namespace FlatRedBall.TileGraphics
 {
 
 
-    public class LayeredTileMap : PositionedObject, IVisible
+    public partial class LayeredTileMap : PositionedObject, IVisible
     {
         #region Fields
 
