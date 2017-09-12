@@ -140,6 +140,32 @@ namespace OfficialPlugins.MonoGameContent
             }
         }
 
+        public static void TryDeleteBuiltXnbFor(ProjectBase project, ReferencedFileSave referencedFileSave, bool forcePngsToContentPipeline)
+        {
+            bool isBuilt = IsBuiltByContentPipeline(referencedFileSave, forcePngsToContentPipeline);
+
+            ContentItem contentItem = null;
+
+            if(isBuilt)
+            {
+                contentItem = GetContentItem(referencedFileSave, project, createEvenIfProjectTypeNotSupported: false);
+            }
+
+            if(contentItem != null)
+            {
+                
+                foreach(var extension in contentItem.GetBuiltExtensions())
+                {
+                    var fileToDelete = $"{contentItem.OutputDirectory}{contentItem.OutputFileNoExtension}.{extension}";
+
+                    if(System.IO.File.Exists(fileToDelete))
+                    { 
+                        GlueCommands.Self.TryMultipleTimes(()=>System.IO.File.Delete(fileToDelete), 5);
+                    }
+                }
+            }
+        }
+
         private static ContentItem GetContentItem(ReferencedFileSave referencedFileSave, ProjectBase project, bool createEvenIfProjectTypeNotSupported)
         {
             var fullFileName = GlueCommands.Self.FileCommands.GetFullFileName(referencedFileSave);
@@ -208,6 +234,8 @@ namespace OfficialPlugins.MonoGameContent
 
                 // remove the trailing slash:
                 contentItem.OutputDirectory = builtXnbRoot;
+                contentItem.OutputFileNoExtension = FileManager.RemoveExtension(relativeToContent);
+
                 contentItem.IntermediateDirectory = builtXnbRoot + "obj/" +
                     FileManager.RemoveExtension(relativeToContent);
             }
@@ -348,12 +376,12 @@ namespace OfficialPlugins.MonoGameContent
         }
 
 
-        private bool IsBuiltByContentPipeline(ReferencedFileSave file, bool forcePngsToContentPipeline)
+        private static bool IsBuiltByContentPipeline(ReferencedFileSave file, bool forcePngsToContentPipeline)
         {
             return IsBuiltByContentPipeline(file.Name, file.UseContentPipeline, forcePngsToContentPipeline);
         }
 
-        private bool IsBuiltByContentPipeline(string fileName, bool rfsUseContentPipeline, bool forcePngsToContentPipeline)
+        private static bool IsBuiltByContentPipeline(string fileName, bool rfsUseContentPipeline, bool forcePngsToContentPipeline)
         {
             string extension = FileManager.GetExtension(fileName);
 

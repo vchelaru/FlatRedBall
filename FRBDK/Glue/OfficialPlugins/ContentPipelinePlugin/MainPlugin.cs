@@ -113,10 +113,23 @@ namespace OfficialPlugins.MonoGameContent
             this.ReactToLoadedSyncedProject += HandleLoadedSyncedProject;
             this.ReactToNewFileHandler += HandleNewFile;
             this.ReactToReferencedFileChangedValueHandler += HandleReferencedFileValueChanged;
+            this.ReactToFileRemoved += HandleFileRemoved;
             this.GetIfUsesContentPipeline += HandleGetIfUsesContentPipeline;
         }
-
         #endregion
+
+
+        private void HandleFileRemoved(IElement container, ReferencedFileSave file)
+        {
+            // Delete the file just in case a new file with the same name is added later. If so, we don't
+            // want old XNBs to sit around and cause the incremental built to not build the newly-added file.
+            BuildLogic.TryDeleteBuiltXnbFor(GlueState.Self.CurrentMainContentProject, file, viewModel.UseContentPipelineOnPngs);
+
+            foreach(var syncedProject in GlueState.Self.SyncedProjects)
+            {
+                BuildLogic.TryDeleteBuiltXnbFor(syncedProject, file, viewModel.UseContentPipelineOnPngs);
+            }
+        }
 
         private void HandleGluxUnloaded()
         {

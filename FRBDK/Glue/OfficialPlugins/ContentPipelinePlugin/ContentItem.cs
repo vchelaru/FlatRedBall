@@ -30,6 +30,12 @@ namespace OfficialPlugins.MonoGameContent
         // /intermediateDir:/outputDir:C:\Users\vchel\Documents\FlatRedBallProjects\GlTest8\GlTest8\Content\obj
         public string IntermediateDirectory { get; set; }
 
+        public string OutputFileNoExtension
+        {
+            get;
+            set;
+        }
+
         public static ContentItem CreateMp3Build()
         {
             var toReturn = new ContentItem();
