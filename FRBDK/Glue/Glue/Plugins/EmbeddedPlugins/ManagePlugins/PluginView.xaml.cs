@@ -65,7 +65,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
 
                 MessageBox.Show(response);
 
-                System.Diagnostics.Process.Start(FileManager.GetDirectory(fileName));
+                System.Diagnostics.Process.Start(FileManager.GetDirectory(filename));
 
             }
         }
