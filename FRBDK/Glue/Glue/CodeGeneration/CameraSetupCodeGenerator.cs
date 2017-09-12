@@ -111,7 +111,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             var namespaceContents = fileCode.Namespace(ProjectManager.ProjectNamespace);
             var classContents = namespaceContents.Class("internal static", "CameraSetup");
 
-            classContents.Line($"const float Scale = {displaySettings.Scale / 100.0m}f;");
+            classContents.Line($"const float Scale = {(displaySettings.Scale / 100.0m).ToString(CultureInfo.InvariantCulture)}f;");
 
             GenerateResetMethodNew(displaySettings, classContents);
 

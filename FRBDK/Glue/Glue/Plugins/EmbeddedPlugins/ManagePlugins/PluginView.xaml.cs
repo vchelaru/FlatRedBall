@@ -26,7 +26,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
         {
             get
             {
-                return (DataContext as PluginViewModel).BackingData;
+                return (DataContext as PluginViewModel)?.BackingData;
             }
         }
 
@@ -38,35 +38,39 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
 
         private void HandleExportPluginClicked(object sender, RoutedEventArgs e)
         {
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-
-
-
-            dlg.FileName = pluginContainer.Name.Replace(" ", ""); // Default file name
-            dlg.DefaultExt = ".plug"; // Default file extension
-            dlg.Filter = "Plugin (.plug)|*.plug"; // Filter files by extension
-
-            // Show save file dialog box
-            Nullable<bool> result = dlg.ShowDialog();
-
-            // Process save file dialog box results
-            if (result == true)
+            if(DataContext != null)
             {
-                // Save document
-                string filename = dlg.FileName;
 
-                ExportPluginLogic exportPluginLogic = new ExportPluginLogic();
+                Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
 
-                string pluginFolder = FileManager.GetDirectory(pluginContainer.AssemblyLocation);
 
-                string response = exportPluginLogic.CreatePluginFromDirectory(
-                    sourceDirectory: pluginFolder, destinationFileName: filename,
-                    includeAllFiles: true);
 
-                MessageBox.Show(response);
+                dlg.FileName = pluginContainer.Name.Replace(" ", ""); // Default file name
+                dlg.DefaultExt = ".plug"; // Default file extension
+                dlg.Filter = "Plugin (.plug)|*.plug"; // Filter files by extension
 
-                System.Diagnostics.Process.Start(FileManager.GetDirectory(filename));
+                // Show save file dialog box
+                Nullable<bool> result = dlg.ShowDialog();
 
+                // Process save file dialog box results
+                if (result == true)
+                {
+                    // Save document
+                    string filename = dlg.FileName;
+
+                    ExportPluginLogic exportPluginLogic = new ExportPluginLogic();
+
+                    string pluginFolder = FileManager.GetDirectory(pluginContainer.AssemblyLocation);
+
+                    string response = exportPluginLogic.CreatePluginFromDirectory(
+                        sourceDirectory: pluginFolder, destinationFileName: filename,
+                        includeAllFiles: true);
+
+                    MessageBox.Show(response);
+
+                    System.Diagnostics.Process.Start(FileManager.GetDirectory(filename));
+
+                }
             }
         }
     }

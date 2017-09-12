@@ -132,6 +132,7 @@ namespace GumPlugin
             // - Added TextRuntime.WrappedLines and TextRuntime.BitmapFont
             // 0.8.8.2
             // - Added support for adding an entire screen to a layer.
+            // - Added SpriteRuntime.Text property.
             get { return new Version(0, 8, 8, 2); }
         }
 

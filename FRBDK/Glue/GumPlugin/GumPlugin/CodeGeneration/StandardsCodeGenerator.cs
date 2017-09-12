@@ -164,6 +164,13 @@ namespace GumPlugin.CodeGeneration
                     generateSetter:false);
 
             }
+            else if(standardElementSave.Name == "Sprite")
+            {
+                GenerateVariable(currentBlock, containedGraphicalObjectName,
+                    new VariableSave { Name = "Texture", Type = "Microsoft.Xna.Framework.Graphics.Texture2D" },
+                    standardElementSave);
+
+            }
         }
 
         private string CreateContainedObjectMembers(ICodeBlock currentBlock, ElementSave standardElementSave)
