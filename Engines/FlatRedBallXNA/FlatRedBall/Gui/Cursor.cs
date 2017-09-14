@@ -308,9 +308,7 @@ namespace FlatRedBall.Gui
 
 		bool mUsingMouse;
 
-#if FRB_MDX
-		Joystick mGamepad;
-#elif !WINDOWS_8
+#if !WINDOWS_8
         Xbox360GamePad mGamepad;
 #endif
 
@@ -2640,11 +2638,13 @@ namespace FlatRedBall.Gui
             }
             else
             {
+#if !WINDOWS_8
                 if(mGamepad != null)
                 {
                     UpdateValuesFromJoystick();
                 }
                 else
+#endif
                 {
                     assignPushAndClickValues = UpdateValuesFromMouse();
                 }
