@@ -620,7 +620,7 @@ namespace FlatRedBall.Glue.Controls
         {
             string nameToSearchFor = selectedPlugin.Name;
 
-            return GlueState.Self.CurrentGlueProject.PluginData.RequiredPlugins.Any(item => item.Name == nameToSearchFor);
+            return GlueState.Self.CurrentGlueProject?.PluginData.RequiredPlugins.Any(item => item.Name == nameToSearchFor) == true;
         }
 
 

@@ -813,20 +813,9 @@ namespace FlatRedBall.Gui
         /// in games with multiple cameras.
         /// </remarks>
         /// <param name="cameraToUse">The camera that the cursor will belong to.</param>
-#if FRB_MDX
-        /// <param name="formToUse">Reference to the form that the application is running on.</param>
-        public Cursor(Camera cameraToUse, System.Windows.Forms.Control formToUse)
-#else
         public Cursor(Camera cameraToUse)
-
-#endif
 		{
-#if FRB_MDX
-			mOwner = formToUse;
-#endif
-
-
-#if WINDOWS_PHONE || MONODROID || IOS
+#if MONODROID || IOS
             InputDevice = Gui.InputDevice.TouchScreen;
 #elif WINDOWS_8
             // We want to support both on W8 by default
@@ -847,10 +836,7 @@ namespace FlatRedBall.Gui
             ClickNoSlideThreshold = 9;
 
 			si = new Sprite();
-
-#if XNA4
             si.Visible = false;
-#endif
 
 			mUsingMouse = true;
 			mCamera = cameraToUse;
@@ -866,10 +852,7 @@ namespace FlatRedBall.Gui
                 mLastScreenX = System.Windows.Forms.Cursor.Position.X;
                 mLastScreenY = System.Windows.Forms.Cursor.Position.Y;
 #else
-
-#if SUPPORTS_FRB_DRAWN_GUI
-				this.si.Texture = GuiManager.guiTexture;
-#endif
+                
                 if (FlatRedBallServices.Game != null)
                 {
                     mLastScreenX = InputManager.Mouse.X + FlatRedBallServices.Game.Window.ClientBounds.X;
@@ -877,7 +860,7 @@ namespace FlatRedBall.Gui
                 }
                 else
                 {
-#if !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME && !UNIT_TESTS
+#if !MONOGAME && !UNIT_TESTS
                     var windowLocation =
                                 System.Windows.Forms.Form.FromHandle(FlatRedBallServices.WindowHandle).Location;
 
@@ -1038,7 +1021,6 @@ namespace FlatRedBall.Gui
             y = WorldYAt(absoluteZ);
         }
 
-#if !SILVERLIGHT
         #region XML Docs
         /// <summary>
         /// Modifies the x and y arguments to show the position that the grabbed Sprite should be at.
@@ -1094,17 +1076,13 @@ namespace FlatRedBall.Gui
 
         
 
-#if !FRB_MDX
-
         public Ray GetLastRay()
         {
             return mLastRay;
         }
-#endif
 
 
 
-#endif
         public Ray GetRay()
         {
 #if DEBUG
@@ -1131,7 +1109,6 @@ namespace FlatRedBall.Gui
             }
         }
 
-#if !SILVERLIGHT
 
         #region XML Docs
         /// <summary>
@@ -1280,7 +1257,6 @@ namespace FlatRedBall.Gui
             return GetSpriteOver(saa);
         }
 
-#endif
 
 		public IWindow GetDeepestChildWindowOver(IWindow window)
         {
@@ -2116,7 +2092,7 @@ namespace FlatRedBall.Gui
         }
 
 
-#if !XBOX360 && !WINDOWS_PHONE && !MONODROID && !MONOGAME
+#if !MONODROID && !MONOGAME
         public bool IsInWindow(System.Windows.Forms.Control control)
         {
             if (!mUsingWindowsCursor)
@@ -2181,16 +2157,12 @@ namespace FlatRedBall.Gui
         /// <summary>
         /// Sets the cursor to be controlled by the joystick rather than the mouse.
         /// </summary>
-        /// <param name="js">Refernce to the joystick that will control the cursor.</param>
+        /// <param name="gamePad">Refernce to the joystick that will control the cursor.</param>
         #endregion
-#if FRB_MDX
-        public void SetJoystickControl(Joystick js)
-#else
-        public void SetJoystickControl(Xbox360GamePad js)
-#endif
+        public void SetJoystickControl(Xbox360GamePad gamePad)
         {
             mUsingMouse = false;
-            this.mGamepad = js;
+            this.mGamepad = gamePad;
         }
 #endif
 
@@ -2668,9 +2640,15 @@ namespace FlatRedBall.Gui
             }
             else
             {
-                assignPushAndClickValues = UpdateValuesFromMouse();
+                if(mGamepad != null)
+                {
+                    UpdateValuesFromJoystick();
+                }
+                else
+                {
+                    assignPushAndClickValues = UpdateValuesFromMouse();
+                }
 
-                UpdateValuesFromJoystick();
 
             }
             #region Clicking, pushing, and holding down button logic
@@ -2701,46 +2679,31 @@ namespace FlatRedBall.Gui
 #if !WINDOWS_8
             if (mGamepad != null)
             {
-#if FRB_MDX
-                if (System.Math.Abs(mGamepad.X) > 100)
-                    XVelocity = sensitivity * mGamepad.X * TimeManager.SecondDifference/8.0f;
-                else
-                    XVelocity = 0;
+                mScreenX += (int)(mGamepad.LeftStick.Position.X * 10);
+                mScreenY -= (int)(mGamepad.LeftStick.Position.Y * 10);
 
-                if (System.Math.Abs(mGamepad.Y) > 100)
-                    YVelocity = sensitivity * mGamepad.Y * TimeManager.SecondDifference / 8.0f;
-                else
-                    YVelocity = 0;
-                if (StaticPosition == false)
+                if(mScreenX < 0)
                 {
-                    si.X += XVelocity;
-                    si.Y += YVelocity;
+                    mScreenX = 0;
+                }
+                if(mScreenX > FlatRedBallServices.GraphicsOptions.ResolutionWidth)
+                {
+                    mScreenX = FlatRedBallServices.GraphicsOptions.ResolutionWidth;
                 }
 
-                PrimaryDown = mGamepad.Down(0);
-                SecondaryDown = mGamepad.Down(1);
-#else
+                if (mScreenY < 0)
+                {
+                    mScreenY = 0;
+                }
+                if (mScreenY > FlatRedBallServices.GraphicsOptions.ResolutionHeight)
+                {
+                    mScreenY = FlatRedBallServices.GraphicsOptions.ResolutionHeight;
+                }
 
-                throw new NotImplementedException();
 
-                //if (System.Math.Abs(mGamepad.LeftStick.Position.X) > .1f && TimeManager.SecondDifference > 0)
-                //    XVelocity = sensitivity * mGamepad.LeftStick.Position.X * TimeManager.SecondDifference * 64;
-                //else
-                //    XVelocity = 0;
-
-                //if (System.Math.Abs(mGamepad.LeftStick.Position.Y) > .1f && TimeManager.SecondDifference > 0)
-                //    YVelocity = sensitivity * mGamepad.LeftStick.Position.Y * TimeManager.SecondDifference * 64;
-                //else
-                //    YVelocity = 0;
-                //if (StaticPosition == false)
-                //{
-                //    si.X += XVelocity;
-                //    si.Y += YVelocity;
-                //}
 
                 PrimaryDown = mGamepad.ButtonDown(Xbox360GamePad.Button.A);
                 SecondaryDown = mGamepad.ButtonDown(Xbox360GamePad.Button.X);
-#endif
             }
 #endif
             #endregion
@@ -2782,9 +2745,6 @@ namespace FlatRedBall.Gui
         public bool UpdateValuesFromMouse()
         {
             bool assignPushAndClickValues = false;
-
-            #region Mouse Control
-#if !XBOX360
 
             if (mUsingMouse && InputManager.Mouse != null)
             {
@@ -2987,8 +2947,7 @@ namespace FlatRedBall.Gui
 
                 mIgnoreNextClick = false;
             }
-#endif
-            #endregion
+
             return assignPushAndClickValues;
         }
 
