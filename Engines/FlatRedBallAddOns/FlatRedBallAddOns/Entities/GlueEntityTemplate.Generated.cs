@@ -47,22 +47,6 @@ namespace FlatRedBallAddOns.Entities
 
 // Generated AddToManagers
 
-		public virtual void Activity()
-		{
-			// Generated Activity
-			
-			// After Custom Activity
-		}
-
-		public virtual void Destroy()
-		{
-			// Generated Destroy
-
-
-			CustomDestroy();
-		}
-
-		// Generated Methods
 
     }
 	

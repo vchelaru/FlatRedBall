@@ -44,7 +44,9 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             GlobalContentFilesDictionary.Clear();
 
-            foreach (ReferencedFileSave rfs in ProjectManager.GlueProjectSave.GlobalFiles)
+            // create a new list in case this changes:
+            var globalFiles = ProjectManager.GlueProjectSave.GlobalFiles.ToList();
+            foreach (ReferencedFileSave rfs in globalFiles)
             {
                 try
                 {

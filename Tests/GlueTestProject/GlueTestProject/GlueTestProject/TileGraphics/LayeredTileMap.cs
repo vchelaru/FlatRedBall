@@ -17,28 +17,22 @@ namespace FlatRedBall.TileGraphics
 {
 
 
-    public class LayeredTileMap : PositionedObject, IVisible
+    public partial class LayeredTileMap : PositionedObject, IVisible
     {
         #region Fields
-
-
         FlatRedBall.Math.PositionedObjectList<MapDrawableBatch> mMapLists = new FlatRedBall.Math.PositionedObjectList<MapDrawableBatch>();
 
         float mRenderingScale = 1;
 
         float mZSplit = 1;
+		#endregion
 
-        float? mNumberTilesWide;
-        float? mNumberTilesTall;
-
-        public float? WidthPerTile { get; private set; }
-        public float? HeightPerTile { get; private set; }
-
-        #endregion
-
-        #region Properties
-
-        public Dictionary<string, List<NamedValue>> TileProperties
+		#region Properties
+		public float? NumberTilesWide { get; private set; }
+		public float? NumberTilesTall { get; private set; }
+		public float? WidthPerTile { get; private set; }
+		public float? HeightPerTile { get; private set; }
+		public Dictionary<string, List<NamedValue>> TileProperties
         {
             get;
             private set;
@@ -119,9 +113,9 @@ namespace FlatRedBall.TileGraphics
         {
             get
             {
-                if (mNumberTilesWide.HasValue && WidthPerTile.HasValue)
+                if (NumberTilesWide.HasValue && WidthPerTile.HasValue)
                 {
-                    return mNumberTilesWide.Value * WidthPerTile.Value;
+                    return NumberTilesWide.Value * WidthPerTile.Value;
                 }
                 else
                 {
@@ -137,9 +131,9 @@ namespace FlatRedBall.TileGraphics
         {
             get
             {
-                if (mNumberTilesTall.HasValue && HeightPerTile.HasValue)
+                if (NumberTilesTall.HasValue && HeightPerTile.HasValue)
                 {
-                    return mNumberTilesTall.Value * HeightPerTile.Value;
+                    return NumberTilesTall.Value * HeightPerTile.Value;
                 }
                 else
                 {
@@ -305,12 +299,12 @@ namespace FlatRedBall.TileGraphics
 
             if (rtmi.NumberCellsWide != 0)
             {
-                toReturn.mNumberTilesWide = rtmi.NumberCellsWide;
+                toReturn.NumberTilesWide = rtmi.NumberCellsWide;
             }
 
             if (rtmi.NumberCellsTall != 0)
             {
-                toReturn.mNumberTilesTall = rtmi.NumberCellsTall;
+                toReturn.NumberTilesTall = rtmi.NumberCellsTall;
             }
 
             toReturn.WidthPerTile = rtmi.QuadWidth;

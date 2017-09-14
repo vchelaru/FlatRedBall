@@ -25,29 +25,5 @@ namespace FlatRedBallAddOns.Screens
         
 // Generated AddToManagers
 
-
-		public override void Activity(bool firstTimeCalled)
-		{
-			// Generated Activity
-
-
-				// After Custom Activity
-				
-            
-		}
-
-		public override void Destroy()
-		{
-			// Generated Destroy
-
-			base.Destroy();
-
-			CustomDestroy();
-
-		}
-
-		// Generated Methods
-
-
 	}
 }

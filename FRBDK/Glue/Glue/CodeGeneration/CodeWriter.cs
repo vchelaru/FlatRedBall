@@ -248,7 +248,6 @@ namespace FlatRedBall.Glue.Parsing
                 whatToInheritFrom
                 );
 
-            #region Make Activity, Initialize, PostInitalize, and Destroy "override" if necessary
 
             if ( element.InheritsFromElement())
             {
@@ -258,18 +257,7 @@ namespace FlatRedBall.Glue.Parsing
                     stringBuilder.Replace("virtual void Initialize", "override void Initialize");
                 }
 
-                if (stringBuilder.Contains("virtual void Activity"))
-                {
-                    stringBuilder.Replace("virtual void Activity", "override void Activity");
-                }
-
-                if (stringBuilder.Contains("virtual void Destroy"))
-                {
-                    stringBuilder.Replace("virtual void Destroy", "override void Destroy");
-                }
             }
-
-            #endregion
 
             try
             {
@@ -300,55 +288,24 @@ namespace FlatRedBall.Glue.Parsing
             #endregion
 
 
-            #region Generate AddToManagers
+            ICodeBlock codeBlock = new CodeDocument(2);
 
+            GenerateAddToManagers(element, codeBlock);
+            
+            GenerateActivity(codeBlock, element);
+           
+            GenerateDestroy(element, codeBlock);
+                
+            GenerateMethods(codeBlock, element);
+            
             int startOfAddToManagers = CodeWriter.GetIndexAfter("// Generated AddToManagers", stringBuilder);
-            ICodeBlock addToManagersSection = CodeWriter.GenerateAddToManagers(element);
-            stringBuilder.Insert(startOfAddToManagers, addToManagersSection.ToString());
+            stringBuilder.Insert(startOfAddToManagers, codeBlock.ToString());
 
-
-            #endregion
-
-
-            #region GenerateActivity
-
-
-
-            ICodeBlock activityBlock = new CodeDocument(3);
-            ICodeBlock currentBlock = activityBlock;
-
-            currentBlock = CodeWriter.GenerateActivity(currentBlock, element);
-            currentBlock = CodeWriter.GenerateAfterActivity(currentBlock, element);
-
-            int startOfActivity = CodeWriter.GetIndexAfter("// Generated Activity", stringBuilder);
-            stringBuilder.Insert(startOfActivity, activityBlock.ToString());
-
-
-            #endregion
-
-            #region Generate Destroy
-
-            ICodeBlock destroySection = CodeWriter.GenerateDestroy(element);
-            int startOfDestroySection = CodeWriter.GetIndexAfter("// Generated Destroy", stringBuilder);
-            stringBuilder.Insert(startOfDestroySection, destroySection.ToString());
-
-            #endregion
-
-
-            #region Generate Methods
-
-            ICodeBlock methodsSection = new CodeDocument(2);
-
-            CodeWriter.GenerateMethods(methodsSection, element);
-
-            int startOfMethodsSection = CodeWriter.GetIndexAfter("// Generated Methods", stringBuilder);
-            stringBuilder.Insert(startOfMethodsSection, methodsSection.ToString());
-
-            #endregion
-
+            
+            
 
             #region Extra Classes
-            CodeBlockBase codeBlock = new CodeBlockBase(null);
+            codeBlock = new CodeBlockBase(null);
 
             foreach (var codeGenerator in CodeGenerators)
             {
@@ -822,9 +779,8 @@ namespace FlatRedBall.Glue.Parsing
         }
 
         
-        internal static ICodeBlock GenerateAddToManagers(IElement saveObject)
+        internal static void GenerateAddToManagers(IElement saveObject, ICodeBlock codeBlock)
         {
-            ICodeBlock codeBlock = new CodeDocument(2);
             ICodeBlock currentBlock = codeBlock;
 
             bool isEntity = saveObject is EntitySave;
@@ -998,7 +954,7 @@ namespace FlatRedBall.Glue.Parsing
             PerformancePluginCodeGenerator.GenerateStart("Custom Initialize");
             currentBlock.Line("CustomInitialize();");
             PerformancePluginCodeGenerator.GenerateEnd();
-            return codeBlock;
+            
         }
 
         private static void GenerateReAddToManagers(IElement saveObject, ICodeBlock currentBlock)
@@ -1090,8 +1046,23 @@ namespace FlatRedBall.Glue.Parsing
         }
 
 
-        internal static ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement saveObject)
+        internal static void GenerateActivity(ICodeBlock codeBlock, IElement saveObject)
         {
+
+            string activityPre = "public virtual void";
+            string activityParameters = "";
+
+            if (saveObject is ScreenSave)
+            {
+                activityPre = "public override void";
+                activityParameters = "bool firstTimeCalled";
+            }
+            else if (saveObject.InheritsFromElement())
+            {
+                activityPre = "public override void";
+            }
+            codeBlock = codeBlock.Function(activityPre, "Activity", activityParameters);
+
             #region Plugin code generation before standard generation
 
             List<PluginManagerBase> pluginManagers = PluginManager.GetInstances();
@@ -1142,9 +1113,8 @@ namespace FlatRedBall.Glue.Parsing
             }
 
 
-
-
-            return currentBlock;
+            CodeWriter.GenerateAfterActivity(codeBlock, saveObject);
+            
         }
 
 
@@ -1200,10 +1170,21 @@ namespace FlatRedBall.Glue.Parsing
             return codeBlock;
         }
 
-        internal static ICodeBlock GenerateDestroy(IElement saveObject)
+        internal static void GenerateDestroy(IElement saveObject, ICodeBlock codeBlock)
         {
+
+            string destroyPre = "public virtual void";
+
+            bool destroyInherits = saveObject is ScreenSave || saveObject.InheritsFromElement();
+
+            if (destroyInherits)
+            {
+                destroyPre = "public override void";
+            }
+
+            codeBlock = codeBlock.Function(destroyPre, "Destroy", "");
+
             bool isScreen = saveObject is ScreenSave;
-            ICodeBlock codeBlock = new CodeDocument(3);
             var currentBlock = codeBlock;
 
             foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators
@@ -1216,7 +1197,7 @@ namespace FlatRedBall.Glue.Parsing
             #region Call base.Destroy if it has a derived object
 
             // The Screen template already includes a call to base.Destroy
-            if ( saveObject.InheritsFromEntity() )
+            if ( saveObject.InheritsFromEntity() || saveObject is ScreenSave )
             {
                 currentBlock.Line("base.Destroy();");
             }
@@ -1258,7 +1239,8 @@ namespace FlatRedBall.Glue.Parsing
                 codeGenerator.GenerateDestroy(currentBlock, saveObject);
             }
 
-            return currentBlock;
+            
+            codeBlock.Line("CustomDestroy();");
         }
 
         public static ICodeBlock CreateClass(ClassProperties classProperties)
