@@ -37,11 +37,10 @@ namespace GlueTestProject.Screens
 
 		}
 
-		void CustomDestroy()
-		{
+        void CustomDestroy()
+        {
 
-
-		}
+        }
 
         static void CustomLoadStaticContent(string contentManagerName)
         {

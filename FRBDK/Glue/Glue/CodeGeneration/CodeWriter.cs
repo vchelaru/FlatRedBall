@@ -210,7 +210,7 @@ namespace FlatRedBall.Glue.Parsing
 
             string objectName = FileManager.RemovePath(element.Name);
 
-            string projectNamespace = ProjectManager.ProjectNamespace;
+            string classNamespace = ProjectManager.ProjectNamespace;
 
             if (element is EntitySave)
             {
@@ -222,12 +222,16 @@ namespace FlatRedBall.Glue.Parsing
                     relativeDirectory = relativeDirectory.Substring(0, relativeDirectory.Length - 1);
                     relativeDirectory = relativeDirectory.Replace('/', '.');
 
-                    projectNamespace += "." + relativeDirectory;
+                    classNamespace += "." + relativeDirectory;
+                }
+                else
+                {
+                    classNamespace += ".Entities";
                 }
             }
             else if (element is ScreenSave)
             {
-                projectNamespace += ".Screens";
+                classNamespace += ".Screens";
             }
 
             string contentManagerName = element.UseGlobalContent ? "\"Global\"" : null;
@@ -239,26 +243,7 @@ namespace FlatRedBall.Glue.Parsing
             }
 
             var whatToInheritFrom = GetInheritance(element);
-            CodeWriter.SetClassNameAndNamespace(
-                projectNamespace,
-                objectName,
-                stringBuilder,
-                !string.IsNullOrEmpty(contentManagerName),
-                contentManagerName,
-                whatToInheritFrom
-                );
-
-
-            if ( element.InheritsFromElement())
-            {
-
-                if (stringBuilder.Contains("virtual void Initialize"))
-                {
-                    stringBuilder.Replace("virtual void Initialize", "override void Initialize");
-                }
-
-            }
-
+            
             try
             {
                 CodeWriter.GenerateUsings(stringBuilder, element);
@@ -270,25 +255,16 @@ namespace FlatRedBall.Glue.Parsing
                 throw new Exception("Error trying to generate using statements for " + element + "\n\n" + stackTrace, e);
             }
 
-            #region Generate Fields
+            var namespaceBlock = new CodeDocument(2).Namespace(classNamespace);
 
-            ICodeBlock fieldsSection = CodeWriter.GenerateFields(element);
-            int startOfFieldsSection = CodeWriter.GetIndexAfter("// Generated Fields", stringBuilder);
-            stringBuilder.Insert(startOfFieldsSection, fieldsSection.ToString());
-
-            #endregion
+            var codeBlock = GenerateClassHeader(element, namespaceBlock);
 
 
-            #region Generate Initialize
+            GenerateFields(element, codeBlock);
 
-            ICodeBlock initializeSection = CodeWriter.GenerateInitialize(element);
-            int startOfInitializeSection = CodeWriter.GetIndexAfter("// Generated Initialize", stringBuilder);
-            stringBuilder.Insert(startOfInitializeSection, initializeSection.ToString());
+            GenerateConstructors(element, codeBlock);
 
-            #endregion
-
-
-            ICodeBlock codeBlock = new CodeDocument(2);
+            GenerateInitialize(element, codeBlock);
 
             GenerateAddToManagers(element, codeBlock);
             
@@ -298,38 +274,17 @@ namespace FlatRedBall.Glue.Parsing
                 
             GenerateMethods(codeBlock, element);
             
-            int startOfAddToManagers = CodeWriter.GetIndexAfter("// Generated AddToManagers", stringBuilder);
-            stringBuilder.Insert(startOfAddToManagers, codeBlock.ToString());
-
-            
-            
-
-            #region Extra Classes
-            codeBlock = new CodeBlockBase(null);
-
             foreach (var codeGenerator in CodeGenerators)
             {
-                codeGenerator.GenerateAdditionalClasses(codeBlock, element);
+                codeGenerator.GenerateAdditionalClasses(namespaceBlock, element);
             }
+            
+            int startOfAddToManagers = CodeWriter.GetIndexAfter("// Generated AddToManagers", stringBuilder);
+            stringBuilder.Insert(startOfAddToManagers, namespaceBlock.ToString());
 
-
-            string extraClasses = codeBlock.ToString();
-
-            if (!string.IsNullOrEmpty(extraClasses))
-            {
-                const string extraClassesComment = "// Extra classes";
-                int indexToReplace = stringBuilder.LastIndexOf(extraClassesComment);
-
-                stringBuilder.Remove(indexToReplace, extraClassesComment.Length);
-
-                stringBuilder.Insert(indexToReplace, extraClasses);
-
-            }
-            #endregion
-
+            
+            
             string generatedCodeFileName = element.Name + ".Generated.cs";
-
-
 
             CodeWriter.SaveFileContents(stringBuilder.ToString(), FileManager.RelativeDirectory + generatedCodeFileName, true);
 
@@ -364,9 +319,7 @@ namespace FlatRedBall.Glue.Parsing
                     }
 
                     #endregion
-
-                    EliminateCall("\tInitialize();", ref fileContents);
-                    EliminateCall(" Initialize();", ref fileContents);
+                    
 
                     CodeWriter.SaveFileContents(fileContents, FileManager.RelativeDirectory + element.Name + ".Generated.cs", true);
                 }
@@ -431,6 +384,53 @@ namespace FlatRedBall.Glue.Parsing
             #endregion
 
 
+        }
+
+        private static ICodeBlock GenerateClassHeader(IElement element, ICodeBlock namespaceBlock)
+        {
+            var inheritance = GetInheritance(element);
+
+            if(!string.IsNullOrEmpty(inheritance))
+            {
+                inheritance = " : " + inheritance;
+            }
+
+            var classCodeblock = namespaceBlock.Class("public partial", FileManager.RemovePath( element.Name), inheritance);
+
+            return classCodeblock;
+        }
+
+        private static void GenerateConstructors(IElement element, ICodeBlock codeBlock)
+        {
+            var whatToInheritFrom = GetInheritance(element);
+
+            var elementName = FileManager.RemovePath(element.Name);
+
+            if (element is EntitySave)
+            {
+                codeBlock.Constructor("public", elementName, "", "this(FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName, true)");
+
+                codeBlock.Constructor("public", elementName, "string contentManagerName", "this(contentManagerName, true)");
+
+                var constructor = codeBlock.Constructor("public", elementName, "string contentManagerName, bool addToManagers", "base()");
+                constructor.Line("ContentManagerName = contentManagerName;");
+                constructor.Line("InitializeEntity(addToManagers);");
+            }
+            else // screen save
+            {
+                string contentManagerName = $"\"{elementName}\"";
+
+                if (element.InheritsFromElement())
+                {
+                    contentManagerName = "";
+                }
+                else if (element.UseGlobalContent)
+                {
+                    contentManagerName = "\"Global\"";
+                }
+
+                codeBlock.Constructor("public", elementName, "", $"base ({contentManagerName})");
+            }
         }
 
         static string GetInheritance(IElement element)
@@ -604,9 +604,29 @@ namespace FlatRedBall.Glue.Parsing
             NamedObjectSaveCodeGenerator.ReusableEntireFileRfses = mReusableEntireFileRfses;
         }
 
-        internal static ICodeBlock GenerateFields(IElement saveObject)
+        internal static ICodeBlock GenerateFields(IElement saveObject, ICodeBlock codeBlock)
         {
-            ICodeBlock codeBlock = new CodeDocument(2);
+            if(saveObject is EntitySave)
+            {
+                if(saveObject.InheritsFromElement())
+                {
+                    string baseQualifiedName = ProjectManager.ProjectNamespace + "." + saveObject.BaseElement.Replace("\\", ".");
+
+                    codeBlock.Line("// This is made static so that static lazy-loaded content can access it.");
+                    codeBlock.Property("public static new string", "ContentManagerName")
+                        .Get().Line($"return {baseQualifiedName}.ContentManagerName;").End()
+                        .Set().Line($"{baseQualifiedName}.ContentManagerName = value;").End();
+                }
+                else
+                {
+                    codeBlock.Line("// This is made static so that static lazy-loaded content can access it.");
+                    codeBlock.AutoProperty("public static string", "ContentManagerName");
+                }
+            }
+
+
+
+
 
             foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators)
             {
@@ -645,11 +665,30 @@ namespace FlatRedBall.Glue.Parsing
 
         }
         
-        internal static ICodeBlock GenerateInitialize(IElement saveObject)
+        internal static ICodeBlock GenerateInitialize(IElement saveObject, ICodeBlock codeBlock)
         {
+            string initializePre = null;
+            string initializeMethodCall = null;
+            if (saveObject is ScreenSave)
+            {
+                initializePre = "public override void";
+                initializeMethodCall = "Initialize";
+            }
+            else
+            {
+                initializeMethodCall = "InitializeEntity";
 
-            ICodeBlock codeBlock = new CodeDocument(3);
-            ICodeBlock currentBlock = codeBlock;
+                if (saveObject.InheritsFromElement())
+                {
+                    initializePre = "protected override void";
+                }
+                else
+                {
+                    initializePre = "protected virtual void";
+                }
+            }
+
+            codeBlock = codeBlock.Function(initializePre, initializeMethodCall, "bool addToManagers");
 
             // Start measuring performance before anything else
             PerformancePluginCodeGenerator.GenerateStartTimingInitialize(saveObject, codeBlock);
@@ -662,7 +701,7 @@ namespace FlatRedBall.Glue.Parsing
             // Load static content before looping through the CodeGenerators
             // The reason for this is there is a ReferencedFileSaveCodeGenerator
             // which needs to work with static RFS's which are instantiated here
-            currentBlock.Line("LoadStaticContent(ContentManagerName);");
+            codeBlock.Line("LoadStaticContent(ContentManagerName);");
 
             PerformancePluginCodeGenerator.GenerateEnd();
 
@@ -711,16 +750,6 @@ namespace FlatRedBall.Glue.Parsing
 
             }
 
-
-
-
-
-
-
-
-
-
-
             codeBlock._();
             PerformancePluginCodeGenerator.GenerateEnd();
 
@@ -758,15 +787,15 @@ namespace FlatRedBall.Glue.Parsing
             bool shouldCallAddToManagers = !saveObject.InheritsFromElement();
             if (shouldCallAddToManagers)
             {
-                currentBlock = currentBlock
+                var ifBlock = codeBlock
                     .If("addToManagers");
                 if (saveObject is ScreenSave)
                 {
-                    currentBlock.Line("AddToManagers();");
+                    ifBlock.Line("AddToManagers();");
                 }
                 else
                 {
-                    currentBlock.Line("AddToManagers(null);");
+                    ifBlock.Line("AddToManagers(null);");
                 }
             }
 

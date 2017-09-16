@@ -116,7 +116,7 @@ namespace FlatRedBall.Screens
 
         /// <summary>
         /// Returns the number of seconds since the Screen was initialized, excluding paused time.
-        /// This value begins at 0 when the Screen is first created.
+        /// This value begins at 0 when the Screen is first created and is reset when the screen restarts.
         /// </summary>
         /// <remarks>
         /// If a screen is never paused, then its PauseAdjustedCurrentTime value increases regularly.

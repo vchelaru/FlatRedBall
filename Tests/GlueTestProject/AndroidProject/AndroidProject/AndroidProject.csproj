@@ -2029,6 +2029,7 @@
       <Link>TileGraphics\TilesetExtensionMethods.cs</Link>
     </Compile>
     <Compile Include="Activity1.cs" />
+    <Compile Include="Code" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

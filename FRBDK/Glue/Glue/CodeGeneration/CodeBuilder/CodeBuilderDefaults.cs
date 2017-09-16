@@ -3,6 +3,6 @@
     static class CodeBuilderDefaults
     {
         public const int TabCount = 0;
-        public const string TabCharacter = "\t";
+        public const string TabCharacter = "    ";
     }
 }

@@ -45,7 +45,11 @@ namespace FlatRedBall
         static float mLastSecondDifference;
         static float mSecondDifferenceSquaredDividedByTwo;
 
-        // This is accessed so many times it's made a field for performance reasons.
+        /// <summary>
+        /// The amount of time in seconds since the game started running. 
+        /// This value is updated once-per-frame so it will 
+        /// always be the same value until the next frame is called.
+        /// </summary>
         public static double CurrentTime;
         static double mLastCurrentTime;
 
