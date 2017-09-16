@@ -2116,7 +2116,7 @@ namespace FlatRedBall.Glue.Parsing
             else
             {
                 int returnValue = indexOfString + stringToSearchFor.Length + 1;
-                if (entireStringToSearchIn[returnValue] == '\n')
+                if (returnValue < entireStringToSearchIn.Length && entireStringToSearchIn[returnValue] == '\n')
                 {
                     returnValue++;
                 }
