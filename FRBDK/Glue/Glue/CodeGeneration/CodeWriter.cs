@@ -145,17 +145,6 @@ namespace FlatRedBall.Glue.Parsing
                 throw new ArgumentNullException("element");
             }
 
-            string template;
-
-            if (element is ScreenSave)
-            {
-                template = mScreenTemplateGeneratedCode;
-            }
-            else
-            {
-                template = mEntityTemplateGeneratedCode;
-            }
-
             // Since anything can modify an enumeration value we want to make sure that
             // it's proper before generating code for it:
 
@@ -190,8 +179,6 @@ namespace FlatRedBall.Glue.Parsing
             EventCodeGenerator.AddStubsForCustomEvents(element);
 
             CreateGeneratedFileIfNecessary(element);
-
-            StringBuilder stringBuilder = new StringBuilder(template);
 
             foreach (PluginManager pluginManager in PluginManager.GetInstances())
             {
@@ -243,19 +230,21 @@ namespace FlatRedBall.Glue.Parsing
             }
 
             var whatToInheritFrom = GetInheritance(element);
+
             
-            try
-            {
-                CodeWriter.GenerateUsings(stringBuilder, element);
-            }
-            catch (Exception e)
-            {
-                string stackTrace = e.StackTrace;
+            var rootBlock = new CodeDocument(0);
 
-                throw new Exception("Error trying to generate using statements for " + element + "\n\n" + stackTrace, e);
-            }
+            rootBlock.Line("#if ANDROID || IOS");
+            rootBlock.Line("#define REQUIRES_PRIMARY_THREAD_LOADING");
+            rootBlock.Line("#endif");
 
-            var namespaceBlock = new CodeDocument(2).Namespace(classNamespace);
+            // Not sure if we still need this, as we've been slowly ripping out using statements from generated code.
+            rootBlock.Line("using Color = Microsoft.Xna.Framework.Color;");
+
+            UsingsCodeGenerator.GenerateUsingStatements(rootBlock, element);
+
+
+            var namespaceBlock = rootBlock.Namespace(classNamespace);
 
             var codeBlock = GenerateClassHeader(element, namespaceBlock);
 
@@ -278,15 +267,11 @@ namespace FlatRedBall.Glue.Parsing
             {
                 codeGenerator.GenerateAdditionalClasses(namespaceBlock, element);
             }
-            
-            int startOfAddToManagers = CodeWriter.GetIndexAfter("// Generated AddToManagers", stringBuilder);
-            stringBuilder.Insert(startOfAddToManagers, namespaceBlock.ToString());
-
-            
+           
             
             string generatedCodeFileName = element.Name + ".Generated.cs";
-
-            CodeWriter.SaveFileContents(stringBuilder.ToString(), FileManager.RelativeDirectory + generatedCodeFileName, true);
+            var contentsToSave = rootBlock.ToString();
+            CodeWriter.SaveFileContents(contentsToSave, FileManager.RelativeDirectory + generatedCodeFileName, true);
 
 
             #region Extra stuff if it's a ScreenSave
@@ -333,7 +318,7 @@ namespace FlatRedBall.Glue.Parsing
             {
                 EntitySave entitySave = element as EntitySave;
 
-                string fileContents = stringBuilder.ToString();
+                string fileContents = contentsToSave;
                 string fileName = FileManager.RelativeDirectory + element.Name + ".Generated.cs";
                 bool shouldSave = false;
 
@@ -2073,19 +2058,6 @@ namespace FlatRedBall.Glue.Parsing
             FileManager.SaveText("// Empty event file - code will be added here if events are added in Glue", fullFileName);
         }
 
-
-        internal static void GenerateUsings(StringBuilder stringBuilder, IElement saveObject)
-        {
-            if (stringBuilder.Contains("// Generated Usings"))
-            {
-                ICodeBlock usings = new CodeDocument();
-
-                UsingsCodeGenerator.GenerateUsingStatements(usings, saveObject);
-
-                int startOfUsingSection = GetIndexAfter("// Generated Usings", stringBuilder);
-                stringBuilder.Insert(startOfUsingSection, usings.ToString());
-            }
-        }
 
         internal static int GetIndexAfter(string stringToSearchFor, string entireStringToSearchIn)
         {
