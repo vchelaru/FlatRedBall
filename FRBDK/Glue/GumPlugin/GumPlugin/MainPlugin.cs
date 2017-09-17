@@ -136,7 +136,9 @@ namespace GumPlugin
             // 0.8.8.3
             // - Fixed viewport issues when ClipsChildren = true on a FRB XNA game
             // - Added property to address monogame GL bug here:  https://github.com/MonoGame/MonoGame/issues/5947
-            get { return new Version(0, 8, 8, 3); }
+            // 0.8.8.4 
+            // - Fixed cursor over on apps running with letterbox/pillarbox.
+            get { return new Version(0, 8, 8, 4); }
         }
 
         #endregion

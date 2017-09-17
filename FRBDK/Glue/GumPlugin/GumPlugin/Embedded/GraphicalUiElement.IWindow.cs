@@ -482,6 +482,10 @@ namespace Gum.Wireframe
                 int screenX = cursor.ScreenX;
                 int screenY = cursor.ScreenY;
 
+                // Adjust by viewport values:
+                screenX -= Managers.Renderer.GraphicsDevice.Viewport.X;
+                screenY -= Managers.Renderer.GraphicsDevice.Viewport.Y;
+
                 float worldX;
                 float worldY;
 

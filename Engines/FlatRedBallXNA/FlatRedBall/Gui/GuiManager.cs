@@ -863,7 +863,6 @@ namespace FlatRedBall.Gui
                         // First check all floating windows
                     else if (c.WindowOver == null)
                     {
-
                         for (int i = mWindowArray.Count - 1; i > -1; i--)
                         {
                             if (!mWindowArray[i].GuiManagerDrawn || mWindowArray[i].Visible == false || !mWindowArray[i].Enabled)
@@ -902,26 +901,7 @@ namespace FlatRedBall.Gui
                                 if (window.Visible == false || !window.Enabled)
                                     continue;
 
-                                if (window.GuiManagerDrawn)
-                                {
-                                    if (c.IsOn(window))
-                                    {
-                                        window.TestCollision(c);
-                                        if (c.PrimaryPush && i < mWindowArray.Count)
-                                        {// we pushed a button, so let's bring it to the front
-                                            // Man, what a bug.  It's possible
-                                            // that clicking one window will bring
-                                            // another to the foreground.  If so, then
-                                            // the index is no longer valid.  Typical unnecessary
-                                            // optimization causing all kinds of problems.
-                                            //mWindowArray.RemoveAt(i);
-                                            mWindowArray.Remove(window);
-                                            mWindowArray.Add(window);
-                                        }
-                                        break;
-                                    }
-                                }
-                                else if (!window.IgnoredByCursor && window.HasCursorOver(c))
+                                if (!window.IgnoredByCursor && window.HasCursorOver(c))
                                 {
                                     window.TestCollision(c);
                                     // I think we should use the cursor's WindowOver which may be a child of Window
