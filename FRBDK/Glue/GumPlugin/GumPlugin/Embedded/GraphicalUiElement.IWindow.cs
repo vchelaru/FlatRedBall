@@ -481,15 +481,11 @@ namespace Gum.Wireframe
             {
                 int screenX = cursor.ScreenX;
                 int screenY = cursor.ScreenY;
-
-                // Adjust by viewport values:
-                screenX -= Managers.Renderer.GraphicsDevice.Viewport.X;
-                screenY -= Managers.Renderer.GraphicsDevice.Viewport.Y;
-
                 float worldX;
                 float worldY;
 
                 var managers = this.EffectiveManagers;
+
 
                 // If there are no managers, we an still fall back to the default:
                 if(managers == null)
@@ -499,6 +495,10 @@ namespace Gum.Wireframe
 
                 if(managers != null)
                 {
+                    // Adjust by viewport values:
+                    screenX -= managers.Renderer.GraphicsDevice.Viewport.X;
+                    screenY -= managers.Renderer.GraphicsDevice.Viewport.Y;
+
                     managers.Renderer.Camera.ScreenToWorld(
                         screenX, screenY,
                         out worldX, out worldY);
