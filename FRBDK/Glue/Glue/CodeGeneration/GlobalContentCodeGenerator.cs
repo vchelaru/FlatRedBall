@@ -52,7 +52,7 @@ namespace FlatRedBall.Glue.Parsing
 
             if (failedSaving)
             {
-                System.Windows.Forms.MessageBox.Show("Could not save the file\n\n" + absoluteFileName);
+                Plugins.ExportedImplementations.GlueCommands.Self.PrintError("Could not save the file\n\n" + absoluteFileName);
 
             }
 

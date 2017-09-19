@@ -419,7 +419,7 @@ Exception Info:
         {
             lblSpeed.Text = _speed;
             lblFileName.Text = _fileName;
-            pbValue.Value = e.ProgressPercentage;
+            pbValue.Value = Math.Min( e.ProgressPercentage, 100);
         }
 
         private void UpdateWorkerThreadRunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)

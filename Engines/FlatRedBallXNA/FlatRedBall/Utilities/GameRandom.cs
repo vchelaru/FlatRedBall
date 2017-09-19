@@ -53,5 +53,24 @@ namespace FlatRedBall.Utilities
                 (float)System.Math.Sin((double)angle) * length);
         }
 
+        /// <summary>
+        /// Returns a Vector2 of random length and angle between the argument values. 
+        /// </summary>
+        /// <param name="minLength">The minimum length of the returned vector.</param>
+        /// <param name="maxLength">The maximum length of the returned vector.</param>
+        /// <param name="minRadians">The minimum angle of the returned vector.</param>
+        /// <param name="maxRadians">The maximum angle of the returned vector.</param>
+        /// <returns>A random vector using the argument values.</returns>
+        public Vector2 WedgeVector2Radians(float minLength, float maxLength, float minRadians, float maxRadians)
+        {
+            var angle = Between(minRadians, maxRadians);
+            var length = Between(minLength, maxLength);
+
+            return new Vector2(
+                (float)System.Math.Cos((double)angle) * length,
+                (float)System.Math.Sin((double)angle) * length);
+        }
+
+
     }
 }
