@@ -414,6 +414,7 @@ namespace FlatRedBall.Gui
             set;
         }
 
+        bool active;
         #region XML Docs
         /// <summary>
         /// Sets whether the cursor is active.
@@ -438,8 +439,7 @@ namespace FlatRedBall.Gui
         {
             set
             {
-                si.CursorSelectable = value;
-
+                active = value;
                 if (value == false)
                 {
                     PrimaryClick = false;
@@ -458,7 +458,7 @@ namespace FlatRedBall.Gui
                     MiddlePush = false;
                 }
             }
-            get { return si.CursorSelectable; }
+            get { return active; }
         }
 
         public Camera Camera
