@@ -105,11 +105,14 @@ namespace FlatRedBall.Glue.Managers
                         topLevelOnly[i] = FlatRedBall.IO.FileManager.RemoveDotDotSlash(topLevelOnly[i]);
                     }
 
-                    fileReferences[standardized] = new FileReferenceInformation
+
+                    var referenceInfo = new FileReferenceInformation
                     {
                         LastWriteTime = File.Exists(standardized) ? File.GetLastWriteTime(standardized) : DateTime.MinValue,
                         References = topLevelOnly
                     };
+
+                    fileReferences[standardized] = referenceInfo;
 
                 }
             }

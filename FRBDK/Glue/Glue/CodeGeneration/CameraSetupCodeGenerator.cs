@@ -233,7 +233,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     methodContents.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(width, height);");
                 }
-
+                else
+                {
+                    methodContents.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution({widthVariable}, {heightVariable});");
+                }
                 // closes the #if platform section
                 methodContents.Line("#endif");
 

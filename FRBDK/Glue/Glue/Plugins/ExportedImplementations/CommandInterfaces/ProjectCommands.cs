@@ -381,7 +381,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if(mainProject.IsFilePartOfProject(absoluteFileName) == false)
             {
                 mainProject.AddCodeBuildItem(absoluteFileName);
-                mainProject.Save();
+
+                GlueCommands.Self.TryMultipleTimes(mainProject.Save, 5);
                 // do we need to project sync?
             }
         }

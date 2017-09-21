@@ -147,6 +147,10 @@ namespace OfficialPlugins.MonoGameContent
                     {
                         yield return "m4a";
                     }
+                    else if(Platform == "WindowsStoreApp")
+                    {
+                        yield return "wma";
+                    }
                     else
                     {
                         // Not sure if other platforms use .ogg, need to test this

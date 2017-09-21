@@ -55,7 +55,8 @@ namespace OfficialPlugins.MonoGameContent
         public static bool GetIfNeedsMonoGameFilesBuilt(ProjectBase project)
         {
             return project is DesktopGlProject ||
-                project is AndroidProject 
+                project is AndroidProject ||
+                project is UwpProject
                 // todo: need to support iOS
                 ;
 
@@ -219,6 +220,10 @@ namespace OfficialPlugins.MonoGameContent
                 else if (project is AndroidProject)
                 {
                     contentItem.Platform = "Android";
+                }
+                else if(project is UwpProject)
+                {
+                    contentItem.Platform = "WindowsStoreApp";
                 }
                 else if (createEvenIfProjectTypeNotSupported == false)
                 {
