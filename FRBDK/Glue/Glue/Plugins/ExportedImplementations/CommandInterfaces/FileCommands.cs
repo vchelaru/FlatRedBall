@@ -115,48 +115,52 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         private void AddFilesReferenced(string fileName, List<string> allFiles, TopLevelOrRecursive topLevelOrRecursive, ProjectOrDisk projectOrFile)
         {
-            string absoluteFileName = ProjectManager.MakeAbsolute(fileName);
-
-            if (File.Exists(absoluteFileName))
+            // The project may have been unloaded:
+            if (GlueState.Self.CurrentMainContentProject != null)
             {
-#if GLUE
+                string absoluteFileName = ProjectManager.MakeAbsolute(fileName);
 
-                List<string> referencedFiles = null;
-
-                if (projectOrFile == ProjectOrDisk.Project)
+                if (File.Exists(absoluteFileName))
                 {
-                    referencedFiles = FlatRedBall.Glue.Managers.FileReferenceManager.Self.GetFilesReferencedBy(absoluteFileName, topLevelOrRecursive);
+    #if GLUE
+
+                    List<string> referencedFiles = null;
+
+                    if (projectOrFile == ProjectOrDisk.Project)
+                    {
+                        referencedFiles = FlatRedBall.Glue.Managers.FileReferenceManager.Self.GetFilesReferencedBy(absoluteFileName, topLevelOrRecursive);
+                    }
+                    else
+                    {
+                        referencedFiles = FlatRedBall.Glue.Managers.FileReferenceManager.Self.GetFilesNeededOnDiskBy(absoluteFileName, topLevelOrRecursive);
+
+                    }
+    #else
+                    List<string> referencedFiles = 
+                            ContentParser.GetFilesReferencedByAsset(absoluteFileName, topLevelOrRecursive);
+
+    #endif
+                    // 12/14/2010
+                    // The referencedFiles
+                    // instance may be null
+                    // if the absoluteFileName
+                    // references a file that doesn't
+                    // exist on the file system.  This
+                    // happens if someone checks in a GLUX
+                    // file but forgets to check in a newly-
+                    // created file.  Not deadly, so Glue shouldn't
+                    // crash.  Also, Glue displays warning messages in
+                    // a different part of the code, so we shouldn't pester
+                    // the user here with another one.
+                    if (referencedFiles != null)
+                    {
+                        allFiles.AddRange(referencedFiles);
+                    }
                 }
                 else
                 {
-                    referencedFiles = FlatRedBall.Glue.Managers.FileReferenceManager.Self.GetFilesNeededOnDiskBy(absoluteFileName, topLevelOrRecursive);
-
+                    // Do nothing?
                 }
-#else
-                List<string> referencedFiles = 
-                        ContentParser.GetFilesReferencedByAsset(absoluteFileName, topLevelOrRecursive);
-
-#endif
-                // 12/14/2010
-                // The referencedFiles
-                // instance may be null
-                // if the absoluteFileName
-                // references a file that doesn't
-                // exist on the file system.  This
-                // happens if someone checks in a GLUX
-                // file but forgets to check in a newly-
-                // created file.  Not deadly, so Glue shouldn't
-                // crash.  Also, Glue displays warning messages in
-                // a different part of the code, so we shouldn't pester
-                // the user here with another one.
-                if (referencedFiles != null)
-                {
-                    allFiles.AddRange(referencedFiles);
-                }
-            }
-            else
-            {
-                // Do nothing?
             }
         }
 

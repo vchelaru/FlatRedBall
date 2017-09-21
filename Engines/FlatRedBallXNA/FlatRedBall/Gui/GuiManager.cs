@@ -358,52 +358,12 @@ namespace FlatRedBall.Gui
 
             mDominantWindows = new List<IWindow>();
 
-#if !MONOGAME && !SILVERLIGHT && !UNIT_TESTS && !XNA4
+#if !MONOGAME && !UNIT_TESTS && !XNA4
             RenderingBasedInitializize();
 #endif
 
             BringsClickedWindowsToFront = true;
 
-
-            try
-            {
-#if FRB_MDX
-                if (System.IO.File.Exists(FlatRedBall.IO.FileManager.RelativeDirectory + "Assets/Textures/upDirectory.bmp"))
-                {
-
-                    mUpDirectory = FlatRedBallServices.Load<Texture2D>(
-                        FlatRedBall.IO.FileManager.RelativeDirectory + "Assets/Textures/upDirectory.bmp", 
-                        InternalGuiContentManagerName);
-                }
-                if (System.IO.File.Exists(FlatRedBall.IO.FileManager.RelativeDirectory + "Assets/Textures/cursorTextBox.bmp"))
-                {
-                    mCursorTextBox = FlatRedBallServices.Load<Texture2D>(
-                        FlatRedBall.IO.FileManager.RelativeDirectory + "Assets/Textures/cursorTextBox.bmp",
-                        InternalGuiContentManagerName);
-                }
-
-
-
-
-                if (guiTextureToUse != null && guiTextureToUse != "")
-                {
-                    guiTexture = FlatRedBallServices.Load<Texture2D>(
-                        guiTextureToUse, InternalGuiContentManagerName);
-
-                    RefreshTextSize();
-                }
-
-#elif SUPPORTS_FRB_DRAWN_GUI
-                guiTexture = guiTextureToUse;
-
-                RefreshTextSize();
-#endif
-
-            }
-            catch(Exception e)
-            {
-                throw e;
-            }
             try
             {
 
@@ -419,14 +379,10 @@ namespace FlatRedBall.Gui
             {
                 throw e;
             }
-
-#if SUPPORTS_FRB_DRAWN_GUI
-            SetPropertyGridTypeAssociations();
-#endif
+            
 
             // Let's do some updates because we want to make sure our "last" values are set to the current value
             // so we don't have any movement on the cursor initially:
-            cursor.Update(TimeManager.CurrentTime);
             cursor.Update(TimeManager.CurrentTime);
 
         }

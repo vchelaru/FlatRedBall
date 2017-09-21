@@ -54,7 +54,7 @@ namespace FlatRedBall.Gui
             // do nothing - touch screen not supported
 #else
 
-            PrimaryClick |= InputManager.TouchScreen.ScreenReleased && IgnoreNextClick == false;
+            PrimaryClick |= InputManager.TouchScreen.ScreenReleased && ignoreNextFrameInput == false;
             PrimaryPush |= InputManager.TouchScreen.ScreenPushed;
 
             // We used to 
@@ -74,7 +74,7 @@ namespace FlatRedBall.Gui
             SecondaryDown |= InputManager.TouchScreen.CurrentNumberOfTouches > 1;
             SecondaryPush |= InputManager.TouchScreen.CurrentNumberOfTouches > 1 && InputManager.TouchScreen.LastFrameNumberOfTouches < 2;
             SecondaryClick |= InputManager.TouchScreen.CurrentNumberOfTouches < 2 && InputManager.TouchScreen.LastFrameNumberOfTouches > 1 &&
-                IgnoreNextClick == false;
+                ignoreNextFrameInput == false;
 #endif
         }
 #endif

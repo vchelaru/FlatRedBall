@@ -321,8 +321,11 @@ namespace FlatRedBall.Gui
 
         internal bool mUsingWindowsCursor = true;
 
-        bool mIgnoreNextClick;
-
+        bool ignoreNextFrameInput;
+        // When a frame of input is ignored, the following frame
+        // may pick up that the cursor is down. We want to ignore pushes
+        // for that frame too:
+        bool ignoreNextPush;
 
         IWindow mWindowOver;
 
@@ -414,7 +417,7 @@ namespace FlatRedBall.Gui
             set;
         }
 
-        bool active;
+        bool active = true;
         #region XML Docs
         /// <summary>
         /// Sets whether the cursor is active.
@@ -456,6 +459,10 @@ namespace FlatRedBall.Gui
                     MiddleClick = false;
                     MiddleDown = false;
                     MiddlePush = false;
+
+                    WindowPushed = null;
+                    WindowOver = null;
+                    mWindowGrabbed = null;
                 }
             }
             get { return active; }
@@ -467,31 +474,24 @@ namespace FlatRedBall.Gui
             set { mCamera = value; }
         }
 
-        [Obsolete("Use IgnoreInputThisFrame")]
-        public bool IgnoreNextClick
-        {
-            get
-            {
-                return IgnoreInputThisFrame;
-            }
-            set
-            {
-                IgnoreInputThisFrame = value;
-            }
-        }
 
         public bool IgnoreInputThisFrame
         {
             get
             {
-                return mIgnoreNextClick;
+                // Users will assign IgnoreInputThisFrame because it makes sense conceptually, but technically
+                // when the user assigns this value the engine has already processed input this frame. They probably
+                // want it ignored next frame. Internally we'll use the technical terminology.
+                return ignoreNextFrameInput;
             }
             set
             {
-                mIgnoreNextClick = value;
+                ignoreNextFrameInput = value;
+                ignoreNextPush = value;
                 if (value)
                 {
                     PrimaryClick = false;
+                    PrimaryPush = false;
                 }
             }
         }
@@ -2357,7 +2357,7 @@ namespace FlatRedBall.Gui
 
         float WorldXChangeAt(float zPosition, bool orthogonal, float orthogonalWidth)
         {
-#if WINDOWS_PHONE || MONODROID || WINDOWS_8 || IOS
+#if MONODROID || WINDOWS_8 || IOS
             if(PrimaryPush || InputManager.TouchScreen.NumberOfTouchesChanged)
             {
                 return 0;
@@ -2491,18 +2491,11 @@ namespace FlatRedBall.Gui
             bool shouldEarlyOut = false;
 
             shouldEarlyOut = !Active;
-#if FRB_MDX
-            
-            shouldEarlyOut |= mOwner.IsDisposed;
-#else
-
 #if !UNIT_TESTS
             shouldEarlyOut |= !FlatRedBallServices.Game.IsActive;
 
             // If the game isn't active we may be debugging.  This can cause clicks to happen every frame, and we don't want that
             PrimaryClick = false;
-#endif
-
 #endif
 
             if (CustomIsActive != null)
@@ -2559,8 +2552,12 @@ namespace FlatRedBall.Gui
 
             #endregion
 
-
-            UpdateValuesFromInputDevice(currentTime);
+                
+            if(ignoreNextFrameInput == false)
+            {
+                UpdateValuesFromInputDevice(currentTime);
+            }
+            ignoreNextFrameInput = false;
 
 			#region Keeping inside the screen
 
@@ -2661,10 +2658,18 @@ namespace FlatRedBall.Gui
 
             if (assignPushAndClickValues)
             {
+                // todo - maybe we should break these up into separate bools?
+                if(ignoreNextPush && !PrimaryDown && !SecondaryDown && !MiddleDown)
+                {
+                    ignoreNextPush = false;
+                }
 
-                PrimaryPush = PrimaryDown && mLastPrimaryDown == false;
-                SecondaryPush = SecondaryDown == true && mLastSecondaryDown == false;
-                MiddlePush = MiddleDown == true && mLastMiddleDown == false;
+                if(ignoreNextPush == false)
+                {
+                    PrimaryPush = PrimaryDown && mLastPrimaryDown == false;
+                    SecondaryPush = SecondaryDown == true && mLastSecondaryDown == false;
+                    MiddlePush = MiddleDown == true && mLastMiddleDown == false;
+                }
 
                 PrimaryDoublePush = PrimaryPush && (currentTime - mLastTimePrimaryPush) < .25;
 
@@ -2951,7 +2956,6 @@ namespace FlatRedBall.Gui
                     }
                 }
 
-                mIgnoreNextClick = false;
             }
 
             return assignPushAndClickValues;
@@ -3135,24 +3139,30 @@ namespace FlatRedBall.Gui
         
         private void GetPushDownClickFromMouse()
         {
+
             PrimaryDown |= InputManager.Mouse.ButtonDown(FlatRedBall.Input.Mouse.MouseButtons.LeftButton);
             PrimaryPush |= InputManager.Mouse.ButtonPushed(FlatRedBall.Input.Mouse.MouseButtons.LeftButton);
             PrimaryClick |= InputManager.Mouse.ButtonReleased(FlatRedBall.Input.Mouse.MouseButtons.LeftButton) &&
-                IgnoreNextClick == false;
+                ignoreNextPush == false;
             PrimaryDoubleClick |= InputManager.Mouse.ButtonDoubleClicked(FlatRedBall.Input.Mouse.MouseButtons.LeftButton);
             PrimaryDoublePush |= InputManager.Mouse.ButtonDoublePushed(FlatRedBall.Input.Mouse.MouseButtons.LeftButton);
 
             SecondaryDown |= InputManager.Mouse.ButtonDown(FlatRedBall.Input.Mouse.MouseButtons.RightButton);
             SecondaryPush |= InputManager.Mouse.ButtonPushed(FlatRedBall.Input.Mouse.MouseButtons.RightButton);
             SecondaryClick |= InputManager.Mouse.ButtonReleased(FlatRedBall.Input.Mouse.MouseButtons.RightButton) &&
-                IgnoreNextClick == false;
+                ignoreNextPush == false;
 
             SecondaryDoubleClick |= InputManager.Mouse.ButtonDoubleClicked(FlatRedBall.Input.Mouse.MouseButtons.RightButton);
 
             MiddleDown |= InputManager.Mouse.ButtonDown(FlatRedBall.Input.Mouse.MouseButtons.MiddleButton);
             MiddlePush |= InputManager.Mouse.ButtonPushed(Mouse.MouseButtons.MiddleButton);
             MiddleClick |= InputManager.Mouse.ButtonReleased(Mouse.MouseButtons.MiddleButton) &&
-                IgnoreNextClick == false;
+                ignoreNextPush == false;
+
+            if (ignoreNextPush && !PrimaryDown && !SecondaryDown && !MiddleDown)
+            {
+                ignoreNextPush = false;
+            }
         }
 
         #endregion

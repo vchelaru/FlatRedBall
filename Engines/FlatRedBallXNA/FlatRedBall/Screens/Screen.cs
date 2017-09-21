@@ -431,7 +431,7 @@ namespace FlatRedBall.Screens
                 UnpauseThisScreen();
             }
 			
-			GuiManager.Cursor.IgnoreNextClick = true;
+			GuiManager.Cursor.IgnoreInputThisFrame = true;
 
             if(mNumberOfThreadsBeforeAsync != -1)
             {
