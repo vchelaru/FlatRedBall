@@ -195,6 +195,10 @@ namespace OfficialPlugins.MonoGameContent
             {
                 contentItem = ContentItem.CreateTextureBuild();
             }
+            else if(extension == "fx")
+            {
+                contentItem = ContentItem.CreateEffectBuild();
+            }
 
 
             if (contentItem != null)
@@ -392,7 +396,8 @@ namespace OfficialPlugins.MonoGameContent
 
             bool isRequired = extension == "mp3" ||
                 extension == "ogg" ||
-                extension == "wav";
+                extension == "wav" ||
+                extension == "fx";
 
             if (isRequired)
             {

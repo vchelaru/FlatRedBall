@@ -55,7 +55,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FlatRedBall.Plugin">
-      <HintPath>..\..\FlatRedBall.Plugin\bin\Debug\FlatRedBall.Plugin.dll</HintPath>
+      <HintPath>..\..\FlatRedBall.Plugin\bin\x86\Debug\FlatRedBall.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="FlatRedBall.PropertyGrid">
       <HintPath>..\..\FlatRedBall.PropertyGrid\bin\Debug\FlatRedBall.PropertyGrid.dll</HintPath>

@@ -36,6 +36,19 @@ namespace OfficialPlugins.MonoGameContent
             set;
         }
 
+        #region CreateXXXXBuild() methods
+
+        // The CreateXXXXBuild() methods create a ContentItem
+        // which can be used to build a content type using the
+        // MonoGame Content Pipeline. These are used to run the
+        // commandline tool. More types may be added here over time
+        // to handle more types of content. To figure out how to add
+        // one here, you can create a new monogame project and add the
+        // desired file type to the project, then save the .mgcb, which
+        // is a text file. That text file will include the parameters which
+        // are sent to the content pipeline, and those can be used to assign
+        // properties on the ContentItem.
+
         public static ContentItem CreateMp3Build()
         {
             var toReturn = new ContentItem();
@@ -72,6 +85,19 @@ namespace OfficialPlugins.MonoGameContent
             return toReturn;
         }
 
+
+        internal static ContentItem CreateEffectBuild()
+        {
+            var toReturn = new ContentItem();
+
+            toReturn.Importer = "EffectImporter";
+            toReturn.Processor = "EffectProcessor";
+            toReturn.ProcessorParameters.Add("DebugMode=Auto");
+
+            return toReturn;
+        }
+
+        #endregion
 
         public string GenerateCommandLine()
         {
@@ -157,6 +183,9 @@ namespace OfficialPlugins.MonoGameContent
                         yield return "ogg";
                     }
                     break;
+                case "EffectProcessor":
+                    yield return "xnb";
+                    break;
             }
         }
 
@@ -164,5 +193,6 @@ namespace OfficialPlugins.MonoGameContent
         {
             return $"{BuildFileName} {Importer} {Processor}";
         }
+
     }
 }
