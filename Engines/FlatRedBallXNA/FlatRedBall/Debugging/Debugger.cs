@@ -237,15 +237,21 @@ namespace FlatRedBall.Debugging
 
         public static string GetAutomaticallyUpdatedObjectInformation()
         {
+            const string indentString = " * ";
+
             StringBuilder stringBuilder = new StringBuilder();
             int total = 0;
             // SpriteManager
             stringBuilder.AppendLine(SpriteManager.ManagedPositionedObjects.Count + " PositionedObjects");
+
+            var entityCount = SpriteManager.ManagedPositionedObjects.Where(item => item.GetType().FullName.Contains(".Entities")).Count();
+            stringBuilder.AppendLine($"{indentString} {entityCount} Entities");
+
             total += SpriteManager.ManagedPositionedObjects.Count;
 
             stringBuilder.AppendLine(SpriteManager.AutomaticallyUpdatedSprites.Count + " Sprites");
-            stringBuilder.AppendLine("  " + SpriteManager.ParticleCount + " Particles");
-            stringBuilder.AppendLine("  " + (SpriteManager.AutomaticallyUpdatedSprites.Count - SpriteManager.ParticleCount) + " Non-Particles");
+            stringBuilder.AppendLine(indentString + SpriteManager.ParticleCount + " Particles");
+            stringBuilder.AppendLine(indentString + (SpriteManager.AutomaticallyUpdatedSprites.Count - SpriteManager.ParticleCount) + " Non-Particles");
             total += SpriteManager.AutomaticallyUpdatedSprites.Count;
 
             stringBuilder.AppendLine(SpriteManager.SpriteFrames.Count + " SpriteFrames");
@@ -265,6 +271,34 @@ namespace FlatRedBall.Debugging
 
             string result = stringBuilder.ToString();
             return result;
+        }
+
+        public static string GetAutomaticallyUpdatedEntityInformation()
+        {
+            Dictionary<Type, int> countDictionary = new Dictionary<Type, int>();
+
+            var entities = SpriteManager.ManagedPositionedObjects.Where(item => item.GetType().FullName.Contains(".Entities"));
+
+            foreach(var entity in entities)
+            {
+                var type = entity.GetType();
+                if (countDictionary.ContainsKey(type))
+                {
+                    countDictionary[type]++;
+                }
+                else
+                {
+                    countDictionary[type] = 1;
+                }
+            }
+
+            StringBuilder builder = new StringBuilder();
+            foreach(var kvp in countDictionary.OrderByDescending(item =>item.Value))
+            {
+                builder.AppendLine($"{kvp.Value} {kvp.Key.Name}");
+            }
+
+            return builder.ToString();
         }
 
         public static void WriteAutomaticallyUpdatedSpriteFrameBreakdown()

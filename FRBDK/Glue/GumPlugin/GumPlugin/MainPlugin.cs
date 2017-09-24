@@ -138,7 +138,9 @@ namespace GumPlugin
             // - Added property to address monogame GL bug here:  https://github.com/MonoGame/MonoGame/issues/5947
             // 0.8.8.4 
             // - Fixed cursor over on apps running with letterbox/pillarbox.
-            get { return new Version(0, 8, 8, 4); }
+            // 0.8.8.5
+            // - Updated to latest Gum rendering engine, allowing Text to specify pixel perfect or free floating positioning.
+            get { return new Version(0, 8, 8, 5); }
         }
 
         #endregion
