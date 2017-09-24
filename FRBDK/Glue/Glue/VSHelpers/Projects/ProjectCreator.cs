@@ -30,7 +30,27 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             try
             {
-                coreVisualStudioProject = new Project(fileName, null, null, new ProjectCollection());
+                try
+                {
+                    coreVisualStudioProject = new Project(fileName, null, null, new ProjectCollection());
+                }
+                catch (Microsoft.Build.Exceptions.InvalidProjectFileException exception)
+                {
+                    // This is a bug I haven't been able to figure out, but have asked about here:
+                    // https://stackoverflow.com/questions/46384075/why-does-microsoft-build-framework-dll-15-3-not-load-csproj-15-1-does
+                    // So I'm going to hack a fix by checking if this has to do with 15.0 vs the other versions:
+
+                    var message = exception.Message;
+                    if(exception.Message.Contains("\"15.0\"") && exception.Message.Contains("\"14.0\""))
+                    {
+                        coreVisualStudioProject = new Project(fileName, null, "14.0", new ProjectCollection());
+                    }
+                    else
+                    {
+                        throw exception;
+                    }
+                }
+
             }
             catch (Microsoft.Build.Exceptions.InvalidProjectFileException exception)
             {
