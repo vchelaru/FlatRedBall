@@ -88,12 +88,12 @@ namespace BuildServerUploaderConsole.Data
                 engine.RelativeToLibrariesReleaseFolder = @"UWP\Release";
                 engine.TemplateFolder = @"FlatRedBallUwpTemplate\FlatRedBallUwpTemplate\";
 
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\Debug\FlatRedBallUwp.dll");
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\Debug\FlatRedBallUwp.pdb");
+                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\x86\Debug\FlatRedBallUwp.dll");
+                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\x86\Debug\FlatRedBallUwp.pdb");
 
 
-                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\Release\FlatRedBallUwp.dll");
-                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\Release\FlatRedBallUwp.pdb");
+                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\x86\Release\FlatRedBallUwp.dll");
+                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\x86\Release\FlatRedBallUwp.pdb");
 
                 Engines.Add(engine);
             }
