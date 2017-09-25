@@ -259,6 +259,11 @@ namespace FlatRedBall.Debugging
 
             stringBuilder.AppendLine(SpriteManager.Cameras.Count + " Cameras");
             total += SpriteManager.Cameras.Count;
+
+            stringBuilder.AppendLine(SpriteManager.Emitters.Count + " Emitters");
+            total += SpriteManager.Emitters.Count;
+
+
             // ShapeManager
             stringBuilder.AppendLine(ShapeManager.AutomaticallyUpdatedShapes.Count + " Shapes");
             total += ShapeManager.AutomaticallyUpdatedShapes.Count;

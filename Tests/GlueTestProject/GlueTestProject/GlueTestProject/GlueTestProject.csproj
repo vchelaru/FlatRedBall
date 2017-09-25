@@ -324,6 +324,14 @@
     <Compile Include="Entities\DrawableEntity.Generated.cs">
       <DependentUpon>DrawableEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\EmitterAsContainerDerived.cs" />
+    <Compile Include="Entities\EmitterAsContainerDerived.Generated.cs">
+      <DependentUpon>EmitterAsContainerDerived.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\EmitterAsContainerEntity.cs" />
+    <Compile Include="Entities\EmitterAsContainerEntity.Generated.cs">
+      <DependentUpon>EmitterAsContainerEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\EmitterEntity.cs" />
     <Compile Include="Entities\EmitterEntity.Generated.cs">
       <DependentUpon>EmitterEntity.cs</DependentUpon>

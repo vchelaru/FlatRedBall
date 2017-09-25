@@ -473,6 +473,20 @@
       <Link>Entities\DrawableEntity.Generated.cs</Link>
       <DependentUpon>DrawableEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EmitterAsContainerDerived.cs">
+      <Link>Entities\EmitterAsContainerDerived.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EmitterAsContainerDerived.Generated.cs">
+      <Link>Entities\EmitterAsContainerDerived.Generated.cs</Link>
+      <DependentUpon>EmitterAsContainerDerived.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EmitterAsContainerEntity.cs">
+      <Link>Entities\EmitterAsContainerEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EmitterAsContainerEntity.Generated.cs">
+      <Link>Entities\EmitterAsContainerEntity.Generated.cs</Link>
+      <DependentUpon>EmitterAsContainerEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\EmitterEntity.cs">
       <Link>Entities\EmitterEntity.cs</Link>
     </Compile>

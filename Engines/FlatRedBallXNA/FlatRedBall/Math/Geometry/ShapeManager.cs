@@ -987,10 +987,6 @@ namespace FlatRedBall.Math.Geometry
         public static void AddToLayer(Polygon polygon, Layer layer, bool makeAutomaticallyUpdated)
         {
 
-#if SILVERLIGHT
-            throw new NotImplementedException();
-#else
-
             if (makeAutomaticallyUpdated && !polygon.ListsBelongingTo.Contains(mAutomaticallyUpdated))
             {
                 mAutomaticallyUpdated.Add(polygon);
@@ -1038,7 +1034,6 @@ namespace FlatRedBall.Math.Geometry
                     mPolygons.Add(polygon);
                 }
             }
-#endif
         }
 
         public static void AddToLayer(Capsule2D capsule, Layer layer)
