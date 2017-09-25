@@ -249,9 +249,14 @@ namespace FlatRedBall.Debugging
 
             total += SpriteManager.ManagedPositionedObjects.Count;
 
-            stringBuilder.AppendLine(SpriteManager.AutomaticallyUpdatedSprites.Count + " Sprites");
+            var totalSpriteCount = SpriteManager.AutomaticallyUpdatedSprites.Count;
+            stringBuilder.AppendLine(totalSpriteCount + " Sprites");
+
+            var spriteNonParticleEntityCount = SpriteManager.AutomaticallyUpdatedSprites.Where(item => item.GetType().FullName.Contains(".Entities")).Count();
+            stringBuilder.AppendLine(indentString + spriteNonParticleEntityCount + " Entity Sprites");
             stringBuilder.AppendLine(indentString + SpriteManager.ParticleCount + " Particles");
-            stringBuilder.AppendLine(indentString + (SpriteManager.AutomaticallyUpdatedSprites.Count - SpriteManager.ParticleCount) + " Non-Particles");
+            var normalSpriteCount = SpriteManager.AutomaticallyUpdatedSprites.Count - spriteNonParticleEntityCount - SpriteManager.ParticleCount;
+            stringBuilder.AppendLine(indentString + (normalSpriteCount) + " Normal Sprites");
             total += SpriteManager.AutomaticallyUpdatedSprites.Count;
 
             stringBuilder.AppendLine(SpriteManager.SpriteFrames.Count + " SpriteFrames");
@@ -566,7 +571,7 @@ namespace FlatRedBall.Debugging
                 case Corner.BottomLeft:
                     mText.RelativeX = -SpriteManager.Camera.RelativeXEdgeAt(SpriteManager.Camera.Z -40) * .95f;// -15;
                     mText.RelativeY = -SpriteManager.Camera.RelativeYEdgeAt(SpriteManager.Camera.Z - 40) * .95f + 
-                        NumberOfLinesInCommandLine * mText.NewLineDistance;
+                        mText.NumberOfLines * mText.NewLineDistance;
                     mText.HorizontalAlignment = HorizontalAlignment.Left;
 
                     break;
