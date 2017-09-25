@@ -2151,6 +2151,10 @@
       <Name>WithLargeObjectOnFirstLayer</Name>
       <Link>Assets\content\screens\tmxscreen\withlargeobjectonfirstlayer.tmx</Link>
     </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestproject\copiedxnbs\content\entities\pausingentity\superhit.xnb">
+      <Name>superHit</Name>
+      <Link>Assets\content\entities\pausingentity\superhit.xnb</Link>
+    </AndroidAsset>
     <AndroidAsset Include="Assets\content\spriteFont1.xnb" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />
