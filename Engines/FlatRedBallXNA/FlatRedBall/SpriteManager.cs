@@ -2315,7 +2315,18 @@ namespace FlatRedBall
 
             spriteToRemove.OnRemove();
 
-            spriteToRemove.ClearRelationships();
+            // September 24, 2017
+            // This used to be called
+            // when removing Sprites, but
+            // if an entity inherits from a
+            // sprite, we don't want all of the
+            // entity's children to be detached when
+            // it's removed from managers. I know this
+            // changes old behavior from FRB but I think
+            // it's bad to destroy relationships under an
+            // object when it is removed from managers, so
+            // I'm going to comment it out:
+            //spriteToRemove.ClearRelationships();
 
             int indexOfParticleArray = spriteToRemove.ListsBelongingTo.IndexOf(mParticleSprites);
 
