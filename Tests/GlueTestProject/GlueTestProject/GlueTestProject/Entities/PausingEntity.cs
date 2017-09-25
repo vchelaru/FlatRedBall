@@ -31,7 +31,7 @@ namespace GlueTestProject.Entities
         {
             get
             {
-                return SoundEffectFileInstance.State == Microsoft.Xna.Framework.Audio.SoundState.Paused;
+                return superHitInstance.State == Microsoft.Xna.Framework.Audio.SoundState.Paused;
             }
         }
 
@@ -39,7 +39,7 @@ namespace GlueTestProject.Entities
         {
             get
             {
-                return SoundEffectFileInstance.State == Microsoft.Xna.Framework.Audio.SoundState.Stopped;
+                return superHitInstance.State == Microsoft.Xna.Framework.Audio.SoundState.Stopped;
             }
         }
 
@@ -70,7 +70,7 @@ namespace GlueTestProject.Entities
         internal void PlaySound()
         {
 
-            this.SoundEffectFileInstance.Play();
+            superHitInstance.Play();
         }
 
     }

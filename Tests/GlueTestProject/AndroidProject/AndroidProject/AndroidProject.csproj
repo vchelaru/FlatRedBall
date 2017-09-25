@@ -836,6 +836,13 @@
       <Link>Entities\PooledDontInheritFromThis.Generated.cs</Link>
       <DependentUpon>PooledDontInheritFromThis.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PooledEntityInheritFromSprite.cs">
+      <Link>Entities\PooledEntityInheritFromSprite.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PooledEntityInheritFromSprite.Generated.cs">
+      <Link>Entities\PooledEntityInheritFromSprite.Generated.cs</Link>
+      <DependentUpon>PooledEntityInheritFromSprite.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PooledWithInternalList.cs">
       <Link>Entities\PooledWithInternalList.cs</Link>
     </Compile>
@@ -1147,6 +1154,9 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\PooledDontInheritFromThisFactory.Generated.cs">
       <Link>Factories\PooledDontInheritFromThisFactory.Generated.cs</Link>
       <DependentUpon>PooledDontInheritFromThisFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\PooledEntityInheritFromSpriteFactory.Generated.cs">
+      <Link>Factories\PooledEntityInheritFromSpriteFactory.Generated.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\PooledWithInternalListFactory.Generated.cs">
       <Link>Factories\PooledWithInternalListFactory.Generated.cs</Link>
@@ -2040,6 +2050,10 @@
     <AndroidAsset Include="..\..\gluetestproject\builtxnbs\entities\pausingentity\soundeffectfile.xnb">
       <Name>SoundEffectFile</Name>
       <Link>Assets\content\entities\pausingentity\soundeffectfile.xnb</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\builtxnbs\entities\pausingentity\superhit.xnb">
+      <Name>superHit</Name>
+      <Link>Assets\content\entities\pausingentity\superhit.xnb</Link>
     </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\builtxnbs\entities\soundeffectentity\dogbarksoundeffect.xnb">
       <Name>DogBarkSoundEffect</Name>

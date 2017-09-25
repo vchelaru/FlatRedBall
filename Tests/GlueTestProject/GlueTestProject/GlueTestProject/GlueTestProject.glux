@@ -630,6 +630,15 @@
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceClassType>PositionedObjectList&lt;T&gt;</SourceClassType>
+          <SourceClassGenericType>Entities\PooledEntityInheritFromSprite</SourceClassGenericType>
+          <InstanceName>PooledEntityInheritFromSpriteList</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
       </NamedObjects>
     </ScreenSave>
     <ScreenSave>
@@ -9272,6 +9281,15 @@
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>File</SourceType>
+          <SourceFile>Entities/PausingEntity/superHit.wav</SourceFile>
+          <SourceName>Entire File (SoundEffectInstance)</SourceName>
+          <InstanceName>superHitInstance</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
       </NamedObjects>
       <ReferencedFiles>
         <ReferencedFileSave>
@@ -9282,6 +9300,18 @@
             </PropertySave>
           </Properties>
           <Name>Entities/PausingEntity/SoundEffectFile.wav</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
+        <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>UseContentPipeline</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
+          <Name>Entities/PausingEntity/superHit.wav</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
           <ProjectsToExcludeFrom />
@@ -9555,6 +9585,121 @@
           <SourceType>FlatRedBallType</SourceType>
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteInstance</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <VariablesToReset>
+            <string>X</string>
+            <string>Y</string>
+            <string>Z</string>
+            <string>XVelocity</string>
+            <string>YVelocity</string>
+            <string>ZVelocity</string>
+            <string>RotationX</string>
+            <string>RotationY</string>
+            <string>RotationZ</string>
+            <string>RotationXVelocity</string>
+            <string>RotationYVelocity</string>
+            <string>RotationZVelocity</string>
+          </VariablesToReset>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+      </NamedObjects>
+      <CreatedByOtherEntities>true</CreatedByOtherEntities>
+      <PooledByFactory>true</PooledByFactory>
+      <Is2D>true</Is2D>
+    </EntitySave>
+    <EntitySave>
+      <Properties>
+        <PropertySave>
+          <Name>ImplementsICollidable</Name>
+          <ValueAsBool>true</ValueAsBool>
+        </PropertySave>
+      </Properties>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
+      <CustomVariables>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>X</Name>
+          <Type>float</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>Y</Name>
+          <Type>float</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>Z</Name>
+          <Type>float</Type>
+        </CustomVariable>
+      </CustomVariables>
+      <BaseEntity>Sprite</BaseEntity>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
+      <Name>Entities\PooledEntityInheritFromSprite</Name>
+      <NamedObjects>
+        <NamedObjectSave>
+          <Properties>
+            <PropertySave>
+              <Name>IsContainer</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>TextureScale</Member>
+            <ValueAsFloat>1</ValueAsFloat>
+          </CustomProperty>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceClassType>Sprite</SourceClassType>
+          <InstanceName>SpriteInstance</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <VariablesToReset>
+            <string>X</string>
+            <string>Y</string>
+            <string>Z</string>
+            <string>XVelocity</string>
+            <string>YVelocity</string>
+            <string>ZVelocity</string>
+            <string>RotationX</string>
+            <string>RotationY</string>
+            <string>RotationZ</string>
+            <string>RotationXVelocity</string>
+            <string>RotationYVelocity</string>
+            <string>RotationZVelocity</string>
+            <string>Alpha</string>
+            <string>AlphaRate</string>
+          </VariablesToReset>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>Radius</Member>
+            <ValueAsFloat>16</ValueAsFloat>
+          </CustomProperty>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceClassType>Circle</SourceClassType>
+          <InstanceName>CircleInstance</InstanceName>
+          <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <VariablesToReset>
@@ -13571,7 +13716,6 @@
     <RecordLockContention>false</RecordLockContention>
   </GlobalContentSettingsSave>
   <SyncedProjects>
-    <string>../../GlueTestProjectW8Sync/GlueTestProjectW8Sync/GlueTestProjectW8Sync.csproj</string>
     <string>../../AndroidProject/AndroidProject/AndroidProject.csproj</string>
   </SyncedProjects>
   <StartUpScreen>Screens\FirstScreen</StartUpScreen>

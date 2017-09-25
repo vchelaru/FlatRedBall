@@ -13,6 +13,7 @@
   <objecttype name="FactoryEntityDerived" />
   <objecttype name="IWindowDerivedFromNoIWindow" />
   <objecttype name="PooledDontInheritFromThis" />
+  <objecttype name="PooledEntityInheritFromSprite" />
   <objecttype name="PooledWithInternalList" />
   <objecttype name="PositioningEntity">
     <property name="CircleX" type="float" default="2" />

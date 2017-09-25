@@ -2,14 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-#if FRB_MDX
-
-using Microsoft.DirectX;
-using System.Drawing;
-using Microsoft.DirectX.Direct3D;
-using FlatRedBall.Graphics;
-
-#else//if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using FlatRedBall.Gui;
 using FlatRedBall.Input;
 using Microsoft.Xna.Framework;
@@ -17,14 +9,14 @@ using Microsoft.Xna.Framework.Graphics;
 using VertexPositionColor = Microsoft.Xna.Framework.Graphics.VertexPositionColor;
 
 
-#endif
+
 
 using System.Collections.ObjectModel;
 using FlatRedBall.Graphics;
 
 namespace FlatRedBall.Math.Geometry
 {
-    public class Polygon : PositionedObject, IEquatable<Polygon>
+    public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible
 #if FRB_XNA
 , IMouseOver
 #endif
@@ -2210,6 +2202,31 @@ namespace FlatRedBall.Math.Geometry
             return cursor.IsOn3D(this, layer);
         }
 #endif
+        #endregion
+
+        #region IVisible implementation
+        IVisible IVisible.Parent
+        {
+            get
+            {
+                return mParent as IVisible;
+            }
+        }
+
+        public bool AbsoluteVisible
+        {
+            get
+            {
+                IVisible iVisibleParent = ((IVisible)this).Parent;
+                return mVisible && (iVisibleParent == null || IgnoresParentVisibility || iVisibleParent.AbsoluteVisible);
+            }
+        }
+
+        public bool IgnoresParentVisibility
+        {
+            get;
+            set;
+        }
         #endregion
     }
 

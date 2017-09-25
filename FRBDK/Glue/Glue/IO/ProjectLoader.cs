@@ -1144,29 +1144,36 @@ namespace FlatRedBall.Glue.IO
             }
             else
             {
-                ProjectBase vsp = ProjectCreator.CreateProject(absoluteFileName);
-                vsp.OriginalProjectBaseIfSynced = ProjectManager.ProjectBase;
-
-                vsp.Load(absoluteFileName);
-
-                if (vsp.SaveAsRelativeSyncedProject == false && vsp.SaveAsAbsoluteSyncedProject == false)
+                try
                 {
-                    vsp.SaveAsRelativeSyncedProject = true;
-                    vsp.SaveAsAbsoluteSyncedProject = false;
-                }
+                    ProjectBase vsp = ProjectCreator.CreateProject(absoluteFileName);
+                    vsp.OriginalProjectBaseIfSynced = ProjectManager.ProjectBase;
 
-                if (FileManager.GetDirectory(absoluteFileName).ToLower() == FileManager.GetDirectory(ProjectManager.ProjectBase.FullFileName).ToLower())
+                    vsp.Load(absoluteFileName);
+
+                    if (vsp.SaveAsRelativeSyncedProject == false && vsp.SaveAsAbsoluteSyncedProject == false)
+                    {
+                        vsp.SaveAsRelativeSyncedProject = true;
+                        vsp.SaveAsAbsoluteSyncedProject = false;
+                    }
+
+                    if (FileManager.GetDirectory(absoluteFileName).ToLower() == FileManager.GetDirectory(ProjectManager.ProjectBase.FullFileName).ToLower())
+                    {
+                        vsp.SaveAsRelativeSyncedProject = false;
+                        vsp.SaveAsAbsoluteSyncedProject = false;
+                    }
+
+                    lock (ProjectManager.SyncedProjects)
+                    {
+                        ProjectManager.AddSyncedProject(vsp);
+
+                    }
+                    succeeded = true;
+                }
+                catch (Exception e)
                 {
-                    vsp.SaveAsRelativeSyncedProject = false;
-                    vsp.SaveAsAbsoluteSyncedProject = false;
+                    GlueCommands.Self.PrintError($"Error loading sycned project. Glue will remove this synced project: {absoluteFileName}:\n{e.ToString()}");
                 }
-
-                lock (ProjectManager.SyncedProjects)
-                {
-                    ProjectManager.AddSyncedProject(vsp);
-
-                }
-                succeeded = true;
 
             }
             return succeeded;
