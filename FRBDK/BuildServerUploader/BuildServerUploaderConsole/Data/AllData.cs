@@ -64,20 +64,21 @@ namespace BuildServerUploaderConsole.Data
             }
 
             // WinRT
+            // retiring September 24, 2017
             {
-                var engine = new EngineData();
+                //var engine = new EngineData();
 
-                engine.RelativeToLibrariesDebugFolder = @"Windows8\Debug";
-                engine.RelativeToLibrariesReleaseFolder = @"Windows8\Release";
-                engine.TemplateFolder = @"Windows8Template\Windows8Template\";
+                //engine.RelativeToLibrariesDebugFolder = @"Windows8\Debug";
+                //engine.RelativeToLibrariesReleaseFolder = @"Windows8\Release";
+                //engine.TemplateFolder = @"Windows8Template\Windows8Template\";
 
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBallW8\bin\Debug\FlatRedBallW8.dll");
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBallW8\bin\Debug\FlatRedBallW8.pdb");
+                //engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBallW8\bin\Debug\FlatRedBallW8.dll");
+                //engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBallW8\bin\Debug\FlatRedBallW8.pdb");
 
-                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBallW8\bin\Release\FlatRedBallW8.dll");
-                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBallW8\bin\Release\FlatRedBallW8.pdb");
+                //engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBallW8\bin\Release\FlatRedBallW8.dll");
+                //engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBallW8\bin\Release\FlatRedBallW8.pdb");
 
-                Engines.Add(engine);
+                //Engines.Add(engine);
             }
 
             {
