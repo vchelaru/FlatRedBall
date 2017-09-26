@@ -324,10 +324,12 @@ namespace FlatRedBall.Glue.GuiDisplay
             bool shouldShowCurrentState = true;
             bool shouldIncludeIncludeInIVisible = true;
             bool shouldIncludeIncludeInIClickable = true;
+            bool shouldIncludeIncludeInICollidable = true;
             bool shouldIncludeIsContainer = true;
             bool shouldShowIsZBuffered = false;
             bool shouldIncludeSetByContainer = true;
             bool shouldShowGenerateTimedEmit = false;
+
 
             ExcludeMember("InstructionSaves");
             ExcludeMember("Properties");
@@ -335,6 +337,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             ExcludeMember("FulfillsRequirement");
             ExcludeMember("IsNodeHidden");
 
+            var assetTypeInfo = instance.GetAssetTypeInfo();
 
             if (DisplayMode == DisplayModes.VariablesOnly)
             {
@@ -353,7 +356,25 @@ namespace FlatRedBall.Glue.GuiDisplay
                 // Screens can't be IVisible/IClickable so no need to show these properties
                 // in screens
                 shouldIncludeIncludeInIVisible = containerType == ContainerType.Entity;
+                if(assetTypeInfo != null && assetTypeInfo.HasVisibleProperty == false)
+                {
+                    shouldIncludeIncludeInIVisible = false;
+                }
+
                 shouldIncludeIncludeInIClickable = containerType == ContainerType.Entity;
+                if(assetTypeInfo != null && assetTypeInfo.HasCursorIsOn == false)
+                {
+                    shouldIncludeIncludeInIClickable = false;
+                }
+
+                // shapes don't implement ICollidable, but they have collision:
+                bool isShape = assetTypeInfo?.QualifiedRuntimeTypeName.QualifiedType.StartsWith("FlatRedBall.Math.Geometry") ?? false;
+                if (assetTypeInfo != null && assetTypeInfo.ImplementsICollidable == false && !isShape)
+                {
+                    shouldIncludeIncludeInICollidable = false;
+                }
+
+
 
                 bool shouldShowAttachToContainer = containerType == ContainerType.Entity &&
                     instance.IsList == false;
@@ -541,6 +562,10 @@ namespace FlatRedBall.Glue.GuiDisplay
                 if (!shouldIncludeIncludeInIVisible)
                 {
                     ExcludeMember("IncludeInIVisible");
+                }
+                if(!shouldIncludeIncludeInICollidable)
+                {
+                    ExcludeMember("IncludeInICollidable");
                 }
 
                 if (!shouldShowIsZBuffered)
