@@ -78,14 +78,6 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-#if SILVERLIGHT
-        public Color FillColor
-        {
-            get;
-            set;
-        }
-#endif
-
         public float RadiusVelocity
         {
             get { return mRadiusVelocity; }

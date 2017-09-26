@@ -1,6 +1,3 @@
-#if FRB_MDX || XNA3
-#define SUPPORTS_FRB_DRAWN_GUI
-#endif
 
 using System;
 using System.Collections.Generic;
@@ -42,10 +39,6 @@ using FlatRedBall.IO.Csv;
 
 using Microsoft.Xna.Framework;
 #if FRB_MDX
-using FlatRedBall.Gui;
-using GraphicsDevice = Microsoft.DirectX.Direct3D.Device;
-using Microsoft.DirectX.Direct3D;
-
 #else
 
 using Microsoft.Xna.Framework.Graphics;
@@ -1810,7 +1803,7 @@ namespace FlatRedBall
 
         #endregion
 
-#if !XBOX360 && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
         public static Texture2D BitmapToTexture2D(System.Drawing.Bitmap bitmapToConvert,
             string newTextureName, string contentManagerName)
         {

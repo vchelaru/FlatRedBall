@@ -1636,7 +1636,7 @@ namespace FlatRedBall.Graphics
             if (layer == null)
             {
                 // reset the camera as it may have been set differently by layers
-#if WINDOWS_PHONE || MONOGAME
+#if  MONOGAME
                 camera.SetDeviceViewAndProjection( mEffect, false);
                 camera.SetDeviceViewAndProjection( mGenericEffect, false );
 #else
@@ -1648,7 +1648,7 @@ namespace FlatRedBall.Graphics
             else
             {
 
-#if WINDOWS_PHONE || MONOGAME
+#if  MONOGAME
                 camera.SetDeviceViewAndProjection( mEffect, layer.RelativeToCamera);
                 camera.SetDeviceViewAndProjection( mGenericEffect, layer.RelativeToCamera );
 #else
@@ -1714,19 +1714,13 @@ namespace FlatRedBall.Graphics
 #endif
             #endregion
 
-#if XNA4 || MONOGAME
             //throw new NotImplementedException();
             // TODO:  Do the shape manager stuff here
             ColorOperation = FlatRedBall.Graphics.ColorOperation.Color;
             ForceSetColorOperation(FlatRedBall.Graphics.ColorOperation.Color);
 
 
-#else
-            mGraphics.GraphicsDevice.VertexDeclaration = mPositionColor;
 
-            ShapeManager.FillPolygonVertexArrays(polygons);
-            mGraphics.GraphicsDevice.RenderState.DepthBufferEnable = ShapeManager.UseZTestingWhenDrawing;
-#endif
             bool hardwareInstanceCircles = false;
 
             if (hardwareInstanceCircles)

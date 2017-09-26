@@ -200,13 +200,14 @@ namespace FlatRedBall.Math.Geometry
 
                 if (Vertices != null)
                 {
-#if FRB_MDX
-                for (int i = 0; i < Vertices.Length; i++)
-                    Vertices[i].Color = (uint)(value.ToArgb());
-#else
+                    var premultiplied = new Color();
+                    premultiplied.A = mColor.A;
+                    premultiplied.R = (byte)(mColor.R * mColor.A / 255);
+                    premultiplied.G = (byte)(mColor.G * mColor.A / 255);
+                    premultiplied.B = (byte)(mColor.B * mColor.A / 255);
+
                     for (int i = 0; i < Vertices.Length; i++)
-                        Vertices[i].Color = value;
-#endif
+                        Vertices[i].Color = premultiplied;
                 }
             }
 
@@ -216,13 +217,7 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-#if FRB_MDX
-        public bool IsFilled
-        {
-            get { return mIsFilled; }
-            set { mIsFilled = value; }
-        }
-#endif
+
 
         #endregion
 
@@ -2138,10 +2133,13 @@ namespace FlatRedBall.Math.Geometry
 
             if(mVertices != null)
             {
-#if FRB_MDX
-                uint colorArgb = (uint)(mColor.ToArgb());
 
-#endif
+                var premultiplied = new Color();
+                premultiplied.A = mColor.A;
+                premultiplied.R = (byte)(mColor.R * mColor.A / 255);
+                premultiplied.G = (byte)(mColor.G * mColor.A / 255);
+                premultiplied.B = (byte)(mColor.B * mColor.A / 255);
+                
                 for (int i = 0; i < mPoints.Length; i++)
                 {
 
@@ -2156,11 +2154,10 @@ namespace FlatRedBall.Math.Geometry
                     mVertices[i].Position.Z = (float)(Position.Z +
                         mRotationMatrix.M13 * mPoints[i].X +
                         mRotationMatrix.M23 * mPoints[i].Y);
-#if FRB_MDX
-                    mVertices[i].Color = colorArgb;
-#else
-                    mVertices[i].Color.PackedValue = mColor.PackedValue;
-#endif
+
+
+                    mVertices[i].Color= premultiplied;
+
 
                 }
             }
