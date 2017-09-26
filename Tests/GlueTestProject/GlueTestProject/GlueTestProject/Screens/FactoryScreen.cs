@@ -102,8 +102,31 @@ namespace GlueTestProject.Screens
             // This should run in debug to throw:
             BasePooledEntityFactory.CreateNew();
 
+            TestPooledAttachment();
+
             TestPooledSpriteInheritingCollisionAttachment();
 
+        }
+
+        private void TestPooledAttachment()
+        {
+            int numberToCreate = 50; // enough to actually pool:
+            for (int i = 0; i < numberToCreate; i++)
+            {
+                Factories.PooledEntityContainingEntityFactory.CreateNew();
+            }
+
+            while (this.PooledEntityContainingEntityList.Count != 0)
+            {
+                this.PooledEntityContainingEntityList.Last.Destroy();
+            }
+
+            var pooledInstance = Factories.PooledEntityContainingEntityFactory.CreateNew();
+
+            if (pooledInstance.CircleContainerInstance.Parent == null)
+            {
+                throw new Exception("If an Entity sprite is destroyed, then its attached entities children get detached and that shouldn't happen!");
+            }
         }
 
         private void TestPooledSpriteInheritingCollisionAttachment()
@@ -124,6 +147,10 @@ namespace GlueTestProject.Screens
             if(pooledInstance.CircleInstance.Parent == null)
             {
                 throw new Exception("If an Entity which inherits from a FRB sprite is destroyed, then its attached children (like Circle) also get detached and that shouldn't happen!");
+            }
+            if(pooledInstance.CircleContainerInstance.Parent == null)
+            {
+                throw new Exception("If an Entity which inherits from a FRB sprite is destroyed, then its attached entities get detached and not reattached and that shouldn't happen!");
             }
         }
 

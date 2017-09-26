@@ -216,6 +216,15 @@ namespace FlatRedBall.Content
 
 #region Public Methods
 
+        /// <summary>
+        /// Adds the argument disposable object to the content manager, to be disposed when the ContentManager Unload method is eventually called.
+        /// </summary>
+        /// <remarks>
+        /// This method is used for objects which either need to be cached and obtained later (such as custom from-file content) or which
+        /// is not usually referenced by its key but which does noeed to be disposed later (such as a RenderTarget2D).
+        /// </remarks>
+        /// <param name="disposableName">The name of the disposablle, so that it can be retrieved later if needed.</param>
+        /// <param name="disposable">The disposable object to be added for disposal upon Unload.</param>
 		public void AddDisposable(string disposableName, IDisposable disposable)
 		{
 			if (FileManager.IsRelative(disposableName))

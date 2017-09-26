@@ -639,6 +639,15 @@
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceClassType>PositionedObjectList&lt;T&gt;</SourceClassType>
+          <SourceClassGenericType>Entities\PooledEntityContainingEntity</SourceClassGenericType>
+          <InstanceName>PooledEntityContainingEntityList</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
       </NamedObjects>
     </ScreenSave>
     <ScreenSave>
@@ -4315,6 +4324,20 @@
           <InstanceName>CircleInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
+          <VariablesToReset>
+            <string>X</string>
+            <string>Y</string>
+            <string>Z</string>
+            <string>XVelocity</string>
+            <string>YVelocity</string>
+            <string>ZVelocity</string>
+            <string>RotationX</string>
+            <string>RotationY</string>
+            <string>RotationZ</string>
+            <string>RotationXVelocity</string>
+            <string>RotationYVelocity</string>
+            <string>RotationZVelocity</string>
+          </VariablesToReset>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
@@ -9731,6 +9754,76 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
+      <CustomVariables>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>X</Name>
+          <Type>float</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>Y</Name>
+          <Type>float</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>Z</Name>
+          <Type>float</Type>
+        </CustomVariable>
+      </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
+      <Name>Entities\PooledEntityContainingEntity</Name>
+      <NamedObjects>
+        <NamedObjectSave>
+          <SourceType>Entity</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>Entities\CircleContainer</SourceClassType>
+          <InstanceName>CircleContainerInstance</InstanceName>
+          <HasPublicProperty>true</HasPublicProperty>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <VariablesToReset>
+            <string>X</string>
+            <string>Y</string>
+            <string>Z</string>
+            <string>XVelocity</string>
+            <string>YVelocity</string>
+            <string>ZVelocity</string>
+            <string>RotationX</string>
+            <string>RotationY</string>
+            <string>RotationZ</string>
+            <string>RotationXVelocity</string>
+            <string>RotationYVelocity</string>
+            <string>RotationZVelocity</string>
+          </VariablesToReset>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+      </NamedObjects>
+      <CreatedByOtherEntities>true</CreatedByOtherEntities>
+      <PooledByFactory>true</PooledByFactory>
+      <Is2D>true</Is2D>
+    </EntitySave>
+    <EntitySave>
       <Properties>
         <PropertySave>
           <Name>ImplementsICollidable</Name>
@@ -9821,6 +9914,31 @@
           <SourceType>FlatRedBallType</SourceType>
           <SourceClassType>Circle</SourceClassType>
           <InstanceName>CircleInstance</InstanceName>
+          <HasPublicProperty>true</HasPublicProperty>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <VariablesToReset>
+            <string>X</string>
+            <string>Y</string>
+            <string>Z</string>
+            <string>XVelocity</string>
+            <string>YVelocity</string>
+            <string>ZVelocity</string>
+            <string>RotationX</string>
+            <string>RotationY</string>
+            <string>RotationZ</string>
+            <string>RotationXVelocity</string>
+            <string>RotationYVelocity</string>
+            <string>RotationZVelocity</string>
+          </VariablesToReset>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>Entity</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>Entities\CircleContainer</SourceClassType>
+          <InstanceName>CircleContainerInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>

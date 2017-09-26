@@ -223,7 +223,9 @@ namespace FlatRedBall.Glue.Parsing
 
             bool shouldCallPostInitializeBecauseIsPooled = false;
 
-            if (isEntity && string.IsNullOrEmpty(element.BaseElement))
+            // It may inherit from a FRB type, in which case we still want to add PostInitialize
+            //if (isEntity && string.IsNullOrEmpty(element.BaseElement))
+            if (isEntity && !element.InheritsFromElement())
             {
 
 

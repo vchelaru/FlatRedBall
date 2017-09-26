@@ -850,6 +850,13 @@
       <Link>Entities\PooledDontInheritFromThis.Generated.cs</Link>
       <DependentUpon>PooledDontInheritFromThis.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PooledEntityContainingEntity.cs">
+      <Link>Entities\PooledEntityContainingEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PooledEntityContainingEntity.Generated.cs">
+      <Link>Entities\PooledEntityContainingEntity.Generated.cs</Link>
+      <DependentUpon>PooledEntityContainingEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Entities\PooledEntityInheritFromSprite.cs">
       <Link>Entities\PooledEntityInheritFromSprite.cs</Link>
     </Compile>
@@ -1168,6 +1175,9 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\PooledDontInheritFromThisFactory.Generated.cs">
       <Link>Factories\PooledDontInheritFromThisFactory.Generated.cs</Link>
       <DependentUpon>PooledDontInheritFromThisFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\PooledEntityContainingEntityFactory.Generated.cs">
+      <Link>Factories\PooledEntityContainingEntityFactory.Generated.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Factories\PooledEntityInheritFromSpriteFactory.Generated.cs">
       <Link>Factories\PooledEntityInheritFromSpriteFactory.Generated.cs</Link>
