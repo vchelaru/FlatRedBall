@@ -815,17 +815,9 @@ namespace FlatRedBall.Gui
         {
 #if MONODROID || IOS
             InputDevice = Gui.InputDevice.TouchScreen;
-#elif WINDOWS_8
-            // We want to support both on W8 by default
-            InputDevice = Gui.InputDevice.Mouse | Gui.InputDevice.TouchScreen;
 #else
             InputDevice = Gui.InputDevice.Mouse;
-
 #endif
-
-
-
-
 
             // This was 6 but I think we
             // were getting too many slide
@@ -839,18 +831,9 @@ namespace FlatRedBall.Gui
             mUsingMouse = true;
             mCamera = cameraToUse;
             //primaryDown = false;
-#if !WINDOWS_8
-            mGamepad = null;
-#endif
 
-#if !XBOX360
             if (FlatRedBallServices.IsWindowsCursorVisible)
             {
-#if FRB_MDX
-                mLastScreenX = System.Windows.Forms.Cursor.Position.X;
-                mLastScreenY = System.Windows.Forms.Cursor.Position.Y;
-#else
-
                 if (FlatRedBallServices.Game != null)
                 {
                     mLastScreenX = InputManager.Mouse.X + FlatRedBallServices.Game.Window.ClientBounds.X;
@@ -866,11 +849,8 @@ namespace FlatRedBall.Gui
                     mLastScreenX = InputManager.Mouse.Y + windowLocation.Y;
 #endif
                 }
-#endif
             }
             else
-#endif
-
             {
                 mLastScreenX = 0;
                 mLastScreenY = 0;
@@ -2077,16 +2057,7 @@ namespace FlatRedBall.Gui
         #endregion
         public bool IsInWindow()
         {
-#if XBOX360
-            return true;
-#else
-
-#if FRB_MDX
-            return IsInWindow(this.mOwner);
-#else
             return InputManager.Mouse.IsInGameWindow();
-#endif
-#endif
         }
 
 
@@ -2098,15 +2069,8 @@ namespace FlatRedBall.Gui
                 return true;
             }
 
-#if FRB_MDX
-            System.Drawing.Point point = control.PointToClient(System.Windows.Forms.Cursor.Position);
-
-            return point.X > 0 && point.X < control.DisplayRectangle.Width &&
-                point.Y > 0 && point.Y < control.DisplayRectangle.Height;
-#else
             // If mUsingWindowsCursor, we can just use the Mouse call
             return InputManager.Mouse.IsInGameWindow();
-#endif
         }
 #endif
 
@@ -2150,7 +2114,6 @@ namespace FlatRedBall.Gui
 
         }
 
-#if !WINDOWS_8
         #region XML Docs
         /// <summary>
         /// Sets the cursor to be controlled by the joystick rather than the mouse.
@@ -2168,7 +2131,6 @@ namespace FlatRedBall.Gui
             mUsingMouse = true;
             mGamepad = null;
         }
-#endif
 
         #region XML Docs
         /// <summary>
@@ -2686,8 +2648,6 @@ namespace FlatRedBall.Gui
 
         private void UpdateValuesFromJoystick()
         {
-            #region Joystick control
-#if !WINDOWS_8
             if (mGamepad != null)
             {
                 mScreenX += (int)(mGamepad.LeftStick.Position.X * 10);
@@ -2715,9 +2675,9 @@ namespace FlatRedBall.Gui
 
                 PrimaryDown = mGamepad.ButtonDown(Xbox360GamePad.Button.A);
                 SecondaryDown = mGamepad.ButtonDown(Xbox360GamePad.Button.X);
+
+                ZVelocity = mGamepad.RightStick.Position.Y;
             }
-#endif
-            #endregion
         }
 
 		void TryHandleStaticPosition ()
@@ -2730,12 +2690,6 @@ namespace FlatRedBall.Gui
                         float xVelocity = si.XVelocity;
                         float yVelocity = si.YVelocity;
 
-            #if FRB_MDX
-                        MathFunctions.ScreenToAbsoluteDistance(
-                            mOwner.PointToClient(System.Windows.Forms.Cursor.Position).X - this.mLastScreenX,
-                            this.mLastScreenY - mOwner.PointToClient(System.Windows.Forms.Cursor.Position).Y,
-                            out xVelocity, out yVelocity, mCamera.Z + 100, mCamera);
-            #else
 
                         // May 12 2011: Not sure why but gotta invert the cursor values
                         // when getting ScreenToAbsolute on a static position cursor in 
@@ -2744,7 +2698,6 @@ namespace FlatRedBall.Gui
                             -InputManager.Mouse.XChange,
                             InputManager.Mouse.YChange,
                             out xVelocity, out yVelocity, mCamera.Z - 100, mCamera);
-            #endif
 
                         si.XVelocity = xVelocity;
                         si.YVelocity = yVelocity;
