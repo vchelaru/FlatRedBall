@@ -76,7 +76,9 @@ namespace AnimationEditorPlugin
             // 2.2.4
             // - Fixed possible crashes when changing texture coord modes with no frame/chain selected
             // - Editor remembers coordinate mode per .achx
-            get { return new Version(2, 2, 4); }
+            // 2.2.5
+            // - Derived entities entity will now show the texture in the texture selection window when a Sprite uses the file from the base
+            get { return new Version(2, 2, 5); }
         }
 
         public bool IsSelectedItemSprite

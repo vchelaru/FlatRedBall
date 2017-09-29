@@ -173,6 +173,11 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        /// <summary>
+        /// Returns the entire inheritance chain of this element, with the most derived first.
+        /// </summary>
+        /// <param name="element">The element to return the inheritance chain for.</param>
+        /// <returns>An IEnumerable of all base elements.</returns>
         public static IEnumerable<IElement> BaseElements(this IElement element)
         {
             if (!string.IsNullOrEmpty(element.BaseElement))

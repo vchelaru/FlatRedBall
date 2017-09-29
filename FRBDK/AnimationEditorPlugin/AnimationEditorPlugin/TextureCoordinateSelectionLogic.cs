@@ -38,6 +38,26 @@ namespace AnimationEditorPlugin
                 {
                     return FileManager.RemovePath(FileManager.RemoveExtension(item.Name)) == fileVariableName;
                 });
+
+                if(rfs == null)
+                {
+                    var allBaseElements = container.BaseElements();
+                    foreach(var baseElement in allBaseElements)
+                    {
+                        rfs = baseElement.ReferencedFiles.FirstOrDefault((item) =>
+                        {
+                            return FileManager.RemovePath(FileManager.RemoveExtension(item.Name)) == fileVariableName;
+                        });
+
+                        if (rfs != null)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+
+
                 if (rfs != null)
                 {
                     fullFileName = FlatRedBall.Glue.ProjectManager.MakeAbsolute(rfs.Name, true);
