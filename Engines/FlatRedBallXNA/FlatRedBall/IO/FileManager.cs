@@ -721,7 +721,17 @@ namespace FlatRedBall.IO
                     hasDotSlash = true;
                 }
 
-                if (hasDotSlash)
+                // Justin Johnson, 09/28/2017:
+                // Folders in the path might have a period in them. We need to make sure
+                // the period is after the last slash or we could end up with an "extension"
+                // that is a large chunk of the path
+                bool hasSlashAfterDot = false;
+                if(i < fileName.LastIndexOf("/") || i < fileName.LastIndexOf(@"\"))
+                {
+                    hasSlashAfterDot = true;
+                }
+
+                if (hasDotSlash || hasSlashAfterDot)
                 {
                     return "";
                 }
