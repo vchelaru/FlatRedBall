@@ -35,16 +35,21 @@ namespace OfficialPlugins.StateInterpolation
 
         #endregion
 
+        #region Properties
+
         public override string FriendlyName
         {
             get { return "State Interpolation Plugin"; }
         }
 
         // 1.2.0 - Added instant interpolation type
+        // 1.2.1 - Fixed bug where Running would remain true after its duration
         public override Version Version
         {
-            get { return new Version(1, 2, 0); }
+            get { return new Version(1, 2, 1); }
         }
+
+        #endregion
 
         public override void StartUp()
         {

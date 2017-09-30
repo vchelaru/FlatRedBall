@@ -140,7 +140,9 @@ namespace GumPlugin
             // - Fixed cursor over on apps running with letterbox/pillarbox.
             // 0.8.8.5
             // - Updated to latest Gum rendering engine, allowing Text to specify pixel perfect or free floating positioning.
-            get { return new Version(0, 8, 8, 5); }
+            // 0.8.8.6
+            // - Fixed bug with Tweener not setting its Running to false when the elapsed passes duration
+            get { return new Version(0, 8, 8, 6); }
         }
 
         #endregion

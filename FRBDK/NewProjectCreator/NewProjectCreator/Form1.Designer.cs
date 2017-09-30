@@ -77,6 +77,8 @@
             this.ProjectNameTextBox.TabIndex = 2;
             this.ProjectNameTextBox.Text = "NewFlatRedBallProject";
             this.ProjectNameTextBox.TextChanged += new System.EventHandler(this.ProjectNameTextBox_TextChanged);
+            this.ProjectNameTextBox.Enter += new System.EventHandler(this.ProjectNameTextBox_Enter);
+            this.ProjectNameTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ProjectNameTextBox_KeyPress);
             // 
             // label2
             // 

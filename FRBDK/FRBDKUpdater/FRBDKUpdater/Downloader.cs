@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using FlatRedBall.IO;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace FRBDKUpdater
 {
@@ -66,24 +67,38 @@ namespace FRBDKUpdater
 
         public void Start()
         {
-            if (mBackgroundWorker != null) return;
 
 
+            ThreadStart threadStart = new ThreadStart(() =>
+            {
+                PerformDownload();
+                BackgroundWorkerOnRunWorkerCompleted();
+            });
+            Thread thread = new Thread(threadStart);
+            thread.Start();
 
-            mBackgroundWorker = new BackgroundWorker();
-            mBackgroundWorker.DoWork += BackgroundWorkerOnDoWork;
-            mBackgroundWorker.RunWorkerCompleted += BackgroundWorkerOnRunWorkerCompleted;
+            // September 30, 2017
+            // For some reason the
+            // BackgroundWorker never
+            // raised its RunWorkerComplete
+            // event when downloading Anfloga.
+            // I couldn't figure out why but...
+            // black boxes suck so I just did it
+            // with threads instead.
+            //mBackgroundWorker = new BackgroundWorker();
+            //mBackgroundWorker.DoWork += BackgroundWorkerOnDoWork;
+            //mBackgroundWorker.RunWorkerCompleted += BackgroundWorkerOnRunWorkerCompleted;
 
-            mBackgroundWorker.RunWorkerAsync();
+            //mBackgroundWorker.RunWorkerAsync();
         }
 
-        private void BackgroundWorkerOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs runWorkerCompletedEventArgs)
+        private void BackgroundWorkerOnRunWorkerCompleted()
         {
             if (DownloadComplete != null)
                 DownloadComplete(null, new DownloaderCompleteEventArgs(!mHasErrorOccured));
         }
 
-        private void BackgroundWorkerOnDoWork(object sender, DoWorkEventArgs doWorkEventArgs)
+        private void PerformDownload()
         {
             
 
@@ -155,6 +170,11 @@ namespace FRBDKUpdater
                                 Logger.Log("Downloading now...");
 
                                 ReadAllBytes(webStream, fileStream, byteBuffer);
+
+                                if (ReportProgress != null)
+                                    ReportProgress(this,
+                                                    new DownloaderProgressEventArgs(100, "Saving file..."));
+
                                 Logger.Log("Downloading complete.  File saved to " + saveFile);
 
                             }
@@ -166,10 +186,12 @@ namespace FRBDKUpdater
                             {
                                 try
                                 {
+                                    var directory = FileManager.GetDirectory(mSettings.LocalFileForTimeStamp);
+                                    System.IO.Directory.CreateDirectory(directory);
                                     System.IO.File.WriteAllText(mSettings.LocalFileForTimeStamp,
                                         _remoteFileTimeStamp.ToString());
                                 }
-                                catch
+                                catch (Exception e)
                                 {
                                     // Who cares?  Ignore this error, it just means FRB will act as if it's not downloaded
                                     // next time

@@ -13,13 +13,14 @@ using System.Diagnostics;
 using FlatRedBall.Glue.Controls;
 //using NewProjectCreator.Managers;
 //using NewProjectCreator.Logic;
-using System.Windows.Forms;
 using NewProjectCreator.ViewModels;
 using FlatRedBall.IO;
 using FlatRedBall.IO.Csv;
 using FlatRedBall.Utilities;
 using FRBDKUpdater;
 using NewProjectCreator.Managers;
+using NewProjectCreator.Views;
+using EditorObjects.IoC;
 
 namespace NewProjectCreator
 {
@@ -62,7 +63,7 @@ namespace NewProjectCreator
 
         public static bool MakeNewProject(NewProjectViewModel viewModel)
         {
-
+            IMessageBox messageBox = Container.Get<IMessageBox>();
 
             string stringToReplace;
             string zipToUnpack;
@@ -71,7 +72,6 @@ namespace NewProjectCreator
 
             bool succeeded = true;
 
-			#if !MAC
             if (NewProjectCreator.Managers.CommandLineManager.Self.OpenedBy != null && NewProjectCreator.Managers.CommandLineManager.Self.OpenedBy.ToLower() == "glue")
             {
                 PlatformProjectInfo ppi = viewModel.ProjectType;
@@ -79,77 +79,78 @@ namespace NewProjectCreator
                 if (!ppi.SupportedInGlue)
                 {
                     succeeded = false;
-                    MessageBox.Show("This project type is not supported in Glue.  You must launch the New Project Creator manually");
+                    messageBox.Show("This project type is not supported in Glue.  You must launch the New Project Creator manually");
                 }
             }
-			#endif
+
+            string unpackDirectory = viewModel.ProjectLocation;
 
             if (succeeded)
             {
-                string unpackDirectory = viewModel.ProjectLocation;
 
-                bool isFileNameValid = GetIfFileNameIsValid(viewModel, ref unpackDirectory);
+                bool isFileNameValid = GetIfFileNameIsValid(viewModel, messageBox, ref unpackDirectory);
 
-                if(!isFileNameValid)
+                if (!isFileNameValid)
                 {
                     succeeded = false;
                 }
-                else
+            }
+
+            if (succeeded)
+            {
+                bool hasUserCancelled = false;
+
+                bool shouldTryDownloading;
+                zipToUnpack = GetZipToUnpack(viewModel, fileToDownload, ref hasUserCancelled, out shouldTryDownloading);
+
+                if (shouldTryDownloading)
                 {
-                    bool hasUserCancelled = false;
+                    // Checks for a newer version and downloads it if necessary
+                    bool downloadSucceeded = DownloadFileSync(viewModel, zipToUnpack, fileToDownload);
 
-                    bool shouldTryDownloading;
-                    zipToUnpack = GetZipToUnpack(viewModel, fileToDownload, ref hasUserCancelled, out shouldTryDownloading);
-
-                    if(shouldTryDownloading)
+                    if (!downloadSucceeded)
                     {
-                        // Checks for a newer version and downloads it if necessary
-                        bool downloadSucceeded = DownloadFileSync(viewModel, zipToUnpack, fileToDownload);
+                        ShowErrorMessageBox(ref hasUserCancelled, ref zipToUnpack, "Error downloading the file.  What would you like to do?");
+                    }
+                }
 
-                        if (!downloadSucceeded)
-                        {
-                            ShowErrorMessageBox(ref hasUserCancelled, ref zipToUnpack, "Error downloading the file.  What would you like to do?");
-                        }
+
+                if (!hasUserCancelled)
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(unpackDirectory);
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        messageBox.Show("The program does not have permission to create a directory at\n\n" + unpackDirectory + "\n\nPlease run as administrator mode");
+                        succeeded = false;
                     }
 
-
-                    if (!hasUserCancelled)
+                    if (succeeded)
                     {
-                        try
+                        if (!File.Exists(zipToUnpack))
                         {
-                            Directory.CreateDirectory(unpackDirectory);
-                        }
-                        catch (UnauthorizedAccessException)
-                        {
-                            MessageBox.Show("The program does not have permission to create a directory at\n\n" + unpackDirectory + "\n\nPlease run as administrator mode");
-                            succeeded = false;
+                            messageBox.Show("Could not find the template file:\n" + zipToUnpack);
                         }
 
-                        if (succeeded)
+
+                        succeeded = UnzipManager.UnzipFile(zipToUnpack, unpackDirectory);
+                    }
+
+                    if (succeeded)
+                    {
+                        RenameEverything(viewModel, stringToReplace, unpackDirectory);
+
+                        CreateGuidInAssemblyInfo(unpackDirectory);
+
+                        if (viewModel.OpenSlnFolderAfterCreation)
                         {
-                            if (!File.Exists(zipToUnpack))
-                            {
-                                System.Windows.Forms.MessageBox.Show("Could not find the template file:\n" + zipToUnpack);
-                            }
-
-
-                            succeeded = UnzipManager.UnzipFile(zipToUnpack, unpackDirectory);
+                            Process.Start(unpackDirectory);
                         }
 
-                        if (succeeded)
-                        {
-                            RenameEverything(viewModel, stringToReplace, unpackDirectory);
+                        System.Console.Out.WriteLine(unpackDirectory);
 
-                            CreateGuidInAssemblyInfo(unpackDirectory);
-
-                            if (viewModel.OpenSlnFolderAfterCreation)
-                            {
-                                Process.Start(unpackDirectory);
-                            }
-
-                            System.Console.Out.WriteLine(unpackDirectory);
-
-                        }
                     }
                 }
             }
@@ -159,14 +160,23 @@ namespace NewProjectCreator
 
         private static void RenameEverything(NewProjectViewModel viewModel, string stringToReplace, string unpackDirectory)
         {
-            RenameFiles(unpackDirectory, stringToReplace,
-                viewModel.ProjectName);
+            var newProjectName = viewModel.ProjectName;
 
-            UpdateSolutionContents(unpackDirectory, stringToReplace,
-                viewModel.ProjectName);
+            if(stringToReplace != newProjectName)
+            {
+                RenameFiles(unpackDirectory, stringToReplace,
+                    newProjectName);
 
-            UpdateNamespaces(unpackDirectory, stringToReplace,
-                viewModel.DifferentNamespace);
+                UpdateSolutionContents(unpackDirectory, stringToReplace,
+                    newProjectName);
+            }
+
+            var newNamespace = viewModel.DifferentNamespace;
+            if(stringToReplace != newNamespace)
+            {
+                UpdateNamespaces(unpackDirectory, stringToReplace,
+                    newNamespace);
+            }
 
         }
 
@@ -213,36 +223,37 @@ namespace NewProjectCreator
 
         private static void ShowErrorMessageBox(ref bool hasUserCancelled, ref string zipToUnpack, string message)
         {
+            // todo - eventually make an interface for this, inject it
             MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
             mbmb.MessageText = message;
-            mbmb.AddButton("Look for the file in the default location", DialogResult.Yes);
-            mbmb.AddButton("Select a .zip file to use", DialogResult.OK);
-            mbmb.AddButton("Nothing - don't create a project", DialogResult.Cancel);
+            mbmb.AddButton("Look for the file in the default location", System.Windows.Forms.DialogResult.Yes);
+            mbmb.AddButton("Select a .zip file to use", System.Windows.Forms.DialogResult.OK);
+            mbmb.AddButton("Nothing - don't create a project", System.Windows.Forms.DialogResult.Cancel);
             var dialogResult = mbmb.ShowDialog();
 
-            if (dialogResult == DialogResult.Yes)
+            if (dialogResult == System.Windows.Forms.DialogResult.Yes)
             {
                 // do nothing, it'll just look in the default location....
             }
-            else if (dialogResult == DialogResult.OK)
+            else if (dialogResult == System.Windows.Forms.DialogResult.OK)
             {
-                OpenFileDialog fileDialog = new OpenFileDialog();
+                System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
                 fileDialog.InitialDirectory = "c:\\";
                 fileDialog.Filter = "Zipped FRB template (*.zip)|*.zip";
                 fileDialog.RestoreDirectory = true;
 
-                if (fileDialog.ShowDialog() == DialogResult.OK)
+                if (fileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     zipToUnpack = fileDialog.FileName;
                 }
             }
-            else if (dialogResult == DialogResult.Cancel)
+            else if (dialogResult == System.Windows.Forms.DialogResult.Cancel)
             {
                 hasUserCancelled = true;
             }
         }
 
-        private static bool GetIfFileNameIsValid(NewProjectViewModel viewModel, ref string unpackDirectory)
+        private static bool GetIfFileNameIsValid(NewProjectViewModel viewModel, IMessageBox messageBox, ref string unpackDirectory)
         {
             string whyIsInvalid = null;
 
@@ -273,7 +284,7 @@ namespace NewProjectCreator
 
             if(!string.IsNullOrEmpty(whyIsInvalid))
             {
-                MessageBox.Show(whyIsInvalid);
+                messageBox.Show(whyIsInvalid);
             }
 
             isFileNameValid = string.IsNullOrEmpty(whyIsInvalid);

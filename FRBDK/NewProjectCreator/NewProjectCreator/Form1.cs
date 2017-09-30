@@ -15,6 +15,7 @@ using NewProjectCreator.Remote;
 using NewProjectCreator.Managers;
 using NewProjectCreator.ViewModels;
 using System.Reflection;
+using NewProjectCreator.Views;
 
 namespace NewProjectCreator
 {
@@ -104,14 +105,17 @@ namespace NewProjectCreator
 
 
             ((System.Windows.Controls.Control)WpfHost.Child).DataContext = viewModel;
+
+            EditorObjects.IoC.Container.Set<IMultiButtonMessageBox>(new WinformsMultiButtonMessageBox());
+            EditorObjects.IoC.Container.Set<IMessageBox>(new WinformsMessageBox());
         }
 
         private void HandleSelectLocationClick(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            DialogResult result = fbd.ShowDialog(this);
+            System.Windows.Forms.DialogResult result = fbd.ShowDialog(this);
 
-            if (result == DialogResult.OK)
+            if (result == System.Windows.Forms.DialogResult.OK)
             {
                 ProjectLocationTextBox.Text = fbd.SelectedPath;
 
@@ -140,6 +144,11 @@ namespace NewProjectCreator
 
         private void MakeMyProjectClick(object sender, EventArgs e)
         {
+            HandleMakeNewProject();
+        }
+
+        private void HandleMakeNewProject()
+        {
             ApplyViewToViewModel();
 
             string whyIsntValid = viewModel.GetWhyIsntValid();
@@ -150,9 +159,17 @@ namespace NewProjectCreator
             }
             else
             {
-                bool succeeded = ProjectCreationHelper.MakeNewProject(viewModel);
+                bool succeeded = false;
+                try
+                {
+                    succeeded = ProjectCreationHelper.MakeNewProject(viewModel);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
 
-                if(succeeded)
+                if (succeeded)
                 {
                     this.Close();
                 }
@@ -223,6 +240,19 @@ namespace NewProjectCreator
             get
             {
                 return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            }
+        }
+
+        private void ProjectNameTextBox_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ProjectNameTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar == (char)Keys.Return)
+            {
+                HandleMakeNewProject();
             }
         }
     }

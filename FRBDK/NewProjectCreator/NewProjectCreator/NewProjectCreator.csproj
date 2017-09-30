@@ -108,6 +108,9 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\FRBDK Supporting Projects\EditorObjects\IoC\Container.cs">
+      <Link>IoC\Container.cs</Link>
+    </Compile>
     <Compile Include="..\..\FRBDKUpdater\FRBDKUpdater\UpdaterRuntimeSettings.cs">
       <Link>DataTypes\UpdaterRuntimeSettings.cs</Link>
     </Compile>
@@ -141,6 +144,8 @@
     <Compile Include="Views\MainControl.xaml.cs">
       <DependentUpon>MainControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\WinformsMessageBox.cs" />
+    <Compile Include="Views\WinformsMultiButtonMessageBox.cs" />
     <EmbeddedResource Include="..\..\Glue\Glue\Controls\MultiButtonMessageBox.resx">
       <Link>Controls\MultiButtonMessageBox.resx</Link>
       <DependentUpon>MultiButtonMessageBox.cs</DependentUpon>
@@ -220,6 +225,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

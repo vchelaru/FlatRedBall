@@ -497,9 +497,15 @@ namespace FlatRedBall.Glue.SetVariable
 
                 if (succeeded)
                 {
+                    string nosType = nos.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType;
+
+                    if(string.IsNullOrEmpty(nosType))
+                    {
+                        nosType = nos.SourceClassType;
+                    }
 
                     bool doesBaseMatch = !string.IsNullOrEmpty(element.BaseElement) &&
-                        element.BaseElement == nos.SourceClassType;
+                        element.BaseElement == nosType;
 
                     if (!doesBaseMatch)
                     {
@@ -512,17 +518,17 @@ namespace FlatRedBall.Glue.SetVariable
                         }
 
 
-                        mbmb.MessageText = "The object is of type " + nos.SourceClassType + " but the container is of type " + containerType + "\n\n" +
+                        mbmb.MessageText = "The object is of type " + nosType + " but the container is of type " + containerType + "\n\n" +
                             "What would you like to do?";
 
-                        mbmb.AddButton("Set the container's type to " + nos.SourceClassType, DialogResult.Yes);
+                        mbmb.AddButton("Set the container's type to " + nosType, DialogResult.Yes);
                         mbmb.AddButton("Nothing - game may not compile until this has been fixed", DialogResult.No);
                         mbmb.AddButton("Set 'IsContainer' back to false", DialogResult.Cancel);
 
                         var dialogResult = mbmb.ShowDialog();
                         if (dialogResult == DialogResult.Yes)
                         {
-                            element.BaseObject = nos.SourceClassType;
+                            element.BaseObject = nosType;
                         }
                         else if (dialogResult == DialogResult.Cancel)
                         {
