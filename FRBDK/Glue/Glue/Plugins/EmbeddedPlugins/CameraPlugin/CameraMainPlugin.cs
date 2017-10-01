@@ -72,7 +72,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
             settings.Is2D = project.In2D;
 
-            settings.ResizeBehavior = ResizeBehavior.IncreaseVisibleArea;
+            settings.ResizeBehavior = ResizeBehavior.StretchVisibleArea;
 
             settings.ResolutionWidth = project.ResolutionWidth;
             settings.ResolutionHeight = project.ResolutionHeight;

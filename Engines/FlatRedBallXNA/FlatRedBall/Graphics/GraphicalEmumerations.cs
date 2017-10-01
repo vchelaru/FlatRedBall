@@ -524,15 +524,10 @@ namespace FlatRedBall.Graphics
             }
 
             colorable.ColorOperation = TranslateColorOperation(op);
-#if FRB_MDX
-            colorable.Red = desiredRed;
-            colorable.Green = desiredGreen;
-            colorable.Blue = desiredBlue;
-#else
+
             colorable.Red = desiredRed / 255.0f;
             colorable.Green = desiredGreen / 255.0f;
             colorable.Blue = desiredBlue / 255.0f;
-#endif
         }
 
         #endregion
