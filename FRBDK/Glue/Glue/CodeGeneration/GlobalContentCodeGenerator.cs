@@ -11,7 +11,7 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.IO;
-
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Parsing
 {
@@ -31,6 +31,14 @@ namespace FlatRedBall.Glue.Parsing
 
         public static void UpdateLoadGlobalContentCode()
         {
+            //////////////////////Early Out////////////////////////
+            if (GlueState.Self.CurrentGlueProject == null)
+            {
+                // early out in case Glue is closing:
+                return;
+            }
+            ///////////////////End Early Out//////////////////////
+
             var classContent = GetLoadGlobalContentCode();
 
 

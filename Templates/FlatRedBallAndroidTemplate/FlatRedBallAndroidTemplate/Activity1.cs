@@ -45,17 +45,26 @@ namespace FlatRedBallAndroidTemplate
 
         private void HandleKeyPress(object sender, View.KeyEventArgs e)
         {
+            // e.Handled defaults to true, surprisingly. Need to explicitly set
+            // e.Handled to false if we dont handle, it so that functionality like
+            // changing the volume still works.
+            bool handled = false;
+
             if ((e.Event.Source & InputSourceType.Gamepad) == InputSourceType.Gamepad)
             {
                 if (e.Event.Action == KeyEventActions.Down)
                 {
                     FlatRedBallAndroid.Input.AndroidGamePadManager.OnKeyDown(e.KeyCode, e.Event);
+                    handled = true;
                 }
                 if (e.Event.Action == KeyEventActions.Up)
                 {
                     FlatRedBallAndroid.Input.AndroidGamePadManager.OnKeyUp(e.KeyCode, e.Event);
+                    handled = true;
                 }
             }
+
+            e.Handled = handled;
         }
 
     }
