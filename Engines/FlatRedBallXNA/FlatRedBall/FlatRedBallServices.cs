@@ -1419,16 +1419,9 @@ namespace FlatRedBall
             }
 #endif
 
-#if FRB_MDX
-            if (count != 1)
-            {
-                throw new ArgumentException("FlatRedBall MDX only supports single-threaded processing.");
-            }
-#else
             mNumberOfThreads = count;
             SpriteManager.SetNumberOfThreadsToUse(count);
             Renderer.SetNumberOfThreadsToUse(count);
-#endif
         }
 
         #region Every-frame Methods (Update and Draw)

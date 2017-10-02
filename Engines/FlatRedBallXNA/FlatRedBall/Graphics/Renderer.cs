@@ -61,14 +61,14 @@ namespace FlatRedBall.Graphics
         public void FillVertexList()
         {
             Reset();
-#if WINDOWS_8 || UWP
+#if UWP
             ThreadPool.RunAsync(FillVertexListInternal);
 #else
-            ThreadPool.QueueUserWorkItem(FillVertexListInternal);
+            ThreadPool.QueueUserWorkItem(FillVertexListSync);
 #endif
         }
 
-        void FillVertexListInternal(object notUsed)
+        internal void FillVertexListSync(object notUsed)
         {
             int vertNum = 0;
             int vertexBufferNum = 0;
@@ -2955,16 +2955,25 @@ namespace FlatRedBall.Graphics
 
             }
 
-
-            for (int i = 0; i < mFillVertexLogics.Count; i++)
-            //for (int i = mFillVertexLogics.Count - 1; i > -1; i--)
+            if (mFillVertexLogics.Count == 1)
             {
-                mFillVertexLogics[i].FillVertexList();
-                //System.Threading.Thread.Sleep(100);
+                // if there's only 1 vertex logic, no need to make it async, that causes memory allocations.
+                // Maybe look at multithread fixes for memory allocations too but...at least let's make the default
+                // case not allocate:
+                mFillVertexLogics[0].FillVertexListSync(null);
             }
-            for (int i = 0; i < mFillVertexLogics.Count; i++)
+            else
             {
-                mFillVertexLogics[i].Wait();
+                for (int i = 0; i < mFillVertexLogics.Count; i++)
+                //for (int i = mFillVertexLogics.Count - 1; i > -1; i--)
+                {
+                    mFillVertexLogics[i].FillVertexList();
+                    //System.Threading.Thread.Sleep(100);
+                }
+                for (int i = 0; i < mFillVertexLogics.Count; i++)
+                {
+                    mFillVertexLogics[i].Wait();
+                }
             }
 
 //            // The numToDraw indicates the number of Sprites that will be put on the
