@@ -1364,6 +1364,12 @@ namespace FlatRedBall
 
         #region Public Methods
 
+        // Not sure why AttachTo is virtual, it just makes things slower
+        public void AttachTo(PositionedObject newParent)
+        {
+            this.AttachTo(newParent, changeRelative: false);
+        }
+
         #region XML Docs
         /// <summary>
         /// Attaches this PositionedObject to the argument newParent.
