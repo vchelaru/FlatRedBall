@@ -154,11 +154,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not exist $(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\Selection\ md $(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\Selection\
-copy $(ProjectDir)Selection\ "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\Selection"
+    <PostBuildEvent>if not exist "$(SolutionDir)"..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\Selection\ md "$(SolutionDir)"..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\Selection\
+copy "$(ProjectDir)"Selection\ "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\Selection"
 
-if not exist $(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\ObjectCreator\ md $(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\ObjectCreator\
-copy $(ProjectDir)ObjectCreator\ "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\ObjectCreator"</PostBuildEvent>
+if not exist "$(SolutionDir)"..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\ObjectCreator\ md "$(SolutionDir)"..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\ObjectCreator\
+copy "$(ProjectDir)"ObjectCreator\ "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\ObjectCreator"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

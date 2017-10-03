@@ -131,7 +131,7 @@
   <PropertyGroup>
     <PostBuildEvent>IF NOT EXIST %25appdata%25\FRBDK\plugins\GameScriptingPlugin\ MD %25appdata%25\FRBDK\plugins\GameScriptingPlugin\
 
-copy $(TargetDir)GameScriptingPlugin.dll  "%25appdata%25\FRBDK\plugins\GameScriptingPlugin\GameScriptingPlugin.dll"
+copy "$(TargetDir)GameScriptingPlugin.dll"  "%25appdata%25\FRBDK\plugins\GameScriptingPlugin\GameScriptingPlugin.dll"
 
 echo Copied files</PostBuildEvent>
   </PropertyGroup>
