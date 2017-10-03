@@ -117,8 +117,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not exist $(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\EntityControl\ md $(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\EntityControl\
-copy $(ProjectDir)EntityControl\ "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\EntityControl"</PostBuildEvent>
+    <PostBuildEvent>if not exist "$(SolutionDir)"..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\EntityControl\ md "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\EntityControl\"
+copy "$(ProjectDir)EntityControl\" "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\EntityControl"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

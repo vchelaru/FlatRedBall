@@ -490,25 +490,25 @@
     <PostBuildEvent>echo PostBuild
 
 IF NOT EXIST %25AppData%25\FRBDK\Plugins\GumPlugin\ MD %25AppData%25\FRBDK\Plugins\GumPlugin\
-IF NOT EXIST  $(SolutionDir)\Glue\bin\Debug\Plugins\GumPlugin\ MD $(SolutionDir)\Glue\bin\Debug\Plugins\GumPlugin\
+IF NOT EXIST  "$(SolutionDir)"\Glue\bin\Debug\Plugins\GumPlugin\ MD "$(SolutionDir)"\Glue\bin\Debug\Plugins\GumPlugin\
 
-copy $(TargetDir)\GumPlugin.dll %25AppData%25\FRBDK\Plugins\GumPlugin\GumPlugin.dll
-copy $(TargetDir)\GumPlugin.pdb %25AppData%25\FRBDK\Plugins\GumPlugin\GumPlugin.pdb
+copy "$(TargetDir)"\GumPlugin.dll %25AppData%25\FRBDK\Plugins\GumPlugin\GumPlugin.dll
+copy "$(TargetDir)"\GumPlugin.pdb %25AppData%25\FRBDK\Plugins\GumPlugin\GumPlugin.pdb
 
 echo dll copies for Evan GumPlugin
-copy $(TargetDir)\GumPlugin.dll $(SolutionDir)\Glue\bin\Debug\Plugins\GumPlugin\GumPlugin.dll
-copy $(TargetDir)\Gum.DataTypes.dll $(SolutionDir)\Glue\bin\Debug\Plugins\GumPlugin\Gum.DataTypes.dll
-copy $(TargetDir)\GumRuntime.dll $(SolutionDir)\Glue\bin\Debug\Plugins\GumPlugin\GumRuntime.dll
-copy $(TargetDir)\FlatRedBall.InterpolationCore.dll $(SolutionDir)\Glue\bin\Debug\Plugins\GumPlugin\FlatRedBall.InterpolationCore.dll
+copy "$(TargetDir)"\GumPlugin.dll "$(SolutionDir)"\Glue\bin\Debug\Plugins\GumPlugin\GumPlugin.dll
+copy "$(TargetDir)"\Gum.DataTypes.dll "$(SolutionDir)"\Glue\bin\Debug\Plugins\GumPlugin\Gum.DataTypes.dll
+copy "$(TargetDir)"\GumRuntime.dll "$(SolutionDir)"\Glue\bin\Debug\Plugins\GumPlugin\GumRuntime.dll
+copy "$(TargetDir)"\FlatRedBall.InterpolationCore.dll "$(SolutionDir)"\Glue\bin\Debug\Plugins\GumPlugin\FlatRedBall.InterpolationCore.dll
 echo dll copies for Evan done
 
-copy $(TargetDir)\Gum.DataTypes.dll %25AppData%25\FRBDK\Plugins\GumPlugin\Gum.DataTypes.dll
-copy $(TargetDir)\Gum.DataTypes.pdb %25AppData%25\FRBDK\Plugins\GumPlugin\Gum.DataTypes.pdb
+copy "$(TargetDir)"\Gum.DataTypes.dll %25AppData%25\FRBDK\Plugins\GumPlugin\Gum.DataTypes.dll
+copy "$(TargetDir)"\Gum.DataTypes.pdb %25AppData%25\FRBDK\Plugins\GumPlugin\Gum.DataTypes.pdb
 
-copy $(TargetDir)\GumRuntime.dll %25AppData%25\FRBDK\Plugins\GumPlugin\GumRuntime.dll
-copy $(TargetDir)\GumRuntime.pdb %25AppData%25\FRBDK\Plugins\GumPlugin\GumRuntime.pdb
+copy "$(TargetDir)"\GumRuntime.dll %25AppData%25\FRBDK\Plugins\GumPlugin\GumRuntime.dll
+copy "$(TargetDir)"\GumRuntime.pdb %25AppData%25\FRBDK\Plugins\GumPlugin\GumRuntime.pdb
 
-copy $(TargetDir)\FlatRedBall.InterpolationCore.dll %25AppData%25\FRBDK\Plugins\GumPlugin\FlatRedBall.InterpolationCore.dll
+copy "$(TargetDir)"\FlatRedBall.InterpolationCore.dll %25AppData%25\FRBDK\Plugins\GumPlugin\FlatRedBall.InterpolationCore.dll
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

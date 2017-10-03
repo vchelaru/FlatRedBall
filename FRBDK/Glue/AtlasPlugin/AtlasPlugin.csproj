@@ -126,11 +126,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not exist $(SolutionDir)Glue\bin\Debug\Plugins\ md $(SolutionDir)Glue\bin\Debug\Plugins\
+    <PostBuildEvent>if not exist "$(SolutionDir)"Glue\bin\Debug\Plugins\ md "$(SolutionDir)"Glue\bin\Debug\Plugins\
 
-if not exist $(SolutionDir)Glue\bin\Debug\Plugins\AtlasPlugin\ md $(SolutionDir)Glue\bin\Debug\Plugins\AtlasPlugin\
-copy $(TargetDir)AtlasPlugin.dll $(SolutionDir)Glue\bin\Debug\Plugins\AtlasPlugin\AtlasPlugin.dll"
-copy $(TargetDir)AtlasPlugin.pdb $(SolutionDir)Glue\bin\Debug\Plugins\AtlasPlugin\AtlasPlugin.pdb"</PostBuildEvent>
+if not exist "$(SolutionDir)"Glue\bin\Debug\Plugins\AtlasPlugin\ md "$(SolutionDir)"Glue\bin\Debug\Plugins\AtlasPlugin\
+copy "$(TargetDir)"AtlasPlugin.dll "$(SolutionDir)"Glue\bin\Debug\Plugins\AtlasPlugin\AtlasPlugin.dll"
+copy "$(TargetDir)"AtlasPlugin.pdb "$(SolutionDir)"Glue\bin\Debug\Plugins\AtlasPlugin\AtlasPlugin.pdb"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
