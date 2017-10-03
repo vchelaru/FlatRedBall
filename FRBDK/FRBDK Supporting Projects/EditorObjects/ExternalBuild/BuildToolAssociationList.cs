@@ -62,11 +62,11 @@ namespace EditorObjects.SaveClasses
                 // if the build tool is null that's okay, we probably 
                 // just need to skip it because the user has removed the
                 // tool.
-                if (!string.IsNullOrEmpty(bta.BuildTool))
+                if (!string.IsNullOrEmpty(bta.BuildToolProcessed))
                 {
-                    string fileToLookFor = bta.BuildTool;
+                    string fileToLookFor = bta.BuildToolProcessed;
 
-                    string absoluteFileName = bta.BuildTool;
+                    string absoluteFileName = bta.BuildToolProcessed;
                     if (FileManager.IsRelative(absoluteFileName))
                     {
                         absoluteFileName = projectDirectory + absoluteFileName;
@@ -74,8 +74,8 @@ namespace EditorObjects.SaveClasses
 
                     if (FileManager.FileExists(absoluteFileName) == false)
                     {
-                        if (buildToolErrors.Contains(bta.BuildTool) == false)
-                            buildToolErrors += bta.BuildTool + "\n";
+                        if (buildToolErrors.Contains(bta.BuildToolProcessed) == false)
+                            buildToolErrors += bta.BuildToolProcessed + "\n";
                     }
                 }
 

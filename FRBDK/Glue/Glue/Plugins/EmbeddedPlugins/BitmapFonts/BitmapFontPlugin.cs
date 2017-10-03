@@ -42,16 +42,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.BitmapFonts
         {
             BuildToolAssociation toReturn = new BuildToolAssociation();
 
-            string folder = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            // relative to Glue:
+            string relativePath = @"%Glue%Libraries\BMFont\bmfont.exe";
 
-            if (!folder.EndsWith("\\") && !folder.EndsWith("/"))
-            {
-                folder += "\\";
-            }
-
-            string bmFontAbsolutePath = folder + @"AngelCode\BMFont\bmfont.exe";
-
-            toReturn.BuildTool = bmFontAbsolutePath;
+            toReturn.BuildTool = relativePath;
             toReturn.SourceFileType = "bmfc";
             toReturn.DestinationFileType = "fnt";
 
@@ -64,7 +58,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.BitmapFonts
 
         void AddIfNecessary(BuildToolAssociation association)
         {
-            if (System.IO.File.Exists(association.BuildTool))
+            if (System.IO.File.Exists(association.BuildToolProcessed))
             {
                 var buildToolList = BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList;
 

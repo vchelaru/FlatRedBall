@@ -205,7 +205,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     foreach (BuildToolAssociation bta in BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList)
                     {
-                        error += "\n\"" + bta.SourceFileType + "\" -> " +  bta.BuildTool + " -> \"" + bta.DestinationFileType + "\"";
+                        error += "\n\"" + bta.SourceFileType + "\" -> " +  bta.BuildToolProcessed + " -> \"" + bta.DestinationFileType + "\"";
                     }
 
                     System.Windows.Forms.MessageBox.Show(error);

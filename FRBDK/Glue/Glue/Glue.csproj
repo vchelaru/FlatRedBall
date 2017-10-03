@@ -806,6 +806,9 @@
     </Compile>
     <Compile Include="Wcf\WcfManager.cs" />
     <Compile Include="Wcf\WcfService.cs" />
+    <Content Include="Libraries\BMFont\bmfont.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Tools\MSBuild\15.0\1028\FileTracker32UI.dll" />
     <Content Include="Tools\MSBuild\15.0\1028\FileTracker64UI.dll" />
     <Content Include="Tools\MSBuild\15.0\1028\TrackerUI.dll" />

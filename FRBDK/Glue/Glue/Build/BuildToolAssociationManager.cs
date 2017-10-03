@@ -121,9 +121,9 @@ namespace FlatRedBall.Glue.Managers
                 foreach (BuildToolAssociation bta in ProjectManager.GlueSettingsSave.BuildToolAssociations)
                 {
                     ProjectSpecificBuildTools.BuildToolList.Add(bta);
-                    if (!FileManager.IsRelative(bta.BuildTool))
+                    if (!FileManager.IsRelative(bta.BuildToolProcessed))
                     {
-                        bta.BuildTool = FileManager.MakeRelative(bta.BuildTool, projectFolder);
+                        bta.BuildTool = FileManager.MakeRelative(bta.BuildToolProcessed, projectFolder);
                     }
                 }
 

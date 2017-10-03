@@ -186,7 +186,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (buildToolAssociation != null)
             {
-                string buildToolFileName = buildToolAssociation.BuildTool;
+                string buildToolFileName = buildToolAssociation.BuildToolProcessed;
                 string absoluteBuildTool = ProjectManager.ProjectBase.Directory + buildToolFileName;
 
                 if (File.Exists(absoluteBuildTool))

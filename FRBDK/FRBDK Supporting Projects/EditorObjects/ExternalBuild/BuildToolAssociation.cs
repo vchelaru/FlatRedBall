@@ -27,6 +27,21 @@ namespace EditorObjects.SaveClasses
             set;
         }
 
+        public string BuildToolProcessed
+        {
+            get
+            {
+                var toReturn = BuildTool;
+                if(toReturn != null)
+                {
+                    var folder = FileManager.GetDirectory(System.Reflection.Assembly.GetEntryAssembly().Location);
+                    toReturn = toReturn.Replace("%Glue%", folder);
+                }
+
+                return toReturn;
+            }
+        }
+
         [Category("Primary Arguments"), PropertyOrder(110)]
         public bool IsBuildToolAbsolute
         {
@@ -113,7 +128,7 @@ namespace EditorObjects.SaveClasses
 
             string errorString = "";
 
-            string executable = BuildTool;
+            string executable = BuildToolProcessed;
 
             if (FileManager.IsRelative(executable))
             {
@@ -343,9 +358,9 @@ namespace EditorObjects.SaveClasses
                 destinationFileType = "*." + DestinationFileType;
             }
 
-            if (!string.IsNullOrEmpty(BuildTool))
+            if (!string.IsNullOrEmpty(BuildToolProcessed))
             {
-                buildTool = FileManager.RemovePath(BuildTool);
+                buildTool = FileManager.RemovePath(BuildToolProcessed);
             }
 
             return sourceFileType + " -> " + buildTool + " -> " +

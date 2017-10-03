@@ -127,15 +127,15 @@ namespace FlatRedBall.Glue.Controls
             }
             else if(changedMember == nameof(SelectedBuildToolAssociation.IsBuildToolAbsolute))
             {
-                if(SelectedBuildToolAssociation.IsBuildToolAbsolute && FileManager.IsRelative(SelectedBuildToolAssociation.BuildTool))
+                if(SelectedBuildToolAssociation.IsBuildToolAbsolute && FileManager.IsRelative(SelectedBuildToolAssociation.BuildToolProcessed))
                 {
                     // Make the build tool absolute:
-                    SelectedBuildToolAssociation.BuildTool = FileManager.RemoveDotDotSlash(projectDirectory + SelectedBuildToolAssociation.BuildTool);
+                    SelectedBuildToolAssociation.BuildTool = FileManager.RemoveDotDotSlash(projectDirectory + SelectedBuildToolAssociation.BuildToolProcessed);
                 }
-                else if(SelectedBuildToolAssociation.IsBuildToolAbsolute == false && !FileManager.IsRelative(SelectedBuildToolAssociation.BuildTool))
+                else if(SelectedBuildToolAssociation.IsBuildToolAbsolute == false && !FileManager.IsRelative(SelectedBuildToolAssociation.BuildToolProcessed))
                 {
                     // It's currently absolute, so convert it to relative:
-                    string relativeValue = FileManager.MakeRelative(SelectedBuildToolAssociation.BuildTool, projectDirectory);
+                    string relativeValue = FileManager.MakeRelative(SelectedBuildToolAssociation.BuildToolProcessed, projectDirectory);
                     SelectedBuildToolAssociation.BuildTool = relativeValue;
                 }
             }
