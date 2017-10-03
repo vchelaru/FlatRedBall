@@ -112,7 +112,15 @@ namespace FlatRedBall.Glue.Managers
                         References = topLevelOnly
                     };
 
-                    fileReferences[standardized] = referenceInfo;
+                    try
+                    {
+                        fileReferences[standardized] = referenceInfo;
+                    }
+                    catch(Exception e)
+                    {
+                        int m = 3;
+                        throw e;
+                    }
 
                 }
             }

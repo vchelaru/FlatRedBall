@@ -84,7 +84,10 @@ namespace TileGraphicsPlugin
             // - Fixed possible threading issue if the project attempts to save on project startup
             // 1.1.1.6
             // - Updated tile entity instantiator so that it supports the latest changes to the factory pattern to support X and Y values
-            get { return new Version(1, 1, 1, 6); }
+            // 1.1.1.7
+            // - Added support for overriding the current TextureFilter when rendering a MapDrawableBatch
+            // - Entities are now offset according to their layer's position - useful for instantiating entities inside of another entity
+            get { return new Version(1, 1, 1, 7); }
         }
 
 
