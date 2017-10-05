@@ -21,6 +21,7 @@ using FRBDKUpdater;
 using NewProjectCreator.Managers;
 using NewProjectCreator.Views;
 using EditorObjects.IoC;
+using NewProjectCreator.LogicObjects;
 
 namespace NewProjectCreator
 {
@@ -142,7 +143,7 @@ namespace NewProjectCreator
                     {
                         RenameEverything(viewModel, stringToReplace, unpackDirectory);
 
-                        CreateGuidInAssemblyInfo(unpackDirectory);
+                        GuidLogic.ReplaceGuids(unpackDirectory);
 
                         if (viewModel.OpenSlnFolderAfterCreation)
                         {
@@ -351,30 +352,6 @@ namespace NewProjectCreator
             else
             {
                 return foundInstance.Url;
-            }
-        }
-
-        private static void CreateGuidInAssemblyInfo(string unpackDirectory)
-        {
-
-            List<string> stringList = FileManager.GetAllFilesInDirectory(unpackDirectory, "cs");
-
-            foreach (string s in stringList)
-            {
-                if (s.ToLower().Contains("assemblyinfo.cs"))
-                {
-                    string contents = FileManager.FromFileText(s);
-
-                    string newGuid = Guid.NewGuid().ToString();
-
-                    string newLine = "[assembly: Guid(\"" + newGuid + "\")]";
-
-                    StringFunctions.ReplaceLine(
-                        ref contents, "[assembly: Guid(", newLine);
-
-                    FileManager.SaveText(contents, s);
-                }
-
             }
         }
 
@@ -633,110 +610,6 @@ namespace NewProjectCreator
             }
         }
         
-
-        private static void AddEngineProjectsToProject(PlatformProjectInfo projectType, ref string contents)
-        {
-            
-            #region Switch based off of the HighlightedTemplate
-
-            
-
-            string projectGUID = "";
-            string projectPath = "";
-            bool XNA4 = false;
-
-            switch (projectType.FriendlyName)
-            {
-                case "FlatRedBall XNA 3.1 (PC)":
-                    projectPath = @"N:\FlatRedBallXNA\FlatRedBall\FlatRedBall.csproj";
-                    projectGUID = GetGUID(projectPath);
-                    break;
-                case "FlatRedBall XNA 4.0 (PC)":
-                    projectPath = @"N:\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj";
-                    projectGUID = GetGUID(projectPath);
-                    XNA4 = true;
-                    break;
-                case "FlatRedBall XNA 3.1 (Xbox 360)":
-                    projectPath = @"N:\FlatRedBallXNA\FlatRedBall\FlatRedBallXbox360.csproj";
-                    projectGUID = GetGUID(projectPath);
-                    break;
-                case "FlatRedBall XNA 4.0 (Xbox 360)":
-                    projectPath = @"N:\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4_360.csproj";
-                    projectGUID = GetGUID(projectPath);
-                    XNA4 = true;
-                    break;
-                case "FlatSilverBall (Browser)":
-                    projectPath = @"N:\FlatSilverBall\FlatSilverBall\FlatRedBall.csproj";
-                    projectGUID = GetGUID(projectPath);
-                    break;
-                case "FlatRedBall MDX (PC)":
-                    projectPath = @"N:\FlatRedBallMDX\FRB.csproj";
-                    projectGUID = GetGUID(projectPath);
-                    break;
-                case "FlatRedBall WindowsPhone (Phone)":
-                    projectPath = @"N:\FlatRedBallXNA\FlatRedBall\FlatRedBallWindowsPhone.csproj";
-                    projectGUID = GetGUID(projectPath);
-                    XNA4 = true;
-                    break;
-
-                case "FlatRedBall Android (Phone)":
-                    // do nothing for now!
-                    break;
-            }
-            /*
-            <ItemGroup>
-                <ProjectReference Include="N:\FlatRedBallXNA\FlatRedBall\FlatRedBall.csproj">
-                  <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
-                  <Name>FlatRedBall</Name>
-                </ProjectReference>N
-            </ItemGroup>
-             */
-            int referenceStartIndex = contents.IndexOf("<Reference Include=\"FlatRedBall,");
-
-            // This could have something like this: <Reference Include="FlatRedBall">
-            if (referenceStartIndex == -1)
-            {
-                referenceStartIndex = contents.IndexOf("<Reference Include=\"FlatRedBall");
-            }
-
-            int referenceEndIndex;
-
-
-            int nextBackSlashReference = contents.IndexOf("</Reference>", referenceStartIndex);
-            int nextBackSlashClose = referenceEndIndex = contents.IndexOf("/>", referenceStartIndex);
-
-            if (nextBackSlashReference != -1 && nextBackSlashReference < nextBackSlashClose)
-            {
-                referenceEndIndex = contents.IndexOf("</Reference>", referenceStartIndex) + "</Reference>".Length;
-            }
-            else
-            {
-                referenceEndIndex = contents.IndexOf("/>", referenceStartIndex) + "/>".Length;
-            }
-            
-            contents = contents.Remove(referenceStartIndex, referenceEndIndex - referenceStartIndex);
-
-            string projectReference = "<ItemGroup>\n<ProjectReference Include=\""+projectPath+"\">\n"+
-                "<Project>{" + projectGUID + "</Project>\n<Name>"+FileManager.RemoveExtension(FileManager.RemovePath(projectPath))+"</Name>\n</ProjectReference>\n</ItemGroup>\n"; 
-
-
-            contents = contents.Insert(contents.IndexOf("<Import Project=\"$") - 1, projectReference);
-
-            #endregion
-
-
-        }
-
-        private static string GetGUID(string projectLocation)
-        {
-            string projectContents = FileManager.FromFileText(projectLocation);
-            int startIndex = projectContents.IndexOf("<ProjectGuid>{") + "<ProjectGuid>{".Length;
-            int endIndex = projectContents.IndexOf("</ProjectGuid>");
-            projectContents = projectContents.Substring(startIndex,endIndex-startIndex);              
-            return projectContents;
- 
-        }
-
         private static void UpdateJavaFiles(string unpackDirectory, string stringToReplace, string stringToReplaceWith)
         {
             List<string> filesToFix = FileManager.GetAllFilesInDirectory(

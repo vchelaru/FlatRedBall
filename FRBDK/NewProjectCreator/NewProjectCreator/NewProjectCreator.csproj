@@ -122,6 +122,9 @@
       <Link>Controls\MultiButtonMessageBox.designer.cs</Link>
       <DependentUpon>MultiButtonMessageBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\Glue\Glue\VSHelpers\VSSolution.cs">
+      <Link>DataTypes\VSSolution.cs</Link>
+    </Compile>
     <Compile Include="EmbeddedExecutableExtractor.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -129,6 +132,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="LogicObjects\GuidLogic.cs" />
     <Compile Include="Managers\CommandLineManager.cs" />
     <Compile Include="Managers\DataLoader.cs" />
     <Compile Include="Managers\MessageBoxShower.cs" />
