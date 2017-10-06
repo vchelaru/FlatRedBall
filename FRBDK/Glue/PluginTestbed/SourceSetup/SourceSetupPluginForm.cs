@@ -119,26 +119,6 @@ namespace PluginTestbed.SourceSetup
                 CheckFile(str);
                 result.Add(str);
             }
-            else if (project is Xna360Project)
-            {
-                str = CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall\FlatRedBallXbox360.csproj";
-                CheckFile(str);
-                result.Add(str);
-
-                str = CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall.Content\FlatRedBall.Content.csproj";
-                CheckFile(str);
-                result.Add(str);
-            }
-            else if (project is Xna4_360Project)
-            {
-                str = CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall\FlatRedBallXbox4_360.csproj";
-                CheckFile(str);
-                result.Add(str);
-
-                str = CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall.Content\FlatRedBall.ContentXna4.csproj";
-                CheckFile(str);
-                result.Add(str);
-            }
             else if (project is Xna4Project)
             {
                 str = CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall\FlatRedBallXbox4.csproj";
@@ -146,16 +126,6 @@ namespace PluginTestbed.SourceSetup
                 result.Add(str);
 
                 str = CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall.Content\FlatRedBall.ContentXna4.csproj";
-                CheckFile(str);
-                result.Add(str);
-            }
-            else if (project is XnaProject)
-            {
-                str = CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall\FlatRedBall.csproj";
-                CheckFile(str);
-                result.Add(str);
-
-                str = CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall.Content\FlatRedBall.Content.csproj";
                 CheckFile(str);
                 result.Add(str);
             }
@@ -178,63 +148,7 @@ namespace PluginTestbed.SourceSetup
             var librariesPath = FileManager.GetDirectory(project.FullFileName) + @"Libraries\";
             string str, strPdb, engineStr, enginePdb;
 
-            if (project is FsbProject)
-            {
-                foreach (var dll in project.LibraryDlls)
-                {
-                    str = librariesPath + dll;
-                    strPdb = str.Remove(str.Length - 4) + ".pdb";
-
-                    if(str.Contains("FlatRedBall.dll"))
-                    {
-                        if(File.Exists(str))
-                            File.Delete(str);
-                        if(File.Exists(strPdb))
-                            File.Delete(strPdb);
-
-                        CreateHardLinkWithCheck(str, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatSilverBall\FlatSilverBall\Bin\Debug\FlatRedBall.dll", IntPtr.Zero);
-                        CreateHardLinkWithCheck(strPdb, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatSilverBall\FlatSilverBall\Bin\Debug\FlatRedBall.pdb", IntPtr.Zero);
-                    }else if(str.Contains("SilverArcade.SilverSprite.Core.dll"))
-                    {
-                        if(File.Exists(str))
-                            File.Delete(str);
-                        if(File.Exists(strPdb))
-                            File.Delete(strPdb);
-
-                        CreateHardLinkWithCheck(str, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatSilverBall\SilverSpriteSource\SilverArcade.SilverSprite.Core\Bin\Debug\SilverArcade.SilverSprite.Core.dll", IntPtr.Zero);
-                        CreateHardLinkWithCheck(strPdb, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatSilverBall\SilverSpriteSource\SilverArcade.SilverSprite.Core\Bin\Debug\SilverArcade.SilverSprite.Core.pdb", IntPtr.Zero);
-                    }else if(str.Contains("SilverArcade.SilverSprite.dll"))
-                    {
-                        if(File.Exists(str))
-                            File.Delete(str);
-                        if(File.Exists(strPdb))
-                            File.Delete(strPdb);
-
-                        CreateHardLinkWithCheck(str, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatSilverBall\SilverSpriteSource\SilverArcade.SilverSprite\Bin\Debug\SilverArcade.SilverSprite.dll", IntPtr.Zero);
-                        CreateHardLinkWithCheck(strPdb, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatSilverBall\SilverSpriteSource\SilverArcade.SilverSprite\Bin\Debug\SilverArcade.SilverSprite.pdb", IntPtr.Zero);
-                    }
-                }
-            }
-            else if (project is MdxProject)
-            {
-                foreach (var dll in project.LibraryDlls)
-                {
-                    str = librariesPath + dll;
-                    strPdb = str.Remove(str.Length - 4) + ".pdb";
-
-                    if (str.Contains("FlatRedBallMdx.dll"))
-                    {
-                        if (File.Exists(str))
-                            File.Delete(str);
-                        if (File.Exists(strPdb))
-                            File.Delete(strPdb);
-
-                        CreateHardLinkWithCheck(str, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallMDX\bin\Debug\FlatRedBallMdx.dll", IntPtr.Zero);
-                        CreateHardLinkWithCheck(strPdb, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallMDX\bin\Debug\FlatRedBallMdx.pdb", IntPtr.Zero);
-                    }
-                }
-            }
-            else if (project is AndroidProject)
+            if (project is AndroidProject)
             {
                 foreach (var dll in project.LibraryDlls)
                 {
@@ -273,44 +187,6 @@ namespace PluginTestbed.SourceSetup
                     }
                 }
             }
-            else if (project is WindowsPhoneProject)
-            {
-                foreach (var dll in project.LibraryDlls)
-                {
-                    str = librariesPath + dll;
-                    strPdb = str.Remove(str.Length - 4) + ".pdb";
-
-                    if (str.Contains("FlatRedBall.dll"))
-                    {
-                        if (File.Exists(str))
-                            File.Delete(str);
-                        if (File.Exists(strPdb))
-                            File.Delete(strPdb);
-
-                        CreateHardLinkWithCheck(str, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall\bin\Windows Phone\Debug\FlatRedBall.dll", IntPtr.Zero);
-                        CreateHardLinkWithCheck(strPdb, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall\bin\Windows Phone\Debug\FlatRedBall.pdb", IntPtr.Zero);
-                    }
-                }
-            }
-            else if (project is Xna4_360Project)
-            {
-                foreach (var dll in project.LibraryDlls)
-                {
-                    str = librariesPath + dll;
-                    strPdb = str.Remove(str.Length - 4) + ".pdb";
-
-                    if (str.Contains("FlatRedBall.dll"))
-                    {
-                        if (File.Exists(str))
-                            File.Delete(str);
-                        if (File.Exists(strPdb))
-                            File.Delete(strPdb);
-
-                        CreateHardLinkWithCheck(str, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall\bin\Xbox 360\Debug\XNA4\FlatRedBall.dll", IntPtr.Zero);
-                        CreateHardLinkWithCheck(strPdb, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall\bin\Xbox 360\Debug\XNA4\FlatRedBall.pdb", IntPtr.Zero);
-                    }
-                }
-            }
             else if (project is Xna4Project)
             {
                 foreach (var dll in project.LibraryDlls)
@@ -337,35 +213,6 @@ namespace PluginTestbed.SourceSetup
 
                         CreateHardLinkWithCheck(str, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall.Content\bin\x86\Debug\Xna4.0\FlatRedBall.Content.dll", IntPtr.Zero);
                         CreateHardLinkWithCheck(strPdb, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall.Content\bin\x86\Debug\Xna4.0\FlatRedBall.Content.pdb", IntPtr.Zero);
-                    }
-                }
-            }
-            else if (project is XnaProject)
-            {
-                foreach (var dll in project.LibraryDlls)
-                {
-                    str = librariesPath + dll;
-                    strPdb = str.Remove(str.Length - 4) + ".pdb";
-
-                    if (str.Contains("FlatRedBall.dll"))
-                    {
-                        if (File.Exists(str))
-                            File.Delete(str);
-                        if (File.Exists(strPdb))
-                            File.Delete(strPdb);
-
-                        CreateHardLinkWithCheck(str, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall\bin\x86\Debug\Xna3.1\FlatRedBall.dll", IntPtr.Zero);
-                        CreateHardLinkWithCheck(strPdb, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall\bin\x86\Debug\Xna3.1\FlatRedBall.pdb", IntPtr.Zero);
-                    }
-                    else if (str.Contains("FlatRedBall.Content.dll"))
-                    {
-                        if (File.Exists(str))
-                            File.Delete(str);
-                        if (File.Exists(strPdb))
-                            File.Delete(strPdb);
-
-                        CreateHardLinkWithCheck(str, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall.Content\bin\x86\Debug\FlatRedBall.Content.dll", IntPtr.Zero);
-                        CreateHardLinkWithCheck(strPdb, CleanBaseDirectory(_settings.SelectedEngineDirectory) + @"\FlatRedBallXNA\FlatRedBall.Content\bin\x86\Debug\FlatRedBall.Content.pdb", IntPtr.Zero);
                     }
                 }
             }

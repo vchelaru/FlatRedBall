@@ -58,12 +58,6 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadRecentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.RecentFileMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.RecentFileMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.RecentFileMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.RecentFileMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.RecentFileMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
             this.closeProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findFileReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -109,15 +103,9 @@
             this.exportScreensAndEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FileWatchTimer = new System.Windows.Forms.Timer(this.components);
             this.ElementViewWindowToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.NavigateForwardButton = new System.Windows.Forms.Button();
+            this.NavigateBackButton = new System.Windows.Forms.Button();
             this.rightPanelContainer = new System.Windows.Forms.SplitContainer();
-            this.PropertyGridContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.topPanelContainer = new System.Windows.Forms.SplitContainer();
-            this.leftPanelContainer = new System.Windows.Forms.SplitContainer();
-            this.bottomPanelContainer = new System.Windows.Forms.SplitContainer();
-            this.msProcesses = new System.Windows.Forms.MenuStrip();
-            this.TortoiseWatchTimer = new System.Windows.Forms.Timer(this.components);
-            this.tcTop = new FlatRedBall.Glue.Controls.TabControlEx();
-            this.tcLeft = new FlatRedBall.Glue.Controls.TabControlEx();
             this.MainTabControl = new FlatRedBall.Glue.Controls.TabControlEx();
             this.PropertiesTab = new FlatRedBall.Glue.Controls.PluginTab();
             this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
@@ -129,10 +117,16 @@
             this.ElementTreeView = new System.Windows.Forms.TreeView();
             this.SearchListBox = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.NavigateForwardButton = new System.Windows.Forms.Button();
-            this.NavigateBackButton = new System.Windows.Forms.Button();
             this.SearchTextbox = new System.Windows.Forms.TextBox();
+            this.PropertyGridContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.topPanelContainer = new System.Windows.Forms.SplitContainer();
+            this.tcTop = new FlatRedBall.Glue.Controls.TabControlEx();
+            this.leftPanelContainer = new System.Windows.Forms.SplitContainer();
+            this.tcLeft = new FlatRedBall.Glue.Controls.TabControlEx();
+            this.bottomPanelContainer = new System.Windows.Forms.SplitContainer();
             this.tcBottom = new FlatRedBall.Glue.Controls.TabControlEx();
+            this.msProcesses = new System.Windows.Forms.MenuStrip();
+            this.TortoiseWatchTimer = new System.Windows.Forms.Timer(this.components);
             this.elementHost2 = new System.Windows.Forms.Integration.ElementHost();
             this.toolbarControl1 = new FlatRedBall.Glue.Controls.ToolbarControl();
             this.mElementContextMenu.SuspendLayout();
@@ -141,6 +135,12 @@
             this.rightPanelContainer.Panel1.SuspendLayout();
             this.rightPanelContainer.Panel2.SuspendLayout();
             this.rightPanelContainer.SuspendLayout();
+            this.MainTabControl.SuspendLayout();
+            this.PropertiesTab.SuspendLayout();
+            this.CodeTab.SuspendLayout();
+            this.tcRight.SuspendLayout();
+            this.ExplorerTab.SuspendLayout();
+            this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.topPanelContainer)).BeginInit();
             this.topPanelContainer.Panel1.SuspendLayout();
             this.topPanelContainer.Panel2.SuspendLayout();
@@ -153,12 +153,6 @@
             this.bottomPanelContainer.Panel1.SuspendLayout();
             this.bottomPanelContainer.Panel2.SuspendLayout();
             this.bottomPanelContainer.SuspendLayout();
-            this.MainTabControl.SuspendLayout();
-            this.PropertiesTab.SuspendLayout();
-            this.CodeTab.SuspendLayout();
-            this.tcRight.SuspendLayout();
-            this.ExplorerTab.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // mElementContextMenu
@@ -375,7 +369,6 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newProjectToolStripMenuItem,
             this.loadProjectToolStripMenuItem,
-            this.loadRecentToolStripMenuItem,
             this.closeProjectToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -384,69 +377,21 @@
             // newProjectToolStripMenuItem
             // 
             this.newProjectToolStripMenuItem.Name = "newProjectToolStripMenuItem";
-            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.newProjectToolStripMenuItem.Text = "New Project";
             this.newProjectToolStripMenuItem.Click += new System.EventHandler(this.newProjectToolStripMenuItem_Click);
             // 
             // loadProjectToolStripMenuItem
             // 
             this.loadProjectToolStripMenuItem.Name = "loadProjectToolStripMenuItem";
-            this.loadProjectToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.loadProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.loadProjectToolStripMenuItem.Text = "Load Project...";
             this.loadProjectToolStripMenuItem.Click += new System.EventHandler(this.loadProjectToolStripMenuItem_Click);
-            // 
-            // loadRecentToolStripMenuItem
-            // 
-            this.loadRecentToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.RecentFileMenuItem1,
-            this.RecentFileMenuItem2,
-            this.RecentFileMenuItem3,
-            this.RecentFileMenuItem4,
-            this.RecentFileMenuItem5});
-            this.loadRecentToolStripMenuItem.Name = "loadRecentToolStripMenuItem";
-            this.loadRecentToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
-            this.loadRecentToolStripMenuItem.Text = "Load Recent";
-            this.loadRecentToolStripMenuItem.Click += new System.EventHandler(this.loadRecentToolStripMenuItem_Click);
-            // 
-            // RecentFileMenuItem1
-            // 
-            this.RecentFileMenuItem1.Name = "RecentFileMenuItem1";
-            this.RecentFileMenuItem1.Size = new System.Drawing.Size(103, 22);
-            this.RecentFileMenuItem1.Text = "None";
-            this.RecentFileMenuItem1.Click += new System.EventHandler(this.RecentFileMenuItem1_Click);
-            // 
-            // RecentFileMenuItem2
-            // 
-            this.RecentFileMenuItem2.Name = "RecentFileMenuItem2";
-            this.RecentFileMenuItem2.Size = new System.Drawing.Size(103, 22);
-            this.RecentFileMenuItem2.Text = "None";
-            this.RecentFileMenuItem2.Click += new System.EventHandler(this.RecentFileMenuItem2_Click);
-            // 
-            // RecentFileMenuItem3
-            // 
-            this.RecentFileMenuItem3.Name = "RecentFileMenuItem3";
-            this.RecentFileMenuItem3.Size = new System.Drawing.Size(103, 22);
-            this.RecentFileMenuItem3.Text = "None";
-            this.RecentFileMenuItem3.Click += new System.EventHandler(this.RecentFileMenuItem3_Click);
-            // 
-            // RecentFileMenuItem4
-            // 
-            this.RecentFileMenuItem4.Name = "RecentFileMenuItem4";
-            this.RecentFileMenuItem4.Size = new System.Drawing.Size(103, 22);
-            this.RecentFileMenuItem4.Text = "None";
-            this.RecentFileMenuItem4.Click += new System.EventHandler(this.RecentFileMenuItem4_Click);
-            // 
-            // RecentFileMenuItem5
-            // 
-            this.RecentFileMenuItem5.Name = "RecentFileMenuItem5";
-            this.RecentFileMenuItem5.Size = new System.Drawing.Size(103, 22);
-            this.RecentFileMenuItem5.Text = "None";
-            this.RecentFileMenuItem5.Click += new System.EventHandler(this.RecentFileMenuItem5_Click);
             // 
             // closeProjectToolStripMenuItem
             // 
             this.closeProjectToolStripMenuItem.Name = "closeProjectToolStripMenuItem";
-            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.closeProjectToolStripMenuItem.Text = "Close Project";
             this.closeProjectToolStripMenuItem.Click += new System.EventHandler(this.closeProjectToolStripMenuItem_Click);
             // 
@@ -772,6 +717,30 @@
             this.FileWatchTimer.Interval = 1000;
             this.FileWatchTimer.Tick += new System.EventHandler(this.FileWatchTimer_Tick);
             // 
+            // NavigateForwardButton
+            // 
+            this.NavigateForwardButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.NavigateForwardButton.Location = new System.Drawing.Point(181, 0);
+            this.NavigateForwardButton.Name = "NavigateForwardButton";
+            this.NavigateForwardButton.Size = new System.Drawing.Size(22, 23);
+            this.NavigateForwardButton.TabIndex = 7;
+            this.NavigateForwardButton.Text = ">";
+            this.ElementViewWindowToolTip.SetToolTip(this.NavigateForwardButton, "Navigate Forward ( ALT + -> )");
+            this.NavigateForwardButton.UseVisualStyleBackColor = true;
+            this.NavigateForwardButton.Click += new System.EventHandler(this.NavigateForwardButton_Click);
+            // 
+            // NavigateBackButton
+            // 
+            this.NavigateBackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.NavigateBackButton.Location = new System.Drawing.Point(160, 0);
+            this.NavigateBackButton.Name = "NavigateBackButton";
+            this.NavigateBackButton.Size = new System.Drawing.Size(22, 23);
+            this.NavigateBackButton.TabIndex = 6;
+            this.NavigateBackButton.Text = "<";
+            this.ElementViewWindowToolTip.SetToolTip(this.NavigateBackButton, "Navigate Back ( ALT + <- )");
+            this.NavigateBackButton.UseVisualStyleBackColor = true;
+            this.NavigateBackButton.Click += new System.EventHandler(this.NavigateBackButton_Click);
+            // 
             // rightPanelContainer
             // 
             this.rightPanelContainer.BackColor = System.Drawing.SystemColors.AppWorkspace;
@@ -793,117 +762,6 @@
             this.rightPanelContainer.SplitterDistance = 546;
             this.rightPanelContainer.TabIndex = 4;
             this.rightPanelContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.rightPanelContainer_SplitterMoved);
-            // 
-            // PropertyGridContextMenu
-            // 
-            this.PropertyGridContextMenu.Name = "PropertyGridContextMenu";
-            this.PropertyGridContextMenu.Size = new System.Drawing.Size(61, 4);
-            // 
-            // topPanelContainer
-            // 
-            this.topPanelContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.topPanelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.topPanelContainer.Location = new System.Drawing.Point(0, 0);
-            this.topPanelContainer.Name = "topPanelContainer";
-            this.topPanelContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // topPanelContainer.Panel1
-            // 
-            this.topPanelContainer.Panel1.Controls.Add(this.tcTop);
-            this.topPanelContainer.Panel1Collapsed = true;
-            // 
-            // topPanelContainer.Panel2
-            // 
-            this.topPanelContainer.Panel2.Controls.Add(this.leftPanelContainer);
-            this.topPanelContainer.Size = new System.Drawing.Size(764, 579);
-            this.topPanelContainer.SplitterDistance = 82;
-            this.topPanelContainer.TabIndex = 6;
-            // 
-            // leftPanelContainer
-            // 
-            this.leftPanelContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.leftPanelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.leftPanelContainer.Location = new System.Drawing.Point(0, 0);
-            this.leftPanelContainer.Name = "leftPanelContainer";
-            // 
-            // leftPanelContainer.Panel1
-            // 
-            this.leftPanelContainer.Panel1.Controls.Add(this.tcLeft);
-            this.leftPanelContainer.Panel1Collapsed = true;
-            // 
-            // leftPanelContainer.Panel2
-            // 
-            this.leftPanelContainer.Panel2.Controls.Add(this.rightPanelContainer);
-            this.leftPanelContainer.Size = new System.Drawing.Size(764, 579);
-            this.leftPanelContainer.SplitterDistance = 138;
-            this.leftPanelContainer.TabIndex = 9;
-            // 
-            // bottomPanelContainer
-            // 
-            this.bottomPanelContainer.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.bottomPanelContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.bottomPanelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bottomPanelContainer.Location = new System.Drawing.Point(0, 54);
-            this.bottomPanelContainer.Name = "bottomPanelContainer";
-            this.bottomPanelContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // bottomPanelContainer.Panel1
-            // 
-            this.bottomPanelContainer.Panel1.Controls.Add(this.topPanelContainer);
-            // 
-            // bottomPanelContainer.Panel2
-            // 
-            this.bottomPanelContainer.Panel2.Controls.Add(this.tcBottom);
-            this.bottomPanelContainer.Panel2Collapsed = true;
-            this.bottomPanelContainer.Size = new System.Drawing.Size(764, 579);
-            this.bottomPanelContainer.SplitterDistance = 520;
-            this.bottomPanelContainer.TabIndex = 7;
-            // 
-            // msProcesses
-            // 
-            this.msProcesses.AllowItemReorder = true;
-            this.msProcesses.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-            this.msProcesses.Location = new System.Drawing.Point(0, 24);
-            this.msProcesses.Name = "msProcesses";
-            this.msProcesses.Size = new System.Drawing.Size(953, 23);
-            this.msProcesses.TabIndex = 8;
-            this.msProcesses.Visible = false;
-            this.msProcesses.ItemAdded += new System.Windows.Forms.ToolStripItemEventHandler(this.MsProcessesItemAdded);
-            this.msProcesses.ItemRemoved += new System.Windows.Forms.ToolStripItemEventHandler(this.MsProcessesItemRemoved);
-            // 
-            // TortoiseWatchTimer
-            // 
-            this.TortoiseWatchTimer.Enabled = true;
-            this.TortoiseWatchTimer.Interval = 1000;
-            this.TortoiseWatchTimer.Tick += new System.EventHandler(this.TortoiseWatchTimer_Tick);
-            // 
-            // tcTop
-            // 
-            this.tcTop.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-            this.tcTop.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tcTop.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            this.tcTop.IgnoreFirst = false;
-            this.tcTop.Location = new System.Drawing.Point(0, 0);
-            this.tcTop.Name = "tcTop";
-            this.tcTop.SelectedIndex = 0;
-            this.tcTop.Size = new System.Drawing.Size(146, 78);
-            this.tcTop.TabIndex = 0;
-            this.tcTop.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlAdded);
-            this.tcTop.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlRemoved);
-            // 
-            // tcLeft
-            // 
-            this.tcLeft.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-            this.tcLeft.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tcLeft.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            this.tcLeft.IgnoreFirst = false;
-            this.tcLeft.Location = new System.Drawing.Point(0, 0);
-            this.tcLeft.Name = "tcLeft";
-            this.tcLeft.SelectedIndex = 0;
-            this.tcLeft.Size = new System.Drawing.Size(134, 96);
-            this.tcLeft.TabIndex = 1;
-            this.tcLeft.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlAdded);
-            this.tcLeft.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlRemoved);
             // 
             // MainTabControl
             // 
@@ -937,6 +795,7 @@
             // 
             this.PropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.PropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PropertyGrid.LineColor = System.Drawing.SystemColors.ControlDark;
             this.PropertyGrid.Location = new System.Drawing.Point(0, 0);
             this.PropertyGrid.Margin = new System.Windows.Forms.Padding(0);
             this.PropertyGrid.Name = "PropertyGrid";
@@ -1070,30 +929,6 @@
             this.panel1.Size = new System.Drawing.Size(202, 23);
             this.panel1.TabIndex = 6;
             // 
-            // NavigateForwardButton
-            // 
-            this.NavigateForwardButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.NavigateForwardButton.Location = new System.Drawing.Point(181, 0);
-            this.NavigateForwardButton.Name = "NavigateForwardButton";
-            this.NavigateForwardButton.Size = new System.Drawing.Size(22, 23);
-            this.NavigateForwardButton.TabIndex = 7;
-            this.NavigateForwardButton.Text = ">";
-            this.ElementViewWindowToolTip.SetToolTip(this.NavigateForwardButton, "Navigate Forward ( ALT + -> )");
-            this.NavigateForwardButton.UseVisualStyleBackColor = true;
-            this.NavigateForwardButton.Click += new System.EventHandler(this.NavigateForwardButton_Click);
-            // 
-            // NavigateBackButton
-            // 
-            this.NavigateBackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.NavigateBackButton.Location = new System.Drawing.Point(160, 0);
-            this.NavigateBackButton.Name = "NavigateBackButton";
-            this.NavigateBackButton.Size = new System.Drawing.Size(22, 23);
-            this.NavigateBackButton.TabIndex = 6;
-            this.NavigateBackButton.Text = "<";
-            this.ElementViewWindowToolTip.SetToolTip(this.NavigateBackButton, "Navigate Back ( ALT + <- )");
-            this.NavigateBackButton.UseVisualStyleBackColor = true;
-            this.NavigateBackButton.Click += new System.EventHandler(this.NavigateBackButton_Click);
-            // 
             // SearchTextbox
             // 
             this.SearchTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -1109,6 +944,99 @@
             this.SearchTextbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchTextbox_KeyDown);
             this.SearchTextbox.Leave += new System.EventHandler(this.SearchTextbox_Leave);
             // 
+            // PropertyGridContextMenu
+            // 
+            this.PropertyGridContextMenu.Name = "PropertyGridContextMenu";
+            this.PropertyGridContextMenu.Size = new System.Drawing.Size(61, 4);
+            // 
+            // topPanelContainer
+            // 
+            this.topPanelContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.topPanelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.topPanelContainer.Location = new System.Drawing.Point(0, 0);
+            this.topPanelContainer.Name = "topPanelContainer";
+            this.topPanelContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // topPanelContainer.Panel1
+            // 
+            this.topPanelContainer.Panel1.Controls.Add(this.tcTop);
+            this.topPanelContainer.Panel1Collapsed = true;
+            // 
+            // topPanelContainer.Panel2
+            // 
+            this.topPanelContainer.Panel2.Controls.Add(this.leftPanelContainer);
+            this.topPanelContainer.Size = new System.Drawing.Size(764, 579);
+            this.topPanelContainer.SplitterDistance = 82;
+            this.topPanelContainer.TabIndex = 6;
+            // 
+            // tcTop
+            // 
+            this.tcTop.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
+            this.tcTop.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tcTop.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            this.tcTop.IgnoreFirst = false;
+            this.tcTop.Location = new System.Drawing.Point(0, 0);
+            this.tcTop.Name = "tcTop";
+            this.tcTop.SelectedIndex = 0;
+            this.tcTop.Size = new System.Drawing.Size(146, 78);
+            this.tcTop.TabIndex = 0;
+            this.tcTop.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlAdded);
+            this.tcTop.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlRemoved);
+            // 
+            // leftPanelContainer
+            // 
+            this.leftPanelContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.leftPanelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.leftPanelContainer.Location = new System.Drawing.Point(0, 0);
+            this.leftPanelContainer.Name = "leftPanelContainer";
+            // 
+            // leftPanelContainer.Panel1
+            // 
+            this.leftPanelContainer.Panel1.Controls.Add(this.tcLeft);
+            this.leftPanelContainer.Panel1Collapsed = true;
+            // 
+            // leftPanelContainer.Panel2
+            // 
+            this.leftPanelContainer.Panel2.Controls.Add(this.rightPanelContainer);
+            this.leftPanelContainer.Size = new System.Drawing.Size(764, 579);
+            this.leftPanelContainer.SplitterDistance = 138;
+            this.leftPanelContainer.TabIndex = 9;
+            // 
+            // tcLeft
+            // 
+            this.tcLeft.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
+            this.tcLeft.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tcLeft.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            this.tcLeft.IgnoreFirst = false;
+            this.tcLeft.Location = new System.Drawing.Point(0, 0);
+            this.tcLeft.Name = "tcLeft";
+            this.tcLeft.SelectedIndex = 0;
+            this.tcLeft.Size = new System.Drawing.Size(134, 96);
+            this.tcLeft.TabIndex = 1;
+            this.tcLeft.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlAdded);
+            this.tcLeft.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel1_ControlRemoved);
+            // 
+            // bottomPanelContainer
+            // 
+            this.bottomPanelContainer.BackColor = System.Drawing.SystemColors.AppWorkspace;
+            this.bottomPanelContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.bottomPanelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bottomPanelContainer.Location = new System.Drawing.Point(0, 54);
+            this.bottomPanelContainer.Name = "bottomPanelContainer";
+            this.bottomPanelContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // bottomPanelContainer.Panel1
+            // 
+            this.bottomPanelContainer.Panel1.Controls.Add(this.topPanelContainer);
+            // 
+            // bottomPanelContainer.Panel2
+            // 
+            this.bottomPanelContainer.Panel2.Controls.Add(this.tcBottom);
+            this.bottomPanelContainer.Panel2Collapsed = true;
+            this.bottomPanelContainer.Size = new System.Drawing.Size(764, 579);
+            this.bottomPanelContainer.SplitterDistance = 520;
+            this.bottomPanelContainer.TabIndex = 7;
+            // 
             // tcBottom
             // 
             this.tcBottom.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
@@ -1122,6 +1050,24 @@
             this.tcBottom.TabIndex = 1;
             this.tcBottom.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tcPanel2_ControlAdded);
             this.tcBottom.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tcPanel2_ControlRemoved);
+            // 
+            // msProcesses
+            // 
+            this.msProcesses.AllowItemReorder = true;
+            this.msProcesses.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
+            this.msProcesses.Location = new System.Drawing.Point(0, 24);
+            this.msProcesses.Name = "msProcesses";
+            this.msProcesses.Size = new System.Drawing.Size(953, 23);
+            this.msProcesses.TabIndex = 8;
+            this.msProcesses.Visible = false;
+            this.msProcesses.ItemAdded += new System.Windows.Forms.ToolStripItemEventHandler(this.MsProcessesItemAdded);
+            this.msProcesses.ItemRemoved += new System.Windows.Forms.ToolStripItemEventHandler(this.MsProcessesItemRemoved);
+            // 
+            // TortoiseWatchTimer
+            // 
+            this.TortoiseWatchTimer.Enabled = true;
+            this.TortoiseWatchTimer.Interval = 1000;
+            this.TortoiseWatchTimer.Tick += new System.EventHandler(this.TortoiseWatchTimer_Tick);
             // 
             // elementHost2
             // 
@@ -1157,6 +1103,13 @@
             this.rightPanelContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.rightPanelContainer)).EndInit();
             this.rightPanelContainer.ResumeLayout(false);
+            this.MainTabControl.ResumeLayout(false);
+            this.PropertiesTab.ResumeLayout(false);
+            this.CodeTab.ResumeLayout(false);
+            this.tcRight.ResumeLayout(false);
+            this.ExplorerTab.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.topPanelContainer.Panel1.ResumeLayout(false);
             this.topPanelContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.topPanelContainer)).EndInit();
@@ -1169,13 +1122,6 @@
             this.bottomPanelContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.bottomPanelContainer)).EndInit();
             this.bottomPanelContainer.ResumeLayout(false);
-            this.MainTabControl.ResumeLayout(false);
-            this.PropertiesTab.ResumeLayout(false);
-            this.CodeTab.ResumeLayout(false);
-            this.tcRight.ResumeLayout(false);
-            this.ExplorerTab.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1187,7 +1133,6 @@
 		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadProjectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadRecentToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem;
@@ -1227,11 +1172,6 @@
         private System.Windows.Forms.ToolStripMenuItem experimentalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createActionScriptLoadingCodeToolStripMenuItem;
         public System.Windows.Forms.SplitContainer rightPanelContainer;
-        private System.Windows.Forms.ToolStripMenuItem RecentFileMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem RecentFileMenuItem3;
-        private System.Windows.Forms.ToolStripMenuItem RecentFileMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem RecentFileMenuItem5;
-        private System.Windows.Forms.ToolStripMenuItem RecentFileMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem fileBuildToolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem errorCheckToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cleanAllscnxFilesToolStripMenuItem;

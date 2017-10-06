@@ -181,7 +181,6 @@ namespace FlatRedBall.Glue.IO
                 UnreferencedFilesManager.Self.RefreshUnreferencedFiles(true);
 
                 MainGlueWindow.Self.Text = "FlatRedBall Glue - " + projectFileName;
-                MainGlueWindow.Self.SaveRecentProject(projectFileName);
 
                 if (shouldSaveGlux)
                 {

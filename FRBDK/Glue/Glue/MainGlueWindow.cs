@@ -146,68 +146,6 @@ namespace Glue
             ProjectLoader.Self.LoadProject(projectFileName, initializationWindow);
         }
 
-        public void SaveRecentProject(string projectFileName)
-        {
-            string[] RecentFiles = ProjectManager.GlueSettingsSave.RecentFiles;
-
-            for (int i = 0; i < RecentFiles.Length; ++i)
-            {
-                if (projectFileName == RecentFiles[i]) 
-                {
-                    return;
-                }
-            }
-
-            if (NumberOfStoredRecentFiles <= 3)
-            {
-                RecentFiles[NumberOfStoredRecentFiles] = projectFileName;
-                NumberOfStoredRecentFiles++;
-            }
-            else 
-            {
-                if (RecentFiles[NumberOfStoredRecentFiles] == null)
-                {
-                    RecentFiles[NumberOfStoredRecentFiles] = projectFileName;
-                }
-                else 
-                {
-                    string[] tempRecentFiles = RecentFiles;
-                    for (int i = 0; i < 4; ++i) 
-                    {
-                        RecentFiles[i] = tempRecentFiles[i + 1];
-                    }
-
-                    RecentFiles[NumberOfStoredRecentFiles] = projectFileName;
-                }
-            }
-            updateRecentFileMenu();
-        }
-
-        private void updateRecentFileMenu()
-        {
-            string[] RecentFiles = ProjectManager.GlueSettingsSave.RecentFiles;
-            if (RecentFiles[0] != null)
-            {
-                RecentFileMenuItem1.Text = RecentFiles[0];
-            }
-            if (RecentFiles[1] != null)
-            {
-                RecentFileMenuItem2.Text = RecentFiles[1];
-            }
-            if (RecentFiles[2] != null)
-            {
-                RecentFileMenuItem3.Text = RecentFiles[2];
-            }
-            if (RecentFiles[3] != null)
-            {
-                RecentFileMenuItem4.Text = RecentFiles[3];
-            }
-            if (RecentFiles[4] != null)
-            {
-                RecentFileMenuItem5.Text = RecentFiles[4];
-            }
-        }
-
         private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NewProjectHelper.CreateNewProject();
@@ -531,14 +469,11 @@ namespace Glue
                     // This sets the last position, but doesn't work on multiple monitors
                     //this.Left = settingsSave.WindowLeft;
                     //this.Top = settingsSave.WindowTop;
-                    NumberOfStoredRecentFiles = settingsSave.StoredRecentFiles;
+
                     // This used to be 0, b
                     this.Height = settingsSave.WindowHeight > 100 ? settingsSave.WindowHeight : 480;
                     this.Width = settingsSave.WindowWidth > 100 ? settingsSave.WindowWidth : 640;
                     this.rightPanelContainer.SplitterDistance = settingsSave.MainSplitterDistance > 0 ? settingsSave.MainSplitterDistance : 450;
-
-
-                    updateRecentFileMenu();
                 }
             }
             else
@@ -1130,39 +1065,8 @@ namespace Glue
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
-
         }
-
-        private void loadRecentToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void RecentFileMenuItem1_Click(object sender, EventArgs e)
-        {
-            LoadProject(ProjectManager.GlueSettingsSave.RecentFiles[0], null);
-        }
-
-        private void RecentFileMenuItem2_Click(object sender, EventArgs e)
-        {
-            LoadProject(ProjectManager.GlueSettingsSave.RecentFiles[1], null);
-        }
-
-        private void RecentFileMenuItem3_Click(object sender, EventArgs e)
-        {
-            LoadProject(ProjectManager.GlueSettingsSave.RecentFiles[2], null);
-        }
-
-        private void RecentFileMenuItem4_Click(object sender, EventArgs e)
-        {
-            LoadProject(ProjectManager.GlueSettingsSave.RecentFiles[3], null);
-        }
-
-        private void RecentFileMenuItem5_Click(object sender, EventArgs e)
-        {
-            LoadProject(ProjectManager.GlueSettingsSave.RecentFiles[4], null);
-        }
-
+        
         private void fileBuildToolsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FileBuildToolAssociationWindow fbtaw = new FileBuildToolAssociationWindow(BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList);

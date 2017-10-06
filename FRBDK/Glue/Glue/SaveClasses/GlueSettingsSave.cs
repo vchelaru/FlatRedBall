@@ -42,7 +42,7 @@ namespace FlatRedBall.Glue.SaveClasses
         // to manually set them up.
         [XmlElementAttribute("Association")]
         public ExternalSeparatingList<FileProgramAssociations> Associations = new ExternalSeparatingList<FileProgramAssociations>();
-        public string[] RecentFiles = new string[5];
+        public List<string> RecentFiles = new List<string>();
 
         public List<string> BuildTools = new List<string>();
 

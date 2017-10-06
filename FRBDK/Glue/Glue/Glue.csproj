@@ -395,6 +395,7 @@
       <DependentUpon>ManualReferenceCopier.xaml</DependentUpon>
     </Compile>
     <Compile Include="Plugins\EmbeddedPlugins\IDrawableBatch\MainPlugin.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\LoadRecentFilesPlugin\MainPlugin.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\ExportPluginLogic.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\GlueVaultBrowser.xaml.cs">
       <DependentUpon>GlueVaultBrowser.xaml</DependentUpon>
