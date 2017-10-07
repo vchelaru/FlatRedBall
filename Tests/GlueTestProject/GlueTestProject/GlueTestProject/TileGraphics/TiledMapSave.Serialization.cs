@@ -296,6 +296,9 @@ namespace TMXGlueLib
     {
         private mapImageLayerImage imageField;
 
+        private float _offsetX;
+        private float _offsetY;
+
         List<property> mProperties = new List<property>();
 
         public List<property> properties
@@ -346,6 +349,20 @@ namespace TMXGlueLib
         {
             get { return _visibleAsInt; }
             set { _visibleAsInt = value; }
+        }
+
+        [XmlAttribute("offsetx")]
+        public float offsetX
+        {
+            get { return _offsetX; }
+            set { _offsetX = value; }
+        }
+
+        [XmlAttribute("offsety")]
+        public float offsetY
+        {
+            get { return _offsetY; }
+            set { _offsetY = value; }
         }
 
         [XmlIgnore]

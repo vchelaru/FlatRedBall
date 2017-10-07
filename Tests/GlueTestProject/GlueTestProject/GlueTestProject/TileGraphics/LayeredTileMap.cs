@@ -442,12 +442,16 @@ namespace FlatRedBall.TileGraphics
                 {
                     Texture = texture,
                     Width = imageLayer.imageobject.width,
-                    Height = imageLayer.imageobject.height
+                    Height = imageLayer.imageobject.height,
+                    X = imageLayer.imageobject.width/2 + imageLayer.offsetX,
+                    Y = -imageLayer.imageobject.height/2 + imageLayer.offsetY
                 };
 
                 var mdb = new MapDrawableBatch(1, texture);
+                mdb.AttachTo(toReturn, false);
                 mdb.Paste(newSprite);
-                
+                mdb.Visible = imageLayer.Visible;
+
                 toReturn.mMapLists.Add(mdb);
             }
 
