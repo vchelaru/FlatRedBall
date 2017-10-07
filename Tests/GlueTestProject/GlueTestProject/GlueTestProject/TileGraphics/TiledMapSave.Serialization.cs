@@ -97,11 +97,12 @@ namespace TMXGlueLib
 
         
         [XmlElement("layer", typeof(MapLayer))]
+        [XmlElement("imagelayer", typeof(mapImageLayer))]
         [XmlElement("objectgroup", typeof(mapObjectgroup))]
         public List<AbstractMapLayer> MapLayers { get; set; }
 
-            /// <remarks/>
-        
+        /// <remarks/>
+
 
         [XmlIgnore]
         public List<MapLayer> Layers => MapLayers.OfType<MapLayer>().ToList();
@@ -109,6 +110,9 @@ namespace TMXGlueLib
         /// <remarks/>
         [XmlIgnore]
         public List<mapObjectgroup> objectgroup => MapLayers.OfType<mapObjectgroup>().ToList();
+
+        [XmlIgnore]
+        public List<mapImageLayer> ImageLayers => MapLayers.OfType<mapImageLayer>().ToList();
 
         /// <remarks/>
         [XmlAttribute()]
@@ -284,6 +288,96 @@ namespace TMXGlueLib
         }
     }
     #endregion
+
+#if !UWP
+    [Serializable]
+#endif
+    public partial class mapImageLayer : AbstractMapLayer
+    {
+        private mapImageLayerImage imageField;
+
+        List<property> mProperties = new List<property>();
+
+        public List<property> properties
+        {
+            get { return mProperties; }
+            set
+            {
+                mProperties = value;
+            }
+        }
+
+        private IDictionary<string, string> propertyDictionaryField = null;
+        private int _visibleAsInt = 1;
+
+        [XmlIgnore]
+        public IDictionary<string, string> PropertyDictionary
+        {
+            get
+            {
+                lock (this)
+                {
+                    if (propertyDictionaryField == null)
+                    {
+                        propertyDictionaryField = TiledMapSave.BuildPropertyDictionaryConcurrently(properties);
+                    }
+                    return propertyDictionaryField;
+                }
+            }
+        }
+
+        /// <remarks/>
+        [XmlElement("image", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public mapImageLayerImage imageobject
+        {
+            get
+            {
+                return this.imageField;
+            }
+            set
+            {
+                this.imageField = value;
+            }
+        }
+
+
+        [XmlAttribute("visible")]
+        public int VisibleAsInt
+        {
+            get { return _visibleAsInt; }
+            set { _visibleAsInt = value; }
+        }
+
+        [XmlIgnore]
+        public bool Visible
+        {
+            get
+            {
+                return VisibleAsInt != 0;
+            }
+        }
+    }
+
+    public partial class mapImageLayerImage
+    {
+        private string _source;
+
+        [XmlAttributeAttribute(AttributeName = "source")]
+        public string Source
+        {
+            get { return _source; }
+            set { _source = value; }
+        }
+
+        /// <remarks/>
+        [XmlAttributeAttribute(AttributeName = "width")]
+        public float width { get; set; }
+
+        /// <remarks/>
+        [XmlAttributeAttribute(AttributeName = "height")]
+        public float height { get; set; }
+    }
+
 
     /// <remarks/>
     [XmlType(AnonymousType = true)]
