@@ -1,4 +1,6 @@
-﻿using FlatRedBall.Glue;
+﻿using EditorObjects.IoC;
+using FlatRedBall.Glue;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
         {
             get
             {
-                return ProjectManager.ProjectSpecificSettingsFolder + "ContentPipelineSettings.xml";
+                return Container.Get<IGlueState>().ProjectSpecificSettingsFolder + "ContentPipelineSettings.xml";
             }
         }
 

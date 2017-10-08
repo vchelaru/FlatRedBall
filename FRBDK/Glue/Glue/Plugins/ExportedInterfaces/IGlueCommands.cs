@@ -1,5 +1,4 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
-using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using System;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
@@ -11,6 +10,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         void TryMultipleTimes(Action action, int numberOfTimesToTry);
 
         void PrintOutput(string output);
+        void PrintError(string output);
 
         IGenerateCodeCommands GenerateCodeCommands { get; }
         IGluxCommands GluxCommands { get; }
@@ -20,6 +20,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         ITreeNodeCommands TreeNodeCommands { get; }
         IUpdateCommands UpdateCommands { get; }
         IDialogCommands DialogCommands { get; }
-        GlueViewCommands GlueViewCommands { get; }
+        IFileCommands FileCommands { get; }
+
+        string GetAbsoluteFileName(SaveClasses.ReferencedFileSave rfs);
+        string GetAbsoluteFileName(string relativeFileName, bool isContent);
+#if GLUE
+        ExportedImplementations.CommandInterfaces.GlueViewCommands GlueViewCommands { get; }
+#endif
     }
 }

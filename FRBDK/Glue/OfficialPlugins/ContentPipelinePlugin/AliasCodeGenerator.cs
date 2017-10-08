@@ -6,8 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.IO;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using EditorObjects.IoC;
 
 namespace OfficialPlugins.ContentPipelinePlugin
 {
@@ -24,34 +25,40 @@ namespace OfficialPlugins.ContentPipelinePlugin
         {
             if(controller.Settings.UseContentPipelineOnAllPngs)
             {
-                codeBlock.Line(GlueState.Self.ProjectNamespace + ".FileAliasLogic.SetFileAliases();");
+                var glueState = Container.Get<IGlueState>();
+                codeBlock.Line(glueState.ProjectNamespace + ".FileAliasLogic.SetFileAliases();");
             }
         }
 
         public void GenerateFileAliasLogicCode(bool isUsingContentPipeline)
         {
+            var glueCommands = Container.Get<IGlueCommands>();
+            var glueState = Container.Get<IGlueState>();
+
             TaskManager.Self.AddSync(() =>
             {
                 string codeFileContents = GetFileAliasLogicFileContents(isUsingContentPipeline);
+
+                glueCommands.ProjectCommands.CreateAndAddCodeFile("FileAliases.Generated.cs");
      
-                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile("FileAliases.Generated.cs");
-     
-                var absolutePath = GlueState.Self.CurrentGlueProjectDirectory + "FileAliases.Generated.cs";
+                var absolutePath = glueState.CurrentGlueProjectDirectory + "FileAliases.Generated.cs";
 
 
-                GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(absolutePath, codeFileContents), 5);
+                glueCommands.TryMultipleTimes(() => System.IO.File.WriteAllText(absolutePath, codeFileContents), 5);
                 
      
             }, "Generating FileAliases for content pipeline.");
 
             // This may be the first time the user has set to use content pipeline, so re-gen global content
-            TaskManager.Self.AddSync(GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode,
+            TaskManager.Self.AddSync(glueCommands.GenerateCodeCommands.GenerateGlobalContentCode,
                 "Generateing global content code");
         }
 
         private static string GetFileAliasLogicFileContents(bool isUsingContentPipeline)
         {
-            var namespaceBlock = new CodeBlockNamespace(null, GlueState.Self.ProjectNamespace);
+            var glueState = Container.Get<IGlueState>();
+
+            var namespaceBlock = new CodeBlockNamespace(null, glueState.ProjectNamespace);
 
             var classBlock = namespaceBlock.Class("public", "FileAliasLogic");
 
@@ -59,7 +66,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
             var files = ContentPipelineController.GetReferencedPngs();
 
-            var contentFolder = GlueState.Self.ContentDirectory;
+            var contentFolder = glueState.ContentDirectory;
 
             if(isUsingContentPipeline)
             {

@@ -7,14 +7,14 @@ using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.VSHelpers.Projects;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Managers;
 using System.Diagnostics;
 using OfficialPlugins.ContentPipelinePlugin;
 using FlatRedBall.Glue.Parsing;
-using System.ComponentModel;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using EditorObjects.IoC;
 
 namespace OfficialPlugins.MonoGameContent
 {
@@ -28,6 +28,9 @@ namespace OfficialPlugins.MonoGameContent
         AliasCodeGenerator aliasCodeGenerator;
 
         ContentPipelineController controller;
+
+        IGlueState GlueState => Container.Get<IGlueState>();
+
 
         public override string FriendlyName
         {
@@ -67,7 +70,7 @@ namespace OfficialPlugins.MonoGameContent
             viewModel.PropertyChanged += HandleViewModelPropertyChanged;
         }
 
-        private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void HandleViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             var propertyName = e.PropertyName;
 
@@ -123,9 +126,9 @@ namespace OfficialPlugins.MonoGameContent
         {
             // Delete the file just in case a new file with the same name is added later. If so, we don't
             // want old XNBs to sit around and cause the incremental built to not build the newly-added file.
-            BuildLogic.TryDeleteBuiltXnbFor(GlueState.Self.CurrentMainContentProject, file, viewModel.UseContentPipelineOnPngs);
+            BuildLogic.TryDeleteBuiltXnbFor(GlueState.CurrentMainContentProject, file, viewModel.UseContentPipelineOnPngs);
 
-            foreach(var syncedProject in GlueState.Self.SyncedProjects)
+            foreach(var syncedProject in GlueState.SyncedProjects)
             {
                 BuildLogic.TryDeleteBuiltXnbFor(syncedProject, file, viewModel.UseContentPipelineOnPngs);
             }
@@ -153,7 +156,8 @@ namespace OfficialPlugins.MonoGameContent
             {
                 control = new ContentPipelinePlugin.ContentPipelineControl();
                 control.DataContext = viewModel;
-                controller.SetControl(control, viewModel);
+                controller.SetViewModel(viewModel);
+                control.RefreshClicked += controller.HandleRefreshClicked;
 
                 AddToTab(PluginManager.LeftTab, control, "Content Pipeline");
 
@@ -168,7 +172,7 @@ namespace OfficialPlugins.MonoGameContent
         {
             if(memberName == nameof(ReferencedFileSave.UseContentPipeline))
             {
-                var rfs = GlueState.Self.CurrentReferencedFileSave;
+                var rfs = GlueState.CurrentReferencedFileSave;
 
                 HandleRfsChange(rfs);
             }
@@ -176,9 +180,9 @@ namespace OfficialPlugins.MonoGameContent
 
         private void HandleRfsChange(ReferencedFileSave rfs)
         {
-            BuildLogic.Self.TryHandleReferencedFile(GlueState.Self.CurrentMainProject, rfs, viewModel.UseContentPipelineOnPngs);
+            BuildLogic.Self.TryHandleReferencedFile(GlueState.CurrentMainProject, rfs, viewModel.UseContentPipelineOnPngs);
 
-            foreach (var syncedProject in GlueState.Self.SyncedProjects)
+            foreach (var syncedProject in GlueState.SyncedProjects)
             {
                 BuildLogic.Self.TryHandleReferencedFile(syncedProject, rfs, viewModel.UseContentPipelineOnPngs);
             }
@@ -187,11 +191,11 @@ namespace OfficialPlugins.MonoGameContent
         private void HandleNewFile(ReferencedFileSave newFile)
         {
 
-            if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( GlueState.Self.CurrentMainProject ))
+            if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( GlueState.CurrentMainProject ))
             {
-                BuildLogic.Self.TryHandleReferencedFile(GlueState.Self.CurrentMainProject, newFile, viewModel.UseContentPipelineOnPngs);
+                BuildLogic.Self.TryHandleReferencedFile(GlueState.CurrentMainProject, newFile, viewModel.UseContentPipelineOnPngs);
             }
-            foreach(var project in GlueState.Self.SyncedProjects)
+            foreach(var project in GlueState.SyncedProjects)
             {
                 if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( project ))
                 {
@@ -209,7 +213,7 @@ namespace OfficialPlugins.MonoGameContent
             {
                 aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
             }
-            BuildLogic.Self.RefreshBuiltFilesFor(GlueState.Self.CurrentMainProject, viewModel.UseContentPipelineOnPngs);
+            BuildLogic.Self.RefreshBuiltFilesFor(GlueState.CurrentMainProject, viewModel.UseContentPipelineOnPngs);
         }
 
         private void HandleLoadedSyncedProject(ProjectBase project)
@@ -230,9 +234,9 @@ namespace OfficialPlugins.MonoGameContent
             }
             else
             {
-                BuildLogic.Self.TryHandleReferencedFile(GlueState.Self.CurrentMainProject, fileName, viewModel.UseContentPipelineOnPngs);
+                BuildLogic.Self.TryHandleReferencedFile(GlueState.CurrentMainProject, fileName, viewModel.UseContentPipelineOnPngs);
 
-                foreach (var syncedProject in GlueState.Self.SyncedProjects)
+                foreach (var syncedProject in GlueState.SyncedProjects)
                 {
                     BuildLogic.Self.TryHandleReferencedFile(syncedProject, fileName, viewModel.UseContentPipelineOnPngs);
                 }

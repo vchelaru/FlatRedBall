@@ -6,19 +6,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Managers;
 using OfficialPlugins.MonoGameContent;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using System.ComponentModel;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 
 namespace OfficialPlugins.ContentPipelinePlugin
 {
     public class ContentPipelineController
     {
         SettingsSave settings;
-        ContentPipelineControl control;
         ControlViewModel viewModel;
+
+        static IGlueState GlueState => EditorObjects.IoC.Container.Get<IGlueState>();
+        static IGlueCommands GlueCommands => EditorObjects.IoC.Container.Get<IGlueCommands>();
 
         public SettingsSave Settings
         {
@@ -34,10 +36,8 @@ namespace OfficialPlugins.ContentPipelinePlugin
             }
         }
 
-        public void SetControl(ContentPipelineControl control, ControlViewModel viewModel)
+        public void SetViewModel(ControlViewModel viewModel)
         {
-            this.control = control;
-            control.RefreshClicked += HandleRefreshClicked;
 
             this.viewModel = viewModel;
             viewModel.PropertyChanged += HandleViewModelPropertyChanged;
@@ -67,7 +67,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
             }
         }
 
-        private void HandleRefreshClicked(object sender, EventArgs e)
+        public void HandleRefreshClicked(object sender, EventArgs e)
         {
             RefreshProjects();
         }
@@ -114,8 +114,8 @@ namespace OfficialPlugins.ContentPipelinePlugin
         {
             TaskManager.Self.AddSync(() =>
             {
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.ProjectCommands.SaveProjects();
+                GlueCommands.GluxCommands.SaveGlux();
             },
             "Saving due to RFS changes");
         }
@@ -124,8 +124,8 @@ namespace OfficialPlugins.ContentPipelinePlugin
         {
             var referencedPngs = GetReferencedPngs();
 
-            var mainProject = GlueState.Self.CurrentMainProject;
-            ProjectBase[] syncedProjects = GlueState.Self.SyncedProjects.ToArray();
+            var mainProject = GlueState.CurrentMainProject;
+            ProjectBase[] syncedProjects = GlueState.SyncedProjects.ToArray();
 
             foreach (var referencedPng in referencedPngs)
             {
@@ -142,8 +142,8 @@ namespace OfficialPlugins.ContentPipelinePlugin
         {
             var referencedPngs = GetReferencedPngs();
 
-            var mainProject = GlueState.Self.CurrentMainProject;
-            ProjectBase[] syncedProjects = GlueState.Self.SyncedProjects.ToArray();
+            var mainProject = GlueState.CurrentMainProject;
+            ProjectBase[] syncedProjects = GlueState.SyncedProjects.ToArray();
 
             foreach (var referencedPng in referencedPngs)
             {
@@ -187,14 +187,14 @@ namespace OfficialPlugins.ContentPipelinePlugin
         {
             var referencedPngs = GetReferencedPngs();
 
-            var projectCommands = GlueCommands.Self.ProjectCommands;
-            var mainProject = GlueState.Self.CurrentMainProject;
+            var projectCommands = GlueCommands.ProjectCommands;
+            var mainProject = GlueState.CurrentMainProject;
 
             foreach (var referencedPng in referencedPngs)
             {
                 projectCommands.UpdateFileMembershipInProject(mainProject, referencedPng, useContentPipeline: useContentPipeline, shouldLink: false);
 
-                foreach(var project in GlueState.Self.SyncedProjects)
+                foreach(var project in GlueState.SyncedProjects)
                 {
                     projectCommands.UpdateFileMembershipInProject(
                         project, referencedPng, useContentPipeline: useContentPipeline, shouldLink: true);
@@ -212,7 +212,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
             foreach (var rfs in allRfses)
             {
-                var absolute = GlueCommands.Self.GetAbsoluteFileName(rfs);
+                var absolute = GlueCommands.GetAbsoluteFileName(rfs);
 
                 if (referencedFileNames.Contains(absolute) == false)
                 {

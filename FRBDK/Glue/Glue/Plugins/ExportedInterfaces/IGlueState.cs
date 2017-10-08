@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using FlatRedBall.Glue.SaveClasses;
-using System.Windows.Forms;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Events;
 
@@ -15,10 +14,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             get;
         }
 
-        TreeNode CurrentTreeNode
+#if GLUE
+        System.Windows.Forms.TreeNode CurrentTreeNode
         {
             get;
         }
+#endif
+
         EntitySave CurrentEntitySave
         {
             get;
@@ -28,6 +30,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             get;
         }
         ProjectBase CurrentMainContentProject { get; }
+
+        IEnumerable<ProjectBase> SyncedProjects { get; }
 
         ScreenSave CurrentScreenSave
         {
@@ -69,6 +73,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             get;
         }
 
+        string CurrentGlueProjectDirectory { get; }
+
         string ContentDirectory
         {
             get;
@@ -76,8 +82,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
         string ProjectNamespace { get; }
 
+        string ProjectSpecificSettingsFolder { get; }
 
-        #endregion
+#endregion
 
         IElement GetElement(string name);
         NamedObjectSave GetNamedObjectSave(string containerName, string name);
@@ -96,11 +103,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             set;
         }
 
-        public TreeNode CurrentTreeNode
+#if GLUE
+        public System.Windows.Forms.TreeNode CurrentTreeNode
         {
             get;
             set;
         }
+#endif
 
         public EntitySave CurrentEntitySave
         {
@@ -167,6 +176,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             get;
             set;
         }
+
+        public IEnumerable<ProjectBase> SyncedProjects { get; set; }
+
         public ProjectBase CurrentMainContentProject
         {
             get;
@@ -178,13 +190,23 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             get;
             set;
         }
+
+        public string ProjectSpecificSettingsFolder
+        {
+            get;
+            set;
+        }
+
+        public string CurrentGlueProjectDirectory { get; set; }
         // STOP!  If adding here be sure to add to SetFrom too
 
         public void SetFrom(IGlueState glueState)
         {
             this.CurrentElement = glueState.CurrentElement;
 
+#if GLUE
             this.CurrentTreeNode = glueState.CurrentTreeNode;
+#endif
 
             this.CurrentEntitySave = glueState.CurrentEntitySave;
 
@@ -204,6 +226,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
             this.CurrentGlueProject = glueState.CurrentGlueProject;
 
+            // do we need to foreach it instead?
+            this.SyncedProjects = glueState.SyncedProjects;
+
             this.ContentDirectory = glueState.ContentDirectory;
 
             this.CurrentMainProject = glueState.CurrentMainProject;
@@ -211,6 +236,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             this.CurrentMainContentProject = glueState.CurrentMainContentProject;
 
             this.ProjectNamespace = glueState.ProjectNamespace;
+
+            this.ProjectSpecificSettingsFolder = glueState.ProjectSpecificSettingsFolder;
+
+            this.CurrentGlueProjectDirectory = glueState.CurrentGlueProjectDirectory;
         }
 
         public IElement GetElement(string name)

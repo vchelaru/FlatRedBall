@@ -14,7 +14,6 @@ using FlatRedBall.Content.Particle;
 using FlatRedBall.Content.AI.Pathfinding;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Content.Math.Splines;
-using System.Windows.Forms;
 using System.IO;
 using System.Reflection;
 using FlatRedBall.Math;
@@ -25,13 +24,7 @@ using FlatRedBall.Content.Scene;
 
 using FlatRedBall.Content.SpriteFrame;
 
-#if XNA4
 using Color = Microsoft.Xna.Framework.Color;
-#elif FRB_MDX
-using Color = System.Drawing.Color;
-#else
-using Color = Microsoft.Xna.Framework.Graphics.Color;
-#endif
 
 namespace EditorObjects.Parsing
 {
@@ -307,17 +300,8 @@ namespace EditorObjects.Parsing
                     case "scnx":
 
                         SceneSave ses = SceneSave.FromFile(fileName);
-                        try
-                        {
-                            newReferencedFiles = ses.GetReferencedFiles(RelativeType.Absolute);
-                        }
-                        catch (InvalidOperationException e)
-                        {
-                            MessageBox.Show("There is an invalid file reference in the file\n\n" +
-                                fileName +
-                                "\n\nGlue will skip this file.  You should investigate this file in a text editor " +
-                                "to identify the issue.\n\nAdditional error information:\n\n" + e.ToString());
-                        }
+                        newReferencedFiles = ses.GetReferencedFiles(RelativeType.Absolute);
+
                         break;
 
                     #endregion

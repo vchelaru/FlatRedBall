@@ -2,8 +2,8 @@
 using FlatRedBall.IO;
 using System.IO;
 using System.Linq;
-using Microsoft.Build.Evaluation;
 using System;
+using Microsoft.Build.Evaluation;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
