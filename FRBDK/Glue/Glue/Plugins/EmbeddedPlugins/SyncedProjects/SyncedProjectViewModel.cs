@@ -59,6 +59,10 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
             }
         }
 
+        /// <summary>
+        /// An ObservableCollection of orphaned files - files which are referenced by the 
+        /// ProjectBase which do not exist on disk.
+        /// </summary>
         public ObservableCollection<BuildItemViewModel> Orphans
         {
             get;
@@ -92,6 +96,9 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
             GeneralErrors = new ObservableCollection<string>();
         }
 
+        /// <summary>
+        /// Refreshes the Orphans list, which is a list of files referenced by the ProjectBase which do not exist on disk.
+        /// </summary>
         public void RefreshOrphans()
         {
             Orphans.Clear();

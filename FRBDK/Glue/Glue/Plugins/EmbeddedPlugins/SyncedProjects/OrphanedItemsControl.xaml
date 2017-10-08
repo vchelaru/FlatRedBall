@@ -7,14 +7,16 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <TreeView ItemsSource="{Binding Orphans}" >
-            
-        </TreeView>
+
+        <TextBlock TextWrapping="Wrap">Orphaned files are referenced by the current project but do not exist on disk. These files will cause compile errors in your project.</TextBlock>
         
-        <Button Grid.Row="1" Click="Button_Click">Clean All</Button>
+        <TreeView Grid.Row="1" ItemsSource="{Binding Orphans}" ></TreeView>
+        
+        <Button Grid.Row="2" Click="Button_Click">Clean All</Button>
           
     </Grid>
 </UserControl>

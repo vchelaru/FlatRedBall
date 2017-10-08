@@ -48,6 +48,13 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
             }
         }
 
+        /// <summary>
+        /// Returns whether a ProjectItem (a reference in a .csproj) references a file which does not exist. Orphans will cause compile errors
+        /// so they should probably be removed.
+        /// </summary>
+        /// <param name="buildItem">The item to test if an orphan.</param>
+        /// <param name="owner">The project which owns the item.</param>
+        /// <returns>If the item is an orphan.</returns>
         public static bool IsOrphaned(ProjectItem buildItem, ProjectBase owner)
         {
             bool considerBuildItem = (buildItem.ItemType == "Compile" || buildItem.ItemType == "Content" || buildItem.ItemType == "None");
