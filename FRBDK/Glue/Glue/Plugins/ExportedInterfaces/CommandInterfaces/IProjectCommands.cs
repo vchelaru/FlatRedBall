@@ -1,7 +1,7 @@
 ﻿using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using System.Collections.Generic;
-using System.Windows.Forms;
+
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -24,7 +24,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void CopyToBuildFolder(ReferencedFileSave rfs);
         void CopyToBuildFolder(string absoluteSource);
 
-        void AddDirectory(string folderName, TreeNode treeNodeToAddTo);
+#if GLUE
+        void AddDirectory(string folderName, System.Windows.Forms.TreeNode treeNodeToAddTo);
+#endif
 
         string MakeAbsolute(string relativeFileName, bool forceAsContent);
 

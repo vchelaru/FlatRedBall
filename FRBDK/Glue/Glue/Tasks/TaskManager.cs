@@ -1,11 +1,9 @@
-﻿using Glue;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using FlatRedBall.Glue.Tasks;
 
 namespace FlatRedBall.Glue.Managers
@@ -183,11 +181,12 @@ namespace FlatRedBall.Glue.Managers
             while (!AreAllAsyncTasksDone)
             {
                 System.Threading.Thread.Sleep(50);
+#if GLUE
                 if(pumpEvents)
                 {
-                    Application.DoEvents();
+                    System.Windows.Forms.Application.DoEvents();
                 }
-
+#endif
             }
         }
 
@@ -282,9 +281,13 @@ namespace FlatRedBall.Glue.Managers
 
         public void OnUiThread(Action action)
         {
-            MainGlueWindow.Self.Invoke(action);
+#if GLUE
+            global::Glue.MainGlueWindow.Self.Invoke(action);
+#else
+            action();
+#endif
         }
 
-        #endregion
+#endregion
     }
 }

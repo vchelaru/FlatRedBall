@@ -1,6 +1,5 @@
-﻿using System.Windows.Forms;
-using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.Glue.ViewModels;
+﻿using FlatRedBall.Glue.SaveClasses;
+
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -8,8 +7,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
     {
         ReferencedFileSave ShowAddNewFileDialog();
 
-        NamedObjectSave ShowAddNewObjectDialog(AddObjectViewModel addObjectViewModel = null);
 
-        void SetFormOwner(Form form);
+#if GLUE
+        NamedObjectSave ShowAddNewObjectDialog(FlatRedBall.Glue.ViewModels.AddObjectViewModel addObjectViewModel = null);
+        void SetFormOwner(System.Windows.Forms.Form form);
+#endif
     }
 }

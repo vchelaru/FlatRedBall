@@ -8,9 +8,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.ComponentModel;
 using System.Threading;
-#if !XNA3_1 && !FRB_MDX
 using System.Threading.Tasks;
-#endif
 
 namespace EditorObjects.SaveClasses
 {

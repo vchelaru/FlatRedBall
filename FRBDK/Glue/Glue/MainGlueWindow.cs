@@ -43,6 +43,7 @@ using Container = EditorObjects.IoC;
 using FlatRedBall.Glue.UnreferencedFiles;
 using FlatRedBall.Glue.Controls.ProjectSync;
 using System.Linq;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 
 //using EnvDTE;
 
@@ -373,7 +374,8 @@ namespace Glue
             EditorObjects.IoC.Container.Set(new GlobalContentSetVariableLogic());
             EditorObjects.IoC.Container.Set(new PluginUpdater());
 
-
+            EditorObjects.IoC.Container.Set<IGlueState>(GlueState.Self);
+            EditorObjects.IoC.Container.Set<IGlueCommands>(GlueCommands.Self);
         }
 
         private void LoadProjectConsideringSettingsAndArgs(InitializationWindow initializationWindow)

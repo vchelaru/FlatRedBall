@@ -820,10 +820,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             ProjectManager.GlueSettingsSave.Save();
         }
 
+        
+        public ReferencedFileSave GetReferencedFileSaveFromFile(string fileName)
+        {
+            return FlatRedBall.Glue.Elements.ObjectFinder.Self.GetReferencedFileSaveFromFile(fileName);
+
+        }
 
 
+    #endregion
 
-        #endregion
-
-    }
+}
 }

@@ -1,6 +1,6 @@
 ﻿using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
@@ -15,6 +15,10 @@ namespace OfficialPlugins.MonoGameContent
 {
     public class BuildLogic : Singleton<BuildLogic>
     {
+        static IGlueState GlueState => EditorObjects.IoC.Container.Get<IGlueState>();
+        static IGlueCommands GlueCommands => EditorObjects.IoC.Container.Get<IGlueCommands>();
+
+
         const string commandLineBuildExe =
             @"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
 
@@ -32,7 +36,7 @@ namespace OfficialPlugins.MonoGameContent
 
             ////////////End Early Out////////////////
 
-            var allReferencedFileSaves = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles();
+            var allReferencedFileSaves = GlueState.CurrentGlueProject.GetAllReferencedFiles();
 
             allReferencedFileSaves = allReferencedFileSaves.Distinct((a, b) => a.Name == b.Name).ToList();
 
@@ -96,7 +100,7 @@ namespace OfficialPlugins.MonoGameContent
 
         private void TryRemoveXnbReferences(ProjectBase project, ReferencedFileSave referencedFile)
         {
-            var fullFileName = GlueCommands.Self.FileCommands.GetFullFileName(referencedFile);
+            var fullFileName = GlueCommands.FileCommands.GetFullFileName(referencedFile);
             TryRemoveXnbReferences(project, fullFileName);
         }
 
@@ -135,7 +139,7 @@ namespace OfficialPlugins.MonoGameContent
 
                     if (didRemove && save)
                     {
-                        GlueCommands.Self.TryMultipleTimes(project.Save, 5);
+                        GlueCommands.TryMultipleTimes(project.Save, 5);
                     }
                 }, $"Removing XNB references for {fullFileName}");
             }
@@ -161,7 +165,7 @@ namespace OfficialPlugins.MonoGameContent
 
                     if(System.IO.File.Exists(fileToDelete))
                     { 
-                        GlueCommands.Self.TryMultipleTimes(()=>System.IO.File.Delete(fileToDelete), 5);
+                        GlueCommands.TryMultipleTimes(()=>System.IO.File.Delete(fileToDelete), 5);
                     }
                 }
             }
@@ -169,13 +173,13 @@ namespace OfficialPlugins.MonoGameContent
 
         private static ContentItem GetContentItem(ReferencedFileSave referencedFileSave, ProjectBase project, bool createEvenIfProjectTypeNotSupported)
         {
-            var fullFileName = GlueCommands.Self.FileCommands.GetFullFileName(referencedFileSave);
+            var fullFileName = GlueCommands.FileCommands.GetFullFileName(referencedFileSave);
             return GetContentItem(fullFileName, project, createEvenIfProjectTypeNotSupported);
         }
 
         private static ContentItem GetContentItem(string fullFileName, ProjectBase project, bool createEvenIfProjectTypeNotSupported)
         {
-            var contentDirectory = GlueState.Self.ContentDirectory;
+            var contentDirectory = GlueState.ContentDirectory;
 
             var relativeToContent = FileManager.MakeRelative(fullFileName, contentDirectory);
 
@@ -237,7 +241,7 @@ namespace OfficialPlugins.MonoGameContent
 
             if (contentItem != null)
             {
-                string projectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
+                string projectDirectory = GlueState.CurrentGlueProjectDirectory;
                 string builtXnbRoot = FileManager.RemoveDotDotSlash(projectDirectory + "../BuiltXnbs/");
                 contentItem.BuildFileName = fullFileName;
 
@@ -254,7 +258,7 @@ namespace OfficialPlugins.MonoGameContent
         private static string GetDestinationDirectory(string fullFileName)
         {
             string contentDirectory = FlatRedBall.Glue.ProjectManager.ContentDirectory;
-            string projectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
+            string projectDirectory = GlueState.CurrentGlueProjectDirectory;
             string destinationDirectory = FileManager.GetDirectory(fullFileName);
             destinationDirectory = FileManager.MakeRelative(destinationDirectory, contentDirectory);
             destinationDirectory = FileManager.RemoveDotDotSlash(projectDirectory + "../BuiltXnbs/" + destinationDirectory);
@@ -264,7 +268,7 @@ namespace OfficialPlugins.MonoGameContent
 
         private void TryAddXnbReferencesAndBuild(ReferencedFileSave referencedFile, ProjectBase project, bool save)
         {
-            var fullFileName = GlueCommands.Self.FileCommands.GetFullFileName(referencedFile);
+            var fullFileName = GlueCommands.FileCommands.GetFullFileName(referencedFile);
 
             TryAddXnbReferencesAndBuild(fullFileName, project, save);
 
@@ -272,7 +276,7 @@ namespace OfficialPlugins.MonoGameContent
 
         public void TryAddXnbReferencesAndBuild(string fullFileName, ProjectBase project, bool saveProjectAfterAdd)
         {
-            var contentDirectory = GlueState.Self.ContentDirectory;
+            var contentDirectory = GlueState.ContentDirectory;
 
             var relativeToContent = FileManager.MakeRelative(fullFileName, contentDirectory);
 
@@ -293,7 +297,7 @@ namespace OfficialPlugins.MonoGameContent
                 () =>
                 {
                     // If the user closes the project while the startup is happening, just skip the task - no need to build
-                    if (GlueState.Self.CurrentGlueProject != null)
+                    if (GlueState.CurrentGlueProject != null)
                     {
 
                         if (contentItem.GetIfNeedsBuild(destinationDirectory))
@@ -352,7 +356,7 @@ namespace OfficialPlugins.MonoGameContent
                     var line = process.StandardOutput.ReadLine();
                     if (!string.IsNullOrEmpty(line))
                     {
-                        GlueCommands.Self.PrintOutput(line);
+                        GlueCommands.PrintOutput(line);
                     }
                 }
             }
@@ -366,17 +370,17 @@ namespace OfficialPlugins.MonoGameContent
                 // We can look at the error code to see if it's an error or not.
                 if(builtCorrectly)
                 {
-                    GlueCommands.Self.PrintOutput(str);
+                    GlueCommands.PrintOutput(str);
                 }
                 else
                 {
-                    GlueCommands.Self.PrintError(str);
+                    GlueCommands.PrintError(str);
                 }
             }
 
             while ((str = process.StandardError.ReadLine()) != null)
             {
-                GlueCommands.Self.PrintError(str);
+                GlueCommands.PrintError(str);
             }
 
 
@@ -431,7 +435,7 @@ namespace OfficialPlugins.MonoGameContent
 
                 if(saveProjectAfterAdd)
                 {
-                    GlueCommands.Self.TryMultipleTimes(project.Save, 5);
+                    GlueCommands.TryMultipleTimes(project.Save, 5);
                 }
             }
 

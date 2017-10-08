@@ -180,6 +180,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         }
 
+        public string ProjectSpecificSettingsFolder => 
+            ProjectManager.ProjectSpecificSettingsFolder;
+
         #endregion
 
         public GlueState()

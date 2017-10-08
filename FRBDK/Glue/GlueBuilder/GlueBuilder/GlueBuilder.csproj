@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{275460F5-D6B8-4499-83AC-E148954BB0A1}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>GlueBuilder</RootNamespace>
+    <AssemblyName>GlueBuilder</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Lidgren.Network, Version=3.7.0.720, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\DesktopGL\Lidgren.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\Glue\Libraries\MSBuild\Current\Microsoft.Build.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Conversion.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\Glue\Libraries\MSBuild\Current\Microsoft.Build.Conversion.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Engine, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\Glue\Libraries\MSBuild\Current\Microsoft.Build.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Framework, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\Glue\Libraries\MSBuild\Current\Microsoft.Build.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Tasks.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\Glue\Libraries\MSBuild\Current\Microsoft.Build.Tasks.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Utilities.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\Glue\Libraries\MSBuild\Current\Microsoft.Build.Utilities.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework, Version=3.7.0.720, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\DesktopGL\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework.Net, Version=3.7.0.720, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\DesktopGL\MonoGame.Framework.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NVorbis">
+      <HintPath>Libraries\DesktopGL\NVorbis.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK">
+      <HintPath>Libraries\DesktopGL\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\Glue\Libraries\MSBuild\Current\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Threading.Tasks.Dataflow">
+      <HintPath>..\..\Glue\Libraries\MSBuild\Current\System.Threading.Tasks.Dataflow.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\FRBDK Supporting Projects\EditorObjects\IoC\Container.cs">
+      <Link>EditorObjects\IoC\Container.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\FRBDK Supporting Projects\EditorObjects\Parsing\ContentParser.cs">
+      <Link>EditorObjects\Parsing\ContentParser.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBlockBase.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBlockBase.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBlockBaseNoIndent.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBlockBaseNoIndent.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBlockBlock.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBlockBlock.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBlockClass.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBlockClass.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBlockException.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBlockException.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBlockFunction.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBlockFunction.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBlockIf.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBlockIf.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBlockInterface.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBlockInterface.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBlockIterations.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBlockIterations.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBlockLock.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBlockLock.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBlockNamespace.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBlockNamespace.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBlockProperty.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBlockProperty.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBlockSwitch.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBlockSwitch.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBlockTag.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBlockTag.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeBuilderDefaults.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeBuilderDefaults.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\CodeLine.cs">
+      <Link>CodeGeneration\CodeBuilder\CodeLine.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\ICode.cs">
+      <Link>CodeGeneration\CodeBuilder\ICode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\ICodeBlock.cs">
+      <Link>CodeGeneration\CodeBuilder\ICodeBlock.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\StringHelper.cs">
+      <Link>CodeGeneration\CodeBuilder\StringHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\GlobalContentCodeGeneratorBase.cs">
+      <Link>CodeGeneration\GlobalContentCodeGeneratorBase.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Managers\Singleton.cs">
+      <Link>Managers\Singleton.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\MVVM\CommandBase.cs">
+      <Link>MVVM\CommandBase.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\MVVM\ViewModel.cs">
+      <Link>MVVM\ViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedImplementations\CommandInterfaces\ValidationResponse.cs">
+      <Link>Plugins\ExportedInterfaces\ValidationResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IDialogCommands.cs">
+      <Link>Plugins\ExportedInterfaces\IDialogCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IElementCommands.cs">
+      <Link>Plugins\ExportedInterfaces\IElementCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IEntityCommands.cs">
+      <Link>Plugins\ExportedInterfaces\IEntityCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IFileCommands.cs">
+      <Link>Plugins\ExportedInterfaces\IFileCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IGenerateCodeCommands.cs">
+      <Link>Plugins\ExportedInterfaces\IGenerateCodeCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IGluxCommands.cs">
+      <Link>Plugins\ExportedInterfaces\IGluxCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IOpenCommands.cs">
+      <Link>Plugins\ExportedInterfaces\IOpenCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IProjectCommands.cs">
+      <Link>Plugins\ExportedInterfaces\IProjectCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IRefreshCommands.cs">
+      <Link>Plugins\ExportedInterfaces\IRefreshCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IScreenCommands.cs">
+      <Link>Plugins\ExportedInterfaces\IScreenCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\ISelectCommands.cs">
+      <Link>Plugins\ExportedInterfaces\ISelectCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\ITreeNodeCommands.cs">
+      <Link>Plugins\ExportedInterfaces\ITreeNodeCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IUpdateCommands.cs">
+      <Link>Plugins\ExportedInterfaces\IUpdateCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\IGlueCommands.cs">
+      <Link>Plugins\ExportedInterfaces\IGlueCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\IGlueState.cs">
+      <Link>Plugins\ExportedInterfaces\IGlueState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Tasks\GlueTask.cs">
+      <Link>Tasks\GlueTask.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Tasks\TaskManager.cs">
+      <Link>Tasks\TaskManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\VSHelpers\Projects\ProjectBase.cs">
+      <Link>VSHelpers\Projects\ProjectBase.cs</Link>
+    </Compile>
+    <Compile Include="Compatability\System\ComponentModel\Composition\ExportAttribute.cs" />
+    <Compile Include="Compatability\System\Windows\Visibility.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Libraries\DesktopGL\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallDesktopGL.csproj">
+      <Project>{10bda06c-7269-4cce-ae2a-d445f414520a}</Project>
+      <Name>FlatRedBallDesktopGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GlueSaveClasses\GlueSaveClassesMonoGame.csproj">
+      <Project>{545ff183-4d9d-4121-9a04-1d354b0b0dba}</Project>
+      <Name>GlueSaveClassesMonoGame</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
