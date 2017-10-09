@@ -97,7 +97,7 @@ namespace TMXGlueLib
 
         
         [XmlElement("layer", typeof(MapLayer))]
-        [XmlElement("imagelayer", typeof(mapImageLayer))]
+        [XmlElement("imagelayer", typeof(MapImageLayer))]
         [XmlElement("objectgroup", typeof(mapObjectgroup))]
         public List<AbstractMapLayer> MapLayers { get; set; }
 
@@ -112,7 +112,7 @@ namespace TMXGlueLib
         public List<mapObjectgroup> objectgroup => MapLayers.OfType<mapObjectgroup>().ToList();
 
         [XmlIgnore]
-        public List<mapImageLayer> ImageLayers => MapLayers.OfType<MapImageLayer>().ToList();
+        public List<MapImageLayer> ImageLayers => MapLayers.OfType<MapImageLayer>().ToList();
 
         /// <remarks/>
         [XmlAttribute()]
