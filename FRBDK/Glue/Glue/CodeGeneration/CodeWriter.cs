@@ -47,8 +47,105 @@ namespace FlatRedBall.Glue.Parsing
     {
         #region Fields
 
-        private static string mScreenTemplateCode;
-        private static string mEntityTemplateCode;
+        private static string mScreenTemplateCode =
+@"using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Linq;
+
+using FlatRedBall;
+using FlatRedBall.Input;
+using FlatRedBall.Instructions;
+using FlatRedBall.AI.Pathfinding;
+using FlatRedBall.Graphics.Animation;
+using FlatRedBall.Graphics.Particle;
+using FlatRedBall.Math.Geometry;
+using FlatRedBall.Localization;
+
+
+
+namespace FlatRedBallAddOns.Screens
+{
+	public partial class ScreenTemplate
+	{
+
+		void CustomInitialize()
+		{
+
+
+		}
+
+		void CustomActivity(bool firstTimeCalled)
+		{
+
+
+		}
+
+		void CustomDestroy()
+		{
+
+
+		}
+
+        static void CustomLoadStaticContent(string contentManagerName)
+        {
+
+
+        }
+
+	}
+}
+";
+
+        private static string mEntityTemplateCode =
+@"using System;
+using System.Collections.Generic;
+using System.Text;
+using FlatRedBall;
+using FlatRedBall.Input;
+using FlatRedBall.Instructions;
+using FlatRedBall.AI.Pathfinding;
+using FlatRedBall.Graphics.Animation;
+using FlatRedBall.Graphics.Particle;
+using FlatRedBall.Math.Geometry;
+
+namespace FlatRedBallAddOns.Entities
+{
+	public partial class GlueEntityTemplate
+	{
+        /// <summary>
+        /// Initialization logic which is execute only one time for this Entity (unless the Entity is pooled).
+        /// This method is called when the Entity is added to managers. Entities which are instantiated but not
+        /// added to managers will not have this method called.
+        /// </summary>
+		private void CustomInitialize()
+		{
+
+
+		}
+
+		private void CustomActivity()
+		{
+
+
+		}
+
+		private void CustomDestroy()
+		{
+
+
+		}
+
+        private static void CustomLoadStaticContent(string contentManagerName)
+        {
+
+
+        }
+	}
+}
+";
+
+
 
         #endregion
 
@@ -88,11 +185,8 @@ namespace FlatRedBall.Glue.Parsing
             CodeGenerators.Add(new IWindowCodeGenerator());
             CodeGenerators.Add(new PauseCodeGenerator());
             CodeGenerators.Add(new LoadingScreenCodeGenerator());
-
-            mScreenTemplateCode = Resources.Resource1.GlueScreenTemplate;
-
-            mEntityTemplateCode = Resources.Resource1.GlueEntityTemplate;
         }
+
         public static bool IsOnOwnLayer(IElement element)
         {
             if (element is EntitySave)
