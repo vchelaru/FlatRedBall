@@ -112,7 +112,7 @@ namespace TMXGlueLib
         public List<mapObjectgroup> objectgroup => MapLayers.OfType<mapObjectgroup>().ToList();
 
         [XmlIgnore]
-        public List<mapImageLayer> ImageLayers => MapLayers.OfType<mapImageLayer>().ToList();
+        public List<mapImageLayer> ImageLayers => MapLayers.OfType<MapImageLayer>().ToList();
 
         /// <remarks/>
         [XmlAttribute()]
@@ -292,10 +292,8 @@ namespace TMXGlueLib
 #if !UWP
     [Serializable]
 #endif
-    public partial class mapImageLayer : AbstractMapLayer
+    public partial class MapImageLayer : AbstractMapLayer
     {
-        private mapImageLayerImage imageField;
-
         private float _offsetX;
         private float _offsetY;
 
@@ -329,21 +327,6 @@ namespace TMXGlueLib
             }
         }
 
-        /// <remarks/>
-        [XmlElement("image", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public mapImageLayerImage imageobject
-        {
-            get
-            {
-                return this.imageField;
-            }
-            set
-            {
-                this.imageField = value;
-            }
-        }
-
-
         [XmlAttribute("visible")]
         public int VisibleAsInt
         {
@@ -352,14 +335,14 @@ namespace TMXGlueLib
         }
 
         [XmlAttribute("offsetx")]
-        public float offsetX
+        public float OffsetX
         {
             get { return _offsetX; }
             set { _offsetX = value; }
         }
 
         [XmlAttribute("offsety")]
-        public float offsetY
+        public float OffsetY
         {
             get { return _offsetY; }
             set { _offsetY = value; }
@@ -388,11 +371,11 @@ namespace TMXGlueLib
 
         /// <remarks/>
         [XmlAttributeAttribute(AttributeName = "width")]
-        public float width { get; set; }
+        public float Width { get; set; }
 
         /// <remarks/>
         [XmlAttributeAttribute(AttributeName = "height")]
-        public float height { get; set; }
+        public float Height { get; set; }
     }
 
 
