@@ -441,10 +441,10 @@ namespace FlatRedBall.TileGraphics
                 var newSprite = new Sprite
                 {
                     Texture = texture,
-                    Width = imageLayer.imageobject.Width,
-                    Height = imageLayer.imageobject.Height,
-                    X = imageLayer.imageobject.Width/2 + imageLayer.OffsetX,
-                    Y = -imageLayer.imageobject.Height/2 + imageLayer.OffsetY
+                    Width = imageLayer.Imageobject.Width,
+                    Height = imageLayer.Imageobject.Height,
+                    X = imageLayer.Imageobject.Width/2 + imageLayer.OffsetX,
+                    Y = -imageLayer.Imageobject.Height/2 + imageLayer.OffsetY
                 };
 
                 var mdb = new MapDrawableBatch(1, texture);
