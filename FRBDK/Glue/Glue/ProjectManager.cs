@@ -40,6 +40,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Collections.ObjectModel;
 using EditorObjects.IoC;
 using GluePropertyGridClasses.Interfaces;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 
 namespace FlatRedBall.Glue
 {
@@ -95,13 +96,13 @@ namespace FlatRedBall.Glue
             private set;
         }
 
+        [Obsolete("Use GlueState.ProjectSpecificSettingsFolder")]
         public static string ProjectSpecificSettingsFolder
         {
             get
             {
-                string projectDirectory = FileManager.GetDirectory(GlueProjectFileName);
-
-                return projectDirectory + "GlueSettings/";
+                return Container.Get<IGlueState>().ProjectSpecificSettingsFolder;
+                
             }
         }
 
@@ -129,6 +130,7 @@ namespace FlatRedBall.Glue
             get { return mGameClass; }
         }
 
+        [Obsolete("use GlueState.GlueProjectFileName")]
         public static string GlueProjectFileName
         {
             get

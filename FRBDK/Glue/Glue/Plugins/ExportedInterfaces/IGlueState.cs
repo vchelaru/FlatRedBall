@@ -84,6 +84,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
         string ProjectSpecificSettingsFolder { get; }
 
+        
+
 #endregion
 
         IElement GetElement(string name);
@@ -92,6 +94,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         StateSave GetState(string containerName, string name);
         StateSaveCategory GetStateCategory(string containerName, string name);
         List<ProjectBase> GetProjects();
+        IEnumerable<ReferencedFileSave> GetAllReferencedFiles();
 
     }
 
@@ -197,6 +200,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             set;
         }
 
+
+
         public string CurrentGlueProjectDirectory { get; set; }
         // STOP!  If adding here be sure to add to SetFrom too
 
@@ -268,6 +273,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         }
 
         public List<ProjectBase> GetProjects()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<ReferencedFileSave> GetAllReferencedFiles()
         {
             throw new System.NotImplementedException();
         }

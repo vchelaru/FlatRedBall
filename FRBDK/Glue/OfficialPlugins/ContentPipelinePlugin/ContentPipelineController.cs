@@ -1,5 +1,4 @@
-﻿using FlatRedBall.Glue.Elements;
-using FlatRedBall.IO;
+﻿using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -158,13 +157,14 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
         private void SetAllPngRfsesToUseContentPipeline()
         {
-            var allRfses = ObjectFinder.Self
-                .GetAllReferencedFiles()
+            var referencedFiles = EditorObjects.IoC.Container.Get<IGlueState>().GetAllReferencedFiles();
+
+            var allPngs = referencedFiles
                 .Where(item => FileManager.GetExtension(item.Name) == "png")
                 .ToArray();
 
 
-            foreach (var rfs in allRfses)
+            foreach (var rfs in allPngs)
             {
                 rfs.UseContentPipeline = true;
             }
@@ -172,8 +172,9 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
         private void SetAllPngsRfsesToFromFileLoading()
         {
-            var allRfses = ObjectFinder.Self
-                .GetAllReferencedFiles()
+            var referencedFiles = EditorObjects.IoC.Container.Get<IGlueState>().GetAllReferencedFiles();
+
+            var allRfses = referencedFiles
                 .Where(item => FileManager.GetExtension(item.Name) == "png")
                 .ToArray();
 
@@ -207,10 +208,9 @@ namespace OfficialPlugins.ContentPipelinePlugin
         {
             List<string> referencedFileNames = new List<string>();
 
-            var allRfses = ObjectFinder.Self
-                .GetAllReferencedFiles();
+            var referencedFiles = EditorObjects.IoC.Container.Get<IGlueState>().GetAllReferencedFiles();
 
-            foreach (var rfs in allRfses)
+            foreach (var rfs in referencedFiles)
             {
                 var absolute = GlueCommands.GetAbsoluteFileName(rfs);
 
@@ -234,8 +234,8 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
         private static void AddReferencedFilesRecursively(string absoluteFileName, List<string> referencedFileNames)
         {
-            var referencedFiles =
-                FileReferenceManager.Self.GetFilesReferencedBy(absoluteFileName, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
+            var referencedFiles = 
+                EditorObjects.IoC.Container.Get<IGlueCommands>().FileCommands.GetFilesReferencedBy(absoluteFileName, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
             
 
             foreach(var file in referencedFiles)

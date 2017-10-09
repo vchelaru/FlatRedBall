@@ -257,7 +257,7 @@ namespace OfficialPlugins.MonoGameContent
 
         private static string GetDestinationDirectory(string fullFileName)
         {
-            string contentDirectory = FlatRedBall.Glue.ProjectManager.ContentDirectory;
+            string contentDirectory = GlueState.ContentDirectory;
             string projectDirectory = GlueState.CurrentGlueProjectDirectory;
             string destinationDirectory = FileManager.GetDirectory(fullFileName);
             destinationDirectory = FileManager.MakeRelative(destinationDirectory, contentDirectory);
@@ -327,7 +327,7 @@ namespace OfficialPlugins.MonoGameContent
 
         private static void PerformBuild(ContentItem contentItem)
         {
-            string contentDirectory = FlatRedBall.Glue.ProjectManager.ContentDirectory;
+            string contentDirectory = GlueState.ContentDirectory;
             string workingDirectory = contentDirectory;
 
             string commandLine = contentItem.GenerateCommandLine();
@@ -345,7 +345,7 @@ namespace OfficialPlugins.MonoGameContent
 
             process.Start();
 
-            PluginManager.ReceiveOutput($"Building: {commandLineBuildExe} {commandLine}");
+            GlueCommands.PrintOutput($"Building: {commandLineBuildExe} {commandLine}");
 
             while (process.HasExited == false)
             {

@@ -46,16 +46,18 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override void LoadContentProject()
         {
-            List<string> files = FileManager.GetAllFilesInDirectory(ContentProjectDirectory, "contentproj", 0);
+            // We're slowly getting rid of WinPhone 7
+            throw new NotImplementedException();
+            //List<string> files = FileManager.GetAllFilesInDirectory(ContentProjectDirectory, "contentproj", 0);
 
-            if (files.Count != 0)
-            {
-                ContentProject = ProjectCreator.LoadXnaProjectFor(this, files[0]);
-            }
-            else
-            {
-                ContentProject = this;
-            }
+            //if (files.Count != 0)
+            //{
+            //    ContentProject = ProjectCreator.LoadXnaProjectFor(this, files[0]);
+            //}
+            //else
+            //{
+            //    ContentProject = this;
+            //}
         }
 
         public override string NeededVisualStudioVersion

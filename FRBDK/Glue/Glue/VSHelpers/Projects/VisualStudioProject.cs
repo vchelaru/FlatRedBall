@@ -7,29 +7,20 @@ using FlatRedBall.Glue.IO;
 using EditorObjects.Parsing;
 using FlatRedBall.Glue.Controls;
 using System.Windows.Forms;
-using System.Text;
 using System.Diagnostics;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Utilities;
-
 #endif
+
+using System.Text;
 using System.Linq;
 using FlatRedBall.Glue.Managers;
 using Microsoft.Build.Evaluation;
+using Container = EditorObjects.IoC.Container;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
-    #region Enums
-
-
-
-    public enum SyncedProjectRelativeType
-    {
-        Contained,
-        Linked
-    }
-
-    #endregion
 
     public abstract class VisualStudioProject : ProjectBase
     {
@@ -135,12 +126,15 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         #endregion
 
-#if GLUE
         public override ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Contained, bool forceToContentPipeline = false)
         {
             /////////////////////////Early Out////////////////////////////
             string extension = FileManager.GetExtension(absoluteFile);
-            var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(absoluteFile);
+            var rfs = Container.Get<IGlueCommands>().FileCommands.GetReferencedFile(absoluteFile);
+
+
+#if GLUE
+
             bool handledByContentPipelinePlugin = Plugins.EmbeddedPlugins.SyncedProjects.SyncedProjectLogic.Self.GetIfHandledByContentPipelinePlugin(this, extension, rfs);
             if (handledByContentPipelinePlugin)
             {
@@ -184,7 +178,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 itemInclude = ProcessInclude(itemInclude);
 
 
-                #region If added to content pipeline
+            #region If added to content pipeline
 
                 if (addToContentPipeline && AllowContentCompile)
                 {
@@ -203,9 +197,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 }
 
-                #endregion
+            #endregion
 
-                #region else, just copy the file
+            #region else, just copy the file
 
                 else
                 {
@@ -225,7 +219,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     }
                 }
 
-                #endregion
+            #endregion
                 try
                 {
                     // The items in the dictionary must be to-lower on some
@@ -281,8 +275,12 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 return buildItem;
             }
-        }
+
+#else
+
+            throw new NotImplementedException();
 #endif
+        }
 
         public bool IsCodeItem(ProjectItem buildItem)
         {
@@ -447,7 +445,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             bool wasChanged = false;
 
-            #region Build the mBuildItemDictionary to make accessing items faster
+#region Build the mBuildItemDictionary to make accessing items faster
             for (int i = mProject.AllEvaluatedItems.Count - 1; i > -1; i--)
             {
                 ProjectItem buildItem = mProject.AllEvaluatedItems.ElementAt(i);
@@ -475,7 +473,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                         buildItem);
                 }
             }
-            #endregion
+#endregion
 
             FindRootNamespace();
 
@@ -774,7 +772,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         }
 
 
-        #region Private Methods
+#region Private Methods
 
         private void FindRootNamespace()
         {
@@ -792,10 +790,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
-        #endregion
+#endregion
 
 
-        #endregion
+#endregion
     }
 
 

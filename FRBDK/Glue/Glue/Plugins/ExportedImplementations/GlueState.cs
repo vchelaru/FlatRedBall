@@ -8,6 +8,7 @@ using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Data;
 using FlatRedBall.Glue.Managers;
 using Glue;
+using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
@@ -180,8 +181,37 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         }
 
-        public string ProjectSpecificSettingsFolder => 
-            ProjectManager.ProjectSpecificSettingsFolder;
+        public string GlueProjectFileName
+        {
+            get
+            {
+#if TEST
+                return FileManager.CurrentDirectory + "TestProject.glux";
+#else
+
+                if (CurrentMainProject == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return FileManager.RemoveExtension(CurrentMainProject.FullFileName) + ".glux";
+                }
+#endif
+
+            }
+
+        }
+
+        public string ProjectSpecificSettingsFolder
+        {
+            get
+            {
+                string projectDirectory = FileManager.GetDirectory(GlueProjectFileName);
+
+                return projectDirectory + "GlueSettings/";
+            }
+        }
 
         #endregion
 
@@ -265,6 +295,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             get { return ObjectFinder.Self.GlueProject; }
         }
 
-        
+        public IEnumerable<ReferencedFileSave> GetAllReferencedFiles()
+        {
+            return ObjectFinder.Self.GetAllReferencedFiles();
+        }
+
     }
 }

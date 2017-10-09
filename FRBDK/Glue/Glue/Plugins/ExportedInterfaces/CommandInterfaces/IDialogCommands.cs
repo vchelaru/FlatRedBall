@@ -7,6 +7,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
     {
         ReferencedFileSave ShowAddNewFileDialog();
 
+        void ShowMessageBox(string message);
+
 
 #if GLUE
         NamedObjectSave ShowAddNewObjectDialog(FlatRedBall.Glue.ViewModels.AddObjectViewModel addObjectViewModel = null);

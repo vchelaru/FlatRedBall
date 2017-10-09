@@ -66,7 +66,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
 
             var fileToLoad = toolStripMenuItem.Text;
 
-            ProjectLoader.Self.LoadProject(fileToLoad);
+            GlueCommands.Self.LoadProject(fileToLoad);
         }
     }
 }

@@ -4,16 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C94C396A-A22B-409E-85F3-034FF8F27959}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ContentPipelinePluginBase</RootNamespace>
-    <AssemblyName>ContentPipelinePluginBase</AssemblyName>
+    <ProjectGuid>{FCC61901-C79C-4B81-8521-AF9051095825}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>GlueConsole</RootNamespace>
+    <AssemblyName>GlueConsole</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -62,29 +63,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\OfficialPlugins\ContentPipelinePlugin\AliasCodeGenerator.cs">
-      <Link>AliasCodeGenerator.cs</Link>
-    </Compile>
-    <Compile Include="..\..\OfficialPlugins\ContentPipelinePlugin\BuildLogic.cs">
-      <Link>BuildLogic.cs</Link>
-    </Compile>
-    <Compile Include="..\..\OfficialPlugins\ContentPipelinePlugin\ContentItem.cs">
-      <Link>ContentItem.cs</Link>
-    </Compile>
-    <Compile Include="..\..\OfficialPlugins\ContentPipelinePlugin\ContentPipelineController.cs">
-      <Link>ContentPipelineController.cs</Link>
-    </Compile>
-    <Compile Include="..\..\OfficialPlugins\ContentPipelinePlugin\ControlViewModel.cs">
-      <Link>ControlViewModel.cs</Link>
-    </Compile>
-    <Compile Include="..\..\OfficialPlugins\ContentPipelinePlugin\SaveLoadLogic.cs">
-      <Link>SaveLoadLogic.cs</Link>
-    </Compile>
-    <Compile Include="..\..\OfficialPlugins\ContentPipelinePlugin\SettingsSave.cs">
-      <Link>SettingsSave.cs</Link>
-    </Compile>
-    <Compile Include="CommandLinePlugin.cs" />
+    <Compile Include="CommandLineCommandProcessor.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallDesktopGL.csproj">
@@ -94,6 +78,10 @@
     <ProjectReference Include="..\..\GlueSaveClasses\GlueSaveClassesMonoGame.csproj">
       <Project>{545ff183-4d9d-4121-9a04-1d354b0b0dba}</Project>
       <Name>GlueSaveClassesMonoGame</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ContentPipelinePluginBase\ContentPipelinePluginBase.csproj">
+      <Project>{c94c396a-a22b-409e-85f3-034ff8f27959}</Project>
+      <Name>ContentPipelinePluginBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\GlueBuilder\GlueBuilder.csproj">
       <Project>{275460f5-d6b8-4499-83ac-e148954bb0a1}</Project>

@@ -26,6 +26,28 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         #endregion
 
+        public IGenerateCodeCommands GenerateCodeCommands{ get; private set; }
+
+        public IGluxCommands GluxCommands { get; private set; }
+
+        public IOpenCommands OpenCommands { get; private set; }
+
+        public IProjectCommands ProjectCommands { get; private set; }
+
+        public IRefreshCommands RefreshCommands { get; private set; }
+
+        public ITreeNodeCommands TreeNodeCommands { get; private set; }
+
+        public IUpdateCommands UpdateCommands { get; private set; }
+
+        public IDialogCommands DialogCommands { get; private set; }
+
+        public GlueViewCommands GlueViewCommands { get; private set; }
+
+        public IFileCommands FileCommands { get; private set; }
+
+        public ISelectCommands SelectCommands { get; private set; }
+
         public void PrintOutput(string output)
         {
             PluginManager.ReceiveOutput(output);
@@ -48,6 +70,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             Process.GetCurrentProcess().Kill();
         }
 
+        public void LoadProject(string fileName)
+        {
+            IO.ProjectLoader.Self.LoadProject(fileName);
+        }
 
         public void TryMultipleTimes(Action action, int numberOfTimesToTry)
         {
@@ -91,28 +117,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             FileCommands = new FileCommands();
             SelectCommands = new SelectCommands();
         }
-
-        public IGenerateCodeCommands GenerateCodeCommands{ get; private set; }
-
-        public IGluxCommands GluxCommands { get; private set; }
-
-        public IOpenCommands OpenCommands { get; private set; }
-
-        public IProjectCommands ProjectCommands { get; private set; }
-
-        public IRefreshCommands RefreshCommands { get; private set; }
-
-        public ITreeNodeCommands TreeNodeCommands { get; private set; }
-
-        public IUpdateCommands UpdateCommands { get; private set; }
-
-        public IDialogCommands DialogCommands { get; private set; }
-
-        public GlueViewCommands GlueViewCommands { get; private set; }
-
-        public IFileCommands FileCommands { get; private set; }
-
-        public ISelectCommands SelectCommands { get; private set; }
 
         public string GetAbsoluteFileName(SaveClasses.ReferencedFileSave rfs)
         {

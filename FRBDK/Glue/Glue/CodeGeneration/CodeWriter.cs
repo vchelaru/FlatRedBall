@@ -48,27 +48,15 @@ namespace FlatRedBall.Glue.Parsing
         #region Fields
 
         private static string mScreenTemplateCode;
-        private static string mScreenTemplateGeneratedCode;
         private static string mEntityTemplateCode;
-        private static string mEntityTemplateGeneratedCode;
 
         #endregion
 
         #region Properties
 
-        public static string ScreenTemplateGeneratedCode
-        {
-            get { return mScreenTemplateGeneratedCode; }
-        }
-
         public static string ScreenTemplateCode
         {
             get { return mScreenTemplateCode; }
-        }
-
-        public static string EntityTemplateGeneratedCode
-        {
-            get { return mEntityTemplateGeneratedCode; }
         }
 
         public static string EntityTemplateCode
@@ -103,12 +91,7 @@ namespace FlatRedBall.Glue.Parsing
 
             mScreenTemplateCode = Resources.Resource1.GlueScreenTemplate;
 
-            mScreenTemplateGeneratedCode = Resources.Resource1.GlueScreenTemplate_Generated;
-
             mEntityTemplateCode = Resources.Resource1.GlueEntityTemplate;
-
-            mEntityTemplateGeneratedCode = Resources.Resource1.GlueEntityTemplate_Generated;
-
         }
         public static bool IsOnOwnLayer(IElement element)
         {

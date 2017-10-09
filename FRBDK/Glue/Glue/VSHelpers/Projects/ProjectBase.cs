@@ -17,6 +17,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         AndroidAsset
     }
 
+    public enum SyncedProjectRelativeType
+    {
+        Contained,
+        Linked
+    }
+
+
     public delegate void SaveDelegate(string fileName);
 
     public abstract class ProjectBase : IEnumerable<ProjectItem>
@@ -132,9 +139,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         #endregion
 
-#if GLUE
-        public bool SaveAsRelativeSyncedProject;
-        public bool SaveAsAbsoluteSyncedProject;
 
         /// <summary>
         /// Adds the argument absoluteFile to the project. This method will not first check
@@ -144,6 +148,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// <param name="absoluteFile">The absolute file name to add.</param>
         /// <returns>The ProjectItem which was created and added to the project.</returns>
         public abstract ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Contained, bool forceToContentPipeline = false);
+#if GLUE
+        public bool SaveAsRelativeSyncedProject;
+        public bool SaveAsAbsoluteSyncedProject;
         public abstract void UpdateContentFile(string sourceFileName);
 #endif
         public abstract string FolderName { get; }

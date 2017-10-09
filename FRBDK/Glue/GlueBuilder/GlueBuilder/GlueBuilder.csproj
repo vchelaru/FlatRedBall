@@ -151,6 +151,9 @@
     <Compile Include="..\..\Glue\CodeGeneration\GlobalContentCodeGeneratorBase.cs">
       <Link>CodeGeneration\GlobalContentCodeGeneratorBase.cs</Link>
     </Compile>
+    <Compile Include="..\..\Glue\Extensions\LinqExtensions.cs">
+      <Link>Extensions\LinqExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\..\Glue\Managers\Singleton.cs">
       <Link>Managers\Singleton.cs</Link>
     </Compile>
@@ -214,11 +217,43 @@
     <Compile Include="..\..\Glue\Tasks\TaskManager.cs">
       <Link>Tasks\TaskManager.cs</Link>
     </Compile>
+    <Compile Include="..\..\Glue\VSHelpers\Projects\AndroidProject.cs">
+      <Link>VSHelpers\Projects\AndroidProject.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\VSHelpers\Projects\CombinedEmbeddedContentProject.cs">
+      <Link>VSHelpers\Projects\CombinedEmbeddedContentProject.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\VSHelpers\Projects\DesktopGlProject.cs">
+      <Link>VSHelpers\Projects\DesktopGlProject.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\VSHelpers\Projects\IosMonogameProject.cs">
+      <Link>VSHelpers\Projects\IosMonogameProject.cs</Link>
+    </Compile>
     <Compile Include="..\..\Glue\VSHelpers\Projects\ProjectBase.cs">
       <Link>VSHelpers\Projects\ProjectBase.cs</Link>
     </Compile>
+    <Compile Include="..\..\Glue\VSHelpers\Projects\ProjectCreator.cs">
+      <Link>VSHelpers\Projects\ProjectCreator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\VSHelpers\Projects\UwpProject.cs">
+      <Link>VSHelpers\Projects\UwpProject.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\VSHelpers\Projects\VisualStudioProject.cs">
+      <Link>VSHelpers\Projects\VisualStudioProject.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\VSHelpers\Projects\Xna4Project.cs">
+      <Link>VSHelpers\Projects\Xna4Project.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\VSHelpers\Projects\XnaContentProject.cs">
+      <Link>VSHelpers\Projects\XnaContentProject.cs</Link>
+    </Compile>
     <Compile Include="Compatability\System\ComponentModel\Composition\ExportAttribute.cs" />
     <Compile Include="Compatability\System\Windows\Visibility.cs" />
+    <Compile Include="Managers\ContainerPopulator.cs" />
+    <Compile Include="Managers\ProjectManager.cs" />
+    <Compile Include="Plugins\ExportedImplementations\GlueCommands.cs" />
+    <Compile Include="Plugins\ExportedImplementations\GlueState.cs" />
+    <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

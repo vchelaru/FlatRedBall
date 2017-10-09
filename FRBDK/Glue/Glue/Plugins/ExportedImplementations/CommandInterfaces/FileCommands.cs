@@ -202,6 +202,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             return ProjectManager.ContentDirectory + rfs.Name;
         }
+
+        public ReferencedFileSave GetReferencedFile(string absoluteFile)
+        {
+            return Elements.ObjectFinder.Self.GetReferencedFileSaveFromFile(absoluteFile);
+        }
     }
 
 }

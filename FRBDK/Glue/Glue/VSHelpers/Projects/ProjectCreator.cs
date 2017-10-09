@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.IO;
 using Microsoft.Build.Evaluation;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -108,7 +108,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 // If we got here that means that the preprocessor defines don't match what
                 // Glue expects.  This is probably bad - Glue generated code will likely not
                 // compile, so let's warn the user
-                GlueGui.ShowMessageBox(errorMessage);
+                EditorObjects.IoC.Container.Get<IGlueCommands>().DialogCommands.ShowMessageBox(errorMessage);
 
             }
 
@@ -130,10 +130,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 toReturn = new AndroidProject(coreVisualStudioProject);
             }
-            else if (preProcessorConstants.Contains("WINDOWS_8"))
-            {
-                toReturn = new Windows8MonoGameProject(coreVisualStudioProject);
-            }
             else if(preProcessorConstants.Contains("IOS"))
             {
                 toReturn = new IosMonogameProject(coreVisualStudioProject);
@@ -141,14 +137,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             else if(preProcessorConstants.Contains("UWP"))
             {
                 toReturn = new UwpProject(coreVisualStudioProject);
-            }
-            else if (preProcessorConstants.Contains("WINDOWS_PHONE"))
-            {
-                toReturn = new WindowsPhoneProject(coreVisualStudioProject);
-            }
-            else if(preProcessorConstants.Contains("LINUX"))
-            {
-                toReturn = new DesktopGlLinuxProject(coreVisualStudioProject);
             }
             else if(preProcessorConstants.Contains("DESKTOP_GL"))
             {

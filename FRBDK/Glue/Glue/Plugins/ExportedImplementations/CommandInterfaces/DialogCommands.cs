@@ -276,6 +276,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return addObjectViewModel;
         }
 
+        public void ShowMessageBox(string message)
+        {
+            GlueGui.ShowMessageBox(message);
+        }
+
 
         private static string HandleObjectInFileSelected(NewObjectTypeSelectionControl typeSelectControl)
         {
