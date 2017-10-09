@@ -435,7 +435,7 @@ namespace FlatRedBall.TileGraphics
             // add image layers
             foreach (var imageLayer in tms.ImageLayers)
             {
-                var imageLayerFile = tmxDirectory + imageLayer.Imageobject.Source;
+                var imageLayerFile = tmxDirectory + imageLayer.ImageObject.Source;
                 var texture = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(imageLayerFile);
 
                 var newSprite = new Sprite
