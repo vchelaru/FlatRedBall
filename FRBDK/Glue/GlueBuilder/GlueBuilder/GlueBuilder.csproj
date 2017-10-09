@@ -163,6 +163,9 @@
     <Compile Include="..\..\Glue\MVVM\ViewModel.cs">
       <Link>MVVM\ViewModel.cs</Link>
     </Compile>
+    <Compile Include="..\..\Glue\Plugins\ExportedImplementations\CommandInterfaces\FileCommands.cs">
+      <Link>Plugins\ExportedImplementations\FileCommands.cs</Link>
+    </Compile>
     <Compile Include="..\..\Glue\Plugins\ExportedImplementations\CommandInterfaces\ValidationResponse.cs">
       <Link>Plugins\ExportedInterfaces\ValidationResponse.cs</Link>
     </Compile>

@@ -176,7 +176,7 @@ namespace FlatRedBall.Glue.Managers
         }
 
 
-        internal void WaitForAllTasksFinished(bool pumpEvents)
+        public void WaitForAllTasksFinished(bool pumpEvents)
         {
             while (!AreAllAsyncTasksDone)
             {

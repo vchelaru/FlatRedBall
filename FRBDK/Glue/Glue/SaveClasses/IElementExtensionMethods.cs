@@ -132,9 +132,9 @@ namespace FlatRedBall.Glue.SaveClasses
                 {
                     if (!element.InheritsFromFrbType())
                     {
-                        System.Windows.Forms.MessageBox.Show("The object\n\n" + element.ToString() + "\n\nhas a base type of\n\n" +
+                        throw new Exception("The object\n\n" + element.ToString() + "\n\nhas a base type of\n\n" +
                             element.BaseObject + "\n\nbut this type can't be found.  This probably happened if the base type was " +
-                            "removed from the project.  You will want to set the base type to NONE", "Error");
+                            "removed from the project.  You will want to set the base type to NONE");
                     }
                 }
                 else

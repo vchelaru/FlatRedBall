@@ -1,5 +1,6 @@
 ﻿using ContentPipelinePluginBase;
 using EditorObjects.IoC;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System;
 using System.Collections.Generic;
@@ -56,7 +57,8 @@ namespace GlueConsole
 
             plugin.HandleLoadedGlux();
 
-            GlueCommands.PrintOutput("Finished building/generating");
+            TaskManager.Self.WaitForAllTasksFinished(pumpEvents:false);
+
 
 
             // no need to build because when it's loaded it performs a build:

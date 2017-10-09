@@ -9,11 +9,14 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using GlueBuilder.Managers;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
 namespace GlueBuilder.Plugins.ExportedImplementations
 {
     internal class GlueCommands : IGlueCommands
     {
+        FileCommands fileCommands = new FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.FileCommands();
+
         public IGenerateCodeCommands GenerateCodeCommands => throw new NotImplementedException();
 
         public IGluxCommands GluxCommands => throw new NotImplementedException();
@@ -30,7 +33,7 @@ namespace GlueBuilder.Plugins.ExportedImplementations
 
         public IDialogCommands DialogCommands => throw new NotImplementedException();
 
-        public IFileCommands FileCommands => throw new NotImplementedException();
+        public IFileCommands FileCommands => fileCommands;
 
         public void CloseGlue()
         {
@@ -57,7 +60,7 @@ namespace GlueBuilder.Plugins.ExportedImplementations
             var projectFileName = FileManager.RemoveExtension(fileName) + ".csproj";
 
             ProjectManager.Self.MainProject = ProjectCreator.CreateProject(projectFileName);
-
+            ProjectManager.Self.MainProject.Load(projectFileName);
         }
 
         public void PrintError(string output)

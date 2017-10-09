@@ -154,7 +154,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         {
             get
             {
-                return ProjectManager.ContentDirectory;
+                return CurrentMainProject?.GetAbsoluteContentFolder();
             }
         }
 

@@ -106,6 +106,7 @@ namespace FlatRedBall.Glue
             }
         }
 
+        [Obsolete("Use GlueState.ContentDirectory")]
         public static string ContentDirectory
         {
             get

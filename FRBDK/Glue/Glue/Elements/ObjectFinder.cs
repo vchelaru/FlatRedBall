@@ -64,6 +64,9 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 
+#if GLUE
+        [Obsolete("Use FileReferenceManager.GetReferencedFileSaveFromFile")]
+#endif
         public ReferencedFileSave GetReferencedFileSaveFromFile(string fileName)
         {
             ////////////////Early Out//////////////////////////////////

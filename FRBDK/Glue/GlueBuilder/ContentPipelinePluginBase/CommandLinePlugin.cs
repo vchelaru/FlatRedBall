@@ -54,7 +54,8 @@ namespace ContentPipelinePluginBase
         {
             if (viewModel.UseContentPipelineOnPngs)
             {
-                aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
+                // eventually when Glue has support for generating code...
+                //aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
             }
             BuildLogic.Self.RefreshBuiltFilesFor(Container.Get<IGlueState>().CurrentMainProject, viewModel.UseContentPipelineOnPngs);
         }

@@ -1,5 +1,7 @@
-﻿using EditorObjects.Parsing;
+﻿using EditorObjects.IoC;
+using EditorObjects.Parsing;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -22,29 +24,41 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
     class FileCommands : IFileCommands
     {
+
+        IGlueState GlueState => Container.Get<IGlueState>();
+        IGlueCommands GlueCommands => Container.Get<IGlueCommands>();
+
         GlueProjectSave GlueProject
         {
             get
             {
-                return GlueState.Self.CurrentGlueProject;
+                return GlueState.CurrentGlueProject;
             }
         }
 
         public IEnumerable<string> GetFilesReferencedBy(ReferencedFileSave file, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
         {
-            var absolute = GlueCommands.Self.GetAbsoluteFileName(file);
+            var absolute = GlueCommands.GetAbsoluteFileName(file);
 
             return GetFilesReferencedBy(absolute, topLevelOrRecursive);
         }
 
         public IEnumerable<string> GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
         {
+#if GLUE
             return FileReferenceManager.Self.GetFilesReferencedBy(absoluteName, topLevelOrRecursive);
+#else
+            throw new NotImplementedException();
+#endif
         }
 
         public void ClearFileCache(string absoluteName)
         {
+#if GLUE
             FileReferenceManager.Self.ClearFileCache(absoluteName);
+#else
+
+#endif
         }
 
         public IEnumerable<string> GetAllFilesNeededOnDisk()
@@ -55,7 +69,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             FillAllFilesWithFilesInList(allFiles, allRfses, TopLevelOrRecursive.Recursive, ProjectOrDisk.Disk);
 
-            string contentProjectDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder().ToLowerInvariant();
+            string contentProjectDirectory = GlueState.CurrentMainContentProject.ContentProject.GetAbsoluteContentFolder().ToLowerInvariant();
 
             for (int i = 0; i < allFiles.Count; i++)
             {
@@ -96,7 +110,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             
             FillAllFilesWithFilesInList(allFiles, allRfses, topLevelOrRecursive, ProjectOrDisk.Project);
 
-            string contentProjectDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder().ToLowerInvariant();
+            string contentProjectDirectory = GlueState.CurrentMainContentProject.GetAbsoluteContentFolder().ToLowerInvariant();
 
             for (int i = 0; i < allFiles.Count; i++)
             {
@@ -116,13 +130,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         private void AddFilesReferenced(string fileName, List<string> allFiles, TopLevelOrRecursive topLevelOrRecursive, ProjectOrDisk projectOrFile)
         {
             // The project may have been unloaded:
-            if (GlueState.Self.CurrentMainContentProject != null)
+            if (GlueState.CurrentMainContentProject != null)
             {
-                string absoluteFileName = ProjectManager.MakeAbsolute(fileName);
+                string absoluteFileName = GlueCommands.GetAbsoluteFileName(fileName, isContent:true);
 
                 if (File.Exists(absoluteFileName))
                 {
-    #if GLUE
+#if GLUE
 
                     List<string> referencedFiles = null;
 
@@ -135,11 +149,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         referencedFiles = FlatRedBall.Glue.Managers.FileReferenceManager.Self.GetFilesNeededOnDiskBy(absoluteFileName, topLevelOrRecursive);
 
                     }
-    #else
+#else
                     List<string> referencedFiles = 
                             ContentParser.GetFilesReferencedByAsset(absoluteFileName, topLevelOrRecursive);
 
-    #endif
+#endif
                     // 12/14/2010
                     // The referencedFiles
                     // instance may be null
@@ -186,7 +200,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public string GetContentFolder(IElement element)
         {
-            string contentFolder = ProjectManager.ContentDirectory;
+            string contentFolder = GlueState.ContentDirectory;
 
             string relativeElementFolder = element.Name + "/";
 
@@ -195,17 +209,87 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void IgnoreNextChangeOnFile(string absoluteFileName)
         {
+#if GLUE
             IO.FileWatchManager.IgnoreNextChangeOnFile(absoluteFileName);
+#endif
         }
 
         public string GetFullFileName(ReferencedFileSave rfs)
         {
-            return ProjectManager.ContentDirectory + rfs.Name;
+            return GlueState.ContentDirectory + rfs.Name;
         }
 
-        public ReferencedFileSave GetReferencedFile(string absoluteFile)
+        // This replaces ObjectFinder.GetReferencedFileSaveFromFile - if any changes are made here, make the changes there too
+        public ReferencedFileSave GetReferencedFile(string fileName)
         {
-            return Elements.ObjectFinder.Self.GetReferencedFileSaveFromFile(absoluteFile);
+            ////////////////Early Out//////////////////////////////////
+            var invalidPathChars = Path.GetInvalidPathChars();
+            if (invalidPathChars.Any(item => fileName.Contains(item)))
+            {
+                // This isn't a RFS, because it's got a bad path. Early out here so that FileManager.IsRelative doesn't throw an exception
+                return null;
+            }
+
+            //////////////End Early Out////////////////////////////////
+
+
+            fileName = fileName.ToLower();
+
+            if (FileManager.IsRelative(fileName))
+            {
+
+                fileName = GlueCommands.GetAbsoluteFileName(fileName, isContent:true);
+
+            }
+
+            fileName = FileManager.Standardize(fileName).ToLower();
+
+
+            if (GlueProject != null)
+            {
+                foreach (ScreenSave screenSave in GlueProject.Screens)
+                {
+                    foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
+                    {
+                        string absoluteRfsFile = FileManager.Standardize(GlueCommands.GetAbsoluteFileName(rfs)).ToLower();
+
+                        if (absoluteRfsFile == fileName)
+                        {
+                            return rfs;
+                        }
+                    }
+                }
+
+                lock (GlueProject.Entities)
+                {
+                    foreach (EntitySave entitySave in GlueProject.Entities)
+                    {
+                        foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
+                        {
+                            string absoluteRfsFile = FileManager.Standardize(GlueCommands.GetAbsoluteFileName(rfs)).ToLower();
+
+                            if (absoluteRfsFile == fileName)
+                            {
+                                return rfs;
+                            }
+                        }
+                    }
+                }
+
+                foreach (ReferencedFileSave rfs in GlueProject.GlobalFiles)
+                {
+                    string absoluteRfsFile = FileManager.Standardize(GlueCommands.GetAbsoluteFileName(rfs)).ToLower();
+
+                    if (absoluteRfsFile == fileName)
+                    {
+                        return rfs;
+                    }
+                }
+            }
+
+            return null;
+
+
         }
     }
 

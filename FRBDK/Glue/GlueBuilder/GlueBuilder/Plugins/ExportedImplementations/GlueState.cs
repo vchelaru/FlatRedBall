@@ -46,9 +46,9 @@ namespace GlueBuilder.Plugins.ExportedImplementations
 
         public GlueProjectSave CurrentGlueProject => ProjectManager.Self.CurrentGlueProjectSave;
 
-        public string CurrentGlueProjectDirectory => throw new NotImplementedException();
+        public string CurrentGlueProjectDirectory => FlatRedBall.IO.FileManager.GetDirectory(CurrentMainProject.FullFileName);
 
-        public string ContentDirectory => throw new NotImplementedException();
+        public string ContentDirectory => CurrentMainProject?.GetAbsoluteContentFolder();
 
         public string ProjectNamespace => throw new NotImplementedException();
 

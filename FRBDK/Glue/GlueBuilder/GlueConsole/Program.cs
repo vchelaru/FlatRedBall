@@ -1,4 +1,5 @@
-﻿using GlueBuilder.Managers;
+﻿using FlatRedBall.Glue.Managers;
+using GlueBuilder.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,9 @@ namespace GlueConsole
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to Glue Command Line");
+            Initialize();
 
-            ContainerPopulator.PopulateDefaultContainers();
-
-            while(true)
+            while (true)
             {
                 var line = Console.ReadLine();
 
@@ -23,16 +23,22 @@ namespace GlueConsole
                 {
                     CommandLineCommandProcessor.Process(line);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Console.WriteLine(e.ToString());
                 }
 
-                if(line == "exit")
+                if (line == "exit")
                 {
                     break;
                 }
             }
+        }
+
+        private static void Initialize()
+        {
+            TaskManager.Self.IsTaskProcessingEnabled = true;
+            ContainerPopulator.PopulateDefaultContainers();
         }
     }
 }
