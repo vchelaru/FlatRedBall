@@ -9,6 +9,8 @@ namespace OfficialPlugins.MonoGameContent
 {
     class ContentItem
     {
+        #region Properties
+
         // /outputDir:C:\Users\vchel\Documents\FlatRedBallProjects\GlTest8\GlTest8\Content\bin
         public string OutputDirectory { get; set; }
 
@@ -25,6 +27,9 @@ namespace OfficialPlugins.MonoGameContent
         public List<string> ProcessorParameters { get; set; } = new List<string>();
 
         // /build:C:\Users\vchel\Documents\FlatRedBallProjects\GlTest8\GlTest8\Content\FR_BattleSong_Loop.mp3
+        /// <summary>
+        /// The raw (prebuilt) file to build to XNB.
+        /// </summary>
         public string BuildFileName { get; set; }
 
         // /intermediateDir:/outputDir:C:\Users\vchel\Documents\FlatRedBallProjects\GlTest8\GlTest8\Content\obj
@@ -35,6 +40,10 @@ namespace OfficialPlugins.MonoGameContent
             get;
             set;
         }
+
+        #endregion
+
+        #region Methods
 
         #region CreateXXXXBuild() methods
 
@@ -193,6 +202,8 @@ namespace OfficialPlugins.MonoGameContent
         {
             return $"{BuildFileName} {Importer} {Processor}";
         }
+
+        #endregion
 
     }
 }

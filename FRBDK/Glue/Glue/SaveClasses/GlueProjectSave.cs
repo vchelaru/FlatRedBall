@@ -196,6 +196,45 @@ namespace FlatRedBall.Glue.SaveClasses
 
         }
 
+
+        public IElement GetElement(string elementName)
+        {
+            IElement retval;
+
+            retval = GetScreenSave(elementName);
+
+            if (retval == null)
+            {
+                retval = GetEntitySave(elementName);
+            }
+
+            return retval;
+        }
+
+
+        public ScreenSave GetScreenSave(string screenName)
+        {
+            if (!string.IsNullOrEmpty(screenName))
+            {
+                // We don't know what project is using the Glue classes, and it may prefer
+                // forward slashes or back slashes.  Therefore we should tolerate either when
+                // making comparisons
+                screenName = screenName.Replace('/', '\\');
+
+                for (int i = 0; i < Screens.Count; i++)
+                {
+                    var screenSave = Screens[i];
+
+                    if (screenSave.Name.Replace('/', '\\') == screenName)
+                    {
+                        return screenSave;
+                    }
+                }
+            }
+            return null;
+        }
+
+
         public EntitySave GetEntitySave(string entityName)
         {
             if (!string.IsNullOrEmpty(entityName))

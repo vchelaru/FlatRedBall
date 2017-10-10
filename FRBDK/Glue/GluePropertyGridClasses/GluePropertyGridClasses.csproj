@@ -233,6 +233,51 @@
     <Compile Include="..\Glue\Parsing\TypeManager.cs">
       <Link>Parsing\TypeManager.cs</Link>
     </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedImplementations\CommandInterfaces\ValidationResponse.cs">
+      <Link>Interfaces\ValidationResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IDialogCommands.cs">
+      <Link>Interfaces\IDialogCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IElementCommands.cs">
+      <Link>Interfaces\IElementCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IEntityCommands.cs">
+      <Link>Interfaces\IEntityCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IFileCommands.cs">
+      <Link>Interfaces\IFileCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IGenerateCodeCommands.cs">
+      <Link>Interfaces\IGenerateCodeCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IGluxCommands.cs">
+      <Link>Interfaces\IGluxCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IOpenCommands.cs">
+      <Link>Interfaces\IOpenCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IProjectCommands.cs">
+      <Link>Interfaces\IProjectCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IRefreshCommands.cs">
+      <Link>Interfaces\IRefreshCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IScreenCommands.cs">
+      <Link>Interfaces\IScreenCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\ISelectCommands.cs">
+      <Link>Interfaces\ISelectCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\ITreeNodeCommands.cs">
+      <Link>Interfaces\ITreeNodeCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedInterfaces\CommandInterfaces\IUpdateCommands.cs">
+      <Link>Interfaces\IUpdateCommands.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\Plugins\ExportedInterfaces\IGlueCommands.cs">
+      <Link>Interfaces\IGlueCommands.cs</Link>
+    </Compile>
     <Compile Include="..\Glue\Plugins\ExportedInterfaces\IGlueState.cs">
       <Link>Interfaces\IGlueState.cs</Link>
     </Compile>

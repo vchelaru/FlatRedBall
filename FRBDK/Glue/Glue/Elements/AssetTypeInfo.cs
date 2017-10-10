@@ -8,7 +8,6 @@ using System.Reflection;
 
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Instructions.Reflection;
-using ModelEditor.SaveClasses;
 using System.Xml.Serialization;
 using FlatRedBall.Glue.SaveClasses;
 

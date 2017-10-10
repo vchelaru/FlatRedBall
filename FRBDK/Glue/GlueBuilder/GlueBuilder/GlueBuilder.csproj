@@ -148,8 +148,20 @@
     <Compile Include="..\..\Glue\CodeGeneration\CodeBuilder\StringHelper.cs">
       <Link>CodeGeneration\CodeBuilder\StringHelper.cs</Link>
     </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\CodeWriter.cs">
+      <Link>CodeGeneration\CodeWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\CodeGeneration\ConversionCodeGenInfo.cs">
+      <Link>CodeGeneration\ConversionCodeGenInfo.cs</Link>
+    </Compile>
     <Compile Include="..\..\Glue\CodeGeneration\GlobalContentCodeGeneratorBase.cs">
       <Link>CodeGeneration\GlobalContentCodeGeneratorBase.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Elements\AssetTypeInfo.cs">
+      <Link>DataObjects\AssetTypeInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\Elements\VariableDefinition.cs">
+      <Link>DataObjects\VariableDefinition.cs</Link>
     </Compile>
     <Compile Include="..\..\Glue\Extensions\LinqExtensions.cs">
       <Link>Extensions\LinqExtensions.cs</Link>
@@ -213,6 +225,18 @@
     </Compile>
     <Compile Include="..\..\Glue\Plugins\ExportedInterfaces\IGlueState.cs">
       <Link>Plugins\ExportedInterfaces\IGlueState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\SaveClasses\CustomVariableExtensionMethods.cs">
+      <Link>DataObjects\CustomVariableExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\SaveClasses\GlueProjectSaveExtensionMethods.cs">
+      <Link>DataObjects\GlueProjectSaveExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\SaveClasses\IElementExtensionMethods.cs">
+      <Link>DataObjects\IElementExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Glue\SaveClasses\ReferencedFileSaveExtensionMethods.cs">
+      <Link>DataObjects\ReferencedFileSaveExtensionMethods.cs</Link>
     </Compile>
     <Compile Include="..\..\Glue\Tasks\GlueTask.cs">
       <Link>Tasks\GlueTask.cs</Link>

@@ -6,18 +6,23 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.FormHelpers.StringConverters;
 using FlatRedBall.IO;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
     public static class IElementExtensionMethods
     {
+
+        static IGlueState GlueState => EditorObjects.IoC.Container.Get<IGlueState>();
+        static IGlueCommands GlueCommands => EditorObjects.IoC.Container.Get<IGlueCommands>();
+
         public static ReferencedFileSave GetReferencedFileSaveRecursively(this IElement instance, string fileName)
         {
             ReferencedFileSave rfs = FileReferencerHelper.GetReferencedFileSave(instance, fileName);
 
             if (rfs == null && !string.IsNullOrEmpty(instance.BaseObject))
             {
-                EntitySave baseEntitySave = ObjectFinder.Self.GetEntitySave(instance.BaseObject);
+                EntitySave baseEntitySave = GlueState.CurrentGlueProject.GetEntitySave(instance.BaseObject);
                 if (baseEntitySave != null)
                 {
                     rfs = baseEntitySave.GetReferencedFileSaveRecursively(fileName);
@@ -37,7 +42,7 @@ namespace FlatRedBall.Glue.SaveClasses
             if (!string.IsNullOrEmpty(instance.BaseElement))
             {
 
-                IElement baseElement = ObjectFinder.Self.GetIElement(instance.BaseElement);
+                IElement baseElement = GlueState.CurrentGlueProject.GetElement(instance.BaseElement);
                 if (baseElement != null)
                 {
                     foreach (ReferencedFileSave rfs in baseElement.GetAllReferencedFileSavesRecursively())
@@ -71,7 +76,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (rfs == null && !string.IsNullOrEmpty(element.BaseElement))
             {
-                EntitySave baseEntitySave = ObjectFinder.Self.GetEntitySave(element.BaseElement);
+                EntitySave baseEntitySave = GlueState.CurrentGlueProject.GetEntitySave(element.BaseElement);
 
                 if (baseEntitySave != null)
                 {
@@ -107,7 +112,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 if (!string.IsNullOrEmpty(container.BaseObject))
                 {
-                    IElement element = ObjectFinder.Self.GetIElement(container.BaseObject);
+                    IElement element = GlueState.CurrentGlueProject.GetElement(container.BaseObject);
 
                     if (element != null)
                     {
@@ -126,7 +131,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (!string.IsNullOrEmpty(element.BaseObject) && element.BaseObject != "<NONE>")
             {
-                IElement elementBase = ObjectFinder.Self.GetIElement(element.BaseObject);
+                IElement elementBase = GlueState.CurrentGlueProject.GetElement(element.BaseObject);
 
                 if (elementBase == null)
                 {
@@ -291,7 +296,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
             else if (stateSave == null && !string.IsNullOrEmpty(element.BaseElement))
             {
-                IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+                IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
 
                 if (baseElement != null)
                 {
@@ -319,7 +324,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (foundStateSave == null && !string.IsNullOrEmpty(element.BaseElement))
             {
-                IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+                IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
 
                 if (baseElement != null)
                 {
@@ -333,7 +338,7 @@ namespace FlatRedBall.Glue.SaveClasses
         public static List<StateSave> GetUncategorizedStatesRecursively(this IElement element)
         {
             // We'll start at the top and move down so that derived types can override baset types....not sure if this is going to eventually change
-            IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+            IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
 
             if(baseElement == null || element.States.Count != 0)
             {
@@ -358,7 +363,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (category == null && !string.IsNullOrEmpty(element.BaseElement))
             {
-                IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+                IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
 
                 if (baseElement != null)
                 {
@@ -390,7 +395,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (!uses && !string.IsNullOrEmpty(element.BaseElement))
             {
-                IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+                IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
 
                 if (baseElement != null)
                 {
@@ -412,7 +417,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 if (!string.IsNullOrEmpty(element.BaseElement))
                 {
-                    IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+                    IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
 
                     if (baseElement != null)
                     {

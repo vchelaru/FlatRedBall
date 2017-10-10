@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins;
@@ -14,11 +13,14 @@ using FlatRedBall.Glue.Managers;
 using EditorObjects.SaveClasses;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.FormHelpers;
+using EditorObjects.IoC;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
     public static class GlueProjectSaveExtensionMethods
     {
+        static IGlueCommands GlueCommands => Container.Get<IGlueCommands>();
 
         public static void RemoveInvalidStatesFromNamedObjects(this GlueProjectSave glueProjectSave, bool showPopupsOnFixedErrors)
         {
@@ -56,7 +58,8 @@ namespace FlatRedBall.Glue.SaveClasses
                     {
                         if (showPopupsOnFixedErrors)
                         {
-                            MessageBox.Show("The Object " + nos.InstanceName + " in " + containingElement.Name + " uses the invalid state " + nos.CurrentState +
+                            Container.Get<IGlueCommands>().DialogCommands.ShowMessageBox(
+                                "The Object " + nos.InstanceName + " in " + containingElement.Name + " uses the invalid state " + nos.CurrentState +
                                 "\nRemoving this current State");
                         }
 
@@ -289,7 +292,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     if (string.IsNullOrEmpty(rfs.Name))
                     {
-                        PluginManager.ReceiveOutput("Removing an empty file from " + entitySave.ToString());
+                        Container.Get<IGlueCommands>().PrintOutput("Removing an empty file from " + entitySave.ToString());
                         entitySave.ReferencedFiles.RemoveAt(i);
                     }
                 }
@@ -304,7 +307,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     if (string.IsNullOrEmpty(rfs.Name))
                     {
-                        PluginManager.ReceiveOutput("Removing an empty file from " + screen.ToString());
+                        Container.Get<IGlueCommands>().PrintOutput("Removing an empty file from " + screen.ToString());
                         screen.ReferencedFiles.RemoveAt(i);
                     }
                 }
@@ -366,8 +369,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     }
                     else
                     {
-
-                        MessageBox.Show("There was an error loading the .glux:\n\n" + e.ToString());
+                        GlueCommands.DialogCommands.ShowMessageBox("There was an error loading the .glux:\n\n" + e.ToString());
                         otherGlueProjectSave = null;
                         succeeded = false;
                     }
@@ -445,7 +447,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 {
                     if (names.Contains(nos.InstanceName))
                     {
-                        MessageBox.Show("There are two objects named " + nos.InstanceName + " in the entity " + entitySave.ToString(), "Duplicate object name found");
+                        GlueCommands.DialogCommands.ShowMessageBox("There are two objects named " + nos.InstanceName + " in the entity " + entitySave.ToString());
                     }
                     else
                     {
@@ -465,7 +467,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 {
                     if (names.Contains(nos.InstanceName))
                     {
-                        MessageBox.Show("There are two objects named " + nos.InstanceName + " in the entity " + screenSave.ToString(), "Duplicate object name found");
+                        GlueCommands.DialogCommands.ShowMessageBox("There are two objects named " + nos.InstanceName + " in the entity " + screenSave.ToString());
                     }
                     else
                     {
@@ -494,7 +496,8 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 if (entitiesVisited.ContainsKey(entitySave.Name))
                 {
-                    MessageBox.Show("The GLUX file contains duplicate entires for\n\n" + entitySave.Name +
+                    Container.Get<IGlueCommands>().DialogCommands.ShowMessageBox(
+                        "The GLUX file contains duplicate entires for\n\n" + entitySave.Name +
                         "\n\nYou should close Glue, open the GLUX in a text editor, remove one of the duplicates, then save the GLUX file");
                 }
                 else

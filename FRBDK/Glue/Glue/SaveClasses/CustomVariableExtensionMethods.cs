@@ -9,11 +9,17 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Instructions;
 using FlatRedBall.Glue.GuiDisplay.Facades;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using Microsoft.Xna.Framework;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
     public static partial class CustomVariableExtensionMethods
     {
+        static IGlueState GlueState => EditorObjects.IoC.Container.Get<IGlueState>();
+        static IGlueCommands GlueCommands => EditorObjects.IoC.Container.Get<IGlueCommands>();
+
+
         public static bool GetIsCsv(this CustomVariable customVariable)
         {
             if (customVariable.Type == null)
@@ -30,7 +36,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 throw new NotImplementedException("Need to implement checking if a custom variable is CSV from Text");
 
             }
-            else if (ObjectFinder.Self.GetAllReferencedFiles().Any(item =>
+            else if (GlueState.GetAllReferencedFiles().Any(item =>
                     item.IsCsvOrTreatedAsCsv && item.GetTypeForCsvFile() == customVariable.Type))
             {
                 return true;
@@ -43,7 +49,7 @@ namespace FlatRedBall.Glue.SaveClasses
             if (customVariable.GetIsCsv())
             {
                 string fullFileName = FacadeContainer.Self.ProjectValues.ContentDirectory + customVariable.Type;
-                ReferencedFileSave foundRfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(fullFileName);
+                ReferencedFileSave foundRfs = GlueCommands.FileCommands.GetReferencedFile(fullFileName);
 
                 if (foundRfs != null)
                 {
@@ -68,7 +74,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
                 if (containingElement != null && !string.IsNullOrEmpty(containingElement.BaseElement))
                 {
-                    IElement baseElement = ObjectFinder.Self.GetIElement( containingElement.BaseElement);
+                    IElement baseElement = GlueState.CurrentGlueProject.GetElement( containingElement.BaseElement);
                     if (baseElement != null)
                     {
                         CustomVariable customVariableInBase = baseElement.GetCustomVariableRecursively(customVariable.Name);
@@ -132,7 +138,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 customVariable.DefaultValue = "";
             }
-            else if (type == typeof(Color))
+            else if (type == typeof(Microsoft.Xna.Framework.Color))
             {
                 customVariable.DefaultValue = "";
             }
@@ -383,7 +389,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 if (container != null && !string.IsNullOrEmpty(container.BaseElement))
                 {
-                    IElement baseElement = ObjectFinder.Self.GetIElement(container.BaseElement);
+                    IElement baseElement = GlueState.CurrentGlueProject.GetElement(container.BaseElement);
                     if (baseElement != null)
                     {
                         CustomVariable customVariableInBase = baseElement.GetCustomVariableRecursively(customVariable.Name);
@@ -467,7 +473,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     }
                     else if(nos.SourceType == SourceType.Entity)
                     {
-                        EntitySave entity = ObjectFinder.Self.GetEntitySave(nos.SourceClassType);
+                        EntitySave entity = GlueState.CurrentGlueProject.GetEntitySave(nos.SourceClassType);
 
                         if (entity != null)
                         {

@@ -106,7 +106,7 @@ namespace OfficialPlugins.MonoGameContent
 
         public void TryRemoveXnbReferences(ProjectBase project, string fullFileName, bool save = true)
         {
-            string destinationDirectory = GetDestinationDirectory(fullFileName);
+            string destinationDirectory = GetDestinationDirectory(fullFileName, project);
 
             ContentItem contentItem = GetContentItem(fullFileName, project, createEvenIfProjectTypeNotSupported: true);
 
@@ -199,50 +199,29 @@ namespace OfficialPlugins.MonoGameContent
             {
                 contentItem = ContentItem.CreateTextureBuild();
             }
-            else if(extension == "fx")
+            else if (extension == "fx")
             {
                 contentItem = ContentItem.CreateEffectBuild();
             }
 
+            string platform = GetPipelinePlatformNameFor(project);
 
-            if (contentItem != null)
+            if (platform == null && createEvenIfProjectTypeNotSupported == false)
             {
-                // According to docs, the following are available:
-                // Windows
-                // iOS
-                // Android
-                // DesktopGL
-                // MacOSX
-                // WindowsStoreApp
-                // NativeClient
-                // PlayStation4
-                // WindowsPhone8
-                // RaspberryPi
-                // PSVita
-                // XboxOne
-                // Switch
-                if (project is DesktopGlProject)
-                {
-                    contentItem.Platform = "DesktopGL";
-                }
-                else if (project is AndroidProject)
-                {
-                    contentItem.Platform = "Android";
-                }
-                else if(project is UwpProject)
-                {
-                    contentItem.Platform = "WindowsStoreApp";
-                }
-                else if (createEvenIfProjectTypeNotSupported == false)
-                {
-                    contentItem = null;
-                }
+                contentItem = null;
             }
+            else if (contentItem != null)
+            {
+                contentItem.Platform = platform;
+            }
+
 
             if (contentItem != null)
             {
                 string projectDirectory = GlueState.CurrentGlueProjectDirectory;
-                string builtXnbRoot = FileManager.RemoveDotDotSlash(projectDirectory + "../BuiltXnbs/");
+                // The user may have multiple monogame projects synced. If so we need to build to different
+                // folders so that one platform doesn't override the other:
+                string builtXnbRoot = FileManager.RemoveDotDotSlash($"{projectDirectory}../BuiltXnbs/{contentItem.Platform}/");
                 contentItem.BuildFileName = fullFileName;
 
                 // remove the trailing slash:
@@ -255,13 +234,48 @@ namespace OfficialPlugins.MonoGameContent
             return contentItem;
         }
 
-        private static string GetDestinationDirectory(string fullFileName)
+        private static string GetPipelinePlatformNameFor(ProjectBase project)
         {
+            string platform = null;
+            // According to docs, the following are available:
+            // Windows
+            // iOS
+            // Android
+            // DesktopGL
+            // MacOSX
+            // WindowsStoreApp
+            // NativeClient
+            // PlayStation4
+            // WindowsPhone8
+            // RaspberryPi
+            // PSVita
+            // XboxOne
+            // Switch
+            if (project is DesktopGlProject)
+            {
+                platform = "DesktopGL";
+            }
+            else if (project is AndroidProject)
+            {
+                platform = "Android";
+            }
+            else if (project is UwpProject)
+            {
+                platform = "WindowsStoreApp";
+            }
+
+            return platform;
+        }
+
+        private static string GetDestinationDirectory(string fullFileName, ProjectBase project)
+        {
+            string platform = GetPipelinePlatformNameFor(project);
+
             string contentDirectory = GlueState.ContentDirectory;
             string projectDirectory = GlueState.CurrentGlueProjectDirectory;
             string destinationDirectory = FileManager.GetDirectory(fullFileName);
             destinationDirectory = FileManager.MakeRelative(destinationDirectory, contentDirectory);
-            destinationDirectory = FileManager.RemoveDotDotSlash(projectDirectory + "../BuiltXnbs/" + destinationDirectory);
+            destinationDirectory = FileManager.RemoveDotDotSlash($"{projectDirectory}../BuiltXnbs/{platform}/{destinationDirectory}");
 
             return destinationDirectory;
         }
@@ -283,7 +297,7 @@ namespace OfficialPlugins.MonoGameContent
             ContentItem contentItem;
             contentItem = GetContentItem(fullFileName, project, createEvenIfProjectTypeNotSupported: false);
 
-            string destinationDirectory = GetDestinationDirectory(fullFileName);
+            string destinationDirectory = GetDestinationDirectory(fullFileName, project);
 
             // The monogame content builder seems to be doing an incremental build - 
             // it's being told to do so through the command line params, and it's not replacing
