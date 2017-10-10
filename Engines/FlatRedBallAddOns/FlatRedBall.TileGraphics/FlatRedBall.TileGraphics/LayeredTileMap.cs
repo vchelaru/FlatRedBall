@@ -432,6 +432,29 @@ namespace FlatRedBall.TileGraphics
 
             var tmxDirectory = FileManager.GetDirectory(fileName);
 
+            // add image layers
+            foreach (var imageLayer in tms.ImageLayers)
+            {
+                var imageLayerFile = tmxDirectory + imageLayer.ImageObject.Source;
+                var texture = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(imageLayerFile);
+
+                var newSprite = new Sprite
+                {
+                    Texture = texture,
+                    Width = imageLayer.ImageObject.Width,
+                    Height = imageLayer.ImageObject.Height,
+                    X = imageLayer.ImageObject.Width / 2 + imageLayer.OffsetX,
+                    Y = -imageLayer.ImageObject.Height / 2 + imageLayer.OffsetY
+                };
+
+                var mdb = new MapDrawableBatch(1, texture);
+                mdb.AttachTo(toReturn, false);
+                mdb.Paste(newSprite);
+                mdb.Visible = imageLayer.Visible;
+
+                toReturn.mMapLists.Add(mdb);
+            }
+
             var animationDictionary = new Dictionary<string, AnimationChain>();
 
             // add animations
