@@ -220,10 +220,28 @@ namespace GlueView.Facades
             get { throw new NotImplementedException(); }
         }
 
-        public IEnumerable<ProjectBase> SyncedProjects => throw new NotImplementedException();
+        public IEnumerable<ProjectBase> SyncedProjects
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
-        public string CurrentGlueProjectDirectory => throw new NotImplementedException();
+        public string CurrentGlueProjectDirectory
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
-        public string ProjectSpecificSettingsFolder => throw new NotImplementedException();
+        public string ProjectSpecificSettingsFolder
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 }
