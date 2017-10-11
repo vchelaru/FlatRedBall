@@ -7,6 +7,7 @@ using FlatRedBall.Glue;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Facades;
+using FlatRedBall.Glue.VSHelpers.Projects;
 
 namespace GlueView.Facades
 {
@@ -33,10 +34,6 @@ namespace GlueView.Facades
         }
 
 
-        private GlueViewState()
-        {
-            CursorState = new CursorState();
-        }
 
 
         public IElement CurrentElement
@@ -146,6 +143,13 @@ namespace GlueView.Facades
             get { return null; }
         }
 
+
+
+        private GlueViewState()
+        {
+            CursorState = new CursorState();
+        }
+
         public IElement GetElement(string name)
         {
             return ObjectFinder.Self.GetIElement(name);
@@ -174,6 +178,11 @@ namespace GlueView.Facades
         public List<FlatRedBall.Glue.VSHelpers.Projects.ProjectBase> GetProjects()
         {
             throw new NotImplementedException();
+        }
+
+        public IEnumerable<ReferencedFileSave> GetAllReferencedFiles()
+        {
+            return ObjectFinder.Self.GetAllReferencedFiles();
         }
 
         public string ContentDirectory
@@ -209,5 +218,11 @@ namespace GlueView.Facades
         {
             get { throw new NotImplementedException(); }
         }
+
+        public IEnumerable<ProjectBase> SyncedProjects => throw new NotImplementedException();
+
+        public string CurrentGlueProjectDirectory => throw new NotImplementedException();
+
+        public string ProjectSpecificSettingsFolder => throw new NotImplementedException();
     }
 }
