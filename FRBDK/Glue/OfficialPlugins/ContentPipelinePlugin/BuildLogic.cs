@@ -98,13 +98,13 @@ namespace OfficialPlugins.MonoGameContent
         }
 
 
-        private void TryRemoveXnbReferences(ProjectBase project, ReferencedFileSave referencedFile)
+        public static void TryRemoveXnbReferences(ProjectBase project, ReferencedFileSave referencedFile, bool save = true)
         {
             var fullFileName = GlueCommands.FileCommands.GetFullFileName(referencedFile);
-            TryRemoveXnbReferences(project, fullFileName);
+            TryRemoveXnbReferences(project, fullFileName, save);
         }
 
-        public void TryRemoveXnbReferences(ProjectBase project, string fullFileName, bool save = true)
+        public static void TryRemoveXnbReferences(ProjectBase project, string fullFileName, bool save = true)
         {
             string destinationDirectory = GetDestinationDirectory(fullFileName, project);
 

@@ -146,11 +146,11 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
             foreach (var referencedPng in referencedPngs)
             {
-                BuildLogic.Self.TryRemoveXnbReferences(mainProject, referencedPng, save: false);
+                BuildLogic.TryRemoveXnbReferences(mainProject, referencedPng, save: false);
                 
                 foreach (var project in syncedProjects)
                 {
-                    BuildLogic.Self.TryRemoveXnbReferences(project, referencedPng, save: false);
+                    BuildLogic.TryRemoveXnbReferences(project, referencedPng, save: false);
                 }
             }
         }

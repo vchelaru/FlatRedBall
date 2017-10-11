@@ -191,6 +191,11 @@ namespace FlatRedBall.Glue.Managers
         }
 
 
+        
+        /// <summary>
+        /// Adds an action to be executed, guaranteeing that no other actions will be executed at the same time as this.
+        /// Actions added will be executed in the order they were added (fifo).
+        /// </summary>
         public void AddSync(Action action, string displayInfo)
         {
             AddSync(action, displayInfo, isHighPriority: false);

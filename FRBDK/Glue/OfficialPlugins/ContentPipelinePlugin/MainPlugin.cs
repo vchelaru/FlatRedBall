@@ -126,12 +126,16 @@ namespace OfficialPlugins.MonoGameContent
         {
             // Delete the file just in case a new file with the same name is added later. If so, we don't
             // want old XNBs to sit around and cause the incremental built to not build the newly-added file.
-            BuildLogic.TryDeleteBuiltXnbFor(GlueState.CurrentMainContentProject, file, viewModel.UseContentPipelineOnPngs);
+            BuildLogic.TryRemoveXnbReferences(GlueState.CurrentMainProject, file, save: false);
+            BuildLogic.TryDeleteBuiltXnbFor(GlueState.CurrentMainProject, file, viewModel.UseContentPipelineOnPngs);
 
             foreach(var syncedProject in GlueState.SyncedProjects)
             {
+                BuildLogic.TryRemoveXnbReferences(syncedProject, file, save: false);
                 BuildLogic.TryDeleteBuiltXnbFor(syncedProject, file, viewModel.UseContentPipelineOnPngs);
             }
+
+            TaskManager.Self.AddSync(Container.Get<IGlueCommands>().ProjectCommands.SaveProjects, "Save projects after removing XNBs");
         }
 
         private void HandleGluxUnloaded()
