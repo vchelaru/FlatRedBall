@@ -138,9 +138,15 @@ namespace GumPlugin.Managers
                     //graphicalUiElement.AddToManagersMethod.Add("this.AddToManagers(mManagers, null)");
                     // Actually, we need to use the overload so that components which are part of FRB entities get added to the right layer:
                     //mGraphicalUiElementAti.AddToManagersMethod.Add("this.AddToManagers()");
-                    mGraphicalUiElementAti.AddToManagersMethod.Add(
+                    // Update October 12, 2017 - since this can be added to layers, need to
+                    // use the LayeredAddToManagers instead of AddToManagers:
+
+                    mGraphicalUiElementAti.LayeredAddToManagersMethod.Add(
                         "this.AddToManagers(RenderingLibrary.SystemManagers.Default, " +
-                        "System.Linq.Enumerable.FirstOrDefault(FlatRedBall.Gum.GumIdb.AllGumLayersOnFrbLayer(layerToAddTo)))");
+                        "System.Linq.Enumerable.FirstOrDefault(FlatRedBall.Gum.GumIdb.AllGumLayersOnFrbLayer(mLayer)))");
+
+                    mGraphicalUiElementAti.AddToManagersMethod.Add("this.AddToManagers()");
+
                     //gumComponentAti.CustomLoadMethod = "{THIS} = new GumIdb();  {THIS}.LoadFromFile(\"{FILE_NAME}\");";
                     mGraphicalUiElementAti.CanBeCloned = false;
                     mGraphicalUiElementAti.CanIgnorePausing = false;

@@ -19,6 +19,7 @@ using FlatRedBall.Math.Geometry;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.Particle;
 using Microsoft.Xna.Framework;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System.Text.RegularExpressions;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -1899,8 +1900,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                                 // This used to be inside the if(element is EntitySave) but
                                 // I think we want it even if the ElementSave is a Screen.
 
-
-                                layerAddToManagersMethod = layerAddToManagersMethod.Replace("mLayer", layerName);
+                                var pattern = @"\bmLayer\b";
+                                Regex rgx = new Regex(pattern);
+                                layerAddToManagersMethod = rgx.Replace(layerAddToManagersMethod, layerName);
 
                                 codeBlock.Line(layerAddToManagersMethod.Replace("this", objectName) + ";");
 
@@ -2001,8 +2003,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                         {
                             string layerAddToManagersMethod = ati.LayeredAddToManagersMethod[0];
 
-
-                            layerAddToManagersMethod = layerAddToManagersMethod.Replace("mLayer", layerName);
+                            // regex this with "\bmLayer\b"
+                            var pattern = @"\bmLayer\b";
+                            Regex rgx = new Regex(pattern);
+                            layerAddToManagersMethod = rgx.Replace(layerAddToManagersMethod, layerName);
+                            //layerAddToManagersMethod = layerAddToManagersMethod.Replace("mLayer", layerName);
 
 
                             codeBlock.Line(layerAddToManagersMethod.Replace("this", objectName) + ";");

@@ -578,11 +578,18 @@ namespace FlatRedBall.Graphics
             get { return mCurrentRenderMode; }
         }
 
+
+        [Obsolete("Use LastFrameRenderBreakList instead")]
         public static int RenderBreaksAllocatedThisFrame
         {
             get
             {
-                return mRenderBreaksAllocatedThisFrame;
+                if(RecordRenderBreaks == false)
+                {
+                    throw new InvalidOperationException($"You must set {nameof(RecordRenderBreaks)} to true before getting RenderBreaksAllocatdThisFrame");
+                }
+
+                return LastFrameRenderBreakList?.Count ?? 0;
             }
         }
 
@@ -611,14 +618,25 @@ namespace FlatRedBall.Graphics
             }
         }
 
+        static List<RenderBreak> lastFrameRenderBreakList;
         /// <summary>
         /// Contains the list of Render Breaks from the previous frame. This is updated every time
         /// FlatRedBall is drawn.
         /// </summary>
         public static List<RenderBreak> LastFrameRenderBreakList
         {
-            get;
-            private set;
+            get
+            {
+#if DEBUG
+                if(RecordRenderBreaks == false)
+                {
+                    throw new InvalidOperationException($"You must set {nameof(RecordRenderBreaks)} to true before getting LastFrameRenderBreakList");
+
+                }
+#endif
+                return lastFrameRenderBreakList;
+            }
+            private set { lastFrameRenderBreakList = value; }
         }
 
 
@@ -1174,9 +1192,9 @@ namespace FlatRedBall.Graphics
 
             mFillVBListCallsThisFrame = 0;
             mRenderBreaksAllocatedThisFrame = 0;
-            if (LastFrameRenderBreakList != null)
+            if (lastFrameRenderBreakList != null)
             {
-                LastFrameRenderBreakList.Clear();
+                lastFrameRenderBreakList.Clear();
             }
 
             NumberOfSpritesDrawn = 0;

@@ -97,12 +97,11 @@ namespace TMXGlueLib
 
         
         [XmlElement("layer", typeof(MapLayer))]
-        [XmlElement("imagelayer", typeof(MapImageLayer))]
         [XmlElement("objectgroup", typeof(mapObjectgroup))]
         public List<AbstractMapLayer> MapLayers { get; set; }
 
-        /// <remarks/>
-
+            /// <remarks/>
+        
 
         [XmlIgnore]
         public List<MapLayer> Layers => MapLayers.OfType<MapLayer>().ToList();
@@ -110,9 +109,6 @@ namespace TMXGlueLib
         /// <remarks/>
         [XmlIgnore]
         public List<mapObjectgroup> objectgroup => MapLayers.OfType<mapObjectgroup>().ToList();
-
-        [XmlIgnore]
-        public List<MapImageLayer> ImageLayers => MapLayers.OfType<MapImageLayer>().ToList();
 
         /// <remarks/>
         [XmlAttribute()]
@@ -288,96 +284,6 @@ namespace TMXGlueLib
         }
     }
     #endregion
-
-#if !UWP
-    [Serializable]
-#endif
-    public partial class MapImageLayer : AbstractMapLayer
-    {
-        private float _offsetX;
-        private float _offsetY;
-
-        List<property> mProperties = new List<property>();
-
-        public List<property> properties
-        {
-            get { return mProperties; }
-            set
-            {
-                mProperties = value;
-            }
-        }
-
-        private IDictionary<string, string> propertyDictionaryField = null;
-        private int _visibleAsInt = 1;
-
-        [XmlIgnore]
-        public IDictionary<string, string> PropertyDictionary
-        {
-            get
-            {
-                lock (this)
-                {
-                    if (propertyDictionaryField == null)
-                    {
-                        propertyDictionaryField = TiledMapSave.BuildPropertyDictionaryConcurrently(properties);
-                    }
-                    return propertyDictionaryField;
-                }
-            }
-        }
-
-        [XmlAttribute("visible")]
-        public int VisibleAsInt
-        {
-            get { return _visibleAsInt; }
-            set { _visibleAsInt = value; }
-        }
-
-        [XmlAttribute("offsetx")]
-        public float OffsetX
-        {
-            get { return _offsetX; }
-            set { _offsetX = value; }
-        }
-
-        [XmlAttribute("offsety")]
-        public float OffsetY
-        {
-            get { return _offsetY; }
-            set { _offsetY = value; }
-        }
-
-        [XmlIgnore]
-        public bool Visible
-        {
-            get
-            {
-                return VisibleAsInt != 0;
-            }
-        }
-    }
-
-    public partial class mapImageLayerImage
-    {
-        private string _source;
-
-        [XmlAttributeAttribute(AttributeName = "source")]
-        public string Source
-        {
-            get { return _source; }
-            set { _source = value; }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute(AttributeName = "width")]
-        public float Width { get; set; }
-
-        /// <remarks/>
-        [XmlAttributeAttribute(AttributeName = "height")]
-        public float Height { get; set; }
-    }
-
 
     /// <remarks/>
     [XmlType(AnonymousType = true)]

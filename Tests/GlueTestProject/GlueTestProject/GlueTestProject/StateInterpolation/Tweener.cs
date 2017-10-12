@@ -321,7 +321,7 @@ namespace FlatRedBall.Glue.StateInterpolation
         #region Methods
         public void Update(float timePassed)
         {
-            if (!Running || (elapsed == Duration))
+            if (!Running || (elapsed >= Duration))
             {
                 Running = false;
                 return;

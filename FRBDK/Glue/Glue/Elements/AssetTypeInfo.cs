@@ -140,8 +140,19 @@ namespace FlatRedBall.Glue.Elements
         [XmlIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, string> ConstructorFunc;
 
+        /// <summary>
+        /// The generated code to include to add the object to managers.
+        /// </summary>
+        /// <remarks>
+        /// This list of properties should be used if the object does not support layers. If the object
+        /// does support layers, the LayeredAddToManagersMethod should be used.
+        /// </remarks>
         public List<string> AddToManagersMethod = new List<string>();
 
+        /// <summary>
+        /// Adds an object to managers on the specified FlatRedBall layer. Glue will
+        /// generate code using the variable mLayer.
+        /// </summary>
 		public List<string> LayeredAddToManagersMethod = new List<string>();
         public string MakeManuallyUpdatedMethod;
         public string ActivityMethod;

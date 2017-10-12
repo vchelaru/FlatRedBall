@@ -75,35 +75,25 @@ namespace TMXGlueLib
                             }
                         }
 
+                       
+
                         if (@object.polygon == null && @object.polyline == null)
                         {
-                            if (@object.Rotation == 0 && @object.ellipse == null)
+                            PolygonSave p = tiledMapSave.ConvertTmxObjectToFrbPolygonSave(@object.Name, @object.x, @object.y, @object.width, @object.height, @object.Rotation, @object.ellipse);
+                            if (p != null)
                             {
-                                var aar = new AxisAlignedRectangleSave()
-                                {
-                                    Name = @object.Name,
-                                      X = (float)@object.x + (@object.width /2),
-                                      Y = (float)-@object.y - (@object.height / 2),
-                                    ScaleX = @object.width / 2,
-                                    ScaleY = @object.height / 2,
-                                };
-
-                                shapes.AxisAlignedRectangleSaves.Add(aar);
-                            }
-                            else
-                            {
-                                PolygonSave p = tiledMapSave.ConvertTmxObjectToFrbPolygonSave(@object.Name, @object.x, @object.y, @object.width, @object.height, @object.Rotation, @object.ellipse);
-                                if (p != null)
-                                {
-                                    shapes.PolygonSaves.Add(p);
-                                }
+                                shapes.PolygonSaves.Add(p);
                             }
                         }
+
+                        
                     }
                 }
             }
             return shapes;
         }
+
+
 
         private static PolygonSave ConvertTmxObjectToFrbPolygonSave(this TiledMapSave tiledMapSave, string name, double x, double y, double w, double h, double rotation, mapObjectgroupObjectEllipse ellipse)
         {

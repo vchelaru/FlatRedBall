@@ -1593,6 +1593,16 @@
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>NineSliceButtonRuntime</SourceClassType>
+          <InstanceName>GumNineSliceAddedThroughGlue</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
       </NamedObjects>
     </ScreenSave>
     <ScreenSave>
@@ -1924,6 +1934,16 @@
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
           <LayerOn>Layer2D</LayerOn>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>NineSliceButtonRuntime</SourceClassType>
+          <InstanceName>ObjectWithmLayerInName</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
     </ScreenSave>
@@ -8692,10 +8712,9 @@
         </NamedObjectSave>
         <NamedObjectSave>
           <SourceType>File</SourceType>
-          <SourceFile>Entities/LayerOwner/SceneFile.scnx</SourceFile>
-          <SourceName>LayeredBear (Sprite)</SourceName>
-          <InstanceName>LayeredBear</InstanceName>
-          <HasPublicProperty>true</HasPublicProperty>
+          <SourceFile>Entities/LayerOwner/SceneFile2.scnx</SourceFile>
+          <SourceName>Entire File (Scene)</SourceName>
+          <InstanceName>EntireScene2</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
@@ -8703,9 +8722,10 @@
         </NamedObjectSave>
         <NamedObjectSave>
           <SourceType>File</SourceType>
-          <SourceFile>Entities/LayerOwner/SceneFile2.scnx</SourceFile>
-          <SourceName>Entire File (Scene)</SourceName>
-          <InstanceName>EntireScene2</InstanceName>
+          <SourceFile>Entities/LayerOwner/SceneFile.scnx</SourceFile>
+          <SourceName>LayeredBear (Sprite)</SourceName>
+          <InstanceName>LayeredBear</InstanceName>
+          <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>

@@ -141,7 +141,7 @@ namespace FlatRedBall.TileEntities
             float left;
             float bottom;
             layer.GetBottomLeftWorldCoordinateForOrderedTile(tileIndex, out left, out bottom);
-            Microsoft.Xna.Framework.Vector3 position = new Microsoft.Xna.Framework.Vector3(left, bottom, layer.Z);
+            Microsoft.Xna.Framework.Vector3 position = new Microsoft.Xna.Framework.Vector3(left, bottom, 0);
 
             var bottomRight = layer.Vertices[tileIndex * 4 + 1].Position;
 
@@ -158,6 +158,8 @@ namespace FlatRedBall.TileEntities
 
             position += entity.RotationMatrix.Right * dimensionHalf;
             position += entity.RotationMatrix.Up * dimensionHalf;
+
+            position += layer.Position;
 
             ApplyPropertiesTo(entity, propertiesToAssign, position);
         }

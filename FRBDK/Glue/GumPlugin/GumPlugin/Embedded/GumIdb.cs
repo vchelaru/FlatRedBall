@@ -464,10 +464,11 @@ namespace FlatRedBall.Gum
                 mManagers.Draw(mFrbToGumLayers[FlatRedBall.Graphics.Renderer.CurrentLayer]);
             }
 
-            var renderBreaks = FlatRedBall.Graphics.Renderer.LastFrameRenderBreakList;
 
-            if (renderBreaks != null)
+
+            if (FlatRedBall.Graphics.Renderer.RecordRenderBreaks)
             {
+                var renderBreaks = FlatRedBall.Graphics.Renderer.LastFrameRenderBreakList;
 #if DEBUG
                 // This object handles its own render breaks
                 if (renderBreaks.Count != 0)

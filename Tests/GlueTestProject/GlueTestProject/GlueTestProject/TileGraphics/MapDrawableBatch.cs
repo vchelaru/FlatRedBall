@@ -71,6 +71,10 @@ namespace FlatRedBall.TileGraphics
             private set;
         } = new List<TMXGlueLib.DataTypes.NamedValue>();
 
+        /// <summary>
+        /// The axis on which tiles are sorted. This is used to perform tile culling for performance. 
+        /// Setting this to SortAxis.None will turn off culling.
+        /// </summary>
         public SortAxis SortAxis
         {
             get
@@ -165,6 +169,9 @@ namespace FlatRedBall.TileGraphics
             get { return -_parallaxMultiplierY + 1; }
             set { _parallaxMultiplierY = 1 - value; }
         }
+
+        public TextureFilter? TextureFilter { get; set; } = null;
+
 
         #endregion
 
@@ -856,13 +863,10 @@ namespace FlatRedBall.TileGraphics
             return AddTile(bottomLeftPosition, tileDimensions, textureValues);
         }
 
-        #region XML Docs
         /// <summary>
-        /// Custom drawing technique - sets graphics states and
-        /// draws the custom shape
+        /// Renders the MapDrawableBatch
         /// </summary>
         /// <param name="camera">The currently drawing camera</param>
-        #endregion
         public void Draw(Camera camera)
         {
             ////////////////////Early Out///////////////////
@@ -880,7 +884,6 @@ namespace FlatRedBall.TileGraphics
 
 
 
-
             int firstVertIndex;
             int lastVertIndex;
             int indexStart;
@@ -889,6 +892,13 @@ namespace FlatRedBall.TileGraphics
 
             if (numberOfTriangles != 0)
             {
+                TextureFilter? oldTextureFilter = null;
+
+                if (this.TextureFilter != null && this.TextureFilter != FlatRedBallServices.GraphicsOptions.TextureFilter)
+                {
+                    oldTextureFilter = FlatRedBallServices.GraphicsOptions.TextureFilter;
+                    FlatRedBallServices.GraphicsOptions.TextureFilter = this.TextureFilter.Value;
+                }
                 TextureAddressMode oldTextureAddressMode;
                 Effect effectTouse = PrepareRenderingStates(camera, out oldTextureAddressMode);
 
@@ -919,8 +929,11 @@ namespace FlatRedBall.TileGraphics
                 {
                     FlatRedBallServices.GraphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
                 }
+                if (oldTextureFilter != null)
+                {
+                    FlatRedBallServices.GraphicsOptions.TextureFilter = oldTextureFilter.Value;
+                }
             }
-
         }
 
         private Effect PrepareRenderingStates(Camera camera, out TextureAddressMode oldTextureAddressMode)
