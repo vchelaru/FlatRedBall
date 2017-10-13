@@ -153,5 +153,18 @@ namespace FlatRedBall.Localization
             return translated;
         }
 
-    }
+		/// <summary>
+		/// Grabs a dictionary with a copy of all the localization database keys and the current language values. 
+		/// </summary>
+		/// <returns></returns>
+		public static Dictionary<string, string> GetLanguageDatabaseCopy()
+		{
+			var dict = new Dictionary<string, string>();
+			foreach (var key in mStringDatabase.Keys)
+			{
+				dict.Add(key, mStringDatabase[key][CurrentLanguage]);
+			}
+			return dict;
+		}
+	}
 }
