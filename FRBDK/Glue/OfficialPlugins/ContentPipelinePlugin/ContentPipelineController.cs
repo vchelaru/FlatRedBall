@@ -214,7 +214,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
             {
                 var absolute = GlueCommands.GetAbsoluteFileName(rfs);
 
-                if (referencedFileNames.Contains(absolute) == false)
+                if (referencedFileNames.Any(item => Match(item, absolute)) == false)
                 {
                     referencedFileNames.Add(absolute);
                     AddReferencedFilesRecursively(absolute, referencedFileNames);
@@ -240,13 +240,18 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
             foreach(var file in referencedFiles)
             {
-                if (referencedFileNames.Contains(file) == false)
+                if (referencedFileNames.Any(item => Match(item, file)) == false)
                 {
                     referencedFileNames.Add(file);
                     AddReferencedFilesRecursively(file, referencedFileNames);
                 }
 
             }
+        }
+
+        static bool Match(string file1, string file2)
+        {
+            return FileManager.Standardize(file1).ToLowerInvariant() == FileManager.Standardize(file2).ToLowerInvariant();
         }
     }
 }

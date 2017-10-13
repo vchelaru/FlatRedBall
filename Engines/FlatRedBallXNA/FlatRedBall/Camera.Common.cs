@@ -395,6 +395,15 @@ namespace FlatRedBall
 
         static float mLongestDimension;
         static float mDistanceFromCamera;
+        /// <summary>
+        /// Returns whether the argument sprite is in view, considering the CameraCullMode. This will always return
+        /// true if cull mode is set to None.
+        /// </summary>
+        /// <param name="sprite">The sprite to check in view</param>
+        /// <param name="relativeToCamera">Whether the sprite's position is relative to the camera. This value may be true if the 
+        /// sprite is on a Layer, and the Layer's RelativeToCamera value is true.</param>
+        /// <returns>Whether the sprite is in view</returns>
+        /// <seealso cref="FlatRedBall.Graphics.Layer.RelativeToCamera"/>
         public bool IsSpriteInView(Sprite sprite, bool relativeToCamera)
         {
             switch (CameraCullMode)
