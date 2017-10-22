@@ -137,6 +137,10 @@ namespace FlatRedBall.Glue.Elements
         /// </summary>
         [XmlIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> AddToManagersFunc;
+
+        /// <summary>
+        /// Returns a custom function to instantiate objects. This is null by default, which means the object will be instantiated using a standard constructor call.
+        /// </summary>
         [XmlIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, string> ConstructorFunc;
 

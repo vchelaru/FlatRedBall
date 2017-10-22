@@ -306,6 +306,7 @@ namespace GumPlugin.Managers
             }
             string unqualifiedName = element.Name + "Runtime";
             newAti.FriendlyName = unqualifiedName;
+            newAti.ConstructorFunc = GetGumElementConstructorFunct;
 
             newAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\") as " +
                 newAti.QualifiedRuntimeTypeName.QualifiedType;
@@ -338,6 +339,23 @@ namespace GumPlugin.Managers
             }
 
             return newAti;
+        }
+
+        private string GetGumElementConstructorFunct(IElement glueContainerElement, NamedObjectSave namedObject, ReferencedFileSave assetTypeInfo)
+        {
+            var fieldName = namedObject.FieldName;
+
+            var ati = namedObject.GetAssetTypeInfo();
+
+            return 
+            "{" + 
+                $"var oldLayoutSuspended = global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended; " + 
+                $"global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = true; " +
+                $"{fieldName} = new {ati.QualifiedRuntimeTypeName.QualifiedType}();" +
+                $"global::Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = oldLayoutSuspended; " +
+                $"{fieldName}.UpdateLayout();" +
+            "}";
+
         }
 
         public void UnloadProjectSpecificAtis()

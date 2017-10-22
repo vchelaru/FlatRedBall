@@ -30,7 +30,14 @@ namespace FlatRedBall.Graphics
     {
         public float FieldOfView = (float)System.Math.PI / 4.0f;
         public bool Orthogonal = false;
+
+        /// <summary>
+        /// The orthogonal width to use when drawing this layer, if Orthogonal is true.
+        /// </summary>
         public float OrthogonalWidth = 800;
+        /// <summary>
+        /// The orthogonal height to use when drawing this layer, if Orthogonal is true;
+        /// </summary>
         public float OrthogonalHeight = 600;
 
         public float ExtraRotationZ = 0;
@@ -366,6 +373,13 @@ namespace FlatRedBall.Graphics
             get { return mBatchesReadOnlyCollection; }
         }
 
+        /// <summary>
+        /// Stores values which are used to override the camera's properties when this Layer is rendered. By default
+        /// this is null, indicating the Layer should match the Camera view.
+        /// </summary>
+        /// <remarks>
+        /// A new instance of LayerCameraSettings will be assigned if the UsePixelCoordiantes is called.
+        /// </remarks>
         public LayerCameraSettings LayerCameraSettings
         {
             get;
@@ -815,6 +829,9 @@ namespace FlatRedBall.Graphics
             return "Name: " + mName;
         }
 
+        /// <summary>
+        /// Instantiates a new LayerCameraSettings object to store pixel-perfect values.
+        /// </summary>
         public void UsePixelCoordinates()
         {
             if (LayerCameraSettings == null)

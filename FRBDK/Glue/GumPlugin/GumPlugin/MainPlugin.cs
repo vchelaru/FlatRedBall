@@ -142,7 +142,20 @@ namespace GumPlugin
             // - Updated to latest Gum rendering engine, allowing Text to specify pixel perfect or free floating positioning.
             // 0.8.8.6
             // - Fixed bug with Tweener not setting its Running to false when the elapsed passes duration
-            get { return new Version(0, 8, 8, 6); }
+            // 0.9.0.0
+            // - Added new Width Unit and Height Unit for depending on other dimension
+            // - Fonts with spaces now generate with '_'instead of ' ' 
+            // 0.9.1
+            // - Huge performance improvements from using the generated default state when instantiating screens/components
+            //   rather than the reflection-based state
+            // - Names with dashes now properly instantiate a member rather than using the modified name when searching and
+            //   obtaining a null reference
+            // - Parent can now be set through states
+            // - Children Layout can now be set through states
+            // - Removed more reflection from setting a StateSave on a screen/component.
+            // - Other micro-optimizations to make state setting faster.
+
+            get { return new Version(0, 9, 1, 0); }
         }
 
         #endregion

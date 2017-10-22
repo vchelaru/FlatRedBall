@@ -1092,6 +1092,7 @@
     <Compile Include="StateInterpolation\Sinusoidal.cs" />
     <Compile Include="StateInterpolation\Tweener.cs" />
     <Compile Include="StateInterpolation\TweenerManager.cs" />
+    <Compile Include="TestFramework\ShouldExtensions.cs" />
     <Compile Include="TileCollisions\TileShapeCollection.cs" />
     <Compile Include="TileEntities\TileEntityInstantiator.cs" />
     <Compile Include="TileGraphics\AbstractMapLayer.cs" />

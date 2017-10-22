@@ -590,7 +590,7 @@ namespace FlatRedBall
                 args.GraphicsDeviceInformation.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
             };
 
-        PlatformServices.Initialize();
+            PlatformServices.Initialize();
 
             PreInitialization(game, graphics);
             mGraphics = graphics;

@@ -326,6 +326,7 @@ namespace FlatRedBall.Glue.Plugins
                     try
                     {
                         Directory.Delete(line, true);
+                        EditorObjects.IoC.Container.Get<IGlueCommands>().PrintOutput($"Uninstalled plugin at {line}");
                     }
                     catch (Exception e)
                     {

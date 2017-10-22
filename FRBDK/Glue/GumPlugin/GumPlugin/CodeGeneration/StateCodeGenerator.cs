@@ -37,6 +37,9 @@ namespace GumPlugin.CodeGeneration
             VariableNamesToReplaceForStates.Add("Texture Top", "TextureTop");
             VariableNamesToReplaceForStates.Add("Font Scale", "FontScale");
             VariableNamesToReplaceForStates.Add("Clips Children", "ClipsChildren");
+            VariableNamesToReplaceForStates.Add("Children Layout", "ChildrenLayout");
+            VariableNamesToReplaceForStates.Add("Custom Texture Coordinates", "CustomTextureCoordinates");
+
 
             VariableNamesToReplaceForStates.Add("X Origin", "XOrigin");
             VariableNamesToReplaceForStates.Add("X Units", "XUnits");
@@ -57,20 +60,20 @@ namespace GumPlugin.CodeGeneration
 
         private void AddVariablesToSkipForStates()
         {
-            mVariableNamesToSkipForStates.Add("CustomFontFile");
-            mVariableNamesToSkipForStates.Add("UseCustomFont");
+            //mVariableNamesToSkipForStates.Add("CustomFontFile");
+            //mVariableNamesToSkipForStates.Add("UseCustomFont");
             mVariableNamesToSkipForStates.Add("Guide");
-            mVariableNamesToSkipForStates.Add("Parent");
+            //mVariableNamesToSkipForStates.Add("Parent");
 
             // Why did we skip width units and height units?
             //mVariableNamesToSkipForStates.Add("Height Units");
             //mVariableNamesToSkipForStates.Add("Width Units");
-            mVariableNamesToSkipForStates.Add("Custom Texture Coordinates");
-            mVariableNamesToSkipForStates.Add("Children Layout");
+            mVariableNamesToSkipForStates.Add("Custom Texture Coordinates"); // This is now handled by TextureCoordinateType
+            //mVariableNamesToSkipForStates.Add("Children Layout");
 
-            mVariableNamesToSkipForStates.Add("Font");
-            mVariableNamesToSkipForStates.Add("FontSize");
-            mVariableNamesToSkipForStates.Add("OutlineThickness");
+            //mVariableNamesToSkipForStates.Add("Font");
+            //mVariableNamesToSkipForStates.Add("FontSize");
+            //mVariableNamesToSkipForStates.Add("OutlineThickness");
             mVariableNamesToSkipForStates.Add("HasEvents");
             mVariableNamesToSkipForStates.Add("ExposeChildrenEvents");
             //mVariableNamesToSkipForStates.Add("SourceFile");

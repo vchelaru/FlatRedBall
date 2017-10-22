@@ -7,6 +7,7 @@ namespace TMXGlueLib
     [Serializable]
 #endif
     [XmlInclude(typeof (MapLayer))]
+    [XmlInclude(typeof  (MapImageLayer))]
     [XmlInclude(typeof (mapObjectgroup))]
     public abstract class AbstractMapLayer
     {

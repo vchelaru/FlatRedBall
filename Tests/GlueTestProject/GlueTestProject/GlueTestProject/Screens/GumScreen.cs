@@ -16,6 +16,7 @@ using FlatRedBall.Math.Splines;
 using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
 using FlatRedBall.Localization;
+using GlueTestProject.TestFramework;
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -35,39 +36,49 @@ namespace GlueTestProject.Screens
             {
                 throw new Exception("Width values from Gum fles are not being assigned.  Expected width: " + 150 + " but got width " + TopButton.Width);
             }
-            if(this.TopButton.GetTextRuntime().GetBitmapFont() == null)
-            {
-                throw new Exception("Texts are not having their BitmapFont assigned");
-            }
 
-            if(this.NineSliceInstance.InternalNineSlice.BottomLeftTexture == 
-                this.NineSliceInstance.InternalNineSlice.CenterTexture)
-            {
-                throw new Exception("The nine slice isn't using the texture pattern and it should.");
-            }
+            this.TopButton.GetTextRuntime().GetBitmapFont().ShouldNotBe(null, "because Texts should having their BitmapFont assigned, but seem to not be");
+
+            this.NineSliceInstance.InternalNineSlice.BottomLeftTexture.ShouldNotBe(this.NineSliceInstance.InternalNineSlice.CenterTexture,
+                "because NineSliceInstance should use the texture pattern");
 
             // Make sure that categories run fine...
             EntireGumScreen.CurrentStateCategory1State = GumRuntimes.TestScreenRuntime.StateCategory1.On;
 
-            if(this.StateComponentInstance.CurrentVariableState != GumRuntimes.StateComponentRuntime.VariableState.NonDefaultState)
-            {
-                throw new Exception("Setting a state on an instance in a screen does not result in the state being set on the runtime.");
-            }
+            this.StateComponentInstance.CurrentVariableState.ShouldBe(GumRuntimes.StateComponentRuntime.VariableState.NonDefaultState, 
+                "because setting a state on an instance in a screen should result in the state being set on the runtime.");
 
-            if( (OutlineTextInstance.RenderableComponent as RenderingLibrary.Graphics.Text).BitmapFont == null)
-            {
-                throw new Exception("Outlined text objects are not getting their fonts set.");
-            }
+            var outlineBitmapFont = (OutlineTextInstance.RenderableComponent as RenderingLibrary.Graphics.Text).BitmapFont;
+            outlineBitmapFont.ShouldNotBe(null, "because outlined text objects should have their fonts set.");
 
             this.TestRectangleInstance.Visible = false;
             bool isAbsoluteVisible = 
                 (this.TestRectangleInstance.Sprite as RenderingLibrary.Graphics.IVisible).AbsoluteVisible;
-            if (isAbsoluteVisible)
-            {
-                throw new Exception("Making a component invisible is not making its contained objects that are attahe to containers also invisible.");
-            }
 
-		}
+            isAbsoluteVisible.ShouldNotBe(true, "because making a component invisible should make its contained objects that are attached to containers also invisible.");
+
+            // The following test all variable assignment to make sure it comes over okay:
+            ColoredRectSetsEverything.X.ShouldBe(64);
+            ColoredRectSetsEverything.XUnits.ShouldBe(Gum.Converters.GeneralUnitType.PixelsFromLarge);
+            ColoredRectSetsEverything.Y.ShouldBe(96);
+            ColoredRectSetsEverything.YUnits.ShouldBe(Gum.Converters.GeneralUnitType.PixelsFromLarge);
+            ColoredRectSetsEverything.XOrigin.ShouldBe(RenderingLibrary.Graphics.HorizontalAlignment.Center);
+            ColoredRectSetsEverything.YOrigin.ShouldBe(RenderingLibrary.Graphics.VerticalAlignment.Center);
+            ColoredRectSetsEverything.Width.ShouldBe(60);
+            ColoredRectSetsEverything.WidthUnits.ShouldBe(Gum.DataTypes.DimensionUnitType.RelativeToContainer);
+            ColoredRectSetsEverything.Height.ShouldBe(256);
+            ColoredRectSetsEverything.HeightUnits.ShouldBe(Gum.DataTypes.DimensionUnitType.PercentageOfOtherDimension);
+            ColoredRectSetsEverything.Parent.Name.ShouldBe("NameWith-Dash");
+            ColoredRectSetsEverything.Visible.ShouldBe(true);
+            ColoredRectSetsEverything.Rotation.ShouldBe(32);
+            ColoredRectSetsEverything.Alpha.ShouldBe(200);
+            ColoredRectSetsEverything.Red.ShouldBe(0);
+            ColoredRectSetsEverything.Green.ShouldBe(0);
+            ColoredRectSetsEverything.Blue.ShouldBe(139);
+            ColoredRectSetsEverything.Blend.ShouldBe(Gum.RenderingLibrary.Blend.Additive);
+            
+
+        }
 
 		void CustomActivity(bool firstTimeCalled)
 		{

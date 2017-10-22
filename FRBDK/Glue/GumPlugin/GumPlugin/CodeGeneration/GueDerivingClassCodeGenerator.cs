@@ -47,6 +47,7 @@ namespace GumPlugin.CodeGeneration
             mTypeToQualifiedTypes.Add("PositionUnitType", "Gum.Managers.PositionUnitType");
             mTypeToQualifiedTypes.Add("TextureAddress", "Gum.Managers.TextureAddress");
             mTypeToQualifiedTypes.Add("DimensionUnitType", "Gum.DataTypes.DimensionUnitType");
+            mTypeToQualifiedTypes.Add("ChildrenLayout", "Gum.Managers.ChildrenLayout");
 
             AddGetterReplacements();
 
@@ -161,6 +162,10 @@ namespace GumPlugin.CodeGeneration
 
             GenerateConstructor(elementSave, currentBlock, runtimeClassName);
 
+            GenerateAssignDefaultState(elementSave, currentBlock);
+
+            GenerateCreateChildrenRecursively(elementSave, currentBlock);
+
             GenerateAssignReferencesMethod(elementSave, currentBlock);
 
             GenerateAddToManagersMethod(elementSave, currentBlock);
@@ -170,6 +175,32 @@ namespace GumPlugin.CodeGeneration
             GeneratePartialMethods(elementSave, currentBlock);
 
             GenerateRaiseExposedEvents(elementSave, currentBlock);
+        }
+
+        private void GenerateCreateChildrenRecursively(ElementSave elementSave, ICodeBlock currentBlock)
+        {
+            currentBlock = currentBlock.Function("public override void", "CreateChildrenRecursively", "Gum.DataTypes.ElementSave elementSave, RenderingLibrary.SystemManagers systemManagers");
+            {
+
+                currentBlock.Line("base.CreateChildrenRecursively(elementSave, systemManagers);");
+                currentBlock.Line("this.AssignReferences();");
+            }
+
+            //public virtual void CreateChildrenRecursively(ElementSave elementSave, SystemManagers systemManagers)
+
+        }
+
+        private void GenerateAssignDefaultState(ElementSave elementSave, ICodeBlock currentBlock)
+        {
+            currentBlock = currentBlock.Function("public override void", "SetDefaultState", "");
+            {
+                bool shouldCallBase = elementSave is StandardElementSave == false;
+                if(shouldCallBase)
+                {
+                    currentBlock.Line("base.SetDefaultState();");
+                }
+                currentBlock.Line("this.CurrentVariableState = VariableState.Default;");
+            }
         }
 
         private void GenerateCallCustomInitialize(ElementSave elementSave, ICodeBlock currentBlock)
@@ -439,6 +470,10 @@ namespace GumPlugin.CodeGeneration
             {
                 AdjustEnumerationVariableValue(variableSave, container, ref variableValue, ref variableType);
             }
+            else if(variableSave.GetRootName() == "Parent")
+            {
+                variableValue = $"this.ContainedElements.FirstOrDefault(item =>item.Name == \"{variableValue}\")";
+            }
             else if(variableSave.IsFile)
             {
                 isEntireAssignment = true;
@@ -511,11 +546,8 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateAssignReferencesMethod(ElementSave elementSave, ICodeBlock currentBlock)
         {
-            currentBlock = currentBlock.Function("public override void", "AssignReferences", "");
+            currentBlock = currentBlock.Function("private void", "AssignReferences", "");
             {
-                currentBlock.Line("base.AssignReferences();");
-
-
                 foreach (var instance in elementSave.Instances)
                 {
                     var foundBase = Gum.Managers.ObjectFinder.Self.GetElementSave(instance.BaseType);
@@ -523,16 +555,11 @@ namespace GumPlugin.CodeGeneration
                     if (foundBase != null)
                     {
                         currentBlock.Line(instance.MemberNameInCode() +
-                            " = this.GetGraphicalUiElementByName(\"" + instance.MemberNameInCode() + "\") as " + 
+                            // Use the actual instance name rather than MemberNameInCode here, because it may differ
+                            // if there's invalid member characters like dashes
+                            $" = this.GetGraphicalUiElementByName(\"{instance.Name}\") as " + 
                             GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(instance) + ";");
-
-                        ElementSave baseElement = Gum.Managers.ObjectFinder.Self.GetElementSave(instance.BaseType);
-
-                        if (baseElement != null && (baseElement is StandardElementSave) == false)
-                        {
-                            currentBlock.Line(instance.MemberNameInCode() + ".AssignReferences();");
-                        }
-
+                        
                         foreach (var eventSave in elementSave.Events.Where(item =>
                             item.GetSourceObject() == instance.Name && !string.IsNullOrEmpty(item.ExposedAsName)))
                         {
@@ -609,9 +636,9 @@ namespace GumPlugin.CodeGeneration
 
             if(hasBase)
             {
-                baseCall = "base(fullInstantiation, false)";
+                baseCall = "base(false)";
             }
-            var constructor = currentBlock.Constructor("public", runtimeClassName, "bool fullInstantiation = true, bool callAssignReferences = true",  baseCall );
+            var constructor = currentBlock.Constructor("public", runtimeClassName, "bool fullInstantiation = true",  baseCall );
 
             bool hasEvents = elementSave.DefaultState.GetValueOrDefault<bool>("HasEvents");
             bool exposeChildrenEvents = elementSave.DefaultState.GetValueOrDefault<bool>("ExposeChildrenEvents");
@@ -647,13 +674,7 @@ namespace GumPlugin.CodeGeneration
             ifStatement.Line("GumRuntime.ElementSaveExtensions.SetGraphicalUiElement(elementSave, this, RenderingLibrary.SystemManagers.Default);");
 
             ifStatement.Line("FlatRedBall.IO.FileManager.RelativeDirectory = oldDirectory;");
-
-            var innerIf = ifStatement.If("callAssignReferences");
-
-            innerIf.Line("this.AssignReferences();");
-            // This used to be called in AddtoManagers, but that
-            // doesn't get called for all objects - specifically on
-            // runtimes created in code and added to children.
+            
         }
 
         public bool ShouldGenerateRuntimeFor(ElementSave elementSave)

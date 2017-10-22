@@ -1,7 +1,10 @@
 ﻿using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +30,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
             get
             {
                 return (DataContext as PluginViewModel)?.BackingData;
+            }
+        }
+
+        static string UninstallPluginFile
+        {
+            get
+            {
+                return FileManager.UserApplicationData + "FRBDK/Plugins/Uninstall.txt";
             }
         }
 
@@ -73,5 +84,29 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
                 }
             }
         }
+
+        private void HandleUninstallPlugin(object sender, RoutedEventArgs e)
+        {
+            if(DataContext != null)
+            {
+                var directoryToDelete = FileManager.GetDirectory( pluginContainer.AssemblyLocation);
+
+                // try deleteing it, probably won't be able to because the plugin is in-use
+                try
+                {
+                    FileManager.DeleteDirectory(directoryToDelete);
+                }
+                catch(UnauthorizedAccessException ex)
+                {
+                    EditorObjects.IoC.Container.Get<IGlueCommands>().DialogCommands.ShowMessageBox("Success - Glue must be restarted to finish removing the plugin.");
+
+                    using (StreamWriter w = File.AppendText(UninstallPluginFile))
+                    {
+                        w.WriteLine(directoryToDelete);
+                    }
+                }
+            }
+        }
+
     }
 }

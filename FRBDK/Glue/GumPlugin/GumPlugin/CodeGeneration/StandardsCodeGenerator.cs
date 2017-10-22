@@ -55,7 +55,9 @@ namespace GumPlugin.CodeGeneration
 
 
             // What we will never support (as is)
-            mVariableNamesToSkipForProperties.Add("Custom Texture Coordinates");
+
+
+            mVariableNamesToSkipForProperties.Add("Custom Texture Coordinates"); // replaced by texture address mode
             mVariableNamesToSkipForProperties.Add("Height Units");
             mVariableNamesToSkipForProperties.Add("Width Units");
             mVariableNamesToSkipForProperties.Add("Parent");
@@ -129,7 +131,18 @@ namespace GumPlugin.CodeGeneration
 
             GenerateVariableProperties(standardElementSave, currentBlock, containedGraphicalObjectName);
 
+            GenerateAssignDefaultState(standardElementSave, currentBlock);
+
             return true;
+        }
+
+
+        private void GenerateAssignDefaultState(ElementSave elementSave, ICodeBlock currentBlock)
+        {
+            currentBlock = currentBlock.Function("public override void", "SetDefaultState", "");
+            {
+                currentBlock.Line("this.CurrentVariableState = VariableState.Default;");
+            }
         }
 
         private void GenerateStates(StandardElementSave standardElementSave, ICodeBlock currentBlock)

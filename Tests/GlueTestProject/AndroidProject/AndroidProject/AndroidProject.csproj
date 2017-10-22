@@ -1995,6 +1995,9 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\StateInterpolation\TweenerManager.cs">
       <Link>StateInterpolation\TweenerManager.cs</Link>
     </Compile>
+    <Compile Include="..\..\gluetestproject\gluetestproject\TestFramework\ShouldExtensions.cs">
+      <Link>TestFramework\ShouldExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TileCollisions\TileShapeCollection.cs">
       <Link>TileCollisions\TileShapeCollection.cs</Link>
     </Compile>

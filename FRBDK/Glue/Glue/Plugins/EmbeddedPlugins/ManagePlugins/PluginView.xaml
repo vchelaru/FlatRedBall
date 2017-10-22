@@ -8,6 +8,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel>
 
+        <Button Click="HandleUninstallPlugin">Uninstall Plugin</Button>
         <Button Click="HandleExportPluginClicked">Export Plugin</Button>
         
         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding LoadOnStartup}">Load on startup</CheckBox>
