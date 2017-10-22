@@ -2186,6 +2186,14 @@
       <Name>book</Name>
       <Link>Assets\content\globalcontent\folderinglobalcontent\book.png</Link>
     </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\globalbmfctofnt.fnt">
+      <Name>GlobalBmfcToFnt</Name>
+      <Link>Assets\content\globalcontent\globalbmfctofnt.fnt</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\globalcontent\globalbmfctofnt_0.png">
+      <Name>GlobalBmfcToFnt_0</Name>
+      <Link>Assets\content\globalcontent\globalbmfctofnt_0.png</Link>
+    </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\componentfolder\infolder1.gucx">
       <Name>InFolder1</Name>
       <Link>Assets\content\gumproject\components\componentfolder\infolder1.gucx</Link>

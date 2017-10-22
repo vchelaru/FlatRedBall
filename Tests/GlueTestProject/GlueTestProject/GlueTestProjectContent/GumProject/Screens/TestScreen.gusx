@@ -124,6 +124,49 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <IsFile>true</IsFile>
+      <Type>string</Type>
+      <Name>ExternalFontText.CustomFontFile</Name>
+      <Value xsi:type="xsd:string">../GlobalContent/GlobalBmfcToFnt.fnt</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ExternalFontText.Height</Name>
+      <Value xsi:type="xsd:float">75</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>ExternalFontText.Text</Name>
+      <Value xsi:type="xsd:string">I use an external font</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
+      <Name>ExternalFontText.UseCustomFont</Name>
+      <Value xsi:type="xsd:boolean">true</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ExternalFontText.Width</Name>
+      <Value xsi:type="xsd:float">207</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ExternalFontText.X</Name>
+      <Value xsi:type="xsd:float">390.5</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ExternalFontText.Y</Name>
+      <Value xsi:type="xsd:float">448.5</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>float</Type>
       <Name>MakeMePublic.X</Name>
       <Value xsi:type="xsd:float">34</Value>
@@ -414,5 +457,9 @@
   <Instance>
     <Name>ColoredRectSetsEverything</Name>
     <BaseType>ColoredRectangle</BaseType>
+  </Instance>
+  <Instance>
+    <Name>ExternalFontText</Name>
+    <BaseType>Text</BaseType>
   </Instance>
 </ScreenSave>

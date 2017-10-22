@@ -351,6 +351,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>CsvFromTmx</Name>
     </None>
+    <None Include="GlobalContent\GlobalBmfcToFnt.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>GlobalBmfcToFnt</Name>
+    </None>
+    <None Include="GlobalContent\GlobalBmfcToFnt_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>GlobalBmfcToFnt_0</Name>
+    </None>
     <None Include="GlobalContent\LoadedAtRuntimeFalseCsv.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>LoadedAtRuntimeFalseCsv</Name>

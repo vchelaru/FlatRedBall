@@ -154,8 +154,9 @@ namespace GumPlugin
             // - Children Layout can now be set through states
             // - Removed more reflection from setting a StateSave on a screen/component.
             // - Other micro-optimizations to make state setting faster.
-
-            get { return new Version(0, 9, 1, 0); }
+            // 0.9.1.1
+            // - Fixed setting custom fonts not considering the relative directory
+            get { return new Version(0, 9, 1, 1); }
         }
 
         #endregion

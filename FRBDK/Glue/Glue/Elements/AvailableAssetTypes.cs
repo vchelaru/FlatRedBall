@@ -91,15 +91,9 @@ namespace FlatRedBall.Glue.Elements
 		{
 			get
 			{
-                foreach (var item in mCoreAssetTypes)
-                {
-                    yield return item;
-                }
-                foreach (var item in mCustomAssetTypes)
-                {
-                    yield return item;
-                }
 
+                return mCoreAssetTypes.Concat(mCustomAssetTypes).ToList();
+                
                 // Project-specific ATIs will also
                 // appear in the mCustomAssetTypes list,
                 // so there's no need to loop through this

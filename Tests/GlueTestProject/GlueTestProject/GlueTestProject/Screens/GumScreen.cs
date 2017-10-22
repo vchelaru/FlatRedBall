@@ -76,7 +76,8 @@ namespace GlueTestProject.Screens
             ColoredRectSetsEverything.Green.ShouldBe(0);
             ColoredRectSetsEverything.Blue.ShouldBe(139);
             ColoredRectSetsEverything.Blend.ShouldBe(Gum.RenderingLibrary.Blend.Additive);
-            
+
+            ExternalFontText.BitmapFont.ShouldNotBe(null, "because custom fonts referenced outside of the Gum project should be found and loaded correctly");
 
         }
 

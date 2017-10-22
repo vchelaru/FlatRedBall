@@ -1612,6 +1612,15 @@
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>File</SourceType>
+          <SourceFile>GumProject/Screens/TestScreen.gusx</SourceFile>
+          <SourceName>ExternalFontText (GlueTestProject.GumRuntimes.TextRuntime)</SourceName>
+          <InstanceName>ExternalFontText</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
       </NamedObjects>
     </ScreenSave>
     <ScreenSave>
@@ -13977,6 +13986,14 @@
       <Name>GlobalContent/CreatedByExcel1.csv</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
+      <ProjectsToExcludeFrom />
+    </ReferencedFileSave>
+    <ReferencedFileSave>
+      <Name>GlobalContent/GlobalBmfcToFnt.fnt</Name>
+      <IsSharedStatic>true</IsSharedStatic>
+      <HasPublicProperty>true</HasPublicProperty>
+      <SourceFile>GlobalContent/GlobalBmfcToFnt.bmfc</SourceFile>
+      <BuildTool>*.bmfc -&gt; bmfont.exe -&gt; *.fnt</BuildTool>
       <ProjectsToExcludeFrom />
     </ReferencedFileSave>
   </GlobalFiles>
