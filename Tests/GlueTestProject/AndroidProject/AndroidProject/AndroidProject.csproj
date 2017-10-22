@@ -1487,6 +1487,13 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\componentfolder\InFolder1Runtime.Generated.cs">
       <Link>GumRuntimes\componentfolder\InFolder1Runtime.Generated.cs</Link>
     </Compile>
+    <Compile Include="..\..\gluetestproject\gluetestproject\GumRuntimes\ComponentWithCustomInitializeRuntime.cs">
+      <Link>GumRuntimes\ComponentWithCustomInitializeRuntime.cs</Link>
+    </Compile>
+    <Compile Include="..\..\gluetestproject\gluetestproject\GumRuntimes\ComponentWithCustomInitializeRuntime.Generated.cs">
+      <Link>GumRuntimes\ComponentWithCustomInitializeRuntime.Generated.cs</Link>
+      <DependentUpon>ComponentWithCustomInitializeRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\ContainerOfInFolderRuntime.Generated.cs">
       <Link>GumRuntimes\ContainerOfInFolderRuntime.Generated.cs</Link>
     </Compile>
@@ -2197,6 +2204,10 @@
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\componentfolder\infolder1.gucx">
       <Name>InFolder1</Name>
       <Link>Assets\content\gumproject\components\componentfolder\infolder1.gucx</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\componentwithcustominitialize.gucx">
+      <Name>ComponentWithCustomInitialize</Name>
+      <Link>Assets\content\gumproject\components\componentwithcustominitialize.gucx</Link>
     </AndroidAsset>
     <AndroidAsset Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\components\containerofinfolder.gucx">
       <Name>ContainerOfInFolder</Name>

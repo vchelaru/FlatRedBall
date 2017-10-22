@@ -139,7 +139,7 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateAssignDefaultState(ElementSave elementSave, ICodeBlock currentBlock)
         {
-            currentBlock = currentBlock.Function("public override void", "SetDefaultState", "");
+            currentBlock = currentBlock.Function("public override void", "SetInitialState", "");
             {
                 currentBlock.Line("this.CurrentVariableState = VariableState.Default;");
             }

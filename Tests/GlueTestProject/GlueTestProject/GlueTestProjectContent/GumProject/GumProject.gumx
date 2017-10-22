@@ -37,6 +37,10 @@
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
+    <Name>ComponentWithCustomInitialize</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>ContainerOfInFolder</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>

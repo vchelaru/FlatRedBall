@@ -192,14 +192,16 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateAssignDefaultState(ElementSave elementSave, ICodeBlock currentBlock)
         {
-            currentBlock = currentBlock.Function("public override void", "SetDefaultState", "");
+            currentBlock = currentBlock.Function("public override void", "SetInitialState", "");
             {
                 bool shouldCallBase = elementSave is StandardElementSave == false;
                 if(shouldCallBase)
                 {
-                    currentBlock.Line("base.SetDefaultState();");
+                    currentBlock.Line("base.SetInitialState();");
                 }
                 currentBlock.Line("this.CurrentVariableState = VariableState.Default;");
+
+                currentBlock.Line("CallCustomInitialize();");
             }
         }
 
@@ -577,7 +579,6 @@ namespace GumPlugin.CodeGeneration
 
                 // must be done after instances are assigned, since beahvior code may reference instances
                 GenerateStandardFrbBehaviorCode(elementSave, currentBlock);
-                currentBlock.Line("CallCustomInitialize();");
 
             }
         }

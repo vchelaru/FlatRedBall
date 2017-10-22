@@ -449,6 +449,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>InFolder1</Name>
     </None>
+    <None Include="GumProject\Components\ComponentWithCustomInitialize.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ComponentWithCustomInitialize</Name>
+    </None>
     <None Include="GumProject\Components\ContainerOfInFolder.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ContainerOfInFolder</Name>

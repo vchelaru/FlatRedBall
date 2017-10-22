@@ -79,6 +79,7 @@ namespace GlueTestProject.Screens
 
             ExternalFontText.BitmapFont.ShouldNotBe(null, "because custom fonts referenced outside of the Gum project should be found and loaded correctly");
 
+            ComponentWithCustomInitializeInstance.Width.ShouldBe(20, "because CustomInitialize should be called after default state is set.");
         }
 
 		void CustomActivity(bool firstTimeCalled)

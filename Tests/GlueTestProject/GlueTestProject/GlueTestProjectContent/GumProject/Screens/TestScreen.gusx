@@ -113,6 +113,18 @@
     </Variable>
     <Variable>
       <Type>float</Type>
+      <Name>ComponentWithCustomInitializeInstance.X</Name>
+      <Value xsi:type="xsd:float">581</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ComponentWithCustomInitializeInstance.Y</Name>
+      <Value xsi:type="xsd:float">-24</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
       <Name>ContainerInstance.X</Name>
       <Value xsi:type="xsd:float">38</Value>
       <SetsValue>true</SetsValue>
@@ -461,5 +473,9 @@
   <Instance>
     <Name>ExternalFontText</Name>
     <BaseType>Text</BaseType>
+  </Instance>
+  <Instance>
+    <Name>ComponentWithCustomInitializeInstance</Name>
+    <BaseType>ComponentWithCustomInitialize</BaseType>
   </Instance>
 </ScreenSave>

@@ -91,7 +91,7 @@ namespace ToolsUtilities
 
         public static bool FileExists(string fileName, bool ignoreExtensions)
         {
-            fileName = Standardize(fileName);
+            fileName = Standardize(fileName, makeAbsolute: true);
             if (!ignoreExtensions)
             {
 #if ANDROID || IOS || WINDOWS_8 

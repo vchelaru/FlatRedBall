@@ -830,6 +830,10 @@
     <Compile Include="GumRuntimes\ColoredRectangleRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\ComponentContainingSpriteRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\componentfolder\InFolder1Runtime.Generated.cs" />
+    <Compile Include="GumRuntimes\ComponentWithCustomInitializeRuntime.cs" />
+    <Compile Include="GumRuntimes\ComponentWithCustomInitializeRuntime.Generated.cs">
+      <DependentUpon>ComponentWithCustomInitializeRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\ContainerOfInFolderRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\ContainerRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\GumIdb.Generated.cs" />
