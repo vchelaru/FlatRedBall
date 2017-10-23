@@ -156,7 +156,11 @@ namespace GumPlugin
             // - Other micro-optimizations to make state setting faster.
             // 0.9.1.1
             // - Fixed setting custom fonts not considering the relative directory
-            get { return new Version(0, 9, 1, 1); }
+            // 0.9.1.2
+            // - Fixed order of CustomInitialize with default state - custom init comes last
+            // 0.9.1.3
+            // - Fixed list items not updating their parent due to an earlier fix.
+            get { return new Version(0, 9, 1, 3); }
         }
 
         #endregion

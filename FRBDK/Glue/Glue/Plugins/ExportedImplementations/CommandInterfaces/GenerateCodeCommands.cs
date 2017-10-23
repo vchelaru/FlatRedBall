@@ -19,7 +19,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void GenerateAllCode()
         {
-            TaskManager.Self.AddAsyncTask(
+            TaskManager.Self.AddSync(
                 () => GenerateAllCodeSync(new object()),
                 "Generating all code"
                 

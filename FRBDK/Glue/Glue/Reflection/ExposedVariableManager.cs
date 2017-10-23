@@ -1067,7 +1067,7 @@ namespace FlatRedBall.Glue.Reflection
 
             foreach (ReferencedFileSave rfs in ObjectFinder.Self.GlueProject.GlobalFiles)
             {
-                if (rfs.IsCsvOrTreatedAsCsv)
+                if (rfs.IsCsvOrTreatedAsCsv && !rfs.IsDatabaseForLocalizing)
                 {
 
                     string type = rfs.GetTypeForCsvFile();
@@ -1085,7 +1085,7 @@ namespace FlatRedBall.Glue.Reflection
                 {
                     foreach (ReferencedFileSave rfs in screen.ReferencedFiles)
                     {
-                        if (rfs.IsCsvOrTreatedAsCsv)
+                        if (rfs.IsCsvOrTreatedAsCsv && !rfs.IsDatabaseForLocalizing)
                         {
 
                             string type = rfs.GetTypeForCsvFile();
@@ -1101,7 +1101,7 @@ namespace FlatRedBall.Glue.Reflection
                 {
                     foreach (ReferencedFileSave rfs in entity.ReferencedFiles)
                     {
-                        if (rfs.IsCsvOrTreatedAsCsv)
+                        if (rfs.IsCsvOrTreatedAsCsv && !rfs.IsDatabaseForLocalizing)
                         {
                             string type = rfs.GetTypeForCsvFile();
                             toReturn.Add(type);
