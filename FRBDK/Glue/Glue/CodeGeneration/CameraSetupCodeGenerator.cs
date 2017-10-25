@@ -67,8 +67,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             string newContents = GetCameraSetupCsContents();
 
-
-            FileManager.SaveText(newContents, fileName);
+            GlueCommands.Self.TryMultipleTimes(()=>FileManager.SaveText(newContents, fileName), 5);
 
             // Now, verify that this thing is part of the project.
             bool wasAdded = GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(ProjectManager.ProjectBase, fileName, false, false);

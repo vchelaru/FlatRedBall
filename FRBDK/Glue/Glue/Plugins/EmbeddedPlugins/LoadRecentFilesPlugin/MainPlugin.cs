@@ -42,9 +42,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
 
             var standardized = FileManager.Standardize(currentFile).ToLowerInvariant();
 
+
+            if(ProjectManager.GlueSettingsSave == null)
+            {
+                ProjectManager.GlueSettingsSave = new SaveClasses.GlueSettingsSave();
+            }
+            
             ProjectManager.GlueSettingsSave.RecentFiles.RemoveAll(item =>
                 FileManager.Standardize(item).ToLowerInvariant() == standardized);
-            
             // newest first
             ProjectManager.GlueSettingsSave.RecentFiles.Insert(0, standardized);
 

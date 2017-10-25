@@ -21,6 +21,20 @@ namespace FlatRedBall.Gui.Behaviors
 
         public override void ApplyTo(IControl control)
         {
+            // Some logic behind the IToggle interface:
+            // The states (such as EnabledOn, EnabledOff)
+            // represent visual states and not logical states.
+            // Therefore, we can't use those states to determine
+            // if a UI control really is toggled on or not. We need
+            // a separate boolean to control that. 
+            // The behavior could store the bool itself, but then that
+            // would mean that to make a control toggled, the user would have
+            // to:
+            // controlToToggle.Behavior.IsToggled = true;
+            // I don't like having to drop in to the behaviors to do that, I like
+            // the property to be on the control itself so it behaves the same way
+            // WPF or XamForms does.
+            // Therefore, the property needs to exist on the object itself.
             var asToggle = control as IToggle;
 
 #if DEBUG
