@@ -401,7 +401,13 @@ namespace GumPlugin.CodeGeneration
                 {
                     var caseBlock = switchBlock.Case(propertyType + "." + state.MemberNameInCode());
                     {
-                        foreach (var variable in state.Variables)
+                        // Parent variables need to be assigned in the order of the objects in the component so that they're attached in the right order.
+                        // If they're attached in the wrong order, then stacking won't work properly:
+                        var instanceNames = container.Instances.Select(item => item.Name).ToList();
+
+                        var orderedVariables = state.Variables.OrderBy(variable => instanceNames.IndexOf(variable.SourceObject));
+
+                        foreach (var variable in orderedVariables)
                         {
                             // where block doesn't debug well for some reason, so I unrolled it...
                             if (GetIfShouldGenerateStateVariable(variable, container))
@@ -468,7 +474,12 @@ namespace GumPlugin.CodeGeneration
                 {
                     var caseBlock = switchBlock.Case(categoryName + "." + state.MemberNameInCode());
                     {
-                        foreach (var variable in state.Variables.Where(item => GetIfShouldGenerateStateVariable(item, container)))
+                        var instanceNames = container.Instances.Select(item => item.Name).ToList();
+                        var orderedVariables = state.Variables
+                            .Where(item => GetIfShouldGenerateStateVariable(item, container))
+                            .OrderBy(variable => instanceNames.IndexOf(variable.SourceObject));
+
+                        foreach (var variable in orderedVariables)
                         {
                             string memberNameInCode = variable.MemberNameInCode(container, VariableNamesToReplaceForStates);
 

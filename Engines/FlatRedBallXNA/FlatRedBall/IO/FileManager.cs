@@ -651,26 +651,26 @@ namespace FlatRedBall.IO
         }
 
 
-        public static byte[] GetByteArrayFromEmbeddedResource(Assembly assembly, string resourceName)
+        public static byte[] GetByteArrayFromEmbeddedResource(Assembly assemblyContainingResource, string resourceName)
         {
             if (string.IsNullOrEmpty(resourceName))
             {
                 throw new NullReferenceException("ResourceName must not be null - can't get the byte array for resource");
             }
 
-            if (assembly == null)
+            if (assemblyContainingResource == null)
             {
                 throw new NullReferenceException("Assembly is null, so can't find the resource\n" + resourceName);
             }
 
-            Stream resourceStream = assembly.GetManifestResourceStream(resourceName);
+            Stream resourceStream = assemblyContainingResource.GetManifestResourceStream(resourceName);
 
             if (resourceStream == null)
             {
                 string message = "Could not find a resource stream for\n" + resourceName + "\n but found " +
                     "the following names:\n\n";
 
-                foreach (string containedResource in assembly.GetManifestResourceNames())
+                foreach (string containedResource in assemblyContainingResource.GetManifestResourceNames())
                 {
                     message += containedResource + "\n";
                 }
@@ -1434,14 +1434,14 @@ namespace FlatRedBall.IO
         }
 
 
-        public static void SaveEmbeddedResource(Assembly assembly, string resourceName, string targetFileName)
+        public static void SaveEmbeddedResource(Assembly assemblyContainingResource, string resourceName, string targetFileName)
         {
 #if WINDOWS_8
             throw new NotImplementedException();
 #else
             System.IO.Directory.CreateDirectory(FileManager.GetDirectory(targetFileName));
 
-            byte[] buffer = GetByteArrayFromEmbeddedResource(assembly, resourceName);
+            byte[] buffer = GetByteArrayFromEmbeddedResource(assemblyContainingResource, resourceName);
 
             bool succeeded = true;
 
