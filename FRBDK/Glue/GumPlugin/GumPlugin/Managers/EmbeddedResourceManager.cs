@@ -15,7 +15,6 @@ namespace GumPlugin.Managers
         Assembly mContextAssembly;
         string mContextDirectoryToSaveTo;
 
-        CodeBuildItemAdder mCodeAdder;
 
         CodeBuildItemAdder mStateInterpolationItemAdder;
 
@@ -59,7 +58,7 @@ namespace GumPlugin.Managers
 
         }
 
-        public void UpdateCodeInProjectPresence()
+        public void UpdateCodeInProjectPresence(bool addDll)
         {
             bool hasGumProject = AppState.Self.GumProjectSave != null;
 
@@ -67,7 +66,7 @@ namespace GumPlugin.Managers
             {
                 Assembly assembly = Assembly.GetExecutingAssembly();
 
-                UpdateGumFiles(assembly);
+                UpdateCoreGumFilePresence(assembly, addDll);
 
                 UpdateAdvancedStateInterpolationFiles(assembly);
             }
@@ -106,59 +105,86 @@ namespace GumPlugin.Managers
 
         }
 
-        private void UpdateGumFiles(Assembly assembly)
+        private void UpdateCoreGumFilePresence(Assembly assemblyContainingResources, bool addDll)
         {
-            mCodeAdder = new CodeBuildItemAdder();
-            mCodeAdder.OutputFolderInProject = "GumCore";
-            // April 14, 2017
-            // Used to only copy
-            // if out of date, but
-            // this plugin is updated
-            // so frequently, and if we
-            // don't force copy, then starter
-            // projects will aywas be out of date
-            // because their modified date is newer
-            // than the plugin.
-            //mCodeAdder.AddFileBehavior = AddFileBehavior.IfOutOfDate;
-            mCodeAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
+            var codeItemAdder = GetGumCoreCodeItemAdder(assemblyContainingResources);
 
-            mCodeAdder.Add("GumPlugin/Embedded/ContentManagerWrapper.cs");
+            var gumCoreDllAdder = new CodeBuildItemAdder();
+            gumCoreDllAdder.OutputFolderInProject = "GumCore";
+            // todo: make this depend on the project type (PC XNA, DesktopGL, etc)
+            gumCoreDllAdder.Add("GumPlugin/Embedded/LibraryFiles/GumCoreXnaPc.dll");
 
-            mCodeAdder.Add("GumPlugin/Embedded/GumIdb.cs");
-            mCodeAdder.Add("GumPlugin/Embedded/PlatformCompatability.cs");
+            if(addDll)
+            {
+                TaskManager.Self.AddSync(() =>
+                {
+                    codeItemAdder.PerformRemoveAndSave(assemblyContainingResources);
+                    gumCoreDllAdder.PerformAddAndSave(assemblyContainingResources);
+                }, "Adding standard Gum files");
+            }
+            else
+            {
+                // April 14, 2017
+                // Used to only copy
+                // if out of date, but
+                // this plugin is updated
+                // so frequently, and if we
+                // don't force copy, then starter
+                // projects will always be out of date
+                // because their modified date is newer
+                // than the plugin.
+                //mCodeAdder.AddFileBehavior = AddFileBehavior.IfOutOfDate;
+                codeItemAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
+                TaskManager.Self.AddSync(() =>
+                {
+                    codeItemAdder.PerformAddAndSave(assemblyContainingResources);
+                    gumCoreDllAdder.PerformRemoveAndSave(assemblyContainingResources);
 
-            mCodeAdder.Add("GumPlugin/Embedded/GraphicalUiElement.IWindow.cs");
-            mCodeAdder.Add("GumPlugin/Embedded/SystemManagers.FlatRedBall.cs");
-            mCodeAdder.Add("GumPlugin/Embedded/GumAnimation.cs");
+                }, "Adding standard Gum files");
+            }
+        }
+
+        private CodeBuildItemAdder GetGumCoreCodeItemAdder(Assembly assemblyContainingResources)
+        {
+            var codeItemAdder = new CodeBuildItemAdder();
+            codeItemAdder.OutputFolderInProject = "GumCore";
+
+            codeItemAdder.Add("GumPlugin/Embedded/ContentManagerWrapper.cs");
+
+            codeItemAdder.Add("GumPlugin/Embedded/GumIdb.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/PlatformCompatability.cs");
+
+            codeItemAdder.Add("GumPlugin/Embedded/GraphicalUiElement.IWindow.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/SystemManagers.FlatRedBall.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/GumAnimation.cs");
 
 
             // Sometimes we can add entire folders because the extensions
             // are simple:
-            mCodeAdder.AddFolder("GumPlugin.Embedded.LibraryFiles.GumDataTypes", assembly);
+            codeItemAdder.AddFolder("GumPlugin.Embedded.LibraryFiles.GumDataTypes", assemblyContainingResources);
 
 
             // But in situations where files have names like
             // FileName.Subname.cs, we have to be explicit and use slashes:
-            mCodeAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/Blend.cs");
-            mCodeAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/ElementSaveExtensionMethods.cs");
-            mCodeAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/ElementSaveExtensions.GumRuntime.cs");
-            mCodeAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/ElementWithState.cs");
-            mCodeAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/GraphicalUiElement.cs");
-            mCodeAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/InstanceSaveExtensionMethods.cs");
-            mCodeAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/InstanceSaveExtensionMethods.GumRuntime.cs");
-            mCodeAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/ObjectFinder.cs");
-            mCodeAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/RecursiveVariableFinder.cs");
-            mCodeAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/StandardElementsManager.cs");
-            mCodeAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/StateSaveExtensionMethods.cs");
-            mCodeAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/VariableSaveExtensionMethods.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/Blend.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/ElementSaveExtensionMethods.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/ElementSaveExtensions.GumRuntime.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/ElementWithState.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/GraphicalUiElement.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/InstanceSaveExtensionMethods.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/InstanceSaveExtensionMethods.GumRuntime.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/ObjectFinder.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/RecursiveVariableFinder.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/StandardElementsManager.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/StateSaveExtensionMethods.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/VariableSaveExtensionMethods.cs");
 
 
-            mCodeAdder.AddFolder("GumPlugin.Embedded.LibraryFiles.RenderingLibrary", assembly);
+            codeItemAdder.AddFolder("GumPlugin.Embedded.LibraryFiles.RenderingLibrary", assemblyContainingResources);
 
-            mCodeAdder.AddFolder("GumPlugin.Embedded.LibraryFiles.ToolsUtilities", assembly);
+            codeItemAdder.AddFolder("GumPlugin.Embedded.LibraryFiles.ToolsUtilities", assemblyContainingResources);
 
-            TaskManager.Self.AddSync(() => mCodeAdder.PerformAddAndSave(assembly), "Adding standard Gum files");
+            return codeItemAdder;
         }
-
     }
 }

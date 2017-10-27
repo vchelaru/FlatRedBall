@@ -9,6 +9,7 @@ using FlatRedBall.Glue.SaveClasses;
 using EditorObjects.Parsing;
 using FlatRedBall.Glue;
 using FlatRedBall.Glue.Managers;
+using GumPlugin.ViewModels;
 
 namespace GumPlugin.Managers
 {
@@ -37,12 +38,26 @@ namespace GumPlugin.Managers
             {
                 // Do we need to do anything?
             }
-            else if(propertyChanged == "ShowDottedOutlines")
+            else if(propertyChanged == nameof(GumViewModel.ShowDottedOutlines))
             {
                 UpdateShowDottedOutlines();
             }
-
+            else if(propertyChanged == nameof(GumViewModel.AddDll))
+            {
+                UpdateCodeOrDllAdd();
+            }
             GlueCommands.Self.GluxCommands.SaveGlux();
+        }
+
+        private void UpdateCodeOrDllAdd()
+        {
+            var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
+            if (gumRfs != null)
+            {
+                bool addDll = gumRfs.Properties.GetValue<bool>(nameof(GumViewModel.AddDll));
+
+                EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(addDll);
+            }
         }
 
         private void UpdateShowDottedOutlines()

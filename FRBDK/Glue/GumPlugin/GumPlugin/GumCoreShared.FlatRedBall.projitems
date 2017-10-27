@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>0ee8a96c-a754-453d-9e65-19a24e9a5e76</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>GumCoreShared.FlatRedBall</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Embedded\ContentManagerWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Embedded\GraphicalUiElement.IWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Embedded\GumAnimation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Embedded\GumIdb.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Embedded\PlatformCompatability.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Embedded\SystemManagers.FlatRedBall.cs" />
+  </ItemGroup>
+</Project>

@@ -1,6 +1,7 @@
 ﻿using Gum.DataTypes.Behaviors;
 using GumPlugin.DataGeneration;
 using GumPlugin.Managers;
+using GumPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -30,6 +31,30 @@ namespace GumPlugin.Controls
         public GumControl()
         {
             InitializeComponent();
+
+            this.DataContextChanged += HandleDataContextChanged;
+        }
+
+        private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            ManuallyRefreshRadioButtons();
+        }
+
+        public void ManuallyRefreshRadioButtons()
+        {
+            // don't know why, but this doesn't update like it should:
+            var viewModel = DataContext as GumViewModel;
+
+            if (viewModel.AddDll)
+            {
+                AddDllRadio.IsChecked = true;
+                EmbedCodeFilesRadio.IsChecked = false;
+            }
+            else
+            {
+                AddDllRadio.IsChecked = false;
+                EmbedCodeFilesRadio.IsChecked = true;
+            }
         }
 
         private void HandleGenerateBehaviors(object sender, RoutedEventArgs e)

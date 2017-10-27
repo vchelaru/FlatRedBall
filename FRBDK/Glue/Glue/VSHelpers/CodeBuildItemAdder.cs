@@ -9,6 +9,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins;
 using System.Windows.Forms;
 using System.ComponentModel.Composition;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.VSHelpers
 {
@@ -71,6 +72,14 @@ namespace FlatRedBall.Glue.VSHelpers
 
         public void AddFolder(string folderName, Assembly assembly)
         {
+            List<string> filesInFolder = GetItemsInFolder(folderName, assembly);
+
+            mFilesToAdd.AddRange(filesInFolder);
+        }
+
+        public List<string> GetItemsInFolder(string folderName, Assembly assembly)
+        {
+            List<string> filesInFolder = new List<string>();
             var named = assembly.GetManifestResourceNames();
             string libraryWithDotAtEnd = folderName + ".";
 
@@ -78,12 +87,14 @@ namespace FlatRedBall.Glue.VSHelpers
             {
                 if (item.StartsWith(libraryWithDotAtEnd))
                 {
-                    mFilesToAdd.Add(item);
+                    filesInFolder.Add(item);
                 }
             }
+
+            return filesInFolder;
         }
 
-        public bool PerformAddAndSave(Assembly assembly)
+        public bool PerformAddAndSave(Assembly assemblyContainingResource)
         {
             bool succeeded = true;
             bool preserveCase = FileManager.PreserveCase;
@@ -96,7 +107,7 @@ namespace FlatRedBall.Glue.VSHelpers
                 // User may have shut down the project:
                 if (ProjectManager.ProjectBase != null)
                 {
-                    succeeded = SaveResourceFileToProject(assembly, succeeded, filesToAddToProject, resourceName);
+                    succeeded = SaveResourceFileToProject(assemblyContainingResource, succeeded, filesToAddToProject, resourceName);
                 }
                 else
                 {
@@ -132,7 +143,25 @@ namespace FlatRedBall.Glue.VSHelpers
             return succeeded;
         }
 
-        private bool SaveResourceFileToProject(Assembly assembly, bool succeeded, List<string> filesToAddToProject, string resourceName)
+        public void PerformRemoveAndSave(Assembly assemblyContainingResource)
+        {
+            foreach (string resourceName in mFilesToAdd)
+            {
+                string destinationDirectory, destination;
+                GetDestination(resourceName, out destinationDirectory, out destination);
+
+                if(ProjectManager.ProjectBase.IsFilePartOfProject(destination, Projects.BuildItemMembershipType.Any))
+                {
+                    ProjectManager.ProjectBase.RemoveItem(destination);
+                    GlueCommands.Self.PrintOutput($"Removing {destination} from project");
+                }
+            }
+
+            ProjectManager.SaveProjects();
+
+        }
+
+        private bool SaveResourceFileToProject(Assembly assemblyContainingResource, bool succeeded, List<string> filesToAddToProject, string resourceName)
         {
             if (ProjectManager.ProjectBase == null)
             {
@@ -142,30 +171,15 @@ namespace FlatRedBall.Glue.VSHelpers
 
             try
             {
-
-                string destinationDirectory = ProjectManager.ProjectBase.Directory + OutputFolderInProject + "/";
-
-                string destination = null;
-
-                if (resourceName.Contains("/"))
-                {
-                    destination = destinationDirectory + FileManager.RemovePath(resourceName);
-                }
-                else
-                {
-                    string completelyStripped = FileManager.RemoveExtension(resourceName);
-                    int lastDot = completelyStripped.LastIndexOf('.');
-                    completelyStripped = completelyStripped.Substring(lastDot + 1);
-
-                    destination = destinationDirectory + completelyStripped + ".cs";
-                }
-                bool shouldAdd = DetermineIfShouldCopyAndAdd(destination, assembly);
+                string destinationDirectory, destination;
+                GetDestination(resourceName, out destinationDirectory, out destination);
+                bool shouldAdd = DetermineIfShouldCopyAndAdd(destination, assemblyContainingResource);
 
                 if (shouldAdd)
                 {
-                    SaveResource(assembly, filesToAddToProject, resourceName, destinationDirectory, destination);
+                    SaveResource(assemblyContainingResource, filesToAddToProject, resourceName, destinationDirectory, destination);
 
-                    if(IsVerbose)
+                    if (IsVerbose)
                     {
                         PluginManager.ReceiveOutput("Updating file: " + destination);
                     }
@@ -187,14 +201,32 @@ namespace FlatRedBall.Glue.VSHelpers
             return succeeded;
         }
 
-        private static void SaveResource(Assembly assembly, List<string> filesToAddToProject, string resourceName, string destinationDirectory, string destination)
+        private void GetDestination(string resourceName, out string destinationDirectory, out string destination)
+        {
+            destinationDirectory = ProjectManager.ProjectBase.Directory + OutputFolderInProject + "/";
+            destination = null;
+            if (resourceName.Contains("/"))
+            {
+                destination = destinationDirectory + FileManager.RemovePath(resourceName);
+            }
+            else
+            {
+                string completelyStripped = FileManager.RemoveExtension(resourceName);
+                int lastDot = completelyStripped.LastIndexOf('.');
+                completelyStripped = completelyStripped.Substring(lastDot + 1);
+
+                destination = destinationDirectory + completelyStripped + ".cs";
+            }
+        }
+
+        private static void SaveResource(Assembly assemblyContainingResource, List<string> filesToAddToProject, string resourceName, string destinationDirectory, string destination)
         {
             bool succeeded = false;
             Directory.CreateDirectory(destinationDirectory);
 
             filesToAddToProject.Add(destination);
 
-            var names = assembly.GetManifestResourceNames();
+            var names = assemblyContainingResource.GetManifestResourceNames();
 
             const int maxFailures = 6;
             int numberOfFailures = 0;
@@ -202,7 +234,7 @@ namespace FlatRedBall.Glue.VSHelpers
             {
                 try
                 {
-                    FileManager.SaveEmbeddedResource(assembly, resourceName.Replace("/", "."), destination);
+                    FileManager.SaveEmbeddedResource(assemblyContainingResource, resourceName.Replace("/", "."), destination);
                     succeeded = true;
                     break;
                 }

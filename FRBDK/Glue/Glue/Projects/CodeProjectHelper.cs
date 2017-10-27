@@ -111,6 +111,10 @@ namespace FlatRedBall.Glue.Projects
 
                 wasAdded = true;
             }
+            else if(fileToAddAbsolute.EndsWith(".dll"))
+            {
+                project.AddContentBuildItem(relativeFileName);
+            }
             return wasAdded;
         }
     }

@@ -59,6 +59,30 @@ namespace GumPlugin.ViewModels
             }
         }
 
+        // We don't use this to adjust the data (ReferencedFileSave, settings file), but it's here
+        // for when we first adjust to the ReferencedFileSave so that we can check or uncheck the radio.
+        bool embedCodeFiles;
+        public bool EmbedCodeFiles
+        {
+            get { return embedCodeFiles; }
+            set
+            {
+                base.ChangeAndNotify(ref embedCodeFiles, value);
+            }
+        }
+
+        bool addDll;
+        public bool AddDll
+        {
+            get { return addDll; }
+            set
+            {
+                backingRfs.Properties.SetValue(
+                    nameof(AddDll), value);
+                base.ChangeAndNotify(ref addDll, value);
+            }
+        }
+
         bool showDottedOutlines;
         public bool ShowDottedOutlines
         {
@@ -98,6 +122,8 @@ namespace GumPlugin.ViewModels
                 UseAtlases = backingRfs.Properties.GetValue<bool>(nameof(UseAtlases));
                 AutoCreateGumScreens = backingRfs.Properties.GetValue<bool>(nameof(AutoCreateGumScreens));
                 ShowDottedOutlines = backingRfs.Properties.GetValue<bool>(nameof(ShowDottedOutlines));
+                AddDll = backingRfs.Properties.GetValue<bool>(nameof(AddDll));
+                EmbedCodeFiles = !AddDll;
             }
             shouldRaiseEvents = true;
         }

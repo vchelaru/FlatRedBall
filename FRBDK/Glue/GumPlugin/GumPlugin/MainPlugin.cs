@@ -272,6 +272,7 @@ namespace GumPlugin
                     AddTab();
                 }
                 viewModel.SetFrom(AppState.Self.GumProjectSave, selectedTreeNode.Tag as ReferencedFileSave);
+                control.ManuallyRefreshRadioButtons();
             }
             else
             {
@@ -321,7 +322,14 @@ namespace GumPlugin
                 else
                 {
                     // in global content, so generate the code files
-                    EmbeddedResourceManager.Self.UpdateCodeInProjectPresence();
+                    var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
+                    bool addDll = false;
+                    if (gumRfs != null)
+                    {
+                        addDll = gumRfs.Properties.GetValue<bool>(nameof(GumViewModel.AddDll));
+                    }
+
+                    EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(addDll);
                 }
 
             }
@@ -403,7 +411,14 @@ namespace GumPlugin
 
             if (added)
             {
-                EmbeddedResourceManager.Self.UpdateCodeInProjectPresence();
+                var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
+                bool addDll = false;
+                if (gumRfs != null)
+                {
+                    addDll = gumRfs.Properties.GetValue<bool>(nameof(GumViewModel.AddDll));
+                }
+
+                EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(addDll);
             }
         }
 
@@ -425,8 +440,14 @@ namespace GumPlugin
 
         private void HandleGluxLoad()
         {
+            var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
+            bool addDll = false;
+            if (gumRfs != null)
+            {
+                addDll = gumRfs.Properties.GetValue<bool>(nameof(GumViewModel.AddDll));
+            }
             // todo: Removing a file should cause this to get called, but I don't think Gum lets us subscribe to that yet.
-            EmbeddedResourceManager.Self.UpdateCodeInProjectPresence();
+            EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(addDll);
 
             CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
 

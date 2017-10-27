@@ -481,7 +481,11 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\..\..\Gum\GumCore\GumCoreXnaPc\bin\Debug\GumCoreXnaPc.dll">
+      <Link>Embedded\LibraryFiles\GumCoreXnaPc.dll</Link>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <None Include="Icons\GumIcon.png" />
   </ItemGroup>

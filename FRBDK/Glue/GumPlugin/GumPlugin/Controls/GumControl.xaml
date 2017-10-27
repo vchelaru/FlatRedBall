@@ -16,6 +16,16 @@
                   Content="Automatically Create Gum Screens for Glue Screens" IsChecked="{Binding AutoCreateGumScreens}"></CheckBox>
         <CheckBox x:Name="UseAtlasesCheckBox" VerticalContentAlignment="Center" 
                   Content="Use Atlases" IsChecked="{Binding UseAtlases}"></CheckBox>
+        <GroupBox Header="Core Gum Addition">
+            <StackPanel >
+                <RadioButton GroupName="AdditionType" x:Name="EmbedCodeFilesRadio" 
+                             VerticalContentAlignment="Center" Content="Embed Code Files" IsChecked="{Binding EmbedCodeFiles, FallbackValue=true, Mode=TwoWay}" />
+                <RadioButton GroupName="AdditionType" x:Name="AddDllRadio" 
+                             VerticalContentAlignment="Center" Content="Add .dll" IsChecked="{Binding AddDll, Mode=TwoWay}"/>
+                
+            </StackPanel>
+            
+        </GroupBox>
         <Button HorizontalAlignment="Left" Margin="0,10,0,0" Width="200" Click="HandleGenerateBehaviors">Generate FlatRedBall Behaviors</Button>
     </StackPanel>
 </UserControl>
