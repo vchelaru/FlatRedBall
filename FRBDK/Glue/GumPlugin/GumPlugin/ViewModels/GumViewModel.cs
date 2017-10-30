@@ -10,6 +10,13 @@ using System.Threading.Tasks;
 
 namespace GumPlugin.ViewModels
 {
+    public enum FileAdditionBehavior
+    {
+        EmbedCodeFiles = 0,
+        AddDll,
+        IncludeNoFiles
+    }
+
     class GumViewModel : ViewModel
     {
         GumProjectSave backingGumProject;
@@ -61,25 +68,40 @@ namespace GumPlugin.ViewModels
 
         // We don't use this to adjust the data (ReferencedFileSave, settings file), but it's here
         // for when we first adjust to the ReferencedFileSave so that we can check or uncheck the radio.
-        bool embedCodeFiles;
+
+        FileAdditionBehavior behavior;
         public bool EmbedCodeFiles
         {
-            get { return embedCodeFiles; }
+            get { return behavior == FileAdditionBehavior.EmbedCodeFiles; }
             set
             {
-                base.ChangeAndNotify(ref embedCodeFiles, value);
+                if (value) behavior = FileAdditionBehavior.EmbedCodeFiles;
+                UpdateBehaviorOnRfs();
+                NotifyPropertyChanged(nameof(EmbedCodeFiles));
             }
         }
 
-        bool addDll;
         public bool AddDll
         {
-            get { return addDll; }
+            get { return behavior == FileAdditionBehavior.AddDll; }
             set
             {
-                backingRfs.Properties.SetValue(
-                    nameof(AddDll), value);
-                base.ChangeAndNotify(ref addDll, value);
+                if (value) behavior = FileAdditionBehavior.AddDll;
+                UpdateBehaviorOnRfs();
+                NotifyPropertyChanged(nameof(AddDll));
+
+            }
+        }
+
+        public bool IncludeNoFiles
+        {
+            get { return behavior == FileAdditionBehavior.IncludeNoFiles; }
+            set
+            {
+                if (value) behavior = FileAdditionBehavior.IncludeNoFiles;
+                UpdateBehaviorOnRfs();
+                NotifyPropertyChanged(nameof(IncludeNoFiles));
+
             }
         }
 
@@ -122,10 +144,31 @@ namespace GumPlugin.ViewModels
                 UseAtlases = backingRfs.Properties.GetValue<bool>(nameof(UseAtlases));
                 AutoCreateGumScreens = backingRfs.Properties.GetValue<bool>(nameof(AutoCreateGumScreens));
                 ShowDottedOutlines = backingRfs.Properties.GetValue<bool>(nameof(ShowDottedOutlines));
-                AddDll = backingRfs.Properties.GetValue<bool>(nameof(AddDll));
-                EmbedCodeFiles = !AddDll;
+                FileAdditionBehavior behavior = (FileAdditionBehavior) backingRfs.Properties.GetValue<int>(nameof(FileAdditionBehavior));
+
+                AddDll = behavior == FileAdditionBehavior.AddDll;
+                EmbedCodeFiles = behavior == FileAdditionBehavior.EmbedCodeFiles;
+                IncludeNoFiles = behavior == FileAdditionBehavior.IncludeNoFiles;
+
             }
             shouldRaiseEvents = true;
+        }
+
+
+        private void UpdateBehaviorOnRfs()
+        {
+            if(AddDll)
+            {
+                backingRfs.Properties.SetValue(nameof(FileAdditionBehavior), (int)FileAdditionBehavior.AddDll);
+            }
+            else if(EmbedCodeFiles)
+            {
+                backingRfs.Properties.SetValue(nameof(FileAdditionBehavior), (int)FileAdditionBehavior.EmbedCodeFiles);
+            }
+            else
+            {
+                backingRfs.Properties.SetValue(nameof(FileAdditionBehavior), (int)FileAdditionBehavior.IncludeNoFiles);
+            }
         }
 
     }

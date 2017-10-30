@@ -218,7 +218,7 @@ namespace GumPlugin.Managers
         string GetGumxLoadCode()
         {
             string toReturn = "FlatRedBall.Gum.GumIdb.StaticInitialize(\"{FILE_NAME}\"); " +
-                        "FlatRedBall.Gum.GumIdb.RegisterTypes();  " +
+                        "FlatRedBall.Gum.GumIdbExtensions.RegisterTypes();  " +
                         "FlatRedBall.Gui.GuiManager.BringsClickedWindowsToFront = false;" +
                         "FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (not, used) => {{ FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera(); }};"
                         ;

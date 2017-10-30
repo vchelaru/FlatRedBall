@@ -42,7 +42,10 @@ namespace GumPlugin.Managers
             {
                 UpdateShowDottedOutlines();
             }
-            else if(propertyChanged == nameof(GumViewModel.AddDll))
+            else if(propertyChanged == nameof(GumViewModel.AddDll) ||
+                propertyChanged == nameof(GumViewModel.EmbedCodeFiles) ||
+                propertyChanged == nameof(GumViewModel.IncludeNoFiles)
+                )
             {
                 UpdateCodeOrDllAdd();
             }
@@ -54,9 +57,9 @@ namespace GumPlugin.Managers
             var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
             if (gumRfs != null)
             {
-                bool addDll = gumRfs.Properties.GetValue<bool>(nameof(GumViewModel.AddDll));
+                var behavior = (FileAdditionBehavior)gumRfs.Properties.GetValue<FileAdditionBehavior>(nameof(FileAdditionBehavior));
 
-                EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(addDll);
+                EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
             }
         }
 

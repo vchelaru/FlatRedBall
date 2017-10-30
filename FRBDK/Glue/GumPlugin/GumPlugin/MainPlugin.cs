@@ -323,13 +323,9 @@ namespace GumPlugin
                 {
                     // in global content, so generate the code files
                     var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
-                    bool addDll = false;
-                    if (gumRfs != null)
-                    {
-                        addDll = gumRfs.Properties.GetValue<bool>(nameof(GumViewModel.AddDll));
-                    }
+                    var behavior = GetBehavior(gumRfs);
 
-                    EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(addDll);
+                    EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
                 }
 
             }
@@ -350,6 +346,17 @@ namespace GumPlugin
             }
 
             UpdateMenuItemVisibility();
+        }
+
+        private static FileAdditionBehavior GetBehavior(ReferencedFileSave gumRfs)
+        {
+            var behavior = FileAdditionBehavior.EmbedCodeFiles;
+            if (gumRfs != null)
+            {
+                behavior = (FileAdditionBehavior)gumRfs.Properties.GetValue<int>(nameof(FileAdditionBehavior));
+            }
+
+            return behavior;
         }
 
         private void HandleFileChange(string fileName)
@@ -417,8 +424,9 @@ namespace GumPlugin
                 {
                     addDll = gumRfs.Properties.GetValue<bool>(nameof(GumViewModel.AddDll));
                 }
+                var behavior = GetBehavior(gumRfs);
 
-                EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(addDll);
+                EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
             }
         }
 
@@ -441,13 +449,10 @@ namespace GumPlugin
         private void HandleGluxLoad()
         {
             var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
-            bool addDll = false;
-            if (gumRfs != null)
-            {
-                addDll = gumRfs.Properties.GetValue<bool>(nameof(GumViewModel.AddDll));
-            }
+            var behavior = GetBehavior(gumRfs);
+
             // todo: Removing a file should cause this to get called, but I don't think Gum lets us subscribe to that yet.
-            EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(addDll);
+            EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 
             CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
 

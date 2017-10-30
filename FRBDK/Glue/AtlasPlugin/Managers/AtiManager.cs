@@ -59,7 +59,7 @@ namespace AtlasPlugin.Managers
             //gumProjectAti.QualifiedSaveTypeName = "Gum.Data.ProjectSave";
             gumProjectAti.Extension = "tps";
             //gumProjectAti.CustomLoadMethod = "FlatRedBall.Gum.GumIdb.StaticInitialize(\"{FILE_NAME}\"); " +
-            //    "FlatRedBall.Gum.GumIdb.RegisterTypes();  " +
+            //    "FlatRedBall.Gum.GumIdbExtensions.RegisterTypes();  " +
             //    "FlatRedBall.Gui.GuiManager.BringsClickedWindowsToFront = false;";
             gumProjectAti.SupportsMakeOneWay = false;
             gumProjectAti.ShouldAttach = false;

@@ -57,7 +57,8 @@ namespace FlatRedBall.Glue.CodeGeneration
                     contents = contents.Insert(index, lineToReplaceWith + Environment.NewLine);
                 }
 
-                FileManager.SaveText(contents, FileManager.RelativeDirectory + gameFileName);
+                GlueCommands.Self.TryMultipleTimes(() =>
+                    FileManager.SaveText(contents, FileManager.RelativeDirectory + gameFileName), 5);
             }
         }
 

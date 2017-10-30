@@ -75,7 +75,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             IO.ProjectLoader.Self.LoadProject(fileName);
         }
 
-        public void TryMultipleTimes(Action action, int numberOfTimesToTry)
+        public void TryMultipleTimes(Action action, int numberOfTimesToTry = 5)
         {
             const int msSleep = 200;
 

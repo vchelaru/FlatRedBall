@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.VSHelpers;
 using FlatRedBall.IO;
+using GumPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,7 +59,7 @@ namespace GumPlugin.Managers
 
         }
 
-        public void UpdateCodeInProjectPresence(bool addDll)
+        public void UpdateCodeInProjectPresence(FileAdditionBehavior behavior)
         {
             bool hasGumProject = AppState.Self.GumProjectSave != null;
 
@@ -66,7 +67,7 @@ namespace GumPlugin.Managers
             {
                 Assembly assembly = Assembly.GetExecutingAssembly();
 
-                UpdateCoreGumFilePresence(assembly, addDll);
+                UpdateCoreGumFilePresence(assembly, behavior);
 
                 UpdateAdvancedStateInterpolationFiles(assembly);
             }
@@ -105,7 +106,7 @@ namespace GumPlugin.Managers
 
         }
 
-        private void UpdateCoreGumFilePresence(Assembly assemblyContainingResources, bool addDll)
+        private void UpdateCoreGumFilePresence(Assembly assemblyContainingResources, FileAdditionBehavior behavior)
         {
             var codeItemAdder = GetGumCoreCodeItemAdder(assemblyContainingResources);
 
@@ -114,7 +115,7 @@ namespace GumPlugin.Managers
             // todo: make this depend on the project type (PC XNA, DesktopGL, etc)
             gumCoreDllAdder.Add("GumPlugin/Embedded/LibraryFiles/GumCoreXnaPc.dll");
 
-            if(addDll)
+            if(behavior == FileAdditionBehavior.AddDll)
             {
                 TaskManager.Self.AddSync(() =>
                 {
@@ -122,7 +123,7 @@ namespace GumPlugin.Managers
                     gumCoreDllAdder.PerformAddAndSave(assemblyContainingResources);
                 }, "Adding standard Gum files");
             }
-            else
+            else if(behavior == FileAdditionBehavior.EmbedCodeFiles)
             {
                 // April 14, 2017
                 // Used to only copy
@@ -141,6 +142,15 @@ namespace GumPlugin.Managers
                     gumCoreDllAdder.PerformRemoveAndSave(assemblyContainingResources);
 
                 }, "Adding standard Gum files");
+            }
+            else // remove both:
+            {
+                TaskManager.Self.AddSync(() =>
+                {
+                    codeItemAdder.PerformRemoveAndSave(assemblyContainingResources);
+                    gumCoreDllAdder.PerformRemoveAndSave(assemblyContainingResources);
+
+                }, "Removing standard Gum files");
             }
         }
 

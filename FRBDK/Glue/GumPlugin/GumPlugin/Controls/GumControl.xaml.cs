@@ -49,11 +49,19 @@ namespace GumPlugin.Controls
             {
                 AddDllRadio.IsChecked = true;
                 EmbedCodeFilesRadio.IsChecked = false;
+                IncludeNoFilesRadio.IsChecked = false;
             }
-            else
+            else if(viewModel.EmbedCodeFiles)
             {
-                AddDllRadio.IsChecked = false;
                 EmbedCodeFilesRadio.IsChecked = true;
+                AddDllRadio.IsChecked = false;
+                IncludeNoFilesRadio.IsChecked = false;
+            }
+            else if(viewModel.IncludeNoFiles)
+            {
+                IncludeNoFilesRadio.IsChecked = true;
+                EmbedCodeFilesRadio.IsChecked = false;
+                AddDllRadio.IsChecked = false;
             }
         }
 

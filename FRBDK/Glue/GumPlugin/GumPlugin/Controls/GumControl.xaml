@@ -22,7 +22,8 @@
                              VerticalContentAlignment="Center" Content="Embed Code Files" IsChecked="{Binding EmbedCodeFiles, FallbackValue=true, Mode=TwoWay}" />
                 <RadioButton GroupName="AdditionType" x:Name="AddDllRadio" 
                              VerticalContentAlignment="Center" Content="Add .dll" IsChecked="{Binding AddDll, Mode=TwoWay}"/>
-                
+                <RadioButton GroupName="AdditionType" x:Name="IncludeNoFilesRadio" 
+                             VerticalContentAlignment="Center" Content="Include No Files (if linking Gum source in game)" IsChecked="{Binding IncludeNoFiles, Mode=TwoWay}"/>                
             </StackPanel>
             
         </GroupBox>

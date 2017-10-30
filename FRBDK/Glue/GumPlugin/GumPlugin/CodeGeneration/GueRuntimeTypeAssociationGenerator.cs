@@ -19,7 +19,7 @@ namespace GumPlugin.CodeGeneration
 
             ICodeBlock currentBlock = codeBlock.Namespace("FlatRedBall.Gum");
 
-            currentBlock = currentBlock.Class("public partial", "GumIdb", "");
+            currentBlock = currentBlock.Class("public ", "GumIdbExtensions", "");
 
             currentBlock = currentBlock.Function("public static void", "RegisterTypes", "");
             {
