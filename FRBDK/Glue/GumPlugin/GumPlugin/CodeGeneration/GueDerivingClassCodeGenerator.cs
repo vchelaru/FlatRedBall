@@ -641,10 +641,20 @@ namespace GumPlugin.CodeGeneration
             }
             var constructor = currentBlock.Constructor("public", runtimeClassName, "bool fullInstantiation = true",  baseCall );
 
-            bool hasEvents = elementSave.DefaultState.GetValueOrDefault<bool>("HasEvents");
-            bool exposeChildrenEvents = elementSave.DefaultState.GetValueOrDefault<bool>("ExposeChildrenEvents");
-            constructor.Line($"this.HasEvents = {hasEvents.ToString().ToLower()};");
-            constructor.Line($"this.ExposeChildrenEvents = {exposeChildrenEvents.ToString().ToLower()};");
+            // This may not have a value, so if not, don't set it:
+            var state = elementSave.DefaultState;
+
+            if(state.GetVariableSave("HasEvents") != null)
+            {
+                bool hasEvents = state.GetValueOrDefault<bool>("HasEvents");
+                constructor.Line($"this.HasEvents = {hasEvents.ToString().ToLower()};");
+            }
+
+            if (state.GetVariableSave("ExposeChildrenEvents") != null)
+            {
+                bool exposeChildrenEvents = state.GetValueOrDefault<bool>("ExposeChildrenEvents");
+                constructor.Line($"this.ExposeChildrenEvents = {exposeChildrenEvents.ToString().ToLower()};");
+            }
 
             var ifStatement = constructor.If("fullInstantiation");
 

@@ -45,7 +45,7 @@ namespace FlatRedBall.Input
         /// <seealso cref="FlatRedBall.Gui.IInputReceiver"/>
         /// </remarks>
         #endregion
-        static public FlatRedBall.Gui.IInputReceiver mReceivingInput;
+        static FlatRedBall.Gui.IInputReceiver mReceivingInput;
         // When a user clicks on an element which is an IInputReceiver,
         // it is set as the object which receieves input.  Whenever the
         // user clicks the mouse, the InputManager's receivingInput gets set.
@@ -113,7 +113,9 @@ namespace FlatRedBall.Input
                     IInputReceiver oldReceiver = mReceivingInput;
                     mReceivingInput = value;
                     if (oldReceiver != null)
+                    {
                         oldReceiver.LoseFocus();
+                    }
                 }
                 mReceivingInputJustSet = true;
 

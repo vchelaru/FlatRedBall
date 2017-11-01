@@ -232,6 +232,7 @@
     <Compile Include="Graphics\EffectCache.cs" />
     <Compile Include="Graphics\EffectContainer.cs" />
     <Compile Include="Graphics\Texture\BitmapList.cs" />
+    <Compile Include="Input\Windows\WindowsInputEventManager.cs" />
     <Compile Include="IO\HttpManager.cs" />
     <Compile Include="IO\ICSharpCode.SharpZLib\Checksums\Adler32.cs" />
     <Compile Include="IO\ICSharpCode.SharpZLib\Checksums\IChecksum.cs" />
@@ -330,7 +331,6 @@
   <ItemGroup>
     <Folder Include="ContentOrganization\" />
     <Folder Include="Content\Xml\" />
-    <Folder Include="Input\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources Xna 4\defaultFont.txt" />

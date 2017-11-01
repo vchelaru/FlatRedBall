@@ -619,17 +619,15 @@ namespace FlatRedBall.Input
                 }
             }
 
-#if !XBOX360
             // Need to call the ReceiveInput method after testing out typed keys
-            if (InputManager.mReceivingInput != null)
+            if (InputManager.InputReceiver != null)
             {
                 InputManager.InputReceiver.OnFocusUpdate();
-                InputManager.mReceivingInput.ReceiveInput();
+                InputManager.InputReceiver.ReceiveInput();
 
                 //				((IInputReceiver)receivingInput).ReceiveInput(this);
                 InputManager.CurrentFrameKeyboardInputSuspended = true;
             }
-#endif
         }
 
         #endregion

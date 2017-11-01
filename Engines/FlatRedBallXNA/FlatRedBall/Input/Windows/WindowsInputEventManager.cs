@@ -79,32 +79,32 @@ namespace FlatRedBall.Input.Windows
 
     #endregion
 
-    public static class WindowsInputEventManager
+    public class WindowsInputEventManager
     {
         #region Events
         /// <summary>
         /// Event raised when a character has been entered.
         /// </summary>
-        public static event CharEnteredHandler CharEntered;
+        public event Action<char> CharEntered;
 
         /// <summary>
         /// Event raised when a key has been pressed down. May fire multiple times due to keyboard repeat.
         /// </summary>
-        public static event KeyEventHandler KeyDown;
+        public event Action<Keys> KeyDown;
 
         /// <summary>
         /// Event raised when a key has been released.
         /// </summary>
-        public static event KeyEventHandler KeyUp;
+        public event Action<Keys> KeyUp;
 
         #endregion
 
         delegate IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
-        static bool initialized;
-        static IntPtr prevWndProc;
-        static WndProc hookProcDelegate;
-        static IntPtr hIMC;
+        bool isInitialized;
+        IntPtr prevWndProc;
+        WndProc hookProcDelegate;
+        IntPtr hIMC;
 
         #region Win32 Constants
         const int GWL_WNDPROC = -4;
@@ -156,7 +156,7 @@ namespace FlatRedBall.Input.Windows
         static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
         #endregion
         
-        public static bool IsShiftDown
+        public bool IsShiftDown
         {
             get
             {
@@ -165,7 +165,7 @@ namespace FlatRedBall.Input.Windows
             }
         }
 
-        public static bool IsCtrlDown
+        public bool IsCtrlDown
         {
             get
             {
@@ -174,7 +174,7 @@ namespace FlatRedBall.Input.Windows
             }
         }
 
-        public static bool IsAltDown
+        public bool IsAltDown
         {
             get
             {
@@ -183,24 +183,24 @@ namespace FlatRedBall.Input.Windows
             }
         }
 
-
         /// <summary>
         /// Initialize the TextInput with the given GameWindow.
         /// </summary>
         /// <param name="window">The XNA window to which text input should be linked.</param>
-        public static void Initialize(GameWindow window)
+        public void Initialize(GameWindow window)
         {
-            if (initialized)
-                throw new InvalidOperationException("TextInput.Initialize can only be called once!");
+            if (isInitialized == false)
+            {
+                hookProcDelegate = new WndProc(HookProc);
+                prevWndProc = (IntPtr)SetWindowLong(window.Handle, GWL_WNDPROC, (int)Marshal.GetFunctionPointerForDelegate(hookProcDelegate));
 
-            hookProcDelegate = new WndProc(HookProc);
-            prevWndProc = (IntPtr)SetWindowLong(window.Handle, GWL_WNDPROC, (int)Marshal.GetFunctionPointerForDelegate(hookProcDelegate));
+                hIMC = ImmGetContext(window.Handle);
 
-            hIMC = ImmGetContext(window.Handle);
-            initialized = true;
+                isInitialized = true;
+            }
         }
 
-        static IntPtr HookProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
+        IntPtr HookProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
         {
             IntPtr returnCode = CallWindowProc(prevWndProc, hWnd, msg, wParam, lParam);
 
@@ -212,17 +212,17 @@ namespace FlatRedBall.Input.Windows
 
                 case WM_KEYDOWN:
                     if (KeyDown != null)
-                        KeyDown(null, new KeyEventArgs((Keys)wParam));
+                        KeyDown((Keys)wParam);
                     break;
 
                 case WM_KEYUP:
                     if (KeyUp != null)
-                        KeyUp(null, new KeyEventArgs((Keys)wParam));
+                        KeyUp((Keys)wParam);
                     break;
 
                 case WM_CHAR:
                     if (CharEntered != null)
-                        CharEntered(null, new CharacterEventArgs((char)wParam, lParam.ToInt32()));
+                        CharEntered((char)wParam);
                     break;
 
                 case WM_IME_SETCONTEXT:
