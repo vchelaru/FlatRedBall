@@ -141,6 +141,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\IMouseOver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Keyboard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\KeyboardStateProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Mouse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\TouchScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Xbox360Gamepad.cs" />

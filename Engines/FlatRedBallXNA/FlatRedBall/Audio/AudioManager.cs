@@ -8,7 +8,7 @@ using System.Reflection;
 using FlatRedBall.IO;
 using FlatRedBall.Instructions;
 
-#if !WINDOWS_8 && !IOS && !ANDROID && !UWP
+#if !MONOGAME
 using Microsoft.Xna.Framework.GamerServices;
 #endif
 

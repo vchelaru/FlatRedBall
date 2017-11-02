@@ -160,7 +160,9 @@ namespace GumPlugin
             // - Fixed order of CustomInitialize with default state - custom init comes last
             // 0.9.1.3
             // - Fixed list items not updating their parent due to an earlier fix.
-            get { return new Version(0, 9, 1, 3); }
+            // 0.9.1.4
+            // - Exporting again to make sure I have all the latest changes
+            get { return new Version(0, 9, 1, 4); }
         }
 
         #endregion

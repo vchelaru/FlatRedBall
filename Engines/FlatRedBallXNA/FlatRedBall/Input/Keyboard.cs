@@ -24,10 +24,7 @@ namespace FlatRedBall.Input
         #endregion
 
         #region Fields
-        
-        KeyboardState mLastFrameKeyboardState = new KeyboardState();
-
-        KeyboardState mKeyboardState;
+        FlatRedBall.Input.KeyboardStateProcessor keyboardStateProcessor = new FlatRedBall.Input.KeyboardStateProcessor();
 
         public const int NumberOfKeys = 255;
 
@@ -40,6 +37,13 @@ namespace FlatRedBall.Input
         bool[] mKeysIgnoredForThisFrame;
 
         #endregion
+
+        #region Properties
+
+        public bool AutomaticallyPushEventsToInputReceiver { get; set; } = true;
+
+        #endregion
+
 
         #region Methods
 
@@ -113,38 +117,12 @@ namespace FlatRedBall.Input
 
         public bool AnyKeyPushed()
         {
-            // Gets all pressed keys. Yuck this allocates memory :(
-            var pressed = mKeyboardState.GetPressedKeys();
-
-            // loop through all pressed keys...
-            for(int i= 0; i < pressed.Length; i++)
-            {
-                // And see if it's pushed (was not down this frame, is down this frame)
-                if(KeyPushed(pressed[i]))
-                {
-                    // if so, we can return true
-                    return true;
-                }
-            }
-
-            // If we got here, no pushed keys
-            return false;
+            return keyboardStateProcessor.AnyKeyPushed();
         }
 
         public void Clear()
         {
-#if FRB_MDX
-            mKeyboardState = null;
-            mLastFrameKeyboardState = null;
-#else
-            mKeyboardState = new KeyboardState();
-            mLastFrameKeyboardState = new KeyboardState();
-#endif
-
-#if SILVERLIGHT
-            mTemporaryKeyboardState = new KeyboardState();
-            mTemporaryKeyboardState.Initialize();
-#endif
+            keyboardStateProcessor.Clear();
         }
 
 
@@ -257,14 +235,9 @@ namespace FlatRedBall.Input
 
             string returnString = "";
 
-            #region Find out if isCtrlPressed
             bool isCtrlPressed =
-#if FRB_MDX
-                InputManager.Keyboard.KeyDown(Key.LeftControl) || InputManager.Keyboard.KeyDown(Key.RightControl);
-#else
                 InputManager.Keyboard.KeyDown(Keys.LeftControl) || InputManager.Keyboard.KeyDown(Keys.RightControl);
-#endif
-            #endregion
+
 
             for (int i = 0; i < NumberOfKeys; i++)
             {
@@ -272,14 +245,6 @@ namespace FlatRedBall.Input
                 {
                     // If the user pressed CTRL + some key combination then ignore that input so that 
                     // the letters aren't written.
-#if FRB_MDX
-                    Key asKey = (Key)i;
-
-                    if (isCtrlPressed && (asKey == Key.V || asKey == Key.C || asKey == Key.Z || asKey == Keys.A))
-                    {
-                        continue;
-                    }
-#elif FRB_XNA || SILVERLIGHT
                     Keys asKey = (Keys)i;
 
 
@@ -287,24 +252,18 @@ namespace FlatRedBall.Input
                     {
                         continue;
                     }
-#endif
                     returnString += KeyToStringAtCurrentState(i);
                 }
             }
 
             #region Add Text if the user presses CTRL+V
-#if !XBOX360
             if (
                 isCtrlPressed
-    #if FRB_MDX
-                && InputManager.Keyboard.KeyPushed(Key.V)
-    #elif FRB_XNA || SILVERLIGHT
                 && InputManager.Keyboard.KeyPushed(Keys.V)
-    #endif
                 )
             {
 
-#if !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
                 bool isSTAThreadUsed =
                     System.Threading.Thread.CurrentThread.GetApartmentState() == System.Threading.ApartmentState.STA;
 
@@ -323,8 +282,6 @@ namespace FlatRedBall.Input
 #endif
 
             }
-#endif
-
             #endregion
 
             return returnString;
@@ -365,12 +322,7 @@ namespace FlatRedBall.Input
 
 
 
-#if FRB_MDX
-            return !InputManager.CurrentFrameInputSuspended && mKeyboardState != null && mKeyboardState[key];
-#else
-            return !InputManager.CurrentFrameInputSuspended && mKeyboardState.IsKeyDown(key);
-
-#endif
+            return !InputManager.CurrentFrameInputSuspended && keyboardStateProcessor.IsKeyDown(key);
         }
 
 
@@ -381,27 +333,15 @@ namespace FlatRedBall.Input
                 return false;
             }
 
-			#if ANDROID
+#if ANDROID
 			if(KeyPushedAndroid(key))
 			{
 				return true;
 			}
-			#endif
-
-#if FRB_MDX
-            if (!InputManager.CurrentFrameInputSuspended && mBufferedData != null)
-                foreach (BufferedData d in mBufferedData)
-                {
-                    if ((d.Data & 0x80) != 0 && d.Offset == (int)key)
-                    {
-                        return true;
-                    }
-                }
-			return false;
-#else
-            return !InputManager.CurrentFrameInputSuspended && mKeyboardState.IsKeyDown(key) &&
-                !mLastFrameKeyboardState.IsKeyDown(key);
 #endif
+
+
+            return !InputManager.CurrentFrameInputSuspended && keyboardStateProcessor.KeyPushed(key);
         }
 
 
@@ -425,16 +365,8 @@ namespace FlatRedBall.Input
 			}
 			#endif
 
-#if FRB_MDX
-            if (!InputManager.CurrentFrameInputSuspended && mBufferedData != null)
-				foreach (BufferedData d in mBufferedData) 
-					if((d.Data & 0x80) == 0 && d.Offset == (int)key)
-						return true;
-			return false;
-#else
-            return !InputManager.CurrentFrameInputSuspended && mLastFrameKeyboardState.IsKeyDown(key) &&
-                !mKeyboardState.IsKeyDown(key);
-#endif
+            return !InputManager.CurrentFrameInputSuspended && 
+                keyboardStateProcessor.KeyReleased(key);
         }
 
         
@@ -500,90 +432,12 @@ namespace FlatRedBall.Input
 
         internal void Update()
         {
-			#if ANDROID
+#if ANDROID
 			ProcessAndroidKeys();
+#endif
 
-			#endif
+            keyboardStateProcessor.Update();
 
-
-
-
-#if FRB_MDX
-            mBufferedData = null;
-
-            if (mKeyboardDevice.Properties.BufferSize != 0)
-            {
-                do
-                {// Try to get the current state
-                    try
-                    {
-                        mKeyboardState = mKeyboardDevice.GetCurrentKeyboardState();
-                        mBufferedData = mKeyboardDevice.GetBufferedData();
-                        break; // everything's ok, so we get out
-                    }
-                    catch (InputException)
-                    { 	// let the application handle Windows messages
-                        try
-                        {
-                            System.Windows.Forms.Application.DoEvents();
-                        }
-                        catch (Microsoft.DirectX.Direct3D.DeviceLostException)
-                        {
-                            break;
-                            //					continue;
-                        }
-                        // Try to get reacquire the keyboard and don't care about exceptions
-                        try { mKeyboardDevice.Acquire(); }
-                        catch (InputLostException) { continue; }
-                        catch (OtherApplicationHasPriorityException)
-                        {
-                            // this was continue, but we don't want to be stuck in this loop, so get out
-                            //	continue; 	
-                            break;
-
-                        }
-                    }
-                }
-                while (true); // Do this until it's successful
-                //			Microsoft.DirectX.DirectInput.BufferedDataCollection tempCollection = keyboard.GetBufferedData();
-            }
-
-            for (int i = 0; i < Keyboard.NumberOfKeys; i++)
-            {
-                mKeysTyped[i] = false;
-            }
-
-            if (mBufferedData != null)
-            {
-
-                foreach (BufferedData d in mBufferedData)
-                { // loop through all Data
-
-                    if ((d.Data & 0x80) == 0) continue;
-
-                    // d.Offset corresponds with the Key values
-
-                    // mark when the button was pushed so that repetitive input can be used
-                    mLastTimeKeyTyped[d.Offset] = TimeManager.CurrentTime;
-                    mLastTypedFromPush[d.Offset] = true;
-                    mKeysTyped[d.Offset] = true;
-                }
-            }
-
-
-#else
-
-#if SILVERLIGHT
-            mLastFrameKeyboardState.CopyFrom(mTemporaryKeyboardState);
-            mTemporaryKeyboardState.CopyFrom(mKeyboardState);
-
-            // This is automatic:
-            mKeyboardState = Microsoft.Xna.Framework.Input.Keyboard.GetState();
-#else 
-            mLastFrameKeyboardState = mKeyboardState;
-            mKeyboardState = Microsoft.Xna.Framework.Input.Keyboard.GetState();
-
-#endif            
             for (int i = 0; i < NumberOfKeys; i++)
             {
                 mKeysIgnoredForThisFrame[i] = false;
@@ -598,7 +452,7 @@ namespace FlatRedBall.Input
 
 
             }
-#endif
+
             const double timeAfterInitialPushForRepeat = .5;
             const double timeBetweenRepeats = .07;           
             
@@ -627,7 +481,37 @@ namespace FlatRedBall.Input
 
                 //				((IInputReceiver)receivingInput).ReceiveInput(this);
                 InputManager.CurrentFrameKeyboardInputSuspended = true;
+
+                if(AutomaticallyPushEventsToInputReceiver)
+                {
+                    var shift = KeyDown(Keys.LeftShift) || KeyDown(Keys.LeftShift);
+                    var ctrl = KeyDown(Keys.LeftControl) || KeyDown(Keys.RightControl);
+                    var alt = KeyDown(Keys.LeftAlt) || KeyDown(Keys.RightAlt);
+                    for (int i = 0; i < mKeysTyped.Length; i++)
+                    {
+                        if (mKeysTyped[i])
+                        {
+                            InputManager.InputReceiver.HandleKeyDown((Keys)i, shift, alt, ctrl);
+                        }
+                    }
+
+                    var stringTyped = GetStringTyped();
+                    for(int i = 0; i < stringTyped.Length; i++)
+                    {
+                        InputManager.InputReceiver.HandleCharEntered(stringTyped[i]);
+                    }
+                }
             }
+        }
+
+        public void PushKeyDownToInputReceiver(Keys key, bool isShiftDown, bool isAltDown, bool isCtrlDown)
+        {
+            InputManager.InputReceiver?.HandleKeyDown(key, isShiftDown, isAltDown, isCtrlDown);
+        }
+
+        public void PushCharEnteredToInputReceiver(char character)
+        {
+            InputManager.InputReceiver?.HandleCharEntered(character);
         }
 
         #endregion

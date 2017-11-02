@@ -40,7 +40,12 @@ namespace FlatRedBall.Forms.Controls
         public int CaretIndex
         {
             get { return caretIndex; }
-            set { caretIndex = value; UpdateToCaretIndex(); }
+            set
+            {
+                caretIndex = value;
+                UpdateToCaretIndex();
+                OffsetTextToKeepCaretInView();
+            }
         }
 
         public List<Keys> IgnoredKeys => null;
@@ -50,7 +55,6 @@ namespace FlatRedBall.Forms.Controls
         public IInputReceiver NextInTabSequence { get; set; }
 
         #endregion
-
 
         #region Initialize Methods
 
@@ -120,17 +124,27 @@ namespace FlatRedBall.Forms.Controls
             CaretIndex = index;
         }
 
-        public void HandleKeyDown(Microsoft.Xna.Framework.Input.Keys key)
+        public void HandleKeyDown(Microsoft.Xna.Framework.Input.Keys key, bool isShiftDown, bool isAltDown, bool isCtrlDown)
         {
             if(hasFocus)
             {
-                switch (key)
+                var oldIndex = caretIndex;
+               switch (key)
                 {
                     case Microsoft.Xna.Framework.Input.Keys.Left:
                         if (caretIndex > 0)
                         {
                             caretIndex--;
                         }
+                        break;
+                    case Keys.Home:
+                        caretIndex = 0;
+                        break;
+                    case Keys.End:
+                        caretIndex = Text.Length;
+                        break;
+                    case Keys.Back:
+                        HandleBackspace(isCtrlDown);
                         break;
                     case Microsoft.Xna.Framework.Input.Keys.Right:
                         if (caretIndex < Text.Length)
@@ -141,13 +155,16 @@ namespace FlatRedBall.Forms.Controls
                     case Microsoft.Xna.Framework.Input.Keys.Delete:
                         if (caretIndex < Text.Length)
                         {
-                            this.Text =
-                            this.Text.Remove(caretIndex, 1);
+                            this.Text = this.Text.Remove(caretIndex, 1);
                         }
 
                         break;
                 }
-                UpdateToCaretIndex();
+                if(oldIndex != caretIndex)
+                {
+                    UpdateToCaretIndex();
+                    OffsetTextToKeepCaretInView();
+                }
             }
         }
 
@@ -155,14 +172,11 @@ namespace FlatRedBall.Forms.Controls
         {
             if(hasFocus)
             {
-                if (character == '\b')
+                // Do we want to handle backspace here or should it be in the Keys handler?
+                if (character == '\b' || character == (char)127)
                 {
-                    if (caretIndex > 0)
-                    {
-                        this.Text =
-                            this.Text.Remove(caretIndex - 1, 1);
-                        caretIndex--;
-                    }
+                    // do nothing, handled with a backspace above
+                //    HandleBackspace();
                 }
                 else if (character == '\r')
                 {
@@ -174,9 +188,33 @@ namespace FlatRedBall.Forms.Controls
                     caretIndex++;
                 }
                 UpdateToCaretIndex();
+                OffsetTextToKeepCaretInView();
+
             }
         }
 
+        private void HandleBackspace(bool isCtrlDown)
+        {
+            if (caretIndex > 0)
+            {
+                if(isCtrlDown)
+                {
+                    var indexBeforeNullable = GetSpaceIndexBefore(caretIndex);
+
+                    var indexToDeleteTo = indexBeforeNullable ?? 0;
+
+                    this.Text = Text.Remove(indexToDeleteTo, caretIndex - indexToDeleteTo);
+
+                    caretIndex = indexToDeleteTo;
+                }
+                else
+                {
+                    this.Text =
+                        this.Text.Remove(caretIndex - 1, 1);
+                    caretIndex--;
+                }
+            }
+        }
 
         public void OnFocusUpdate()
         {
@@ -200,6 +238,8 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
+        #region UpdateTo methods
+
         private void UpdateToCaretIndex()
         {
             var substring = Text.Substring(0, caretIndex);
@@ -209,11 +249,72 @@ namespace FlatRedBall.Forms.Controls
             caretComponent.X = measure + this.textComponent.X;
         }
 
-
         private void UpdateToHasFocus()
         {
             caretComponent.Visible = hasFocus;
         }
 
+        private void OffsetTextToKeepCaretInView()
+        {
+            float leftOfCaret = caretComponent.AbsoluteX;
+            float rightOfCaret = caretComponent.AbsoluteX + caretComponent.GetAbsoluteWidth();
+
+            float leftOfParent = caretComponent.ParentGue.AbsoluteX;
+            float rightOfParent = caretComponent.ParentGue.AbsoluteX + caretComponent.ParentGue.GetAbsoluteWidth();
+
+            float shiftAmount = 0;
+            const float padding = 5;
+            if(rightOfCaret > rightOfParent)
+            {
+                shiftAmount = rightOfParent - rightOfCaret - padding;
+            }
+            if(leftOfCaret < leftOfParent)
+            {
+                shiftAmount = leftOfParent - leftOfCaret + padding;
+            }
+
+            if(shiftAmount != 0)
+            {
+                this.textComponent.X += shiftAmount;
+                this.caretComponent.X += shiftAmount;
+            }
+        }
+
+
+
+
+        #endregion
+
+        #region Utilities
+
+        int? GetSpaceIndexBefore(int index)
+        {
+            for(int i = index - 1; i > 0; i--)
+            {
+                var isSpace = Char.IsWhiteSpace(Text[i]);
+
+                if(isSpace)
+                {
+                    return i;
+                }
+            }
+            return null;
+        }
+
+        int? GetSpaceIndexAfter(int index)
+        {
+            for (int i = index; i < Text.Length; i++)
+            {
+                var isSpace = Char.IsWhiteSpace(Text[i]);
+
+                if (isSpace)
+                {
+                    return i;
+                }
+            }
+            return null;
+        }
+
+        #endregion
     }
 }

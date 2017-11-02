@@ -12,6 +12,7 @@ namespace GumPlugin.DataGeneration
     {
         public const string ButtonBehaviorName = "ButtonBehavior";
         public const string ToggleBehaviorName = "ToggleBehavior";
+        public const string TextBoxBehaviorName = "TextBoxBehavior";
 
         public static BehaviorSave CreateButtonBehavior()
         {
@@ -52,6 +53,23 @@ namespace GumPlugin.DataGeneration
 
             return toReturn;
 
+        }
+
+        public static BehaviorSave CreateTextBoxBehavior()
+        {
+            BehaviorSave toReturn = new BehaviorSave();
+            toReturn.Name = TextBoxBehaviorName;
+
+            var category = new StateSaveCategory();
+            toReturn.Categories.Add(category);
+            category.Name = "ToggleCategory";
+
+            category.States.Add(new StateSave { Name = "Enabled" });
+            category.States.Add(new StateSave { Name = "Disabled" });
+            category.States.Add(new StateSave { Name = "Highlighted" });
+            category.States.Add(new StateSave { Name = "Selected" });
+
+            return toReturn;
         }
     }
 }

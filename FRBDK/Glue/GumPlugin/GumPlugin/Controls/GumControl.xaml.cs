@@ -70,7 +70,8 @@ namespace GumPlugin.Controls
             bool didAdd = false;
 
             didAdd = AddIfDoesntHave(BehaviorGenerator.CreateButtonBehavior());
-            didAdd = AddIfDoesntHave(BehaviorGenerator.CreateToggleBehavior());
+            didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateToggleBehavior());
+            didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateTextBoxBehavior());
 
             if(didAdd)
             {

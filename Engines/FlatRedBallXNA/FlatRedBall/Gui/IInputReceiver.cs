@@ -103,6 +103,10 @@ namespace FlatRedBall.Gui
         /// </summary>
         void ReceiveInput();
 
+        void HandleKeyDown(Keys key, bool isShiftDown, bool isAltDown, bool isCtrlDown);
+
+        void HandleCharEntered(char character);
+
         #endregion
 
     }
