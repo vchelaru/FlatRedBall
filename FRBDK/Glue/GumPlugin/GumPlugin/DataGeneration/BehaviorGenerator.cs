@@ -1,4 +1,5 @@
-﻿using Gum.DataTypes.Behaviors;
+﻿using Gum.DataTypes;
+using Gum.DataTypes.Behaviors;
 using Gum.DataTypes.Variables;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace GumPlugin.DataGeneration
         public const string ButtonBehaviorName = "ButtonBehavior";
         public const string ToggleBehaviorName = "ToggleBehavior";
         public const string TextBoxBehaviorName = "TextBoxBehavior";
+        public const string ScrollBarBehaviorName = "ScrollBarBehavior";
 
         public static BehaviorSave CreateButtonBehavior()
         {
@@ -62,12 +64,49 @@ namespace GumPlugin.DataGeneration
 
             var category = new StateSaveCategory();
             toReturn.Categories.Add(category);
-            category.Name = "ToggleCategory";
+            category.Name = "TextBoxCategory";
 
             category.States.Add(new StateSave { Name = "Enabled" });
             category.States.Add(new StateSave { Name = "Disabled" });
             category.States.Add(new StateSave { Name = "Highlighted" });
             category.States.Add(new StateSave { Name = "Selected" });
+
+            // add the required instances:
+            InstanceSave textInstance = new InstanceSave();
+            textInstance.Name = "TextInstance";
+            textInstance.BaseType = "Text";
+            toReturn.RequiredInstances.Add(textInstance);
+
+            InstanceSave caretInstance = new InstanceSave();
+            caretInstance.Name = "CaretInstance";
+            toReturn.RequiredInstances.Add(caretInstance);
+
+            return toReturn;
+        }
+
+        public static BehaviorSave CreateScrollBarBehavior()
+        {
+            BehaviorSave toReturn = new BehaviorSave();
+            toReturn.Name = ScrollBarBehaviorName;
+
+            var category = new StateSaveCategory();
+            toReturn.Categories.Add(category);
+            category.Name = "ScrollBarCategory";
+
+            InstanceSave upButtonInstance = new InstanceSave();
+            upButtonInstance.Name = "UpButtonInstance";
+            // todo - upButtonInstance needs to implement the Button behavior
+            toReturn.RequiredInstances.Add(upButtonInstance);
+
+            InstanceSave downButtonInstance = new InstanceSave();
+            downButtonInstance.Name = "DownButtonInstance";
+            // todo - downButtonInstance needs to implement the Button behavior
+            toReturn.RequiredInstances.Add(downButtonInstance);
+
+            InstanceSave thumbInstance = new InstanceSave();
+            thumbInstance.Name = "ThumbInstance";
+            // todo - thumbInstance needs to implement the Button behavior
+            toReturn.RequiredInstances.Add(thumbInstance);
 
             return toReturn;
         }

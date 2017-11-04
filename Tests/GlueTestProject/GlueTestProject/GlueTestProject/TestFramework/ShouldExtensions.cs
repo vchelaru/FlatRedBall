@@ -31,7 +31,12 @@ namespace GlueTestProject.TestFramework
 
             if (equals)
             {
-                string message = $"Should not be {undesired}";
+                string undesiredName = undesired?.ToString();
+                if(undesired == null)
+                {
+                    undesiredName = "<null>";
+                }
+                string message = $"Should not be {undesiredName}";
 
                 if (!string.IsNullOrEmpty(because))
                 {
@@ -42,6 +47,21 @@ namespace GlueTestProject.TestFramework
             }
         }
 
+        public static void ShouldBeGreaterThan<T>(this T thisObject, T other, string because = null) where T : IComparable<T>
+        {
+            bool isGreaterThan = thisObject.CompareTo(other) > 0;
 
+            if(!isGreaterThan)
+            {
+                string message = $"{thisObject} should be greater than {other}";
+
+                if (!string.IsNullOrEmpty(because))
+                {
+                    message += $" : {because}";
+                }
+
+                throw new Exception(message);
+            }
+        }
     }
 }

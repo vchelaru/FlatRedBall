@@ -15,7 +15,11 @@ namespace FlatRedBall.Forms.Controls
         private bool HasFocus
         {
             get { return hasFocus; }
-            set { hasFocus = value; UpdateToHasFocus(); }
+            set
+            {
+                hasFocus = value && IsEnabled;
+                UpdateToHasFocus();
+            }
         }
 
         GraphicalUiElement textComponent;
@@ -30,6 +34,9 @@ namespace FlatRedBall.Forms.Controls
             {
                 // go through the component instead of the core text object to force a layout refresh if necessary
                 textComponent.SetProperty("Text", value);
+
+
+                CaretIndex = System.Math.Min(CaretIndex, value?.Length ?? 0);
             }
         }
 
@@ -54,31 +61,48 @@ namespace FlatRedBall.Forms.Controls
 
         public IInputReceiver NextInTabSequence { get; set; }
 
+        public override bool IsEnabled
+        {
+            get
+            {
+                return base.IsEnabled;
+            }
+            set
+            {
+                base.IsEnabled = value;
+                if(!IsEnabled)
+                {
+                    HasFocus = false;
+                }
+                UpdateState();
+            }
+        }
+
         #endregion
 
         #region Initialize Methods
 
         protected override void ReactToVisualChanged()
         {
-            textComponent = base.Visual.GetGraphicalUiElementByName("Text");
+            textComponent = base.Visual.GetGraphicalUiElementByName("TextInstance");
             coreTextObject = textComponent.RenderableComponent as RenderingLibrary.Graphics.Text;
-            caretComponent = base.Visual.GetGraphicalUiElementByName("Cursor");
+            caretComponent = base.Visual.GetGraphicalUiElementByName("CaretInstance");
 
 #if DEBUG
             if (textComponent == null) throw new Exception("Gum object must have an object called \"Text\"");
             if (coreTextObject == null) throw new Exception("The Text instance must be of type Text");
-            if (caretComponent == null) throw new Exception("Gum object must have an object called \"Cursor\"");
+            if (caretComponent == null) throw new Exception("Gum object must have an object called \"Caret\"");
 
 #endif
 
             Visual.Click += this.HandleClick;
+            Visual.RollOn += this.HandleRollOn;
+            Visual.RollOff += this.HandleRollOff;
 
             base.ReactToVisualChanged();
 
             HasFocus = false;
         }
-
-
 
         #endregion
 
@@ -89,7 +113,16 @@ namespace FlatRedBall.Forms.Controls
             Input.InputManager.InputReceiver = this;
 
             UpdateCarrotIndexFromCursor();
+        }
 
+        private void HandleRollOn(IWindow window)
+        {
+            UpdateState();
+        }
+
+        private void HandleRollOff(IWindow window)
+        {
+            UpdateState();
         }
 
         private void UpdateCarrotIndexFromCursor()
@@ -173,7 +206,11 @@ namespace FlatRedBall.Forms.Controls
             if(hasFocus)
             {
                 // Do we want to handle backspace here or should it be in the Keys handler?
-                if (character == '\b' || character == (char)127)
+                if (character == '\b'  
+                    // I think CTRL Backspace?
+                    || character == (char)127 
+                    // esc
+                    || character == (char)27)
                 {
                     // do nothing, handled with a backspace above
                 //    HandleBackspace();
@@ -238,7 +275,29 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
-        #region UpdateTo methods
+        #region UpdateTo Methods
+
+
+        private void UpdateState()
+        {
+            if(IsEnabled == false)
+            {
+                Visual.SetProperty("TextBoxCategoryState", "Disabled");
+            }
+            else if(HasFocus)
+            {
+                Visual.SetProperty("TextBoxCategoryState", "Selected");
+            }
+            else if(Visual.HasCursorOver(GuiManager.Cursor))
+            {
+                Visual.SetProperty("TextBoxCategoryState", "Highlighted");
+            }
+            else
+            {
+                Visual.SetProperty("TextBoxCategoryState", "Enabled");
+            }
+        }
+
 
         private void UpdateToCaretIndex()
         {
@@ -252,6 +311,7 @@ namespace FlatRedBall.Forms.Controls
         private void UpdateToHasFocus()
         {
             caretComponent.Visible = hasFocus;
+            UpdateState();
         }
 
         private void OffsetTextToKeepCaretInView()

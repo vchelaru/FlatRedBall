@@ -124,7 +124,7 @@ namespace Gum.Wireframe
                 }
                 else
                 {
-                    return this.ParentGue?.EffectiveManagers;
+                    return this.ElementGueContainingThis?.EffectiveManagers;
                 }
             }
         }
@@ -424,7 +424,7 @@ namespace Gum.Wireframe
                     mX = value;
 
                     // special case:
-                    if (ParentGue == null && XUnits == GeneralUnitType.PixelsFromSmall)
+                    if (Parent as GraphicalUiElement == null && XUnits == GeneralUnitType.PixelsFromSmall)
                     {
                         this.mContainedObjectAsIpso.X = mX;
                     }
@@ -449,7 +449,7 @@ namespace Gum.Wireframe
                     mY = value;
 
 
-                    if (ParentGue == null && YUnits == GeneralUnitType.PixelsFromSmall)
+                    if (Parent as GraphicalUiElement == null && YUnits == GeneralUnitType.PixelsFromSmall)
                     {
                         this.mContainedObjectAsIpso.Y = mY;
                     }
@@ -514,10 +514,18 @@ namespace Gum.Wireframe
             }
         }
 
+        // Made obsolete November 4, 2017
+        [Obsolete("Use ElementGueContainingThis instead - it more clearly indicates the relationship, as the ParentGue may not actually be the parent")]
+        public GraphicalUiElement ParentGue
+        {
+            get { return ElementGueContainingThis; }
+            set { ElementGueContainingThis = value; }
+        }
+
         /// <summary>
         /// The ScreenSave or Component which contains this instance.
         /// </summary>
-        public GraphicalUiElement ParentGue
+        public GraphicalUiElement ElementGueContainingThis
         {
             get
             {
@@ -525,16 +533,19 @@ namespace Gum.Wireframe
             }
             set
             {
-                if (mWhatContainsThis != null)
+                if (mWhatContainsThis != value)
                 {
-                    mWhatContainsThis.mWhatThisContains.Remove(this); ;
-                }
+                    if (mWhatContainsThis != null)
+                    {
+                        mWhatContainsThis.mWhatThisContains.Remove(this); ;
+                    }
 
-                mWhatContainsThis = value;
+                    mWhatContainsThis = value;
 
-                if (mWhatContainsThis != null)
-                {
-                    mWhatContainsThis.mWhatThisContains.Add(this);
+                    if (mWhatContainsThis != null)
+                    {
+                        mWhatContainsThis.mWhatThisContains.Add(this);
+                    }
                 }
             }
         }
@@ -549,7 +560,7 @@ namespace Gum.Wireframe
                 }
                 else
                 {
-                    return ParentGue;
+                    return ElementGueContainingThis;
                 }
             }
         }
@@ -1124,7 +1135,7 @@ namespace Gum.Wireframe
                     {
                         childGue.Parent = this;
                     }
-                    childGue.ParentGue = this;
+                    childGue.ElementGueContainingThis = this;
                 }
             }
         }
@@ -1212,6 +1223,10 @@ namespace Gum.Wireframe
                         {
                             (mContainedObjectAsIpso as LineRectangle).ClipsChildren = ClipsChildren;
                         }
+                        else if(mContainedObjectAsIpso is InvisibleRenderable)
+                        {
+                            (mContainedObjectAsIpso as InvisibleRenderable).ClipsChildren = ClipsChildren;
+                        }
 
                         float widthBefore = 0;
                         float heightBefore = 0;
@@ -1282,7 +1297,7 @@ namespace Gum.Wireframe
                     // like check the width/height of the parent to see if they're 0
                     if (updateParent && GetIfShouldCallUpdateOnParent())
                     {
-                        this.ParentGue.UpdateLayout(false, false);
+                        (this.Parent as GraphicalUiElement).UpdateLayout(false, false);
                         ChildrenUpdatingParentLayoutCalls++;
                     }
 
@@ -1360,10 +1375,10 @@ namespace Gum.Wireframe
                 parentWidth = Parent.Width;
                 parentHeight = Parent.Height;
             }
-            else if (this.ParentGue != null && this.ParentGue.mContainedObjectAsIpso != null)
+            else if (this.ElementGueContainingThis != null && this.ElementGueContainingThis.mContainedObjectAsIpso != null)
             {
-                parentWidth = this.ParentGue.mContainedObjectAsIpso.Width;
-                parentHeight = this.ParentGue.mContainedObjectAsIpso.Height;
+                parentWidth = this.ElementGueContainingThis.mContainedObjectAsIpso.Width;
+                parentHeight = this.ElementGueContainingThis.mContainedObjectAsIpso.Height;
             }
         }
 
@@ -1651,7 +1666,7 @@ namespace Gum.Wireframe
 
             if (this.Parent == null)
             {
-                siblings = this.ParentGue.mWhatThisContains;
+                siblings = this.ElementGueContainingThis.mWhatThisContains;
             }
             else if (this.Parent is GraphicalUiElement)
             {

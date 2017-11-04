@@ -22,7 +22,12 @@ namespace FlatRedBall.Forms.Controls
             set { Visual.Width = value; }
         }
 
-        public bool IsEnabled { get; set; }
+
+        public virtual bool IsEnabled
+        {
+            get;
+            set;
+        } = true;
 
         public bool IsMouseOver { get; set; }
 

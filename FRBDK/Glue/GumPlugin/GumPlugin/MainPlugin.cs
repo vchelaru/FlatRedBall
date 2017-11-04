@@ -162,7 +162,12 @@ namespace GumPlugin
             // - Fixed list items not updating their parent due to an earlier fix.
             // 0.9.1.4
             // - Exporting again to make sure I have all the latest changes
-            get { return new Version(0, 9, 1, 4); }
+            // 0.9.2.0
+            // - Added new TextBox behavior save
+            // - Added new Button behavior save
+            // - Started on ScrollBar behavior save
+            // - Fixed a bug where children of a stack layout woulnd't update if added at runtime
+            get { return new Version(0, 9, 2, 0); }
         }
 
         #endregion

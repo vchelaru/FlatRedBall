@@ -17,6 +17,9 @@ using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
 using FlatRedBall.Localization;
 using GlueTestProject.TestFramework;
+using Gum.Wireframe;
+using GlueTestProject.GumRuntimes;
+using System.Linq;
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -31,8 +34,8 @@ namespace GlueTestProject.Screens
 	{
 
 		void CustomInitialize()
-		{
-            if(this.TopButton.Width < 149 || this.TopButton.Width > 151)
+        {
+            if (this.TopButton.Width < 149 || this.TopButton.Width > 151)
             {
                 throw new Exception("Width values from Gum fles are not being assigned.  Expected width: " + 150 + " but got width " + TopButton.Width);
             }
@@ -45,18 +48,30 @@ namespace GlueTestProject.Screens
             // Make sure that categories run fine...
             EntireGumScreen.CurrentStateCategory1State = GumRuntimes.TestScreenRuntime.StateCategory1.On;
 
-            this.StateComponentInstance.CurrentVariableState.ShouldBe(GumRuntimes.StateComponentRuntime.VariableState.NonDefaultState, 
+            this.StateComponentInstance.CurrentVariableState.ShouldBe(GumRuntimes.StateComponentRuntime.VariableState.NonDefaultState,
                 "because setting a state on an instance in a screen should result in the state being set on the runtime.");
 
             var outlineBitmapFont = (OutlineTextInstance.RenderableComponent as RenderingLibrary.Graphics.Text).BitmapFont;
             outlineBitmapFont.ShouldNotBe(null, "because outlined text objects should have their fonts set.");
 
             this.TestRectangleInstance.Visible = false;
-            bool isAbsoluteVisible = 
+            bool isAbsoluteVisible =
                 (this.TestRectangleInstance.Sprite as RenderingLibrary.Graphics.IVisible).AbsoluteVisible;
 
             isAbsoluteVisible.ShouldNotBe(true, "because making a component invisible should make its contained objects that are attached to containers also invisible.");
 
+            TestColoredRectangleSettingAllValues();
+
+            ExternalFontText.BitmapFont.ShouldNotBe(null, "because custom fonts referenced outside of the Gum project should be found and loaded correctly");
+
+            ComponentWithCustomInitializeInstance.Width.ShouldBe(20, "because CustomInitialize should be called after default state is set.");
+
+            PerformTopToBottomStackTest();
+
+            PerformDynamicParentAssignmentTest();
+        }
+        private void TestColoredRectangleSettingAllValues()
+        {
             // The following test all variable assignment to make sure it comes over okay:
             ColoredRectSetsEverything.X.ShouldBe(64);
             ColoredRectSetsEverything.XUnits.ShouldBe(Gum.Converters.GeneralUnitType.PixelsFromLarge);
@@ -76,13 +91,50 @@ namespace GlueTestProject.Screens
             ColoredRectSetsEverything.Green.ShouldBe(0);
             ColoredRectSetsEverything.Blue.ShouldBe(139);
             ColoredRectSetsEverything.Blend.ShouldBe(Gum.RenderingLibrary.Blend.Additive);
-
-            ExternalFontText.BitmapFont.ShouldNotBe(null, "because custom fonts referenced outside of the Gum project should be found and loaded correctly");
-
-            ComponentWithCustomInitializeInstance.Width.ShouldBe(20, "because CustomInitialize should be called after default state is set.");
         }
 
-		void CustomActivity(bool firstTimeCalled)
+        private void PerformTopToBottomStackTest()
+        {
+            var stackingContainer = TestScreen.GetGraphicalUiElementByName("TopToBottomStackTest");
+
+            var firstChild = stackingContainer.Children[0] as GraphicalUiElement;
+            var secondChild = stackingContainer.Children[1] as GraphicalUiElement;
+            // first make sure the children are stacked correctly:
+            var firstAbsolute = firstChild.AbsoluteY;
+            var secondAbsolute = secondChild.AbsoluteY;
+
+            secondAbsolute.ShouldBe(firstAbsolute + firstChild.GetAbsoluteHeight());
+
+            // now shift the first child down
+            firstChild.Y += 64;
+
+            firstAbsolute = firstChild.AbsoluteY;
+            secondAbsolute = secondChild.AbsoluteY;
+
+            secondAbsolute.ShouldBe(firstAbsolute + firstChild.GetAbsoluteHeight());
+
+            var lastChildBeforeDynamicallyAdded = stackingContainer.Children.Last() as GraphicalUiElement;
+
+            // Add objects dynamically and see if they stack properly too
+            var newNineSlice = new NineSliceRuntime();
+            newNineSlice.Parent = stackingContainer;
+
+            newNineSlice.AbsoluteY.ShouldBeGreaterThan(lastChildBeforeDynamicallyAdded.AbsoluteY, "because newly-added children of a stack panel should be positioned at the end of the stack");
+
+            float lastAbsoluteYBeforeMove = newNineSlice.AbsoluteY;
+            firstChild.Y += 64;
+            newNineSlice.AbsoluteY.ShouldBeGreaterThan(lastAbsoluteYBeforeMove, "because moving the first child in a stack should also move dynamically-added children of the stack");
+        }
+
+        private void PerformDynamicParentAssignmentTest()
+        {
+            var circle = new GumRuntimes.CircleRuntime();
+            circle.Parent = TestScreen.GetGraphicalUiElementByName("ContainerInstance") as GraphicalUiElement;
+
+        }
+
+
+        void CustomActivity(bool firstTimeCalled)
 		{
 
             if (this.ActivityCallCount > 5)

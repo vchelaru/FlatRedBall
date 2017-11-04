@@ -14010,9 +14010,7 @@
     <LoadAsynchronously>false</LoadAsynchronously>
     <RecordLockContention>false</RecordLockContention>
   </GlobalContentSettingsSave>
-  <SyncedProjects>
-    <string>../../AndroidProject/AndroidProject/AndroidProject.csproj</string>
-  </SyncedProjects>
+  <SyncedProjects />
   <StartUpScreen>Screens\FirstScreen</StartUpScreen>
   <ResolutionPresets />
   <PerformanceSettingsSave>
@@ -14177,7 +14175,13 @@
   <ApplyToFixedResolutionPlatforms>false</ApplyToFixedResolutionPlatforms>
   <ExternallyBuiltFileDirectory>../../</ExternallyBuiltFileDirectory>
   <PluginData>
-    <RequiredPlugins />
+    <RequiredPlugins>
+      <PluginRequirement>
+        <Name>Tiled Plugin</Name>
+        <Version>1.1.1.7</Version>
+        <VersionRequirement>EqualToOrNewerThan</VersionRequirement>
+      </PluginRequirement>
+    </RequiredPlugins>
   </PluginData>
   <DisplaySettings>
     <Is2D>true</Is2D>
