@@ -377,6 +377,36 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>string</Type>
+      <Name>NineSliceInstance6.Parent</Name>
+      <Value xsi:type="xsd:string">StackWithChildrenWidthDependsOnParent</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance6.Width</Name>
+      <Value xsi:type="xsd:float">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>DimensionUnitType</Type>
+      <Name>NineSliceInstance6.Width Units</Name>
+      <Value xsi:type="xsd:int">2</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance6.X</Name>
+      <Value xsi:type="xsd:float">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance6.Y</Name>
+      <Value xsi:type="xsd:float">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>int</Type>
       <Name>OutlineTextInstance.OutlineThickness</Name>
       <Value xsi:type="xsd:int">1</Value>
@@ -410,6 +440,42 @@
       <Type>float</Type>
       <Name>ParentStateComponentInstance.Y</Name>
       <Value xsi:type="xsd:float">26</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>ChildrenLayout</Type>
+      <Name>StackWithChildrenWidthDependsOnParent.Children Layout</Name>
+      <Value xsi:type="xsd:int">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StackWithChildrenWidthDependsOnParent.Height</Name>
+      <Value xsi:type="xsd:float">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>DimensionUnitType</Type>
+      <Name>StackWithChildrenWidthDependsOnParent.Height Units</Name>
+      <Value xsi:type="xsd:int">4</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StackWithChildrenWidthDependsOnParent.Width</Name>
+      <Value xsi:type="xsd:float">134.127</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StackWithChildrenWidthDependsOnParent.X</Name>
+      <Value xsi:type="xsd:float">422.7454</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StackWithChildrenWidthDependsOnParent.Y</Name>
+      <Value xsi:type="xsd:float">549.492065</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -632,6 +698,14 @@
   </Instance>
   <Instance>
     <Name>NineSliceInstance5</Name>
+    <BaseType>NineSlice</BaseType>
+  </Instance>
+  <Instance>
+    <Name>StackWithChildrenWidthDependsOnParent</Name>
+    <BaseType>Container</BaseType>
+  </Instance>
+  <Instance>
+    <Name>NineSliceInstance6</Name>
     <BaseType>NineSlice</BaseType>
   </Instance>
 </ScreenSave>

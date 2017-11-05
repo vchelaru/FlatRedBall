@@ -15,6 +15,7 @@ namespace GumPlugin.DataGeneration
         public const string ToggleBehaviorName = "ToggleBehavior";
         public const string TextBoxBehaviorName = "TextBoxBehavior";
         public const string ScrollBarBehaviorName = "ScrollBarBehavior";
+        public const string ScrollViewerBehaviorName = "ScrollViewerBehavior";
 
         public static BehaviorSave CreateButtonBehavior()
         {
@@ -107,6 +108,31 @@ namespace GumPlugin.DataGeneration
             thumbInstance.Name = "ThumbInstance";
             // todo - thumbInstance needs to implement the Button behavior
             toReturn.RequiredInstances.Add(thumbInstance);
+
+            return toReturn;
+        }
+
+        public static BehaviorSave CreateScrollViewerBehavior()
+        {
+            BehaviorSave toReturn = new BehaviorSave();
+            toReturn.Name = ScrollViewerBehaviorName;
+
+            // no categories needed yet
+
+            InstanceSave verticalScrollBarInstance = new InstanceSave();
+            verticalScrollBarInstance.Name = "VerticalScrollBarInstance";
+            // todo - needs to implement the ScrollBar behavior
+            toReturn.RequiredInstances.Add(verticalScrollBarInstance);
+
+            InstanceSave innerPanelInstance = new InstanceSave();
+            innerPanelInstance.Name = "InnerPanelInstance";
+            // todo - needs to implement the ScrollBar behavior
+            toReturn.RequiredInstances.Add(innerPanelInstance);
+
+            InstanceSave clipContainerInstance = new InstanceSave();
+            clipContainerInstance.Name = "ClipContainerInstance";
+            // todo - needs to implement the ScrollBar behavior
+            toReturn.RequiredInstances.Add(clipContainerInstance);
 
             return toReturn;
         }

@@ -16,6 +16,10 @@
     <Name>TestScreen</Name>
     <ElementType>Screen</ElementType>
   </ScreenReference>
+  <ScreenReference>
+    <Name>TestScreenUnused</Name>
+    <ElementType>Screen</ElementType>
+  </ScreenReference>
   <ComponentReference>
     <Name>AlignmentObject</Name>
     <ElementType>Component</ElementType>

@@ -69,7 +69,19 @@ namespace GlueTestProject.Screens
             PerformTopToBottomStackTest();
 
             PerformDynamicParentAssignmentTest();
+
+            PerformDependsOnChildrenTest();
         }
+
+        private void PerformDependsOnChildrenTest()
+        {
+            // This control has children which have widths that depend on the parent, so they have dependent units on the X axis, not Y axis. The stack panel should still
+            // auto-size itself based on the heights of the children.
+            var stackPanel = TestScreen.GetGraphicalUiElementByName("StackWithChildrenWidthDependsOnParent");
+
+            stackPanel.GetAbsoluteHeight().ShouldNotBe(0, "because the height of the container should be set even though the the width of the contained nine slice depends on its parent.");
+        }
+
         private void TestColoredRectangleSettingAllValues()
         {
             // The following test all variable assignment to make sure it comes over okay:

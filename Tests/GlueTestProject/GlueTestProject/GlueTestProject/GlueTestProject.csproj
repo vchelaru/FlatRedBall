@@ -859,6 +859,7 @@
       <DependentUpon>TestRectangleRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\TestScreenRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\TestScreenUnusedRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\TextRuntime.cs" />
     <Compile Include="GumRuntimes\TextRuntime.Generated.cs">
       <DependentUpon>TextRuntime.cs</DependentUpon>

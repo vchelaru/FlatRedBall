@@ -10,6 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ScrollBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ScrollViewer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\TextBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FrameworkElement.cs" />
   </ItemGroup>

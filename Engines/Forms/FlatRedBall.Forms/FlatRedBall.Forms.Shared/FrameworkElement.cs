@@ -7,7 +7,13 @@ namespace FlatRedBall.Forms.Controls
 {
     public class FrameworkElement
     {
+        /// <summary>
+        /// The height in pixels. This is a calculated value considering HeightUnits and Height.
+        /// </summary>
         public float ActualHeight => Visual.GetAbsoluteHeight();
+        /// <summary>
+        /// The width in pixels. This is a calculated value considering WidthUnits and Width;
+        /// </summary>
         public float ActualWidth => Visual.GetAbsoluteWidth();
 
         public float Height
@@ -15,13 +21,25 @@ namespace FlatRedBall.Forms.Controls
             get { return Visual.Height; }
             set { Visual.Height = value; }
         }
-
         public float Width
         {
             get { return Visual.Width; }
             set { Visual.Width = value; }
         }
 
+        public float ActualX => Visual.AbsoluteX;
+        public float ActualY => Visual.AbsoluteY;
+
+        public float X
+        {
+            get { return Visual.X; }
+            set { Visual.X = value; }
+        }
+        public float Y
+        {
+            get { return Visual.Y; }
+            set { Visual.Y = value; }
+        }
 
         public virtual bool IsEnabled
         {
@@ -47,7 +65,16 @@ namespace FlatRedBall.Forms.Controls
         public GraphicalUiElement Visual
         {
             get { return visual; }
-            set { visual = value; ReactToVisualChanged(); }
+            set
+            {
+#if DEBUG
+                if(value == null)
+                {
+                    throw new ArgumentNullException("Visual cannot be assigned to null");
+                }
+#endif
+                visual = value; ReactToVisualChanged();
+            }
         }
 
         protected virtual void ReactToVisualChanged()

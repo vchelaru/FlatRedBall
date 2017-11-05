@@ -51,9 +51,11 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+
         #endregion
 
         public event EventHandler Click;
+        public event EventHandler Push;
 
         #region Initialize Methods
 
@@ -78,14 +80,16 @@ namespace FlatRedBall.Forms.Controls
 
         private void HandleClick(IWindow window)
         {
-            Click?.Invoke(this, null);
-
             UpdateState();
+
+            Click?.Invoke(this, null);
         }
 
         public void HandlePush(IWindow window)
         {
             UpdateState();
+
+            Push?.Invoke(this, null);
         }
 
         public void HandleLosePush(IWindow window)
@@ -110,11 +114,7 @@ namespace FlatRedBall.Forms.Controls
         private void UpdateState()
         {
             var cursor = GuiManager.Cursor;
-            if(cursor.PrimaryClick)
-            {
-                int m = 3;
 
-            }
             if (IsEnabled == false)
             {
                 Visual.SetProperty("ButtonCategoryState", "Disabled");

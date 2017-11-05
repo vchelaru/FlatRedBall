@@ -246,9 +246,13 @@ namespace FlatRedBall.Forms.Controls
                 }
                 else
                 {
-                    this.Text =
-                        this.Text.Remove(caretIndex - 1, 1);
+                    var whereToRemoveFrom = caretIndex - 1;
+                    // Move the care to the left one before removing from the text. Otherwise, if the
+                    // caret is at the end of the word, modifying the word will shift the caret to the left, 
+                    // and that could cause it to shift over two times.
                     caretIndex--;
+                    this.Text =
+                        this.Text.Remove(whereToRemoveFrom, 1);
                 }
             }
         }
