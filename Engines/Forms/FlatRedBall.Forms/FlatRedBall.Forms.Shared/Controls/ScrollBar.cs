@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Gui;
+using RenderingLibrary;
+using FlatRedBall.Forms.GumExtensions;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -16,8 +18,29 @@ namespace FlatRedBall.Forms.Controls
 
         GraphicalUiElement track;
 
-        public double Minimum { get; set; }
-        public double Maximum { get; set; }
+        double minimum;
+        public double Minimum
+        {
+            get { return minimum; }
+            set
+            {
+                minimum = value;
+                UpdateThumbSize();
+                UpdateThumbPositionAccordingToValue();
+            }
+        }
+
+        double maximum;
+        public double Maximum
+        {
+            get { return maximum; }
+            set
+            {
+                maximum = value;
+                UpdateThumbSize();
+                UpdateThumbPositionAccordingToValue();
+            }
+        }
 
         double value;
         public double Value
@@ -39,7 +62,19 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        public double ViewportSize { get; set; }
+        double viewportSize;
+        public double ViewportSize
+        {
+            get { return viewportSize; }
+            set
+            {
+                viewportSize = value;
+
+                UpdateThumbSize();
+                UpdateThumbPositionAccordingToValue();
+
+            }
+        }
         public double LargeChange { get; set; }
         public double SmallChange { get; set; }
 
@@ -86,9 +121,11 @@ namespace FlatRedBall.Forms.Controls
             thumb.Visual = this.Visual.GetGraphicalUiElementByName("ThumbInstance");
             thumb.Push += HandleThumbPush;
             thumb.Visual.RollOver += HandleThumbRollOver;
+            // do this before assigning any values like Minimum, Maximum
+            var thumbHeight = thumb.ActualHeight;
 
             track = thumb.Visual.ParentGue;
-            track.Click += HandleTrackClicked;
+            track.Push += HandleTrackPush;
             track.RollOver += HandleTrackRollOver;
 
             // read the height values and infer the Value and ViewportSize based on a 0 - 100
@@ -99,7 +136,6 @@ namespace FlatRedBall.Forms.Controls
 
 
             var visibleTrackSpace = track.Height - upButton.ActualHeight - downButton.ActualHeight;
-            var thumbHeight = thumb.ActualHeight;
 
             var thumbRatio = thumbHeight / visibleTrackSpace;
             ViewportSize = (Maximum - Minimum) * thumbRatio;
@@ -141,7 +177,7 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        private void HandleTrackClicked(IWindow window)
+        private void HandleTrackPush(IWindow window)
         {
             if(GuiManager.Cursor.ScreenY < thumb.ActualY)
             {
@@ -171,7 +207,7 @@ namespace FlatRedBall.Forms.Controls
         private void UpdateThumbPositionToCursorDrag(Cursor cursor)
         {
             var cursorScreenY = cursor.ScreenY;
-            var cursorYRelativeToTrack = cursorScreenY - (track.AbsoluteY + upButton.ActualHeight);
+            var cursorYRelativeToTrack = cursorScreenY - (track.GetTop() + upButton.ActualHeight);
 
             thumb.Y = cursorYRelativeToTrack - cursorGrabOffsetRelativeToThumb;
 
@@ -183,5 +219,22 @@ namespace FlatRedBall.Forms.Controls
 
         }
         
+        private void UpdateThumbSize()
+        {
+            if(ViewportSize == 0)
+            {
+                thumb.Height = 0;
+            }
+            else
+            {
+                float trackHeight = (track.GetAbsoluteHeight() - downButton.ActualHeight) - MinThumbPosition;
+
+                var valueRange = (Maximum - Minimum) + ViewportSize;
+
+                var thumbRatio = ViewportSize / valueRange;
+
+                thumb.Height = (float)(trackHeight * thumbRatio);
+            }
+        }
     }
 }

@@ -16,6 +16,7 @@ namespace GumPlugin.DataGeneration
         public const string TextBoxBehaviorName = "TextBoxBehavior";
         public const string ScrollBarBehaviorName = "ScrollBarBehavior";
         public const string ScrollViewerBehaviorName = "ScrollViewerBehavior";
+        public const string ListBoxItemBehaviorName = "ListBoxItemBehavior";
 
         public static BehaviorSave CreateButtonBehavior()
         {
@@ -133,6 +134,22 @@ namespace GumPlugin.DataGeneration
             clipContainerInstance.Name = "ClipContainerInstance";
             // todo - needs to implement the ScrollBar behavior
             toReturn.RequiredInstances.Add(clipContainerInstance);
+
+            return toReturn;
+        }
+
+        public static BehaviorSave CreateListBoxItemBehavior()
+        {
+            BehaviorSave toReturn = new BehaviorSave();
+            toReturn.Name = ListBoxItemBehaviorName;
+
+            var category = new StateSaveCategory();
+            toReturn.Categories.Add(category);
+            category.Name = "ListBoxItemCategory";
+
+            category.States.Add(new StateSave { Name = "Enabled" });
+            category.States.Add(new StateSave { Name = "Highlighted" });
+            category.States.Add(new StateSave { Name = "Selected" });
 
             return toReturn;
         }

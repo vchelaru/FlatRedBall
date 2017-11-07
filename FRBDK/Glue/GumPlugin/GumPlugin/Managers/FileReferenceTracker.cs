@@ -212,7 +212,7 @@ namespace GumPlugin.Managers
                 ElementSave rootElementSave = null;
                 if (string.IsNullOrEmpty(variable.SourceObject))
                 {
-                    rootElementSave = state.ParentContainer;
+                    rootElementSave = ObjectFinder.Self.GetRootStandardElementSave(state.ParentContainer);
                 }
                 else
                 {

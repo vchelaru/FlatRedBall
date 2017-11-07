@@ -9,6 +9,8 @@ namespace FlatRedBall.Forms.Controls
     {
         #region Fields/Properties
 
+        bool reactToInnerPanelPositionOrSizeChanged = true;
+
         ScrollBar verticalScrollBar;
 
         GraphicalUiElement innerPanel;
@@ -27,6 +29,8 @@ namespace FlatRedBall.Forms.Controls
             verticalScrollBar.ValueChanged += HandleVerticalScrollBarValueChanged;
 
             innerPanel = Visual.GetGraphicalUiElementByName("InnerPanelInstance");
+            innerPanel.SizeChanged += HandleInnerPanelSizeChanged;
+            innerPanel.PositionChanged += HandleInnerPanelPositionChanged;
             clipContainer = Visual.GetGraphicalUiElementByName("ClipContainerInstance");
 
             UpdateVerticalScrollBarValues();
@@ -34,15 +38,33 @@ namespace FlatRedBall.Forms.Controls
             base.ReactToVisualChanged();
         }
 
+
         #endregion
 
         #region Event Handlers
 
         private void HandleVerticalScrollBarValueChanged(object sender, EventArgs e)
         {
+            reactToInnerPanelPositionOrSizeChanged = false;
             innerPanel.Y = -(float)verticalScrollBar.Value;
+            reactToInnerPanelPositionOrSizeChanged = true;
         }
 
+        private void HandleInnerPanelSizeChanged(object sender, EventArgs e)
+        {
+            if(reactToInnerPanelPositionOrSizeChanged)
+            {
+                UpdateVerticalScrollBarValues();
+            }
+        }
+
+        private void HandleInnerPanelPositionChanged(object sender, EventArgs e)
+        {
+            if(reactToInnerPanelPositionOrSizeChanged)
+            {
+                UpdateVerticalScrollBarValues();
+            }
+        }
         #endregion
 
         #region UpdateTo methods

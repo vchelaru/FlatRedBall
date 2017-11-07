@@ -1,4 +1,5 @@
-﻿using Gum.Wireframe;
+﻿using FlatRedBall.Forms.GumExtensions;
+using Gum.Wireframe;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -27,8 +28,8 @@ namespace FlatRedBall.Forms.Controls
             set { Visual.Width = value; }
         }
 
-        public float ActualX => Visual.AbsoluteX;
-        public float ActualY => Visual.AbsoluteY;
+        public float ActualX => Visual.GetLeft();
+        public float ActualY => Visual.GetTop();
 
         public float X
         {
