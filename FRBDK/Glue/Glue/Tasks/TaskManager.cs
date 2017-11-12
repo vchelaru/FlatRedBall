@@ -133,7 +133,6 @@ namespace FlatRedBall.Glue.Managers
         /// <param name="details">The details of the task, to be displayed in the tasks window.</param>
         public void AddAsyncTask(Action action, string details)
         {
-            asyncTasks++;
 
             ThreadPool.QueueUserWorkItem(
                 (arg)=>ExecuteActionSync(action, details));
@@ -168,6 +167,9 @@ namespace FlatRedBall.Glue.Managers
                 mActiveAsyncTasks.Remove(glueTask);
             }
             asyncTasks--;
+
+            // not sure why but this can go into the negative...
+            asyncTasks = System.Math.Max(asyncTasks, 0);
 
             CallTaskAddedOrRemoved();
 

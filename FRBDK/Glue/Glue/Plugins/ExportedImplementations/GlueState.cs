@@ -213,6 +213,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
+        public string CurrentSlnFileName
+        {
+            get
+            {
+                return VSHelpers.ProjectSyncer.LocateSolution(CurrentGlueProjectFileName);
+            }
+        }
+
         #endregion
 
         public GlueState()

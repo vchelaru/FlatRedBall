@@ -167,7 +167,9 @@ namespace GumPlugin
             // - Added new Button behavior save
             // - Started on ScrollBar behavior save
             // - Fixed a bug where children of a stack layout woulnd't update if added at runtime
-            get { return new Version(0, 9, 2, 0); }
+            // 0.9.2.1
+            // - Fixed components which inherit from nineslice not properly setting up necessary files in Glue project.
+            get { return new Version(0, 9, 2, 1); }
         }
 
         #endregion

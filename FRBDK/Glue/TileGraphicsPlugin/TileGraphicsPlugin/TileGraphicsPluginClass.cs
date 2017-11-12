@@ -222,6 +222,24 @@ namespace TileGraphicsPlugin
                     tiledObjectTypeCreator.RefreshFile();
                 }
             };
+
+            this.ReactToVariableAdded += (newVariable) =>
+            {
+                var element = EditorObjects.IoC.Container.Get<IGlueState>().CurrentElement;
+                if ((element as EntitySave)?.CreatedByOtherEntities == true)
+                {
+                    tiledObjectTypeCreator.RefreshFile();
+                }
+            };
+
+            this.ReactToVariableRemoved += (removedVariable) =>
+            {
+                var element = EditorObjects.IoC.Container.Get<IGlueState>().CurrentElement;
+                if ((element as EntitySave)?.CreatedByOtherEntities == true)
+                {
+                    tiledObjectTypeCreator.RefreshFile();
+                }
+            };
         }
 
         private void HandleGluxLoadEarly()

@@ -11,6 +11,8 @@ namespace FlatRedBall.Forms.Controls
     {
         #region Fields/Properties
 
+        int selectedIndex = -1;
+
         List<object> objects;
 
         public Type ListBoxItemType { get; set; }
@@ -25,6 +27,7 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
+        public event EventHandler NewItemSelected;
 
         public ListBox()
         {
@@ -73,6 +76,11 @@ namespace FlatRedBall.Forms.Controls
                     listBoxItem.IsSelected = false;
                 }
             }
+
+            selectedIndex = listBoxItems.IndexOf(sender as ListBoxItem);
+
+            NewItemSelected?.Invoke(Items[selectedIndex], null);
+
         }
 
     }

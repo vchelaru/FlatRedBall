@@ -147,6 +147,9 @@ namespace FlatRedBall.Glue.Plugins
         public Action<NamedObjectSave, ICodeBlock, InstructionSave> WriteInstanceVariableAssignment { get; protected set; }
 
         public Action<string, object> ReactToReferencedFileChangedValueHandler { get;  protected set;}
+        public Action<CustomVariable> ReactToVariableAdded { get; protected set; }
+        public Action<CustomVariable> ReactToVariableRemoved { get; protected set; }
+        
 
         public Func<string, bool> GetIfUsesContentPipeline { get; protected set; }
 

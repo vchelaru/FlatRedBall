@@ -36,7 +36,7 @@ namespace TileGraphicsPlugin.Managers
             // put this in the content directory
             var directory = GlueState.Self.ContentDirectory;
 
-            return directory + "TiledObjects.xml";
+            return directory + "TiledObjects.Generated.xml";
         }
 
         private IEnumerable<EntitySave> GetEntitiesForTiledObjectTypeFile()

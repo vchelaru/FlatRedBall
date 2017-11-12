@@ -1491,6 +1491,48 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+        internal static void ReactToVariableAdded(CustomVariable newVariable)
+        {
+            foreach (PluginManager pluginManager in mInstances)
+            {
+                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToVariableAdded != null);
+
+                foreach (var plugin in plugins)
+                {
+                    var container = pluginManager.mPluginContainers[plugin];
+                    if (container.IsEnabled)
+                    {
+                        PluginBase plugin1 = plugin;
+                        PluginCommand(() =>
+                        {
+                            plugin1.ReactToVariableAdded(newVariable);
+                        }, container, "Failed in ReactToVariableAdded");
+                    }
+                }
+            }
+        }
+
+        internal static void ReactToVariableRemoved(CustomVariable removedVariable)
+        {
+            foreach (PluginManager pluginManager in mInstances)
+            {
+                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToVariableRemoved != null);
+
+                foreach (var plugin in plugins)
+                {
+                    var container = pluginManager.mPluginContainers[plugin];
+                    if (container.IsEnabled)
+                    {
+                        PluginBase plugin1 = plugin;
+                        PluginCommand(() =>
+                        {
+                            plugin1.ReactToVariableRemoved(removedVariable);
+                        }, container, "Failed in ReactToVariableRemoved");
+                    }
+                }
+            }
+        }
+
         internal static void ReactToNamedObjectChangedValue(string changedMember, object oldValue)
         {
             foreach (PluginManager pluginManager in mInstances)

@@ -37,7 +37,8 @@ namespace OfficialPlugins.Git
 
         private void HandleAddGitIgnore(object sender, EventArgs e)
         {
-            var gitIgnoreFolder = FileManager.RemoveDotDotSlash(GlueState.Self.CurrentGlueProjectDirectory + "../../");
+            // Vic asks - does gitignore sit in the root? I think so...
+            var gitIgnoreFolder = FileManager.GetDirectory(GlueState.Self.CurrentSlnFileName);
 
             string gitIgnoreFile = gitIgnoreFolder + ".gitignore";
 
@@ -89,8 +90,10 @@ namespace OfficialPlugins.Git
             yield return "*.sln.metaproj";
 
             yield return $"{gameName}/{gameName}/bin/";
+            yield return $"{gameName}/bin/";
 
             yield return $"{gameName}/{gameName}/obj/";
+            yield return $"{gameName}/obj/";
 
             yield return $"{gameName}/{gameName}Content/obj/";
         }

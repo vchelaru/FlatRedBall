@@ -669,27 +669,29 @@ namespace FlatRedBall.Glue
         {
             // additionalFilesToRemove is added to keep this consistent with other remove methods
 
-            IElement iElement = ObjectFinder.Self.GetElementContaining(customVariable);
+            IElement element = ObjectFinder.Self.GetElementContaining(customVariable);
 
-            if (iElement == null || !iElement.CustomVariables.Contains(customVariable))
+            if (element == null || !element.CustomVariables.Contains(customVariable))
             {
                 throw new ArgumentException();
             }
             else
             {
-                iElement.CustomVariables.Remove(customVariable);
-                iElement.RefreshStatesToCustomVariables();
+                element.CustomVariables.Remove(customVariable);
+                element.RefreshStatesToCustomVariables();
 
-                List<EventResponseSave> eventsReferencedByVariable = iElement.GetEventsOnVariable(customVariable.Name);
+                List<EventResponseSave> eventsReferencedByVariable = element.GetEventsOnVariable(customVariable.Name);
 
                 foreach (EventResponseSave ers in eventsReferencedByVariable)
                 {
-                    iElement.Events.Remove(ers);
+                    element.Events.Remove(ers);
                 }
             }
             UpdateCurrentTreeNodeAndCodeAndSave(false);
 
             UpdateAllDerivedElementFromBaseValues(false, true);
+
+            PluginManager.ReactToVariableRemoved(customVariable);
         }
 
 

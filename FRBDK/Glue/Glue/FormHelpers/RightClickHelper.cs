@@ -2290,6 +2290,8 @@ namespace FlatRedBall.Glue.FormHelpers
                         EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
                     }
                     ElementViewWindow.ShowAllElementVariablesInPropertyGrid();
+
+
                     if(GlueState.Self.CurrentElement != null)
                     {
                         PluginManager.ReactToItemSelect(GlueState.Self.CurrentTreeNode);
@@ -2382,6 +2384,9 @@ namespace FlatRedBall.Glue.FormHelpers
             ElementViewWindow.GenerateSelectedElementCode();
 
             UpdateInstanceCustomVariables(currentElement);
+
+            PluginManager.ReactToVariableAdded(newVariable);
+
 
             GluxCommands.Self.SaveGlux();
 
