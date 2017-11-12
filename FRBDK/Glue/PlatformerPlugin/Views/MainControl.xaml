@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FlatRedBall.PlatformerPlugin.Views"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="500">
     <Grid>
@@ -24,9 +25,19 @@
             </ItemsControl>
         </ScrollViewer>
         
-        <StackPanel Visibility="{Binding PlatformerUiVisibility}" Grid.Row="2">
-            <Button Click="AddPlatformerValuesClick" Height="28">Add Control Values</Button>
-        </StackPanel>
+        <Grid Visibility="{Binding PlatformerUiVisibility}" Grid.Row="2">
+            <!--<Button Click="AddPlatformerValuesClick" Grid.Column="0" Height="28">Add Control Values</Button>
+            <Button Click="AddPlatformerValuesClick" Grid.Column="1" Height="28" Width="15">v</Button>-->
+            <xctk:SplitButton Content="Add Control Values" Click="AddEmptyPlatformerValuesClick" x:Name="AddControlButtonInstance">
+                <xctk:SplitButton.DropDownContent>
+                    <StackPanel>
+                        <Button Click="AddEmptyPlatformerValuesClick">Empty Values</Button>
+                        <Button Click="AddDefaultGroundPlatformerValuesClick">Default Ground Control</Button>
+                        <Button Click="AddDefaultAirPlatformerValuesClick">Default Air Control</Button>
+                    </StackPanel>
+                </xctk:SplitButton.DropDownContent>
+            </xctk:SplitButton>
+        </Grid>
 
     </Grid>
 </UserControl>

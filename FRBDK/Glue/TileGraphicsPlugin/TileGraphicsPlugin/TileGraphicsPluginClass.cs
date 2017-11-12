@@ -87,7 +87,10 @@ namespace TileGraphicsPlugin
             // 1.1.1.7
             // - Added support for overriding the current TextureFilter when rendering a MapDrawableBatch
             // - Entities are now offset according to their layer's position - useful for instantiating entities inside of another entity
-            get { return new Version(1, 1, 1, 7); }
+            // 1.2.0
+            // - Added/improved xml Type generated file creation/updating
+            // - Made the IDs alittle clearer - no more +1 in code 
+            get { return new Version(1, 2, 0, 0); }
         }
 
 

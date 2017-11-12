@@ -146,6 +146,11 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             UsesAcceleration = values.UsesAcceleration;
         }
 
+        public PlatformerValuesViewModel Clone()
+        {
+            return (PlatformerValuesViewModel)this.MemberwiseClone();
+        }
+
         internal PlatformerValues ToValues()
         {
             var toReturn = new PlatformerValues();

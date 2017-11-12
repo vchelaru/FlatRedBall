@@ -453,6 +453,49 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
 
         /// <summary>
+        /// Assigns the current movement values based off of whether the user is on ground and has double-jumped or not.
+        /// This is called automatically, but it can be overridden in derived classes to perform custom assignment of 
+        /// movement types.
+        /// </summary>
+        protected virtual void DetermineMovementValues()
+        {
+            if (mIsOnGround)
+            {
+                mHasDoubleJumped = false;
+                if (CurrentMovementType == MovementType.Air ||
+                    CurrentMovementType == MovementType.AfterDoubleJump)
+                {
+                    CurrentMovementType = MovementType.Ground;
+                }
+            }
+            else
+            {
+                if (CurrentMovementType == MovementType.Ground)
+                {
+                    CurrentMovementType = MovementType.Air;
+                }
+
+            }
+
+            if (CurrentMovementType == MovementType.Air && mHasDoubleJumped)
+            {
+                CurrentMovementType = MovementType.AfterDoubleJump;
+            }
+
+
+
+        }
+
+        #endregion
+");
+            #endregion
+
+            #region Collision Methods
+
+            codeBlock.Line(
+                @"
+
+        /// <summary>
         /// Performs a standard solid collision against a ShapeCollection.
         /// </summary>
         /// <param name=""shapeCollection""></param>
@@ -539,43 +582,27 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 }
             }
         }
+"
 
-        /// <summary>
-        /// Assigns the current movement values based off of whether the user is on ground and has double-jumped or not.
-        /// This is called automatically, but it can be overridden in derived classes to perform custom assignment of 
-        /// movement types.
-        /// </summary>
-        protected virtual void DetermineMovementValues()
+
+                );
+
+
+            bool hasTiledPlugin =
+                Glue.Plugins.PluginManager.AllPluginContainers.Any(item => item.Name == "Tiled Plugin");
+
+            if (hasTiledPlugin)
+            {
+                codeBlock.Line(@"
+        public void CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, bool isCloudCollision = false)
         {
-            if (mIsOnGround)
-            {
-                mHasDoubleJumped = false;
-                if (CurrentMovementType == MovementType.Air ||
-                    CurrentMovementType == MovementType.AfterDoubleJump)
-                {
-                    CurrentMovementType = MovementType.Ground;
-                }
-            }
-            else
-            {
-                if (CurrentMovementType == MovementType.Ground)
-                {
-                    CurrentMovementType = MovementType.Air;
-                }
-
-            }
-
-            if (CurrentMovementType == MovementType.Air && mHasDoubleJumped)
-            {
-                CurrentMovementType = MovementType.AfterDoubleJump;
-            }
-
-
-
+            CollideAgainst(() => shapeCollection.CollideAgainstSolid(this), isCloudCollision);
         }
 
-        #endregion
 ");
+            }
+
+
             #endregion
 
             return base.GenerateAdditionalMethods(codeBlock, element);

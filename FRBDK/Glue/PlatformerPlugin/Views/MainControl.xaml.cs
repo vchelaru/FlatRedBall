@@ -1,4 +1,5 @@
-﻿using FlatRedBall.PlatformerPlugin.ViewModels;
+﻿using FlatRedBall.PlatformerPlugin.Data;
+using FlatRedBall.PlatformerPlugin.ViewModels;
 using FlatRedBall.Utilities;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Xceed.Wpf.Toolkit;
 
 namespace FlatRedBall.PlatformerPlugin.Views
 {
@@ -35,18 +37,41 @@ namespace FlatRedBall.PlatformerPlugin.Views
             InitializeComponent();
         }
 
-        private void AddPlatformerValuesClick(object sender, RoutedEventArgs e)
+        private void AddEmptyPlatformerValuesClick(object sender, RoutedEventArgs e)
         {
             string name = "Unnamed";
+            AddPlatformerValues(name);
 
-            while(ViewModel.PlatformerValues.Any(item=>item.Name == name))
+            AddControlButtonInstance.IsOpen = false;
+        }
+
+        private void AddDefaultGroundPlatformerValuesClick(object sender, RoutedEventArgs e)
+        {
+            string name = "Ground";
+            AddPlatformerValues(name);
+
+            AddControlButtonInstance.IsOpen = false;
+        }
+
+        private void AddDefaultAirPlatformerValuesClick(object sender, RoutedEventArgs e)
+        {
+            string name = "Air";
+            AddPlatformerValues(name);
+
+            AddControlButtonInstance.IsOpen = false;
+        }
+
+        private void AddPlatformerValues(string predefinedName)
+        {
+            var values = PredefinedPlatformerValues.GetValues(predefinedName);
+
+            string newItemName = predefinedName;
+            while(ViewModel.PlatformerValues.Any(item=>item.Name == newItemName))
             {
-                name = FlatRedBall.Utilities.StringFunctions.IncrementNumberAtEnd(name);
+                newItemName = FlatRedBall.Utilities.StringFunctions.IncrementNumberAtEnd(newItemName);
             }
 
-            var values = new PlatformerValuesViewModel();
-            values.Name = name;
-
+            values.Name = newItemName;
 
             ViewModel.PlatformerValues.Add(values);
         }
