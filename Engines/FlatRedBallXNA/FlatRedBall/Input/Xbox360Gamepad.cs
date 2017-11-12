@@ -1207,7 +1207,7 @@ namespace FlatRedBall.Input
         {
             GamePadState gamepadState;
 
-#if SILVERLIGHT || MONOGAME
+#if MONOGAME
             gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex);//, GamePadDeadZone.Circular);
 #else
             gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.Circular);

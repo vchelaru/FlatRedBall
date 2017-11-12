@@ -114,13 +114,12 @@ namespace FlatRedBall.Input
         {
             int padNumber;
 
-#if !WINDOWS_PHONE && !MONODROID
+#if !MONODROID
             padNumber = 4;
 #else
             padNumber = 1;
 #endif
 
-#if !WINDOWS_8
             for (int i = 0; i < padNumber; i++)
             {
                 if (mXbox360GamePads[i].IsConnected != mControllerConnectedStatus[i])
@@ -131,7 +130,6 @@ namespace FlatRedBall.Input
                     mControllerConnectedStatus[i] = mXbox360GamePads[i].IsConnected;
                 }
             }
-#endif
         }
 
 
@@ -188,7 +186,7 @@ namespace FlatRedBall.Input
 #if SUPPORTS_XBOX_GAMEPADS
 
                 mXbox360GamePads[0].Update();
-#if !WINDOWS_PHONE && !MONODROID
+#if !MONODROID
                 mXbox360GamePads[1].Update();
                 mXbox360GamePads[2].Update();
                 mXbox360GamePads[3].Update();
