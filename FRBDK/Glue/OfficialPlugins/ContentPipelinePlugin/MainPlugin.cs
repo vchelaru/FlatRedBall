@@ -238,13 +238,25 @@ namespace OfficialPlugins.MonoGameContent
             }
             else
             {
-                BuildLogic.Self.TryHandleReferencedFile(GlueState.CurrentMainProject, fileName, viewModel.UseContentPipelineOnPngs);
+                // We only want to process this file if it's actually referenced by the project, not if it's a floating file
+                var allFileNames = Container.Get<IGlueCommands>().FileCommands.GetAllReferencedFileNames();
 
-                foreach (var syncedProject in GlueState.SyncedProjects)
+                var contentFolder = Container.Get<IGlueState>().ContentDirectory;
+                var absoluteLowerCase = allFileNames.Select(item => (contentFolder + item).ToLowerInvariant());
+
+                var standardized = FileManager.Standardize(fileName).ToLowerInvariant();
+
+                var isReferenced = absoluteLowerCase.Contains(standardized);
+
+                if(isReferenced)
                 {
-                    BuildLogic.Self.TryHandleReferencedFile(syncedProject, fileName, viewModel.UseContentPipelineOnPngs);
-                }
+                    BuildLogic.Self.TryHandleReferencedFile(GlueState.CurrentMainProject, fileName, viewModel.UseContentPipelineOnPngs);
 
+                    foreach (var syncedProject in GlueState.SyncedProjects)
+                    {
+                        BuildLogic.Self.TryHandleReferencedFile(syncedProject, fileName, viewModel.UseContentPipelineOnPngs);
+                    }
+                }
             }
 
         }
