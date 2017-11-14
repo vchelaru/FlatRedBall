@@ -757,6 +757,8 @@ namespace FlatRedBall.IO
             int lastIndex = System.Math.Max(
                 fileName.LastIndexOf('/'), fileName.LastIndexOf('\\'));
 
+            string directoryToReturn = "";
+
             if (lastIndex == fileName.Length - 1)
             {
                 // If this happens then fileName is actually a directory.
@@ -780,24 +782,27 @@ namespace FlatRedBall.IO
                 if (FileManager.IsUrl(fileName) || isFtp)
                 {
                     // don't standardize URLs - they're case sensitive!!!
-                    return fileName.Substring(0, lastIndex + 1);
+                    directoryToReturn = fileName.Substring(0, lastIndex + 1);
 
                 }
                 else
                 {
                     if (relativeType == RelativeType.Absolute)
                     {
-                        return FileManager.Standardize(fileName.Substring(0, lastIndex + 1));
+                        directoryToReturn = FileManager.Standardize(fileName.Substring(0, lastIndex + 1));
                     }
                     else
                     {
-                        return FileManager.Standardize(fileName.Substring(0, lastIndex + 1), "", false);
+                        directoryToReturn = FileManager.Standardize(fileName.Substring(0, lastIndex + 1), "", false);
                     }
                 }
             }
             else
-                return ""; // there was no directory found.
+            {
+                directoryToReturn = ""; // there was no directory found.
+            }
 
+            return directoryToReturn;
         }
 
         public static string GetDirectoryKeepRelative(string fileName)
@@ -910,23 +915,31 @@ namespace FlatRedBall.IO
         {
 #if SILVERLIGHT || WINDOWS_8
             throw new NotImplementedException();
-#else
+#endif
+            // EARLY OUT: Bad directory
             if (!Directory.Exists(directory))
             {
                 return;
             }
 
             if (directory == "")
+            {
                 directory = RelativeDirectory;
+            }
 
             if (directory.EndsWith(@"\") == false && directory.EndsWith("/") == false)
-                directory += @"\";
+            {
+                directory += @"/";
+            }
+
 
             // if they passed in a fileType which begins with a period (like ".jpg"), then
             // remove the period so only the extension remains.  That is, convert
             // ".jpg" to "jpg"
             if (fileType != null && fileType.Length > 0 && fileType[0] == '.')
+            {
                 fileType = fileType.Substring(1);
+            }
 
             string[] files = System.IO.Directory.GetFiles(directory);
             string[] directories = System.IO.Directory.GetDirectories(directory);
