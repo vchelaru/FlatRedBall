@@ -973,9 +973,8 @@ namespace FlatRedBall.IO
                     GetAllFilesInDirectory(directoryChecking, fileType, depthToSearch - 1, arrayToReturn);
                 }
             }
-#endif
         }
-#endregion
+        #endregion
 
 
 
