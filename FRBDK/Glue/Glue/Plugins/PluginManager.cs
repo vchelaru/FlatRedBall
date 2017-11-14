@@ -1892,7 +1892,8 @@ namespace FlatRedBall.Glue.Plugins
 
         static void CallMethodOnPluginNotUiThread(Action<PluginBase> methodToCall, string methodName)
         {
-            foreach (PluginManager manager in mInstances)
+            var instances = mInstances.ToList();
+            foreach (PluginManager manager in instances)
             {
                 foreach (var plugin in manager.PluginContainers.Keys.Where(plugin => plugin is PluginBase))
                 {
