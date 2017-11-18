@@ -46,7 +46,7 @@ namespace GumPlugin.CodeGeneration
 
             foreach (var layerName in gumLayerNames)
             {
-                codeBlock.Line($"global::RenderingLibrary.Graphics.Layer {layerName};");
+                codeBlock.Line($"protected global::RenderingLibrary.Graphics.Layer {layerName};");
 
             }
 
@@ -87,11 +87,19 @@ namespace GumPlugin.CodeGeneration
 
         public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
         {
+            return base.GenerateAddToManagers(codeBlock, element);
+        }
+
+        public override void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, IElement element)
+        {
+            GenerateMoveObjectsToGumLayers(codeBlock, element);
+            base.GenerateAddToManagersBottomUp(codeBlock, element);
+        }
+
+        private void GenerateMoveObjectsToGumLayers(ICodeBlock codeBlock, IElement element)
+        {
             if (ShouldGenerate)
             {
-
-
-
                 bool wasAnythingMovedToALayer = false;
                 // todo:  Need to register the layer here
                 foreach (var item in element.AllNamedObjects.Where(item =>
@@ -102,7 +110,7 @@ namespace GumPlugin.CodeGeneration
                     string frbLayerName = item.LayerOn;
                     string gumLayerName = $"{item.LayerOn}Gum";
 
-                    if(item.LayerOn == AvailableLayersTypeConverter.UnderEverythingLayerName)
+                    if (item.LayerOn == AvailableLayersTypeConverter.UnderEverythingLayerName)
                     {
                         frbLayerName = AvailableLayersTypeConverter.UnderEverythingLayerCode;
                         gumLayerName = UnderEverythingLayerGumName;
@@ -118,13 +126,11 @@ namespace GumPlugin.CodeGeneration
                     wasAnythingMovedToALayer = true;
                 }
 
-                if(wasAnythingMovedToALayer && element is FlatRedBall.Glue.SaveClasses.ScreenSave)
+                if (wasAnythingMovedToALayer && element is FlatRedBall.Glue.SaveClasses.ScreenSave)
                 {
                     codeBlock.Line("FlatRedBall.Gui.GuiManager.SortZAndLayerBased();");
                 }
             }
-            return base.GenerateAddToManagers(codeBlock, element);
         }
-
     }
 }

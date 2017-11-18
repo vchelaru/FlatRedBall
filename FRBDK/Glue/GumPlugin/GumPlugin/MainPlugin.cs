@@ -169,7 +169,10 @@ namespace GumPlugin
             // - Fixed a bug where children of a stack layout woulnd't update if added at runtime
             // 0.9.2.1
             // - Fixed components which inherit from nineslice not properly setting up necessary files in Glue project.
-            get { return new Version(0, 9, 2, 1); }
+            // 0.9.2.2
+            // - Fixed bug - derived Screens could not access Gum layers defined in base through Glue layers.
+            // - Fixed bug - Screens without Gum screens now use define and associate layers using IDBs
+            get { return new Version(0, 9, 2, 2); }
         }
 
         #endregion

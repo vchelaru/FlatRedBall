@@ -245,17 +245,16 @@ namespace TMXGlueLib.DataTypes
                     quad.TopTexturePixel = (ushort)FlatRedBall.Math.MathFunctions.RoundToInt(topTextureCoordinate * tileSet.Images[0].height);
 
 
-                    if (tileSet.TileDictionary.ContainsKey(valueWithoutFlip))
+                    if (tileSet.TileDictionary.ContainsKey(valueWithoutFlip - tileSet.Firstgid))
                     {
-
-                        var dictionary = tileSet.TileDictionary[valueWithoutFlip].PropertyDictionary;
+                        var dictionary = tileSet.TileDictionary[valueWithoutFlip - tileSet.Firstgid].PropertyDictionary;
                         if (dictionary.ContainsKey("name"))
                         {
-                            quad.Name = tileSet.TileDictionary[valueWithoutFlip].PropertyDictionary["name"];
+                            quad.Name = tileSet.TileDictionary[valueWithoutFlip - tileSet.Firstgid].PropertyDictionary["name"];
                         }
                         else if (dictionary.ContainsKey("Name"))
                         {
-                            quad.Name = tileSet.TileDictionary[valueWithoutFlip].PropertyDictionary["Name"];
+                            quad.Name = tileSet.TileDictionary[valueWithoutFlip - tileSet.Firstgid].PropertyDictionary["Name"];
                         }
                     }
 

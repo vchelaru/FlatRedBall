@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<objecttypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <objecttype name="BaseNotPooled" />
+  <objecttype name="BasePooledEntity" />
+  <objecttype name="ChildOfPositioningEntity" />
+  <objecttype name="CreatedByTiled" />
+  <objecttype name="DerivedPooledFromNotPooled" />
+  <objecttype name="DerivedPooledFromPooled" />
+  <objecttype name="EntityInFolder" />
+  <objecttype name="FactoryEntity">
+    <property name="Visible" type="bool" default="true" />
+  </objecttype>
+  <objecttype name="FactoryEntityDerived" />
+  <objecttype name="IWindowDerivedFromNoIWindow" />
+  <objecttype name="PooledDontInheritFromThis" />
+  <objecttype name="PooledEntityContainingEntity" />
+  <objecttype name="PooledEntityInheritFromSprite" />
+  <objecttype name="PooledWithInternalList" />
+  <objecttype name="PositioningEntity">
+    <property name="CircleX" type="float" default="2" />
+  </objecttype>
+  <objecttype name="RecyclableEntity" />
+  <objecttype name="ShapeEntityCreatedByOtherEntities" />
+  <objecttype name="TextInheritingEntity">
+    <property name="ThisAsTextRed" type="float" default="0.5" />
+    <property name="ThisAsTextAlpha" type="float" default="1" />
+    <property name="Visible" type="bool" />
+    <property name="CircleRadius" type="float" />
+  </objecttype>
+</objecttypes>

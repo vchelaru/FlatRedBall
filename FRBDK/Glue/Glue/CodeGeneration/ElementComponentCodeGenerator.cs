@@ -89,6 +89,11 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
+        public virtual void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, IElement element)
+        {
+
+        }
+
         public virtual bool HandlesVariable(CustomVariable variable, IElement element)
         {
             return false;

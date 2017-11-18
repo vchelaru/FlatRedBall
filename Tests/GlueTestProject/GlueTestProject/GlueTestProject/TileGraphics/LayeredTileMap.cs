@@ -333,6 +333,7 @@ namespace FlatRedBall.TileGraphics
             // Ultimately properties are tied to tiles by the tile name.
             // If a tile has no name but it has properties, those properties
             // will be lost in the conversion. Therefore, we have to add name properties.
+            tms.MoveTypeToProperties();
             tms.NameUnnamedTilesetTiles();
             tms.NameUnnamedObjects();
 

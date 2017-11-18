@@ -49,6 +49,8 @@ namespace TMXGlueLib
                 set;
             }
 
+            [XmlAttribute("type")]
+            public string Type { get; set; }
 
             [XmlElement("animation")]
             public TileAnimation Animation

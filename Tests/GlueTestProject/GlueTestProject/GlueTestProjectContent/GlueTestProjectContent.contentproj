@@ -529,6 +529,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>GumProject</Name>
     </None>
+    <None Include="GumProject\Screens\DerivedScreenGum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>DerivedScreenGum</Name>
+    </None>
     <None Include="GumProject\Screens\GumScreenLayeredGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>GumScreenLayeredGum</Name>

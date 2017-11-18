@@ -110,6 +110,7 @@ namespace FlatRedBall.Glue.IO
         {
             TryCopyingBuiltFile(fileName, ErrorReportingStyle.MessageBox);
         }
+
         void TryCopyingBuiltFile(string fileName, ErrorReportingStyle errorReportingStyle)
         {
             // We only care about XNBs and WMAs
@@ -121,66 +122,72 @@ namespace FlatRedBall.Glue.IO
                 shouldCopy = extension == "xnb" || extension == "wma" || extension == "mp3";
             }
 
-            string projectDirectory = FileManager.GetDirectory(GlueState.Self.CurrentGlueProjectFileName);
-            string destinationDirectory = FileManager.GetDirectory(fileName);
-            destinationDirectory = FileManager.MakeRelative(destinationDirectory, projectDirectory);
-            // look for the first instance of "/content/" which is in the root of the bin folder on PC
-
-            if(shouldCopy)
-            {
-                // If the changed file is not a file in the bin folder, we don't worry about copying it
-                int indexOfContent = destinationDirectory.ToLowerInvariant().IndexOf("/content/");
-
-                if (indexOfContent == -1)
-                {
-                    shouldCopy = false;
-                }
-            }
-
-
-            if (shouldCopy)
+            if(GlueState.Self.CurrentGlueProject != null)
             {
 
-                try
+                string projectDirectory = FileManager.GetDirectory(GlueState.Self.CurrentGlueProjectFileName);
+                string destinationDirectory = FileManager.GetDirectory(fileName);
+                destinationDirectory = FileManager.MakeRelative(destinationDirectory, projectDirectory);
+                // look for the first instance of "/content/" which is in the root of the bin folder on PC
+
+                if(shouldCopy)
                 {
-          
+                    // If the changed file is not a file in the bin folder, we don't worry about copying it
                     int indexOfContent = destinationDirectory.ToLowerInvariant().IndexOf("/content/");
-                    if(indexOfContent != -1)
+
+                    if (indexOfContent == -1)
                     {
-                        // add 1 to take off the leading slash so the resulting path doesn't have a double forward slash
-                        destinationDirectory = destinationDirectory.Substring(indexOfContent + 1);
+                        shouldCopy = false;
                     }
-                    else
-                    {
-                        PluginManager.ReceiveError("Could not identify root binary folder for path " + fileName);
-                    }
-
-
-                    destinationDirectory = projectDirectory + "CopiedXnbs/" + destinationDirectory;
-
-                    System.IO.Directory.CreateDirectory(destinationDirectory);
-
-                    string destinationFile = destinationDirectory +
-                        FileManager.RemovePath(fileName);
-
-
-                    System.IO.File.Copy(fileName, destinationFile, true);
-
-                    Plugins.PluginManager.ReceiveOutput("Copied built file " + fileName + " to " + destinationFile);
-
                 }
-                catch (Exception e)
+
+
+
+                if (shouldCopy)
                 {
-                    if (errorReportingStyle == ErrorReportingStyle.MessageBox)
+
+                    try
                     {
-                        System.Windows.Forms.MessageBox.Show("Error copying built file:\n\n" + e.ToString());
+
+                        int indexOfContent = destinationDirectory.ToLowerInvariant().IndexOf("/content/");
+                        if (indexOfContent != -1)
+                        {
+                            // add 1 to take off the leading slash so the resulting path doesn't have a double forward slash
+                            destinationDirectory = destinationDirectory.Substring(indexOfContent + 1);
+                        }
+                        else
+                        {
+                            PluginManager.ReceiveError("Could not identify root binary folder for path " + fileName);
+                        }
+
+
+                        destinationDirectory = projectDirectory + "CopiedXnbs/" + destinationDirectory;
+
+                        System.IO.Directory.CreateDirectory(destinationDirectory);
+
+                        string destinationFile = destinationDirectory +
+                            FileManager.RemovePath(fileName);
+
+
+                        System.IO.File.Copy(fileName, destinationFile, true);
+
+                        Plugins.PluginManager.ReceiveOutput("Copied built file " + fileName + " to " + destinationFile);
+
                     }
-                    else
+                    catch (Exception e)
                     {
-                        FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput(
-                            "Error copying built file: " + e.ToString());
+                        if (errorReportingStyle == ErrorReportingStyle.MessageBox)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Error copying built file:\n\n" + e.ToString());
+                        }
+                        else
+                        {
+                            FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput(
+                                "Error copying built file: " + e.ToString());
+                        }
                     }
                 }
+
             }
 
         }

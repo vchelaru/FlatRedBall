@@ -802,15 +802,8 @@ namespace FlatRedBallAddOns.Entities
                     // no need to do anything here because Screens are smart enough to know to not load if they
                     // are using global content
                 }
-
-                if (!string.IsNullOrEmpty(asScreenSave.NextScreen))
-                {
-                    string nameToUse = ProjectManager.ProjectNamespace + "." + asScreenSave.NextScreen.Replace("\\", ".");
-
-                    codeBlock.Line(string.Format("this.NextScreen = typeof({0}).FullName;", nameToUse));
-                }
-
             }
+
 
             codeBlock._();
             PerformancePluginCodeGenerator.GenerateEnd();
@@ -833,6 +826,19 @@ namespace FlatRedBallAddOns.Entities
 
             InheritanceCodeWriter.Self.WriteBaseInitialize(saveObject, codeBlock);
 
+            // This needs to happen after calling WriteBaseInitialize so that the derived overwrites the base
+            if (saveObject is ScreenSave)
+            {
+                ScreenSave asScreenSave = saveObject as ScreenSave;
+
+                if (!string.IsNullOrEmpty(asScreenSave.NextScreen))
+                {
+                    string nameToUse = ProjectManager.ProjectNamespace + "." + asScreenSave.NextScreen.Replace("\\", ".");
+
+                    codeBlock.Line(string.Format("this.NextScreen = typeof({0}).FullName;", nameToUse));
+                }
+
+            }
             PerformancePluginCodeGenerator.GenerateEnd();
 
             // I think we want to set this after calling base.Initialize so that the base
@@ -2213,6 +2219,9 @@ namespace FlatRedBallAddOns.Entities
                 .Function("AddToManagersBottomUp", layerArgs, Public: true, Override: inheritsFromElement,
                           Virtual: !inheritsFromElement, Type: "void");
 
+
+
+
             if (inheritsFromElement)
             {
                 if (isEntity)
@@ -2224,6 +2233,18 @@ namespace FlatRedBallAddOns.Entities
                     currentBlock.Line("base.AddToManagersBottomUp();");
                 }
             }
+            foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators
+                .Where(item =>item.CodeLocation == CodeLocation.BeforeStandardGenerated))
+            {
+                codeGenerator.GenerateAddToManagersBottomUp(currentBlock,element);
+            }
+
+            foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators
+                .Where(item => item.CodeLocation == CodeLocation.StandardGenerated))
+            {
+                codeGenerator.GenerateAddToManagersBottomUp(currentBlock, element);
+            }
+
 
             if (isScreen && string.IsNullOrEmpty(element.BaseElement))
             {
@@ -2233,6 +2254,12 @@ namespace FlatRedBallAddOns.Entities
             if (!element.InheritsFromElement())
             {
                 currentBlock.Line("AssignCustomVariables(false);");
+            }
+
+            foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators
+                .Where(item => item.CodeLocation == CodeLocation.AfterStandardGenerated))
+            {
+                codeGenerator.GenerateAddToManagersBottomUp(currentBlock, element);
             }
         }
 

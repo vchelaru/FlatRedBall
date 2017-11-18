@@ -50,14 +50,21 @@ namespace GumPlugin.CodeGeneration
                 foreach (var layer in GetObjectsForGumLayers(element))
                 {
                     var rfs = GetScreenRfsIn(element);
-                    if (rfs != null)
+
+                    var idbName = rfs?.GetInstanceName();
+
+                    if (string.IsNullOrEmpty(idbName) && element is FlatRedBall.Glue.SaveClasses.ScreenSave)
+                    {
+                        idbName = "gumIdb";
+                    }
+
+                    if(idbName != null)
                     {
 
                         codeBlock.Line(layer.InstanceName + "Gum = RenderingLibrary.SystemManagers.Default.Renderer.AddLayer();");
                         codeBlock.Line(layer.InstanceName + "Gum.Name = \"" + layer.InstanceName + "Gum\";");
 
-
-                        codeBlock.Line(rfs.GetInstanceName() + ".AddGumLayerToFrbLayer(" + layer.InstanceName + "Gum, " + layer.InstanceName + ");");
+                        codeBlock.Line(idbName + ".AddGumLayerToFrbLayer(" + layer.InstanceName + "Gum, " + layer.InstanceName + ");");
                     }
                 }
 

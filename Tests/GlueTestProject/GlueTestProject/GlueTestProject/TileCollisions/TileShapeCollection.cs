@@ -603,6 +603,11 @@ namespace FlatRedBall.TileCollisions
             rectangle.Width = width;
             rectangle.Height = height;
 
+            if (tileShapeCollection.Visible)
+            {
+                rectangle.Visible = true;
+            }
+
             tileShapeCollection.Rectangles.Add(rectangle);
         }
 

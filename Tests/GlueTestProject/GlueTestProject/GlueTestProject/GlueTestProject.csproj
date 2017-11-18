@@ -836,6 +836,7 @@
     </Compile>
     <Compile Include="GumRuntimes\ContainerOfInFolderRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\ContainerRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DerivedScreenGumRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\GumIdb.Generated.cs" />
     <Compile Include="GumRuntimes\GumScreenLayeredGumRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.cs" />

@@ -225,7 +225,13 @@ namespace TMXGlueLib
 
                             foreach (var t in Tiles)
                             {
-                                uint key = (uint)t.id + 1;
+
+                                // November 11, 2017 - why is this "+1"?
+                                // That's confusing. Is it because in the old days 
+                                // it was hardcoded to be the ID of the tile including the offset?
+                                // for multiple tilesets the offset won't be 1...
+                                //uint key = (uint)t.id + 1;
+                                uint key = (uint)t.id;
                                 if (!_tileDictionaryField.ContainsKey(key))
                                 {
                                     _tileDictionaryField.Add(key, t);

@@ -11,6 +11,9 @@ namespace TMXGlueLib.DataTypes
         public string Type;
         public object Value;
 
+        public static NamedValue Empty = new NamedValue();
+
+
         public override string ToString()
         {
             if(string.IsNullOrEmpty(Type))
