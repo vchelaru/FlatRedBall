@@ -90,7 +90,9 @@ namespace TileGraphicsPlugin
             // 1.2.0
             // - Added/improved xml Type generated file creation/updating
             // - Made the IDs alittle clearer - no more +1 in code 
-            get { return new Version(1, 2, 0, 0); }
+            // 1.2.1
+            // - Added TileShapeCollextion.AddCollisionFromTilesWithProperty
+            get { return new Version(1, 2, 1, 0); }
         }
 
 
