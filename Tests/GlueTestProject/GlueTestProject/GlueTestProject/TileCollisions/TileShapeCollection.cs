@@ -471,6 +471,13 @@ namespace FlatRedBall.TileCollisions
             ApplyMerging(tileShapeCollection, dimension, rectangleIndexes);
         }
 
+        public static void AddCollisionFromTilesWithProperty(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap, string propertyName)
+        {
+            tileShapeCollection.AddCollisionFrom(
+                layeredTileMap, (list) => list.Any(item => item.Name == propertyName));
+
+        }
+
         private static void ApplyMerging(TileShapeCollection tileShapeCollection, float dimension, Dictionary<int, List<int>> rectangleIndexes)
         {
             foreach (var kvp in rectangleIndexes.OrderBy(item => item.Key))
