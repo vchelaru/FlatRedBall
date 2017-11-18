@@ -22,3 +22,4 @@ storage.ide
 *.csv#
 Engines/Forms/FlatRedBall.Forms/.vs/
 Tests/GlueTestProject/.vs/
+Engines/FlatRedBallXNA/FlatRedBall/.vs/
