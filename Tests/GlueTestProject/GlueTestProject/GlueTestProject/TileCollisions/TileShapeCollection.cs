@@ -276,6 +276,20 @@ namespace FlatRedBall.TileCollisions
 
         }
 
+        public void RemoveSurroundedCollision()
+        {
+            for (int i = Rectangles.Count - 1; i > -1; i--)
+            {
+                var rectangle = Rectangles[i];
+                if (rectangle.RepositionDirections == RepositionDirections.None)
+                {
+                    rectangle.Visible = false;
+                    this.Rectangles.Remove(rectangle);
+                }
+            }
+        }
+
+
         private float GetKeyValue(float x, float y)
         {
             float keyValue = 0;
@@ -474,6 +488,13 @@ namespace FlatRedBall.TileCollisions
         public static void AddCollisionFromTilesWithProperty(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap, string propertyName)
         {
             tileShapeCollection.AddCollisionFrom(
+                layeredTileMap, (list) => list.Any(item => item.Name == propertyName));
+
+        }
+
+        public static void AddMergedCollisionFromTilesWithProperty(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap, string propertyName)
+        {
+            tileShapeCollection.AddMergedCollisionFrom(
                 layeredTileMap, (list) => list.Any(item => item.Name == propertyName));
 
         }

@@ -17,7 +17,7 @@ using FlatRedBall.Localization;
 using GlueTestProject.TestFramework;
 using RenderingLibrary.Graphics;
 
-#if FRB_XNA || SILVERLIGHT
+#if FRB_XNA
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
