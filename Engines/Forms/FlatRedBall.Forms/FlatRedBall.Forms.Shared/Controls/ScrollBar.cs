@@ -51,6 +51,12 @@ namespace FlatRedBall.Forms.Controls
             }
             set
             {
+#if DEBUG
+                if(double.IsNaN(value))
+                {
+                    throw new InvalidOperationException("Can't set the ScrollBar Value to NaN");
+                }
+#endif
                 this.value = value;
 
                 this.value = System.Math.Min(this.value, Maximum);
@@ -213,10 +219,16 @@ namespace FlatRedBall.Forms.Controls
 
             float range = MaxThumbPosition - MinThumbPosition;
 
-            var ratio = (thumb.Y) / range;
+            if(range != 0)
+            {
+                var ratio = (thumb.Y) / range;
 
-            Value = Minimum + (Maximum - Minimum) * ratio;
-
+                Value = Minimum + (Maximum - Minimum) * ratio;
+            }
+            else
+            {
+                Value = Minimum;
+            }
         }
         
         private void UpdateThumbSize()

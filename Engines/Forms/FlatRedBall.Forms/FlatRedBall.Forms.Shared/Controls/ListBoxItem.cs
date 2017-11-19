@@ -80,6 +80,8 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
+        #region Update To
+
         public void UpdateToObject(object o)
         {
             if(coreText != null)
@@ -105,6 +107,17 @@ namespace FlatRedBall.Forms.Controls
                 Visual.SetProperty("ListBoxItemCategoryState", "Enabled");
             }
         }
+
+        #endregion
+
+        #region Utilities
+
+        public override string ToString()
+        {
+            return ToString();
+        }
+
+        #endregion
 
     }
 }

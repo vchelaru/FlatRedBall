@@ -12,6 +12,7 @@ namespace FlatRedBall.Forms.Controls
         #region Fields/Properties
 
         GraphicalUiElement textComponent;
+
         RenderingLibrary.Graphics.Text coreTextObject;
 
         public string Text
@@ -51,11 +52,14 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-
         #endregion
+
+        #region Events
 
         public event EventHandler Click;
         public event EventHandler Push;
+
+        #endregion
 
         #region Initialize Methods
 
