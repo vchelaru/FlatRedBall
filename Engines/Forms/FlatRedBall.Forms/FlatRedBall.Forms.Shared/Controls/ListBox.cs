@@ -104,6 +104,32 @@ namespace FlatRedBall.Forms.Controls
                     }
 
                     break;
+                case NotifyCollectionChangedAction.Remove:
+                    {
+                        var index = e.OldStartingIndex;
+
+                        var listItem = InnerPanel.Children[index];
+                        listBoxItems.RemoveAt(index);
+                        listItem.Parent = null;
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+
+                    for(int i = InnerPanel.Children.Count - 1; i > -1; i--)
+                    {
+                        InnerPanel.Children[i].Parent = null;
+                    }
+                    listBoxItems.Clear();
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                    {
+                        var index = e.NewStartingIndex;
+                        var listItem = InnerPanel.Children[index];
+
+                        listBoxItems[e.NewStartingIndex].UpdateToObject(Items[index]);
+                    }
+
+                    break;
             }
         }
 
