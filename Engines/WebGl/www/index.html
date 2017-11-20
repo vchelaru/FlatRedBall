@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Bridge Cube3D</title>
+
+    <script type="text/javascript" src="lib/glMatrix-0.9.5.min.js"></script>
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+        precision mediump float;
+
+        varying vec2 vTextureCoord;
+        varying vec3 vLightWeighting;
+
+        uniform sampler2D uSampler;
+
+        uniform float uAlpha;
+
+        void main(void) {
+            vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+            gl_FragColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a * uAlpha);
+        }
+    </script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+        attribute vec3 aVertexPosition;
+        attribute vec3 aVertexNormal;
+        attribute vec2 aTextureCoord;
+
+        uniform mat4 uMVMatrix;
+        uniform mat4 uPMatrix;
+        uniform mat3 uNMatrix;
+
+        uniform vec3 uAmbientColor;
+
+        uniform vec3 uLightingDirection;
+        uniform vec3 uDirectionalColor;
+
+        uniform bool uUseLighting;
+
+        varying vec2 vTextureCoord;
+        varying vec3 vLightWeighting;
+
+        void main(void) {
+            gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+            vTextureCoord = aTextureCoord;
+
+            if (!uUseLighting) {
+                vLightWeighting = vec3(1.0, 1.0, 1.0);
+            } else {
+                vec3 transformedNormal = uNMatrix * aVertexNormal;
+                float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+                vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+            }
+        }
+    </script>
+
+    <script src="js/bridge.js"></script>
+    <script src="js/FlatRedBridge.js"></script>
+    <script src="js/cube3D.js"></script>
+</head>
+<body>
+    <canvas id="canvas1" style="border: none;" width="600" height="600"></canvas>
+
+    <p>Credits to <a href="http://learningwebgl.com/lessons/lesson08/index.html">LearningWebGL.com</a></p>
+
+    <p>Please use <code>A</code>, <code>S</code>, <code>D</code>, <code>W</code> keys to spin the cube and <code>Q</code>/<code>E</code> to zoom out/in<p>
+
+    <input type="checkbox" id="settings" style="display: none;" checked />
+
+    <input type="checkbox" id="blending" checked /> Use blending<br /><br />
+    Alpha level <input type="text" id="alpha" value="1" /><br />
+
+    <br />
+    <input type="checkbox" id="lighting" checked /> Use lighting<br />
+
+    <br />
+    <h2>Directional light:</h2>
+
+    <table style="border: 0; padding: 10px;">
+        <tr>
+            <td><b>Direction:</b>
+            <td>X: <input type="text" id="lightDirectionX" value="0" />
+            <td>Y: <input type="text" id="lightDirectionY" value="0" />
+            <td>Z: <input type="text" id="lightDirectionZ" value="-1.0" />
+        </tr>
+        <tr>
+            <td><b>Colour:</b>
+            <td>R: <input type="text" id="directionalR" value="0.25" />
+            <td>G: <input type="text" id="directionalG" value="0.25" />
+            <td>B: <input type="text" id="directionalB" value="0.25" />
+        </tr>
+    </table>
+
+    <h2>Ambient light:</h2>
+
+    <table style="border: 0; padding: 10px;">
+        <tr>
+            <td><b>Colour:</b>
+            <td>R: <input type="text" id="ambientR" value="0.4" />
+            <td>G: <input type="text" id="ambientG" value="0.4" />
+            <td>B: <input type="text" id="ambientB" value="0.4" />
+        </tr>
+    </table>
+</body>
+</html>
