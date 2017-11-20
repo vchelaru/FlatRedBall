@@ -21,7 +21,14 @@ namespace EditorObjects.IoC
 
         public static T Get<T>()
         {
-            return (T)mObjects[typeof(T)];
+            var type = typeof(T);
+#if DEBUG
+            if(mObjects.ContainsKey(type) == false)
+            {
+                throw new InvalidOperationException("The container does not contain an entry for the type " + type);
+            }
+#endif
+            return (T)mObjects[type];
         }
 
         public static string GetDiagnosticInfo()

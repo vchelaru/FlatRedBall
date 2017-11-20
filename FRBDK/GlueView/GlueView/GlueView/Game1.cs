@@ -26,6 +26,8 @@ using RemotingHelper;
 using FlatRedBall.Glue.Reflection;
 using System.Reflection;
 using FlatRedBall.Instructions.Reflection;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using GlueView.Facades;
 
 namespace GlueView
 {
@@ -61,6 +63,8 @@ namespace GlueView
         protected override void Initialize()
         {
             FlatRedBallServices.InitializeFlatRedBall(this, graphics);
+
+            InitializeIoc();
 
             this.TargetElapsedTime = TimeSpan.FromSeconds( 1 / 30.0 );
 
@@ -113,6 +117,11 @@ namespace GlueView
             mainForm = Form.FromHandle(FlatRedBallServices.WindowHandle) as Form;
             mainForm.Resize += HandleResize;
             base.Initialize();
+        }
+
+        private void InitializeIoc()
+        {
+            EditorObjects.IoC.Container.Set<IGlueState>(GlueViewState.Self);
         }
 
         private void HandleToolFormItemCollapsedOrExpanded(object sender, EventArgs e)
