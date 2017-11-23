@@ -357,7 +357,7 @@ namespace FlatRedBall.Screens
 
 
 
-#if WINDOWS_8 || UWP
+#if UWP
                 System.Threading.Tasks.Task.Run(action);
 #else
                 ThreadStart threadStart = new ThreadStart(action);

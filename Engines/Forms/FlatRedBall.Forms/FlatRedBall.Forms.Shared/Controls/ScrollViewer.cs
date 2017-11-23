@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using FlatRedBall.Gui;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -33,9 +34,23 @@ namespace FlatRedBall.Forms.Controls
             innerPanel.PositionChanged += HandleInnerPanelPositionChanged;
             clipContainer = Visual.GetGraphicalUiElementByName("ClipContainerInstance");
 
+            Visual.MouseWheelScroll += HandleMouseWheelScroll;
+
             UpdateVerticalScrollBarValues();
 
             base.ReactToVisualChanged();
+        }
+
+        private void HandleMouseWheelScroll(IWindow window, FlatRedBall.Gui.RoutedEventArgs args)
+        {
+            var valueBefore = verticalScrollBar.Value;
+
+            const float scrollMultiplier = 12;
+
+            // Do we want to use the small change? Or have some separate value that the user can set?
+            verticalScrollBar.Value -= GuiManager.Cursor.ZVelocity * verticalScrollBar.SmallChange;
+
+            args.Handled = verticalScrollBar.Value != valueBefore;
         }
 
 

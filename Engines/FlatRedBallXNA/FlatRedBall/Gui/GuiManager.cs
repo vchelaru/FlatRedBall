@@ -440,7 +440,7 @@ namespace FlatRedBall.Gui
             return unmodifiedXEdge - GuiManager.XEdge;
         }
 
-#if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME && !WINDOWS_8
+#if !MONOGAME
 
         static public Cursor AddCursor(Camera camera, System.Windows.Forms.Form form)
         {
@@ -488,11 +488,6 @@ namespace FlatRedBall.Gui
             }
         }
 
-#if !SILVERLIGHT
-
-
-
-
         public static void BringToFront(IWindow windowToBringToFront)
         {
             if (windowToBringToFront.Parent == null)
@@ -529,8 +524,6 @@ namespace FlatRedBall.Gui
             }
         }
 
-#endif
-
         static public void ElementActivity()
         {
             foreach (IWindow w in mWindowArray)
@@ -549,11 +542,7 @@ namespace FlatRedBall.Gui
             }
         }
 
-#if !SILVERLIGHT && !WINDOWS_PHONE && !MONODROID
-
-
-
-
+#if !MONODROID
         static public Cursor GetCursorNum(int index)
         {
             if (index > -1 && index < mCursors.Count)
@@ -564,10 +553,7 @@ namespace FlatRedBall.Gui
 #endif
 
 
-#if !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME
-
-
-
+#if !MONOGAME
         static public void LoadSettingsFromText(string settingsTextFile)
         {
             TextReader tr = new StreamReader(settingsTextFile);
@@ -580,7 +566,6 @@ namespace FlatRedBall.Gui
             FileManager.Close(tr);
 
         }
-
 #endif
 
         [Obsolete("Use AddDominantWindow instead - this method will go away soon")]
@@ -675,7 +660,7 @@ namespace FlatRedBall.Gui
         }
 
 
-#if !SILVERLIGHT && !WINDOWS_PHONE && !MONODROID
+#if !MONODROID
 
 
         public static new string ToString()
@@ -940,10 +925,6 @@ namespace FlatRedBall.Gui
             }
             #endregion
 
-#if SUPPORTS_FRB_DRAWN_GUI
-            LoseInputOnTextBox(tempTextBox);
-#endif
-
             #region letting go of any grabbed window
             if (Cursor.PrimaryClick)
             {
@@ -951,16 +932,6 @@ namespace FlatRedBall.Gui
                 Cursor.mSidesGrabbed = Sides.None;
 
             }
-            #endregion
-
-            #region regulate button and toggle button up/down states depending on if the cursor is still over the button pushed
-            if (Cursor.WindowPushed != null && Cursor.WindowOver != Cursor.WindowPushed)
-            {
-#if SUPPORTS_FRB_DRAWN_GUI
-                ButtonReactToPush();
-#endif
-            }
-
             #endregion
 
             #region Remove invisible Dominant Windows

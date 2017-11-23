@@ -7,8 +7,15 @@ using System.Text;
 
 namespace Gum.Wireframe
 {
+
+
     public partial class GraphicalUiElement : FlatRedBall.Gui.Controls.IControl
     {
+        class HandledActions
+        {
+            public bool HandledMouseWheel;
+        }
+
 
         public event WindowEvent Click;
         public event WindowEvent ClickNoSlide;
@@ -19,6 +26,8 @@ namespace Gum.Wireframe
         public event WindowEvent RollOff;
         public event WindowEvent RollOver;
         public event WindowEvent EnabledChange;
+
+        public event Action<IWindow, FlatRedBall.Gui.RoutedEventArgs> MouseWheelScroll;
 
         /// <summary>
         /// Event which is raised whenever this loses a push. A push occurs when the
@@ -319,7 +328,7 @@ namespace Gum.Wireframe
         /// 
         /// Ultimately this hierarchical logic exists because only the top-most parent is added to the GuiManager, and it is responsible for
         /// giving its children the opportunity to perform cursor-related input. </remarks>
-        private bool TryHandleCursorActivity(Cursor cursor)
+        private bool TryHandleCursorActivity(Cursor cursor, HandledActions handledActions)
         {
             bool handledByChild = false;
             bool handledByThis = false;
@@ -347,7 +356,7 @@ namespace Gum.Wireframe
 
                         if ((asGue.HasEvents || asGue.ExposeChildrenEvents) && asGue.HasCursorOver(cursor))
                         {
-                            handledByChild = asGue.TryHandleCursorActivity(cursor);
+                            handledByChild = asGue.TryHandleCursorActivity(cursor, handledActions);
 
                             if (handledByChild)
                             {
@@ -361,52 +370,61 @@ namespace Gum.Wireframe
             }
             if (isOver)
             {
-
-                if (!handledByChild && this.IsComponentOrInstanceOfComponent())
+                if(this.IsComponentOrInstanceOfComponent())
                 {
-                    handledByThis = true;
-
-                    if (this.HasEvents)
+                    if (!handledByChild)
                     {
-                        cursor.WindowOver = this;
+                        handledByThis = true;
 
-                        if (cursor.PrimaryPush)
+                        if (this.HasEvents)
                         {
+                            cursor.WindowOver = this;
 
-                            cursor.WindowPushed = this;
+                            if (cursor.PrimaryPush)
+                            {
 
-                            if (Push != null)
-                                Push(this);
+                                cursor.WindowPushed = this;
+
+                                if (Push != null)
+                                    Push(this);
 
 
-                            cursor.GrabWindow(this);
+                                cursor.GrabWindow(this);
+
+                            }
+
+                            if (cursor.PrimaryClick) // both pushing and clicking can occur in one frame because of buffered input
+                            {
+                                if (cursor.WindowPushed == this)
+                                {
+                                    if (Click != null)
+                                    {
+                                        Click(this);
+                                    }
+                                    if (cursor.PrimaryClickNoSlide && ClickNoSlide != null)
+                                    {
+                                        ClickNoSlide(this);
+                                    }
+
+                                    // if (cursor.PrimaryDoubleClick && DoubleClick != null)
+                                    //   DoubleClick(this);
+                                }
+                                else
+                                {
+                                    if (SlideOnClick != null)
+                                    {
+                                        SlideOnClick(this);
+                                    }
+                                }
+                            }
 
                         }
-
-                        if (cursor.PrimaryClick) // both pushing and clicking can occur in one frame because of buffered input
-                        {
-                            if (cursor.WindowPushed == this)
-                            {
-                                if (Click != null)
-                                {
-                                    Click(this);
-                                }
-                                if (cursor.PrimaryClickNoSlide && ClickNoSlide != null)
-                                {
-                                    ClickNoSlide(this);
-                                }
-
-                                // if (cursor.PrimaryDoubleClick && DoubleClick != null)
-                                //   DoubleClick(this);
-                            }
-                            else
-                            {
-                                if (SlideOnClick != null)
-                                {
-                                    SlideOnClick(this);
-                                }
-                            }
-                        }
+                    }
+                    if (HasEvents && cursor.ZVelocity != 0 && handledActions.HandledMouseWheel == false)
+                    {
+                        FlatRedBall.Gui.RoutedEventArgs args = new FlatRedBall.Gui.RoutedEventArgs();
+                        MouseWheelScroll?.Invoke(this, args);
+                        handledActions.HandledMouseWheel = args.Handled;
                     }
                 }
             }
@@ -417,7 +435,7 @@ namespace Gum.Wireframe
 
         public void TestCollision(Cursor cursor)
         {
-            TryHandleCursorActivity(cursor);
+            TryHandleCursorActivity(cursor, new HandledActions());
         }
 
         public void UpdateDependencies()

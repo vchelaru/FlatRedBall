@@ -131,6 +131,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Gui\IInputReceiver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\IToggleable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\IWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Gui\RoutedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\WindowArray.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\AnalogButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\AnalogStick.cs" />

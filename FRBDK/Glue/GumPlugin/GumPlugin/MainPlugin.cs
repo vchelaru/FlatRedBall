@@ -171,8 +171,10 @@ namespace GumPlugin
             // - Fixed components which inherit from nineslice not properly setting up necessary files in Glue project.
             // 0.9.2.2
             // - Fixed bug - derived Screens could not access Gum layers defined in base through Glue layers.
-            // - Fixed bug - Screens without Gum screens now use define and associate layers using IDBs
-            get { return new Version(0, 9, 2, 2); }
+            // - Fixed bug - Screens without Gum screens now use define and associate layers using IDBs.
+            // 0.9.2.3
+            // - State interpolation is now removed if Glue is set to not embed code.
+            get { return new Version(0, 9, 2, 3); }
         }
 
         #endregion

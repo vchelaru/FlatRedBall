@@ -69,11 +69,11 @@ namespace GumPlugin.Managers
 
                 UpdateCoreGumFilePresence(assembly, behavior);
 
-                UpdateAdvancedStateInterpolationFiles(assembly);
+                UpdateAdvancedStateInterpolationFiles(assembly, behavior);
             }
         }
 
-        private void UpdateAdvancedStateInterpolationFiles(Assembly assembly)
+        private void UpdateAdvancedStateInterpolationFiles(Assembly assembly, FileAdditionBehavior behavior)
         {
 
             mStateInterpolationItemAdder = new CodeBuildItemAdder();
@@ -93,17 +93,33 @@ namespace GumPlugin.Managers
             mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Tweener.cs");
             mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/TweenerManager.cs");
 
-            mStateInterpolationItemAdder.AddFileBehavior = AddFileBehavior.IfOutOfDate;
 
             mStateInterpolationItemAdder.OutputFolderInProject = "StateInterpolation";
-            TaskManager.Self.AddSync(() =>
+            if(behavior == FileAdditionBehavior.EmbedCodeFiles)
             {
-                FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput("Adding interpolation files from Gum plugin");
-                mStateInterpolationItemAdder.IsVerbose = true;
-                mStateInterpolationItemAdder.PerformAddAndSave(assembly);
-            }
-            , "Adding interpolation files for Gum");
+                mStateInterpolationItemAdder.AddFileBehavior = AddFileBehavior.IfOutOfDate;
 
+                TaskManager.Self.AddSync(() =>
+                {
+                    FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput("Adding interpolation files from Gum plugin");
+                    mStateInterpolationItemAdder.IsVerbose = true;
+                    mStateInterpolationItemAdder.PerformAddAndSave(assembly);
+                }
+                , "Adding interpolation files for Gum");
+
+            }
+            else if(behavior == FileAdditionBehavior.AddDll)
+            {
+                // todo
+            }
+            else if(behavior == FileAdditionBehavior.IncludeNoFiles)
+            {
+                TaskManager.Self.AddSync(() =>
+                {
+                    mStateInterpolationItemAdder.PerformRemoveAndSave(assembly);
+
+                }, "Removing standard Gum files");
+            }
         }
 
         private void UpdateCoreGumFilePresence(Assembly assemblyContainingResources, FileAdditionBehavior behavior)

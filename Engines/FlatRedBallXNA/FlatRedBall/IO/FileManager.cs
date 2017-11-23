@@ -2,7 +2,7 @@
 #define USE_ISOLATED_STORAGE
 #endif
 
-#if  MONODROID || WINDOWS_8 || IOS || UWP
+#if  MONODROID || IOS || UWP
 #define USES_DOT_SLASH_ABOLUTE_FILES
 #endif
 
@@ -24,20 +24,16 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 #endif
 
-#if USE_ISOLATED_STORAGE && !WINDOWS_8
+#if USE_ISOLATED_STORAGE
 using System.IO.IsolatedStorage;
 #endif
 
-#if !WINDOWS_8
 using File = System.IO.File;
-#endif
-
 using System.Collections;
-
 
 using System.Reflection;
 
-#if !WINDOWS_8 && !UWP
+#if !UWP
 using System.Runtime.Serialization.Formatters.Binary;
 #endif
 
@@ -996,6 +992,11 @@ namespace FlatRedBall.IO
             return true;
         }
 
+        /// <summary>
+        /// Gets a folder for the user name. This user is a unique key specific to this game.
+        /// </summary>
+        /// <param name="userName">The user name, which can be anything for a particular game. If multiple profiles are not stored, then a name like "global" can be used.</param>
+        /// <returns>The folder for the current user.</returns>
         public static string GetUserFolder(string userName)
         {
 
@@ -1008,22 +1009,6 @@ namespace FlatRedBall.IO
 
 #if USE_ISOLATED_STORAGE
             stringToReturn = IsolatedStoragePrefix + @"\" + userName + @"\";
-#elif XBOX360
-            mLastUserName = userName;
-
-            if (mStorageDevice == null)
-            {
-                throw new InvalidOperationException("There is no storage device.  Call InitializeUserFolder");
-            }
-            else if (!mStorageDevice.IsConnected)
-            {
-                throw new InvalidOperationException("The storage device is not connected");
-            }
-            else
-            {
-
-                return IsolatedStoragePrefix + @"\" + userName + @"\";
-            }
 #else
             stringToReturn = FileManager.UserApplicationDataForThisApplication + userName + @"\";
 #endif
@@ -1042,38 +1027,20 @@ namespace FlatRedBall.IO
             return stringToReturn;
         }
 
-#if XBOX360
-        // always always always dispose this after getting it!  Or use a using statement
-        private static StorageContainer GetStorageContainer()
-        {
-
-            var result = mStorageDevice.BeginOpenContainer(mAssemblyName +
-                    "___" + mLastUserName, null, null);
-
-            result.AsyncWaitHandle.WaitOne(TimeSpan.FromMinutes(5));
-
-            mLastStorageContainer = mStorageDevice.EndOpenContainer(result);
-
-            return mLastStorageContainer;
-        }
-
-        public static void InitializeUserFolder(StorageDevice storageDevice, string applicationName)
-        {
-            mStorageDevice = storageDevice;
-            mHasUserFolderBeenInitialized = true;
-            mAssemblyName = applicationName;
-        }
-
-#else
+        /// <summary>
+        /// Creates a folder for the given user name, which is a unique key for the current app.
+        /// This method must be called before GetUserFolder is called.
+        /// </summary>
+        /// <param name="userName">The user name, which can be anything for a particular game. If multiple profiles are not stored, then a name like "global" can be used.</param>
         public static void InitializeUserFolder(string userName)
         {
 #if USE_ISOLATED_STORAGE
 
-#if WINDOWS_8 || IOS || UWP
+    #if IOS || UWP
             // I don't know if we need to get anything here
-#else
+    #else
             mIsolatedStorageFile = IsolatedStorageFile.GetUserStoreForApplication();
-#endif
+    #endif
             mHasUserFolderBeenInitialized = true;
 
 #else
@@ -1084,20 +1051,19 @@ namespace FlatRedBall.IO
 
             if (!Directory.Exists(directory))
             {
-#if IOS
+    #if IOS
                 if(directory.StartsWith("./"))
                 {
                     directory = directory.Substring(1);
                 }
-#endif
+    #endif
 
                 Directory.CreateDirectory(directory);
             }
             mHasUserFolderBeenInitialized = true;
 #endif
         }
-
-#endif
+        
 
 
 #region XML Docs
