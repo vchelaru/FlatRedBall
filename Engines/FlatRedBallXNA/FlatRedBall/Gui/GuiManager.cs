@@ -26,8 +26,6 @@ namespace FlatRedBall.Gui
 {
     #region Classes
 
-
-
     public static class EnumerableExtensionMethods
     {
         public static bool Contains(this IEnumerable<IWindow> enumerable, IWindow item)
@@ -61,12 +59,10 @@ namespace FlatRedBall.Gui
     }
     #endregion
 
-
     public delegate void WindowEvent(IWindow window);
 
 	public static partial class GuiManager
 	{
-
 		#region Enums
 
 		public enum GuiControl
@@ -81,14 +77,15 @@ namespace FlatRedBall.Gui
             OverwriteVisibility
         }
 
-		#endregion
+        #endregion
 
 
+        #region Fields
 
-		#region Fields
-
+        static List<Action> nextClickActions = new List<Action>();
 
         static bool mUIEnabled;
+
         public const string InternalGuiContentManagerName = "FlatRedBall Internal GUI";
 
 		static WindowArray mWindowArray;
@@ -132,11 +129,9 @@ namespace FlatRedBall.Gui
 		static public System.Globalization.NumberFormatInfo nfi;
 
 
-
 		static public float TextHeight;
+
 		static public float TextSpacing;
-
-
 
 
         public static List<String> renderingNotes;
@@ -161,7 +156,6 @@ namespace FlatRedBall.Gui
         static WindowArray mPerishableWindowsToSurviveClick = new WindowArray();
 
 		#endregion
-
 
 
 		#region Properties
@@ -311,7 +305,6 @@ namespace FlatRedBall.Gui
 
         #endregion
 
-
 	
         #region Methods
 
@@ -392,10 +385,6 @@ namespace FlatRedBall.Gui
 
         #region Public Methods
 
-
-		#region adding gui component methods
-		
-
         public static void AddWindow(IWindow windowToAdd)
         {
 #if DEBUG
@@ -421,8 +410,18 @@ namespace FlatRedBall.Gui
                 InsertionSort(mWindowArray, WindowComparisonForSorting);
             }
         }
+
+        public static void AddNextClickAction(Action action)
+        {
+#if DEBUG
+            if(action == null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+#endif
+            nextClickActions.Add(action);
+        }
         
-		#endregion
 
         internal static float GetYOffsetForModifiedAspectRatio()
         {
@@ -440,16 +439,10 @@ namespace FlatRedBall.Gui
             return unmodifiedXEdge - GuiManager.XEdge;
         }
 
-#if !MONOGAME
-
-        static public Cursor AddCursor(Camera camera, System.Windows.Forms.Form form)
+        static public Cursor AddCursor(Camera camera)
         {
-#if FRB_MDX
-            Cursor cursorToAdd = new Cursor(camera, form);
-#else
             Cursor cursorToAdd = new Cursor(camera);
 
-#endif
             cursorToAdd.SetCursor(
                 FlatRedBallServices.Load<Texture2D>("Assets/Textures/cursor1.bmp", InternalGuiContentManagerName), -.5f, 1);
 
@@ -457,7 +450,6 @@ namespace FlatRedBall.Gui
             return cursorToAdd;
 
         }
-#endif
 
 		#region XML Docs
 		/// <summary>
@@ -659,10 +651,6 @@ namespace FlatRedBall.Gui
             }
         }
 
-
-#if !MONODROID
-
-
         public static new string ToString()
         {
             StringBuilder stringBuilder = new StringBuilder();
@@ -672,10 +660,8 @@ namespace FlatRedBall.Gui
             return stringBuilder.ToString();
         }
 
-#endif
         static public void UpdateDependencies()
         {
-            // This thing is a linked list, so we gotta foreach it
             foreach (IWindow w in mDominantWindows)
                 w.UpdateDependencies();
             for (int i = 0; i < mWindowArray.Count; i++)
@@ -684,21 +670,6 @@ namespace FlatRedBall.Gui
                 mPerishableArray[i].UpdateDependencies();
 
 
-        }
-
-        public static void WorldToUi(float worldX, float worldY, float worldZ, out float uiX, out float uiY)
-        {
-            uiX = worldX;
-            uiY = worldY;
-
-            uiX = uiX - SpriteManager.Camera.X;
-            uiY -= SpriteManager.Camera.Y;
-
-            uiX *= SpriteManager.Camera.XEdge / SpriteManager.Camera.RelativeXEdgeAt(worldZ);
-            uiY *= -SpriteManager.Camera.YEdge / SpriteManager.Camera.RelativeYEdgeAt(worldZ);
-
-            uiX += SpriteManager.Camera.XEdge;
-            uiY += SpriteManager.Camera.YEdge;
         }
 
         #endregion
@@ -716,12 +687,18 @@ namespace FlatRedBall.Gui
 
             mToolTipText = "";
 
-            #region Update cursors
+            // Eventually we may do this per cursor:
+            if(Cursor.PrimaryClick)
+            {
+                foreach(var item in nextClickActions)
+                {
+                    item();
+                }
+                nextClickActions.Clear();
+            }
 
             foreach (Cursor c in mCursors)
             {
-
-                #region SET CURSOR WINDOWPUSHED and WindowMiddleButtonPushed TO NULL if we push or click on something that is not a window
                 // Do this before the activity so on a click the frame with the click will still have a valid
                 // WindowPushed.
                 if ((c.PrimaryPush && c.WindowOver == null) || c.PrimaryClick)
@@ -732,15 +709,12 @@ namespace FlatRedBall.Gui
                     }
                 }
 
-                #endregion
-
                 c.Update(TimeManager.CurrentTime);
                 c.WindowOver = null;
                 c.WindowClosing = null;
 
             }
 
-            #endregion
 
             UpdateDependencies();
 
@@ -1027,11 +1001,8 @@ namespace FlatRedBall.Gui
         #endregion
 	
 
-
 		#endregion
-
-
-	}// end of class GuiManager
+	}
 
     
 

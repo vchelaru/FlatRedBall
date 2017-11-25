@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ComboBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ListBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ListBoxItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ScrollBar.cs" />

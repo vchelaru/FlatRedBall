@@ -115,6 +115,14 @@ namespace FlatRedBall.Forms.Controls
             UpdateCarrotIndexFromCursor();
         }
 
+        private void HandleClickOff()
+        {
+            if(GuiManager.Cursor.WindowOver != Visual)
+            {
+                HasFocus = false;
+            }
+        }
+
         private void HandleRollOn(IWindow window)
         {
             UpdateState();
@@ -316,6 +324,17 @@ namespace FlatRedBall.Forms.Controls
         {
             caretComponent.Visible = hasFocus;
             UpdateState();
+
+            if(hasFocus)
+            {
+                GuiManager.AddNextClickAction(HandleClickOff);
+
+
+            }
+            else if(!hasFocus && Input.InputManager.InputReceiver == this)
+            {
+                Input.InputManager.InputReceiver = null;
+            }
         }
 
         private void OffsetTextToKeepCaretInView()
