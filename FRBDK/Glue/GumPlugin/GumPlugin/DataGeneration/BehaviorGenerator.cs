@@ -172,6 +172,11 @@ namespace GumPlugin.DataGeneration
             // todo - needs to implement the ListBox behavior
             toReturn.RequiredInstances.Add(listBoxInstance);
 
+            InstanceSave textInstance = new InstanceSave();
+            textInstance.Name = "TextInstance";
+            textInstance.BaseType = "Text";
+            toReturn.RequiredInstances.Add(textInstance);
+
             return toReturn;
         }
     }

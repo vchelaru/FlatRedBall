@@ -27,7 +27,7 @@ namespace FlatRedBall.Forms.Controls
         {
             get
             {
-                if (selectedIndex > 0 && selectedIndex < Items.Count)
+                if (selectedIndex > -1 && selectedIndex < Items.Count)
                 {
                     return Items[selectedIndex];
                 }
@@ -55,6 +55,15 @@ namespace FlatRedBall.Forms.Controls
                 if(value > 0 && value < listBoxItems.Count)
                 {
                     listBoxItems[value].IsSelected = true;
+                }
+                else
+                {
+                    foreach (var listBoxItem in listBoxItems)
+                    {
+                        listBoxItem.IsSelected = false;
+                    }
+                    NewItemSelected?.Invoke(null, null);
+
                 }
             }
         }

@@ -29,7 +29,9 @@ namespace FlatRedBall.Forms.Controls
             {
                 var foundItem = Items.FirstOrDefault(item => item.ToString() == value);
 
-                listBox.SelectedIndex = Items.IndexOf(foundItem);
+                var index = Items.IndexOf(foundItem);
+                listBox.SelectedIndex = index;
+
             }
         }
 
@@ -86,15 +88,18 @@ namespace FlatRedBall.Forms.Controls
             listBox.Visual.EffectiveParentGue.RaiseChildrenEventsOutsideOfBounds = true;
             listBox.NewItemSelected += HandleNewItemSelected;
 
+            listBox.IsVisible = false;
+            Text = null;
 
             base.ReactToVisualChanged();
         }
 
         #endregion
 
+        #region Event Handler Methods
+
         private void HandleClick(IWindow window)
         {
-            listBox.IsVisible = !listBox.IsVisible;
 
             UpdateState();
         }
@@ -111,6 +116,8 @@ namespace FlatRedBall.Forms.Controls
 
         private void HandlePush(IWindow window)
         {
+            listBox.IsVisible = !listBox.IsVisible;
+
             UpdateState();
         }
 
@@ -126,6 +133,7 @@ namespace FlatRedBall.Forms.Controls
             listBox.IsVisible = false;
         }
 
+        #endregion
 
         #region UpdateTo Methods
 
