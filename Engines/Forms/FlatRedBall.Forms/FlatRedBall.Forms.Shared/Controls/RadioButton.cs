@@ -199,34 +199,62 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void UpdateState()
         {
+
             var cursor = GuiManager.Cursor;
 
-            if (IsEnabled == false)
+            if (IsChecked)
             {
-                Visual.SetProperty("RadioButtonCategoryState", "Disabled");
-            }
-            //else if (HasFocus)
-            //{
-            //    Visual.SetProperty("TextBoxCategoryState", "Selected");
-            //}
-            else if (Visual.HasCursorOver(cursor))
-            {
-                if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
+                if (IsEnabled == false)
                 {
-                    if(IsChecked)
-                        Visual.SetProperty("RadioButtonCategoryState", "Checked");
+                    Visual.SetProperty("ToggleCategoryState", "DisabledOn");
+                }
+                //else if (HasFocus)
+                //{
+                //    Visual.SetProperty("TextBoxCategoryState", "Selected");
+                //}
+                else if (Visual.HasCursorOver(cursor))
+                {
+                    if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
+                    {
+                        Visual.SetProperty("ToggleCategoryState", "PushedOn");
+                    }
                     else
-                        Visual.SetProperty("RadioButtonCategoryState", "Unchecked");
+                    {
+                        Visual.SetProperty("ToggleCategoryState", "HighlightedOn");
+                    }
                 }
                 else
                 {
-                    Visual.SetProperty("RadioButtonCategoryState", "Highlighted");
+                    Visual.SetProperty("ToggleCategoryState", "EnabledOn");
                 }
             }
             else
             {
-                Visual.SetProperty("RadioButtonCategoryState", "Enabled");
+                if (IsEnabled == false)
+                {
+                    Visual.SetProperty("ToggleCategoryState", "DisabledOff");
+                }
+                //else if (HasFocus)
+                //{
+                //    Visual.SetProperty("TextBoxCategoryState", "Selected");
+                //}
+                else if (Visual.HasCursorOver(cursor))
+                {
+                    if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
+                    {
+                        Visual.SetProperty("ToggleCategoryState", "PushedOff");
+                    }
+                    else
+                    {
+                        Visual.SetProperty("ToggleCategoryState", "HighlightedOff");
+                    }
+                }
+                else
+                {
+                    Visual.SetProperty("ToggleCategoryState", "EnabledOff");
+                }
             }
+            
         }
 
 
