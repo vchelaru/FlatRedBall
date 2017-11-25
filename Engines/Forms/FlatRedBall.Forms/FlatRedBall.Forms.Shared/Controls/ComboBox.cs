@@ -33,32 +33,64 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        public Type ListBoxItemType
+        {
+            get { return listBox.ListBoxItemType; }
+            set
+            {
+#if DEBUG
+                if(listBox == null)
+                {
+                    throw new Exception("Visual must be set before assigning the ListBoxItemType");
+                }
+#endif
+                listBox.ListBoxItemType = value;
+            }
+        }
+
         #endregion
+
+        #region Initialize Methods
 
         public ComboBox()
         {
-            Visual.Click += this.HandleClick;
-            Visual.Push += this.HandlePush;
-            Visual.LosePush += this.HandleLosePush;
-            Visual.RollOn += this.HandleRollOn;
-            Visual.RollOff += this.HandleRollOff;
         }
 
         protected override void ReactToVisualChanged()
         {
             listBox = new ListBox();
-            listBox.Visual = Visual.GetGraphicalUiElementByName("ListBoxInstance");
-
+            var listBoxInstance = Visual.GetGraphicalUiElementByName("ListBoxInstance");
+            textComponent = base.Visual.GetGraphicalUiElementByName("TextInstance");
 
 #if DEBUG
+            if (listBoxInstance == null)
+            {
+                throw new Exception("Gum object must have an object called \"ListBoxInstance\"");
+            }
 
+            if(textComponent == null)
+            {
+                throw new Exception("Gum object must have an object called \"Text\"");
+            }
 #endif
+            coreTextObject = textComponent.RenderableComponent as RenderingLibrary.Graphics.Text;
+
+            listBox.Visual = listBoxInstance;
+
+
+            Visual.Click += this.HandleClick;
+            Visual.Push += this.HandlePush;
+            Visual.LosePush += this.HandleLosePush;
+            Visual.RollOn += this.HandleRollOn;
+            Visual.RollOff += this.HandleRollOff;
             listBox.Visual.EffectiveParentGue.RaiseChildrenEventsOutsideOfBounds = true;
             listBox.NewItemSelected += HandleNewItemSelected;
 
 
             base.ReactToVisualChanged();
         }
+
+        #endregion
 
         private void HandleClick(IWindow window)
         {

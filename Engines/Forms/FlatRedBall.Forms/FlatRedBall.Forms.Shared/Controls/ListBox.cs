@@ -153,6 +153,12 @@ namespace FlatRedBall.Forms.Controls
 
         private ListBoxItem CreateNewListItemVisual(object o)
         {
+#if DEBUG
+            if(ListBoxItemType == null)
+            {
+                throw new Exception("The list box does not have a ListBoxItemType specified. This must be done before adding any items");
+            }
+#endif
             ListBoxItem item = new ListBoxItem();
             var constructor = ListBoxItemType.GetConstructor(new[] {typeof(bool)});
             item.Visual = constructor.Invoke(new object[]{ true }) as GraphicalUiElement;

@@ -85,9 +85,9 @@ namespace FlatRedBall.Forms.Controls
         protected override void ReactToVisualChanged()
         {
             textComponent = base.Visual.GetGraphicalUiElementByName("TextInstance");
-            coreTextObject = textComponent.RenderableComponent as RenderingLibrary.Graphics.Text;
             caretComponent = base.Visual.GetGraphicalUiElementByName("CaretInstance");
 
+            coreTextObject = textComponent.RenderableComponent as RenderingLibrary.Graphics.Text;
 #if DEBUG
             if (textComponent == null) throw new Exception("Gum object must have an object called \"Text\"");
             if (coreTextObject == null) throw new Exception("The Text instance must be of type Text");
