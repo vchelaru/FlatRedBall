@@ -13,9 +13,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ComboBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ListBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ListBoxItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\RadioButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ScrollBar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ScrollViewer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\TextBox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ToggleButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FrameworkElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GumExtensions\GraphicalUiElementExtensions.cs" />
   </ItemGroup>
