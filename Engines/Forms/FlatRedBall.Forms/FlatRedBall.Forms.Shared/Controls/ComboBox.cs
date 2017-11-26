@@ -116,7 +116,48 @@ namespace FlatRedBall.Forms.Controls
 
         private void HandlePush(IWindow window)
         {
-            listBox.IsVisible = !listBox.IsVisible;
+            if(listBox.IsVisible == false)
+            {
+                ShowListBox();
+            }
+            else
+            {
+                HideListBox();
+            }
+            
+        }
+
+        private void ShowListBox()
+        {
+            listBox.IsVisible = true;
+
+            GuiManager.AddNextPushAction(TryHideFromPush);
+
+            UpdateState();
+        }
+
+        private void TryHideFromPush()
+        {
+            var cursor = GuiManager.Cursor;
+
+
+            var clickedOnThisOrChild =
+                cursor.WindowOver == this.Visual ||
+                (cursor.WindowOver != null && cursor.WindowOver.IsInParentChain(this.Visual));
+
+            if (clickedOnThisOrChild == false)
+            {
+                HideListBox();
+            }
+            else
+            {
+                GuiManager.AddNextPushAction(TryHideFromPush);
+            }
+        }
+
+        private void HideListBox()
+        {
+            listBox.IsVisible = false;
 
             UpdateState();
         }

@@ -163,4 +163,36 @@ namespace FlatRedBall.Gui
 
 
     }
+
+
+    public static class IWindowExtensions
+    {
+        public static IWindow GetParentRoot(this IWindow window)
+        {
+            if(window.Parent == null)
+            {
+                return window;
+            }
+            else
+            {
+                return window.Parent.GetParentRoot();
+            }
+        }
+
+        public static bool IsInParentChain(this IWindow window, IWindow possibleParent)
+        {
+            if(window.Parent == possibleParent)
+            {
+                return true;
+            }
+            else if(window.Parent != null)
+            {
+                return window.Parent.IsInParentChain(possibleParent);
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
 }

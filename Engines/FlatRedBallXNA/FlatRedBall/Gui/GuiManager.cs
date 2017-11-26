@@ -82,6 +82,7 @@ namespace FlatRedBall.Gui
 
         #region Fields
 
+        static List<Action> nextPushActions = new List<Action>();
         static List<Action> nextClickActions = new List<Action>();
 
         static bool mUIEnabled;
@@ -421,6 +422,17 @@ namespace FlatRedBall.Gui
 #endif
             nextClickActions.Add(action);
         }
+
+        public static void AddNextPushAction(Action action)
+        {
+#if DEBUG
+            if(action == null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+#endif
+            nextPushActions.Add(action);            
+        }
         
 
         internal static float GetYOffsetForModifiedAspectRatio()
@@ -690,11 +702,29 @@ namespace FlatRedBall.Gui
             // Eventually we may do this per cursor:
             if(Cursor.PrimaryClick)
             {
-                foreach(var item in nextClickActions)
+                if(nextClickActions.Count > 0)
                 {
-                    item();
+                    var items = nextClickActions.ToList();
+                    nextClickActions.Clear();
+                    foreach(var item in items)
+                    {
+                        item();
+                    }
+
                 }
-                nextClickActions.Clear();
+            }
+
+            if(Cursor.PrimaryPush)
+            {
+                if(nextPushActions .Count > 0)
+                {
+                    var items = nextPushActions.ToList();
+                    nextPushActions.Clear();
+                    foreach(var item in items)
+                    {
+                        item();
+                    }
+                }
             }
 
             foreach (Cursor c in mCursors)
