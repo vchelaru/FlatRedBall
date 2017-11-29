@@ -13,7 +13,11 @@
 
     public static class CodeBlockFunctionExtensions
     {
-        public static ICodeBlock Function(this ICodeBlock codeBlock, string pre, string name, string parameters, string whereClause = null)
+        public static ICodeBlock Function(this ICodeBlock codeBlock, string pre, string name, string parameters)
+        {
+            return Function(codeBlock, pre, name, parameters, null);
+        }
+        public static ICodeBlock Function(this ICodeBlock codeBlock, string pre, string name, string parameters, string whereClause)
         {
             return new CodeBlockFunction(codeBlock, pre, name, parameters, whereClause);
         }
