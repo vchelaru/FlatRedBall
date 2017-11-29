@@ -146,6 +146,11 @@ namespace FlatRedBall.Glue.Plugins
         public Func<IElement, NamedObjectSave, TypedMemberBase, TypeConverter> GetTypeConverter { get; protected set; }
         public Action<NamedObjectSave, ICodeBlock, InstructionSave> WriteInstanceVariableAssignment { get; protected set; }
 
+        /// <summary>
+        /// Action to raise whenever a ReferencedFileSave value changes. 
+        /// string - The name of the variable that changed
+        /// object - The old value for the variable
+        /// </summary>
         public Action<string, object> ReactToReferencedFileChangedValueHandler { get;  protected set;}
         public Action<CustomVariable> ReactToVariableAdded { get; protected set; }
         public Action<CustomVariable> ReactToVariableRemoved { get; protected set; }

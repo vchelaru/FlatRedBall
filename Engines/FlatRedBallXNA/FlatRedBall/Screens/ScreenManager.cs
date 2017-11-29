@@ -543,6 +543,23 @@ namespace FlatRedBall.Screens
                 {
                     messages.Add("There are " + SpriteManager.ManagedPositionedObjects.Count +
                         " Managed PositionedObjects in the SpriteManager.  See \"FlatRedBall.SpriteManager.ManagedPositionedObjects\"");
+
+                    var firstPositionedObject = SpriteManager.ManagedPositionedObjects[0];
+                    var type = firstPositionedObject.GetType();
+
+                    if (type.FullName.Contains(".Entities."))
+                    {
+                        string message;
+                        if(string.IsNullOrWhiteSpace(firstPositionedObject.Name))
+                        {
+                            message = $"The first is an unnnamed entity of type {type.Name}";
+                        }
+                        else
+                        {
+                            message = $"The first is an entity of type {type.Name} named {firstPositionedObject.Name}";
+                        }
+                        messages.Add(message);
+                    }
                 }
                 #endregion
 

@@ -21,6 +21,8 @@ namespace FlatRedBall.Glue.Controls
     /// </summary>
     public partial class AddEntityWindow : Window
     {
+        #region Fields/Properties
+
         bool hasUserUncheckedICollidable = false;
 
         public string EnteredText
@@ -83,6 +85,9 @@ namespace FlatRedBall.Glue.Controls
             set { ICollidableCheckBox.IsChecked = value; }
         }
 
+        #endregion
+
+        #region Constructor
 
         public AddEntityWindow()
         {
@@ -90,6 +95,15 @@ namespace FlatRedBall.Glue.Controls
 
             this.IsVisibleChanged += HandleVisibleChanged;
         }
+
+        #endregion
+
+        public void AddToStackPanel(UIElement element)
+        {
+            this.MainStackPanel.Children.Add(element);
+        }
+
+        #region Event Handlers
 
         private void HandleVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
@@ -177,5 +191,7 @@ namespace FlatRedBall.Glue.Controls
                 FailureTextBlock.Text = whyIsntValid;
             }
         }
+
+        #endregion
     }
 }

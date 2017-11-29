@@ -261,7 +261,7 @@ namespace Gum.Wireframe
         {
             get
             {
-                throw new NotImplementedException();
+                return EffectiveParentGue as IWindow;
             }
             set
             {

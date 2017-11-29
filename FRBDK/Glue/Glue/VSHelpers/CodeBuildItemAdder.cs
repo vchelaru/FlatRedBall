@@ -28,6 +28,9 @@ namespace FlatRedBall.Glue.VSHelpers
     {
         #region Fields
 
+        /// <summary>
+        /// The list of files which are contained in a library as embedded resources.
+        /// </summary>
         List<string> mFilesToAdd = new List<string>();
 
         public bool IsVerbose { get; set; } = false;
@@ -69,7 +72,7 @@ namespace FlatRedBall.Glue.VSHelpers
             mFilesToAdd.Add(resourceName);
 
         }
-
+        
         public void AddFolder(string folderName, Assembly assembly)
         {
             List<string> filesInFolder = GetItemsInFolder(folderName, assembly);

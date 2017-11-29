@@ -371,6 +371,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // see if the file exists. If not, create it:
             var absoluteFileName = GlueState.Self.CurrentGlueProjectDirectory + relativeFileName;
 
+            var directory = FileManager.GetDirectory(absoluteFileName);
+
+            System.IO.Directory.CreateDirectory(directory);
+
             if(System.IO.File.Exists(absoluteFileName) == false)
             {
                 // will get back in later

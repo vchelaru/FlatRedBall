@@ -17,6 +17,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="code"></param>
         void CreateAndAddPartialFile(IElement element, string partialName, string code);
 
+        /// <summary>
+        /// Creates an empty code file (if it doesn't already exist), and adds it to the main project. If the file already exists, then it 
+        /// is not modified on disk, but is still added to the code project.
+        /// </summary>
+        /// <param name="relativeFileName">The file name.</param>
         void CreateAndAddCodeFile(string relativeFileName);
 
         void AddContentFileToProject(string absoluteFileName, bool saveProjects = true);
