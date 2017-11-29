@@ -13,6 +13,7 @@ namespace GumPlugin.DataGeneration
     {
         public const string ButtonBehaviorName = "ButtonBehavior";
         public const string ToggleBehaviorName = "ToggleBehavior";
+        public const string RadioButtonBehaviorName = "RadioButtonBehavior";
         public const string TextBoxBehaviorName = "TextBoxBehavior";
         public const string ScrollBarBehaviorName = "ScrollBarBehavior";
         public const string ScrollViewerBehaviorName = "ScrollViewerBehavior";
@@ -42,6 +43,30 @@ namespace GumPlugin.DataGeneration
             var category = new StateSaveCategory();
             toReturn.Categories.Add(category);
             category.Name = "ToggleCategory";
+
+            category.States.Add(new StateSave { Name = "EnabledOn" });
+            category.States.Add(new StateSave { Name = "EnabledOff" });
+            category.States.Add(new StateSave { Name = "DisabledOn" });
+            category.States.Add(new StateSave { Name = "DisabledOff" });
+
+
+            category.States.Add(new StateSave { Name = "HighlightedOn" });
+            category.States.Add(new StateSave { Name = "HighlightedOff" });
+            category.States.Add(new StateSave { Name = "PushedOn" });
+            category.States.Add(new StateSave { Name = "PushedOff" });
+
+            return toReturn;
+
+        }
+
+        public static BehaviorSave CreateRadioButtonBehavior()
+        {
+            BehaviorSave toReturn = new BehaviorSave();
+            toReturn.Name = RadioButtonBehaviorName;
+
+            var category = new StateSaveCategory();
+            toReturn.Categories.Add(category);
+            category.Name = "RadioButtonCategory";
 
             category.States.Add(new StateSave { Name = "EnabledOn" });
             category.States.Add(new StateSave { Name = "EnabledOff" });

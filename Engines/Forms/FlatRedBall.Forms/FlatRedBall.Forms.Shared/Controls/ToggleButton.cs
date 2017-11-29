@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FlatRedBall.Forms.Controls
 {
-    class ToggleButton : FrameworkElement
+    public class ToggleButton : FrameworkElement
     {
         #region Fields/Properties
 

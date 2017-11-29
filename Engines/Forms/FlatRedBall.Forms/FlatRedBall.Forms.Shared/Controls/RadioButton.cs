@@ -7,7 +7,7 @@ using RenderingLibrary.Graphics;
 
 namespace FlatRedBall.Forms.Controls
 {
-    class RadioButton : ToggleButton
+    public class RadioButton : ToggleButton
     {
         #region Fields/Properties
 
@@ -25,8 +25,10 @@ namespace FlatRedBall.Forms.Controls
         private object GetParent()
         {
             object parent;
-            if (base.Visual.Parent != null)
-                parent = base.Visual.Parent;
+            if (Visual == null)
+                parent = null;
+            else if (Visual.Parent != null)
+                parent = Visual.Parent;
             else
                 parent = FakeRoot;
 
@@ -47,6 +49,9 @@ namespace FlatRedBall.Forms.Controls
         private void RemoveFromDictionary()
         {
             var parent = GetParent();
+
+            if (parent == null) //parent will be null when visual is null. groupname dictionary updates are meaningless until we have set the scope for the radio button!
+                return;
 
             if (RadioButtonDictionary.ContainsKey(parent)
                 && RadioButtonDictionary[parent].ContainsKey(GroupName)
@@ -73,6 +78,9 @@ namespace FlatRedBall.Forms.Controls
         private void AddToDictionary()
         {
             var parent = GetParent();
+
+            if (parent == null) //parent will be null when visual is null. groupname dictionary updates are meaningless until we have set the scope for the radio button!
+                return;
 
             if (RadioButtonDictionary.ContainsKey(parent) == false)
                 RadioButtonDictionary.Add(parent, new Dictionary<string, List<RadioButton>>());
@@ -135,6 +143,11 @@ namespace FlatRedBall.Forms.Controls
             IsChecked = false;
         }
 
+        /*
+        This method will assign the group of the radio box according to the parent of the assigned Visual. 
+        This method assumes that the visual is already attached to its parent
+        and that the parent will not change after this method has been called. If these assumptions cause problems in the future we may have to revisit this
+         */
         protected override void ReactToVisualChanged()
         {
             // text component is optional:
@@ -146,6 +159,8 @@ namespace FlatRedBall.Forms.Controls
             Visual.RollOn += this.HandleRollOn;
             Visual.RollOff += this.HandleRollOff;
 
+            GroupName = GroupName; //this will force the dictionary to be updated for the current <group name, visual> pair
+
             base.ReactToVisualChanged();
         }
 
@@ -155,7 +170,7 @@ namespace FlatRedBall.Forms.Controls
 
         private void HandleClick(IWindow window)
         {
-            UpdateGroup();
+            UpdateGroup();  //will call update state
 
             Click?.Invoke(this, null);
         }
@@ -194,11 +209,13 @@ namespace FlatRedBall.Forms.Controls
                 }
             }
 
-            IsChecked = !IsChecked;
+            IsChecked = true;
         }
 
         protected override void UpdateState()
         {
+            if (Visual == null) //don't try to update the UI when the UI is not set yet, mmmmkay?
+                return;
 
             var cursor = GuiManager.Cursor;
 
@@ -206,7 +223,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 if (IsEnabled == false)
                 {
-                    Visual.SetProperty("ToggleCategoryState", "DisabledOn");
+                    Visual.SetProperty("RadioButtonCategoryState", "DisabledOn");
                 }
                 //else if (HasFocus)
                 //{
@@ -216,23 +233,23 @@ namespace FlatRedBall.Forms.Controls
                 {
                     if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
                     {
-                        Visual.SetProperty("ToggleCategoryState", "PushedOn");
+                        Visual.SetProperty("RadioButtonCategoryState", "PushedOn");
                     }
                     else
                     {
-                        Visual.SetProperty("ToggleCategoryState", "HighlightedOn");
+                        Visual.SetProperty("RadioButtonCategoryState", "HighlightedOn");
                     }
                 }
                 else
                 {
-                    Visual.SetProperty("ToggleCategoryState", "EnabledOn");
+                    Visual.SetProperty("RadioButtonCategoryState", "EnabledOn");
                 }
             }
             else
             {
                 if (IsEnabled == false)
                 {
-                    Visual.SetProperty("ToggleCategoryState", "DisabledOff");
+                    Visual.SetProperty("RadioButtonCategoryState", "DisabledOff");
                 }
                 //else if (HasFocus)
                 //{
@@ -242,16 +259,16 @@ namespace FlatRedBall.Forms.Controls
                 {
                     if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
                     {
-                        Visual.SetProperty("ToggleCategoryState", "PushedOff");
+                        Visual.SetProperty("RadioButtonCategoryState", "PushedOff");
                     }
                     else
                     {
-                        Visual.SetProperty("ToggleCategoryState", "HighlightedOff");
+                        Visual.SetProperty("RadioButtonCategoryState", "HighlightedOff");
                     }
                 }
                 else
                 {
-                    Visual.SetProperty("ToggleCategoryState", "EnabledOff");
+                    Visual.SetProperty("RadioButtonCategoryState", "EnabledOff");
                 }
             }
             

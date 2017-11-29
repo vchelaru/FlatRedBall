@@ -71,6 +71,7 @@ namespace GumPlugin.Controls
 
             didAdd = AddIfDoesntHave(BehaviorGenerator.CreateButtonBehavior());
             didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateToggleBehavior());
+            didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateRadioButtonBehavior());
             didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateTextBoxBehavior());
             didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateScrollBarBehavior());
             didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateScrollViewerBehavior());
