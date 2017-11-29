@@ -124,7 +124,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
 
                     string itemTypeWithoutPath = FileManager.RemovePath(entitySave.ItemType);
-                    codeBlock.Line("Factories." + itemTypeWithoutPath + "Factory.Initialize(null, ContentManagerName);");
+                    codeBlock.Line("Factories." + itemTypeWithoutPath + "Factory.Initialize(ContentManagerName);");
 
                     codeBlock.Line("mScrollableHandle.AttachTo(this, false);");
                     codeBlock.Line("mScrollableHandle.RelativeY = " + entitySave.ListTopBound + ";");

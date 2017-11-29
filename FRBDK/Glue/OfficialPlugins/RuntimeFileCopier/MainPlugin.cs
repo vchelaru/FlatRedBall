@@ -21,6 +21,7 @@ namespace OfficialPlugins.RuntimeFileCopier
             "txt",
             "png",
             "tmx",
+            "tsx",
             "bmp",
             "png",
             "achx",

@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <objecttypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <objecttype name="BaseFactoryEntity" />
   <objecttype name="BaseNotPooled" />
   <objecttype name="BasePooledEntity" />
+  <objecttype name="ChildFactoryEntity" />
   <objecttype name="ChildOfPositioningEntity" />
   <objecttype name="CreatedByTiled" />
   <objecttype name="DerivedPooledFromNotPooled" />
@@ -11,6 +13,7 @@
     <property name="Visible" type="bool" default="true" />
   </objecttype>
   <objecttype name="FactoryEntityDerived" />
+  <objecttype name="GrandchildFactoryEntity" />
   <objecttype name="IWindowDerivedFromNoIWindow" />
   <objecttype name="PooledDontInheritFromThis" />
   <objecttype name="PooledEntityContainingEntity" />

@@ -139,6 +139,7 @@
     <Compile Include="DataTypes\Spreadsheet.Generated.cs" />
     <Compile Include="DataTypes\SpreadsheetClass.Generated.cs" />
     <Compile Include="DataTypes\SpreadsheetToReplace.Generated.cs" />
+    <Compile Include="DataTypes\Strings.Generated.cs" />
     <Compile Include="DataTypes\TestSaveClass.cs" />
     <Compile Include="DataTypes\TextureSettingsInfo.Generated.cs" />
     <Compile Include="DataTypes\TileMapInfo.Generated.cs" />
@@ -184,6 +185,10 @@
     <Compile Include="Entities\BaseEntityWithNoStates.Generated.cs">
       <DependentUpon>BaseEntityWithNoStates.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\BaseFactoryEntity.cs" />
+    <Compile Include="Entities\BaseFactoryEntity.Generated.cs">
+      <DependentUpon>BaseFactoryEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\BaseNotPooled.cs" />
     <Compile Include="Entities\BaseNotPooled.Generated.cs">
       <DependentUpon>BaseNotPooled.cs</DependentUpon>
@@ -211,6 +216,10 @@
     <Compile Include="Entities\CameraModifyingEntity.cs" />
     <Compile Include="Entities\CameraModifyingEntity.Generated.cs">
       <DependentUpon>CameraModifyingEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ChildFactoryEntity.cs" />
+    <Compile Include="Entities\ChildFactoryEntity.Generated.cs">
+      <DependentUpon>ChildFactoryEntity.cs</DependentUpon>
     </Compile>
     <Compile Include="Entities\ChildOfPositioningEntity.cs" />
     <Compile Include="Entities\ChildOfPositioningEntity.Generated.cs">
@@ -393,6 +402,10 @@
     <Compile Include="Entities\GlobalContentEntity.cs" />
     <Compile Include="Entities\GlobalContentEntity.Generated.cs">
       <DependentUpon>GlobalContentEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\GrandchildFactoryEntity.cs" />
+    <Compile Include="Entities\GrandchildFactoryEntity.Generated.cs">
+      <DependentUpon>GrandchildFactoryEntity.cs</DependentUpon>
     </Compile>
     <Compile Include="Entities\GumComponentContainer.cs" />
     <Compile Include="Entities\GumComponentContainer.Generated.cs">
@@ -713,8 +726,10 @@
     <Compile Include="Entities\ZBufferedEntity.Generated.cs">
       <DependentUpon>ZBufferedEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Factories\BaseFactoryEntityFactory.Generated.cs" />
     <Compile Include="Factories\BaseNotPooledFactory.Generated.cs" />
     <Compile Include="Factories\BasePooledEntityFactory.Generated.cs" />
+    <Compile Include="Factories\ChildFactoryEntityFactory.Generated.cs" />
     <Compile Include="Factories\ChildOfPositioningEntityFactory.Generated.cs" />
     <Compile Include="Factories\CreatedByTiledFactory.Generated.cs" />
     <Compile Include="Factories\DerivedPooledFromNotPooledFactory.Generated.cs" />
@@ -722,6 +737,7 @@
     <Compile Include="Factories\EntityInFolderFactory.Generated.cs" />
     <Compile Include="Factories\FactoryEntityDerivedFactory.Generated.cs" />
     <Compile Include="Factories\FactoryEntityFactory.Generated.cs" />
+    <Compile Include="Factories\GrandchildFactoryEntityFactory.Generated.cs" />
     <Compile Include="Factories\IWindowDerivedFromNoIWindowFactory.Generated.cs" />
     <Compile Include="Factories\PooledDontInheritFromThisFactory.Generated.cs" />
     <Compile Include="Factories\PooledEntityContainingEntityFactory.Generated.cs" />

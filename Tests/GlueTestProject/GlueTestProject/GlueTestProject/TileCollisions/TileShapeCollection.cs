@@ -384,6 +384,14 @@ namespace FlatRedBall.TileCollisions
                     break;
             }
         }
+
+        public void SetColor(Microsoft.Xna.Framework.Color color)
+        {
+            foreach (var rectangle in this.Rectangles)
+            {
+                rectangle.Color = color;
+            }
+        }
     }
 
 

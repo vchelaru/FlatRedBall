@@ -13,15 +13,14 @@ using FlatRedBall.Math.Splines;
 using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
 using FlatRedBall.Localization;
+using GlueTestProject.TestFramework;
 
-#if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
 using GlueTestProject.Entities;
 using GlueTestProject.Factories;
 using FlatRedBall.Math;
-#endif
 
 namespace GlueTestProject.Screens
 {
@@ -30,8 +29,6 @@ namespace GlueTestProject.Screens
 
 		void CustomInitialize()
 		{
-            // Just to make sure the syntax works:
-            FactoryEntityFactory.ScreenListReference = FactoryEntityFactory.ScreenListReference;
 
 
             if (PooledDontInheritFromThisInstance.AxisAlignedRectangleInstance.RelativeX != 5)
@@ -50,7 +47,7 @@ namespace GlueTestProject.Screens
                 throw new Exception("Destroying Entities also destroys factories if the Entity contains a list of a pooled type.  This shouldn't happen.");
             }
 
-
+            FactoryEntityDerivedFactory.Initialize(ContentManagerName);
             FactoryEntityDerived instance = FactoryEntityDerivedFactory.CreateNew();
             if (instance.AxisAlignedRectangleInstance.RelativeX != 5.0f)
             {
@@ -66,6 +63,7 @@ namespace GlueTestProject.Screens
             {
                 throw new Exception("Reset varaibles aren't working");
             }
+            instance.Destroy();
 
             // Let's try addition/removal:
             RecyclableEntity recyclableInstance = new RecyclableEntity();
@@ -74,7 +72,7 @@ namespace GlueTestProject.Screens
 
             recyclableInstance.Destroy();
 
-            BaseNotPooledFactory.Initialize(null, ContentManagerName);
+            BaseNotPooledFactory.Initialize(ContentManagerName);
             BaseNotPooled notPooled = BaseNotPooledFactory.CreateNew();
             notPooled.Destroy();
 
@@ -82,7 +80,7 @@ namespace GlueTestProject.Screens
             // According this bug:
             // http://www.hostedredmine.com/issues/413966
             // This may break:
-            DerivedPooledFromNotPooledFactory.Initialize((PositionedObjectList<DerivedPooledFromNotPooled>)null, ContentManagerName);
+            DerivedPooledFromNotPooledFactory.Initialize(ContentManagerName);
             var pooled = DerivedPooledFromNotPooledFactory.CreateNew();
             if (!SpriteManager.ManagedPositionedObjects.Contains(pooled))
             {
@@ -106,6 +104,17 @@ namespace GlueTestProject.Screens
 
             TestPooledSpriteInheritingCollisionAttachment();
 
+            TestBaseChildGrandchildListAdditions();
+
+        }
+
+        private void TestBaseChildGrandchildListAdditions()
+        {
+            var newInstance = Factories.GrandchildFactoryEntityFactory.CreateNew();
+
+            BaseFactoryEntityList.Contains(newInstance).ShouldBe(true);
+            ChildFactoryEntityList.Contains(newInstance).ShouldBe(true);
+            GrandchildFactoryEntityList.Contains(newInstance).ShouldBe(true);
         }
 
         private void TestPooledAttachment()

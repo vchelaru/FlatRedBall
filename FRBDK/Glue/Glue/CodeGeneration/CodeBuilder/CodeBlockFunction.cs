@@ -2,9 +2,10 @@
 {
     public class CodeBlockFunction : CodeBlockBase
     {
-        public CodeBlockFunction(ICodeBlock parent,string pre, string name, string parameters) : base(parent)
+        public CodeBlockFunction(ICodeBlock parent,string pre, string name, string parameters, string whereClause = null) : base(parent)
         {
-            PreCodeLines.Add(new CodeLine(StringHelper.SpaceStrings(pre, name, "(") + (string.IsNullOrEmpty(parameters) ? "" : parameters) + ")"));
+            string functionSignature = StringHelper.SpaceStrings(pre, name, "(") + (string.IsNullOrEmpty(parameters) ? "" : parameters) + ")" + " " + whereClause;
+            PreCodeLines.Add(new CodeLine(functionSignature));
             PreCodeLines.Add(new CodeLine("{"));
             PostCodeLines.Add(new CodeLine("}"));
         }
@@ -12,9 +13,9 @@
 
     public static class CodeBlockFunctionExtensions
     {
-        public static ICodeBlock Function(this ICodeBlock codeBlock, string pre, string name, string parameters)
+        public static ICodeBlock Function(this ICodeBlock codeBlock, string pre, string name, string parameters, string whereClause = null)
         {
-            return new CodeBlockFunction(codeBlock, pre, name, parameters);
+            return new CodeBlockFunction(codeBlock, pre, name, parameters, whereClause);
         }
 
         public static ICodeBlock Constructor(this ICodeBlock codeBlock, string pre, string name, string parameters, string baseOrThisCall = null)

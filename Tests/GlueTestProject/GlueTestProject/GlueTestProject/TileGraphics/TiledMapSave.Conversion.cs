@@ -100,13 +100,15 @@ namespace TMXGlueLib
                         // if the type is on the tile in the tileset, but not on the object. But...I'm tired. That will have to
                         // be something I add later.
 
-                        var properties = tileset.TileDictionary[item.gid.Value - tileset.Firstgid];
-                        if (!string.IsNullOrEmpty(properties.Type))
+                        if (tileset.TileDictionary.ContainsKey(item.gid.Value - tileset.Firstgid))
                         {
+                            var properties = tileset.TileDictionary[item.gid.Value - tileset.Firstgid];
+                            if (!string.IsNullOrEmpty(properties.Type))
+                            {
 
-                            item.properties.Add(new property { name = "Type", Type = "string", value = properties.Type });
-                            item.PropertyDictionary["Type"] = properties.Type;
-
+                                item.properties.Add(new property { name = "Type", Type = "string", value = properties.Type });
+                                item.PropertyDictionary["Type"] = properties.Type;
+                            }
                         }
 
                     }

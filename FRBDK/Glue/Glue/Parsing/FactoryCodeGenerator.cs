@@ -88,58 +88,50 @@ namespace FlatRedBall.Glue.Parsing
             // the second Screen.  We fix this by moving the Initialize
             // method into AddToManagers so that it's not called asynchronously - 
             // instead it's called after the first screen has finished unloading itself.
-            foreach (NamedObjectSave nos in element.NamedObjects)
-            {
-                if (!nos.InstantiatedByBase &&
+
+            var entityLists = element.NamedObjects
+                .Where(nos => !nos.InstantiatedByBase &&
                     nos.SourceType == SourceType.FlatRedBallType &&
                     nos.IsList &&
                     nos.IsDisabled == false &&
                     !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
                     (nos.SourceClassGenericType.StartsWith("Entities\\") || nos.SourceClassGenericType.StartsWith("Entities/")))
+                .ToList();
+
+
+            List<EntitySave> entitiesToInitializeFactoriesFor = new List<EntitySave>();
+            foreach(var listNos in entityLists)
+            {
+                EntitySave sourceEntitySave = ObjectFinder.Self.GetEntitySave(listNos.SourceClassGenericType);
+
+                if(sourceEntitySave != null)
                 {
-
-                    EntitySave sourceEntitySave = ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType);
-
-                    if (sourceEntitySave == null)
+                    if(sourceEntitySave.CreatedByOtherEntities && !entitiesToInitializeFactoriesFor.Contains(sourceEntitySave))
                     {
-                        Plugins.PluginManager.ReceiveError("Could not find the Entity " + nos.SourceClassGenericType + " which is referenced by " +
-                            nos + ", so no code will be generated for this object");
-                        return codeBlock;
+                        entitiesToInitializeFactoriesFor.Add(sourceEntitySave);
                     }
-                    string objectName = nos.FieldName;
-
-                    if (sourceEntitySave.CreatedByOtherEntities)
-                    {
-
-                        string entityClassName = FileManager.RemovePath(nos.SourceClassGenericType);
-                        string line = entityClassName + "Factory.Initialize(" + objectName + ", ContentManagerName);";
-
-                        codeBlock.Line(line);
-                    }
-
-                    // If this Entity type is the base type, then the user
-                    // may be using this list as the base type which gets populated
-                    // by derived factories.
-                    if (string.IsNullOrEmpty(sourceEntitySave.BaseEntity))
-                    {
-                        List<EntitySave> derivedList = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(sourceEntitySave);
-
-                        foreach (EntitySave derivedEntity in derivedList)
-                        {
-                            if (derivedEntity.CreatedByOtherEntities)
-                            {
-                                string derivedName = FileManager.RemovePath(derivedEntity.Name);
-                                string replaceLine = derivedName + "Factory.Initialize(" + objectName + ", ContentManagerName);";
-
-                                codeBlock.Line(replaceLine);
-                            }
-                        }
-                    }
-
-
                 }
-
             }
+
+            foreach(var entity in entitiesToInitializeFactoriesFor)
+            {
+                // initialize the factory:
+                string entityClassName = FileManager.RemovePath(entity.Name);
+                string factoryName = entityClassName + "Factory";
+                codeBlock.Line(factoryName + ".Initialize(ContentManagerName);");
+
+                // find any lists of entities that are of this type, or of a derived type.
+                foreach(var listNos in entityLists)
+                {
+                    EntitySave listEntitySave = ObjectFinder.Self.GetEntitySave(listNos.SourceClassGenericType);
+
+                    if(listEntitySave != null && (listEntitySave == entity || entity.InheritsFrom(listEntitySave.Name)))
+                    {
+                        codeBlock.Line($"{factoryName}.AddList({listNos.FieldName});");
+                    }
+                }
+            }
+
             return codeBlock;
         }
 
@@ -355,10 +347,7 @@ namespace FlatRedBall.Glue.Parsing
         {
 
             string entityClassName = FileManager.RemovePath(FileManager.RemoveExtension(EntitySave.Name));
-            if (entityClassName.StartsWith("I"))
-            {
-                int m = 3;
-            }
+            
             string baseEntityName = null;
             if (!string.IsNullOrEmpty(EntitySave.BaseEntity))
             {
@@ -416,13 +405,8 @@ namespace FlatRedBall.Glue.Parsing
 
             var codeBlock = new CodeBlockBase(null);
             codeBlock.Line("static string mContentManagerName;");
-            codeBlock.Line("static PositionedObjectList<" + entityClassName + "> mScreenListReference;");
-            
-            if (!string.IsNullOrEmpty(baseEntityName))
-            {
-                codeBlock.Line("static PositionedObjectList<" + FileManager.RemovePath(baseEntityName) + "> mBaseScreenListReference;");
+            codeBlock.Line("static System.Collections.Generic.List<System.Collections.IList> listsToAddTo = new System.Collections.Generic.List<System.Collections.IList>();");
 
-            }
             codeBlock.Line(string.Format("static PoolList<{0}> mPool = new PoolList<{0}>();", entityClassName));
 
             codeBlock.Line(string.Format("public static Action<{0}> EntitySpawned;", entityClassName));
@@ -432,15 +416,6 @@ namespace FlatRedBall.Glue.Parsing
 
             codeBlock.Function("object", "IEntityFactory.CreateNew", "Layer layer")
                 .Line(string.Format("return {0}.CreateNew(layer);", factoryClassName));
-
-            #region ScreenListReference property
-            var propertyBlock = new CodeBlockProperty(codeBlock, "public static " + positionedObjectListType, "ScreenListReference");
-
-            //codeContent.Property("ScreenListReference", Public: true, Static: true, Type: positionedObjectListType);
-            propertyBlock.Get().Line("return mScreenListReference;").End();
-            propertyBlock.Set().Line("mScreenListReference = value;").End();
-            #endregion
-
 
             #region Self and mSelf
             codeBlock.Line("static " + factoryClassName + " mSelf;");
@@ -469,19 +444,28 @@ namespace FlatRedBall.Glue.Parsing
             GetInitializeFactoryMethod(codeBlock, className, poolObjects, "mScreenListReference");
             codeBlock._();
 
-            if (!string.IsNullOrEmpty(baseClassName))
-            {
-                GetInitializeFactoryMethod(codeBlock, FileManager.RemovePath(baseClassName), poolObjects, "mBaseScreenListReference");
-                codeBlock._();
-            }
-
             GetDestroyFactoryMethod(codeBlock, factoryClassName);
             codeBlock._();
             GetFactoryInitializeMethod(codeBlock, factoryClassName, numberToPreAllocate);
             codeBlock._();
             GetMakeUnusedFactory(codeBlock, factoryClassName, poolObjects);
+            codeBlock._();
+
+
+            string whereClass = className;
+            if(!string.IsNullOrEmpty(baseClassName))
+            {
+                whereClass = baseClassName.Replace("\\", ".");
+            }
+            AddAddListMethod(codeBlock, whereClass);
 
             return codeBlock;
+        }
+
+        private static void AddAddListMethod(ICodeBlock codeBlock, string entityClassName)
+        {
+            var method = codeBlock.Function("public static void", "AddList<T>", "System.Collections.Generic.IList<T> newList", $"where T : {entityClassName}");
+            method.Line("listsToAddTo.Add(newList as System.Collections.IList);");
         }
 
         private static ICodeBlock GetCreateNewFactoryMethod(ICodeBlock codeBlock, string className, bool poolObjects, string baseEntityName)
@@ -523,12 +507,7 @@ namespace FlatRedBall.Glue.Parsing
             codeBlock.Line("instance.X = x;");
             codeBlock.Line("instance.Y = y;");
 
-            CreateAddToListIfNotNullCode(codeBlock, "mScreenListReference");
-
-            if (!string.IsNullOrEmpty(baseEntityName))
-            {
-                CreateAddToListIfNotNullCode(codeBlock, "mBaseScreenListReference");
-            }
+            CreateAddToListCode(codeBlock, className);
 
             codeBlock = codeBlock
                 .If("EntitySpawned != null")
@@ -540,19 +519,20 @@ namespace FlatRedBall.Glue.Parsing
             return codeBlock;
         }
 
-        private static ICodeBlock CreateAddToListIfNotNullCode(ICodeBlock codeBlock, string listName)
+        private static ICodeBlock CreateAddToListCode(ICodeBlock codeBlock, string className)
         {
+
             codeBlock
-                .If(listName + " != null")
-                    .If("SortAxis == FlatRedBall.Math.Axis.X")
-                        .Line("var index = mScreenListReference.GetFirstAfter(x, Axis.X, 0, mScreenListReference.Count);")
-                        .Line("mScreenListReference.Insert(index, instance);")
-                    .End().ElseIf("SortAxis == FlatRedBall.Math.Axis.Y")
-                        .Line("var index = mScreenListReference.GetFirstAfter(y, Axis.Y, 0, mScreenListReference.Count);")
-                        .Line("mScreenListReference.Insert(index, instance);")
+                .ForEach("var list in listsToAddTo")
+                    .If($"SortAxis == FlatRedBall.Math.Axis.X && list is PositionedObjectList<{className}>")
+                        .Line($"var index = (list as PositionedObjectList<{className}>).GetFirstAfter(x, Axis.X, 0, list.Count);")
+                        .Line($"list.Insert(index, instance);")
+                    .End().ElseIf($"SortAxis == FlatRedBall.Math.Axis.Y && list is PositionedObjectList<{className}>")
+                        .Line($"var index = (list as PositionedObjectList<{className}>).GetFirstAfter(y, Axis.Y, 0, list.Count);")
+                        .Line($"list.Insert(index, instance);")
                     .End().Else()
                         .Line("// Sort Z not supported")
-                        .Line(listName + ".Add(instance);")
+                        .Line("list.Add(instance);")
                     .End()
                 .End();
 
@@ -566,7 +546,7 @@ namespace FlatRedBall.Glue.Parsing
             codeBlock
                 .Function("public static void", "Destroy", "")
                     .Line("mContentManagerName = null;")
-                    .Line("mScreenListReference = null;")
+                    .Line("listsToAddTo.Clear();")
                     .Line("SortAxis = null;")
                     .Line("mPool.Clear();")
                     .Line("EntitySpawned = null;")
@@ -594,9 +574,8 @@ namespace FlatRedBall.Glue.Parsing
         private static ICodeBlock GetInitializeFactoryMethod(ICodeBlock codeBlock, string className, bool poolObjects, string listToAssign)
         {
             codeBlock = codeBlock
-                .Function("public static void", "Initialize", string.Format("FlatRedBall.Math.PositionedObjectList<{0}> listFromScreen, string contentManager", className))
-                    .Line("mContentManagerName = contentManager;")
-                    .Line(listToAssign + " = listFromScreen;");
+                .Function("public static void", "Initialize", string.Format("string contentManager", className))
+                    .Line("mContentManagerName = contentManager;");
 
             if (poolObjects)
             {

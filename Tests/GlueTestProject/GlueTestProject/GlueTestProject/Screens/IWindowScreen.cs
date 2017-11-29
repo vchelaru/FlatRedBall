@@ -44,6 +44,7 @@ namespace GlueTestProject.Screens
             }
             newInstance.Destroy();
 
+            IWindowDerivedFromNoIWindowFactory.Initialize(ContentManagerName);
             var result = IWindowDerivedFromNoIWindowFactory.CreateNew();
             if (GuiManager.Windows.Contains(result) == false)
             {

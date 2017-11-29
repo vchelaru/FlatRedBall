@@ -63,9 +63,15 @@ namespace FlatRedBall.Screens
         /// <summary>
         /// Stores the names and values of variables which should be preserved on the next
         /// restart. These values are recorded prior to the screen being destroyed, then applied
-        /// after the construction of the next screen.
+        /// after the construction of the next screen. These values are used internally in the base
+        /// screen class and should not be modified.
         /// </summary>
         static Dictionary<string, object> RestartVariableValues { get; set; } = new Dictionary<string, object>();
+
+        /// <summary>
+        /// A collection of variables to reset. This can be variables on the Screen itself or variables on objects within
+        /// the screen, like PlayerInstance.X
+        /// </summary>
         protected static List<string> RestartVariables { get; private set; } = new List<string>();
 
 #if !FRB_MDX

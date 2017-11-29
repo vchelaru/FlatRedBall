@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              SizeToContent="Height"
              Width="220">
-    <StackPanel>
+    <StackPanel x:Name="MainStackPanel">
         <TextBlock Margin="3,0,3,0">Enter a name for the new entity:</TextBlock>
         <TextBox x:Name="TextBox" Margin="3,0,3,0" KeyDown="TextBox_KeyDown" TextChanged="TextBox_TextChanged"></TextBox>
         <TextBlock x:Name="FailureTextBlock" Margin="3,0,3,3" Foreground="Red" Visibility="Collapsed" TextWrapping="Wrap">Failure Message</TextBlock>
