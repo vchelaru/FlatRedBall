@@ -53,7 +53,24 @@ namespace GlueTestProject.TestFramework
 
             if(!isGreaterThan)
             {
-                string message = $"{thisObject} should be greater than {other}";
+                string message = $"The value is {thisObject} but should be greater than {other}";
+
+                if (!string.IsNullOrEmpty(because))
+                {
+                    message += $" : {because}";
+                }
+
+                throw new Exception(message);
+            }
+        }
+
+        public static void ShouldBeLessThan<T>(this T thisObject, T other, string because = null) where T : IComparable<T>
+        {
+            bool isGreaterThan = thisObject.CompareTo(other) < 0;
+
+            if (!isGreaterThan)
+            {
+                string message = $"The value is {thisObject} but should be less than {other}";
 
                 if (!string.IsNullOrEmpty(because))
                 {

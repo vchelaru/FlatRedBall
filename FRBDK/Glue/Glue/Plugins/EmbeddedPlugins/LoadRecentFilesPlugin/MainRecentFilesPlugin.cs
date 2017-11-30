@@ -12,7 +12,7 @@ using System.Windows.Forms;
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
 {
     [Export(typeof(PluginBase))]
-    public class MainPlugin : EmbeddedPlugin
+    public class MainRecentFilesPlugin : EmbeddedPlugin
     {
         ToolStripMenuItem recentFilesMenuItem;
 
@@ -47,7 +47,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
             {
                 ProjectManager.GlueSettingsSave = new SaveClasses.GlueSettingsSave();
             }
-            
+
+            if(ProjectManager.GlueSettingsSave.RecentFiles == null)
+            {
+                ProjectManager.GlueSettingsSave.RecentFiles = new List<string>();
+            }
+
             ProjectManager.GlueSettingsSave.RecentFiles.RemoveAll(item =>
                 FileManager.Standardize(item).ToLowerInvariant() == standardized);
             // newest first

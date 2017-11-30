@@ -724,7 +724,22 @@ namespace FlatRedBall.Math.Geometry
                     if (currentDistance < smallest) { smallest = currentDistance; side = Side.Bottom; }
                 }
 
-                if (float.IsPositiveInfinity(smallest) == false)
+
+                bool shouldApplyReposition = float.IsPositiveInfinity(smallest) == false;
+                // this is kinda crappy but addresses this bug:
+                // https://trello.com/c/twwOTKFz/411-l-shaped-corners-can-cause-entities-to-teleport-through-despite-using-proper-reposition-directions
+                float maxMovement;
+                if(side == Side.Left || side == Side.Right)
+                {
+                    maxMovement = rectangle.Width / 2.0f + Width / 2.0f;
+                }
+                else
+                {
+                    maxMovement = rectangle.Height / 2.0f + Height / 2.0f;
+                }
+                shouldApplyReposition &= System.Math.Abs(smallest) < maxMovement;
+
+                if (shouldApplyReposition)
                 {
                     float amountToMoveThis = 1;
                     if (!float.IsPositiveInfinity(otherMass))

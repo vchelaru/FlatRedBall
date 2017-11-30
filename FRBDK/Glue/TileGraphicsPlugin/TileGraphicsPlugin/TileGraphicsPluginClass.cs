@@ -94,7 +94,9 @@ namespace TileGraphicsPlugin
             // - Added TileShapeCollection.AddCollisionFromTilesWithProperty
             // 1.2.2
             // - Added TileShapeCollection.SetColor
-            get { return new Version(1, 2, 2, 0); }
+            // 1.2.2.1
+            // - Fixed possible crash with an empt yobject layer
+            get { return new Version(1, 2, 2, 1); }
         }
 
 

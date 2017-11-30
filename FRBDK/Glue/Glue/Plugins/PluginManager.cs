@@ -1261,7 +1261,8 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToChangedBuiltFile(string fileName)
         {
-            foreach (PluginManager pluginManager in mInstances)
+            var pluginManagers = mInstances.ToList();
+            foreach (PluginManager pluginManager in pluginManagers)
             {
                 // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToBuiltFileChangeHandler != null);

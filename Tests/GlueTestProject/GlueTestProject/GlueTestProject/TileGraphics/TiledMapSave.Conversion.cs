@@ -90,27 +90,30 @@ namespace TMXGlueLib
 
             foreach (var objectLayer in this.objectgroup)
             {
-                foreach (var item in objectLayer.@object)
+                if (objectLayer.@object != null)
                 {
-                    if (item.gid != null)
+                    foreach (var item in objectLayer.@object)
                     {
-                        var tileset = GetTilesetForGid(item.gid.Value);
-
-                        // todo - need to modify the TMX loader to support reading the Type from an object. Right now it works
-                        // if the type is on the tile in the tileset, but not on the object. But...I'm tired. That will have to
-                        // be something I add later.
-
-                        if (tileset.TileDictionary.ContainsKey(item.gid.Value - tileset.Firstgid))
+                        if (item.gid != null)
                         {
-                            var properties = tileset.TileDictionary[item.gid.Value - tileset.Firstgid];
-                            if (!string.IsNullOrEmpty(properties.Type))
+                            var tileset = GetTilesetForGid(item.gid.Value);
+
+                            // todo - need to modify the TMX loader to support reading the Type from an object. Right now it works
+                            // if the type is on the tile in the tileset, but not on the object. But...I'm tired. That will have to
+                            // be something I add later.
+
+                            if (tileset.TileDictionary.ContainsKey(item.gid.Value - tileset.Firstgid))
                             {
+                                var properties = tileset.TileDictionary[item.gid.Value - tileset.Firstgid];
+                                if (!string.IsNullOrEmpty(properties.Type))
+                                {
 
-                                item.properties.Add(new property { name = "Type", Type = "string", value = properties.Type });
-                                item.PropertyDictionary["Type"] = properties.Type;
+                                    item.properties.Add(new property { name = "Type", Type = "string", value = properties.Type });
+                                    item.PropertyDictionary["Type"] = properties.Type;
+                                }
                             }
-                        }
 
+                        }
                     }
                 }
             }
