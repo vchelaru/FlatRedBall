@@ -49,6 +49,30 @@ namespace FlatRedBall.AnimationEditorForms
             }
             else if (state.SelectedChain != null)
             {
+                var mMoveToTop = new ToolStripMenuItem("^^ Move To Top");
+                mMoveToTop.ShortcutKeyDisplayString = "Alt+Shift+Up";
+                mMoveToTop.Click += new System.EventHandler(MoveToTopClick);
+                mMenu.Items.Add(mMoveToTop);
+
+                var mMoveUp = new ToolStripMenuItem("^ Move Up");
+                mMoveUp.ShortcutKeyDisplayString = "Alt+Up";
+                mMoveUp.Click += new System.EventHandler(MoveUpClick);
+                mMenu.Items.Add(mMoveUp);
+
+                var mMoveDown = new ToolStripMenuItem("v Move Down");
+                mMoveDown.ShortcutKeyDisplayString = "Alt+Down";
+                mMoveDown.Click += new System.EventHandler(MoveDownClick);
+                mMenu.Items.Add(mMoveDown);
+
+                var mMoveToBottom = new ToolStripMenuItem("vv Move To Bottom");
+                mMoveToBottom.ShortcutKeyDisplayString = "Alt+Shift+Down";
+                mMoveToBottom.Click += new System.EventHandler(MoveToBottomClick);
+                mMenu.Items.Add(mMoveToBottom);
+
+
+                mMenu.Items.Add("-");
+
+
                 mMenu.Items.Add("Adjust All Frame Time", null, AdjustFrameTimeClick);
                 mMenu.Items.Add("Adjust Offsets", null, AdjustOffsetsClick);
                 mMenu.Items.Add("Flip Horizontally", null, FlipAnimationChainHorizontally);
@@ -78,6 +102,80 @@ namespace FlatRedBall.AnimationEditorForms
 
             mMenu.Items.Add("Sort Animations Alphabetically", null, SortAnimationsAlphabetically );
             
+        }
+
+        public void MoveToTopClick(object sender, EventArgs e)
+        {
+            var chain = SelectedState.Self.SelectedChain;
+            if (ProjectManager.Self.AnimationChainListSave != null && 
+                chain != null &&
+                ProjectManager.Self.AnimationChainListSave.AnimationChains.First() != chain
+                )
+            {
+                ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
+                ProjectManager.Self.AnimationChainListSave.AnimationChains.Insert(0, chain);
+                
+                TreeViewManager.Self.RefreshTreeView();
+                CallAnimationChainsChange();
+
+            }
+        }
+
+        public void MoveUpClick(object sender, EventArgs e)
+        {
+            var chain = SelectedState.Self.SelectedChain;
+            if (ProjectManager.Self.AnimationChainListSave != null &&
+                chain != null &&
+                ProjectManager.Self.AnimationChainListSave.AnimationChains.First() != chain
+                )
+            {
+                var oldIndex = ProjectManager.Self.AnimationChainListSave.AnimationChains.IndexOf(chain);
+
+                ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
+                ProjectManager.Self.AnimationChainListSave.AnimationChains.Insert(oldIndex-1, chain);
+
+                TreeViewManager.Self.RefreshTreeView();
+                CallAnimationChainsChange();
+
+            }
+        }
+
+        public void MoveDownClick(object sender, EventArgs e)
+        {
+            var chain = SelectedState.Self.SelectedChain;
+            if (ProjectManager.Self.AnimationChainListSave != null &&
+                chain != null &&
+                ProjectManager.Self.AnimationChainListSave.AnimationChains.Last() != chain
+                )
+            {
+                var oldIndex = ProjectManager.Self.AnimationChainListSave.AnimationChains.IndexOf(chain);
+
+                ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
+                ProjectManager.Self.AnimationChainListSave.AnimationChains.Insert(oldIndex + 1, chain);
+
+                TreeViewManager.Self.RefreshTreeView();
+                CallAnimationChainsChange();
+
+            }
+        }
+
+        public void MoveToBottomClick(object sender, EventArgs e)
+        {
+            var chain = SelectedState.Self.SelectedChain;
+            if (ProjectManager.Self.AnimationChainListSave != null &&
+                chain != null &&
+                ProjectManager.Self.AnimationChainListSave.AnimationChains.Last() != chain
+                )
+            {
+                var oldIndex = ProjectManager.Self.AnimationChainListSave.AnimationChains.IndexOf(chain);
+
+                ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
+                ProjectManager.Self.AnimationChainListSave.AnimationChains.Add(chain);
+
+                TreeViewManager.Self.RefreshTreeView();
+                CallAnimationChainsChange();
+
+            }
         }
 
         internal IEnumerable<string> GetExpandedNodeAnimationChainNames()

@@ -51,7 +51,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
                 if (control == null)
                 {
                     control = new ExclusionControl();
-                    pluginTab = base.AddToTab(PluginManager.LeftTab, control, "Platform Inclusions");
+                    pluginTab = base.AddToTab(PluginManager.CenterTab, control, "Platform Inclusions");
                 }
                 else
                 {

@@ -455,7 +455,17 @@ namespace FlatRedBall.AnimationEditorForms
             GifManager.Self.SaveCurrentAnimationAsGif();
         }
 
-
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if(Managers.HotkeyManager.Self.TryHandleKeys(keyData))
+            {
+                return true;
+            }
+            else
+            {
+                return base.ProcessCmdKey(ref msg, keyData);
+            }
+        }
 
     }
 }

@@ -11,32 +11,19 @@ using FlatRedBall.Math;
 
 namespace FlatRedBall.AnimationEditorForms
 {
-    public partial class TreeViewManager
+    public partial class TreeViewManager : Singleton<TreeViewManager>
     {
         #region Fields
 
         TreeView mTreeView;
         TreeNode mGrabbedNode;
-
-        static TreeViewManager mSelf;
+        
 
         #endregion
 
 
         #region Properties
-
-        public static TreeViewManager Self
-        {
-            get
-            {
-                if (mSelf == null)
-                {
-                    mSelf = new TreeViewManager();
-                }
-                return mSelf;
-            }
-        }
-
+        
         // See SelectedState
         //public AnimationChainSave SelectedAnimationChain
         //{

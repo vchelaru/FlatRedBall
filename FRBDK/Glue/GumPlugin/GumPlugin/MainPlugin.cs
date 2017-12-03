@@ -254,7 +254,7 @@ namespace GumPlugin
 
                     AppCommands.Self.AddScreen(gumScreen);
 
-                    AppCommands.Self.SaveGlux(saveAllElements: false);
+                    AppCommands.Self.SaveGumx(saveAllElements: false);
 
                     AppCommands.Self.SaveScreen(gumScreen);
 

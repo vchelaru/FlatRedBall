@@ -13,7 +13,7 @@ namespace GumPlugin.Managers
 {
     public class AppCommands : Singleton<AppCommands>
     {
-        public void SaveGlux(bool saveAllElements = false)
+        public void SaveGumx(bool saveAllElements = false)
         {
             string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 

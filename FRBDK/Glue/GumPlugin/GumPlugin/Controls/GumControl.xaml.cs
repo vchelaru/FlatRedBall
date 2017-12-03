@@ -80,7 +80,7 @@ namespace GumPlugin.Controls
 
             if(didAdd)
             {
-                AppCommands.Self.SaveGlux();
+                AppCommands.Self.SaveGumx();
             }
         }
 
