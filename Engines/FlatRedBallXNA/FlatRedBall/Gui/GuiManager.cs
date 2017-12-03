@@ -842,20 +842,37 @@ namespace FlatRedBall.Gui
                             {
                                 var window = mWindowArray[i];
 
-
-                                if (window.Visible == false || !window.Enabled)
-                                    continue;
+                                // December 3, 2017
+                                // The GuiManager used
+                                // to continue the loop
+                                // if UI was disabled, but
+                                // that means that UI could
+                                // be clicked-through. We don't
+                                // want that, so we only continue
+                                // if the UI is invisible. It's now
+                                // the job of the IWindow implementation
+                                // to check its own Enabled to figure out
+                                // if it should process events or not...
+                                //if (window.Visible == false || !window.Enabled)
+                                if (window.Visible == false)
+                                        continue;
 
                                 if (!window.IgnoredByCursor && window.HasCursorOver(c))
                                 {
                                     window.TestCollision(c);
-                                    // I think we should use the cursor's WindowOver which may be a child of Window
-                                    c.LastWindowOver = c.WindowOver;
-                                    if (Cursor.PrimaryPush && i < mWindowArray.Count && BringsClickedWindowsToFront == true)
-                                    {// we pushed a button, so let's bring it to the front
-                                        mWindowArray.Remove(window); mWindowArray.Add(window);
+
+                                    // HasCursorOver simply says "Is the cursor over this object".
+                                    // You could be over an object but the object may not be enabled UI,
+                                    // so we should only break the loop if WindowOver was actually assigned:
+                                    if(c.WindowOver != null)
+                                    {
+                                        c.LastWindowOver = c.WindowOver;
+                                        if (Cursor.PrimaryPush && i < mWindowArray.Count && BringsClickedWindowsToFront == true)
+                                        {// we pushed a button, so let's bring it to the front
+                                            mWindowArray.Remove(window); mWindowArray.Add(window);
+                                        }
+                                        break;
                                     }
-                                    break;
 
                                 }
                             }

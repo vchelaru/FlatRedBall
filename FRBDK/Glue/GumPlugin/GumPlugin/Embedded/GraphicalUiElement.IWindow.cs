@@ -380,7 +380,7 @@ namespace Gum.Wireframe
                         {
                             cursor.WindowOver = this;
 
-                            if (cursor.PrimaryPush)
+                            if (cursor.PrimaryPush && Enabled)
                             {
 
                                 cursor.WindowPushed = this;
@@ -393,7 +393,7 @@ namespace Gum.Wireframe
 
                             }
 
-                            if (cursor.PrimaryClick) // both pushing and clicking can occur in one frame because of buffered input
+                            if (cursor.PrimaryClick && Enabled) // both pushing and clicking can occur in one frame because of buffered input
                             {
                                 if (cursor.WindowPushed == this)
                                 {
@@ -420,7 +420,8 @@ namespace Gum.Wireframe
 
                         }
                     }
-                    if (HasEvents && cursor.ZVelocity != 0 && handledActions.HandledMouseWheel == false)
+                    if (HasEvents && cursor.ZVelocity != 0 && handledActions.HandledMouseWheel == false &&
+                        Enabled)
                     {
                         FlatRedBall.Gui.RoutedEventArgs args = new FlatRedBall.Gui.RoutedEventArgs();
                         MouseWheelScroll?.Invoke(this, args);

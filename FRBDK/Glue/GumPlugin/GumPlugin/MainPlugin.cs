@@ -174,7 +174,10 @@ namespace GumPlugin
             // - Fixed bug - Screens without Gum screens now use define and associate layers using IDBs.
             // 0.9.2.3
             // - State interpolation is now removed if Glue is set to not embed code.
-            get { return new Version(0, 9, 2, 3); }
+            // 0.9.2.4
+            // - GUE's no longer raise events if disabled, enabling the GuiManager to make 
+            //   GUEs with HasEvents = false be "input transparent"
+            get { return new Version(0, 9, 2, 4); }
         }
 
         #endregion
