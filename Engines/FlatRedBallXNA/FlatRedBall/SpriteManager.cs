@@ -1806,6 +1806,10 @@ namespace FlatRedBall
         }
 
         #region Convert to Manually/Automatically Updated and Distance/ZBuffer drawn Sprite
+        /// <summary>
+        /// Converts the argument Sprite from an anutomatically updated Sprite to a manually updated Sprite.
+        /// </summary>
+        /// <param name="spriteToConvert"></param>
         public static void ConvertToManuallyUpdated(Sprite spriteToConvert)
         {
             // I think we want to wrap the entire function in this if-check
@@ -1943,6 +1947,10 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// Converts the argument Sprite from a manually updated Sprite to an automatically updated Sprite.
+        /// </summary>
+        /// <param name="spriteToConvert">The sprite to convert.</param>
         public static void ConvertToAutomaticallyUpdated(Sprite spriteToConvert)
         {
             if (mManuallyUpdatedSprites.Contains(spriteToConvert))

@@ -1068,6 +1068,13 @@ namespace FlatRedBall.Math
             return ((int)( System.Math.Sign(valueToRound) * .5 + valueToRound  / multipleOf)) * multipleOf;
         }
 
+        public static double RoundDouble(double valueToRound, double multipleOf, double seed)
+        {
+            valueToRound -= seed;
+
+            return seed + ((int)(System.Math.Sign(valueToRound) * .5f + valueToRound / multipleOf)) * multipleOf;
+        }
+
         /// <summary>
         /// Rounds the argument floatToRound to an integer.
         /// </summary>

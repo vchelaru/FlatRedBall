@@ -16,10 +16,7 @@ using FlatRedBall.Graphics;
 
 namespace FlatRedBall.Math.Geometry
 {
-    public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible
-#if FRB_XNA
-, IMouseOver
-#endif
+    public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible, IMouseOver
     {
         #region Fields
 
@@ -338,12 +335,21 @@ namespace FlatRedBall.Math.Geometry
 
         #region Public Methods
 
+        /// <summary>
+        /// Returns the absolute (world) position of the point at the argument pointIndex. This considers the Polygon's position and rotation.
+        /// </summary>
+        /// <remarks>
+        /// This method internally uses the vertices of the polygon to return the position. These vertices are updated every frame if the polygon is
+        /// part of the ShapeManager. If a Polygon is not part of the ShapeManager, or if a change (such as position) has been performed on the polygon
+        /// and the AbsolutePointPosition is needed immediately, then ForceUpdateDependencies can be called to update the verts internally.
+        /// </remarks>
+        /// <param name="pointIndex">The 0-based index of the points.</param>
+        /// <returns>The absolute world position of the vert at the argument pointIndex.</returns>
         public Vector3 AbsolutePointPosition(int pointIndex)
         {
             return mVertices[pointIndex].Position;
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns whether two indexes are adjacent.  This considers wrapping and duplicate
         /// points for closed polygons.
@@ -351,7 +357,6 @@ namespace FlatRedBall.Math.Geometry
         /// <param name="firstIndex">The first index.</param>
         /// <param name="secondIndex">The second index</param>
         /// <returns>Whether the two points are adjacent.</returns>
-        #endregion
         public bool ArePointsAdjacent(int firstIndex, int secondIndex)
         {
             // If firstIndex or secondIndex are the last point, make them
