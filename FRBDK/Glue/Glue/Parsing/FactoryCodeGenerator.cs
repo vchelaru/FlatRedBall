@@ -459,6 +459,7 @@ namespace FlatRedBall.Glue.Parsing
             }
             AddAddListMethod(codeBlock, whereClass);
             AddRemoveListMethod(codeBlock, whereClass);
+            AddClearListsToAddTo(codeBlock);
 
             return codeBlock;
         }
@@ -473,6 +474,12 @@ namespace FlatRedBall.Glue.Parsing
         {
             var method = codeBlock.Function("public static void", "RemoveList<T>", "System.Collections.Generic.IList<T> newList", $"where T : {entityClassName}");
             method.Line("ListsToAddTo.Remove(newList as System.Collections.IList);");
+        }
+
+        private static void AddClearListsToAddTo(ICodeBlock codeBlock)
+        {
+            var method = codeBlock.Function("public static void", "ClearListsToAddTo", "");
+            method.Line("ListsToAddTo.Clear();");
         }
 
         private static ICodeBlock GetCreateNewFactoryMethod(ICodeBlock codeBlock, string className, bool poolObjects, string baseEntityName)
