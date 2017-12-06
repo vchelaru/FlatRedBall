@@ -641,9 +641,9 @@ namespace FlatRedBall.Math.Geometry
         #endregion
         public void SetFromAbsoluteEndpoints(Vector3 endpoint1, Vector3 endpoint2)
         {
-            Position = new Vector3((endpoint2.X - endpoint1.X) / 2.0f,
-                (endpoint2.Y - endpoint1.Y) / 2.0f,
-                (endpoint2.Z - endpoint1.Z) / 2.0f); //Z will most likely always be the same value.
+            Position = new Vector3((endpoint2.X + endpoint1.X) / 2.0f,
+                (endpoint2.Y + endpoint1.Y) / 2.0f,
+                (endpoint2.Z + endpoint1.Z) / 2.0f); //Z will most likely always be the same value.
 
             RelativePoint1 = new Point3D(endpoint1 - Position);
             RelativePoint2 = new Point3D(endpoint2 - Position);
@@ -652,9 +652,9 @@ namespace FlatRedBall.Math.Geometry
 
         public void SetFromAbsoluteEndpoints(Point3D endpoint1, Point3D endpoint2)
         {
-            Position = new Vector3((float)(endpoint2.X - endpoint1.X) / 2.0f,
-                (float)(endpoint2.Y - endpoint1.Y) / 2.0f,
-                (float)(endpoint2.Z - endpoint1.Z) / 2.0f); //Z will most likely always be the same value.
+            Position = new Vector3((float)(endpoint2.X + endpoint1.X) / 2.0f,
+                (float)(endpoint2.Y + endpoint1.Y) / 2.0f,
+                (float)(endpoint2.Z + endpoint1.Z) / 2.0f); //Z will most likely always be the same value.
 
             RelativePoint1 = (endpoint1 - Position);
             RelativePoint2 = (endpoint2 - Position);
