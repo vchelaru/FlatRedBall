@@ -37,7 +37,10 @@ namespace FlatRedBall.Forms.Controls
 
         public string GroupName
         {
-            get => _groupName;
+            get
+            {
+                return _groupName;
+            }
             set
             {
                 RemoveFromDictionary();
@@ -114,7 +117,10 @@ namespace FlatRedBall.Forms.Controls
 
         public override bool IsEnabled
         {
-            get => base.IsEnabled;
+            get
+            {
+                return base.IsEnabled;
+            }
             set
             {
                 base.IsEnabled = value;

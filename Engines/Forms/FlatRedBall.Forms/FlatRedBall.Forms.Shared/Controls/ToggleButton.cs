@@ -12,7 +12,10 @@ namespace FlatRedBall.Forms.Controls
 
         public bool IsChecked
         {
-            get => _checkedState;
+            get
+            {
+                return _checkedState;
+            }
             set
             {
                 _checkedState = value;
