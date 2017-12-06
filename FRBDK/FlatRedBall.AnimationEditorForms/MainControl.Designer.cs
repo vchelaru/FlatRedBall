@@ -32,7 +32,7 @@
             this.TreeViewAndEverythingElse = new System.Windows.Forms.SplitContainer();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.AnimationsTab = new System.Windows.Forms.TabPage();
-            this.AnimationTreeView = new System.Windows.Forms.TreeView();
+            this.AnimationTreeView = new FlatRedBall.AnimationEditorForms.Controls.CustomNodeColorTreeView();
             this.TreeViewRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.TexturesPage = new System.Windows.Forms.TabPage();
             this.TexturesTreeView = new System.Windows.Forms.TreeView();
@@ -397,7 +397,7 @@
         #endregion
 
         private System.Windows.Forms.SplitContainer TreeViewAndEverythingElse;
-        private System.Windows.Forms.TreeView AnimationTreeView;
+        private FlatRedBall.AnimationEditorForms.Controls.CustomNodeColorTreeView AnimationTreeView;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.PropertyGrid SelectedItemPropertyGrid;
         private Controls.TileMapInfoWindow tileMapInfoWindow1;

@@ -138,6 +138,9 @@
     <Compile Include="Controls\AnimationChainTimeScaleWindow.Designer.cs">
       <DependentUpon>AnimationChainTimeScaleWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\CustomNodeColorTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\PreviewControls.cs">
       <SubType>UserControl</SubType>
     </Compile>
