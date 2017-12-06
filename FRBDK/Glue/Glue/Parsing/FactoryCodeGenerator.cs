@@ -347,7 +347,7 @@ namespace FlatRedBall.Glue.Parsing
         {
 
             string entityClassName = FileManager.RemovePath(FileManager.RemoveExtension(EntitySave.Name));
-            
+
             string baseEntityName = null;
             if (!string.IsNullOrEmpty(EntitySave.BaseEntity))
             {
@@ -368,12 +368,12 @@ namespace FlatRedBall.Glue.Parsing
 
             classProperties.NamespaceName = ProjectManager.ProjectNamespace + ".Factories";
             classProperties.ClassName = factoryClassName + " : IEntityFactory";
-            
+
             classProperties.Members = new List<FlatRedBall.Instructions.Reflection.TypedMemberBase>();
 
             classProperties.UntypedMembers = new Dictionary<string, string>();
             string positionedObjectListType = string.Format("FlatRedBall.Math.PositionedObjectList<{0}>", entityClassName);
-            
+
             // Factories used to be always static but we're going to make them singletons instead
             //classProperties.IsStatic = true;
 
@@ -411,11 +411,7 @@ namespace FlatRedBall.Glue.Parsing
 
             codeBlock.Line(string.Format("public static Action<{0}> EntitySpawned;", entityClassName));
 
-            codeBlock.Function("object", "IEntityFactory.CreateNew", "")
-                .Line(string.Format("return {0}.CreateNew();", factoryClassName));
-
-            codeBlock.Function("object", "IEntityFactory.CreateNew", "Layer layer")
-                .Line(string.Format("return {0}.CreateNew(layer);", factoryClassName));
+            ImplementIEntityFactory(factoryClassName, codeBlock);
 
             #region Self and mSelf
             codeBlock.Line("static " + factoryClassName + " mSelf;");
@@ -429,6 +425,23 @@ namespace FlatRedBall.Glue.Parsing
 
             ((codeContent.BodyCodeLines.Last() as CodeBlockBase).BodyCodeLines.Last() as CodeBlockBase).InsertBlock(codeBlock);
             return codeContent.ToString();
+        }
+
+        private static void ImplementIEntityFactory(string factoryClassName, CodeBlockBase codeBlock)
+        {
+            codeBlock.Function("object", "IEntityFactory.CreateNew", "")
+                .Line($"return {factoryClassName}.CreateNew();");
+
+            codeBlock.Function("object", "IEntityFactory.CreateNew", "Layer layer")
+                .Line($"return {factoryClassName}.CreateNew(layer);");
+
+            codeBlock.Function("void", "IEntityFactory.Initialize", "string contentManagerName")
+                .Line($"{factoryClassName}.Initialize(contentManagerName);");
+
+            codeBlock.Function("void", "IEntityFactory.ClearListsToAddTo", "")
+                .Line($"{factoryClassName}.ClearListsToAddTo();");
+
+
         }
 
         private static ICodeBlock GetAllFactoryMethods(string factoryClassName, string baseClassName, int numberToPreAllocate, bool poolObjects)
