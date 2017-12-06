@@ -405,7 +405,7 @@ namespace FlatRedBall.Glue.Parsing
 
             var codeBlock = new CodeBlockBase(null);
             codeBlock.Line("static string mContentManagerName;");
-            codeBlock.Line("static System.Collections.Generic.List<System.Collections.IList> listsToAddTo = new System.Collections.Generic.List<System.Collections.IList>();");
+            codeBlock.Line("static System.Collections.Generic.List<System.Collections.IList> ListsToAddTo = new System.Collections.Generic.List<System.Collections.IList>();");
 
             codeBlock.Line(string.Format("static PoolList<{0}> mPool = new PoolList<{0}>();", entityClassName));
 
@@ -458,6 +458,7 @@ namespace FlatRedBall.Glue.Parsing
                 whereClass = baseClassName.Replace("\\", ".");
             }
             AddAddListMethod(codeBlock, whereClass);
+            AddRemoveListMethod(codeBlock, whereClass);
 
             return codeBlock;
         }
@@ -465,7 +466,13 @@ namespace FlatRedBall.Glue.Parsing
         private static void AddAddListMethod(ICodeBlock codeBlock, string entityClassName)
         {
             var method = codeBlock.Function("public static void", "AddList<T>", "System.Collections.Generic.IList<T> newList", $"where T : {entityClassName}");
-            method.Line("listsToAddTo.Add(newList as System.Collections.IList);");
+            method.Line("ListsToAddTo.Add(newList as System.Collections.IList);");
+        }
+
+        private static void AddRemoveListMethod(ICodeBlock codeBlock, string entityClassName)
+        {
+            var method = codeBlock.Function("public static void", "RemoveList<T>", "System.Collections.Generic.IList<T> newList", $"where T : {entityClassName}");
+            method.Line("ListsToAddTo.Remove(newList as System.Collections.IList);");
         }
 
         private static ICodeBlock GetCreateNewFactoryMethod(ICodeBlock codeBlock, string className, bool poolObjects, string baseEntityName)
@@ -523,7 +530,7 @@ namespace FlatRedBall.Glue.Parsing
         {
 
             codeBlock
-                .ForEach("var list in listsToAddTo")
+                .ForEach("var list in ListsToAddTo")
                     .If($"SortAxis == FlatRedBall.Math.Axis.X && list is PositionedObjectList<{className}>")
                         .Line($"var index = (list as PositionedObjectList<{className}>).GetFirstAfter(x, Axis.X, 0, list.Count);")
                         .Line($"list.Insert(index, instance);")
@@ -546,7 +553,7 @@ namespace FlatRedBall.Glue.Parsing
             codeBlock
                 .Function("public static void", "Destroy", "")
                     .Line("mContentManagerName = null;")
-                    .Line("listsToAddTo.Clear();")
+                    .Line("ListsToAddTo.Clear();")
                     .Line("SortAxis = null;")
                     .Line("mPool.Clear();")
                     .Line("EntitySpawned = null;")
