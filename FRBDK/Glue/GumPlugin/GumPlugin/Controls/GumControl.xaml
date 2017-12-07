@@ -27,6 +27,16 @@
             </StackPanel>
             
         </GroupBox>
-        <Button HorizontalAlignment="Left" Margin="0,10,0,0" Width="200" Click="HandleGenerateBehaviors">Generate FlatRedBall Behaviors</Button>
+
+        <GroupBox Header="FlatRedBall.Forms">
+            <StackPanel>
+                
+                <CheckBox VerticalContentAlignment="Center"
+                          Content="Include Forms in Components With Behaviors" IsChecked="{Binding IncludeFormsInComponents, Mode=TwoWay}"></CheckBox>
+                <Button HorizontalAlignment="Left" Margin="0,10,0,0" Width="200" Click="HandleGenerateBehaviors">Generate FlatRedBall Behaviors</Button>
+            
+            </StackPanel>
+        </GroupBox>
+        
     </StackPanel>
 </UserControl>

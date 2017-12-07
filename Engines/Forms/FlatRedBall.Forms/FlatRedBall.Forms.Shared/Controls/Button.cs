@@ -56,7 +56,19 @@ namespace FlatRedBall.Forms.Controls
 
         #region Events
 
+        /// <summary>
+        /// Event raised when the user pushes, then releases a button.
+        /// This means the cursor is over the button, the button was originally pushed,
+        /// the primary button was pressed last frame, but is no longer pressed this frame.
+        /// The "click" terminology comes from the Cursor's PrimaryClick property.
+        /// </summary>
         public event EventHandler Click;
+
+        /// <summary>
+        /// Event raised when the user pushes on a button. 
+        /// This means the cursor is over the button and the primary button was not pressed last frame, but is pressed this frame.
+        /// The "push" terminology comes from the Cursor's PrimaryPush property.
+        /// </summary>
         public event EventHandler Push;
 
         #endregion

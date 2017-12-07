@@ -336,7 +336,7 @@ namespace GumPlugin.CodeGeneration
                 GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave);
             }
 
-            GenerateBehaviorStateProperties(currentBlock, elementSave);
+            //GenerateBehaviorStateProperties(currentBlock, elementSave);
 
             currentBlock.Line("#endregion");
 

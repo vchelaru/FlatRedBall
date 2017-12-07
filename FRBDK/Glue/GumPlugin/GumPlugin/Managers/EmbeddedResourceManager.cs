@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.VSHelpers;
 using FlatRedBall.IO;
 using GumPlugin.ViewModels;
@@ -154,8 +155,12 @@ namespace GumPlugin.Managers
                 codeItemAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
                 TaskManager.Self.AddSync(() =>
                 {
-                    codeItemAdder.PerformAddAndSave(assemblyContainingResources);
-                    gumCoreDllAdder.PerformRemoveAndSave(assemblyContainingResources);
+                    // Just in case the project was unloaded:
+                    if(GlueState.Self.CurrentGlueProject != null)
+                    {
+                        codeItemAdder.PerformAddAndSave(assemblyContainingResources);
+                        gumCoreDllAdder.PerformRemoveAndSave(assemblyContainingResources);
+                    }
 
                 }, "Adding standard Gum files");
             }

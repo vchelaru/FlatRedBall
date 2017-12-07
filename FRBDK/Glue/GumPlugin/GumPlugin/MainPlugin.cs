@@ -38,6 +38,8 @@ namespace GumPlugin
 
         ToolStripMenuItem addGumProjectMenuItem;
 
+        bool raiseViewModelEvents = true;
+
         #endregion
 
         #region Properties
@@ -288,7 +290,9 @@ namespace GumPlugin
                 {
                     AddTab();
                 }
+                raiseViewModelEvents = false;
                 viewModel.SetFrom(AppState.Self.GumProjectSave, selectedTreeNode.Tag as ReferencedFileSave);
+                raiseViewModelEvents = true;
                 control.ManuallyRefreshRadioButtons();
             }
             else
@@ -302,8 +306,10 @@ namespace GumPlugin
             // Maybe we'll need this at some point:
             //var referencedFileSave = GlueState.Self.CurrentReferencedFileSave;
             //var absoluteFileName = GlueCommands.Self.GetAbsoluteFileName(referencedFileSave);
-
-            propertiesManager.HandlePropertyChanged(e.PropertyName);
+            if(raiseViewModelEvents)
+            {
+                propertiesManager.HandlePropertyChanged(e.PropertyName);
+            }
         }
 
         private bool GetIfShouldShowTab(TreeNode selectedTreeNode)

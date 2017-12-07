@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Gum.DataTypes.Behaviors;
 
 namespace GumPlugin.CodeGeneration
 {
@@ -155,6 +156,7 @@ namespace GumPlugin.CodeGeneration
 
             StateCodeGenerator.Self.GenerateEverythingFor(elementSave, currentBlock);
 
+            
             GenerateProperties(elementSave, currentBlock);
 
 
@@ -175,6 +177,109 @@ namespace GumPlugin.CodeGeneration
             GeneratePartialMethods(elementSave, currentBlock);
 
             GenerateRaiseExposedEvents(elementSave, currentBlock);
+
+            GenerateFormsCode(elementSave, currentBlock);
+        }
+
+        private void GenerateFormsCode(ElementSave element, ICodeBlock currentBlock)
+        {
+            string controlType;
+            var shouldGenerate = GetIfShouldGenerateFormsCode(element, out controlType);
+
+            if(shouldGenerate)
+            {
+                currentBlock.Line($"public {controlType} FormsControl {{get; private set;}}");
+                currentBlock.Line($"public override object FormsControlAsObject {{ get {{ return FormsControl; }} }}");
+
+    }
+}
+
+        private static bool GetIfShouldGenerateFormsCode(ElementSave element, out string controlType)
+        {
+            bool shouldGenerateFormsCode = false;
+            controlType = null;
+
+            if(element is ComponentSave)
+            {
+                var component = (ComponentSave)element;
+
+                var behaviors = component.Behaviors;
+
+                controlType = GetFormsControlTypeFrom(behaviors);
+                
+                if(!string.IsNullOrEmpty(controlType))
+                {
+                    var gumxRfs = GumProjectManager.Self.GetRfsForGumProject();
+
+
+                    if (gumxRfs != null)
+                    {
+                        var property = gumxRfs.Properties
+                            .FirstOrDefault(item => item.Name == "IncludeFormsInComponents");
+
+                        if (property != null)
+                        {
+                            shouldGenerateFormsCode = (bool)property.Value;
+                        }
+                    }
+
+                }
+            }
+            return shouldGenerateFormsCode;
+        }
+
+        private static string GetFormsControlTypeFrom(List<ElementBehaviorReference> behaviors)
+        {
+            string controlName = null;
+            foreach(var behavior in behaviors)
+            {
+                switch(behavior.BehaviorName)
+                {
+                    case BehaviorGenerator.ButtonBehaviorName:
+                        controlName = "Button";
+                        break;
+                    case BehaviorGenerator.ToggleBehaviorName:
+                        controlName = null; // need to implement this
+                        break;
+                    case BehaviorGenerator.RadioButtonBehaviorName:
+                        controlName = "RadioButton";
+                        break;
+                    case BehaviorGenerator.TextBoxBehaviorName:
+                        controlName = "TextBox";
+                        break;
+                    case BehaviorGenerator.ScrollBarBehaviorName:
+                        controlName = "ScrollBar";
+                        break;
+                    case BehaviorGenerator.ScrollViewerBehaviorName:
+                        controlName = "ScrollViewer";
+                        break;
+                    case BehaviorGenerator.ListBoxItemBehaviorName:
+                        controlName = "ListBoxItem";
+                        break;
+                    case BehaviorGenerator.ListBoxBehaviorName:
+                        controlName = "ListBox";
+                        break;
+                    case BehaviorGenerator.ComboBoxBehaviorName:
+                        controlName = "ComboBox";
+                        break;
+                    case BehaviorGenerator.SliderBehaviorName:
+                        controlName = "Slider";
+                        break;
+                }
+                if(controlName != null)
+                {
+                    break;
+                }
+            }
+
+            if(controlName != null)
+            {
+                return $"FlatRedBall.Forms.Controls.{controlName}";
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private void GenerateCreateChildrenRecursively(ElementSave elementSave, ICodeBlock currentBlock)
@@ -232,23 +337,24 @@ namespace GumPlugin.CodeGeneration
                 var project = AppState.Self.GumProjectSave;
                 var behaviors = project.Behaviors;
 
-                foreach (var behaviorReference in asComponentSave.Behaviors)
-                {
-                    inheritance += $", {GueRuntimeNamespace}.I{behaviorReference.BehaviorName}";
+                // I don't think we need this anymore now that we're using Forms instead;
+                //foreach (var behaviorReference in asComponentSave.Behaviors)
+                //{
+                //    inheritance += $", {GueRuntimeNamespace}.I{behaviorReference.BehaviorName}";
 
-                    var behavior = behaviors.FirstOrDefault(item => item.Name == behaviorReference.BehaviorName);
+                //    var behavior = behaviors.FirstOrDefault(item => item.Name == behaviorReference.BehaviorName);
 
-                    string behaviorInheritance = null;
-                    if (behavior != null)
-                    {
-                        behaviorInheritance = BehaviorCodeGenerator.GetInterfacesFromBehaviors(behavior);
-                    }
+                //    string behaviorInheritance = null;
+                //    if (behavior != null)
+                //    {
+                //        behaviorInheritance = BehaviorCodeGenerator.GetInterfacesFromBehaviors(behavior);
+                //    }
 
-                    if(!string.IsNullOrEmpty(behaviorInheritance))
-                    {
-                        inheritance += $", {behaviorInheritance}";
-                    }
-                }
+                //    if(!string.IsNullOrEmpty(behaviorInheritance))
+                //    {
+                //        inheritance += $", {behaviorInheritance}";
+                //    }
+                //}
 
             }
 
@@ -266,7 +372,6 @@ namespace GumPlugin.CodeGeneration
         {
             currentBlock.Line("partial void CustomInitialize();");
         }
-
 
         private void GenerateProperties(ElementSave elementSave, ICodeBlock currentBlock)
         {
@@ -578,7 +683,16 @@ namespace GumPlugin.CodeGeneration
                 }
 
                 // must be done after instances are assigned, since beahvior code may reference instances
-                GenerateStandardFrbBehaviorCode(elementSave, currentBlock);
+                //GenerateStandardFrbBehaviorCode(elementSave, currentBlock);
+
+                string controlType;
+                var shouldGenerate = GetIfShouldGenerateFormsCode(elementSave, out controlType);
+                if(shouldGenerate)
+                {
+                    currentBlock.Line($"FormsControl = new {controlType}();");
+                    currentBlock.Line($"FormsControl.Visual = this;");
+
+                }
 
             }
         }

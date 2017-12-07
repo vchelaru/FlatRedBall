@@ -93,6 +93,20 @@ namespace GumPlugin.ViewModels
             }
         }
 
+        bool includeFormsInComponents;
+        public bool IncludeFormsInComponents
+        {
+            get { return includeFormsInComponents; }
+            set
+            {
+                backingRfs.Properties.SetValue(
+                    nameof(IncludeFormsInComponents), value);
+
+
+                base.ChangeAndNotify(ref includeFormsInComponents, value);
+            }
+        }
+
         public bool IncludeNoFiles
         {
             get { return behavior == FileAdditionBehavior.IncludeNoFiles; }
@@ -126,18 +140,9 @@ namespace GumPlugin.ViewModels
             }
         }
 
-        protected override void NotifyPropertyChanged(string propertyName)
-        {
-            if(shouldRaiseEvents)
-            {
-                base.NotifyPropertyChanged(propertyName);
-            }
-        }
 
         public void SetFrom(GumProjectSave gumProjectSave, ReferencedFileSave referencedFileSave)
         {
-            shouldRaiseEvents = false;
-            {
                 backingGumProject = gumProjectSave;
                 backingRfs = referencedFileSave;
 
@@ -149,9 +154,7 @@ namespace GumPlugin.ViewModels
                 AddDll = behavior == FileAdditionBehavior.AddDll;
                 EmbedCodeFiles = behavior == FileAdditionBehavior.EmbedCodeFiles;
                 IncludeNoFiles = behavior == FileAdditionBehavior.IncludeNoFiles;
-
-            }
-            shouldRaiseEvents = true;
+                IncludeFormsInComponents = backingRfs.Properties.GetValue<bool>(nameof(IncludeFormsInComponents));
         }
 
 

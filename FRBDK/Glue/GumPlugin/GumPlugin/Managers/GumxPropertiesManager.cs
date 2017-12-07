@@ -49,6 +49,13 @@ namespace GumPlugin.Managers
             {
                 UpdateCodeOrDllAdd();
             }
+            else if (propertyChanged == nameof(GumViewModel.IncludeFormsInComponents))
+            {
+                TaskManager.Self.AddSync(
+                    CodeGeneratorManager.Self.GenerateDerivedGueRuntimes,
+                    $"Regenerating Gum derived runtimes because of changed {propertyChanged}");
+
+            }
             GlueCommands.Self.GluxCommands.SaveGlux();
         }
 

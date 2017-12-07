@@ -17,6 +17,10 @@ namespace GumPlugin.DataGeneration
         public const string TextBoxBehaviorName = "TextBoxBehavior";
         public const string ScrollBarBehaviorName = "ScrollBarBehavior";
         public const string ScrollViewerBehaviorName = "ScrollViewerBehavior";
+        public const string ListBoxItemBehaviorName = "ListBoxItemBehavior";
+        public const string ListBoxBehaviorName = "ListBoxBehavior";
+        public const string ComboBoxBehaviorName = "ComboBoxBehavior";
+        public const string SliderBehaviorName = "SliderBehavior";
 
         public static BehaviorSave CreateButtonBehavior()
         {
@@ -137,6 +141,23 @@ namespace GumPlugin.DataGeneration
             return toReturn;
         }
 
+        public static BehaviorSave CreateSliderBehavior()
+        {
+            BehaviorSave toReturn = new BehaviorSave();
+            toReturn.Name = SliderBehaviorName;
+
+            var category = new StateSaveCategory();
+            toReturn.Categories.Add(category);
+            category.Name = "SliderCategory";
+            
+            InstanceSave thumbInstance = new InstanceSave();
+            thumbInstance.Name = "ThumbInstance";
+            // todo - thumbInstance needs to implement the Button behavior
+            toReturn.RequiredInstances.Add(thumbInstance);
+
+            return toReturn;
+        }
+
         public static BehaviorSave CreateScrollViewerBehavior()
         {
             BehaviorSave toReturn = new BehaviorSave();
@@ -162,10 +183,35 @@ namespace GumPlugin.DataGeneration
             return toReturn;
         }
 
+        public static BehaviorSave CreateListBoxBehavior()
+        {
+            BehaviorSave toReturn = new BehaviorSave();
+            toReturn.Name = ListBoxBehaviorName;
+
+            // no categories needed yet
+
+            InstanceSave verticalScrollBarInstance = new InstanceSave();
+            verticalScrollBarInstance.Name = "VerticalScrollBarInstance";
+            // todo - needs to implement the ScrollBar behavior
+            toReturn.RequiredInstances.Add(verticalScrollBarInstance);
+
+            InstanceSave innerPanelInstance = new InstanceSave();
+            innerPanelInstance.Name = "InnerPanelInstance";
+            // todo - needs to implement the ScrollBar behavior
+            toReturn.RequiredInstances.Add(innerPanelInstance);
+
+            InstanceSave clipContainerInstance = new InstanceSave();
+            clipContainerInstance.Name = "ClipContainerInstance";
+            // todo - needs to implement the ScrollBar behavior
+            toReturn.RequiredInstances.Add(clipContainerInstance);
+
+            return toReturn;
+        }
+        
         public static BehaviorSave CreateListBoxItemBehavior()
         {
             BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = "ListBoxItemBehavior";
+            toReturn.Name = ListBoxItemBehaviorName;
 
             var category = new StateSaveCategory();
             toReturn.Categories.Add(category);
@@ -181,7 +227,7 @@ namespace GumPlugin.DataGeneration
         public static BehaviorSave CreateComboBoxBehavior()
         {
             BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = "ComboBoxBehavior";
+            toReturn.Name = ComboBoxBehaviorName;
 
             var category = new StateSaveCategory();
             toReturn.Categories.Add(category);
@@ -204,5 +250,7 @@ namespace GumPlugin.DataGeneration
 
             return toReturn;
         }
+
+        // listbox
     }
 }

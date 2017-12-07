@@ -24,6 +24,12 @@ namespace FlatRedBall.Forms.Controls
             get { return viewportSize; }
             set
             {
+#if DEBUG
+                if(double.IsNaN(value))
+                {
+                    throw new Exception("ScrollBar ViewportSize cannot be float.NaN");
+                }
+#endif
                 viewportSize = value;
 
                 UpdateThumbSize();
@@ -75,9 +81,13 @@ namespace FlatRedBall.Forms.Controls
 
             var visibleTrackSpace = track.Height - upButton.ActualHeight - downButton.ActualHeight;
 
-            var thumbRatio = thumbHeight / visibleTrackSpace;
-            ViewportSize = (Maximum - Minimum) * thumbRatio;
-            LargeChange = ViewportSize;
+            if(visibleTrackSpace != 0)
+            {
+
+                var thumbRatio = thumbHeight / visibleTrackSpace;
+                ViewportSize = (Maximum - Minimum) * thumbRatio;
+                LargeChange = ViewportSize;
+            }
 
         }
 

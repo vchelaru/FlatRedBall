@@ -20,7 +20,16 @@ namespace FlatRedBall.Forms.Controls
         public float Height
         {
             get { return Visual.Height; }
-            set { Visual.Height = value; }
+            set
+            {
+#if DEBUG
+                if(float.IsNaN(value))
+                {
+                    throw new Exception("NaN value not supported for FrameworkElement Height");
+                }
+#endif
+                Visual.Height = value;
+            }
         }
         public float Width
         {

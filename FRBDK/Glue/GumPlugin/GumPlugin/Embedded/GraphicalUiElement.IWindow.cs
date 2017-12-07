@@ -625,5 +625,8 @@ namespace Gum.Wireframe
         {
             this.ApplyState(stateName);
         }
+
+        public virtual Object FormsControlAsObject { get { return null; } }
+
     }
 }
