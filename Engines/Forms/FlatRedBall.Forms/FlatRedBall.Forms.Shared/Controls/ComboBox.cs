@@ -12,13 +12,11 @@ namespace FlatRedBall.Forms.Controls
     {
         #region Fields/Properties
 
-        public ObservableCollection<object> Items => listBox.Items;
         
         ListBox listBox;
         GraphicalUiElement textComponent;
         RenderingLibrary.Graphics.Text coreTextObject;
 
-        // todo:
         public string Text
         {
             get
@@ -35,6 +33,7 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        public ObservableCollection<object> Items => listBox.Items;
         public Type ListBoxItemType
         {
             get { return listBox.ListBoxItemType; }
@@ -49,6 +48,22 @@ namespace FlatRedBall.Forms.Controls
                 listBox.ListBoxItemType = value;
             }
         }
+        public object SelectedObject
+        {
+            get { return listBox.SelectedObject; }
+            set { listBox.SelectedObject = value; }
+        }
+        public int SelectedIndex
+        {
+            get { return listBox.SelectedIndex; }
+            set { listBox.SelectedIndex = value; }
+        }
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler NewItemSelected;
 
         #endregion
 
@@ -86,7 +101,7 @@ namespace FlatRedBall.Forms.Controls
             Visual.RollOn += this.HandleRollOn;
             Visual.RollOff += this.HandleRollOff;
             listBox.Visual.EffectiveParentGue.RaiseChildrenEventsOutsideOfBounds = true;
-            listBox.NewItemSelected += HandleNewItemSelected;
+            listBox.SelectionChanged += HandleNewItemSelected;
 
             listBox.IsVisible = false;
             Text = null;
