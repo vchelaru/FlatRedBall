@@ -62,7 +62,7 @@ namespace FlatRedBall.Forms.Controls
                     {
                         listBoxItem.IsSelected = false;
                     }
-                    NewItemSelected?.Invoke(null, null);
+                    SelectionChanged?.Invoke(null, null);
 
                 }
             }
@@ -72,7 +72,7 @@ namespace FlatRedBall.Forms.Controls
 
         #region Events
 
-        public event EventHandler NewItemSelected;
+        public event EventHandler SelectionChanged;
 
         #endregion
 
@@ -154,7 +154,8 @@ namespace FlatRedBall.Forms.Controls
 
             selectedIndex = listBoxItems.IndexOf(sender as ListBoxItem);
 
-            NewItemSelected?.Invoke(Items[selectedIndex], null);
+            // todo - WPF uses SelectionChangedArgs, we prob want to incorporate that
+            SelectionChanged?.Invoke(this, null);
 
         }
 
@@ -165,7 +166,8 @@ namespace FlatRedBall.Forms.Controls
 #if DEBUG
             if(ListBoxItemType == null)
             {
-                throw new Exception("The list box does not have a ListBoxItemType specified. This must be done before adding any items");
+                throw new Exception("The list box does not have a ListBoxItemType specified. " + 
+                    "This property must be set before adding any items");
             }
 #endif
             ListBoxItem item = new ListBoxItem();
