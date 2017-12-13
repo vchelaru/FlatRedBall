@@ -238,6 +238,12 @@ namespace GumPlugin.CodeGeneration
                     case BehaviorGenerator.ButtonBehaviorName:
                         controlName = "Button";
                         break;
+                    case BehaviorGenerator.CheckBoxBehaviorName:
+                        controlName = "CheckBox";
+                        break;
+                    case BehaviorGenerator.ComboBoxBehaviorName:
+                        controlName = "ComboBox";
+                        break;
                     case BehaviorGenerator.ToggleBehaviorName:
                         controlName = null; // need to implement this
                         break;
@@ -258,9 +264,6 @@ namespace GumPlugin.CodeGeneration
                         break;
                     case BehaviorGenerator.ListBoxBehaviorName:
                         controlName = "ListBox";
-                        break;
-                    case BehaviorGenerator.ComboBoxBehaviorName:
-                        controlName = "ComboBox";
                         break;
                     case BehaviorGenerator.SliderBehaviorName:
                         controlName = "Slider";

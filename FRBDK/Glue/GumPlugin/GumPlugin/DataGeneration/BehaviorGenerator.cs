@@ -21,6 +21,10 @@ namespace GumPlugin.DataGeneration
         public const string ListBoxBehaviorName = "ListBoxBehavior";
         public const string ComboBoxBehaviorName = "ComboBoxBehavior";
         public const string SliderBehaviorName = "SliderBehavior";
+        public const string CheckBoxBehaviorName = "CheckBoxBehavior";
+        // if adding here, search for the const string usage and the "Get" function to see
+        // where to add additional code
+        
 
         public static BehaviorSave CreateButtonBehavior()
         {
@@ -251,6 +255,29 @@ namespace GumPlugin.DataGeneration
             return toReturn;
         }
 
-        // listbox
+        public static BehaviorSave CreateCheckBoxBehavior()
+        {
+            BehaviorSave toReturn = new BehaviorSave();
+            toReturn.Name = CheckBoxBehaviorName;
+
+            var category = new StateSaveCategory();
+            toReturn.Categories.Add(category);
+            category.Name = "CheckBoxCategory";
+
+            category.States.Add(new StateSave { Name = "EnabledOn" });
+            category.States.Add(new StateSave { Name = "EnabledOff" });
+            category.States.Add(new StateSave { Name = "DisabledOn" });
+            category.States.Add(new StateSave { Name = "DisabledOff" });
+
+
+            category.States.Add(new StateSave { Name = "HighlightedOn" });
+            category.States.Add(new StateSave { Name = "HighlightedOff" });
+            category.States.Add(new StateSave { Name = "PushedOn" });
+            category.States.Add(new StateSave { Name = "PushedOff" });
+
+            return toReturn;
+
+        }
+
     }
 }

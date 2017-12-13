@@ -18,6 +18,11 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>CircleStateCategoryState</Type>
+      <Name>CircleStateCategoryState</Name>
+      <SetsValue>false</SetsValue>
+    </Variable>
+    <Variable>
       <Type>bool</Type>
       <Name>ExposeChildrenEvents</Name>
       <Value xsi:type="xsd:boolean">false</Value>
@@ -91,7 +96,7 @@
     <Variable>
       <Type>float</Type>
       <Name>X</Name>
-      <Value xsi:type="xsd:float">0</Value>
+      <Value xsi:type="xsd:float">2</Value>
       <Category>Position</Category>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -131,4 +136,51 @@
       <SetsValue>true</SetsValue>
     </Variable>
   </State>
+  <Category>
+    <Name>CircleStateCategory</Name>
+    <State>
+      <Name>CircleCategorized1</Name>
+      <Variable>
+        <Type>float</Type>
+        <Name>Height</Name>
+        <Value xsi:type="xsd:float">50</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>float</Type>
+        <Name>Radius</Name>
+        <Value xsi:type="xsd:float">50</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>float</Type>
+        <Name>Width</Name>
+        <Value xsi:type="xsd:float">50</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
+    <State>
+      <Name>CircleCategory2</Name>
+      <Variable>
+        <Type>float</Type>
+        <Name>Radius</Name>
+        <Value xsi:type="xsd:float">16</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>float</Type>
+        <Name>Width</Name>
+        <Value xsi:type="xsd:float">16</Value>
+        <SetsValue>true</SetsValue>
+        <IsHiddenInPropertyGrid>true</IsHiddenInPropertyGrid>
+      </Variable>
+      <Variable>
+        <Type>float</Type>
+        <Name>Height</Name>
+        <Value xsi:type="xsd:float">16</Value>
+        <SetsValue>true</SetsValue>
+        <IsHiddenInPropertyGrid>true</IsHiddenInPropertyGrid>
+      </Variable>
+    </State>
+  </Category>
 </StandardElementSave>

@@ -134,13 +134,7 @@ namespace FlatRedBall.Forms.Controls
         }
 
         #endregion
-
-        #region Events
-
-        public event EventHandler Click;
-
-        #endregion
-
+        
         #region Initialize Methods
 
         public RadioButton(string groupName = "")
@@ -159,45 +153,10 @@ namespace FlatRedBall.Forms.Controls
             // text component is optional:
             textComponent = base.Visual.GetGraphicalUiElementByName("TextInstance");
 
-            Visual.Click += this.HandleClick;
-            Visual.Push += this.HandlePush;
-            Visual.LosePush += this.HandleLosePush;
-            Visual.RollOn += this.HandleRollOn;
-            Visual.RollOff += this.HandleRollOff;
-
             GroupName = GroupName; //this will force the dictionary to be updated for the current <group name, visual> pair
 
             base.ReactToVisualChanged();
-        }
 
-        #endregion
-
-        #region Event Handler Methods
-
-        private void HandleClick(IWindow window)
-        {
-            UpdateGroup();  //will call update state
-
-            Click?.Invoke(this, null);
-        }
-
-        public void HandlePush(IWindow window)
-        {
-            UpdateState();
-        }
-
-        public void HandleLosePush(IWindow window)
-        {
-            UpdateState();
-        }
-
-        public void HandleRollOn(IWindow window)
-        {
-            UpdateState();
-        }
-
-        public void HandleRollOff(IWindow window)
-        {
             UpdateState();
         }
 
@@ -205,7 +164,7 @@ namespace FlatRedBall.Forms.Controls
 
         #region UpdateTo Methods
 
-        private void UpdateGroup()
+        private void SetThisAsOnlyCheckedInGroup()
         {
             foreach (var radio in RadioButtonDictionary[GetParent()][GroupName])
             {
@@ -225,7 +184,7 @@ namespace FlatRedBall.Forms.Controls
 
             var cursor = GuiManager.Cursor;
 
-            if (IsChecked)
+            if (IsChecked  == true)
             {
                 if (IsEnabled == false)
                 {
@@ -251,7 +210,7 @@ namespace FlatRedBall.Forms.Controls
                     Visual.SetProperty("RadioButtonCategoryState", "EnabledOn");
                 }
             }
-            else
+            else if(IsChecked == false)
             {
                 if (IsEnabled == false)
                 {
@@ -277,11 +236,21 @@ namespace FlatRedBall.Forms.Controls
                     Visual.SetProperty("RadioButtonCategoryState", "EnabledOff");
                 }
             }
+            else
+            {
+                // todo - handle the indeterminate state here
+            }
             
         }
 
 
         #endregion
+
+        protected override void OnClick()
+        {
+            SetThisAsOnlyCheckedInGroup();
+        }
+
 
         #region Utilities
 

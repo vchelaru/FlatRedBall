@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Gui;
+﻿using FlatRedBall.Forms.Controls.Primitives;
+using FlatRedBall.Gui;
 using Gum.Wireframe;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Text;
 namespace FlatRedBall.Forms.Controls
 {
 
-    public class Button : FrameworkElement
+    public class Button : ButtonBase
     {
         #region Fields/Properties
 
@@ -54,25 +55,6 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
-        #region Events
-
-        /// <summary>
-        /// Event raised when the user pushes, then releases a button.
-        /// This means the cursor is over the button, the button was originally pushed,
-        /// the primary button was pressed last frame, but is no longer pressed this frame.
-        /// The "click" terminology comes from the Cursor's PrimaryClick property.
-        /// </summary>
-        public event EventHandler Click;
-
-        /// <summary>
-        /// Event raised when the user pushes on a button. 
-        /// This means the cursor is over the button and the primary button was not pressed last frame, but is pressed this frame.
-        /// The "push" terminology comes from the Cursor's PrimaryPush property.
-        /// </summary>
-        public event EventHandler Push;
-
-        #endregion
-
         #region Initialize Methods
 
         protected override void ReactToVisualChanged()
@@ -80,54 +62,15 @@ namespace FlatRedBall.Forms.Controls
             // text component is optional:
             textComponent = base.Visual.GetGraphicalUiElementByName("TextInstance");
 
-            Visual.Click += this.HandleClick;
-            Visual.Push += this.HandlePush;
-            Visual.LosePush += this.HandleLosePush;
-            Visual.RollOn += this.HandleRollOn;
-            Visual.RollOff += this.HandleRollOff;
-
             base.ReactToVisualChanged();
         }
 
 
         #endregion
 
-        #region Event Handler Methods
-
-        private void HandleClick(IWindow window)
-        {
-            UpdateState();
-
-            Click?.Invoke(this, null);
-        }
-
-        public void HandlePush(IWindow window)
-        {
-            UpdateState();
-
-            Push?.Invoke(this, null);
-        }
-
-        public void HandleLosePush(IWindow window)
-        {
-            UpdateState();
-        }
-
-        public void HandleRollOn(IWindow window)
-        {
-            UpdateState();
-        }
-
-        public void HandleRollOff(IWindow window)
-        {
-            UpdateState();
-        }
-
-        #endregion
-
         #region UpdateTo Methods
 
-        private void UpdateState()
+        protected override void UpdateState()
         {
             var cursor = GuiManager.Cursor;
 
@@ -137,7 +80,6 @@ namespace FlatRedBall.Forms.Controls
             }
             //else if (HasFocus)
             //{
-            //    Visual.SetProperty("TextBoxCategoryState", "Selected");
             //}
             else if (cursor.WindowOver == Visual)
             {

@@ -1,33 +1,54 @@
-﻿using System;
+﻿using FlatRedBall.Forms.Controls.Primitives;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace FlatRedBall.Forms.Controls
 {
-    public class ToggleButton : FrameworkElement
+    public class ToggleButton : ButtonBase
     {
         #region Fields/Properties
 
-        private bool _checkedState;
 
-        public bool IsChecked
+        public bool IsThreeState { get; set; }
+
+        private bool? isChecked = false;
+
+        public bool? IsChecked
         {
             get
             {
-                return _checkedState;
+                return isChecked;
             }
             set
             {
-                _checkedState = value;
+                isChecked = value;
                 UpdateState();
+
+                if(isChecked == true)
+                {
+                    Checked?.Invoke(this, null);
+                }
+                else if(isChecked == false)
+                {
+                    Unchecked?.Invoke(this, null);
+                }
+                else if(isChecked == null)
+                {
+                    Indeterminate?.Invoke(this, null);
+                }
             }
         }
 
         #endregion
 
-        protected virtual void UpdateState()
-        {
-            
-        }
+        #region Events
+        public event EventHandler Checked;
+
+        public event EventHandler Indeterminate;
+
+        public event EventHandler Unchecked;
+
+        #endregion
     }
 }

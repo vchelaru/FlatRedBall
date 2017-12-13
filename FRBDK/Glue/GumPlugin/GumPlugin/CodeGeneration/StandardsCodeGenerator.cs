@@ -221,6 +221,12 @@ namespace GumPlugin.CodeGeneration
             {
                 return false;
             }
+            // Core Gum objets don't have states, so if it's a state then don't create a property for it - it'll be handled
+            // by the code that handles states
+            if(variable.IsState(standardElementSave))
+            {
+                return false;
+            }
 
             return true;
         }

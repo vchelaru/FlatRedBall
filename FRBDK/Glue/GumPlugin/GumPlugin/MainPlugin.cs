@@ -179,7 +179,11 @@ namespace GumPlugin
             // 0.9.2.4
             // - GUE's no longer raise events if disabled, enabling the GuiManager to make 
             //   GUEs with HasEvents = false be "input transparent"
-            get { return new Version(0, 9, 2, 4); }
+            // 0.9.3
+            // - Huge change - plugin can now automatically assign .Forms controls to Gum runtimes based on their behaviors
+            // - Added Checkbox behavior
+            // - Fixed bugs when adding state categories to standard objects.
+            get { return new Version(0, 9, 3, 0); }
         }
 
         #endregion
