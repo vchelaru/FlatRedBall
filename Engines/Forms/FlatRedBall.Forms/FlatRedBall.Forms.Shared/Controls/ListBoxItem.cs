@@ -50,7 +50,7 @@ namespace FlatRedBall.Forms.Controls
 
             // optional
             text = Visual.GetGraphicalUiElementByName("TextInstance");
-            coreText = text.RenderableComponent as RenderingLibrary.Graphics.Text;
+            coreText = text?.RenderableComponent as RenderingLibrary.Graphics.Text;
 
             // Just in case it needs to set the state to "enabled"
             UpdateState();
@@ -82,7 +82,7 @@ namespace FlatRedBall.Forms.Controls
 
         #region Update To
 
-        public void UpdateToObject(object o)
+        public virtual void UpdateToObject(object o)
         {
             if(coreText != null)
             {
@@ -98,7 +98,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 Visual.SetProperty("ListBoxItemCategoryState", "Selected");
             }
-            else if (Visual.HasCursorOver(cursor))
+            else if (GetIfIsOnThisOrChildVisual(cursor))
             {
                 Visual.SetProperty("ListBoxItemCategoryState", "Highlighted");
             }
@@ -114,7 +114,7 @@ namespace FlatRedBall.Forms.Controls
 
         public override string ToString()
         {
-            return ToString();
+            return coreText.RawText;
         }
 
         #endregion

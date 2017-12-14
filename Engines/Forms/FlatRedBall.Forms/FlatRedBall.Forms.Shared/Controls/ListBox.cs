@@ -13,7 +13,8 @@ namespace FlatRedBall.Forms.Controls
 
         int selectedIndex = -1;
 
-        public Type ListBoxItemType { get; set; }
+        public Type ListBoxItemGumType { get; set; }
+        public Type ListBoxItemFormsType { get; set; } = typeof(ListBoxItem);
 
         public ObservableCollection<object> Items
         {
@@ -163,19 +164,36 @@ namespace FlatRedBall.Forms.Controls
 
         private ListBoxItem CreateNewListItemVisual(object o)
         {
-#if DEBUG
-            if(ListBoxItemType == null)
+            ListBoxItem item;
+            if(o is ListBoxItem)
             {
-                throw new Exception("The list box does not have a ListBoxItemType specified. " + 
-                    "This property must be set before adding any items");
+                // the user provided a list box item, so just use that directly instead of creating a new one
+                item = o as ListBoxItem;
+                // let's hope the item doesn't already have this event - if the user recycles them that could be a problem...
+                item.Selected += HandleItemSelected;
             }
+            else
+            {
+#if DEBUG
+                if(ListBoxItemGumType == null)
+                {
+                    throw new Exception("The list box does not have a ListBoxItemGumType specified. " + 
+                        "This property must be set before adding any items");
+                }
+                if(ListBoxItemFormsType == null)
+                {
+                    throw new Exception("The list box does not have a ListBoxItemFormsType specified. " +
+                        "This property must be set before adding any items");
+                }
 #endif
-            ListBoxItem item = new ListBoxItem();
-            var constructor = ListBoxItemType.GetConstructor(new[] {typeof(bool)});
-            item.Visual = constructor.Invoke(new object[]{ true }) as GraphicalUiElement;
+                // vic says - this uses reflection, could be made faster, somehow...
+                item = ListBoxItemFormsType.GetConstructor(new Type[0]).Invoke(new object[0]) as ListBoxItem;
+                var gumConstructor = ListBoxItemGumType.GetConstructor(new[] {typeof(bool)});
+                item.Visual = gumConstructor.Invoke(new object[]{ true }) as GraphicalUiElement;
+                item.Selected += HandleItemSelected;
+                item.UpdateToObject(o);
+            }
 
-            item.Selected += HandleItemSelected;
-            item.UpdateToObject(o);
 
             return item;
         }

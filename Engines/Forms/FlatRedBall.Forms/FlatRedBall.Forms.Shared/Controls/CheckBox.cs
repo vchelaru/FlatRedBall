@@ -88,7 +88,7 @@ namespace FlatRedBall.Forms.Controls
                 //{
                 //    Visual.SetProperty("TextBoxCategoryState", "Selected");
                 //}
-                else if (Visual.HasCursorOver(cursor))
+                else if (GetIfIsOnThisOrChildVisual(cursor))
                 {
                     if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
                     {

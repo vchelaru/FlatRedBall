@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Forms.GumExtensions;
+using FlatRedBall.Gui;
 using Gum.Wireframe;
 using System;
 using System.Collections.Generic;
@@ -86,6 +87,16 @@ namespace FlatRedBall.Forms.Controls
                 visual = value; ReactToVisualChanged();
             }
         }
+
+        protected bool GetIfIsOnThisOrChildVisual(Gui.Cursor cursor)
+        {
+            var isOnThisOrChild =
+                cursor.WindowOver == this.Visual ||
+                (cursor.WindowOver != null && cursor.WindowOver.IsInParentChain(this.Visual));
+
+            return isOnThisOrChild;
+        }
+
 
         protected virtual void ReactToVisualChanged()
         {

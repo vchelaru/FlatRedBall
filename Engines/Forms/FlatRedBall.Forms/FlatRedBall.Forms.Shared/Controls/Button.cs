@@ -81,7 +81,7 @@ namespace FlatRedBall.Forms.Controls
             //else if (HasFocus)
             //{
             //}
-            else if (cursor.WindowOver == Visual)
+            else if (GetIfIsOnThisOrChildVisual(cursor))
             {
                 if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
                 {

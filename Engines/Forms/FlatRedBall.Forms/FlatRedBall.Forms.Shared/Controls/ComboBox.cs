@@ -34,9 +34,9 @@ namespace FlatRedBall.Forms.Controls
         }
 
         public ObservableCollection<object> Items => listBox.Items;
-        public Type ListBoxItemType
+        public Type ListBoxItemGumType
         {
-            get { return listBox.ListBoxItemType; }
+            get { return listBox.ListBoxItemGumType; }
             set
             {
 #if DEBUG
@@ -45,7 +45,7 @@ namespace FlatRedBall.Forms.Controls
                     throw new Exception("Visual must be set before assigning the ListBoxItemType");
                 }
 #endif
-                listBox.ListBoxItemType = value;
+                listBox.ListBoxItemGumType = value;
             }
         }
         public object SelectedObject
