@@ -48,6 +48,24 @@ namespace FlatRedBall.Forms.Controls
                 listBox.ListBoxItemGumType = value;
             }
         }
+
+        public Type ListBoxItemFormsType
+        {
+            get { return listBox.ListBoxItemFormsType; }
+            set
+            {
+#if DEBUG
+                if (listBox == null)
+                {
+                    throw new Exception("Visual must be set before assigning the ListBoxItemType");
+                }
+#endif
+                listBox.ListBoxItemFormsType = value;
+            }
+        } 
+
+
+
         public object SelectedObject
         {
             get { return listBox.SelectedObject; }

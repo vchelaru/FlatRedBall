@@ -217,11 +217,9 @@ namespace FlatRedBall.Gui
         #endregion
         public float ObjectGrabbedRelativeY;
 
-        #region XML Docs
         /// <summary>
-        /// Determines whether the primary button was pushed this frame.
+        /// Whether the primary button was pushed this frame. A push is when the primary button is not down last frame but is down this frame.
         /// </summary>
-        #endregion
         public bool PrimaryPush;
 
         public bool PrimaryDoublePush;
@@ -233,11 +231,9 @@ namespace FlatRedBall.Gui
         #endregion
         public bool PrimaryDown;
 
-        #region XML Docs
         /// <summary>
-        /// Determines whether the primary button was clicked (released) this frame.
+        /// Whether the primary button was clicked (released) this frame. A release is when the primary button is down last frame but not down this frame.
         /// </summary>
-        #endregion
         public bool PrimaryClick;
 
         #region XML Docs

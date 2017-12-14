@@ -137,6 +137,8 @@ namespace FlatRedBall.Forms.Controls
             UpdateThumbPositionAccordingToValue();
         }
 
+        #region UpdateTo Methods
+
         private void UpdateThumbPositionAccordingToValue()
         {
             var ratioDown = (Value - Minimum) / (Maximum - Minimum);
@@ -188,5 +190,7 @@ namespace FlatRedBall.Forms.Controls
                 thumb.Height = (float)(trackHeight * thumbRatio);
             }
         }
+
+        #endregion
     }
 }

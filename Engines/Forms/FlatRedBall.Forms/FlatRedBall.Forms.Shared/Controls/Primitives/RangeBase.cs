@@ -92,7 +92,16 @@ namespace FlatRedBall.Forms.Controls.Primitives
             base.ReactToVisualChanged();
 
             thumb = new Button();
-            thumb.Visual = this.Visual.GetGraphicalUiElementByName("ThumbInstance");
+            var thumbVisual = this.Visual.GetGraphicalUiElementByName("ThumbInstance");
+#if DEBUG
+            if(thumbVisual == null)
+            {
+                throw new Exception($"The {this.GetType().Name} Gum object must have a button called DownButtonInstance");
+
+            }
+#endif
+
+            thumb.Visual = thumbVisual;
             thumb.Push += HandleThumbPush;
             thumb.Visual.RollOver += HandleThumbRollOver;
             // do this before assigning any values like Minimum, Maximum
