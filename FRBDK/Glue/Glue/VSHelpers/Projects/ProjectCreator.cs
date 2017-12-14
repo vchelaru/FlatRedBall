@@ -62,6 +62,14 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 {
                     message = $"Could not load the project {fileName}\nbecause MonoGame files are missing. Try installing MonoGame, then try opening the project in Glue again.\n\n";
                 }
+                else if(exceptionMessage.Contains("Novell.MonoDroid.CSharp.targets"))
+                {
+                    message = "This project references Novell.MonoDroid.CSharp.targets, " + 
+                        "which is an old file that used to be installed by Xamarin, but which " + 
+                        "is now replaced by a different .targets file. You can fix this by editing " +
+                        "the .csproj file and changing the reference to the Xamarin version. You can " + 
+                        " also look at a new FlatRedBall Android project to see what this looks like.";
+                }
                 else
                 {
                     message = $"Could not load the project {fileName}\n" +
