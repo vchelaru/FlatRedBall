@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 
 namespace FlatRedBall.Forms.Controls
@@ -73,7 +74,7 @@ namespace FlatRedBall.Forms.Controls
 
         #region Events
 
-        public event EventHandler SelectionChanged;
+        public event Action<object, SelectionChangedEventArgs> SelectionChanged;
 
         #endregion
 
@@ -145,18 +146,25 @@ namespace FlatRedBall.Forms.Controls
 
         private void HandleItemSelected(object sender, EventArgs e)
         {
-            foreach (var listBoxItem in listBoxItems)
+            var args = new SelectionChangedEventArgs();
+
+            for(int i = 0; i < listBoxItems.Count; i++)
             {
-                if(listBoxItem != sender)
+                var listBoxItem = listBoxItems[i];
+                if(listBoxItem != sender && listBoxItem.IsSelected)
                 {
+                    args.RemovedItems.Add(Items[i]);
                     listBoxItem.IsSelected = false;
                 }
             }
 
             selectedIndex = listBoxItems.IndexOf(sender as ListBoxItem);
-
+            if(selectedIndex > -1)
+            {
+                args.AddedItems.Add(Items[selectedIndex]);
+            }
             // todo - WPF uses SelectionChangedArgs, we prob want to incorporate that
-            SelectionChanged?.Invoke(this, null);
+            SelectionChanged?.Invoke(this, args);
 
         }
 

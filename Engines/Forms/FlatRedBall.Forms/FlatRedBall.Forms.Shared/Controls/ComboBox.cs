@@ -81,7 +81,7 @@ namespace FlatRedBall.Forms.Controls
 
         #region Events
 
-        public event EventHandler NewItemSelected;
+        public event Action<object, SelectionChangedEventArgs> SelectionChanged;
 
         #endregion
 
@@ -119,7 +119,7 @@ namespace FlatRedBall.Forms.Controls
             Visual.RollOn += this.HandleRollOn;
             Visual.RollOff += this.HandleRollOff;
             listBox.Visual.EffectiveParentGue.RaiseChildrenEventsOutsideOfBounds = true;
-            listBox.SelectionChanged += HandleNewItemSelected;
+            listBox.SelectionChanged += HandleSelectionChanged;
 
             listBox.IsVisible = false;
             Text = null;
@@ -200,11 +200,13 @@ namespace FlatRedBall.Forms.Controls
             UpdateState();
         }
 
-        private void HandleNewItemSelected(object sender, EventArgs e)
+        private void HandleSelectionChanged(object sender, SelectionChangedEventArgs args)
         {
             coreTextObject.RawText = listBox.SelectedObject?.ToString();
 
             listBox.IsVisible = false;
+
+            SelectionChanged?.Invoke(this, args);
         }
 
         #endregion
