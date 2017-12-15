@@ -26,7 +26,7 @@ namespace FlatRedBallAndroidTemplate
             g.Services.AddService<Activity>(this);
 
 
-            var view = (OpenTK.Platform.Android.AndroidGameView)g.Services.GetService(typeof(View));
+            var view = g.Services.GetService<View>();
 
             view.KeyPress += HandleKeyPress;
             view.GenericMotion += HandleGenericMotion;
