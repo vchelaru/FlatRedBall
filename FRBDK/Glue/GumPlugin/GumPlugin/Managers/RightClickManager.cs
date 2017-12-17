@@ -25,10 +25,26 @@ namespace GumPlugin.Managers
         private void TryAddRegenerateGumElement(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
         {
             var file = rightClickedTreeNode.Tag as ReferencedFileSave;
-            if(file != null)
+
+            bool shouldShowRegenerateCodeMenu =
+                file != null;
+
+            if(shouldShowRegenerateCodeMenu)
+            {
+                var extension = FileManager.GetExtension(file.Name);
+
+                shouldShowRegenerateCodeMenu =
+                    extension == GumProjectSave.ComponentExtension ||
+                    extension == GumProjectSave.ComponentExtension ||
+                    extension == GumProjectSave.ComponentExtension ||
+                    extension == GumProjectSave.ComponentExtension;
+
+            }
+
+            if(file != null )
             {
 
-                var newMenu = new ToolStripMenuItem("Regenerate Code");
+                var newMenu = new ToolStripMenuItem("Regenerate Gum Code");
                 menuToModify.Items.Add(newMenu);
                 newMenu.Click += delegate
                 {

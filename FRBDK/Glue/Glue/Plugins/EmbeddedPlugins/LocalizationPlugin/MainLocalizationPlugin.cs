@@ -1,5 +1,6 @@
 ﻿using EditorObjects.IoC;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.SaveClasses;
@@ -20,16 +21,23 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
         {
             this.ReactToLoadedGlux += HandleGluxLoad;
             this.ReactToReferencedFileChangedValueHandler += HandleReactToRfsValueChanged;
+            // This is if the user modifies the file while Glue is open
+            this.ReactToFileChangeHandler += HandleFileChanged;
+        }
+
+        private void HandleFileChanged(string fileName)
+        {
+            var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(fileName);
+
+            if(rfs?.IsDatabaseForLocalizing == true)
+            {
+                TryGenerateStringConsts(rfs);
+            }
         }
 
         private void HandleReactToRfsValueChanged(string variableName, object oldValue)
         {
-            var glueState = Container.Get<IGlueState>();
-
-            if(glueState.CurrentReferencedFileSave?.IsDatabaseForLocalizing == true)
-            {
-                TryGenerateStringConsts();
-            }
+            TryGenerateStringConsts();
         }
 
         private void HandleGluxLoad()
@@ -45,25 +53,33 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
             var referencedFileSave = glueState.GetAllReferencedFiles().FirstOrDefault(item => item.IsDatabaseForLocalizing);
             if (referencedFileSave != null)
             {
-                var contents = GetStringsGeneratedCodeFileContents(referencedFileSave);
-
-                string fileName = $"DataTypes/Strings.Generated.cs";
-
-                TaskManager.Self.AddSync(() =>
-                {
-                    glueCommands.ProjectCommands.CreateAndAddCodeFile(fileName);
-
-                    try
-                    {
-                        glueCommands.TryMultipleTimes(() => System.IO.File.WriteAllText(glueState.CurrentGlueProjectDirectory +  fileName, contents), 5);
-                    }
-                    catch (Exception e)
-                    {
-                        glueCommands.PrintError(e.ToString());
-                    }
-                }, "Adding localization string consts");
+                TryGenerateStringConsts(referencedFileSave);
 
             }
+        }
+
+        private void TryGenerateStringConsts(ReferencedFileSave referencedFileSave)
+        {
+            var glueCommands = Container.Get<IGlueCommands>();
+            var glueState = Container.Get<IGlueState>();
+
+            var contents = GetStringsGeneratedCodeFileContents(referencedFileSave);
+
+            string fileName = $"DataTypes/Strings.Generated.cs";
+
+            TaskManager.Self.AddSync(() =>
+            {
+                glueCommands.ProjectCommands.CreateAndAddCodeFile(fileName);
+
+                try
+                {
+                    glueCommands.TryMultipleTimes(() => System.IO.File.WriteAllText(glueState.CurrentGlueProjectDirectory + fileName, contents), 5);
+                }
+                catch (Exception e)
+                {
+                    glueCommands.PrintError(e.ToString());
+                }
+            }, "Adding localization string consts");
         }
 
         private string GetStringsGeneratedCodeFileContents(ReferencedFileSave referencedFileSave)
@@ -87,18 +103,55 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
 
                 foreach(var row in runtime.Records)
                 {
-                    if(row.Length > 1)
-                    {
-                        var stringId = row[0];
-                        // assume english is row 1
-                        var value = row[1];
-
-                        codeBlock.Line($"/// <summary>{value}</summary>");
-                        codeBlock.Line($"public const string {stringId} = \"{stringId}\";");
-                    }
+                    TryAddMemberForRow(codeBlock, row);
                 }
 
                 toReturn = document.ToString();
+            }
+
+            return toReturn;
+        }
+
+        private static void TryAddMemberForRow(ICodeBlock codeBlock, string[] row)
+        {
+            bool shouldProcess = row.Length > 1 &&
+                !string.IsNullOrWhiteSpace(row[0]) &&
+                row[0].StartsWith("//") == false;
+
+
+            if (shouldProcess)
+            {
+                var stringId = row[0];
+
+                string memberName = GetMemberNameFor(stringId);
+
+                // assume english is row 1
+                var value = row[1];
+
+                codeBlock.Line($"/// <summary>{value}</summary>");
+                codeBlock.Line($"public const string {memberName} = \"{stringId}\";");
+            }
+        }
+
+        private static string GetMemberNameFor(string stringId)
+        {
+            var toReturn = stringId;
+            if (char.IsDigit(toReturn[0]))
+            {
+                toReturn = "_" + toReturn;
+            }
+
+            if(toReturn.Contains(' '))
+            {
+                toReturn = toReturn.Replace(' ', '_');
+            }
+
+            foreach(var invalidCharacter in NameVerifier.InvalidCharacters)
+            {
+                if(toReturn.Contains(invalidCharacter))
+                {
+                    toReturn = toReturn.Replace(invalidCharacter, '_');
+                }
             }
 
             return toReturn;

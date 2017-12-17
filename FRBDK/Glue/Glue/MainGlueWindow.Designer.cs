@@ -46,7 +46,6 @@
             this.addBehaviorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openBehaviorFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importBehaviorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.reGenerateCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editResetVariablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ignoreDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -171,7 +170,6 @@
             this.addBehaviorToolStripMenuItem,
             this.openBehaviorFolderToolStripMenuItem,
             this.importBehaviorToolStripMenuItem,
-            this.reGenerateCodeToolStripMenuItem,
             this.editResetVariablesToolStripMenuItem,
             this.addFolderToolStripMenuItem,
             this.ignoreDirectoryToolStripMenuItem,
@@ -278,13 +276,6 @@
             // 
             this.importBehaviorToolStripMenuItem.Name = "importBehaviorToolStripMenuItem";
             this.importBehaviorToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            // 
-            // reGenerateCodeToolStripMenuItem
-            // 
-            this.reGenerateCodeToolStripMenuItem.Name = "reGenerateCodeToolStripMenuItem";
-            this.reGenerateCodeToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.reGenerateCodeToolStripMenuItem.Text = "Re-Generate Code";
-            this.reGenerateCodeToolStripMenuItem.Click += new System.EventHandler(this.reGenerateCodeToolStripMenuItem_Click);
             // 
             // editResetVariablesToolStripMenuItem
             // 
@@ -1162,7 +1153,6 @@
         internal System.Windows.Forms.ToolStripMenuItem existingBehaviorToolStripMenuItem;
         internal System.Windows.Forms.ToolStripMenuItem openBehaviorFolderToolStripMenuItem;
         internal System.Windows.Forms.ToolStripMenuItem importBehaviorToolStripMenuItem;
-        internal System.Windows.Forms.ToolStripMenuItem reGenerateCodeToolStripMenuItem;
         internal System.Windows.Forms.ToolStripMenuItem editResetVariablesToolStripMenuItem;
         internal System.Windows.Forms.ToolStripMenuItem addFolderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ignoreDirectoryToolStripMenuItem;

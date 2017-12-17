@@ -726,12 +726,7 @@ namespace Glue
             faw.ShowDialog(this);
 
         }
-
-        private void reGenerateCodeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RightClickHelper.ReGenerateCodeForSelectedElement();
-        }
-        
+       
         private void ElementTreeView_KeyPress(object sender, KeyPressEventArgs e)
         {
             // copy, paste, ctrl c, ctrl v, ctrl + c, ctrl + v, ctrl+c, ctrl+v

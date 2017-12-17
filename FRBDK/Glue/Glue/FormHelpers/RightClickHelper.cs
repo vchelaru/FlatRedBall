@@ -97,6 +97,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static ToolStripMenuItem mCopyToBuildFolder;
 
+        static ToolStripMenuItem reGenerateCodeToolStripMenuItem;
+
+
         #endregion
 
 
@@ -229,7 +232,7 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 menu.Items.Add(form.addFileToolStripMenuItem);
                 menu.Items.Add(form.addFolderToolStripMenuItem);
-                menu.Items.Add(form.reGenerateCodeToolStripMenuItem);
+                menu.Items.Add(reGenerateCodeToolStripMenuItem);
 
                 menu.Items.Add(form.viewInExplorerToolStripMenuItem);
 
@@ -336,7 +339,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     menu.Items.Add("-");
                     menu.Items.Add(form.setCreatedClassToolStripMenuItem);
-                    menu.Items.Add(form.reGenerateCodeToolStripMenuItem);
+                    menu.Items.Add(reGenerateCodeToolStripMenuItem);
                 }
 
 
@@ -382,7 +385,7 @@ namespace FlatRedBall.Glue.FormHelpers
             {
 
                 menu.Items.Add(form.viewInExplorerToolStripMenuItem);
-                menu.Items.Add(form.reGenerateCodeToolStripMenuItem);
+                menu.Items.Add(reGenerateCodeToolStripMenuItem);
             }
 
             #endregion
@@ -391,7 +394,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (targetNode.IsRootCodeNode())
             {
-                menu.Items.Add(form.reGenerateCodeToolStripMenuItem);
+                menu.Items.Add(reGenerateCodeToolStripMenuItem);
             }
 
 
@@ -579,6 +582,15 @@ namespace FlatRedBall.Glue.FormHelpers
 
             mCopyToBuildFolder = new ToolStripMenuItem("Copy to build folder");
             mCopyToBuildFolder.Click += HandleCopyToBuildFolder;
+
+            reGenerateCodeToolStripMenuItem = new ToolStripMenuItem("Re-Generate Code");
+            reGenerateCodeToolStripMenuItem.Click += HandleReGenerateCodeClick; ;
+
+        }
+
+        private static void HandleReGenerateCodeClick(object sender, EventArgs e)
+        {
+            ReGenerateCodeForSelectedElement();
         }
 
         private static void HandleCopyToBuildFolder(object sender, EventArgs e)
@@ -2099,7 +2111,13 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 ReferencedFileSave rfs = EditorLogic.CurrentReferencedFile;
 
-                if (FileManager.GetExtension(rfs.Name) == "csv" || (FileManager.GetExtension(rfs.Name) == "txt" && rfs.TreatAsCsv))
+                var isCsv = 
+                    FileManager.GetExtension(rfs.Name) == "csv" || (FileManager.GetExtension(rfs.Name) == "txt" && rfs.TreatAsCsv);
+
+                var shouldGenerateCsvDataClass =
+                    isCsv && !rfs.IsDatabaseForLocalizing;
+
+                if (shouldGenerateCsvDataClass)
                 {
                     CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
                     GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();

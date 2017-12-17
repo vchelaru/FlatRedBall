@@ -133,6 +133,7 @@
     <Compile Include="DataTypes\HugeCsv.Generated.cs" />
     <Compile Include="DataTypes\ListCsv.Generated.cs" />
     <Compile Include="DataTypes\LoadedAtRuntimeFalseCsv.Generated.cs" />
+    <Compile Include="DataTypes\LocalizationDatabase.Generated.cs" />
     <Compile Include="DataTypes\MovementValues.Generated.cs" />
     <Compile Include="DataTypes\Resources.Generated.cs" />
     <Compile Include="DataTypes\SharedClass1.Generated.cs" />
