@@ -29,8 +29,6 @@ namespace GlueTestProject.Screens
 
 		void CustomInitialize()
 		{
-
-
             if (PooledDontInheritFromThisInstance.AxisAlignedRectangleInstance.RelativeX != 5)
             {
                 throw new Exception("Pooled values aren't getting proper relative values set.");
@@ -106,6 +104,15 @@ namespace GlueTestProject.Screens
 
             TestBaseChildGrandchildListAdditions();
 
+            TestFactoriesNotRequiringInitialize();
+
+        }
+
+        private void TestFactoriesNotRequiringInitialize()
+        {
+            // This makes sure that initialization is not needed for entities that are not pooled
+            var toDestroy = FactoryEntityWithNoListFactory.CreateNew();
+            toDestroy.Destroy(); 
         }
 
         private void TestBaseChildGrandchildListAdditions()

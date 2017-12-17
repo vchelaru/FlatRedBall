@@ -388,6 +388,10 @@
     <Compile Include="Entities\FactoryEntityDerived.Generated.cs">
       <DependentUpon>FactoryEntityDerived.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\FactoryEntityWithNoList.cs" />
+    <Compile Include="Entities\FactoryEntityWithNoList.Generated.cs">
+      <DependentUpon>FactoryEntityWithNoList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\FileReferencingEntity.cs" />
     <Compile Include="Entities\FileReferencingEntity.Generated.cs">
       <DependentUpon>FileReferencingEntity.cs</DependentUpon>
@@ -738,6 +742,7 @@
     <Compile Include="Factories\EntityInFolderFactory.Generated.cs" />
     <Compile Include="Factories\FactoryEntityDerivedFactory.Generated.cs" />
     <Compile Include="Factories\FactoryEntityFactory.Generated.cs" />
+    <Compile Include="Factories\FactoryEntityWithNoListFactory.Generated.cs" />
     <Compile Include="Factories\GrandchildFactoryEntityFactory.Generated.cs" />
     <Compile Include="Factories\IWindowDerivedFromNoIWindowFactory.Generated.cs" />
     <Compile Include="Factories\PooledDontInheritFromThisFactory.Generated.cs" />

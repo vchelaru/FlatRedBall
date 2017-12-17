@@ -13,6 +13,7 @@
     <property name="Visible" type="bool" default="true" />
   </objecttype>
   <objecttype name="FactoryEntityDerived" />
+  <objecttype name="FactoryEntityWithNoList" />
   <objecttype name="GrandchildFactoryEntity" />
   <objecttype name="IWindowDerivedFromNoIWindow" />
   <objecttype name="PooledDontInheritFromThis" />

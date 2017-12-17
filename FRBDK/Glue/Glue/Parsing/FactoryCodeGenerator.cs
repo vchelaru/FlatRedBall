@@ -506,16 +506,19 @@ namespace FlatRedBall.Glue.Parsing
                 .End();
 
             codeBlock = codeBlock
-                .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Layer layer, float x = 0, float y = 0")
-                    .If("string.IsNullOrEmpty(mContentManagerName)")
-                        .Line("throw new System.Exception(\"You must first initialize the factory to use it. You can either add PositionedObjectList of type " +
-                            className + " (the most common solution) or call Initialize in custom code\");")
-                    .End()
+                .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Layer layer, float x = 0, float y = 0");
 
-                    .Line(className + " instance = null;");
+            codeBlock.Line(className + " instance = null;");
 
             if (poolObjects)
             {
+
+                // only throw exception if pooled. This requires the user to pool the fatory.
+                // But do we want to have an explicit "IsInitialized" value? Maybe if this causes problems in the future...
+                codeBlock.If("string.IsNullOrEmpty(mContentManagerName)")
+                            .Line("throw new System.Exception(\"You must first initialize the factory to use it. You can either add PositionedObjectList of type " +
+                                className + " (the most common solution) or call Initialize in custom code\");")
+                        .End();
                 codeBlock
                     .Line("instance = mPool.GetNextAvailable();")
                     .If("instance == null")
@@ -526,8 +529,12 @@ namespace FlatRedBall.Glue.Parsing
             }
             else
             {
+                // If not pooled don't require a content manager, can use the current screen's, so that init isn't required:
+
+                //instance = new FactoryEntityWithNoList(mContentManagerName ?? FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName, false);
+
                 codeBlock
-                    .Line(string.Format("instance = new {0}(mContentManagerName, false);", className))
+                    .Line($"instance = new {className}(mContentManagerName ?? FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName, false);")
                     .Line("instance.AddToManagers(layer);");
             }
 
