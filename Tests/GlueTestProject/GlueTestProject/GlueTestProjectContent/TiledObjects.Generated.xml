@@ -8,6 +8,7 @@
   <objecttype name="CreatedByTiled" />
   <objecttype name="DerivedPooledFromNotPooled" />
   <objecttype name="DerivedPooledFromPooled" />
+  <objecttype name="DrivedNotPooledFromBaseNotPooled" />
   <objecttype name="EntityInFolder" />
   <objecttype name="FactoryEntity">
     <property name="Visible" type="bool" default="true" />

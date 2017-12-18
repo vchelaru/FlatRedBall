@@ -334,6 +334,10 @@
     <Compile Include="Entities\DrawableEntity.Generated.cs">
       <DependentUpon>DrawableEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\DrivedNotPooledFromBaseNotPooled.cs" />
+    <Compile Include="Entities\DrivedNotPooledFromBaseNotPooled.Generated.cs">
+      <DependentUpon>DrivedNotPooledFromBaseNotPooled.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\EmitterAsContainerDerived.cs" />
     <Compile Include="Entities\EmitterAsContainerDerived.Generated.cs">
       <DependentUpon>EmitterAsContainerDerived.cs</DependentUpon>
@@ -739,6 +743,7 @@
     <Compile Include="Factories\CreatedByTiledFactory.Generated.cs" />
     <Compile Include="Factories\DerivedPooledFromNotPooledFactory.Generated.cs" />
     <Compile Include="Factories\DerivedPooledFromPooledFactory.Generated.cs" />
+    <Compile Include="Factories\DrivedNotPooledFromBaseNotPooledFactory.Generated.cs" />
     <Compile Include="Factories\EntityInFolderFactory.Generated.cs" />
     <Compile Include="Factories\FactoryEntityDerivedFactory.Generated.cs" />
     <Compile Include="Factories\FactoryEntityFactory.Generated.cs" />
@@ -967,6 +972,10 @@
     <Compile Include="Screens\FactoryScreen.cs" />
     <Compile Include="Screens\FactoryScreen.Generated.cs">
       <DependentUpon>FactoryScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\FactoryScreenForListAddingChecks.cs" />
+    <Compile Include="Screens\FactoryScreenForListAddingChecks.Generated.cs">
+      <DependentUpon>FactoryScreenForListAddingChecks.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\FileScreen.cs" />
     <Compile Include="Screens\FileScreen.Generated.cs">

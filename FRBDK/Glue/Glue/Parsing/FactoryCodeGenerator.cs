@@ -89,7 +89,49 @@ namespace FlatRedBall.Glue.Parsing
             // method into AddToManagers so that it's not called asynchronously - 
             // instead it's called after the first screen has finished unloading itself.
 
-            var entityLists = element.NamedObjects
+            List<NamedObjectSave> entityLists;
+            List<EntitySave> entitiesToInitializeFactoriesFor;
+            GetEntitiesToInstantiateFactoriesFor(element, out entityLists, out entitiesToInitializeFactoriesFor);
+
+            foreach (var entity in entitiesToInitializeFactoriesFor)
+            {
+                // initialize the factory:
+                string entityClassName = FileManager.RemovePath(entity.Name);
+                string factoryName = $"Factories.{entityClassName}Factory";
+                codeBlock.Line(factoryName + ".Initialize(ContentManagerName);");
+            }
+
+            var allEntitiesWithFactories = GlueState.Self.CurrentGlueProject.Entities
+                .Where(item => item.CreatedByOtherEntities);
+
+
+            foreach (var listNos in entityLists)
+            {
+                // Find all factories of this type, or of derived type
+                EntitySave listEntityType = ObjectFinder.Self.GetEntitySave(listNos.SourceClassGenericType);
+
+                var factoryTypesToCallAddListOn = allEntitiesWithFactories.Where(item =>
+                {
+                    return item == listEntityType || item.InheritsFrom(listEntityType.Name);
+                });
+
+                // find any lists of entities that are of this type, or of a derived type.
+                foreach (var factoryEntityType in factoryTypesToCallAddListOn)
+                {
+                    string entityClassName = FileManager.RemovePath(factoryEntityType.Name);
+
+                    string factoryName = $"Factories.{entityClassName}Factory";
+                    codeBlock.Line($"{factoryName}.AddList({listNos.FieldName});");
+                }
+
+            }
+
+            return codeBlock;
+        }
+
+        private static void GetEntitiesToInstantiateFactoriesFor(IElement element, out List<NamedObjectSave> entityLists, out List<EntitySave> entitiesToInitializeFactoriesFor)
+        {
+            entityLists = element.NamedObjects
                 .Where(nos => !nos.InstantiatedByBase &&
                     nos.SourceType == SourceType.FlatRedBallType &&
                     nos.IsList &&
@@ -97,96 +139,62 @@ namespace FlatRedBall.Glue.Parsing
                     !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
                     (nos.SourceClassGenericType.StartsWith("Entities\\") || nos.SourceClassGenericType.StartsWith("Entities/")))
                 .ToList();
-
-
-            List<EntitySave> entitiesToInitializeFactoriesFor = new List<EntitySave>();
-            foreach(var listNos in entityLists)
+            entitiesToInitializeFactoriesFor = new List<EntitySave>();
+            foreach (var listNos in entityLists)
             {
                 EntitySave sourceEntitySave = ObjectFinder.Self.GetEntitySave(listNos.SourceClassGenericType);
 
-                if(sourceEntitySave != null)
+                if (sourceEntitySave != null)
                 {
-                    if(sourceEntitySave.CreatedByOtherEntities && !entitiesToInitializeFactoriesFor.Contains(sourceEntitySave))
+                    if (sourceEntitySave.CreatedByOtherEntities && !entitiesToInitializeFactoriesFor.Contains(sourceEntitySave))
                     {
                         entitiesToInitializeFactoriesFor.Add(sourceEntitySave);
                     }
                 }
             }
-
-            foreach(var entity in entitiesToInitializeFactoriesFor)
-            {
-                // initialize the factory:
-                string entityClassName = FileManager.RemovePath(entity.Name);
-                string factoryName = entityClassName + "Factory";
-                codeBlock.Line(factoryName + ".Initialize(ContentManagerName);");
-
-                // find any lists of entities that are of this type, or of a derived type.
-                foreach(var listNos in entityLists)
-                {
-                    EntitySave listEntitySave = ObjectFinder.Self.GetEntitySave(listNos.SourceClassGenericType);
-
-                    if(listEntitySave != null && (listEntitySave == entity || entity.InheritsFrom(listEntitySave.Name)))
-                    {
-                        codeBlock.Line($"{factoryName}.AddList({listNos.FieldName});");
-                    }
-                }
-            }
-
-            return codeBlock;
         }
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
         {
-            foreach (NamedObjectSave namedObject in element.NamedObjects)
+            // but for some reason we still destroyed
+            // them.  Added the check for element is ScreenSave.
+            if(element is ScreenSave)
             {
+                List<NamedObjectSave> entityLists;
+                List<EntitySave> entityFactoriesToDestroy;
+                GetEntitiesToInstantiateFactoriesFor(element, out entityLists, out entityFactoriesToDestroy);
 
-                if (namedObject.SourceClassType == "PositionedObjectList<T>" && !string.IsNullOrEmpty(namedObject.SourceClassGenericType) &&
-                    namedObject.SourceClassGenericType.StartsWith("Entities\\"))
+
+                var allEntitiesWithFactories = GlueState.Self.CurrentGlueProject.Entities
+                    .Where(item => item.CreatedByOtherEntities);
+
+                foreach (var listNos in entityLists)
                 {
-                    EntitySave sourceEntitySave = ObjectFinder.Self.GetEntitySave(namedObject.SourceClassGenericType);
+                    // Find all factories of this type, or of derived type
+                    EntitySave listEntityType = ObjectFinder.Self.GetEntitySave(listNos.SourceClassGenericType);
 
-                    if (sourceEntitySave == null)
+                    var factoryTypesToCallAddListOn = allEntitiesWithFactories.Where(item =>
                     {
-                        Plugins.PluginManager.ReceiveError("Could not find the Entity " + namedObject.SourceClassGenericType + " which is referenced by " +
-                            namedObject);
-                        return codeBlock;
-                    }
+                        return item == listEntityType || item.InheritsFrom(listEntityType.Name);
+                    });
 
-                    // August 23, 2012
-                    // We don't Initialize
-                    // factories inside of Entities,
-                    // but for some reason we still destroyed
-                    // them.  Added the check for element is ScreenSave.
-                    if(element is ScreenSave)
+                    // find any lists of entities that are of this type, or of a derived type.
+                    foreach (var factoryEntityType in factoryTypesToCallAddListOn)
                     {
-                        if (sourceEntitySave.CreatedByOtherEntities)
-                        {
-                            string entityClassName = FileManager.RemovePath(namedObject.SourceClassGenericType);
-                            string line = entityClassName + "Factory.Destroy();";
-
-                            codeBlock.Line(line);
-                        }
-
-                        if (string.IsNullOrEmpty(sourceEntitySave.BaseEntity))
-                        {
-                            List<EntitySave> derivedList = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(sourceEntitySave);
-
-                            foreach (EntitySave derivedEntity in derivedList)
-                            {
-                                if (derivedEntity.CreatedByOtherEntities)
-                                {
-                                    string derivedName = FileManager.RemovePath(derivedEntity.Name);
-                                    string replaceLine = derivedName + "Factory.Destroy();";
-
-                                    codeBlock.Line(replaceLine);
-                                }
-                            }
-                        }
+                        entityFactoriesToDestroy.Add(factoryEntityType);
                     }
-
-                    
                 }
 
+                entityFactoriesToDestroy = entityFactoriesToDestroy.Distinct().ToList();
+
+                foreach(var entityFactory in entityFactoriesToDestroy)
+                {
+                    string entityClassName = FileManager.RemovePath(entityFactory.Name);
+                    string line = $"Factories.{entityClassName}Factory.Destroy();";
+
+                    codeBlock.Line(line);
+
+                }
             }
 
             return codeBlock;
