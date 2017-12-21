@@ -166,7 +166,8 @@ namespace FlatRedBall.Forms.Controls
 
         private void SetThisAsOnlyCheckedInGroup()
         {
-            foreach (var radio in RadioButtonDictionary[GetParent()][GroupName])
+            var parent = GetParent();
+            foreach (var radio in RadioButtonDictionary[parent][GroupName])
             {
                 if (radio != this)
                 {

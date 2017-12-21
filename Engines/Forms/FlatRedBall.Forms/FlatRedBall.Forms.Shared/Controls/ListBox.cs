@@ -54,18 +54,35 @@ namespace FlatRedBall.Forms.Controls
             }
             set
             {
-                if(value > 0 && value < listBoxItems.Count)
+                if(value > -1 && value < listBoxItems.Count)
                 {
                     listBoxItems[value].IsSelected = true;
                 }
+                else if(value == -1)
+                {
+                    // do we just set it to the value before doing any logic?
+                    selectedIndex = -1;
+
+                    var selectionChangedArgs = new SelectionChangedEventArgs();
+
+                    for(int i = 0; i < listBoxItems.Count; i++)
+                    {
+                        var listBoxItem = listBoxItems[i];
+
+                        if (listBoxItem.IsSelected)
+                        {
+                            selectionChangedArgs.RemovedItems.Add(Items[i]);
+                            listBoxItem.IsSelected = false;
+                        }
+                    }
+
+    
+                    SelectionChanged?.Invoke(this, selectionChangedArgs);
+
+                }
                 else
                 {
-                    foreach (var listBoxItem in listBoxItems)
-                    {
-                        listBoxItem.IsSelected = false;
-                    }
-                    SelectionChanged?.Invoke(null, null);
-
+                    throw new IndexOutOfRangeException();
                 }
             }
         }
@@ -163,7 +180,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 args.AddedItems.Add(Items[selectedIndex]);
             }
-            // todo - WPF uses SelectionChangedArgs, we prob want to incorporate that
+
             SelectionChanged?.Invoke(this, args);
 
         }
