@@ -80,11 +80,15 @@ namespace FlatRedBall.Forms.Controls
 
         private void AddToDictionary()
         {
-            var parent = GetParent();
-
-            if (parent == null) //parent will be null when visual is null. groupname dictionary updates are meaningless until we have set the scope for the radio button!
+            // early out
+            if(Visual == null)
+            {
                 return;
+            }
+            // end early out
 
+            var parent = GetParent();
+            
             if (RadioButtonDictionary.ContainsKey(parent) == false)
                 RadioButtonDictionary.Add(parent, new Dictionary<string, List<RadioButton>>());
 
@@ -157,9 +161,10 @@ namespace FlatRedBall.Forms.Controls
 
             base.ReactToVisualChanged();
 
+            Visual.ParentChanged += HandleParentChanged;
+
             UpdateState();
         }
-
         #endregion
 
         #region UpdateTo Methods
@@ -247,10 +252,20 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
+        #region Event Handlers
+
+        private void HandleParentChanged(object sender, EventArgs e)
+        {
+            // setting GroupName refreshes grouping
+            GroupName = GroupName;
+        }
+
         protected override void OnClick()
         {
             SetThisAsOnlyCheckedInGroup();
         }
+
+        #endregion
 
 
         #region Utilities

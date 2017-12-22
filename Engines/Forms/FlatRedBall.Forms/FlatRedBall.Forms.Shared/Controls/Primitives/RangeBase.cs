@@ -12,7 +12,7 @@ namespace FlatRedBall.Forms.Controls.Primitives
 
         protected Button thumb;
 
-        protected GraphicalUiElement track;
+        protected GraphicalUiElement Track => thumb.Visual.EffectiveParentGue;
 
         /// <summary>
         /// Represents the X or Y offset of the cursor relative to the thumb when the thumb was grabbed.
@@ -107,8 +107,7 @@ namespace FlatRedBall.Forms.Controls.Primitives
             // do this before assigning any values like Minimum, Maximum
             var thumbHeight = thumb.ActualHeight;
 
-            track = thumb.Visual.EffectiveParentGue;
-            track.RollOver += HandleTrackRollOver;
+            Visual.RollOver += HandleTrackRollOver;
 
             // read the height values and infer the Value and ViewportSize based on a 0 - 100
 

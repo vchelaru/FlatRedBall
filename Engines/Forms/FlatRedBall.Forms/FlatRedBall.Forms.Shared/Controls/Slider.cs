@@ -35,7 +35,7 @@ namespace FlatRedBall.Forms.Controls
 
 
 
-            track.Push += HandleTrackPush;
+            Track.Push += HandleTrackPush;
 
         }
 
@@ -71,8 +71,8 @@ namespace FlatRedBall.Forms.Controls
         {
             if(IsMoveToPointEnabled)
             {
-                var left = track.AbsoluteX;
-                var right = track.AbsoluteX + track.GetAbsoluteWidth();
+                var left = Track.AbsoluteX;
+                var right = Track.AbsoluteX + Track.GetAbsoluteWidth();
 
                 var screenX = GuiManager.Cursor.ScreenX;
 
@@ -164,7 +164,7 @@ namespace FlatRedBall.Forms.Controls
                 ratioOver = 0;
             }
 
-            thumb.X = Microsoft.Xna.Framework.MathHelper.Lerp(0, track.GetAbsoluteWidth(),
+            thumb.X = Microsoft.Xna.Framework.MathHelper.Lerp(0, Track.GetAbsoluteWidth(),
                 (float)ratioOver);
 
         }
@@ -173,11 +173,11 @@ namespace FlatRedBall.Forms.Controls
         {
             var cursorScreenX = cursor.ScreenX;
 
-            var cursorXRelativeToTrack = cursorScreenX - track.AbsoluteX;
+            var cursorXRelativeToTrack = cursorScreenX - Track.AbsoluteX;
             
             thumb.X = cursorXRelativeToTrack - cursorGrabOffsetRelativeToThumb;
 
-            float range = track.GetAbsoluteWidth() ;
+            float range = Track.GetAbsoluteWidth() ;
 
             
             if(range != 0)

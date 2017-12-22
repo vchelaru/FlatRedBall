@@ -16,7 +16,7 @@ namespace FlatRedBall.Forms.Controls
         Button upButton;
         Button downButton;
 
-        
+        public float MinimumThumbSize { get; set; } = 16;
         
         double viewportSize;
         public double ViewportSize
@@ -39,8 +39,9 @@ namespace FlatRedBall.Forms.Controls
         }
 
 
-        float MinThumbPosition => upButton.ActualHeight;
-        float MaxThumbPosition => track.GetAbsoluteHeight() - downButton.ActualHeight - thumb.ActualHeight;
+        float MinThumbPosition => 0;
+        float MaxThumbPosition => Track.GetAbsoluteHeight() - thumb.ActualHeight;
+
 
         #endregion
 
@@ -74,12 +75,13 @@ namespace FlatRedBall.Forms.Controls
             var thumbHeight = thumb.ActualHeight;
 
             upButton.Push += (not, used) => this.Value -= this.SmallChange;
-
             downButton.Push += (not, used) => this.Value += this.SmallChange;
-            track.Push += HandleTrackPush;
+            Track.Push += HandleTrackPush;
+            Visual.SizeChanged += HandleVisualSizeChange;
 
 
-            var visibleTrackSpace = track.Height - upButton.ActualHeight - downButton.ActualHeight;
+
+            var visibleTrackSpace = Track.Height - upButton.ActualHeight - downButton.ActualHeight;
 
             if(visibleTrackSpace != 0)
             {
@@ -87,12 +89,21 @@ namespace FlatRedBall.Forms.Controls
                 var thumbRatio = thumbHeight / visibleTrackSpace;
                 ViewportSize = (Maximum - Minimum) * thumbRatio;
                 LargeChange = ViewportSize;
-            }
 
+                Value = Minimum;
+            }
+            else
+            {
+                ViewportSize = 10;
+                LargeChange = 10;
+                SmallChange = 2;
+            }
         }
+
 
         #endregion
 
+        #region Event Handlers
         protected override void HandleThumbPush(object sender, EventArgs e)
         {
             var topOfThumb = this.thumb.ActualY;
@@ -113,6 +124,11 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        private void HandleVisualSizeChange(object sender, EventArgs e)
+        {
+            UpdateThumbPositionAccordingToValue();
+            UpdateThumbSize();
+        }
 
         protected override void OnMinimumChanged(double oldMinimum, double newMinimum)
         {
@@ -137,6 +153,8 @@ namespace FlatRedBall.Forms.Controls
             UpdateThumbPositionAccordingToValue();
         }
 
+        #endregion
+
         #region UpdateTo Methods
 
         private void UpdateThumbPositionAccordingToValue()
@@ -155,7 +173,7 @@ namespace FlatRedBall.Forms.Controls
         protected override void UpdateThumbPositionToCursorDrag(Cursor cursor)
         {
             var cursorScreenY = cursor.ScreenY;
-            var cursorYRelativeToTrack = cursorScreenY - (track.GetTop() + upButton.ActualHeight);
+            var cursorYRelativeToTrack = cursorScreenY - Track.GetTop();
 
             thumb.Y = cursorYRelativeToTrack - cursorGrabOffsetRelativeToThumb;
 
@@ -175,19 +193,16 @@ namespace FlatRedBall.Forms.Controls
         
         private void UpdateThumbSize()
         {
-            if(ViewportSize == 0)
+            var desiredHeight = MinimumThumbSize;
+            if(ViewportSize != 0)
             {
-                thumb.Height = 0;
-            }
-            else
-            {
-                float trackHeight = (track.GetAbsoluteHeight() - downButton.ActualHeight) - MinThumbPosition;
+                float trackHeight = Track.GetAbsoluteHeight();
 
                 var valueRange = (Maximum - Minimum) + ViewportSize;
 
                 var thumbRatio = ViewportSize / valueRange;
 
-                thumb.Height = (float)(trackHeight * thumbRatio);
+                thumb.Height = System.Math.Max(MinimumThumbSize, (float)(trackHeight * thumbRatio));
             }
         }
 
