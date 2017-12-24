@@ -158,13 +158,21 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
-        public string CurrentGlueProjectFileName { get { return ProjectManager.ProjectBase.FullFileName; } }
+        public string CurrentGlueProjectFileName { get { return ProjectManager.ProjectBase?.FullFileName; } }
 
         public string CurrentGlueProjectDirectory
         {
             get
             {
-                return FlatRedBall.IO.FileManager.GetDirectory(CurrentGlueProjectFileName);
+                var currentGlueProjectFileName = CurrentGlueProjectFileName;
+                if(!string.IsNullOrEmpty(currentGlueProjectFileName))
+                {
+                    return FlatRedBall.IO.FileManager.GetDirectory(currentGlueProjectFileName);
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 

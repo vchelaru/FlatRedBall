@@ -1264,7 +1264,6 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Linear approximation of drag.  This reduces the Velocity of the
         /// instance according to its absolute Velocity.  
@@ -1273,10 +1272,10 @@ namespace FlatRedBall
         /// The following formula is applied to apply Drag:
         /// <para>
         /// Velocity -= Velocity * Drag * TimeManager.SecondDifference;
-        /// 
+        /// Note that a very large Drag value may result in an object moving in the opposite 
+        /// direction.
         /// </para>
         /// </remarks>
-        #endregion
         public float Drag
         {
             get { return mDrag; }

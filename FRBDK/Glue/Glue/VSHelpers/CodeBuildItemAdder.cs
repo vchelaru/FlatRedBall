@@ -153,14 +153,17 @@ namespace FlatRedBall.Glue.VSHelpers
                 string destinationDirectory, destination;
                 GetDestination(resourceName, out destinationDirectory, out destination);
 
-                if(ProjectManager.ProjectBase.IsFilePartOfProject(destination, Projects.BuildItemMembershipType.Any))
+                if(ProjectManager.ProjectBase?.IsFilePartOfProject(destination, Projects.BuildItemMembershipType.Any) == true)
                 {
                     ProjectManager.ProjectBase.RemoveItem(destination);
                     GlueCommands.Self.PrintOutput($"Removing {destination} from project");
                 }
             }
 
-            ProjectManager.SaveProjects();
+            if(ProjectManager.ProjectBase != null)
+            {
+                ProjectManager.SaveProjects();
+            }
 
         }
 
@@ -176,7 +179,8 @@ namespace FlatRedBall.Glue.VSHelpers
             {
                 string destinationDirectory, destination;
                 GetDestination(resourceName, out destinationDirectory, out destination);
-                bool shouldAdd = DetermineIfShouldCopyAndAdd(destination, assemblyContainingResource);
+                bool shouldAdd = GlueState.Self.CurrentGlueProject != null &&
+                    DetermineIfShouldCopyAndAdd(destination, assemblyContainingResource);
 
                 if (shouldAdd)
                 {
@@ -206,19 +210,27 @@ namespace FlatRedBall.Glue.VSHelpers
 
         private void GetDestination(string resourceName, out string destinationDirectory, out string destination)
         {
-            destinationDirectory = ProjectManager.ProjectBase.Directory + OutputFolderInProject + "/";
-            destination = null;
-            if (resourceName.Contains("/"))
+            if(ProjectManager.ProjectBase == null)
             {
-                destination = destinationDirectory + FileManager.RemovePath(resourceName);
+                destinationDirectory = null;
+                destination = null;
             }
             else
             {
-                string completelyStripped = FileManager.RemoveExtension(resourceName);
-                int lastDot = completelyStripped.LastIndexOf('.');
-                completelyStripped = completelyStripped.Substring(lastDot + 1);
+                destinationDirectory = ProjectManager.ProjectBase?.Directory + OutputFolderInProject + "/";
+                destination = null;
+                if (resourceName.Contains("/"))
+                {
+                    destination = destinationDirectory + FileManager.RemovePath(resourceName);
+                }
+                else
+                {
+                    string completelyStripped = FileManager.RemoveExtension(resourceName);
+                    int lastDot = completelyStripped.LastIndexOf('.');
+                    completelyStripped = completelyStripped.Substring(lastDot + 1);
 
-                destination = destinationDirectory + completelyStripped + ".cs";
+                    destination = destinationDirectory + completelyStripped + ".cs";
+                }
             }
         }
 

@@ -28,6 +28,10 @@ namespace FlatRedBall.Forms.Controls
                 {
                     throw new Exception("NaN value not supported for FrameworkElement Height");
                 }
+                if(float.IsPositiveInfinity(value) || float.IsNegativeInfinity(value))
+                {
+                    throw new Exception();
+                }
 #endif
                 Visual.Height = value;
             }
@@ -35,7 +39,20 @@ namespace FlatRedBall.Forms.Controls
         public float Width
         {
             get { return Visual.Width; }
-            set { Visual.Width = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsNaN(value))
+                {
+                    throw new Exception("NaN value not supported for FrameworkElement Width");
+                }
+                if (float.IsPositiveInfinity(value) || float.IsNegativeInfinity(value))
+                {
+                    throw new Exception();
+                }
+#endif
+                Visual.Width = value;
+            }
         }
 
         public float ActualX => Visual.GetLeft();
