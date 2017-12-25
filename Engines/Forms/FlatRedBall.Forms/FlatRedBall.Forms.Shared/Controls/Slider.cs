@@ -41,6 +41,7 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
+        #region Event Handlers
         protected override void HandleThumbPush(object sender, EventArgs e)
         {
             var leftOfThumb = this.thumb.ActualX;
@@ -102,6 +103,29 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+
+        protected override void OnMaximumChanged(double oldMaximum, double newMaximum)
+        {
+            base.OnMaximumChanged(oldMaximum, newMaximum);
+
+            if (Visual != null)
+            {
+                UpdateThumbPositionAccordingToValue();
+            }
+        }
+
+        protected override void OnValueChanged(double oldValue, double newValue)
+        {
+            base.OnValueChanged(oldValue, newValue);
+
+            if (Visual != null)
+            {
+                UpdateThumbPositionAccordingToValue();
+            }
+        }
+
+        #endregion
+
         private double ApplyValueConsideringSnapToTicks(double newValue)
         {
             var originalValue = newValue;
@@ -135,27 +159,6 @@ namespace FlatRedBall.Forms.Controls
             Value = newValue;
             return newValue;
         }
-
-        protected override void OnMaximumChanged(double oldMaximum, double newMaximum)
-        {
-            base.OnMaximumChanged(oldMaximum, newMaximum);
-
-            if (Visual != null)
-            {
-                UpdateThumbPositionAccordingToValue();
-            }
-        }
-
-        protected override void OnValueChanged(double oldValue, double newValue)
-        {
-            base.OnValueChanged(oldValue, newValue);
-
-            if (Visual != null)
-            {
-                UpdateThumbPositionAccordingToValue();
-            }
-        }
-
         private void UpdateThumbPositionAccordingToValue()
         {
             var ratioOver = (Value - Minimum) / (Maximum - Minimum);

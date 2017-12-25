@@ -93,7 +93,6 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void ReactToVisualChanged()
         {
-            listBox = new ListBox();
             var listBoxInstance = Visual.GetGraphicalUiElementByName("ListBoxInstance");
             textComponent = base.Visual.GetGraphicalUiElementByName("TextInstance");
 
@@ -110,7 +109,15 @@ namespace FlatRedBall.Forms.Controls
 #endif
             coreTextObject = textComponent.RenderableComponent as RenderingLibrary.Graphics.Text;
 
-            listBox.Visual = listBoxInstance;
+            if(listBoxInstance.FormsControlAsObject == null)
+            {
+                listBox = new ListBox();
+                listBox.Visual = listBoxInstance;
+            }
+            else
+            {
+                listBox = listBoxInstance.FormsControlAsObject as ListBox;
+            }
 
 
             Visual.Click += this.HandleClick;

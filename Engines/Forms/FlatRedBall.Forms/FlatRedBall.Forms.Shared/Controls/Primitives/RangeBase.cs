@@ -23,7 +23,7 @@ namespace FlatRedBall.Forms.Controls.Primitives
         public double LargeChange { get; set; }
         public double SmallChange { get; set; }
 
-        double minimum;
+        double minimum = 0;
         public double Minimum
         {
             get { return minimum; }
@@ -36,7 +36,7 @@ namespace FlatRedBall.Forms.Controls.Primitives
             }
         }
 
-        double maximum;
+        double maximum = 1;
         public double Maximum
         {
             get { return maximum; }
@@ -136,7 +136,8 @@ namespace FlatRedBall.Forms.Controls.Primitives
         {
             var cursor = GuiManager.Cursor;
 
-            if (cursor.WindowPushed == thumb.Visual)
+            if (cursor.WindowPushed == thumb.Visual && 
+                (cursor.PrimaryPush || cursor.PrimaryClick))
             {
                 UpdateThumbPositionToCursorDrag(cursor);
             }

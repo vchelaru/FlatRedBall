@@ -18,7 +18,7 @@ namespace FlatRedBall.Forms.Controls
 
         public float MinimumThumbSize { get; set; } = 16;
         
-        double viewportSize;
+        double viewportSize = .1;
         public double ViewportSize
         {
             get { return viewportSize; }
@@ -49,7 +49,6 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void ReactToVisualChanged()
         {
-            upButton = new Button();
             var upButtonVisual = this.Visual.GetGraphicalUiElementByName("UpButtonInstance");
 #if DEBUG
             if (upButtonVisual == null)
@@ -57,9 +56,16 @@ namespace FlatRedBall.Forms.Controls
                 throw new Exception("The ScrollBar Gum object must have a button called UpButtonInstance");
             }
 #endif
-            upButton.Visual = upButtonVisual;
+            if(upButtonVisual.FormsControlAsObject == null)
+            {
+                upButton = new Button();
+                upButton.Visual = upButtonVisual;
+            }
+            else
+            {
+                upButton = upButtonVisual.FormsControlAsObject as Button;
+            }
 
-            downButton = new Button();
             var downButtonVisual = this.Visual.GetGraphicalUiElementByName("DownButtonInstance");
 #if DEBUG
             if(downButtonVisual == null)
@@ -67,7 +73,15 @@ namespace FlatRedBall.Forms.Controls
                 throw new Exception("The ScrollBar Gum object must have a button called DownButtonInstance");
             }
 #endif
-            downButton.Visual = downButtonVisual;
+            if(downButtonVisual.FormsControlAsObject == null)
+            {
+                downButton = new Button();
+                downButton.Visual = downButtonVisual;
+            }
+            else
+            {
+                downButton = downButtonVisual.FormsControlAsObject as Button;
+            }
 
 
             base.ReactToVisualChanged();

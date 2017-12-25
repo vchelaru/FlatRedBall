@@ -37,6 +37,8 @@ namespace FlatRedBall.Forms.Controls
 
 
                 CaretIndex = System.Math.Min(CaretIndex, value?.Length ?? 0);
+
+                TextChanged?.Invoke(this, null);
             }
         }
 
@@ -80,6 +82,12 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
+        #region Events
+
+        public event EventHandler TextChanged;
+
+        #endregion 
+
         #region Initialize Methods
 
         protected override void ReactToVisualChanged()
@@ -92,7 +100,6 @@ namespace FlatRedBall.Forms.Controls
             if (textComponent == null) throw new Exception("Gum object must have an object called \"Text\"");
             if (coreTextObject == null) throw new Exception("The Text instance must be of type Text");
             if (caretComponent == null) throw new Exception("Gum object must have an object called \"Caret\"");
-
 #endif
 
             Visual.Click += this.HandleClick;

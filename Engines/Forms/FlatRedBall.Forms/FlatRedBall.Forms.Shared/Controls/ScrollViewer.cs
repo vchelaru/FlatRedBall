@@ -25,9 +25,24 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void ReactToVisualChanged()
         {
-            verticalScrollBar = new ScrollBar();
-            verticalScrollBar.Visual = Visual.GetGraphicalUiElementByName("VerticalScrollBarInstance");
+            var scrollBarVisual = Visual.GetGraphicalUiElementByName("VerticalScrollBarInstance"); 
+            if(scrollBarVisual.FormsControlAsObject == null)
+            {
+                verticalScrollBar = new ScrollBar();
+                verticalScrollBar.Visual = scrollBarVisual;
+            }
+            else
+            {
+                verticalScrollBar = scrollBarVisual.FormsControlAsObject as ScrollBar;
+            }
             verticalScrollBar.ValueChanged += HandleVerticalScrollBarValueChanged;
+            // Depending on the height and width units, the scroll bar may get its update
+            // called before or after this. We can't bet on the order, so we have to handle
+            // both this and the scroll bar's height value changes, and adjust according to both:
+            var thumbVisual =
+                verticalScrollBar.Visual.GetGraphicalUiElementByName("ThumbInstance");
+            verticalScrollBar.Visual.SizeChanged += HandleVerticalScrollBarThumbSizeChanged;
+
 
             innerPanel = Visual.GetGraphicalUiElementByName("InnerPanelInstance");
             innerPanel.SizeChanged += HandleInnerPanelSizeChanged;
@@ -35,6 +50,7 @@ namespace FlatRedBall.Forms.Controls
             clipContainer = Visual.GetGraphicalUiElementByName("ClipContainerInstance");
 
             Visual.MouseWheelScroll += HandleMouseWheelScroll;
+            Visual.SizeChanged += HandleVisualSizeChanged;
 
             UpdateVerticalScrollBarValues();
 
@@ -68,6 +84,22 @@ namespace FlatRedBall.Forms.Controls
         private void HandleInnerPanelSizeChanged(object sender, EventArgs e)
         {
             if(reactToInnerPanelPositionOrSizeChanged)
+            {
+                UpdateVerticalScrollBarValues();
+            }
+        }
+
+        private void HandleVisualSizeChanged(object sender, EventArgs args)
+        {
+            if(reactToInnerPanelPositionOrSizeChanged)
+            {
+                UpdateVerticalScrollBarValues();
+            }
+        }
+
+        private void HandleVerticalScrollBarThumbSizeChanged(object sender, EventArgs args)
+        {
+            if (reactToInnerPanelPositionOrSizeChanged)
             {
                 UpdateVerticalScrollBarValues();
             }
