@@ -121,18 +121,18 @@ namespace FlatRedBall.Forms.Controls
         protected override void HandleThumbPush(object sender, EventArgs e)
         {
             var topOfThumb = this.thumb.ActualY;
-            var cursorScreen = GuiManager.Cursor.ScreenY;
+            var cursorScreen = GuiManager.Cursor.GumY();
 
             cursorGrabOffsetRelativeToThumb = cursorScreen - topOfThumb;
         }
 
         private void HandleTrackPush(IWindow window)
         {
-            if (GuiManager.Cursor.ScreenY < thumb.ActualY)
+            if (GuiManager.Cursor.GumY() < thumb.ActualY)
             {
                 Value -= LargeChange;
             }
-            else if (GuiManager.Cursor.ScreenY > thumb.ActualY + thumb.ActualHeight)
+            else if (GuiManager.Cursor.GumY() > thumb.ActualY + thumb.ActualHeight)
             {
                 Value += LargeChange;
             }
@@ -186,7 +186,7 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void UpdateThumbPositionToCursorDrag(Cursor cursor)
         {
-            var cursorScreenY = cursor.ScreenY;
+            var cursorScreenY = cursor.GumY();
             var cursorYRelativeToTrack = cursorScreenY - Track.GetTop();
 
             thumb.Y = cursorYRelativeToTrack - cursorGrabOffsetRelativeToThumb;

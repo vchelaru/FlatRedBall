@@ -54,7 +54,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 leftOfThumb += this.thumb.ActualWidth;
             }
-            var cursorScreen = GuiManager.Cursor.ScreenX;
+            var cursorScreen = GuiManager.Cursor.GumX();
 
             cursorGrabOffsetRelativeToThumb = cursorScreen - leftOfThumb;
         }
@@ -75,7 +75,7 @@ namespace FlatRedBall.Forms.Controls
                 var left = Track.AbsoluteX;
                 var right = Track.AbsoluteX + Track.GetAbsoluteWidth();
 
-                var screenX = GuiManager.Cursor.ScreenX;
+                var screenX = GuiManager.Cursor.GumX();
 
                 var ratio = (screenX - left) / (right - left);
 
@@ -89,12 +89,12 @@ namespace FlatRedBall.Forms.Controls
             else
             {
                 double newValue;
-                if (GuiManager.Cursor.ScreenX < thumb.ActualX)
+                if (GuiManager.Cursor.GumX() < thumb.ActualX)
                 {
                     newValue = Value - LargeChange;
                     ApplyValueConsideringSnapToTicks(newValue);
                 }
-                else if (GuiManager.Cursor.ScreenX > thumb.ActualX + thumb.ActualWidth)
+                else if (GuiManager.Cursor.GumX() > thumb.ActualX + thumb.ActualWidth)
                 {
                     newValue = Value + LargeChange;
 
@@ -174,7 +174,7 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void UpdateThumbPositionToCursorDrag(Cursor cursor)
         {
-            var cursorScreenX = cursor.ScreenX;
+            var cursorScreenX = cursor.GumX();
 
             var cursorXRelativeToTrack = cursorScreenX - Track.AbsoluteX;
             

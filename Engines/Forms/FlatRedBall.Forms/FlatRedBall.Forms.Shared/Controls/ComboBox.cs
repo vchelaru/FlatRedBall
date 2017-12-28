@@ -117,6 +117,14 @@ namespace FlatRedBall.Forms.Controls
             else
             {
                 listBox = listBoxInstance.FormsControlAsObject as ListBox;
+
+#if DEBUG
+                if(listBox == null)
+                {
+                    var message = $"The ListBoxInstance Gum component inside the combo box {Visual.Name} is of type {listBoxInstance.FormsControlAsObject.GetType().Name}, but it should be of type ListBox";
+                    throw new Exception(message);
+                }
+#endif
             }
 
 
