@@ -176,12 +176,10 @@ namespace GumPlugin.DataGeneration
 
             InstanceSave innerPanelInstance = new InstanceSave();
             innerPanelInstance.Name = "InnerPanelInstance";
-            // todo - needs to implement the ScrollBar behavior
             toReturn.RequiredInstances.Add(innerPanelInstance);
 
             InstanceSave clipContainerInstance = new InstanceSave();
             clipContainerInstance.Name = "ClipContainerInstance";
-            // todo - needs to implement the ScrollBar behavior
             toReturn.RequiredInstances.Add(clipContainerInstance);
 
             return toReturn;

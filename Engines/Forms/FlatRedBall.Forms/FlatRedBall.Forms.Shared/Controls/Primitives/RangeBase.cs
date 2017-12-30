@@ -91,7 +91,6 @@ namespace FlatRedBall.Forms.Controls.Primitives
         {
             base.ReactToVisualChanged();
 
-            thumb = new Button();
             var thumbVisual = this.Visual.GetGraphicalUiElementByName("ThumbInstance");
 #if DEBUG
             if(thumbVisual == null)
@@ -101,7 +100,15 @@ namespace FlatRedBall.Forms.Controls.Primitives
             }
 #endif
 
-            thumb.Visual = thumbVisual;
+            if(thumbVisual.FormsControlAsObject == null)
+            {
+                thumb = new Button();
+                thumb.Visual = thumbVisual;
+            }
+            else
+            {
+                thumb = thumbVisual.FormsControlAsObject as Button;
+            }
             thumb.Push += HandleThumbPush;
             thumb.Visual.RollOver += HandleThumbRollOver;
             // do this before assigning any values like Minimum, Maximum
