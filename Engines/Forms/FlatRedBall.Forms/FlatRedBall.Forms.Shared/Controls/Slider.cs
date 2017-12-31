@@ -34,7 +34,6 @@ namespace FlatRedBall.Forms.Controls
             base.ReactToVisualChanged();
 
 
-
             Track.Push += HandleTrackPush;
 
         }
@@ -132,10 +131,6 @@ namespace FlatRedBall.Forms.Controls
 
             if (IsSnapToTickEnabled)
             {
-                if(FlatRedBall.Input.InputManager.Keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.S))
-                {
-                    int m = 3;
-                }
                 newValue = Math.MathFunctions.RoundDouble(newValue, TicksFrequency, Minimum);
 
                 var range = Maximum - Minimum;
@@ -167,6 +162,8 @@ namespace FlatRedBall.Forms.Controls
                 ratioOver = 0;
             }
 
+            thumb.Visual.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
+
             thumb.X = Microsoft.Xna.Framework.MathHelper.Lerp(0, Track.GetAbsoluteWidth(),
                 (float)ratioOver);
 
@@ -177,7 +174,9 @@ namespace FlatRedBall.Forms.Controls
             var cursorScreenX = cursor.GumX();
 
             var cursorXRelativeToTrack = cursorScreenX - Track.AbsoluteX;
-            
+
+            thumb.Visual.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
+
             thumb.X = cursorXRelativeToTrack - cursorGrabOffsetRelativeToThumb;
 
             float range = Track.GetAbsoluteWidth() ;

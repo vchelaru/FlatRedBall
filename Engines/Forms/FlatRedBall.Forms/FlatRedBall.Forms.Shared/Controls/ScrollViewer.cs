@@ -77,6 +77,7 @@ namespace FlatRedBall.Forms.Controls
         private void HandleVerticalScrollBarValueChanged(object sender, EventArgs e)
         {
             reactToInnerPanelPositionOrSizeChanged = false;
+            innerPanel.YUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
             innerPanel.Y = -(float)verticalScrollBar.Value;
             reactToInnerPanelPositionOrSizeChanged = true;
         }

@@ -86,6 +86,7 @@ namespace FlatRedBall.Forms.Controls
 
             base.ReactToVisualChanged();
 
+            
             var thumbHeight = thumb.ActualHeight;
 
             upButton.Push += (not, used) => this.Value -= this.SmallChange;
@@ -179,6 +180,10 @@ namespace FlatRedBall.Forms.Controls
                 ratioDown = 0;
             }
 
+            thumb.Visual.YUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
+            thumb.Visual.HeightUnits = global::Gum.DataTypes.DimensionUnitType.Absolute;
+
+
             thumb.Y = Microsoft.Xna.Framework.MathHelper.Lerp(MinThumbPosition, MaxThumbPosition, 
                 (float)ratioDown);
 
@@ -188,6 +193,10 @@ namespace FlatRedBall.Forms.Controls
         {
             var cursorScreenY = cursor.GumY();
             var cursorYRelativeToTrack = cursorScreenY - Track.GetTop();
+
+
+            thumb.Visual.YUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
+            thumb.Visual.HeightUnits = global::Gum.DataTypes.DimensionUnitType.Absolute;
 
             thumb.Y = cursorYRelativeToTrack - cursorGrabOffsetRelativeToThumb;
 
@@ -215,6 +224,9 @@ namespace FlatRedBall.Forms.Controls
                 var valueRange = (Maximum - Minimum) + ViewportSize;
 
                 var thumbRatio = ViewportSize / valueRange;
+
+                thumb.Visual.YUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
+                thumb.Visual.HeightUnits = global::Gum.DataTypes.DimensionUnitType.Absolute;
 
                 thumb.Height = System.Math.Max(MinimumThumbSize, (float)(trackHeight * thumbRatio));
             }
