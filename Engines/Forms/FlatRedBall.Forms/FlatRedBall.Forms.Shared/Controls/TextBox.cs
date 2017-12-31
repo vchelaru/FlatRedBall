@@ -322,7 +322,8 @@ namespace FlatRedBall.Forms.Controls
         {
             var substring = Text.Substring(0, caretIndex);
             var measure = this.coreTextObject.BitmapFont.MeasureString(substring);
-            
+
+            caretComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
 
             caretComponent.X = measure + this.textComponent.X;
         }
@@ -346,11 +347,15 @@ namespace FlatRedBall.Forms.Controls
 
         private void OffsetTextToKeepCaretInView()
         {
+            this.textComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
+            this.caretComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
+
             float leftOfCaret = caretComponent.AbsoluteX;
             float rightOfCaret = caretComponent.AbsoluteX + caretComponent.GetAbsoluteWidth();
 
-            float leftOfParent = caretComponent.ParentGue.AbsoluteX;
-            float rightOfParent = caretComponent.ParentGue.AbsoluteX + caretComponent.ParentGue.GetAbsoluteWidth();
+            float leftOfParent = caretComponent.EffectiveParentGue.AbsoluteX;
+            float rightOfParent = caretComponent.EffectiveParentGue.AbsoluteX + 
+                caretComponent.EffectiveParentGue.GetAbsoluteWidth();
 
             float shiftAmount = 0;
             const float padding = 5;
