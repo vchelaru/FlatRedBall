@@ -160,7 +160,7 @@ namespace FlatRedBall.Glue.Parsing
             var toReturn = CodeWriter.CreateClass(classProperties);
 
             var block = new CodeBlockBaseNoIndent(null);
-            block.Line("#if ANDROID || IOS");
+            block.Line("#if ANDROID || IOS || DESKTOP_GL");
             block.Line("// Android doesn't allow background loading. iOS doesn't allow background rendering (which is used by converting textures to use premult alpha)");
             block.Line("#define REQUIRES_PRIMARY_THREAD_LOADING");
             block.Line("#endif");

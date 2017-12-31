@@ -311,7 +311,7 @@ namespace FlatRedBallAddOns.Entities
             
             var rootBlock = new CodeDocument(0);
 
-            rootBlock.Line("#if ANDROID || IOS");
+            rootBlock.Line("#if ANDROID || IOS || DESKTOP_GL");
             rootBlock.Line("#define REQUIRES_PRIMARY_THREAD_LOADING");
             rootBlock.Line("#endif");
 
