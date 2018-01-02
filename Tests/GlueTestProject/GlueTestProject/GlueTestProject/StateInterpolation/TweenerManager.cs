@@ -41,7 +41,14 @@ namespace StateInterpolationPlugin
             mTweeners.Add(tweener);
             // We could use a function in the
             // tweener to prevent allocating a function.
-            tweener.Ended += () => mTweeners.Remove(tweener);
+            // Update January 1, 2018
+            // I don't know if we need
+            // to add this event anymore
+            // because once it's ended the
+            // tweener manager will automatically
+            // remove it. This causes allocations so 
+            // there's probably no need for it.
+            //tweener.Ended += () => mTweeners.Remove(tweener);
         }
 
         public void StopAllTweenersOwnedBy(object owner)
