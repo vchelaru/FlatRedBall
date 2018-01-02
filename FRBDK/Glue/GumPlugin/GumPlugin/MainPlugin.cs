@@ -183,7 +183,9 @@ namespace GumPlugin
             // - Huge change - plugin can now automatically assign .Forms controls to Gum runtimes based on their behaviors
             // - Added Checkbox behavior
             // - Fixed bugs when adding state categories to standard objects.
-            get { return new Version(0, 9, 3, 0); }
+            // 0.9.3.1
+            // - Improved TweenerManager to not add a removed event, potentially saving lots of memory allocations.
+            get { return new Version(0, 9, 3, 1); }
         }
 
         #endregion

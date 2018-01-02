@@ -44,9 +44,10 @@ namespace OfficialPlugins.StateInterpolation
 
         // 1.2.0 - Added instant interpolation type
         // 1.2.1 - Fixed bug where Running would remain true after its duration
+        // 1.2.2 - Removed event that fired when a tweener finished - now we just rely on the TweenerManager to do it.
         public override Version Version
         {
-            get { return new Version(1, 2, 1); }
+            get { return new Version(1, 2, 2); }
         }
 
         #endregion
