@@ -106,12 +106,12 @@ namespace GumPlugin.DataGeneration
             category.States.Add(new StateSave { Name = "Selected" });
 
             // add the required instances:
-            InstanceSave textInstance = new InstanceSave();
+            BehaviorInstanceSave textInstance = new BehaviorInstanceSave();
             textInstance.Name = "TextInstance";
             textInstance.BaseType = "Text";
             toReturn.RequiredInstances.Add(textInstance);
 
-            InstanceSave caretInstance = new InstanceSave();
+            BehaviorInstanceSave caretInstance = new BehaviorInstanceSave();
             caretInstance.Name = "CaretInstance";
             toReturn.RequiredInstances.Add(caretInstance);
 
@@ -127,19 +127,19 @@ namespace GumPlugin.DataGeneration
             toReturn.Categories.Add(category);
             category.Name = "ScrollBarCategory";
 
-            InstanceSave upButtonInstance = new InstanceSave();
+            BehaviorInstanceSave upButtonInstance = new BehaviorInstanceSave();
             upButtonInstance.Name = "UpButtonInstance";
-            // todo - upButtonInstance needs to implement the Button behavior
+            upButtonInstance.Behaviors.Add(new BehaviorReference { Name = ButtonBehaviorName });
             toReturn.RequiredInstances.Add(upButtonInstance);
 
-            InstanceSave downButtonInstance = new InstanceSave();
+            BehaviorInstanceSave downButtonInstance = new BehaviorInstanceSave();
             downButtonInstance.Name = "DownButtonInstance";
-            // todo - downButtonInstance needs to implement the Button behavior
+            downButtonInstance.Behaviors.Add(new BehaviorReference { Name = ButtonBehaviorName });
             toReturn.RequiredInstances.Add(downButtonInstance);
 
-            InstanceSave thumbInstance = new InstanceSave();
+            BehaviorInstanceSave thumbInstance = new BehaviorInstanceSave();
             thumbInstance.Name = "ThumbInstance";
-            // todo - thumbInstance needs to implement the Button behavior
+            thumbInstance.Behaviors.Add(new BehaviorReference { Name = ButtonBehaviorName });
             toReturn.RequiredInstances.Add(thumbInstance);
 
             return toReturn;
@@ -153,10 +153,10 @@ namespace GumPlugin.DataGeneration
             var category = new StateSaveCategory();
             toReturn.Categories.Add(category);
             category.Name = "SliderCategory";
-            
-            InstanceSave thumbInstance = new InstanceSave();
+
+            BehaviorInstanceSave thumbInstance = new BehaviorInstanceSave();
             thumbInstance.Name = "ThumbInstance";
-            // todo - thumbInstance needs to implement the Button behavior
+            thumbInstance.Behaviors.Add(new BehaviorReference { Name = ButtonBehaviorName });
             toReturn.RequiredInstances.Add(thumbInstance);
 
             return toReturn;
@@ -169,16 +169,16 @@ namespace GumPlugin.DataGeneration
 
             // no categories needed yet
 
-            InstanceSave verticalScrollBarInstance = new InstanceSave();
+            BehaviorInstanceSave verticalScrollBarInstance = new BehaviorInstanceSave();
             verticalScrollBarInstance.Name = "VerticalScrollBarInstance";
-            // todo - needs to implement the ScrollBar behavior
+            verticalScrollBarInstance.Behaviors.Add(new BehaviorReference { Name = ScrollBarBehaviorName });
             toReturn.RequiredInstances.Add(verticalScrollBarInstance);
 
-            InstanceSave innerPanelInstance = new InstanceSave();
+            BehaviorInstanceSave innerPanelInstance = new BehaviorInstanceSave();
             innerPanelInstance.Name = "InnerPanelInstance";
             toReturn.RequiredInstances.Add(innerPanelInstance);
 
-            InstanceSave clipContainerInstance = new InstanceSave();
+            BehaviorInstanceSave clipContainerInstance = new BehaviorInstanceSave();
             clipContainerInstance.Name = "ClipContainerInstance";
             toReturn.RequiredInstances.Add(clipContainerInstance);
 
@@ -192,19 +192,17 @@ namespace GumPlugin.DataGeneration
 
             // no categories needed yet
 
-            InstanceSave verticalScrollBarInstance = new InstanceSave();
+            BehaviorInstanceSave verticalScrollBarInstance = new BehaviorInstanceSave();
             verticalScrollBarInstance.Name = "VerticalScrollBarInstance";
-            // todo - needs to implement the ScrollBar behavior
+            verticalScrollBarInstance.Behaviors.Add(new BehaviorReference { Name = ScrollBarBehaviorName });
             toReturn.RequiredInstances.Add(verticalScrollBarInstance);
 
-            InstanceSave innerPanelInstance = new InstanceSave();
+            BehaviorInstanceSave innerPanelInstance = new BehaviorInstanceSave();
             innerPanelInstance.Name = "InnerPanelInstance";
-            // todo - needs to implement the ScrollBar behavior
             toReturn.RequiredInstances.Add(innerPanelInstance);
 
-            InstanceSave clipContainerInstance = new InstanceSave();
+            BehaviorInstanceSave clipContainerInstance = new BehaviorInstanceSave();
             clipContainerInstance.Name = "ClipContainerInstance";
-            // todo - needs to implement the ScrollBar behavior
             toReturn.RequiredInstances.Add(clipContainerInstance);
 
             return toReturn;
@@ -240,12 +238,13 @@ namespace GumPlugin.DataGeneration
             category.States.Add(new StateSave { Name = "Highlighted" });
             category.States.Add(new StateSave { Name = "Pushed" });
 
-            InstanceSave listBoxInstance = new InstanceSave();
+            BehaviorInstanceSave listBoxInstance = new BehaviorInstanceSave();
             listBoxInstance.Name = "ListBoxInstance";
-            // todo - needs to implement the ListBox behavior
+            listBoxInstance.Behaviors.Add(new BehaviorReference { Name = ListBoxBehaviorName });
+
             toReturn.RequiredInstances.Add(listBoxInstance);
 
-            InstanceSave textInstance = new InstanceSave();
+            BehaviorInstanceSave textInstance = new BehaviorInstanceSave();
             textInstance.Name = "TextInstance";
             textInstance.BaseType = "Text";
             toReturn.RequiredInstances.Add(textInstance);

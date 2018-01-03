@@ -97,8 +97,9 @@ namespace GumPlugin.Controls
             if(!doesProjectAlreadyHaveBehavior)
             {
                 AppCommands.Self.AddBehavior(behaviorSave);
-                AppCommands.Self.SaveBehavior(behaviorSave);
             }
+            // in case it's changed, or in case the user has somehow corrupted their behavior, force save it
+            AppCommands.Self.SaveBehavior(behaviorSave);
 
             return doesProjectAlreadyHaveBehavior == false;
         }
