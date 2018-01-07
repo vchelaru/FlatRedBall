@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glue", "Glue\Glue.csproj", "{213357E3-F729-4FF3-9B99-E91C40D50E6E}"
 EndProject
@@ -87,11 +87,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GumCoreProjects", "GumCoreP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateInterpolation", "..\..\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.csproj", "{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GumCoreShared", "..\..\..\Gum\GumCoreShared.shproj", "{F919C045-EAC7-4806-9A1F-CE421F923E97}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}*SharedItemsImports = 4
 		StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{f0bdee46-0374-4278-b1c3-f91a76fe3a8d}*SharedItemsImports = 4
+		..\..\..\Gum\GumCoreShared.projitems*{f919c045-eac7-4806-9a1f-ce421f923e97}*SharedItemsImports = 13
 		GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.projitems*{fc2030b0-e60b-434d-a513-400270b8d7c6}*SharedItemsImports = 4
 		..\..\..\Gum\GumCoreShared.projitems*{fc2030b0-e60b-434d-a513-400270b8d7c6}*SharedItemsImports = 4
 	EndGlobalSection
@@ -2557,8 +2560,8 @@ Global
 		{FC2030B0-E60B-434D-A513-400270B8D7C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC2030B0-E60B-434D-A513-400270B8D7C6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{FC2030B0-E60B-434D-A513-400270B8D7C6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{FC2030B0-E60B-434D-A513-400270B8D7C6}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FC2030B0-E60B-434D-A513-400270B8D7C6}.Debug|x86.Build.0 = Debug|Any CPU
+		{FC2030B0-E60B-434D-A513-400270B8D7C6}.Debug|x86.ActiveCfg = Debug|x86
+		{FC2030B0-E60B-434D-A513-400270B8D7C6}.Debug|x86.Build.0 = Debug|x86
 		{FC2030B0-E60B-434D-A513-400270B8D7C6}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
 		{FC2030B0-E60B-434D-A513-400270B8D7C6}.Debug|Xbox 360.Build.0 = Debug|Any CPU
 		{FC2030B0-E60B-434D-A513-400270B8D7C6}.DebugProfile|Any CPU.ActiveCfg = Debug|Any CPU
@@ -2645,8 +2648,8 @@ Global
 		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.Debug|x86.Build.0 = Debug|Any CPU
+		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.Debug|x86.ActiveCfg = Debug|x86
+		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.Debug|x86.Build.0 = Debug|x86
 		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
 		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.Debug|Xbox 360.Build.0 = Debug|Any CPU
 		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.DebugProfile|Any CPU.ActiveCfg = Debug|Any CPU
@@ -2756,6 +2759,7 @@ Global
 		{FC2030B0-E60B-434D-A513-400270B8D7C6} = {1D66D67D-064B-4AAC-94E1-AF754D281FA0}
 		{1D66D67D-064B-4AAC-94E1-AF754D281FA0} = {3DDD0995-4B47-47A2-82A4-F0A6367C9FF2}
 		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D} = {1D66D67D-064B-4AAC-94E1-AF754D281FA0}
+		{F919C045-EAC7-4806-9A1F-CE421F923E97} = {1D66D67D-064B-4AAC-94E1-AF754D281FA0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {878CCBB8-EADE-4F25-9DE7-D55D999D414A}
