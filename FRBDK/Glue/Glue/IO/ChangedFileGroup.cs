@@ -159,6 +159,12 @@ namespace FlatRedBall.Glue.IO
             mFileSystemWatcher.IncludeSubdirectories = true;
             mFileSystemWatcher.NotifyFilter =
                 NotifyFilters.LastWrite |
+                // tiled seems to save the file with a temp name like
+                // MyFile.tmx.D1234
+                // then it renames it to
+                // MyFile.tmx
+                // We need to handle the filename changing or else Glue isn't notified of the change.
+                NotifyFilters.FileName |
                 NotifyFilters.DirectoryName;
 
 

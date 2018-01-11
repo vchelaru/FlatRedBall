@@ -9707,6 +9707,47 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
+      <CustomVariables>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>X</Name>
+          <Type>float</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>Y</Name>
+          <Type>float</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>Z</Name>
+          <Type>float</Type>
+        </CustomVariable>
+      </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
+      <Name>Entities\NotUsedEntity1</Name>
+      <Is2D>true</Is2D>
+    </EntitySave>
+    <EntitySave>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
