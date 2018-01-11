@@ -456,7 +456,6 @@ namespace FlatRedBall.Math
 
         }
 
-#if !FRB_MDX
         public void SortAlongForwardVectorDescending(PositionedObject positionedObjectRelativeTo)
         {
             Dictionary<PositionedObject, Vector3> oldPositions = new Dictionary<PositionedObject, Vector3>(this.Count);
@@ -485,7 +484,6 @@ namespace FlatRedBall.Math
                 kvp.Key.Position = kvp.Value;
             }
         }
-#endif
 
         public void SortCameraDistanceInsersionDescending(Camera camera)
         {// Biggest first
@@ -501,18 +499,9 @@ namespace FlatRedBall.Math
                 // Creating new vectors here for distance is slow.  
                 // For optimization just do the length suared calculations
                 // by hand.
-#if FRB_MDX
-                cameraDistanceSquared = ((this[i]).Position - camera.Position).LengthSq();
-#else
                 cameraDistanceSquared = ((Vector3)(this[i]).Position - camera.Position).LengthSquared();
-#endif
 
-#if FRB_MDX
-                if (cameraDistanceSquared > ((this[i - 1]).Position - camera.Position).LengthSq())
-#else
                 if (cameraDistanceSquared > ((this[i - 1]).Position - camera.Position).LengthSquared())
-
-#endif
                 {
                     if (i == 1)
                     {
@@ -525,23 +514,15 @@ namespace FlatRedBall.Math
                     {
                         // Optimize here by not calling LengthSq/LengthSquared
 #if FRB_MDX
-                        if (cameraDistanceSquared <= ((this[whereCameraBelongs]).Position - camera.Position).LengthSq())
 #else
                         if (cameraDistanceSquared <= ((this[whereCameraBelongs]).Position - camera.Position).LengthSquared())
-
 #endif
                         {
                             base.Insert(whereCameraBelongs + 1, this[i]);
                             base.RemoveAtOneWay(i + 1);
                             break;
                         }
-
-#if FRB_MDX
-                        else if (whereCameraBelongs == 0 && cameraDistanceSquared > ((this[0]).Position - camera.Position).LengthSq())
-#else
                         else if (whereCameraBelongs == 0 && cameraDistanceSquared > ((this[0]).Position - camera.Position).LengthSquared())
-
-#endif
                         {
                             base.Insert(0, this[i]);
                             base.RemoveAtOneWay(i + 1);
