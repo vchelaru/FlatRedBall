@@ -95,7 +95,7 @@ namespace FlatRedBall.Forms.Controls.Primitives
 #if DEBUG
             if(thumbVisual == null)
             {
-                throw new Exception($"The {this.GetType().Name} Gum object must have a button called DownButtonInstance");
+                throw new Exception($"The {this.GetType().Name} Gum object must have a button called ThumbInstance");
 
             }
 #endif
