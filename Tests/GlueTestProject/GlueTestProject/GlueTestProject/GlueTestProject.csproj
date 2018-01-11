@@ -544,6 +544,10 @@
     <Compile Include="Entities\NoIWindowBase.Generated.cs">
       <DependentUpon>NoIWindowBase.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\NotUsedEntity1.cs" />
+    <Compile Include="Entities\NotUsedEntity1.Generated.cs">
+      <DependentUpon>NotUsedEntity1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\OptionallyAddedEntity.cs" />
     <Compile Include="Entities\OptionallyAddedEntity.Generated.cs">
       <DependentUpon>OptionallyAddedEntity.cs</DependentUpon>
@@ -766,6 +770,7 @@
     <Compile Include="GumCore\AnimationFrame.cs" />
     <Compile Include="GumCore\Atlas.cs" />
     <Compile Include="GumCore\AtlasedTexture.cs" />
+    <Compile Include="GumCore\BehaviorInstanceSave.cs" />
     <Compile Include="GumCore\BehaviorReference.cs" />
     <Compile Include="GumCore\BehaviorSave.cs" />
     <Compile Include="GumCore\BitmapCharacterInfo.cs" />

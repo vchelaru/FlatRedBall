@@ -132,6 +132,11 @@ namespace FlatRedBall.TileCollisions
             return mShapes.CollideAgainst(circle, true, mSortAxis);
         }
 
+        public bool CollideAgainst(Polygon polygon)
+        {
+            return mShapes.CollideAgainst(polygon, true, mSortAxis);
+        }
+
         public bool CollideAgainst(ICollidable collidable)
         {
             return mShapes.CollideAgainst(collidable.Collision, true, mSortAxis);
