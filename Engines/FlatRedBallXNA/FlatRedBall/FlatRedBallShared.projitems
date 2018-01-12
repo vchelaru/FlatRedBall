@@ -208,6 +208,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Math\AttachableList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Attachment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Collision\CollisionEnumerations.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Collision\CollisionManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Collision\CollisionRelationship.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Collision\PartitionedValuesBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\AxisAlignedCube.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\AxisAlignedRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\Capsule2D.cs" />
