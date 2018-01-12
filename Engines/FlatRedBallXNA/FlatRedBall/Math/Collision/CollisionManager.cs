@@ -14,6 +14,8 @@ namespace FlatRedBall.Math.Collision
     {
         #region Fields/Properties
 
+        public static CollisionManager Self { get; private set; }
+
         /// <summary>
         /// The relationships which are currently part of the collision manager. This should not be added to
         /// by regular game code. This is exposed so that collision manager extension methods can add new relationships.
@@ -35,6 +37,22 @@ namespace FlatRedBall.Math.Collision
 
                 return toReturn;
             }
+        }
+
+        #endregion
+
+        #region Constructor/Init
+
+        static CollisionManager()
+        {
+            Self = new CollisionManager();
+
+            FlatRedBallServices.AddManager(Self);
+        }
+
+        private CollisionManager()
+        {
+
         }
 
         #endregion
@@ -89,6 +107,7 @@ namespace FlatRedBall.Math.Collision
 
         #endregion
 
+        #region Partition Methods
 
         public void Partition<T>(PositionedObjectList<T> list, Axis axis, float maxWidthOrHeight, bool sortEveryFrame = false) where T : PositionedObject
         {
@@ -103,6 +122,8 @@ namespace FlatRedBall.Math.Collision
             partitionedValues.MaxWidthOrHeight = maxWidthOrHeight;
             partitions.Add(partitionedValues);
         }
+
+        #endregion
 
         public void Update()
         {
