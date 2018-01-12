@@ -164,6 +164,7 @@ namespace FlatRedBall.Glue.IO
                 // then it renames it to
                 // MyFile.tmx
                 // We need to handle the filename changing or else Glue isn't notified of the change.
+                // Update - only do this for TMX (see below)
                 NotifyFilters.FileName |
                 NotifyFilters.DirectoryName;
 
@@ -213,14 +214,16 @@ namespace FlatRedBall.Glue.IO
         void HandleFileSystemChange(object sender, FileSystemEventArgs e)
         {
             string fileName = e.FullPath;
-            ChangeInformation toAddTo = mChangedFiles;
 
-            bool wasAdded = AddChangedFileTo(fileName, toAddTo);
+            bool shouldProcess =
+                e.ChangeType != WatcherChangeTypes.Renamed || FileManager.GetExtension(fileName) == "tmx";
 
-            //if(!wasAdded && FileManager.GetExtension(fileName) == "csproj")
-            //{
-            //    Plugins.PluginManager.ReceiveOutput($"Ignored {fileName}, {NumberOfTimesToIgnore(fileName)} left");
-            //}
+            if(shouldProcess)
+            {
+                ChangeInformation toAddTo = mChangedFiles;
+
+                bool wasAdded = AddChangedFileTo(fileName, toAddTo);
+            }
         }
 
         private bool AddChangedFileTo(string fileName, ChangeInformation toAddTo)
