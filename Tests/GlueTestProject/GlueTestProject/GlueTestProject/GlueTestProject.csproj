@@ -242,6 +242,10 @@
     <Compile Include="Entities\CollisionEntity.Generated.cs">
       <DependentUpon>CollisionEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\CollisionPlayer.cs" />
+    <Compile Include="Entities\CollisionPlayer.Generated.cs">
+      <DependentUpon>CollisionPlayer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\CollisionShip.cs" />
     <Compile Include="Entities\CollisionShip.Generated.cs">
       <DependentUpon>CollisionShip.cs</DependentUpon>

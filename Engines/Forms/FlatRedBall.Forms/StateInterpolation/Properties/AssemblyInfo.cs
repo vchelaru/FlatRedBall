@@ -1,17 +1,16 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Android.App;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("StateInterpolation.Android")]
+[assembly: AssemblyTitle("StateInterpolation")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Universidade do Porto")]
-[assembly: AssemblyProduct("StateInterpolation.Android")]
-[assembly: AssemblyCopyright("Copyright © Universidade do Porto 2018")]
+[assembly: AssemblyCompany("FlatRedBall")]
+[assembly: AssemblyProduct("StateInterpolation")]
+[assembly: AssemblyCopyright("Copyright © FlatRedBall 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

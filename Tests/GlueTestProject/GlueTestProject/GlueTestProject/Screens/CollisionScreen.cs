@@ -11,6 +11,7 @@ using FlatRedBall.AI.Pathfinding;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Graphics.Particle;
 
+using FlatRedBall.Math.Collision;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Math.Splines;
 
@@ -70,6 +71,15 @@ namespace GlueTestProject.Screens
             }
 
             Test_L_RepositonDirection();
+
+            CreateCollisionRelationships();
+        }
+
+        private void CreateCollisionRelationships()
+        {
+            var subcollision = CollisionManager.Self.CreateRelationship(PlayerList, ShipList);
+
+
         }
 
         private void Test_L_RepositonDirection()
@@ -118,16 +128,21 @@ namespace GlueTestProject.Screens
         }
 
         void CustomActivity(bool firstTimeCalled)
-		{
+        {
+            var shouldContinue = this.ActivityCallCount > 5;
 
-            IsActivityFinished = true;
+            // give the screen a chance to call 
+
+            if (shouldContinue)
+            {
+                IsActivityFinished = true;
+            }
 		}
 
 		void CustomDestroy()
 		{
-
-
-		}
+            CollisionManager.Self.Relationships.Count.ShouldBe(0);
+        }
 
         static void CustomLoadStaticContent(string contentManagerName)
         {
