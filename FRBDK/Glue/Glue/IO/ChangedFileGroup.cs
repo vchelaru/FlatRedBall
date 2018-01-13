@@ -208,15 +208,17 @@ namespace FlatRedBall.Glue.IO
             ChangeInformation toAddTo = mDeletedFiles;
 
             bool shouldIgnoreDelete = GetIfShouldIgnoreDelete(fileName);
-
-            AddChangedFileTo(fileName, toAddTo);
+            if(!shouldIgnoreDelete)
+            {
+                AddChangedFileTo(fileName, toAddTo);
+            }
 
         }
 
         private bool GetIfShouldIgnoreDelete(string fileName)
         {
             var extension = FileManager.GetExtension(fileName);
-            return fileName == "glux";
+            return extension == "glux";
         }
 
         void HandleFileSystemChange(object sender, FileSystemEventArgs e)
