@@ -663,7 +663,9 @@ namespace FlatRedBall.Math.Collision
                 }
                 else
                 {
-                    GetCollisionStartAndInt(out int startInclusive, out int endExclusive);
+                    int startInclusive;
+                    int endExclusive;
+                    GetCollisionStartAndInt(out startInclusive, out endExclusive);
 
                     for (int i = startInclusive; i > endExclusive; i--)
                     {
@@ -687,8 +689,9 @@ namespace FlatRedBall.Math.Collision
             FirstCollidableT closestFirst = null;
             SecondCollidableT closestSecond = null;
             var closestDistanceSquared = float.PositiveInfinity;
-
-            GetCollisionStartAndInt(out int startInclusive, out int endExclusive);
+            int startInclusive;
+            int endExclusive;
+            GetCollisionStartAndInt(out startInclusive, out endExclusive);
 
             for (int i = startInclusive; i > endExclusive; i--)
             {
@@ -809,7 +812,10 @@ namespace FlatRedBall.Math.Collision
             else
             {
                 skippedFrames = 0;
-                GetCollisionStartAndInt(out int startInclusive, out int endExclusive);
+                int startInclusive;
+                int endExclusive;
+
+                GetCollisionStartAndInt(out startInclusive, out endExclusive);
 
                 for (int i = startInclusive; i > endExclusive; i--)
                 {
@@ -874,7 +880,10 @@ namespace FlatRedBall.Math.Collision
                     {
                         var first = firstList[i];
 
-                        GetCollisionStartAndInt(first, out int startInclusive, out int endExclusive);
+                        int startInclusive;
+                        int endExclusive;
+
+                        GetCollisionStartAndInt(first, out startInclusive, out endExclusive);
 
                         for (int j = startInclusive; j > endExclusive; j--)
                         {
@@ -960,8 +969,9 @@ namespace FlatRedBall.Math.Collision
                 var closestDistanceSquared = float.PositiveInfinity;
 
                 var first = firstList[i];
-
-                GetCollisionStartAndInt(first, out int startInclusive, out int endExclusive);
+                int startInclusive;
+                int endExclusive;
+                GetCollisionStartAndInt(first, out startInclusive, out endExclusive);
 
 
                 for (int j = startInclusive; j > endExclusive; j--)
