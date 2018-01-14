@@ -185,7 +185,9 @@ namespace GumPlugin
             // - Fixed bugs when adding state categories to standard objects.
             // 0.9.3.1
             // - Improved TweenerManager to not add a removed event, potentially saving lots of memory allocations.
-            get { return new Version(0, 9, 3, 1); }
+            // 0.9.3.2
+            // - Huge reduction in every-frame memory allocation by pooling render state info lists
+            get { return new Version(0, 9, 3, 2); }
         }
 
         #endregion
