@@ -311,6 +311,104 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static ICodeBlock GenerateCurrentStateProperty(IElement element, ICodeBlock codeBlock, string enumType, List<StateSave> states)
         {
+            // early out
+            if(states.Count == 0)
+            {
+                return codeBlock;
+            }
+
+            string variableNameModifier = enumType;
+            if (enumType == "VariableState")
+            {
+                variableNameModifier = "";
+            }
+
+            string qualifiedEnumType = element.Name.Replace("\\", ".").Replace("/", ".") + "." + enumType;
+
+            string variableToLookFor = "Current" + variableNameModifier + "State";
+            CustomVariable customVariable = element.GetCustomVariable(variableToLookFor);
+            bool hasEvent = customVariable != null && customVariable.CreatesEvent;
+
+
+            #region Header and Getter stuff - simple stuff with no logic
+
+            bool createField = GetIfShouldCreateCurrentStateField(element, enumType);
+
+            if (createField)
+            {
+                codeBlock
+                    .Line(string.Format("protected int mCurrent{0}State = 0;", variableNameModifier));
+            }
+
+            string publicWithOptionalNew = "public";
+            if (ShouldUseNewKeyword(element, enumType))
+            {
+                publicWithOptionalNew += " new";
+            }
+
+            // This is inclusive (-1), but includes 0 and 1 values (+2), which means the net is +1
+            int maxIntValueInclusive = states.Count + 1;
+
+            var setBlock = codeBlock
+                .Property(publicWithOptionalNew + " " + qualifiedEnumType, "Current" + variableNameModifier + "State")
+                    .Get()
+                    // This could could check if the value is a valid state int either by doing a IsDefined call which is probably slow (uses reflection) or
+                    // it could check the int value to make sure it's within the necessary range.
+                        //.If(string.Format("System.Enum.IsDefined(typeof({0}), mCurrent{1}State)", enumType, variableNameModifier))
+                        .If($"mCurrent{variableNameModifier}State >= 0 && mCurrent{variableNameModifier}State <= {maxIntValueInclusive}")
+                            .Line(string.Format("return ({0})mCurrent{1}State;", enumType, variableNameModifier))
+                        .End()
+                        .Else()
+                            .Line(string.Format("return {0}.Unknown;", enumType))
+                        .End()
+                    .End()
+                    .Set();
+
+            #endregion
+
+            #region Set the state value and call an event if necessary
+
+            bool stillNeedsToAssignValue = true;
+
+            if (hasEvent)
+            {
+                EventCodeGenerator.GenerateEventRaisingCode(setBlock, BeforeOrAfter.Before, variableToLookFor, element);
+            }
+
+            if (stillNeedsToAssignValue)
+            {
+                setBlock.Line("mCurrent" + variableNameModifier + "State = (int)value;");
+            }
+
+            #endregion
+
+            var switchBlock = setBlock.Switch("Current" + variableNameModifier + "State");
+
+            switchBlock.Case(enumType + ".Uninitialized");
+            switchBlock.Case(enumType + ".Unknown");
+
+            foreach (StateSave stateSave in states)
+            {
+                GenerateCurrentStateCodeForIndividualState(element, switchBlock, stateSave, enumType);
+            }
+
+            if ((enumType == "VariableState" && DoesBaseHaveUncategorizedStates(element)) ||
+                (!string.IsNullOrEmpty(element.BaseElement) && GetAllStateCategoryNames(ObjectFinder.Self.GetIElement(element.BaseElement), true).Any(category => category == enumType)))
+            {
+                switchBlock.Default()
+                    .Line("base.Current" + variableNameModifier + "State = base.Current" + variableNameModifier + "State;");
+            }
+
+            if (hasEvent)
+            {
+                EventCodeGenerator.GenerateEventRaisingCode(setBlock, BeforeOrAfter.After, variableToLookFor, element);
+            }
+
+            return codeBlock;
+        }
+
+        private static bool GetIfShouldCreateCurrentStateField(IElement element, string enumType)
+        {
             var createField = false;
             if (enumType == "VariableState" && !DoesBaseHaveUncategorizedStates(element))  //Uncategorized and not base
             {
@@ -326,108 +424,14 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         createField = true;
                     }
-                }else
+                }
+                else
                 {
                     createField = true;
                 }
             }
 
-            string variableNameModifier = enumType;
-            if (enumType == "VariableState")
-            {
-                variableNameModifier = "";
-            }
-
-            string qualifiedEnumType = element.Name.Replace("\\", ".").Replace("/", ".")  +  "." + enumType;
-
-            if (states.Count != 0)
-            {
-                string variableToLookFor = "Current" + variableNameModifier + "State";
-                CustomVariable customVariable = element.GetCustomVariable(variableToLookFor);
-                bool hasEvent = customVariable != null && customVariable.CreatesEvent;
-
-
-                #region Header and Getter stuff - simple stuff with no logic
-
-                if (createField)
-                {
-                    codeBlock
-                        .Line(string.Format("protected int mCurrent{0}State = 0;", variableNameModifier));
-                }
-
-                string publicWithOptionalNew = "public";
-                if (ShouldUseNewKeyword(element, enumType))
-                {
-                    publicWithOptionalNew += " new";
-                }
-                var setBlock = codeBlock
-                    .Property(publicWithOptionalNew + " " + qualifiedEnumType, "Current" + variableNameModifier + "State")
-                        .Get()
-                            .If(string.Format("System.Enum.IsDefined(typeof({0}), mCurrent{1}State)", enumType, variableNameModifier))
-                                .Line(string.Format("return ({0})mCurrent{1}State;", enumType, variableNameModifier))
-                            .End()
-                            .Else()
-                                .Line(string.Format("return {0}.Unknown;", enumType))
-                            .End()
-                        .End()
-                        .Set();
-
-                #endregion
-
-                #region Set the state value and call an event if necessary
-
-                bool stillNeedsToAssignValue = true;
-
-                if (element is EntitySave)
-                {
-                    EntitySave asEntitySave = element as EntitySave;
-
-                    //if (!string.IsNullOrEmpty(asEntitySave.CurrentStateChange))
-                    //{
-                    //    setBlock
-                    //        .If("value != mCurrent" + variableNameModifier + "State")
-                    //            .Line("mCurrent" + variableNameModifier + "State = value;")
-                    //            .Line(asEntitySave.CurrentStateChange + "(this, null);");
-
-                    //    stillNeedsToAssignValue = false;
-                    //}
-                }
-
-                if (hasEvent)
-                {
-                    EventCodeGenerator.GenerateEventRaisingCode(setBlock, BeforeOrAfter.Before, variableToLookFor, element);
-                }
-
-                if (stillNeedsToAssignValue)
-                {
-                    setBlock.Line("mCurrent" + variableNameModifier + "State = (int)value;");
-                }
-
-                #endregion
-
-                var switchBlock = setBlock.Switch("Current" + variableNameModifier + "State");
-
-                switchBlock.Case(enumType + ".Uninitialized");
-                switchBlock.Case(enumType + ".Unknown");
-
-                foreach (StateSave stateSave in states)
-                {
-                    GenerateCurrentStateCodeForIndividualState(element, switchBlock, stateSave, enumType);
-                }
-
-                if ((enumType == "VariableState" && DoesBaseHaveUncategorizedStates(element)) || 
-                    (!string.IsNullOrEmpty(element.BaseElement) && GetAllStateCategoryNames(ObjectFinder.Self.GetIElement(element.BaseElement), true).Any(category => category == enumType)))
-                {
-                    switchBlock.Default()
-                        .Line("base.Current" + variableNameModifier + "State = base.Current" + variableNameModifier + "State;");
-                }
-
-                if (hasEvent)
-                {
-                    EventCodeGenerator.GenerateEventRaisingCode(setBlock, BeforeOrAfter.After, variableToLookFor, element);
-                }
-            }
-            return codeBlock;
+            return createField;
         }
 
         private static bool DoesBaseHaveUncategorizedStates(IElement element)
