@@ -335,13 +335,6 @@
   <ItemGroup>
     <None Include="Resources Xna 4\defaultFont.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="Assets\WindowsPhone\FlatRedBallEmbeddedResourcesPC.contentproj">
-      <Project>{B8467EA4-2FE4-4B6A-BEB2-9A1C44304B74}</Project>
-      <Name>FlatRedBallEmbeddedResourcesPC</Name>
-      <XnaReferenceType>Content</XnaReferenceType>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="FlatRedBallShared.projitems" Label="Shared" Condition="Exists('FlatRedBallShared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" Condition="" />
