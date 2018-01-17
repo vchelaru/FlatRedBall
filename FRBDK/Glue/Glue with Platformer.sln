@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glue", "Glue\Glue.csproj", "{213357E3-F729-4FF3-9B99-E91C40D50E6E}"
 EndProject
@@ -67,9 +67,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlatformerPlugin", "Platfor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatformerPlugin", "PlatformerPlugin\PlatformerPlugin.csproj", "{D523C4DD-2490-4D33-99E1-3DA8DDD51EAA}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}*SharedItemsImports = 4
+		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AutomatedBuild|Any CPU = AutomatedBuild|Any CPU
@@ -2081,6 +2083,7 @@ Global
 		{6E3DECA0-B292-4FBA-B585-7460A329DE2E} = {CABF5E9B-47A7-475F-A6E5-D535BFF7D099}
 		{47241002-7EB5-433B-B931-A530BB6B84EE} = {CABF5E9B-47A7-475F-A6E5-D535BFF7D099}
 		{D523C4DD-2490-4D33-99E1-3DA8DDD51EAA} = {442C404A-ED92-424B-831C-DEFBF161B821}
+		{0BB8CBE3-8503-46C1-9272-D98E153A230E} = {B4A7ECC2-6FE4-49F4-99B6-761967A3A030}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FBAF353D-79B7-49A8-BF48-4CF5706A6FEE}
