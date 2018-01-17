@@ -4,6 +4,7 @@ using System.Text;
 using FlatRedBall.Gui;
 using Gum.Wireframe;
 using RenderingLibrary.Graphics;
+using Text = FlatRedBall.Graphics.Text;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -107,7 +108,9 @@ namespace FlatRedBall.Forms.Controls
 #if DEBUG
                 ReportMissingTextInstance();
 #endif
+                
                 return coreTextObject.RawText;
+
             }
             set
             {
@@ -156,6 +159,9 @@ namespace FlatRedBall.Forms.Controls
         {
             // text component is optional:
             textComponent = base.Visual.GetGraphicalUiElementByName("TextInstance");
+
+            if (textComponent != null)
+                coreTextObject = (RenderingLibrary.Graphics.Text)textComponent.RenderableComponent;
 
             GroupName = GroupName; //this will force the dictionary to be updated for the current <group name, visual> pair
 
