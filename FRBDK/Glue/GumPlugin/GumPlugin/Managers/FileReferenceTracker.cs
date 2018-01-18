@@ -672,7 +672,7 @@ namespace GumPlugin.Managers
 
                 bool isGumProjectInOwnFolder = glueContentFolder != gumProjectFolder && FileManager.MakeRelative(gumProjectFolder, glueContentFolder).Contains("..") == false;
 
-                foreach (var buildItem in contentProject)
+                foreach (var buildItem in contentProject.ToList())
                 {
 
                     bool shouldRemove = GetIfShouldRemoveFontFile(toRemove, buildItem, fontCacheFolder, contentProject, referencedGumFiles);
