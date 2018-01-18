@@ -143,8 +143,7 @@ namespace FlatRedBall.Forms.Controls.Primitives
         {
             var cursor = GuiManager.Cursor;
 
-            if (cursor.WindowPushed == thumb.Visual && 
-                (cursor.PrimaryPush || cursor.PrimaryClick))
+            if (cursor.WindowPushed == thumb.Visual)
             {
                 UpdateThumbPositionToCursorDrag(cursor);
             }

@@ -57,6 +57,7 @@ namespace FlatRedBall.Forms.Controls
 
             cursorGrabOffsetRelativeToThumb = cursorScreen - leftOfThumb;
         }
+
         protected override void OnMinimumChanged(double oldMinimum, double newMinimum)
         {
             base.OnMinimumChanged(oldMinimum, newMinimum);
@@ -102,7 +103,6 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-
         protected override void OnMaximumChanged(double oldMaximum, double newMaximum)
         {
             base.OnMaximumChanged(oldMaximum, newMaximum);
@@ -134,7 +134,7 @@ namespace FlatRedBall.Forms.Controls
                 newValue = Math.MathFunctions.RoundDouble(newValue, TicksFrequency, Minimum);
 
                 var range = Maximum - Minimum;
-                var lastTick = ((int)((originalValue - Minimum) / TicksFrequency)) * TicksFrequency;
+                var lastTick = ((int)((Maximum - Minimum) / TicksFrequency)) * TicksFrequency;
 
                 if(originalValue > lastTick)
                 {
