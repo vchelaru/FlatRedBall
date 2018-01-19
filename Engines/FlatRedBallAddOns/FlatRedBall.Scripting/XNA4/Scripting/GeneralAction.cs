@@ -6,48 +6,52 @@ using FlatRedBall.Scripting;
 
 namespace FlatRedBall.Scripting
 {
-    public class GeneralAction: IScriptAction
-    {
-        public string Name
-        {
-            get;
-            set;
-        }
+	public class GeneralAction : IScriptAction
+	{
+		bool hasExecuted = false; 
+		public string Name
+		{
+			get;
+			set;
+		}
 
-        public Func<bool> IsCompleteFunction;
+		public Func<bool> IsCompleteFunction;
 
-        public Action ActionToPerform;
-        
+		public Action ActionToPerform;
 
-        public bool IsComplete() 
-        {
-            if (IsCompleteFunction != null)
-            {
-                return IsCompleteFunction();
-            }
-            else
-            {
-                return true;
-            }
-        }
+		public GeneralAction()
+		{
+			IsCompleteFunction = DefaultIsCompleteFunction; 
+		}
 
-        public bool Execute()
-        {
-            ActionToPerform();
-            return true;
-        }
+		public bool IsComplete()
+		{
+			return IsCompleteFunction();
+		}
+
+		public bool Execute()
+		{
+			ActionToPerform();
+			hasExecuted = true; 
+			return true;
+		}
 
 
-        public override string ToString()
-        {
-            if (!string.IsNullOrEmpty(Name))
-            {
-                return Name;
-            }
-            else
-            {
-                return base.ToString();
-            }
-        }
-    }
+		public override string ToString()
+		{
+			if (!string.IsNullOrEmpty(Name))
+			{
+				return Name;
+			}
+			else
+			{
+				return base.ToString();
+			}
+		}
+
+		private bool DefaultIsCompleteFunction()
+		{
+			return hasExecuted; 
+		}
+	}
 }
