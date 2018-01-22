@@ -13,9 +13,11 @@ namespace OfficialPlugins.CollisionPlugin
     {
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
         {
-            codeBlock.Line("FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Clear();");
-
-            return codeBlock;
+			if (element is ScreenSave)
+			{
+				codeBlock.Line("FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Clear();");
+			}
+			return codeBlock;
         }
     }
 }
