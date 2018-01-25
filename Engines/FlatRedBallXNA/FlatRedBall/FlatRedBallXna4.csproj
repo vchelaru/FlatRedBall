@@ -275,8 +275,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="bin\x86\Debug\Xna4.0\Assets\Shaders\FlatRedBallShader.xnb" />
-    <None Include="bin\x86\Debug\Xna4.0\Content\Shaders\FlatRedBallShader.xnb" />
     <None Include="Resources Xna 4\x86\Shaders\FlatRedBallModelShader.xnb" />
     <None Include="Resources Xna 4\x86\Shaders\FlatRedBallShader.xnb" />
     <None Include="Resources Xna 4\x86\Shaders\PostProcessing\Bloom.xnb" />
