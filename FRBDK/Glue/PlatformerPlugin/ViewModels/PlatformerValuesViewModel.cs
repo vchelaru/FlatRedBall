@@ -26,6 +26,24 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             set { base.ChangeAndNotify(ref maxSpeedX, value); }
         }
 
+        bool canFallThroughCloudPlatforms;
+        public bool CanFallThroughCloudPlatforms
+        {
+            get { return canFallThroughCloudPlatforms; }
+            set { base.ChangeAndNotify(ref canFallThroughCloudPlatforms, value); }
+        }
+
+        [DependsOn(nameof(CanFallThroughCloudPlatforms))]
+        public Visibility FallThroughCloudPlatformsVisibility =>
+            CanFallThroughCloudPlatforms ? Visibility.Visible : Visibility.Hidden;
+
+        float cloudFallThroughDistance;
+        public float CloudFallThroughDistance
+        {
+            get { return cloudFallThroughDistance; }
+            set { base.ChangeAndNotify(ref cloudFallThroughDistance, value); }
+        }
+
         bool isImmediate = true;
         public bool IsImmediate
         {
@@ -37,7 +55,6 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
                 NotifyPropertyChanged(nameof(AccelerationValuesVisibility));
             }
         }
-
 
         public bool UsesAcceleration
         {
@@ -113,10 +130,10 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             set
             {
                 base.ChangeAndNotify(ref jumpApplyByButtonHold, value);
-                NotifyPropertyChanged(nameof(JumpHoldTimeVisibility));
             }
         }
 
+        [DependsOn(nameof(JumpApplyByButtonHold))]
         public Visibility JumpHoldTimeVisibility
         {
             get
@@ -144,6 +161,8 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             JumpApplyLength = values.JumpApplyLength;
             JumpApplyByButtonHold = values.JumpApplyByButtonHold;
             UsesAcceleration = values.UsesAcceleration;
+            CanFallThroughCloudPlatforms = values.CanFallThroughCloudPlatforms;
+            CloudFallThroughDistance = values.CloudFallThroughDistance;
         }
 
         public PlatformerValuesViewModel Clone()
@@ -166,6 +185,8 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             toReturn.JumpApplyLength = JumpApplyLength;
             toReturn.JumpApplyByButtonHold = JumpApplyByButtonHold;
             toReturn.UsesAcceleration = UsesAcceleration;
+            toReturn.CanFallThroughCloudPlatforms = CanFallThroughCloudPlatforms;
+            toReturn.CloudFallThroughDistance = CloudFallThroughDistance;
             return toReturn;
         }
     }

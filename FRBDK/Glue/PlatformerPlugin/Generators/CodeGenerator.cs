@@ -159,6 +159,13 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             codeBlock.AutoProperty("public FlatRedBall.Input.I1DInput", "HorizontalInput");
 
             codeBlock.Line("/// <summary>");
+            codeBlock.Line("/// The input object which controls vertical input such as moving on ladders or falling through cloud collision.");
+            codeBlock.Line("/// -1 represents full down, 0 is neutral, +1 is full up.");
+
+            codeBlock.Line("/// </summary>");
+            codeBlock.AutoProperty("public FlatRedBall.Input.I1DInput", "VerticalInput");
+
+            codeBlock.Line("/// <summary>");
             codeBlock.Line("/// The ratio that the horizontal input is being held.");
             codeBlock.Line("/// -1 represents full left, 0 is neutral, +1 is full right.");
             codeBlock.Line("/// </summary>");
@@ -201,11 +208,18 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             codeBlock.Line("/// </summary>");
             codeBlock.AutoProperty("public bool", "InputEnabled");
 
+
+
             // This can be used to add anything else here without the complexity of CodeBlock calls
             codeBlock.Line(
 @"
 
-
+            /// <summary>
+            /// Stores the value that the entity must fall down to before cloud collision is enabled.
+            /// If this value is null, then cloud collision is enabled. When the entity falls through a
+            /// cloud (by pressing down direction + jump), then this value is set. 
+            /// </summary>
+            private float? cloudCollisionFallThroughY = null;
 ");
 
 
@@ -403,17 +417,25 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 			bool jumpPushed = JumpInput.WasJustPressed && InputEnabled;
 			bool jumpDown = JumpInput.IsDown && InputEnabled;
 
-
-            if (jumpPushed && 
+            if(jumpPushed && mIsOnGround && VerticalInput?.Value < -.5 && CurrentMovement.CanFallThroughCloudPlatforms && CurrentMovement.CloudFallThroughDistance > 0)
+            {
+                // try falling through the ground
+                cloudCollisionFallThroughY = this.Y - CurrentMovement.CloudFallThroughDistance;
+            }
+            // Test for jumping up
+            else if (jumpPushed && // Did the player push the jump button
                 CurrentMovement.JumpVelocity > 0 &&
-                (mIsOnGround || AfterDoubleJump == null || 
-				(AfterDoubleJump != null && mHasDoubleJumped == false) ||
-				(AfterDoubleJump != null && AfterDoubleJump.JumpVelocity > 0)
+                (
+                    mIsOnGround || 
+                    AfterDoubleJump == null || 
+				    (AfterDoubleJump != null && mHasDoubleJumped == false) ||
+				    (AfterDoubleJump != null && AfterDoubleJump.JumpVelocity > 0)
 
 				)
                 
-                )
+            )
             {
+                cloudCollisionFallThroughY = null;
 
                 mTimeJumpPushed = CurrentTime;
                 this.YVelocity = CurrentMovement.JumpVelocity;
@@ -429,6 +451,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     mHasDoubleJumped = true ;
                 }
             }
+
 
             double secondsSincePush = CurrentTime - mTimeJumpPushed;
 
@@ -543,7 +566,22 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 mHitHead = false;
             }
 
-            if (isCloudCollision == false || velocityBeforeCollision.Y < 0)
+            if(cloudCollisionFallThroughY != null && this.Y < cloudCollisionFallThroughY)
+            {
+                cloudCollisionFallThroughY = null;
+            }
+
+            bool canCheckCollision = true;
+
+            if(isCloudCollision)
+            {
+                // need to be moving down
+                canCheckCollision = velocityBeforeCollision.Y < 0 &&
+                    // and not ignoring fallthrough
+                    cloudCollisionFallThroughY == null;
+            }
+
+            if (canCheckCollision)
             {
 
                 if (collisionFunction())

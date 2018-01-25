@@ -18,5 +18,7 @@ namespace FlatRedBall.PlatformerPlugin.SaveClasses
         public float JumpApplyLength { get; set; }
         public bool JumpApplyByButtonHold { get; set; }
         public bool UsesAcceleration { get; set; }
+        public bool CanFallThroughCloudPlatforms { get; set; }
+        public float CloudFallThroughDistance { get; set; }
     }
 }
