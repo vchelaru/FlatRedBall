@@ -127,7 +127,7 @@ namespace FlatRedBall.Math.Collision
 
         public void Update()
         {
-            foreach(var partition in this.Partitions)
+            foreach(var partition in this.partitions)
             {
                 if (partition.SortEveryFrame)
                 {
