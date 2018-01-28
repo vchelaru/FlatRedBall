@@ -319,6 +319,13 @@ namespace FlatRedBall.Graphics.Particle
 
         }
 
+        /// <summary>
+        /// Controls whether emission occurs on a timer when calling TimedEmit.
+        /// </summary>
+        /// <remarks>
+        /// This variable is only useful when calling TimedEmit. It enables code to call TimedEmit
+        /// in one area and to control the emission variable in another.
+        /// </remarks>
         public bool TimedEmission
         {
             get { return mTimedEmission; }

@@ -100,6 +100,7 @@
     <Compile Include="Views\PlatformerValuesView.xaml.cs">
       <DependentUpon>PlatformerValuesView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WpfBehaviors\InputBindingsManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">

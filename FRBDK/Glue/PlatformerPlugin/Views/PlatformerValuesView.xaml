@@ -4,8 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FlatRedBall.PlatformerPlugin.Views"
+             xmlns:b="clr-namespace:FlatRedBall.PlatformerPlugin.WpfBehaviors"
              mc:Ignorable="d" 
-             d:DesignHeight="180" d:DesignWidth="550">
+             d:DesignHeight="185" d:DesignWidth="550">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -41,7 +42,7 @@
         <!--Name-->
         <StackPanel Grid.Row="1" Margin="3">
             <TextBlock HorizontalAlignment="Center" Margin="3">Movement Type</TextBlock>
-            <TextBox Text="{Binding Name}" Width="90" VerticalAlignment="Top"></TextBox>
+            <TextBox Text="{Binding Name}" Width="90" VerticalAlignment="Top" b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
             
         </StackPanel>
 
@@ -50,16 +51,19 @@
         <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,3,8,3">
 
             <TextBlock>Max Speed:</TextBlock>
-            <TextBox Text="{Binding MaxSpeedX}" HorizontalAlignment="Left" Width="70" Margin="0,0,0,5"></TextBox>
+            <TextBox Text="{Binding MaxSpeedX}" HorizontalAlignment="Left" Width="70" Margin="0,0,0,5"
+                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
 
             <RadioButton IsChecked="{Binding IsImmediate}">Immediate</RadioButton>
             <RadioButton  IsChecked="{Binding UsesAcceleration}" Margin="0,0,0,5">Speed Up/Down</RadioButton>
 
             <StackPanel Visibility="{Binding AccelerationValuesVisibility}">
                 <TextBlock>Speed Up Time:</TextBlock>
-                <TextBox HorizontalAlignment="Left" Width="50"  Text="{Binding AccelerationTimeX}"></TextBox>
+                <TextBox HorizontalAlignment="Left" Width="50"  Text="{Binding AccelerationTimeX}"
+                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
                 <TextBlock>Slow Down Time:</TextBlock>
-                <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding DecelerationTimeX}"></TextBox>
+                <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding DecelerationTimeX}"
+                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
 
             </StackPanel>
             
@@ -69,18 +73,21 @@
         <TextBlock Grid.Column="2" FontSize="16" HorizontalAlignment="Left" Margin="3">Jumping</TextBlock>
         <StackPanel Grid.Column="2" Grid.Row="1" Margin="12,3,8,3">
             <TextBlock>Jump Speed:</TextBlock>
-            <TextBox HorizontalAlignment="Left" Width="70"  Text="{Binding JumpVelocity}" Margin="1,0,-1,5"></TextBox>
+            <TextBox HorizontalAlignment="Left" Width="70"  Text="{Binding JumpVelocity}" Margin="1,0,-1,5"
+                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
 
             <CheckBox Margin="0,5,0,0" IsChecked="{Binding JumpApplyByButtonHold}">Hold to Jump Higher</CheckBox>
             <StackPanel Visibility="{Binding JumpHoldTimeVisibility}">
                 <TextBlock>Max Jump Hold Time:</TextBlock>
-                <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding JumpApplyLength}"></TextBox>
+                <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding JumpApplyLength}"
+                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
             </StackPanel>
 
             <CheckBox Margin="0,10,0,0" IsChecked="{Binding CanFallThroughCloudPlatforms}">Can Fall Through Clouds</CheckBox>
             <StackPanel Visibility="{Binding FallThroughCloudPlatformsVisibility}">
                 <TextBlock>Cloud Platform Thickness:</TextBlock>
-                <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding CloudFallThroughDistance}"></TextBox>
+                <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding CloudFallThroughDistance}"
+                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
             </StackPanel>
         </StackPanel>
 
@@ -88,9 +95,11 @@
         <TextBlock Grid.Column="3" FontSize="16" HorizontalAlignment="Left" Margin="3">Falling</TextBlock>
         <StackPanel Grid.Column="3" Grid.Row="1" Margin="12,3,8,3">
             <TextBlock>Gravity:</TextBlock>
-            <TextBox HorizontalAlignment="Left" Width="70" Text="{Binding Gravity}" Margin="0,0,0,5" ></TextBox>
+            <TextBox HorizontalAlignment="Left" Width="70" Text="{Binding Gravity}" Margin="0,0,0,5" 
+                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
             <TextBlock>Max Falling Speed:</TextBlock>
-            <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding MaxFallSpeed}"></TextBox>
+            <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding MaxFallSpeed}"
+                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
         </StackPanel>
 
 
