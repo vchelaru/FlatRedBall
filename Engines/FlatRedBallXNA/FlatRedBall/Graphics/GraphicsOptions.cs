@@ -5,12 +5,20 @@ using System.Xml.Serialization;
 using FlatRedBall.IO;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-    #if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME
+    #if !MONOGAME
     using System.Windows.Forms;
     #endif
 
 namespace FlatRedBall.Graphics
 {
+
+    public enum WindowedFullscreenMode
+    {
+        Windowed,
+        Fullscreen,
+        FullscreenBorderless
+    }
+
     public class GraphicsOptions
     {
         #region Fields
@@ -22,6 +30,48 @@ namespace FlatRedBall.Graphics
         Game game;
 
         int mResolutionHeight;
+        #endregion
+
+
+        /// <summary>
+        /// Event raised when the resolution or orientation changes.
+        /// </summary>
+        // Implementation note: Prior to 2016, FlatRedBall included
+        // both SizeOrOrientationChanged and FlatRedBallServices.CornerGrabbingResize.
+        // SizeOrOrientationChanged worked fine on all platforms (I think) except for PC.
+        // SizeOrOrinetationChanged didn't get raised when clicking the maximize/minimize button.
+        // To address this, custom code in FlatRedBallServices will be raising SizeOrOrientationChanged
+        // on PC, and all other platforms will use the regular implementation.
+        public event EventHandler SizeOrOrientationChanged;
+
+        #region Fields
+
+        #region XML Docs
+        /// <summary>
+        /// The texture loading color key
+        /// </summary>
+        #endregion
+        public Color TextureLoadingColorKey = Color.Black;
+
+
+        private WindowedFullscreenMode windowedFullscreenMode = WindowedFullscreenMode.Windowed;
+
+#if !MONOGAME
+        // For some reason setting to fullscreen can crash things but setting the border style to none helps.
+        System.Windows.Forms.FormBorderStyle mWindowedBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D; 
+#endif
+
+        bool mUseMultiSampling;
+    
+        #region XML Docs
+        /// <summary>
+        /// Set to true to suspend device reset while loading from file
+        /// </summary>
+        #endregion
+        private static bool IsLoading = false;
+
+        private bool mIsInAReset = false;
+
         #endregion
 
         #region Properties
@@ -92,54 +142,6 @@ namespace FlatRedBall.Graphics
             }
         }
 
-        #endregion
-
-
-        /// <summary>
-        /// Event raised when the resolution or orientation changes.
-        /// </summary>
-        // Implementation note: Prior to 2016, FlatRedBall included
-        // both SizeOrOrientationChanged and FlatRedBallServices.CornerGrabbingResize.
-        // SizeOrOrientationChanged worked fine on all platforms (I think) except for PC.
-        // SizeOrOrinetationChanged didn't get raised when clicking the maximize/minimize button.
-        // To address this, custom code in FlatRedBallServices will be raising SizeOrOrientationChanged
-        // on PC, and all other platforms will use the regular implementation.
-        public event EventHandler SizeOrOrientationChanged;
-
-        #region Fields
-
-        #region XML Docs
-        /// <summary>
-        /// The texture loading color key
-        /// </summary>
-        #endregion
-        public Color TextureLoadingColorKey = Color.Black;
-
-
-
-
-        bool mIsFullScreen;
-
-#if !MONOGAME
-        // For some reason setting to fullscreen can crash things but setting the border style to none helps.
-        System.Windows.Forms.FormBorderStyle mWindowedBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D; 
-#endif
-
-        bool mUseMultiSampling;
-    
-        #region XML Docs
-        /// <summary>
-        /// Set to true to suspend device reset while loading from file
-        /// </summary>
-        #endregion
-        private static bool IsLoading = false;
-
-        private bool mIsInAReset = false;
-
-        #endregion
-
-        #region Properties
-
         #region XML Docs
         /// <summary>
         /// Gets or sets the background color of all cameras
@@ -159,26 +161,75 @@ namespace FlatRedBall.Graphics
         }
 
 
+        public WindowedFullscreenMode WindowedFullscreenMode
+        {
+            get { return windowedFullscreenMode; }
+            set
+            {
+                if(value != windowedFullscreenMode)
+                {
+                    int oldWidth = mResolutionWidth;
+                    int oldHeight = mResolutionHeight;
+                    windowedFullscreenMode = value;
+
+                    if (!FlatRedBallServices.IsInitialized)
+                    {
+                        // It's possible for someone to instantiate a GraphicsOptions and
+                        // set its FullScreen to true before FlatRedBall is created.  This is
+                        // done so that the engine starts in full screen.  If this is the case,
+                        // then we shouldn't do the remainder of the code in this property.
+                        return;
+                    }
+
+#if !MONOGAME
+                    if (IsFullScreen)
+                    {
+                        mWindowedBorderStyle = ((Form)FlatRedBallServices.Owner).FormBorderStyle;
+                        ((Form)FlatRedBallServices.Owner).FormBorderStyle = FormBorderStyle.None;
+                    }
+#endif
+
+                    ResetDevice();
+#if !MONOGAME
+                    if (!IsFullScreen)
+                    {
+                        ((Form)FlatRedBallServices.Owner).FormBorderStyle = mWindowedBorderStyle;
+                    }
+#endif
+                    if (!IsFullScreen)
+                    {
+                        // When coming out of full screen the resolution is lost for some reason, so force it
+                        SetResolution(oldWidth, oldHeight);
+                    }
+                }
 
 
+            }
+        }
 
-        #region XML Docs
+
         /// <summary>
         /// Sets the display mode to full screen
         /// Use SetFullScreen() to set the full-screen resolution and full-screen simultaneously
         /// </summary>
-        #endregion
         public bool IsFullScreen
         {
-            get { return mIsFullScreen; }
+            get { return windowedFullscreenMode == WindowedFullscreenMode.Fullscreen; }
             set
             {
-                if (mIsFullScreen != value)
+                if (IsFullScreen != value)
                 {
                     int oldWidth = mResolutionWidth;
                     int oldHeight = mResolutionHeight;
 
-                    mIsFullScreen = value;
+                    if(value)
+                    {
+                        windowedFullscreenMode = WindowedFullscreenMode.Fullscreen;
+                    }
+                    else
+                    {
+                        windowedFullscreenMode = WindowedFullscreenMode.Windowed;
+                    }
 
 					if (!FlatRedBallServices.IsInitialized)
 					{
@@ -190,7 +241,7 @@ namespace FlatRedBall.Graphics
                     }
 
 #if !MONOGAME
-                    if (mIsFullScreen)
+                    if (IsFullScreen)
                     {
                         mWindowedBorderStyle = ((Form)FlatRedBallServices.Owner).FormBorderStyle;
                         ((Form)FlatRedBallServices.Owner).FormBorderStyle = FormBorderStyle.None;
@@ -199,12 +250,12 @@ namespace FlatRedBall.Graphics
 
                     ResetDevice();
 #if !MONOGAME
-                    if (!mIsFullScreen)
+                    if (!IsFullScreen)
                     {
                         ((Form)FlatRedBallServices.Owner).FormBorderStyle = mWindowedBorderStyle;
                     }
 #endif
-                    if (!mIsFullScreen)
+                    if (!IsFullScreen)
                     {
                         // When coming out of full screen the resolution is lost for some reason, so force it
                         SetResolution(oldWidth, oldHeight);
@@ -466,7 +517,23 @@ namespace FlatRedBall.Graphics
 
         public void SetResolution(int width, int height, bool isFullscreen)
         {
-            mIsFullScreen = isFullscreen;
+            WindowedFullscreenMode windowedFullscreenMode;
+            if (isFullscreen)
+            {
+                windowedFullscreenMode = WindowedFullscreenMode.Fullscreen;
+            }
+            else
+            {
+                windowedFullscreenMode = WindowedFullscreenMode.Windowed;
+            }
+
+            SetResolution(width, height, windowedFullscreenMode);
+        }
+
+        public void SetResolution(int width, int height, WindowedFullscreenMode windowedFullscreenMode)
+        { 
+            this.windowedFullscreenMode = windowedFullscreenMode;
+
             mResolutionWidth = width;
             mResolutionHeight = height;
             ResetDevice();
@@ -487,6 +554,9 @@ namespace FlatRedBall.Graphics
         {
             SetResolution(width, height, isFullscreen: true);
         }
+
+
+
 
         //#region XML Docs
         ///// <summary>
@@ -561,54 +631,41 @@ namespace FlatRedBall.Graphics
                 // Reset the graphics device manager
                 if (FlatRedBallServices.mGraphics != null)
                 {
+                    if(windowedFullscreenMode == WindowedFullscreenMode.Fullscreen)
+                    {
+                        ThrowExceptionIfFullScreenResolutionNotSupported(mResolutionWidth, mResolutionHeight);
+                    }
+
+
                     // Set window size
                     FlatRedBallServices.mGraphics.PreferredBackBufferWidth = mResolutionWidth;
                     FlatRedBallServices.mGraphics.PreferredBackBufferHeight = mResolutionHeight;
-                    FlatRedBallServices.mGraphics.PreferMultiSampling = mUseMultiSampling ;
-                    FlatRedBallServices.mGraphics.IsFullScreen = mIsFullScreen;
+                    FlatRedBallServices.mGraphics.PreferMultiSampling = mUseMultiSampling;
+                    FlatRedBallServices.mGraphics.IsFullScreen = windowedFullscreenMode == WindowedFullscreenMode.Fullscreen;
+
+#if DESKTOP_GL
+                    // for borderless the user must set the GraphicsDeviceManager.HardwareModeSwitch to false
+                    http://community.monogame.net/t/how-to-implement-borderless-fullscreen-on-desktopgl-project/8359
+                    FlatRedBallServices.mGraphics.IsFullScreen = 
+                        windowedFullscreenMode == WindowedFullscreenMode.Fullscreen || 
+                        windowedFullscreenMode == WindowedFullscreenMode.FullscreenBorderless
+
+
+                        ;
+
+#else
+                    FlatRedBallServices.mGraphics.IsFullScreen = windowedFullscreenMode == WindowedFullscreenMode.Fullscreen;
+
+#endif
+
 
 
                     try
                     {
-                        // Victor Chelaru
-                        // February 26, 2014
-                        // Android doesn't have 
-                        // the ability to run on 
-                        // multiple resolutions, so 
-                        // we won't do any checks here.
-#if DEBUG && !SILVERLIGHT && !ANDROID && !UWP
-                        if (IsFullScreen)
-                        {
-                            bool foundResolution = false;
-
-                            var supportedDisplay = GraphicsAdapter.DefaultAdapter.SupportedDisplayModes;
-
-                            foreach (DisplayMode mode in GraphicsAdapter.DefaultAdapter.SupportedDisplayModes)
-                            {
-                                if (mode.Width == mResolutionWidth && mode.Height == mResolutionHeight)
-                                {
-                                    foundResolution = true;
-                                }
-                            }
-                            if (!foundResolution)
-                            {
-                                string message = $"The resolution {mResolutionWidth} x {mResolutionHeight} is not supported in full screen mode.  Supported resolutions:\n";
-                                message += "(width x height)\n";
-
-                                foreach (var value in GraphicsAdapter.DefaultAdapter.SupportedDisplayModes)
-                                {
-                                    message += value.Width + "x" + value.Height + "\n";
-                                }
-
-
-                                throw new NotImplementedException(message);
-                            }
-                        }
-#endif
                         FlatRedBallServices.mGraphics.ApplyChanges();
 
                     }
-                        // No longer needed since we are always going to use a sample quality of 0
+                    // No longer needed since we are always going to use a sample quality of 0
                     //catch (Exception e)
                     //{
                     //    int qualityLevels = 0;
@@ -662,17 +719,54 @@ namespace FlatRedBall.Graphics
             #endregion
         }
 
-            #region XML Docs
+        private static void ThrowExceptionIfFullScreenResolutionNotSupported(int proposedWidth, int proposedHeight)
+        {
+            // Victor Chelaru
+            // February 26, 2014
+            // Android doesn't have 
+            // the ability to run on 
+            // multiple resolutions, so 
+            // we won't do any checks here.
+            // Should this also be !IOS?
+#if DEBUG && !ANDROID && !UWP
+            bool foundResolution = false;
+
+            var supportedDisplay = GraphicsAdapter.DefaultAdapter.SupportedDisplayModes;
+
+            foreach (DisplayMode mode in GraphicsAdapter.DefaultAdapter.SupportedDisplayModes)
+            {
+                if (mode.Width == proposedWidth && mode.Height == proposedHeight)
+                {
+                    foundResolution = true;
+                }
+            }
+            if (!foundResolution)
+            {
+                string message = $"The resolution {proposedWidth} x {proposedHeight} is not supported in full screen mode.  Supported resolutions:\n";
+                message += "(width x height)\n";
+
+                foreach (var value in GraphicsAdapter.DefaultAdapter.SupportedDisplayModes)
+                {
+                    message += value.Width + "x" + value.Height + "\n";
+                }
+
+
+                throw new InvalidOperationException(message);
+            }
+#endif
+        }
+
+        #region XML Docs
         /// <summary>
         /// Sets the presentation parameters
         /// </summary>
         /// <param name="presentationParameters">The structure to set parameters in</param>
-            #endregion
+        #endregion
         public void SetPresentationParameters(ref PresentationParameters presentationParameters)
         {
             presentationParameters.BackBufferWidth = mResolutionWidth;
             presentationParameters.BackBufferHeight = mResolutionHeight;
-            presentationParameters.IsFullScreen = mIsFullScreen;
+            presentationParameters.IsFullScreen = windowedFullscreenMode == WindowedFullscreenMode.Fullscreen ;
         }
 
             #endregion
@@ -718,7 +812,7 @@ namespace FlatRedBall.Graphics
 
             #endregion
 
-#endregion
-        }
+        #endregion
+    }
 
     }

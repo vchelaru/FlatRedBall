@@ -187,7 +187,9 @@ namespace GumPlugin
             // - Improved TweenerManager to not add a removed event, potentially saving lots of memory allocations.
             // 0.9.3.2
             // - Huge reduction in every-frame memory allocation by pooling render state info lists
-            get { return new Version(0, 9, 3, 2); }
+            // 0.9.3.3
+            // - Lots more reduction in every-frame memory allocation by making Text objects only update when width has changed, removing LINQ calls
+            get { return new Version(0, 9, 3, 3); }
         }
 
         #endregion
