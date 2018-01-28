@@ -193,7 +193,24 @@ namespace FlatRedBall.Glue.CodeGeneration
                     methodContents.Line("#if DESKTOP_GL");
 
                     // We used to do this on WINDOWS too but that isn't stable so we use borderless
-                    methodContents.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(width, height);");
+                    // Actually no, we should just use borderless everywhere so it works the same on all platforms:
+
+                    bool useActualFullscreenOnDesktopGl = false;
+                    if(useActualFullscreenOnDesktopGl)
+                    {
+                        methodContents.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(width, height);");
+                    }
+                    else
+                    {
+                        // from here:
+                        // http://community.monogame.net/t/how-to-implement-borderless-fullscreen-on-desktopgl-project/8359
+                        methodContents.Line("graphicsDeviceManager.HardwareModeSwitch = false;");
+                        methodContents.Line(
+                            "FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(width, height, FlatRedBall.Graphics.WindowedFullscreenMode.FullscreenBorderless);");
+
+                    }
+
+
                     methodContents.Line("#elif WINDOWS");
                     methodContents.Line("System.IntPtr hWnd = FlatRedBall.FlatRedBallServices.Game.Window.Handle;");
                     methodContents.Line("var control = System.Windows.Forms.Control.FromHandle(hWnd);");
