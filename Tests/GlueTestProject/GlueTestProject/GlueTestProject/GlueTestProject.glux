@@ -14537,6 +14537,14 @@
       <BuildTool>*.bmfc -&gt; bmfont.exe -&gt; *.fnt</BuildTool>
       <ProjectsToExcludeFrom />
     </ReferencedFileSave>
+    <ReferencedFileSave>
+      <Name>GlobalContent/LoadedOnlyWhenReferencedGlobal.mp3</Name>
+      <IsSharedStatic>true</IsSharedStatic>
+      <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
+      <DestroyOnUnload>false</DestroyOnUnload>
+      <HasPublicProperty>true</HasPublicProperty>
+      <ProjectsToExcludeFrom />
+    </ReferencedFileSave>
   </GlobalFiles>
   <GlobalContentSettingsSave>
     <LoadAsynchronously>false</LoadAsynchronously>

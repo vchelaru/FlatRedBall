@@ -568,7 +568,12 @@ namespace FlatRedBall.Glue.CodeGeneration
             string variableName = null;
 
             // if container is null, set the property to force a MRE reset if it's async loadedWriteAssignmentAndMreSet
-            bool shouldAssignField = container != null && NeedsFullProperty(rfs, container);
+            // 2/2/2018 - global content could be loaded only when referenced?
+            // I'm not sure if it should or shouldn't, but Jared tried it with MP3s
+            // and got a compile error. Let's allow it for now. If container == null 
+            // that means it's in global content.
+            //bool shouldAssignField = container != null && NeedsFullProperty(rfs, container);
+            bool shouldAssignField = NeedsFullProperty(rfs, container);
 
             if(shouldAssignField)
             {

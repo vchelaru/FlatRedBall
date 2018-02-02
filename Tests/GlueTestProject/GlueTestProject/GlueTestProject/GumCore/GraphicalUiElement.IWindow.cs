@@ -537,9 +537,18 @@ namespace Gum.Wireframe
                 }
             }
 
-            if(!toReturn && RaiseChildrenEventsOutsideOfBounds)
+            if (!toReturn && RaiseChildrenEventsOutsideOfBounds)
             {
-                toReturn = this.Children.Any(item => item is GraphicalUiElement &&  ((GraphicalUiElement)item).HasCursorOver(cursor));
+                for (int i = 0; i < Children.Count; i++)
+                {
+                    var child = Children[i] as GraphicalUiElement;
+
+                    if (child != null && child.HasCursorOver(cursor))
+                    {
+                        toReturn = true;
+                        break;
+                    }
+                }
             }
 
             return toReturn;

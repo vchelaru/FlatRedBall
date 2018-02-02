@@ -13,6 +13,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 {
     class CodeGenerator : ElementComponentCodeGenerator
     {
+
         public override CodeLocation CodeLocation
         {
             get
@@ -20,6 +21,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 return CodeLocation.AfterStandardGenerated;
             }
         }
+
         public override void GenerateAdditionalClasses(ICodeBlock codeBlock, IElement element)
         {
             ///////////////Early Out//////////////////////
@@ -631,10 +633,16 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             if (hasTiledPlugin)
             {
+                
                 codeBlock.Line(@"
         public void CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, bool isCloudCollision = false)
         {
             CollideAgainst(() => shapeCollection.CollideAgainstSolid(this), isCloudCollision);
+        }
+
+        public void CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, FlatRedBall.Math.Geometry.AxisAlignedRectangle thisCollision, bool isCloudCollision = false)
+        {
+            CollideAgainst(() => shapeCollection.CollideAgainstSolid(thisCollision), isCloudCollision);
         }
 
 ");
@@ -645,7 +653,6 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             return base.GenerateAdditionalMethods(codeBlock, element);
         }
-
 
         public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
         {

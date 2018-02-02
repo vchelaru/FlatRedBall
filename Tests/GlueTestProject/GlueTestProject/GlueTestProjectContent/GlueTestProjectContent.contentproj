@@ -908,6 +908,11 @@
       <Processor>SoundEffectProcessor</Processor>
       <Name>DogBarkSoundEffect2</Name>
     </Compile>
+    <Compile Include="GlobalContent\LoadedOnlyWhenReferencedGlobal.mp3">
+      <Importer>Mp3Importer</Importer>
+      <Processor>SongProcessor</Processor>
+      <Name>LoadedOnlyWhenReferencedGlobal</Name>
+    </Compile>
     <Compile Include="Screens\AudioScreen\boom.wav">
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>

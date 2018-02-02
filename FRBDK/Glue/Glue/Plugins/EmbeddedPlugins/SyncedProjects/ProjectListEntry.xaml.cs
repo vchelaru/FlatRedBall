@@ -85,10 +85,25 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             {
                 var startedProcess = Process.Start(fileToOpen);
 
-                if (startedProcess != null && startedProcess.ProcessName == "Glue")
+                if (startedProcess != null)
                 {
-                    MessageBox.Show("Your machine has the file\n\n" + fileToOpen + "\n\nassociated with Glue.  " +
-                        "It should probably be associated with a programming IDE like Visual Studio");
+                    bool openedWithGlue = false;
+
+                    try
+                    {
+                        openedWithGlue = startedProcess.ProcessName == "Glue";
+
+                        if(openedWithGlue)
+                        {
+                            MessageBox.Show("Your machine has the file\n\n" + fileToOpen + "\n\nassociated with Glue.  " +
+                                "It should probably be associated with a programming IDE like Visual Studio");
+                        }
+                    }
+                    catch(InvalidOperationException)
+                    {
+                        // An error with this code has been reported, but I'm not sure why. It's not damaging to just ignore it, and say that there was a failure:
+                        GlueCommands.Self.PrintOutput("An error has occurred when trying to open the project. Please try again if Visual Studio has not opened.");
+                    }
                 }
             }
         }
