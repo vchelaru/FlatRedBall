@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="21" tilewidth="16" tileheight="16" backgroundcolor="#4688ba" nextobjectid="2">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="32" height="21" tilewidth="16" tileheight="16" backgroundcolor="#4688ba" nextobjectid="5">
  <tileset firstgid="1" name="PlatformerTiles" tilewidth="16" tileheight="16" tilecount="512" columns="32">
   <image source="../Tilesets/PlatformerTiles.png" width="512" height="256"/>
   <tile id="0">
@@ -19,6 +19,11 @@
     <frame tileid="23" duration="100"/>
     <frame tileid="55" duration="100"/>
    </animation>
+  </tile>
+  <tile id="192" type="CreatedByTiledType">
+   <properties>
+    <property name="SetByDefaultInt" type="int" value="4"/>
+   </properties>
   </tile>
   <tile id="256">
    <properties>
@@ -42,6 +47,9 @@
     <property name="EntityToCreate" value="CreatedByTiled"/>
    </properties>
   </object>
+  <object id="2" gid="193" x="75" y="63" width="16" height="16"/>
+  <object id="3" gid="193" x="112" y="92" width="16" height="16"/>
+  <object id="4" gid="193" x="70" y="114" width="16" height="16"/>
  </objectgroup>
  <layer name="ForegroundLayer" width="32" height="21">
   <data encoding="base64" compression="gzip">

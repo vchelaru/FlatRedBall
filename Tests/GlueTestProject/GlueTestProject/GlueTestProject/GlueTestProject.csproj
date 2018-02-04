@@ -262,6 +262,10 @@
     <Compile Include="Entities\CreatedByTiled.Generated.cs">
       <DependentUpon>CreatedByTiled.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\CreatedByTiledType.cs" />
+    <Compile Include="Entities\CreatedByTiledType.Generated.cs">
+      <DependentUpon>CreatedByTiledType.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\CsvEntity.cs" />
     <Compile Include="Entities\CsvEntity.Event.cs">
       <DependentUpon>CsvEntity.cs</DependentUpon>
@@ -753,6 +757,7 @@
     <Compile Include="Factories\ChildFactoryEntityFactory.Generated.cs" />
     <Compile Include="Factories\ChildOfPositioningEntityFactory.Generated.cs" />
     <Compile Include="Factories\CreatedByTiledFactory.Generated.cs" />
+    <Compile Include="Factories\CreatedByTiledTypeFactory.Generated.cs" />
     <Compile Include="Factories\DerivedPooledFromNotPooledFactory.Generated.cs" />
     <Compile Include="Factories\DerivedPooledFromPooledFactory.Generated.cs" />
     <Compile Include="Factories\DrivedNotPooledFromBaseNotPooledFactory.Generated.cs" />

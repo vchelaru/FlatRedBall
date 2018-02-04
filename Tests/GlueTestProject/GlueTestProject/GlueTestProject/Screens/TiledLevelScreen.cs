@@ -23,6 +23,8 @@ using Keys = Microsoft.Xna.Framework.Input.Keys;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
 #endif
+
+using GlueTestProject.TestFramework;
 #endregion
 
 namespace GlueTestProject.Screens
@@ -32,6 +34,7 @@ namespace GlueTestProject.Screens
 
 		void CustomInitialize()
 		{
+
             InitializeLevel("Level1");
 
             foreach (var item in Level1Info)
@@ -54,9 +57,19 @@ namespace GlueTestProject.Screens
             {
                 throw new Exception("Entities created from tiled object layers are not appearing in the screen's list with the right Z.");
             }
+
+            TestTypeEntityCreation();
 		}
 
-		void CustomActivity(bool firstTimeCalled)
+        private void TestTypeEntityCreation()
+        {
+            CreatedByTiledTypeList.Count.ShouldNotBe(0, "because setting a Tiled object's Type should result in that entity being created");
+
+            var first = CreatedByTiledTypeList[0];
+            first.SetByDefaultInt.ShouldBe(4, "because entities should have default values set from the tileset");
+        }
+
+        void CustomActivity(bool firstTimeCalled)
 		{
             if(!firstTimeCalled)
             {

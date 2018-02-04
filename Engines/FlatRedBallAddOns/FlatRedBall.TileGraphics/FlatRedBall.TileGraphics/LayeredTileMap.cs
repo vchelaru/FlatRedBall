@@ -391,11 +391,14 @@ namespace FlatRedBall.TileGraphics
             {
                 foreach (var tile in tileset.TileDictionary.Values)
                 {
+                    int propertyCountFromTileset = 0;
+
                     if (tile.properties.Count != 0)
                     {
                         // this needs a name:
                         string name = tile.properties.FirstOrDefault(item => item.StrippedName.ToLowerInvariant() == "name")?.value;
-                        AddPropertiesToMap(tms, toReturn.TileProperties, tile.properties, name);
+                        // todo - eventually need to copy default values from the Tileset to the tile here
+                        AddPropertiesToMap(tms, toReturn.TileProperties, tile.properties, null, name);
                     }
                 }
             }
@@ -406,25 +409,40 @@ namespace FlatRedBall.TileGraphics
                 {
                     foreach (var objectInstance in objectLayer.@object)
                     {
-                        if (objectInstance.properties.Count != 0)
+                        TMXGlueLib.Tileset tileset = null;
+                        int propertyCountFromTileset = 0;
+
+                        var objectProperties = objectInstance.properties;
+                        List<property> tilesetProperties = null;
+                        if (objectInstance.gid != null)
+                        {
+                            tileset = tms.GetTilesetForGid(objectInstance.gid.Value);
+                            if(tileset.TileDictionary.ContainsKey(objectInstance.gid.Value - tileset.Firstgid))
+                            {
+                                tilesetProperties = tileset.TileDictionary[objectInstance.gid.Value - tileset.Firstgid].properties;
+                                propertyCountFromTileset = tilesetProperties.Count;
+                            }
+                        }
+
+
+                        if (objectProperties.Count + propertyCountFromTileset != 0)
                         {
                             string name = objectInstance.Name;
                             // if name is null, check the properties:
                             if (string.IsNullOrEmpty(name))
                             {
-                                name = objectInstance.properties.FirstOrDefault(item => item.StrippedNameLower == "name")?.value;
+                                name = objectProperties.FirstOrDefault(item => item.StrippedNameLower == "name")?.value;
                             }
-                            var properties = objectInstance.properties;
 
                             var objectInstanceIsTile = objectInstance.gid != null;
 
                             if (objectInstanceIsTile)
                             {
-                                AddPropertiesToMap(tms, toReturn.TileProperties, properties, name);
+                                AddPropertiesToMap(tms, toReturn.TileProperties, objectProperties, tilesetProperties, name);
                             }
                             else
                             {
-                                AddPropertiesToMap(tms, toReturn.ShapeProperties, properties, name);
+                                AddPropertiesToMap(tms, toReturn.ShapeProperties, objectProperties, tilesetProperties, name);
                             }
                         }
                     }
@@ -528,17 +546,31 @@ namespace FlatRedBall.TileGraphics
             return toReturn;
         }
 
-        private static void AddPropertiesToMap(TiledMapSave tms, Dictionary<string, List<NamedValue>> dictionaryToAddTo, List<property> properties, string name)
+        private static void AddPropertiesToMap(TiledMapSave tms, Dictionary<string, List<NamedValue>> dictionaryToAddTo, List<property> objectProperties, List<property> tilesetProperties, string name)
         {
             if (!string.IsNullOrEmpty(name))
             {
                 List<NamedValue> namedValues = new List<NamedValue>();
-                foreach (var prop in properties)
+                foreach (var prop in objectProperties)
                 {
                     namedValues.Add(new NamedValue()
                     { Name = prop.StrippedName, Value = prop.value, Type = prop.Type });
                 }
 
+                if (tilesetProperties != null)
+                {
+                    foreach (var tilesetProperty in tilesetProperties)
+                    {
+                        bool hasAlreadyBeenAdded = objectProperties.Any(item => item.StrippedNameLower == tilesetProperty.StrippedNameLower);
+
+                        if (!hasAlreadyBeenAdded)
+                        {
+                            namedValues.Add(new NamedValue()
+                            { Name = tilesetProperty.StrippedName, Value = tilesetProperty.value, Type = tilesetProperty.Type });
+                        }
+
+                    }
+                }
 
 #if DEBUG
                 if (dictionaryToAddTo.Any(item => item.Key == name))

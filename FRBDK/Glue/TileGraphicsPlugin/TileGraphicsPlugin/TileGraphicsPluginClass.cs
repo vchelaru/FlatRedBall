@@ -98,7 +98,9 @@ namespace TileGraphicsPlugin
             // - Fixed possible crash with an empty object layer
             // 1.2.2.2
             // - Added TileShapeCollection CollideAgainst Polygon
-            get { return new Version(1, 2, 2, 2); }
+            // 1.2.3
+            // - Default properties from the TileSet now get assigned on created entities for object layers
+            get { return new Version(1, 2, 3, 0); }
         }
 
 

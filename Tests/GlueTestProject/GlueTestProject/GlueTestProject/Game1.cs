@@ -14,6 +14,7 @@ using FlatRedBall.Utilities;
 using GlueTestProject.Screens;
 using FlatRedBall.Localization;
 using System.Reflection;
+using TMXGlueLib.DataTypes;
 
 namespace GlueTestProject
 {
@@ -45,6 +46,8 @@ namespace GlueTestProject
             LocalizationManager.CurrentLanguage = 1;
 
             CustomInitialize();
+
+            ReducedTileMapInfo.FastCreateFromTmx = true;
 
 			FlatRedBall.Screens.ScreenManager.Start(typeof(GlueTestProject.Screens.FirstScreen));
 

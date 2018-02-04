@@ -6,6 +6,9 @@
   <objecttype name="ChildFactoryEntity" />
   <objecttype name="ChildOfPositioningEntity" />
   <objecttype name="CreatedByTiled" />
+  <objecttype name="CreatedByTiledType">
+    <property name="SetByDefaultInt" type="int" />
+  </objecttype>
   <objecttype name="DerivedPooledFromNotPooled" />
   <objecttype name="DerivedPooledFromPooled" />
   <objecttype name="DrivedNotPooledFromBaseNotPooled" />
