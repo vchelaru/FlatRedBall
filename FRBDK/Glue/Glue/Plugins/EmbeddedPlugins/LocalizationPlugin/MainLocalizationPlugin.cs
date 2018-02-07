@@ -126,9 +126,21 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
                 string memberName = GetMemberNameFor(stringId);
 
                 // assume english is row 1
-                var value = row[1];
+                var comments = row[1].Split('\n');
+                if(comments.Length == 1)
+                {
+                    codeBlock.Line($"/// <summary>{row[1]}</summary>");
+                }
+                else
+                {
+                    codeBlock.Line($"/// <summary>");
+                    foreach(var line in comments)
+                    {
+                        codeBlock.Line($"/// {line?.Trim()}");
+                    }
+                    codeBlock.Line($"/// </summary>");
 
-                codeBlock.Line($"/// <summary>{value}</summary>");
+                }
                 codeBlock.Line($"public const string {memberName} = \"{stringId}\";");
             }
         }

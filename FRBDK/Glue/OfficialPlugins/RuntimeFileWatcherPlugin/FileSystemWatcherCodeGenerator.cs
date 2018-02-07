@@ -45,7 +45,10 @@ namespace OfficialPlugins.RuntimeFileWatcherPlugin
 
                 foreach(var rfs in GlueState.Self.CurrentGlueProject.GlobalFiles)
                 {
-                    bool shouldGenerate = rfs.LoadedAtRuntime && rfs.IsDatabaseForLocalizing == false;
+                    var ati = rfs.GetAssetTypeInfo();
+
+                    bool shouldGenerate = rfs.LoadedAtRuntime && rfs.IsDatabaseForLocalizing == false && 
+                        ati?.QualifiedRuntimeTypeName.QualifiedType != null;
 
                     if(shouldGenerate)
                     {
