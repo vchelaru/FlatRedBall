@@ -148,7 +148,15 @@
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+
+  <!-- The following path may not be available on some machines (Vic had problems with this in Feb 2018, so to solve it we're going to hardcode
+       the version to visual studio. It assumes community edition but future versions may need to check all other versions of VS. I don't know how to 
+	   get the VS install location. -->
+  <!--<Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />-->
+<Import Project="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\Microsoft\WindowsXaml\v15.0\Microsoft.Windows.UI.Xaml.CSharp.targets" Condition="Exists('C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\Microsoft\WindowsXaml\v15.0\Microsoft.Windows.UI.Xaml.CSharp.targets')" />
+  
+  
+  
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
