@@ -315,7 +315,14 @@ namespace FlatRedBall.Graphics
 #if MONODROID
             if (graphics != null)
             {
-                mIsFullScreen = graphics.IsFullScreen;
+                if(graphics.IsFullScreen)
+                {
+                    this.windowedFullscreenMode = WindowedFullscreenMode.Fullscreen;
+                }
+                else
+                {
+                    this.windowedFullscreenMode = WindowedFullscreenMode.Windowed;
+                }
             }
 #endif
             
