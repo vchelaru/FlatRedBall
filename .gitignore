@@ -28,3 +28,5 @@ Engines/WebGl/.vs/
 Templates/FlatRedBallAndroidTemplate/.vs/
 *.bak
 Templates/FlatRedBallUwpTemplate/.vs/FlatRedBallUwpTemplate/v15/Server/sqlite3/db.lock
+Templates/FlatRedBallUwpTemplate/.vs/FlatRedBallUwpTemplate/v15/Server/sqlite3/storage.ide-shm
+Templates/FlatRedBallUwpTemplate/.vs/FlatRedBallUwpTemplate/v15/Server/sqlite3/storage.ide-wal
