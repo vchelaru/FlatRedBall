@@ -1249,6 +1249,11 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// Sets the camera to be 2D (far-away things do not get smaller) by
+        /// setting Orthogonal to true and adjusts the OrthogonalWidth and OrthogonalHeight
+        /// to match the pixel resolution. In other words, this makes 1 unit in game match 1 pixel on screen.
+        /// </summary>
         public void UsePixelCoordinates()
         {
             UsePixelCoordinates(false,

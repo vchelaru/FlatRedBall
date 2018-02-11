@@ -409,8 +409,29 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void CopyToBuildFolder(string absoluteSource)
         {
-            string buildFolder = FileManager.GetDirectory(GlueState.Self.CurrentGlueProjectFileName) + "bin/x86/debug/Content/";
-            string destination = buildFolder +  FileManager.MakeRelative(absoluteSource, ProjectManager.ContentDirectory);
+            // This is the location when running from Glue
+            // Maybe eventually I'll fix glue build to build to the same location as the project...
+            string debugPath = "bin/x86/debug/";
+            CopyToBuildFolder(absoluteSource, debugPath);
+
+            if (GlueState.Self.CurrentMainProject is VisualStudioProject)
+            {
+                // This is the location when running from Visual Studio
+                var foundProperty = (GlueState.Self.CurrentMainProject as VisualStudioProject).Project.Properties.FirstOrDefault(item => item.Name == "OutputPath");
+
+                if (foundProperty != null)
+                {
+                    debugPath = foundProperty.EvaluatedValue.Replace('\\', '/');
+                    CopyToBuildFolder(absoluteSource, debugPath);
+                }
+
+            }
+        }
+
+        private static void CopyToBuildFolder(string absoluteSource, string debugPath)
+        {
+            string buildFolder = FileManager.GetDirectory(GlueState.Self.CurrentGlueProjectFileName) + debugPath + "Content/";
+            string destination = buildFolder + FileManager.MakeRelative(absoluteSource, ProjectManager.ContentDirectory);
 
             string destinationFolder = FileManager.GetDirectory(destination);
 
@@ -418,7 +439,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // destination folder. If this is a new entity or a new folder in an entity, 
             // there's no reason to copy this over yet - it means the game hasn't been built
             // with this file:
-            if(System.IO.Directory.Exists(destinationFolder))
+            if (System.IO.Directory.Exists(destinationFolder))
             {
                 string projectName = FileManager.RemovePath(FileManager.RemoveExtension(GlueState.Self.CurrentGlueProjectFileName));
 

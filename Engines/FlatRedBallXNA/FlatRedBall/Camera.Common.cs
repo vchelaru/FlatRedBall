@@ -263,11 +263,10 @@ namespace FlatRedBall
             set { mDrawsCameraLayer = value; }
         }
 
-        #region XML Docs
         /// <summary>
-        /// Whether the Camera draws world objects (objects not on the Camera's Layer)
+        /// Whether the Camera draws world objects (objects not on the Camera's Layer). This is true by default.
+        /// This is usually set to false for cameras used in render targets which only draw layers.
         /// </summary>
-        #endregion
         public bool DrawsWorld
         {
             get { return mDrawsWorld; }
@@ -741,10 +740,16 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// Adjusts the camera's Z value so that 1 unit equals 1 pixel at the argument absolute Z value.
+        /// Note that objects closer to the camera will appear bigger and objects further will appear smaller.
+        /// This function assumes that Orthogonal is set to false.
+        /// </summary>
+        /// <param name="zToMakePixelPerfect">The absolute Z value to make pixel perfect.</param>
         public void UsePixelCoordinates3D(float zToMakePixelPerfect)
         {
             double distance = GetZDistanceForPixelPerfect();
-            this.Z = -MathFunctions.ForwardVector3.Z * (float)(distance);
+            this.Z = -MathFunctions.ForwardVector3.Z * (float)(distance) + zToMakePixelPerfect;
             this.FarClipPlane = System.Math.Max(this.FarClipPlane,
                 (float)distance * 2);
         }

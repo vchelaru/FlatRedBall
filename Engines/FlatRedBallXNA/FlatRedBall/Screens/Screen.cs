@@ -498,13 +498,21 @@ namespace FlatRedBall.Screens
             NextScreen = screenType.FullName;
         }
 
-        public void RestartScreen(bool reloadContent)
+        public void RestartScreen(bool reloadContent, bool applyRestartVariables = true)
         {
             if (reloadContent == false)
             {
                 UnloadsContentManagerWhenDestroyed = false;
             }
-            StoreRestartVariableValues();
+            if(applyRestartVariables)
+            {
+                StoreRestartVariableValues();
+            }
+            else
+            {
+                RestartVariableValues.Clear();
+                RestartVariables.Clear();
+            }
 
             MoveToScreen(this.GetType());
         }

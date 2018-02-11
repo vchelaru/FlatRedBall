@@ -23,6 +23,37 @@ namespace FlatRedBall.Glue.MVVM
     public class ViewModel : INotifyPropertyChanged
     {
         Dictionary<string, List<string>> notifyRelationships = new Dictionary<string, List<string>>();
+        private Dictionary<string, object> propertyDictionary = new Dictionary<string, object>();
+
+        protected T Get<T>([CallerMemberName]string propertyName = null)
+        {
+            T toReturn = default(T);
+
+            if (propertyName != null && propertyDictionary.ContainsKey(propertyName))
+            {
+                toReturn = (T)propertyDictionary[propertyName];
+            }
+
+            return toReturn;
+        }
+
+        protected void Set<T>(T propertyValue, [CallerMemberName]string propertyName = null)
+        {
+            if (propertyDictionary.ContainsKey(propertyName))
+            {
+                var storage = (T)propertyDictionary[propertyName];
+                if (EqualityComparer<T>.Default.Equals(storage, propertyValue) == false)
+                {
+                    propertyDictionary[propertyName] = propertyValue;
+                    NotifyPropertyChanged(propertyName);
+                }
+            }
+            else
+            {
+                propertyDictionary.Add(propertyName, propertyValue);
+                NotifyPropertyChanged(propertyName);
+            }
+        }
 
 
         public ViewModel()
@@ -89,6 +120,11 @@ namespace FlatRedBall.Glue.MVVM
             }
         }
 
+
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+
+
     }
 }
