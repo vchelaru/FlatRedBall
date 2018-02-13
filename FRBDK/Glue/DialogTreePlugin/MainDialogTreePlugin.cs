@@ -18,8 +18,7 @@ namespace DialogTreePlugin
     public class MainDialogTreePlugin : PluginBase
     {
         MainControl mainControl;
-        MainControlViewModel mainControlViewModel;
-
+        
 
         public override string FriendlyName => "Dialog Tree Plugin";
 
