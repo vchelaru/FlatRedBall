@@ -56,9 +56,6 @@
     <Compile Include="SaveClasses\DialogTreeLocalizationEntry.cs" />
     <Compile Include="ViewModels\LocaliztionDbViewModel.cs" />
     <Compile Include="ViewModels\MainControlViewModel.cs" />
-    <Compile Include="Views\LocalizationEntryView.xaml.cs">
-      <DependentUpon>LocalizationEntryView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\MainControl.xaml.cs">
       <DependentUpon>MainControl.xaml</DependentUpon>
     </Compile>
@@ -94,10 +91,6 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Views\LocalizationEntryView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\MainControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
