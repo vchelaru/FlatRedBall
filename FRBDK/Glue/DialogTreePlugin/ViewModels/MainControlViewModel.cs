@@ -14,8 +14,8 @@ namespace DialogTreePlugin.ViewModels
 {
     public class MainControlViewModel : ViewModel
     {
-        public Collection<DialogTreeLocalizationEntryViewModel> csvEntry;
-        public Collection<DialogTreeLocalizationEntryViewModel> CsvEntry
+        public Collection<LocaliztionDbViewModel> csvEntry;
+        public Collection<LocaliztionDbViewModel> CsvEntry
         {
             get => csvEntry;
             set { base.ChangeAndNotify(ref csvEntry, value); }
@@ -28,19 +28,28 @@ namespace DialogTreePlugin.ViewModels
                 foreach(var entry in CsvEntry)
                 {
                     entry.PropertyChanged -= MainController.Self.ReactToPropertyChangedEvent;
+                    entry.DeregisterFromEvents();
                 }
             }
-            var tempList = new Collection<DialogTreeLocalizationEntryViewModel>();
+            var tempList = new Collection<LocaliztionDbViewModel>();
             foreach(var id in dialogIds)
             {
                 var record = localizationDb.Records.FirstOrDefault(item => item[0] == id);
-                string recordValue = record == null ? string.Empty : record[1];
+                string[] recordValue = record;
 
-                var viewModel = new DialogTreeLocalizationEntryViewModel()
+                if(recordValue == null)
                 {
-                    DialogId = id,
-                    LocalizedText = recordValue
+                    //Default to an empty record
+                    recordValue = new string[localizationDb.Headers.Length];
+                    recordValue[0] = id;
+                }
+
+                var viewModel = new LocaliztionDbViewModel()
+                {
+                    CsvHeader = localizationDb.Headers
                 };
+
+                viewModel.SetFrom(recordValue);
 
                 viewModel.PropertyChanged += MainController.Self.ReactToPropertyChangedEvent;
 

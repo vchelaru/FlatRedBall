@@ -54,7 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveClasses\DialogTree.cs" />
     <Compile Include="SaveClasses\DialogTreeLocalizationEntry.cs" />
-    <Compile Include="ViewModels\DialogTreeLocalizationEntryViewModel.cs" />
+    <Compile Include="ViewModels\LocaliztionDbViewModel.cs" />
     <Compile Include="ViewModels\MainControlViewModel.cs" />
     <Compile Include="Views\LocalizationEntryView.xaml.cs">
       <DependentUpon>LocalizationEntryView.xaml</DependentUpon>

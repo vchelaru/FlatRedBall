@@ -23,7 +23,9 @@ namespace DialogTreePlugin
 
         public override string FriendlyName => "Dialog Tree Plugin";
 
-        public override Version Version => new Version(1, 0, 0);
+        //The string keys are no longer editable.
+        //We can now dynamically size the columns for any number of languages.
+        public override Version Version => new Version(1, 1, 0);
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {

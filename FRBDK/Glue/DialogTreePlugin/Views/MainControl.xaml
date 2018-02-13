@@ -4,9 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DialogTreePlugin.Views"
+             xmlns:b="clr-namespace:DialogTreePlugin.WpfBehaviors"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <DataGrid ItemsSource="{Binding CsvEntry}"></DataGrid>
+        <!--<DataGrid ItemsSource="{Binding CsvEntry}"></DataGrid>-->
+        <b:DialogTreeDataGrid ItemsSource="{Binding CsvEntry}" 
+              AutoGenerateColumns="True">
+        </b:DialogTreeDataGrid>
     </Grid>
 </UserControl>
