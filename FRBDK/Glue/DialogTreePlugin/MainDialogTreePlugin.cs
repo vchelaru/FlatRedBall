@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.Plugins;
 using System.Windows.Forms;
@@ -10,7 +6,6 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using DialogTreePlugin.Views;
 using DialogTreePlugin.Controllers;
 using FlatRedBall.Glue.SaveClasses;
-using DialogTreePlugin.ViewModels;
 
 namespace DialogTreePlugin
 {
@@ -18,13 +13,14 @@ namespace DialogTreePlugin
     public class MainDialogTreePlugin : PluginBase
     {
         MainControl mainControl;
-        
 
         public override string FriendlyName => "Dialog Tree Plugin";
 
-        //The string keys are no longer editable.
-        //We can now dynamically size the columns for any number of languages.
-        public override Version Version => new Version(1, 1, 0);
+        //v1.1.0 The string keys are no longer editable.
+        // - We can now dynamically size the columns for any number of languages.
+        //v1.2.0 removed unused files and general code cleanup.
+        // - Removed the extra blank line from the data grid.
+        public override Version Version => new Version(1, 2, 0);
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {

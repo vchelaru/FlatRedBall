@@ -8,9 +8,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <!--<DataGrid ItemsSource="{Binding CsvEntry}"></DataGrid>-->
         <b:DialogTreeDataGrid ItemsSource="{Binding CsvEntry}" 
-              AutoGenerateColumns="True">
+              AutoGenerateColumns="True"
+              CanUserAddRows="False">
         </b:DialogTreeDataGrid>
     </Grid>
 </UserControl>

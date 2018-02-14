@@ -1,12 +1,6 @@
 ﻿using FlatRedBall.Glue.MVVM;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using FlatRedBall.IO.Csv;
 using DialogTreePlugin.Controllers;
 
@@ -21,16 +15,22 @@ namespace DialogTreePlugin.ViewModels
             set { base.ChangeAndNotify(ref csvEntry, value); }
         }
 
+
+        public MainControlViewModel()
+        {
+            csvEntry = new Collection<LocaliztionDbViewModel>();
+        }
+
         internal void SetFrom(RuntimeCsvRepresentation localizationDb, string[] dialogIds)
         {
-            if(CsvEntry != null)
+            foreach(var entry in CsvEntry)
             {
-                foreach(var entry in CsvEntry)
-                {
-                    entry.PropertyChanged -= MainController.Self.ReactToPropertyChangedEvent;
-                    entry.DeregisterFromEvents();
-                }
+                entry.PropertyChanged -= MainController.Self.ReactToPropertyChangedEvent;
+                entry.DeregisterFromEvents();
             }
+            CsvEntry.Clear();
+
+            //We use a temp list so we can notify anything listening that the collection has changed.
             var tempList = new Collection<LocaliztionDbViewModel>();
             foreach(var id in dialogIds)
             {

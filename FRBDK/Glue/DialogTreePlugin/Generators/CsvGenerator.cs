@@ -1,16 +1,9 @@
-﻿using DialogTreePlugin.SaveClasses;
-using DialogTreePlugin.ViewModels;
-using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
-using FlatRedBall.IO.Csv;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DialogTreePlugin.Generators
 {
