@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -49,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\MainController.cs" />
+    <Compile Include="Generators\CodeGenerator.cs" />
     <Compile Include="Generators\CsvGenerator.cs" />
     <Compile Include="MainDialogTreePlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

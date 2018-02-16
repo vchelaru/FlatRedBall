@@ -12,11 +12,14 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO.Csv;
 using DialogTreePlugin.ViewModels;
 using DialogTreePlugin.Generators;
+using System.Windows.Forms;
 
 namespace DialogTreePlugin.Controllers
 {
     public class MainController : Singleton<MainController>
     {
+        public List<string> TrackedDialogTrees;
+
         #region Fields
         MainControl mainControl;
         MainControlViewModel mainControlViewModel;
@@ -43,6 +46,7 @@ namespace DialogTreePlugin.Controllers
 
             return mainControl;
         }
+
 
         internal void ReactToLocalizationDbChange(string filename)
         {
