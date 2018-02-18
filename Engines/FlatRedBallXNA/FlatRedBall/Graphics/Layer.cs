@@ -682,6 +682,17 @@ namespace FlatRedBall.Graphics
             mSprites.SortYInsertionDescendingOnZBreaks();
         }
 
+        /// <summary>
+        /// Directly adds a sprite to the sprite list for this layer.
+        /// This is faster than using the SpriteManager.AddToLayer method
+        /// but does no automatic updating and performs a one way add.
+        /// </summary>
+        /// <param name="spriteToAdd">The sprite to be added.</param>
+        public void AddManualSpriteOneWay(Sprite spriteToAdd)
+        {
+            mSprites.AddOneWay(spriteToAdd);
+        }
+
         public void Remove(Sprite spriteToRemove)
         {
             if (spriteToRemove.ListsBelongingTo.Contains(mSprites))
