@@ -23,8 +23,9 @@ namespace GumPlugin.DataGeneration
         public const string SliderBehaviorName = "SliderBehavior";
         public const string CheckBoxBehaviorName = "CheckBoxBehavior";
         // if adding here, search for the const string usage and the "Get" function to see
-        // where to add additional code
-        
+        // where to add additional code.
+        // Also look in the GueRuntimeTypeAssociationGenerator
+
 
         public static BehaviorSave CreateButtonBehavior()
         {

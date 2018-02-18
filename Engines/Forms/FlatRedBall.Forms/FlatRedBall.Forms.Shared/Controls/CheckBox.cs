@@ -56,6 +56,10 @@ namespace FlatRedBall.Forms.Controls
 
         #region Initialize Methods
 
+        public CheckBox() : base() { }
+
+        public CheckBox(GraphicalUiElement visual) : base(visual) { }
+
         protected override void ReactToVisualChanged()
         {
             // text component is optional:

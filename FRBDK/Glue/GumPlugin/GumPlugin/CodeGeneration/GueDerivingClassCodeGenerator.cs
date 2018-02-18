@@ -156,6 +156,7 @@ namespace GumPlugin.CodeGeneration
 
             StateCodeGenerator.Self.GenerateEverythingFor(elementSave, currentBlock);
 
+            GenerateFields(elementSave, currentBlock);
             
             GenerateProperties(elementSave, currentBlock);
 
@@ -181,6 +182,15 @@ namespace GumPlugin.CodeGeneration
             GenerateFormsCode(elementSave, currentBlock);
         }
 
+        private void GenerateFields(ElementSave elementSave, ICodeBlock currentBlock)
+        {
+            string throwaway;
+            if(GetIfShouldGenerateFormsCode(elementSave, out throwaway))
+            {
+                currentBlock.Line("private bool tryCreateFormsObject;");
+            }
+        }
+
         private void GenerateFormsCode(ElementSave element, ICodeBlock currentBlock)
         {
             string controlType;
@@ -191,8 +201,8 @@ namespace GumPlugin.CodeGeneration
                 currentBlock.Line($"public {controlType} FormsControl {{get; private set;}}");
                 currentBlock.Line($"public override object FormsControlAsObject {{ get {{ return FormsControl; }} }}");
 
-    }
-}
+            }
+        }
 
         private static bool GetIfShouldGenerateFormsCode(ElementSave element, out string controlType)
         {
@@ -334,33 +344,6 @@ namespace GumPlugin.CodeGeneration
             }
 
             var asComponentSave = elementSave as ComponentSave;
-
-            if(asComponentSave != null)
-            {
-                var project = AppState.Self.GumProjectSave;
-                var behaviors = project.Behaviors;
-
-                // I don't think we need this anymore now that we're using Forms instead;
-                //foreach (var behaviorReference in asComponentSave.Behaviors)
-                //{
-                //    inheritance += $", {GueRuntimeNamespace}.I{behaviorReference.BehaviorName}";
-
-                //    var behavior = behaviors.FirstOrDefault(item => item.Name == behaviorReference.BehaviorName);
-
-                //    string behaviorInheritance = null;
-                //    if (behavior != null)
-                //    {
-                //        behaviorInheritance = BehaviorCodeGenerator.GetInterfacesFromBehaviors(behavior);
-                //    }
-
-                //    if(!string.IsNullOrEmpty(behaviorInheritance))
-                //    {
-                //        inheritance += $", {behaviorInheritance}";
-                //    }
-                //}
-
-            }
-
 
             // If it's not public then exposing an instance in a public class makes the project not compile
             //ICodeBlock currentBlock = codeBlock.Class("partial", runtimeClassName, " : " + inheritance);
@@ -692,8 +675,9 @@ namespace GumPlugin.CodeGeneration
                 var shouldGenerate = GetIfShouldGenerateFormsCode(elementSave, out controlType);
                 if(shouldGenerate)
                 {
-                    currentBlock.Line($"FormsControl = new {controlType}();");
-                    currentBlock.Line($"FormsControl.Visual = this;");
+                    currentBlock
+                        .If("tryCreateFormsObject")
+                        .Line($"FormsControl = new {controlType}(this);");
 
                 }
 
@@ -754,12 +738,18 @@ namespace GumPlugin.CodeGeneration
 
             if(hasBase)
             {
-                baseCall = "base(false)";
+                baseCall = "base(false, tryCreateFormsObject)";
             }
-            var constructor = currentBlock.Constructor("public", runtimeClassName, "bool fullInstantiation = true",  baseCall );
+            var constructor = currentBlock.Constructor("public", runtimeClassName, "bool fullInstantiation = true, bool tryCreateFormsObject = true",  baseCall );
 
             // This may not have a value, so if not, don't set it:
             var state = elementSave.DefaultState;
+
+            string throwaway;
+            if (GetIfShouldGenerateFormsCode(elementSave, out throwaway))
+            {
+                constructor.Line("this.tryCreateFormsObject = tryCreateFormsObject;");
+            }
 
             if(state.GetVariableSave("HasEvents") != null)
             {

@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Gui;
+using Gum.Wireframe;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,6 +27,12 @@ namespace FlatRedBall.Forms.Controls.Primitives
 
         #endregion
 
+        #region Initialize
+
+        public ButtonBase() : base() { }
+
+        public ButtonBase(GraphicalUiElement visual) : base(visual) { }
+
         protected override void ReactToVisualChanged()
         {
             Visual.Click += this.HandleClick;
@@ -36,6 +43,8 @@ namespace FlatRedBall.Forms.Controls.Primitives
 
             base.ReactToVisualChanged();
         }
+
+        #endregion
 
         protected virtual void UpdateState() { }
 

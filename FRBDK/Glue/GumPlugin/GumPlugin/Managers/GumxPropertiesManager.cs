@@ -56,6 +56,12 @@ namespace GumPlugin.Managers
                     $"Regenerating Gum derived runtimes because of changed {propertyChanged}");
 
             }
+            else if(propertyChanged == nameof(GumViewModel.IncludeComponentToFormsAssociation))
+            {
+                TaskManager.Self.AddSync(
+                    () => { CodeGeneratorManager.Self.GenerateAndSaveRuntimeAssociations(); },
+                    $"Regenerating runtime associations because of changed {propertyChanged}");
+            }
             GlueCommands.Self.GluxCommands.SaveGlux();
         }
 

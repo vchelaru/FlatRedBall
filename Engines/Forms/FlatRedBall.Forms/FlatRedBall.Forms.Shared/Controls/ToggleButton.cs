@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Forms.Controls.Primitives;
+using Gum.Wireframe;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -48,6 +49,14 @@ namespace FlatRedBall.Forms.Controls
         public event EventHandler Indeterminate;
 
         public event EventHandler Unchecked;
+
+        #endregion
+
+        #region Initialize
+
+        public ToggleButton() : base() { }
+
+        public ToggleButton(GraphicalUiElement visual) : base(visual) { }
 
         #endregion
     }

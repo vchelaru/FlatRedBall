@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Gum.DataTypes.Behaviors;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace GumPlugin.Managers
 {
@@ -112,7 +113,7 @@ namespace GumPlugin.Managers
                     GenerateDueToFileChange(container);
                 }
 
-                if(changedElement is ScreenSave)
+                if(changedElement is Gum.DataTypes.ScreenSave)
                 {
                     foreach(var screenSave in ObjectFinder.Self.GumProjectSave.Screens)
                     {
@@ -278,11 +279,22 @@ namespace GumPlugin.Managers
             return wasSaved;
         }
 
-        private bool GenerateAndSaveRuntimeAssociations()
+        public bool GenerateAndSaveRuntimeAssociations()
         {
             bool wasAdded = false;
 
-            string contents = GueRuntimeTypeAssociationGenerator.Self.GetRuntimeRegistrationPartialClassContents();
+            var shouldGenerateComponentsToFormsAssociation = false;
+            var rfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.GetAllReferencedFiles()
+                .FirstOrDefault(item => FlatRedBall.IO.FileManager.GetExtension(item.Name) == "gumx");
+
+            if(rfs != null)
+            {
+                shouldGenerateComponentsToFormsAssociation = rfs.Properties.GetValue<bool>("IncludeComponentToFormsAssociation");   
+                    //.SetValue(
+                    //nameof(IncludeComponentToFormsAssociation), value);
+            }
+
+            string contents = GueRuntimeTypeAssociationGenerator.Self.GetRuntimeRegistrationPartialClassContents(shouldGenerateComponentsToFormsAssociation);
 
             string whereToSave = GumRuntimesFolder + "GumIdb.Generated.cs";
 

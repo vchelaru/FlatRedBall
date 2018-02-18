@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Gui;
+using Gum.Wireframe;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -20,8 +21,15 @@ namespace FlatRedBall.Forms.Controls
 
         #region Initialize
 
+        public Slider() : base()
+        {
+            Minimum = 0;
+            Maximum = 100;
+            LargeChange = 25;
+            SmallChange = 5;
+        }
 
-        public Slider()
+        public Slider(GraphicalUiElement visual) : base(visual)
         {
             Minimum = 0;
             Maximum = 100;

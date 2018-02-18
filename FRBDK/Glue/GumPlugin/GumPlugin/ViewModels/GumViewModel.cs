@@ -93,17 +93,26 @@ namespace GumPlugin.ViewModels
             }
         }
 
-        bool includeFormsInComponents;
         public bool IncludeFormsInComponents
         {
-            get { return includeFormsInComponents; }
+            get { return Get<bool>(); }
             set
             {
                 backingRfs.Properties.SetValue(
                     nameof(IncludeFormsInComponents), value);
 
+                Set(value);
+            }
+        }
 
-                base.ChangeAndNotify(ref includeFormsInComponents, value);
+        public bool IncludeComponentToFormsAssociation
+        {
+            get { return Get<bool>(); }
+            set
+            {
+                backingRfs.Properties.SetValue(
+                    nameof(IncludeComponentToFormsAssociation), value);
+                Set(value);
             }
         }
 
@@ -119,24 +128,18 @@ namespace GumPlugin.ViewModels
             }
         }
 
-        bool showDottedOutlines;
         public bool ShowDottedOutlines
         {
             get
             {
-                return showDottedOutlines;
+                return Get<bool>();
             }
             set
             {
-                if(showDottedOutlines != value)
-                {
-                    showDottedOutlines = value;
+                backingRfs.Properties.SetValue(
+                    nameof(ShowDottedOutlines), value);
 
-                    backingRfs.Properties.SetValue(
-                        nameof(ShowDottedOutlines), value);
-
-                    base.NotifyPropertyChanged(nameof(ShowDottedOutlines));
-                }
+                Set(value);
             }
         }
 
@@ -155,6 +158,7 @@ namespace GumPlugin.ViewModels
                 EmbedCodeFiles = behavior == FileAdditionBehavior.EmbedCodeFiles;
                 IncludeNoFiles = behavior == FileAdditionBehavior.IncludeNoFiles;
                 IncludeFormsInComponents = backingRfs.Properties.GetValue<bool>(nameof(IncludeFormsInComponents));
+                IncludeComponentToFormsAssociation = backingRfs.Properties.GetValue<bool>(nameof(IncludeComponentToFormsAssociation));
         }
 
 

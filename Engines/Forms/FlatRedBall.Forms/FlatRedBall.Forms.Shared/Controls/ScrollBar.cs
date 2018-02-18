@@ -47,6 +47,10 @@ namespace FlatRedBall.Forms.Controls
 
         #region Initialize
 
+        public ScrollBar() : base() { }
+
+        public ScrollBar(GraphicalUiElement visual) : base(visual) { }
+
         protected override void ReactToVisualChanged()
         {
             var upButtonVisual = this.Visual.GetGraphicalUiElementByName("UpButtonInstance");
@@ -58,8 +62,7 @@ namespace FlatRedBall.Forms.Controls
 #endif
             if(upButtonVisual.FormsControlAsObject == null)
             {
-                upButton = new Button();
-                upButton.Visual = upButtonVisual;
+                upButton = new Button(upButtonVisual);
             }
             else
             {
@@ -75,8 +78,7 @@ namespace FlatRedBall.Forms.Controls
 #endif
             if(downButtonVisual.FormsControlAsObject == null)
             {
-                downButton = new Button();
-                downButton.Visual = downButtonVisual;
+                downButton = new Button(downButtonVisual);
             }
             else
             {
@@ -114,7 +116,6 @@ namespace FlatRedBall.Forms.Controls
                 SmallChange = 2;
             }
         }
-
 
         #endregion
 

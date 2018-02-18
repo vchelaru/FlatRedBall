@@ -42,6 +42,10 @@ namespace FlatRedBall.Forms.Controls
 
         #region Initialize
 
+        public ListBoxItem() : base() { }
+
+        public ListBoxItem(GraphicalUiElement visual) : base(visual) { }
+
         protected override void ReactToVisualChanged()
         {
             Visual.Push += this.HandlePush;

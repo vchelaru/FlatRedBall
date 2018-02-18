@@ -97,7 +97,13 @@ namespace FlatRedBall.Forms.Controls
 
         #region Initialize Methods
 
-        public ListBox()
+        public ListBox() : base()
+        {
+            Items = new ObservableCollection<object>();
+            Items.CollectionChanged += HandleCollectionChanged;
+        }
+
+        public ListBox(GraphicalUiElement visual) : base(visual) 
         {
             Items = new ObservableCollection<object>();
             Items.CollectionChanged += HandleCollectionChanged;
@@ -106,6 +112,43 @@ namespace FlatRedBall.Forms.Controls
         protected override void ReactToVisualChanged()
         {
             base.ReactToVisualChanged();
+        }
+
+        private ListBoxItem CreateNewListItemVisual(object o)
+        {
+            ListBoxItem item;
+            if(o is ListBoxItem)
+            {
+                // the user provided a list box item, so just use that directly instead of creating a new one
+                item = o as ListBoxItem;
+                // let's hope the item doesn't already have this event - if the user recycles them that could be a problem...
+                item.Selected += HandleItemSelected;
+            }
+            else
+            {
+#if DEBUG
+                if(ListBoxItemGumType == null)
+                {
+                    throw new Exception("The list box does not have a ListBoxItemGumType specified. " + 
+                        "This property must be set before adding any items");
+                }
+                if(ListBoxItemFormsType == null)
+                {
+                    throw new Exception("The list box does not have a ListBoxItemFormsType specified. " +
+                        "This property must be set before adding any items");
+                }
+#endif
+                // vic says - this uses reflection, could be made faster, somehow...
+                var gumConstructor = ListBoxItemGumType.GetConstructor(new[] {typeof(bool), typeof(bool)});
+                var visual = gumConstructor.Invoke(new object[] { true, true }) as GraphicalUiElement;
+
+                item = ListBoxItemFormsType.GetConstructor(new Type[] { typeof(GraphicalUiElement) }).Invoke(new object[] { visual }) as ListBoxItem;
+                item.Selected += HandleItemSelected;
+                item.UpdateToObject(o);
+            }
+
+
+            return item;
         }
 
         #endregion
@@ -187,40 +230,5 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
-        private ListBoxItem CreateNewListItemVisual(object o)
-        {
-            ListBoxItem item;
-            if(o is ListBoxItem)
-            {
-                // the user provided a list box item, so just use that directly instead of creating a new one
-                item = o as ListBoxItem;
-                // let's hope the item doesn't already have this event - if the user recycles them that could be a problem...
-                item.Selected += HandleItemSelected;
-            }
-            else
-            {
-#if DEBUG
-                if(ListBoxItemGumType == null)
-                {
-                    throw new Exception("The list box does not have a ListBoxItemGumType specified. " + 
-                        "This property must be set before adding any items");
-                }
-                if(ListBoxItemFormsType == null)
-                {
-                    throw new Exception("The list box does not have a ListBoxItemFormsType specified. " +
-                        "This property must be set before adding any items");
-                }
-#endif
-                // vic says - this uses reflection, could be made faster, somehow...
-                item = ListBoxItemFormsType.GetConstructor(new Type[0]).Invoke(new object[0]) as ListBoxItem;
-                var gumConstructor = ListBoxItemGumType.GetConstructor(new[] {typeof(bool)});
-                item.Visual = gumConstructor.Invoke(new object[]{ true }) as GraphicalUiElement;
-                item.Selected += HandleItemSelected;
-                item.UpdateToObject(o);
-            }
-
-
-            return item;
-        }
     }
 }

@@ -33,6 +33,9 @@
                 
                 <CheckBox VerticalContentAlignment="Center"
                           Content="Include Forms in Components With Behaviors" IsChecked="{Binding IncludeFormsInComponents, Mode=TwoWay}"></CheckBox>
+
+                <CheckBox VerticalContentAlignment="Center"
+                          Content="Add Default Forms to Gum Component Associations" IsChecked="{Binding IncludeComponentToFormsAssociation, Mode=TwoWay}"></CheckBox>
                 <Button HorizontalAlignment="Left" Margin="0,10,0,0" Width="200" Click="HandleGenerateBehaviors">Generate FlatRedBall Behaviors</Button>
             
             </StackPanel>

@@ -205,8 +205,14 @@ namespace FlatRedBall.Glue.CodeGeneration
                         // from here:
                         // http://community.monogame.net/t/how-to-implement-borderless-fullscreen-on-desktopgl-project/8359
                         methodContents.Line("graphicsDeviceManager.HardwareModeSwitch = false;");
+
+                        // If in fullscreen we want the widow to take up just the resolution of the screen:
+
                         methodContents.Line(
-                            "FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(width, height, FlatRedBall.Graphics.WindowedFullscreenMode.FullscreenBorderless);");
+                            "FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(" +
+                            "Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, " +
+                            "Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, " +
+                            "FlatRedBall.Graphics.WindowedFullscreenMode.FullscreenBorderless);");
 
                     }
 

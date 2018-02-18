@@ -9,6 +9,8 @@ namespace FlatRedBall.Forms.Controls
 {
     public class FrameworkElement
     {
+        #region Fields/Properties
+
         /// <summary>
         /// The height in pixels. This is a calculated value considering HeightUnits and Height.
         /// </summary>
@@ -104,6 +106,42 @@ namespace FlatRedBall.Forms.Controls
                 visual = value; ReactToVisualChanged();
             }
         }
+
+        public static Dictionary<Type, Type> DefaultFormsComponents { get; private set; } = new Dictionary<Type, Type>();
+
+        protected static GraphicalUiElement GetGraphicalUiElementFor(FrameworkElement element)
+        {
+            var type = element.GetType();
+            if(DefaultFormsComponents.ContainsKey(type))
+            {
+                var gumType = DefaultFormsComponents[type];
+                var gumConstructor = gumType.GetConstructor(new[] { typeof(bool), typeof(bool) });
+
+                return gumConstructor.Invoke(new object[] { true, false }) as GraphicalUiElement;
+            }
+            else
+            {
+                throw new Exception($"Could not find default Gum Component for {type}. You can solve this by adding a Gum type for {type} to {nameof(DefaultFormsComponents)}, or constructing the Gum object itself.");
+            }
+        }
+
+        #endregion
+
+        public FrameworkElement() 
+        {
+            Visual = GetGraphicalUiElementFor(this);
+        }
+
+        public FrameworkElement(GraphicalUiElement visual)
+        {
+            if(visual != null)
+            {
+                this.visual = visual;
+                ReactToVisualChanged();
+
+            }
+        }
+
 
         protected bool GetIfIsOnThisOrChildVisual(Gui.Cursor cursor)
         {

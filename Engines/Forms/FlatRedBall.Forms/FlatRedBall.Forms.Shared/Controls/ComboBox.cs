@@ -87,9 +87,9 @@ namespace FlatRedBall.Forms.Controls
 
         #region Initialize Methods
 
-        public ComboBox()
-        {
-        }
+        public ComboBox() : base() { }
+
+        public ComboBox(GraphicalUiElement visual) : base(visual) { }
 
         protected override void ReactToVisualChanged()
         {
@@ -111,8 +111,7 @@ namespace FlatRedBall.Forms.Controls
 
             if(listBoxInstance.FormsControlAsObject == null)
             {
-                listBox = new ListBox();
-                listBox.Visual = listBoxInstance;
+                listBox = new ListBox(listBoxInstance);
             }
             else
             {

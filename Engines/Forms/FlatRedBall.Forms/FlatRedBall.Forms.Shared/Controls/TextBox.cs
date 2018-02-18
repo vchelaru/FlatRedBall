@@ -90,6 +90,10 @@ namespace FlatRedBall.Forms.Controls
 
         #region Initialize Methods
 
+        public TextBox() : base() { }
+
+        public TextBox(GraphicalUiElement visual) : base(visual) { }
+
         protected override void ReactToVisualChanged()
         {
             textComponent = base.Visual.GetGraphicalUiElementByName("TextInstance");

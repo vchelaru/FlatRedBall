@@ -23,13 +23,16 @@ namespace FlatRedBall.Forms.Controls
 
         #region Initialize
 
+        public ScrollViewer() : base() { }
+
+        public ScrollViewer(GraphicalUiElement visual) : base(visual) { }
+
         protected override void ReactToVisualChanged()
         {
             var scrollBarVisual = Visual.GetGraphicalUiElementByName("VerticalScrollBarInstance"); 
             if(scrollBarVisual.FormsControlAsObject == null)
             {
-                verticalScrollBar = new ScrollBar();
-                verticalScrollBar.Visual = scrollBarVisual;
+                verticalScrollBar = new ScrollBar(scrollBarVisual);
             }
             else
             {

@@ -57,6 +57,10 @@ namespace FlatRedBall.Forms.Controls
 
         #region Initialize Methods
 
+        public Button() : base() { }
+
+        public Button(GraphicalUiElement visual) : base(visual) { }
+
         protected override void ReactToVisualChanged()
         {
             // text component is optional:
@@ -109,7 +113,8 @@ namespace FlatRedBall.Forms.Controls
             if (textComponent == null)
             {
                 throw new Exception(
-                    "This button was created with a Gum component that does not have an instance called 'text'. A 'text' instance must be added to modify the button's Text property.");
+                    $"This button was created with a Gum component ({Visual?.ElementSave}) " +
+                    "that does not have an instance called 'text'. A 'text' instance must be added to modify the button's Text property.");
             }
         }
 #endif

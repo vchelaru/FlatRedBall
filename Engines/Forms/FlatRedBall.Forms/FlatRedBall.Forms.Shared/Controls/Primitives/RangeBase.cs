@@ -87,6 +87,10 @@ namespace FlatRedBall.Forms.Controls.Primitives
 
         #region Initialize
 
+        public RangeBase() : base() { }
+
+        public RangeBase(GraphicalUiElement visual) : base(visual) { }
+
         protected override void ReactToVisualChanged()
         {
             base.ReactToVisualChanged();
@@ -102,8 +106,7 @@ namespace FlatRedBall.Forms.Controls.Primitives
 
             if(thumbVisual.FormsControlAsObject == null)
             {
-                thumb = new Button();
-                thumb.Visual = thumbVisual;
+                thumb = new Button(thumbVisual);
             }
             else
             {

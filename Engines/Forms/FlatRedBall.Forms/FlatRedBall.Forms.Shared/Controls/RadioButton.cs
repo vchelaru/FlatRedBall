@@ -58,6 +58,7 @@ namespace FlatRedBall.Forms.Controls
                 return;
 
             if (RadioButtonDictionary.ContainsKey(parent)
+                && GroupName != null 
                 && RadioButtonDictionary[parent].ContainsKey(GroupName)
                 && RadioButtonDictionary[parent][GroupName].Contains(this))
             {
@@ -144,7 +145,13 @@ namespace FlatRedBall.Forms.Controls
         
         #region Initialize Methods
 
-        public RadioButton(string groupName = "")
+        public RadioButton(string groupName = "") : base()
+        {
+            GroupName = groupName;
+            IsChecked = false;
+        }
+
+        public RadioButton(GraphicalUiElement visual, string groupName = "") : base(visual) 
         {
             GroupName = groupName;
             IsChecked = false;
@@ -163,7 +170,14 @@ namespace FlatRedBall.Forms.Controls
             if (textComponent != null)
                 coreTextObject = (RenderingLibrary.Graphics.Text)textComponent.RenderableComponent;
 
-            GroupName = GroupName; //this will force the dictionary to be updated for the current <group name, visual> pair
+            if(GroupName == null)
+            {
+                GroupName = ""; //this will force the dictionary to be updated for the current <group name, visual> pair
+            }
+            else
+            {
+                GroupName = GroupName; //this will force the dictionary to be updated for the current <group name, visual> pair
+            }
 
             base.ReactToVisualChanged();
 
