@@ -458,10 +458,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public IEnumerator<ProjectItem> GetEnumerator()
         {
-            foreach (var buildItem in mBuildItemDictionaries.Values)
-            {
-                yield return buildItem;
-            }
+            return mBuildItemDictionaries.Values.ToList().GetEnumerator();
         }
 
         #endregion

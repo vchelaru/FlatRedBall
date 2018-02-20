@@ -2173,9 +2173,17 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
+                    var element = GlueState.Self.CurrentElement;
+                    string directoryOfTreeNode = EditorLogic.CurrentTreeNode.GetRelativePath();
+
                     foreach (string fileName in openFileDialog.FileNames)
                     {
-                        AddSingleFile(fileName, ref userCancelled);
+                        string fileNameLocal = fileName;
+                        TaskManager.Self.AddSync(() =>
+                        {
+                            AddSingleFile(fileName, ref userCancelled, element, directoryOfTreeNode, null);
+
+                        }, $"Adding file {fileNameLocal}");
                     }
                 }
             }
@@ -2217,12 +2225,9 @@ namespace FlatRedBall.Glue.FormHelpers
                 isBuiltFile = false;
             }
 
-            if (isBuiltFile && buildToolAssociation == null && !userCancelled && !userPickedNone)
+            if (isBuiltFile && buildToolAssociation == null && !userPickedNone)
             {
-                TaskManager.Self.OnUiThread(() =>
-                    {
-                        System.Windows.Forms.MessageBox.Show("Couldn't find a tool for the file extension " + sourceExtension);
-                    });
+                GlueCommands.Self.PrintOutput("Couldn't find a tool for the file extension " + sourceExtension);
             }
 
             else if (!userCancelled)

@@ -429,7 +429,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 element.HasChanged = true;
             }
 
-            GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+            GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshGlobalContent);
 
             return referencedFileSave;
         }
