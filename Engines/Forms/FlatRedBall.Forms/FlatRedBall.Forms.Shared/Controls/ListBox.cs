@@ -91,6 +91,10 @@ namespace FlatRedBall.Forms.Controls
 
         #region Events
 
+        /// <summary>
+        /// Event raised whenever the selection changes. The object parameter is the sender (list box) and the SelectionChangedeventArgs
+        /// contains information about the changed selected items.
+        /// </summary>
         public event Action<object, SelectionChangedEventArgs> SelectionChanged;
 
         #endregion
@@ -126,10 +130,17 @@ namespace FlatRedBall.Forms.Controls
             }
             else
             {
-#if DEBUG
-                if(ListBoxItemGumType == null)
+                var listBoxItemGumType = ListBoxItemGumType;
+
+                if(listBoxItemGumType == null && DefaultFormsComponents.ContainsKey(typeof(ListBoxItem)))
                 {
-                    throw new Exception("The list box does not have a ListBoxItemGumType specified. " + 
+
+                    listBoxItemGumType = DefaultFormsComponents[typeof(ListBoxItem)];// set associations
+                }
+#if DEBUG
+                if (listBoxItemGumType == null)
+                {
+                    throw new Exception("The list box does not have a ListBoxItemGumType specified, nor does the DefaultFormsControl have an entry for ListBoxItem. " + 
                         "This property must be set before adding any items");
                 }
                 if(ListBoxItemFormsType == null)
@@ -139,10 +150,17 @@ namespace FlatRedBall.Forms.Controls
                 }
 #endif
                 // vic says - this uses reflection, could be made faster, somehow...
-                var gumConstructor = ListBoxItemGumType.GetConstructor(new[] {typeof(bool), typeof(bool)});
+                var gumConstructor = listBoxItemGumType.GetConstructor(new[] {typeof(bool), typeof(bool)});
                 var visual = gumConstructor.Invoke(new object[] { true, true }) as GraphicalUiElement;
 
-                item = ListBoxItemFormsType.GetConstructor(new Type[] { typeof(GraphicalUiElement) }).Invoke(new object[] { visual }) as ListBoxItem;
+                var listBoxFormsConstructor = ListBoxItemFormsType.GetConstructor(new Type[] { typeof(GraphicalUiElement) });
+
+                if(listBoxFormsConstructor == null)
+                {
+                    throw new Exception($"Could not find a constructor for {ListBoxItemFormsType} which takes a single GraphicalUiElement argument");
+                }
+
+                item = listBoxFormsConstructor.Invoke(new object[] { visual }) as ListBoxItem;
                 item.Selected += HandleItemSelected;
                 item.UpdateToObject(o);
             }

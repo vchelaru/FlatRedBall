@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Forms.Controls.Primitives;
+using FlatRedBall.Gui;
 using Gum.Wireframe;
 using System;
 using System.Collections.Generic;
@@ -44,20 +45,93 @@ namespace FlatRedBall.Forms.Controls
         #endregion
 
         #region Events
+        /// <summary>
+        /// Event raised when the IsChecked value is set to true.
+        /// </summary>
         public event EventHandler Checked;
 
+        /// <summary>
+        /// Event raised when the IsChecked value is set to null.
+        /// </summary>
         public event EventHandler Indeterminate;
 
+        /// <summary>
+        /// Event raised when the IsChecked value is set to false;
+        /// </summary>
         public event EventHandler Unchecked;
 
         #endregion
 
         #region Initialize
 
-        public ToggleButton() : base() { }
+        public ToggleButton() : base()
+        {
+            IsChecked = false;
+        }
 
-        public ToggleButton(GraphicalUiElement visual) : base(visual) { }
+        public ToggleButton(GraphicalUiElement visual) : base(visual)
+        {
+            IsChecked = false;
+        }
 
         #endregion
+
+        #region Update To Methods
+
+        protected override void UpdateState()
+        {
+            var cursor = GuiManager.Cursor;
+
+            if (IsEnabled == false)
+            {
+                SetPropertyConsideringOn("Disabled");
+            }
+            //else if (HasFocus)
+            //{
+            //}
+            else if (GetIfIsOnThisOrChildVisual(cursor))
+            {
+                if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
+                {
+                    SetPropertyConsideringOn("Pushed");
+                }
+                else
+                {
+                    SetPropertyConsideringOn("Highlighted");
+                }
+            }
+            else
+            {
+                SetPropertyConsideringOn("Enabled");
+            }
+        }
+
+        private void SetPropertyConsideringOn(string stateName)
+        {
+            if(isChecked == true)
+            {
+                stateName += "On";
+            }
+            else
+            {
+                stateName += "Off";
+            }
+            Visual.SetProperty("ToggleCategoryState", stateName);
+
+        }
+
+        #endregion
+
+        protected override void OnClick()
+        {
+            if (IsChecked == true)
+            {
+                IsChecked = false;
+            }
+            else // false or indeterminte
+            {
+                IsChecked = true;
+            }
+        }
     }
 }

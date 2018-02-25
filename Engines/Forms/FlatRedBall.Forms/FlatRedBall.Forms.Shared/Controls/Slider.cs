@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Gui;
 using Gum.Wireframe;
+using RenderingLibrary;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -80,8 +81,8 @@ namespace FlatRedBall.Forms.Controls
         {
             if(IsMoveToPointEnabled)
             {
-                var left = Track.AbsoluteX;
-                var right = Track.AbsoluteX + Track.GetAbsoluteWidth();
+                var left = Track.GetAbsoluteX();
+                var right = Track.GetAbsoluteX() + Track.GetAbsoluteWidth();
 
                 var screenX = GuiManager.Cursor.GumX();
 
@@ -158,10 +159,18 @@ namespace FlatRedBall.Forms.Controls
 
             }
 
-
-            Value = newValue;
+            if(Value != newValue)
+            {
+                Value = newValue;
+            }
+            else
+            {
+                // cursor drag will set the position to the cursor, we may need to snap it back
+                UpdateThumbPositionAccordingToValue();
+            }
             return newValue;
         }
+
         private void UpdateThumbPositionAccordingToValue()
         {
             var ratioOver = (Value - Minimum) / (Maximum - Minimum);
@@ -181,7 +190,7 @@ namespace FlatRedBall.Forms.Controls
         {
             var cursorScreenX = cursor.GumX();
 
-            var cursorXRelativeToTrack = cursorScreenX - Track.AbsoluteX;
+            var cursorXRelativeToTrack = cursorScreenX - Track.GetAbsoluteX();
 
             thumb.Visual.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
 

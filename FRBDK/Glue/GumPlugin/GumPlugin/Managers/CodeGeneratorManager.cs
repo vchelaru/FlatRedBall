@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Gum.DataTypes.Behaviors;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.IO;
 
 namespace GumPlugin.Managers
 {
@@ -57,9 +58,9 @@ namespace GumPlugin.Managers
             behaviorCodeGenerator = new BehaviorCodeGenerator();
         }
 
-        public void GenerateDueToFileChange(string file)
+        public void GenerateDueToFileChange(FilePath file)
         {
-            string extension = FileManager.GetExtension(file);
+            string extension = file.Extension;
             if(extension == "gumx")
             {
                 foreach(var screen in ObjectFinder.Self.GumProjectSave.Screens)
@@ -138,14 +139,14 @@ namespace GumPlugin.Managers
             }
         }
 
-        private ElementSave GetElementFromFile(string file)
+        private ElementSave GetElementFromFile(FilePath file)
         {
-            var extension = FlatRedBall.IO.FileManager.GetExtension(file);
+            var extension = file.Extension;
 
             var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
             var gumDirectory = FlatRedBall.IO.FileManager.GetDirectory(gumProject.FullFileName);
 
-            var fileRelativeToGum = FlatRedBall.IO.FileManager.MakeRelative(file, gumDirectory);
+            var fileRelativeToGum = FlatRedBall.IO.FileManager.MakeRelative(file.Standardized, gumDirectory);
 
             // the file will start with something like "Components/", so remove that
             var firstForwardSlash = fileRelativeToGum.IndexOf("/");
@@ -154,21 +155,22 @@ namespace GumPlugin.Managers
             fileName = FlatRedBall.IO.FileManager.RemoveExtension(fileName);
 
             // Gum uses the backslash:
-            fileName = fileName.Replace("/", "\\").ToLowerInvariant();
+            // Update 
+            FilePath filePath = new FilePath(fileName);
 
             if (extension == GumProjectSave.ScreenExtension)
             {
-                return gumProject.Screens.FirstOrDefault(item => item.Name.ToLowerInvariant() == fileName);
+                return gumProject.Screens.FirstOrDefault(item => item.Name.ToLowerInvariant() == filePath);
                 //var screens = gumProject.ScreenReferences[0]
             }
             else if(extension == GumProjectSave.ComponentExtension)
             {
-                return gumProject.Components.FirstOrDefault(item => item.Name.ToLowerInvariant() == fileName);
+                return gumProject.Components.FirstOrDefault(item => item.Name.ToLowerInvariant() == filePath);
 
             }
             else if(extension == GumProjectSave.StandardExtension)
             {
-                return gumProject.StandardElements.FirstOrDefault(item => item.Name.ToLowerInvariant() == fileName);
+                return gumProject.StandardElements.FirstOrDefault(item => item.Name.ToLowerInvariant() == filePath);
 
             }
 

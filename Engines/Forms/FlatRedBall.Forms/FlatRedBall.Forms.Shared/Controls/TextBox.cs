@@ -32,13 +32,16 @@ namespace FlatRedBall.Forms.Controls
             get { return coreTextObject.RawText;  }
             set
             {
-                // go through the component instead of the core text object to force a layout refresh if necessary
-                textComponent.SetProperty("Text", value);
+                if(value != Text)
+                {
+                    // go through the component instead of the core text object to force a layout refresh if necessary
+                    textComponent.SetProperty("Text", value);
 
 
-                CaretIndex = System.Math.Min(CaretIndex, value?.Length ?? 0);
+                    CaretIndex = System.Math.Min(CaretIndex, value?.Length ?? 0);
 
-                TextChanged?.Invoke(this, null);
+                    TextChanged?.Invoke(this, null);
+                }
             }
         }
 
@@ -109,10 +112,18 @@ namespace FlatRedBall.Forms.Controls
             Visual.Click += this.HandleClick;
             Visual.RollOn += this.HandleRollOn;
             Visual.RollOff += this.HandleRollOff;
+            Visual.SizeChanged += HandleVisualSizeChanged;
 
             base.ReactToVisualChanged();
 
+            OffsetTextToKeepCaretInView();
+
             HasFocus = false;
+        }
+
+        private void HandleVisualSizeChanged(object sender, EventArgs e)
+        {
+            OffsetTextToKeepCaretInView();
         }
 
         #endregion

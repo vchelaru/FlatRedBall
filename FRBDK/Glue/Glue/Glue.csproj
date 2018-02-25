@@ -300,6 +300,7 @@
       <DependentUpon>AddEntityWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Extensions\LinqExtensions.cs" />
+    <Compile Include="IO\FilePath.cs" />
     <Compile Include="Managers\HotkeyManager.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSettingsControl.xaml.cs">
       <DependentUpon>CameraSettingsControl.xaml</DependentUpon>

@@ -143,17 +143,7 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
-        protected override void OnClick()
-        {
-            if(IsChecked == true)
-            {
-                IsChecked = false;
-            }
-            else // false or indeterminte
-            {
-                IsChecked = true;
-            }
-        }
+
 
         #region Utilities
 

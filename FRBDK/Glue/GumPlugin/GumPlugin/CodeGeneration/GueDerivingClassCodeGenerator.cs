@@ -255,7 +255,7 @@ namespace GumPlugin.CodeGeneration
                         controlName = "ComboBox";
                         break;
                     case BehaviorGenerator.ToggleBehaviorName:
-                        controlName = null; // need to implement this
+                        controlName = "ToggleButton";
                         break;
                     case BehaviorGenerator.RadioButtonBehaviorName:
                         controlName = "RadioButton";

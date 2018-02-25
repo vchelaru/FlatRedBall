@@ -65,15 +65,19 @@ namespace FlatRedBall.Forms.Controls.Primitives
                 }
 #endif
                 var oldValue = this.value;
+                if(oldValue != value)
+                {
 
-                this.value = value;
+                    this.value = value;
 
-                this.value = System.Math.Min(this.value, Maximum);
-                this.value = System.Math.Max(this.value, Minimum);
+                    this.value = System.Math.Min(this.value, Maximum);
+                    this.value = System.Math.Max(this.value, Minimum);
 
-                OnValueChanged(oldValue, this.value);
 
-                ValueChanged?.Invoke(this, null);
+                    OnValueChanged(oldValue, this.value);
+
+                    ValueChanged?.Invoke(this, null);
+                }
             }
         }
 
@@ -152,8 +156,21 @@ namespace FlatRedBall.Forms.Controls.Primitives
             }
         }
 
-        protected virtual void OnMaximumChanged(double oldMaximum, double newMaximum) { }
-        protected virtual void OnMinimumChanged(double oldMinimum, double newMinimum) { }
+        protected virtual void OnMaximumChanged(double oldMaximum, double newMaximum)
+        {
+            if(Value > Maximum && Maximum >= Minimum)
+            {
+                Value = Maximum;
+            }
+        }
+        protected virtual void OnMinimumChanged(double oldMinimum, double newMinimum)
+        {
+            if(Value < Minimum && Minimum <= Maximum)
+            {
+                Value = Minimum;
+            }
+        }
+
         protected virtual void OnValueChanged(double oldValue, double newValue) { }
 
         protected abstract void UpdateThumbPositionToCursorDrag(Cursor cursor);
