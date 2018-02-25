@@ -36,7 +36,7 @@ namespace DialogTreePlugin.Generators
             }
         }
 
-        internal void AddNewTrackedFile(string name)
+        internal void AddNewTrackedFile(string name, bool isGlueLoad = false)
         {
             bool needToRegenCode = false;
             if (dialogTreeFileNames.Contains(name) == false)
@@ -44,18 +44,14 @@ namespace DialogTreePlugin.Generators
                 dialogTreeFileNames.Add(name);
                 needToRegenCode = true;
             }
-            else
-            {
-                MessageBox.Show($"Dialog Tree filname already exists:\n{name}");
-            }
 
-            if(needToRegenCode)
+            if(needToRegenCode && !isGlueLoad)
             {
                 RegenCode();
             }
         }
 
-        private void RegenCode()
+        internal void RegenCode()
         {
             const string fieldType = "public const string";
             var nameSpaceBlock = new CodeBlockNamespace(null, ProjectManager.ProjectBase.RootNamespace);

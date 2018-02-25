@@ -26,9 +26,9 @@ namespace DialogTreePlugin.WpfBehaviors
         {
 
             e.Cancel = true;
-            if (e.PropertyName == nameof(LocaliztionDbViewModel.CsvHeader) && MainController.Self.LocalizationDb != null)
+            if (e.PropertyName == nameof(LocaliztionDbViewModel.CsvHeader) && DialogTreeFileController.Self.LocalizationDb != null)
             {
-                var headers = MainController.Self.LocalizationDb.Headers;
+                var headers = DialogTreeFileController.Self.LocalizationDb.Headers;
                 if (ShouldRegenerateColumns(headers))
                 {
                     Columns.Clear();

@@ -24,7 +24,7 @@ namespace DialogTreePlugin.Controllers
         MainControl mainControl;
         MainControlViewModel mainControlViewModel;
 
-        DialogTree.Rootobject dialogTree;
+        DialogTreeConverted.Rootobject dialogTree;
         string[] dialogIds;
         public RuntimeCsvRepresentation LocalizationDb;
 
@@ -48,12 +48,11 @@ namespace DialogTreePlugin.Controllers
         }
 
 
-        internal void ReactToLocalizationDbChange(string filename)
+        internal void ReactToLocalizationDbChange()
         {
-            LocalizationDb = CsvFileManager.CsvDeserializeToRuntime(filename);
-            if(LocalizationDb != null && dialogIds != null)
+            if(DialogTreeFileController.Self.LocalizationDb != null && dialogIds != null)
             {
-                mainControlViewModel?.SetFrom(LocalizationDb, dialogIds);
+                mainControlViewModel?.SetFrom(DialogTreeFileController.Self.LocalizationDb, dialogIds);
             }
         }
 
@@ -62,9 +61,9 @@ namespace DialogTreePlugin.Controllers
             var fileName = GlueCommands.Self.GetAbsoluteFileName(currentFileSave);
             try
             {
-                Stream fileStream = new FileStream(fileName, FileMode.Open);
-                var serializer = new DataContractJsonSerializer(typeof(DialogTree.Rootobject));
-                dialogTree = (DialogTree.Rootobject)serializer.ReadObject(fileStream);
+                DialogTreeConverted.Rootobject dialogTreeNew = DialogTreeFileController.Self.DeserializeConvertedDialogTree(fileName);
+                dialogTree = dialogTreeNew;
+
             }
             catch (Exception e)
             {
@@ -74,32 +73,22 @@ namespace DialogTreePlugin.Controllers
             var idList = new List<string>();
             foreach(var passage in dialogTree.passages)
             {
-                idList.Add(passage.name);
+                idList.Add(passage.stringid);
                 if (passage.links != null)
                 {
                     foreach (var link in passage.links)
                     {
-                        idList.Add(link.name);
+                        idList.Add(link.stringid);
                     }
                 }
             }
 
             dialogIds = idList.ToArray();
 
-            if(LocalizationDb == null)
-            {
-                try
-                {
-                    var filePath = GlueCommands.Self.GetAbsoluteFileName(RelativeToGlobalContentLocalizationDbCsvFile, false);
-                    ReactToLocalizationDbChange(filePath);
-                }
-                catch (Exception e)
-                {
 
-                }
-            }
+            ReactToLocalizationDbChange();
 
-            mainControlViewModel.SetFrom(LocalizationDb, dialogIds);
+            //mainControlViewModel.SetFrom(LocalizationDb, dialogIds);
         }
 
         internal void ReactToPropertyChangedEvent(object sender, PropertyChangedEventArgs e)
@@ -110,31 +99,7 @@ namespace DialogTreePlugin.Controllers
                 //For now, make sure we are not allowing the edit of the DialogId for now.
                 if (e.PropertyName == nameof(LocalizedTextViewModel.Text))
                 {
-
-                    var dbRecord = LocalizationDb.Records.FirstOrDefault(item => item[0] == senderAsTextViewModel.LocalizedText[0].Text);
-
-                    if (dbRecord != null)
-                    {
-                        var newRecord = senderAsTextViewModel.LocalizedTextAsStringArray;
-                        for(int i = 0; i < newRecord.Length; i++)
-                        {
-                            dbRecord[i] = newRecord[i];
-                        }
-                    }
-                    else
-                    {
-                        LocalizationDb.Records.Add(senderAsTextViewModel.LocalizedTextAsStringArray);
-                    }
-
-                    TaskManager.Self.AddAsyncTask(
-                        () =>
-                        {
-                            string fileName = GlueCommands.Self.GetAbsoluteFileName(RelativeToGlobalContentLocalizationDbCsvFile, false);
-
-                            CsvGenerator.Self.GenerateFor(fileName, LocalizationDb.GenerateCsvString());
-                        },
-                        "Dialog Tree Manager: Regenerating LocalizationDatabase."
-                        );
+                    DialogTreeFileController.Self.UpdateLocalizationDb(new string[][] { senderAsTextViewModel.LocalizedTextAsStringArray });
                 }
             }
         }
