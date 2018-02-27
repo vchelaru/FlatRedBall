@@ -49,10 +49,19 @@ namespace DialogTreePlugin.Controllers
 
         public DialogTreeRaw.Rootobject DeserializeRawDialogTree(string fileName)
         {
-            Stream openStream = new FileStream(fileName, FileMode.Open);
-            var serializer = new DataContractJsonSerializer(typeof(DialogTreeRaw.Rootobject));
-            var dialogTreeNew = (DialogTreeRaw.Rootobject)serializer.ReadObject(openStream);
-            return dialogTreeNew;
+            DialogTreeRaw.Rootobject deserializedDialogTree;
+            try
+            {
+                Stream openStream = new FileStream(fileName, FileMode.Open);
+                var serializer = new DataContractJsonSerializer(typeof(DialogTreeRaw.Rootobject));
+                deserializedDialogTree = (DialogTreeRaw.Rootobject)serializer.ReadObject(openStream);
+            }
+            catch
+            {
+                deserializedDialogTree = null;
+                GlueCommands.Self.PrintError($"Json file could not be deserialized to a DialogTree:\n{fileName}");
+            }
+            return deserializedDialogTree;
         }
 
         public DialogTreeConverted.Rootobject DeserializeConvertedDialogTree(string fileName)

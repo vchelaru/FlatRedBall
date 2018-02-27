@@ -19,39 +19,74 @@ namespace DialogTreePlugin.Generators
     public class CodeGenerator : Singleton<CodeGenerator>
     {
         List<string> dialogTreeFileNames;
+        List<string> dialogTreeTags;
 
         public CodeGenerator()
         {
             dialogTreeFileNames = new List<string>();
-        }
-
-        internal void UpdateTrackedDialogTreeFiles(IEnumerable<string> dialogTrees)
-        {
-            var newfileNames = dialogTrees.Where(item => dialogTreeFileNames.Contains(item) == false).ToArray();
-            dialogTreeFileNames.AddRange(newfileNames);
-
-            if(newfileNames.Length > 0)
-            {
-                RegenCode();
-            }
+            dialogTreeTags = new List<string>();
         }
 
         internal void AddNewTrackedFile(string name, bool isGlueLoad = false)
         {
-            bool needToRegenCode = false;
             if (dialogTreeFileNames.Contains(name) == false)
             {
                 dialogTreeFileNames.Add(name);
-                needToRegenCode = true;
+                dialogTreeFileNames.Sort();
+
+                if(isGlueLoad == false)
+                {
+                    RegenCodeDialogTreeFileName();
+                }
             }
 
-            if(needToRegenCode && !isGlueLoad)
+        }
+
+        internal void AddTrackedDialogTreeTag(string[] tags, bool isGlueLoad = false)
+        {
+            var newTags = tags.Where(item => dialogTreeTags.Contains(item) == false).ToArray();
+            if(newTags.Length > 0)
             {
-                RegenCode();
+                dialogTreeTags.AddRange(tags);
+
+                dialogTreeTags.Sort();
+                if(isGlueLoad == false)
+                {
+                    RegenCodeDialogTreeTags();
+                }
             }
         }
 
-        internal void RegenCode()
+        internal void RegenCodeDialogTreeTags()
+        {
+            const string fieldType = "public const string";
+            var nameSpaceBlock = new CodeBlockNamespace(null, ProjectManager.ProjectBase.RootNamespace);
+            var classBlock = nameSpaceBlock.Class("public partial", "DialogTree");
+            var internalClassBlock = classBlock.Class("public", "Tag");
+            var codeFileName = $"{FileManager.GetDirectory(GlueState.Self.CurrentGlueProjectFileName)}DialogTree.Tags.Generated.cs";
+
+            foreach (var tag in dialogTreeTags)
+            {
+                internalClassBlock.Line($"{fieldType} {tag} = \"{tag}\";");
+            }
+
+            TaskManager.Self.AddAsyncTask(
+                () =>
+                {
+                    bool wasSaved = SaveDiaogTreeCsFile(nameSpaceBlock.ToString(), codeFileName);
+
+                    bool wasAdded = ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(ProjectManager.ProjectBase, codeFileName);
+
+                    if (wasAdded)
+                    {
+                        ProjectManager.SaveProjects();
+                    }
+                },
+                "Adding geneated file to the DialogTree file"
+                );
+        }
+
+        internal void RegenCodeDialogTreeFileName()
         {
             const string fieldType = "public const string";
             var nameSpaceBlock = new CodeBlockNamespace(null, ProjectManager.ProjectBase.RootNamespace);
@@ -62,8 +97,9 @@ namespace DialogTreePlugin.Generators
             {
                 var fileName = FileManager.RemovePath(treeName);
                 var fieldName = FileManager.RemoveExtension(fileName);
+                var localPath = FileManager.MakeRelative(treeName);
 
-                classBlock.Line($"{fieldType} {fieldName} = \"{fieldName}\";");
+                classBlock.Line($"{fieldType} {fieldName} = \"{localPath.ToLower()}\";");
             }
 
             TaskManager.Self.AddAsyncTask(

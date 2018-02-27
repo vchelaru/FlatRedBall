@@ -50,7 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\DialogTreeFileController.cs" />
-    <Compile Include="Controllers\MainController.cs" />
+    <Compile Include="Controllers\TabConroller.cs" />
     <Compile Include="Generators\CodeGenerator.cs" />
     <Compile Include="Generators\CsvGenerator.cs" />
     <Compile Include="Generators\JsonToGlsnConverter.cs" />

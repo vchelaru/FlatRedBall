@@ -29,7 +29,9 @@ namespace DialogTreePlugin
         // - Implemented code-gen for the dialog tree files so Design can use DialogTrees.FileName
         //v2.0.0 Implementing .json -> .glsn conversion.
         // - We now auto generate the string ids for the dialog trees.
-        public override Version Version => new Version(2, 0, 0);
+        //v2.1.0 Plugin generates string constants for tags.
+        // - Modifed the dialog tree name constant to use the file name.
+        public override Version Version => new Version(2, 1, 0);
 
         const string rawFileType = "json";
         const string convertedFileType = "glsn";
@@ -138,7 +140,8 @@ namespace DialogTreePlugin
                 }
 
                 //Regen the code after converting the .glsn files on load.
-                CodeGenerator.Self.RegenCode();
+                CodeGenerator.Self.RegenCodeDialogTreeFileName();
+                CodeGenerator.Self.RegenCodeDialogTreeTags();
             }
         }
 
@@ -152,7 +155,7 @@ namespace DialogTreePlugin
             {
                 if (mainControl == null)
                 {
-                    mainControl = MainController.Self.GetControl();
+                    mainControl = TabConroller.Self.GetControl();
                     this.AddToTab(PluginManager.CenterTab, mainControl, "Dialog Tree");
                 }
                 else
@@ -160,7 +163,7 @@ namespace DialogTreePlugin
                     this.AddTab();
                 }
 
-                MainController.Self.UpdateTo(GlueState.Self.CurrentReferencedFileSave);
+                TabConroller.Self.UpdateTo(GlueState.Self.CurrentReferencedFileSave);
             }
             else
             {
@@ -178,9 +181,9 @@ namespace DialogTreePlugin
 
         private void HandleFileChanged(string fileName)
         {
-            if (fileName.EndsWith(MainController.RelativeToGlobalContentLocalizationDbCsvFile))
+            if (fileName.EndsWith(TabConroller.RelativeToGlobalContentLocalizationDbCsvFile))
             {
-                MainController.Self.ReactToLocalizationDbChange();
+                TabConroller.Self.ReactToLocalizationDbChange();
             }
 
             if(fileName.EndsWith(rawFileType))
