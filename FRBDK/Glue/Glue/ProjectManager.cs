@@ -917,7 +917,25 @@ namespace FlatRedBall.Glue
 
             mSyncedProjects.Clear();
 
-            PluginManager.Initialize(false);
+            if(isExiting)
+            {
+                // If we're exiting we don't care about crashes here...especially
+                // since we may have gotten here because of a missing XNA so we can't 
+                // initialize plugins anyway
+
+                try
+                {
+                    PluginManager.Initialize(false);
+                }
+                catch
+                {
+                    // do nothing
+                }
+            }
+            else
+            {
+                PluginManager.Initialize(false);
+            }
 
             FileWatchManager.UpdateToProjectDirectory();
 
