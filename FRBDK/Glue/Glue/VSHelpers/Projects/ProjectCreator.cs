@@ -26,8 +26,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public static ProjectBase CreateProject(string fileName)
         {
             //Project coreVisualStudioProject = new Project(fileName);
-            Project coreVisualStudioProject;
+            Project coreVisualStudioProject = null;
 
+            var didErrorOccur = false;
             try
             {
                 try
@@ -54,13 +55,19 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
             catch (Microsoft.Build.Exceptions.InvalidProjectFileException exception)
             {
+                didErrorOccur = true;
                 var exceptionMessage = exception.Message;
 
-                bool isMissingMonoGame = exceptionMessage.Contains("MonoGame.Content.Builder.targets\" was not found");
+                var shouldThrowException = true;
+                string locationToOpen = null;
+
+                bool isMissingMonoGame = exceptionMessage.Contains("MonoGame.Content.Builder.targets\"");
                 string message;
                 if(isMissingMonoGame)
                 {
                     message = $"Could not load the project {fileName}\nbecause MonoGame files are missing. Try installing MonoGame, then try opening the project in Glue again.\n\n";
+                    locationToOpen = "http://teamcity.monogame.net/repository/download/MonoGame_PackagingWindows/latest.lastSuccessful/MonoGameSetup.exe?guest=1";
+                    shouldThrowException = false;
                 }
                 else if(exceptionMessage.Contains("Novell.MonoDroid.CSharp.targets"))
                 {
@@ -77,10 +84,27 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 }
 
-                throw new Exception(message, exception);
+                if(shouldThrowException)
+                {
+                    throw new Exception(message, exception);
+                }
+                else
+                {
+                    Plugins.ExportedImplementations.GlueCommands.Self.DialogCommands.ShowMessageBox(message);
+
+                    if(locationToOpen != null)
+                    {
+                        System.Diagnostics.Process.Start(locationToOpen);
+                    }
+                }
             }
 
-            ProjectBase toReturn = CreatePlatformSpecificProject(coreVisualStudioProject, fileName);
+            ProjectBase toReturn = null;
+
+            if(didErrorOccur == false)
+            {
+                toReturn = CreatePlatformSpecificProject(coreVisualStudioProject, fileName);
+            }
 
 #if GLUE
             // It may be null if the project is of an unknown type.  
