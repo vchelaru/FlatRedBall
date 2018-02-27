@@ -279,7 +279,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             EditorLogic.TakeSnapshot();
 
-            bool wasFocused = mTreeView.Focused;
+            bool wasFocused = mTreeView?.Focused == true;
             VisibilityManager.ReactivelySetItemViewVisibility();
             if (!SuppressSelectionEvents)
             {

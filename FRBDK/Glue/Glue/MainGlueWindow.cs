@@ -155,16 +155,22 @@ namespace Glue
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            var message = "Could not load Glue, probably because XNA 4 is not installed. Click OK to go to the XNA runtime page to install the XNA runtime, then run Glue again";
+
+
+            MessageBox.Show(message);
+
+            System.Diagnostics.Process.Start("https://www.microsoft.com/en-us/download/details.aspx?id=20914");
+
+            this.Close();
             try
             {
-                StartUpGlue();
+                //StartUpGlue();
             }
             catch (FileNotFoundException fnfe)
             {
-                if (fnfe.ToString().Contains("Microsoft.Xna.Framework"))
+                if (fnfe.ToString().Contains("Microsoft.Xna.Framework.dll"))
                 {
-                    MessageBox.Show("Could not load Glue, probably because XNA 4 is not installed.  Additional information\n\n" +
-                        fnfe.ToString());
                 }
                 else
                 {
@@ -619,11 +625,19 @@ namespace Glue
             
             // Select null so plugins deselect:
             Self.ElementTreeView.SelectedNode = null;
-            ElementViewWindow.AfterSelect();
 
-            Self.ElementTreeView.Nodes.Clear();
+            // This only matters if we're not exiting the app:
+            if(isExiting == false)
+            {
 
-            Self.InitializeElementViewWindow();
+                ElementViewWindow.AfterSelect();
+
+                Self.ElementTreeView.Nodes.Clear();
+
+                Self.InitializeElementViewWindow();
+            }
+
+
 
             #endregion
 
