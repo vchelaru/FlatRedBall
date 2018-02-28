@@ -16,7 +16,7 @@ using System.Windows.Forms;
 
 namespace DialogTreePlugin.Controllers
 {
-    public class MainController : Singleton<MainController>
+    public class TabConroller : Singleton<TabConroller>
     {
         public List<string> TrackedDialogTrees;
 
@@ -87,8 +87,6 @@ namespace DialogTreePlugin.Controllers
 
 
             ReactToLocalizationDbChange();
-
-            //mainControlViewModel.SetFrom(LocalizationDb, dialogIds);
         }
 
         internal void ReactToPropertyChangedEvent(object sender, PropertyChangedEventArgs e)

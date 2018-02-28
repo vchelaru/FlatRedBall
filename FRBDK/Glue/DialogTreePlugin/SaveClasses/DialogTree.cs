@@ -61,7 +61,12 @@
             public string stringid { get; set; }
             public Link[] links { get; set; }
             public int pid { get; set; }
-            public string[] tags { get; set; }
+            private string[] mTags;
+            public string[] tags
+            {
+                get => mTags ?? new string[0];
+                set { mTags = value; }
+            }
         }
 
         public class Link

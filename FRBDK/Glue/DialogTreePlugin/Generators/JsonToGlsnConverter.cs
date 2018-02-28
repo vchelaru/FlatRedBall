@@ -28,21 +28,27 @@ namespace DialogTreePlugin.Generators
         {
             var localizationDbEntriesToAdd = new List<string[]>();
             
-            DialogTreeConverted.Rootobject convertedDialogTree;
-            ConvertJsonToGlsn(newFile, localizationDbEntriesToAdd, out convertedDialogTree);
+            DialogTreeConverted.Rootobject convertedDialogTree = null;
+            var didConvert = ConvertJsonToGlsn(newFile, localizationDbEntriesToAdd, ref convertedDialogTree);
 
-            //Save the new .glsn file.
-            var convertedFileName = GlueCommands.Self.GetAbsoluteFileName(newFile).Replace(rawFileType, combinedFileNameEnd);
-            DialogTreeFileController.Self.SerializeConvertedDialogTree(convertedDialogTree, convertedFileName);
+            if (didConvert)
+            {
+                //Save the new .glsn file.
+                var convertedFileName = GlueCommands.Self.GetAbsoluteFileName(newFile).Replace(rawFileType, combinedFileNameEnd);
+                DialogTreeFileController.Self.SerializeConvertedDialogTree(convertedDialogTree, convertedFileName);
 
-            //Update the localizationdb
-            DialogTreeFileController.Self.UpdateLocalizationDb(localizationDbEntriesToAdd.ToArray(), isGlsnChange: true);
+                //Update the localizationdb
+                DialogTreeFileController.Self.UpdateLocalizationDb(localizationDbEntriesToAdd.ToArray(), isGlsnChange: true);
 
-            //Regen the dialog tree constants.
-            CodeGenerator.Self.AddNewTrackedFile(convertedFileName, isGlueLoad);
+                //Regen the dialog tree constants.
+                CodeGenerator.Self.AddNewTrackedFile(convertedFileName, isGlueLoad);
 
-            //Update the glue project to include the .glsn instead of the .json
-            ReplaceGluxJsonReferenceWithGlsn(newFile, convertedFileName);
+                //Regen the tag constants
+                CodeGenerator.Self.AddTrackedDialogTreeTag(convertedDialogTree.passages.SelectMany(item => item.tags).ToArray(), isGlueLoad);
+
+                //Update the glue project to include the .glsn instead of the .json
+                ReplaceGluxJsonReferenceWithGlsn(newFile, convertedFileName);
+            }
         }
 
         private void ReplaceGluxJsonReferenceWithGlsn(ReferencedFileSave newFile, string convertedFileName)
@@ -76,78 +82,83 @@ namespace DialogTreePlugin.Generators
             }
         }
 
-        private void ConvertJsonToGlsn(ReferencedFileSave newFile, List<string[]> localizationDbEntriesToAdd, out DialogTreeConverted.Rootobject convertedDialogTree)
+        private bool ConvertJsonToGlsn(ReferencedFileSave newFile, List<string[]> localizationDbEntriesToAdd, ref DialogTreeConverted.Rootobject convertedDialogTree)
         {
             //Deserialize the raw dialog tree.
             var rawDialogTree = DialogTreeFileController.Self.DeserializeRawDialogTree(GlueCommands.Self.GetAbsoluteFileName(newFile));
 
-            //Strip the file name of the path and extenstion to use as the tree name and 
-            var strippedExtenstion = FileManager.RemoveExtension(newFile.Name);
-            var rootStringKeyName = FileManager.RemovePath(strippedExtenstion);
-
-            //Temporarily store the converted pasages in a list.
-            var converedPassaged = new List<DialogTreeConverted.Passage>();
-
-            foreach (var passage in rawDialogTree.passages)
+            if (rawDialogTree != null)
             {
-                //Get the start of the converted passage from the passage.
-                //This preserves the tags array and pid but converted to an int.
-                var newPassage = passage.ToConvertedPassage();
+                //Strip the file name of the path and extenstion to use as the tree name and 
+                var strippedExtenstion = FileManager.RemoveExtension(newFile.Name);
+                var rootStringKeyName = FileManager.RemovePath(strippedExtenstion);
 
-                //Generate a string key for the passage text.
-                //Se the new passage's stringid.
-                var newPassageStringKey = stringKeyPrefix + rootStringKeyName + passageText + newPassage.pid;
-                newPassage.stringid = newPassageStringKey;
+                //Temporarily store the converted pasages in a list.
+                var converedPassaged = new List<DialogTreeConverted.Passage>();
 
-                //Add the passage to the temp list of passages.
-                converedPassaged.Add(newPassage);
-
-                //Add the new stringId and parsedPassageText to localizationDbToAdd
-                //If it exists, we are assuming design wants to change the db entry.
-                var newdDbEntry = DialogTreeFileController.Self.GetLocalizationDbEntryOrDefault(newPassageStringKey);
-                newdDbEntry[0] = newPassageStringKey;
-                newdDbEntry[1] = ParsePassageText(passage.text);
-
-                localizationDbEntriesToAdd.Add((string[])newdDbEntry.Clone());
-
-                if (passage.links != null)
+                foreach (var passage in rawDialogTree.passages)
                 {
-                    var convertedLinks = new List<DialogTreeConverted.Link>();
-                    int linkIndex = 0;
+                    //Get the start of the converted passage from the passage.
+                    //This preserves the tags array and pid but converted to an int.
+                    var newPassage = passage.ToConvertedPassage();
 
-                    foreach (var link in passage.links)
+                    //Generate a string key for the passage text.
+                    //Se the new passage's stringid.
+                    var newPassageStringKey = stringKeyPrefix + rootStringKeyName + passageText + newPassage.pid;
+                    newPassage.stringid = newPassageStringKey;
+
+                    //Add the passage to the temp list of passages.
+                    converedPassaged.Add(newPassage);
+
+                    //Add the new stringId and parsedPassageText to localizationDbToAdd
+                    //If it exists, we are assuming design wants to change the db entry.
+                    var newdDbEntry = DialogTreeFileController.Self.GetLocalizationDbEntryOrDefault(newPassageStringKey);
+                    newdDbEntry[0] = newPassageStringKey;
+                    newdDbEntry[1] = ParsePassageText(passage.text);
+
+                    localizationDbEntriesToAdd.Add((string[])newdDbEntry.Clone());
+
+                    if (passage.links != null)
                     {
-                        //Generate a new converted link preserving pid it links too.
-                        var newLink = link.ToConvertedLink();
+                        var convertedLinks = new List<DialogTreeConverted.Link>();
+                        int linkIndex = 0;
 
-                        //Generate stringId for the dialog text.
-                        var newLinkStringKey = newPassageStringKey + linkText + linkIndex;
-                        newLink.stringid = newLinkStringKey;
+                        foreach (var link in passage.links)
+                        {
+                            //Generate a new converted link preserving pid it links too.
+                            var newLink = link.ToConvertedLink();
 
-                        //Add the link to the temp list of links.
-                        convertedLinks.Add(newLink);
+                            //Generate stringId for the dialog text.
+                            var newLinkStringKey = newPassageStringKey + linkText + linkIndex;
+                            newLink.stringid = newLinkStringKey;
 
-                        //Add the link text to the localizationDbEntriesToAdd.
-                        //If it exists, we are assuming design wants to change the db entry.
-                        newdDbEntry = DialogTreeFileController.Self.GetLocalizationDbEntryOrDefault(newLinkStringKey);
-                        newdDbEntry[0] = newLinkStringKey;
-                        newdDbEntry[1] = link.name;
+                            //Add the link to the temp list of links.
+                            convertedLinks.Add(newLink);
 
-                        localizationDbEntriesToAdd.Add((string[])newdDbEntry.Clone());
+                            //Add the link text to the localizationDbEntriesToAdd.
+                            //If it exists, we are assuming design wants to change the db entry.
+                            newdDbEntry = DialogTreeFileController.Self.GetLocalizationDbEntryOrDefault(newLinkStringKey);
+                            newdDbEntry[0] = newLinkStringKey;
+                            newdDbEntry[1] = link.name;
 
-                        linkIndex++;
+                            localizationDbEntriesToAdd.Add((string[])newdDbEntry.Clone());
+
+                            linkIndex++;
+                        }
+                        newPassage.links = convertedLinks.ToArray();
                     }
-                    newPassage.links = convertedLinks.ToArray();
                 }
+
+                convertedDialogTree = new DialogTreeConverted.Rootobject()
+                {
+                    name = rootStringKeyName,
+                    passages = converedPassaged.ToArray(),
+                    pluginversion = currentPluginVersion,
+                    startnodepid = int.Parse(rawDialogTree.startnode)
+                };
             }
 
-            convertedDialogTree = new DialogTreeConverted.Rootobject()
-            {
-                name = rootStringKeyName,
-                passages = converedPassaged.ToArray(),
-                pluginversion = currentPluginVersion,
-                startnodepid = int.Parse(rawDialogTree.startnode)
-            };
+            return rawDialogTree != null;
         }
 
         private string ParsePassageText(string rawPassageText)

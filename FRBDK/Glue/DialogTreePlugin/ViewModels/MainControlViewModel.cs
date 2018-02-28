@@ -25,7 +25,7 @@ namespace DialogTreePlugin.ViewModels
         {
             foreach(var entry in CsvEntry)
             {
-                entry.PropertyChanged -= MainController.Self.ReactToPropertyChangedEvent;
+                entry.PropertyChanged -= TabConroller.Self.ReactToPropertyChangedEvent;
                 entry.DeregisterFromEvents();
             }
             CsvEntry.Clear();
@@ -51,7 +51,7 @@ namespace DialogTreePlugin.ViewModels
 
                 viewModel.SetFrom(recordValue);
 
-                viewModel.PropertyChanged += MainController.Self.ReactToPropertyChangedEvent;
+                viewModel.PropertyChanged += TabConroller.Self.ReactToPropertyChangedEvent;
 
                 tempList.Add(viewModel);
             }
