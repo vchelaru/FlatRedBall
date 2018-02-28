@@ -98,10 +98,14 @@ namespace FlatRedBall.Glue.IO
 
             SetInitWindowText("Loading code project");
 
+            var result = ProjectCreator.CreateProject(projectFileName);
+            ProjectManager.ProjectBase = result.Project;
 
-            ProjectManager.ProjectBase = ProjectCreator.CreateProject(projectFileName);
-
-            bool shouldLoad = DetermineIfShouldLoad(projectFileName);
+            bool shouldLoad = false;
+            if (result.ShouldTryToLoadProject)
+            {
+                shouldLoad = DetermineIfShouldLoad(projectFileName);
+            }
 
             if (shouldLoad)
             {
@@ -216,20 +220,6 @@ namespace FlatRedBall.Glue.IO
         private static bool DetermineIfShouldLoad(string projectFileName)
         {
             bool shouldLoad = true;
-
-            if (ProjectManager.ProjectBase == null)
-            {
-                DialogResult result = MessageBox.Show(
-                    "The project\n\n" + projectFileName + "\n\nis an unknown project type.  Would you like more " +
-                    "info on how to fix this problem?", "Unknown Project Type", MessageBoxButtons.YesNo);
-
-                if (result == DialogResult.Yes)
-                {
-                    System.Diagnostics.Process.Start("http://www.flatredball.com/frb/docs/index.php?title=Glue:Reference:Projects:csproj_File");
-
-                }
-                shouldLoad = false;
-            }
 
             // see if this project references any plugins that aren't installed:
             var glueFileName = FileManager.RemoveExtension(projectFileName) + ".glux";
@@ -1145,7 +1135,7 @@ namespace FlatRedBall.Glue.IO
             {
                 try
                 {
-                    ProjectBase vsp = ProjectCreator.CreateProject(absoluteFileName);
+                    ProjectBase vsp = ProjectCreator.CreateProject(absoluteFileName).Project;
                     vsp.OriginalProjectBaseIfSynced = ProjectManager.ProjectBase;
 
                     vsp.Load(absoluteFileName);

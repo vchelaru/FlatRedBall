@@ -6,11 +6,19 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
+    public class CreateProjectResult
+    {
+        public ProjectBase Project { get; set; }
+        public bool ShouldTryToLoadProject { get; set; } = true;
+    }
+
     public static class ProjectCreator
     {
+
+
         public static ProjectBase LoadXnaProjectFor(ProjectBase masterProject, string fileName)
         {
-            ProjectBase project = CreateProject(fileName);
+            ProjectBase project = CreateProject(fileName).Project;
 
             project.Load(fileName);
 
@@ -23,10 +31,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         }
 
 
-        public static ProjectBase CreateProject(string fileName)
+        public static CreateProjectResult CreateProject(string fileName)
         {
             //Project coreVisualStudioProject = new Project(fileName);
             Project coreVisualStudioProject = null;
+            CreateProjectResult result = new CreateProjectResult();
 
             var didErrorOccur = false;
             try
@@ -68,6 +77,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     message = $"Could not load the project {fileName}\nbecause MonoGame files are missing. Try installing MonoGame, then try opening the project in Glue again.\n\n";
                     locationToOpen = "http://teamcity.monogame.net/repository/download/MonoGame_PackagingWindows/latest.lastSuccessful/MonoGameSetup.exe?guest=1";
                     shouldThrowException = false;
+                    result.ShouldTryToLoadProject = false;
                 }
                 else if(exceptionMessage.Contains("Novell.MonoDroid.CSharp.targets"))
                 {
@@ -76,6 +86,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                         "is now replaced by a different .targets file. You can fix this by editing " +
                         "the .csproj file and changing the reference to the Xamarin version. You can " + 
                         " also look at a new FlatRedBall Android project to see what this looks like.";
+                    result.ShouldTryToLoadProject = false;
                 }
                 else
                 {
@@ -99,24 +110,26 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 }
             }
 
-            ProjectBase toReturn = null;
+            ProjectBase projectBase = null;
 
             if(didErrorOccur == false)
             {
-                toReturn = CreatePlatformSpecificProject(coreVisualStudioProject, fileName);
+                projectBase = CreatePlatformSpecificProject(coreVisualStudioProject, fileName);
             }
 
 #if GLUE
             // It may be null if the project is of an unknown type.  
             // We'll handle that problem outside of this function.
-            if (toReturn != null)
+            if (projectBase != null)
             {
-                toReturn.Saving += FlatRedBall.Glue.IO.FileWatchManager.IgnoreNextChangeOnFile;
+                projectBase.Saving += FlatRedBall.Glue.IO.FileWatchManager.IgnoreNextChangeOnFile;
                 // Saving seems to cause 2 file changes, so we're going to ignore 2, what a hack!
-                toReturn.Saving += FlatRedBall.Glue.IO.FileWatchManager.IgnoreNextChangeOnFile;
+                projectBase.Saving += FlatRedBall.Glue.IO.FileWatchManager.IgnoreNextChangeOnFile;
             }
 #endif
-            return toReturn;
+
+            result.Project = projectBase;
+            return result;
         }
 
         public static ProjectBase CreatePlatformSpecificProject(Project coreVisualStudioProject, string fileName)

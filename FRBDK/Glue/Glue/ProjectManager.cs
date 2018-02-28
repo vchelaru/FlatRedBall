@@ -369,7 +369,7 @@ namespace FlatRedBall.Glue
 
             if (!doesProjectAlreadyExist)
             {
-                syncedProject = ProjectCreator.CreateProject(fileName);
+                syncedProject = ProjectCreator.CreateProject(fileName).Project;
 
                 syncedProject.OriginalProjectBaseIfSynced = ProjectManager.ProjectBase;
 
