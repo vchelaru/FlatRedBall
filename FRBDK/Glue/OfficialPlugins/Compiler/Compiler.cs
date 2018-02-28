@@ -46,32 +46,46 @@ namespace OfficialPlugins.Compiler
         internal void Compile(Action<string> printOutput, Action<string> printError, Action<bool> afterBuilt = null, 
             string configuration = "Debug")
         {
-            //string whyCantRun = GetWhyCantRun();
-            //do we actually want to do this ?
 
-
-           TaskManager.Self.AddAsyncTask(() =>
+            var message = GetMissingFrameworkMessage();
+            if(!string.IsNullOrEmpty(message))
             {
-                var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
+                printError("Cannot build due to missing .NET SDK:\n" + message);
+            }
+            //do we actually want to do this ?
+            else
+            {
 
-                bool succeeded = RunMsBuildOnProject(printOutput, printError, configuration, projectFileName);
+               TaskManager.Self.AddAsyncTask(() =>
+                {
+                    var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
 
-                afterBuilt?.Invoke(succeeded);
-            },
-            "Building project");
+                    bool succeeded = RunMsBuildOnProject(printOutput, printError, configuration, projectFileName);
+
+                    afterBuilt?.Invoke(succeeded);
+                },
+                "Building project");
+
+            }
         }
 
-        private string GetWhyCantRun()
+        private string GetMissingFrameworkMessage()
         {
             string whyCantRun = null;
 
             // check if .NET is installed:
+            // This is where the .NET 4.5.2 SDK 
+            // installs the files, which seems to 
+            // be required for running the build tool.
             const string dotNet452Directory = @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\";
 
             var directoryExists = System.IO.Directory.Exists(dotNet452Directory);
             if(directoryExists == false)
             {
-                whyCantRun = $"Your computer is missing the .NET framework version 4.5.2. Searcing for it in the following location:\n{dotNet452Directory}";
+                var sdkLocation = "https://www.microsoft.com/en-us/download/details.aspx?id=42637";
+                whyCantRun = $"Your computer is missing the .NET framework version 4.5.2. Glue is expecting " +
+                    " it it in the following location:\n{dotNet452Directory}\n\n" +
+                    $"This can be downloaded here: {sdkLocation}";
             }
 
             return whyCantRun;
