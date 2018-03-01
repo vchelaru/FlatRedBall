@@ -342,12 +342,17 @@ namespace FlatRedBall.Glue.FormHelpers
 
 
                     var element = GlueState.Self.CurrentElement;
-                    string directoryOfTreeNode = EditorLogic.CurrentTreeNode.GetRelativePath();
+                    if(string.IsNullOrEmpty(directoryPath))
+                    {
+                        directoryPath = EditorLogic.CurrentTreeNode.GetRelativePath();
+                    }
             
 
                     FlatRedBall.Glue.Managers.TaskManager.Self.AddSync(() =>
                         {
-                            RightClickHelper.AddSingleFile(fileName, ref userCancelled, element, directoryOfTreeNode);
+                            var newRfs = RightClickHelper.AddSingleFile(fileName, ref userCancelled, element, directoryPath);
+
+                            GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.SelectCommands.Select(newRfs));
                         },
                         "Add file " + fileName);
                     any = true;
