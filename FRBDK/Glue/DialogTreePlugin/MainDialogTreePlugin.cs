@@ -34,8 +34,8 @@ namespace DialogTreePlugin
         //v2.2.0 Generating a switch statement for the consts so we can set the tree from tiled
         //v3.0.0 Code gen now generates static references to each tree which will be cached after deserialization.
         // - There is a option to clear the trees.
-        //v3.1.0 Preserving the story name in the string ids to help design find troublesome strings.
-        public override Version Version => new Version(3, 1, 0);
+        // - Preserving the story name in the string ids to help design find troublesome strings.
+        public override Version Version => new Version(3, 0, 0);
 
         const string rawFileType = "json";
         const string convertedFileType = "glsn";
