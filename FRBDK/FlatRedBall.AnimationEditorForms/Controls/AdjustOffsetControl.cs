@@ -29,7 +29,6 @@ namespace FlatRedBall.AnimationEditorForms.Controls
     public partial class AdjustOffsetControl : UserControl
     {
 
-
         #region Properties
 
         public AdjustmentType AdjustmentType
@@ -44,13 +43,12 @@ namespace FlatRedBall.AnimationEditorForms.Controls
         {
             get
             {
-                return (Justification)comboBox1.SelectedItem;
+                return (Justification)JustificationComboBox.SelectedItem;
             }
         }
 
 
         #endregion
-
 
         #region Events
 
@@ -60,7 +58,6 @@ namespace FlatRedBall.AnimationEditorForms.Controls
 
         #endregion
 
-
         #region Methods
 
         public AdjustOffsetControl()
@@ -68,16 +65,18 @@ namespace FlatRedBall.AnimationEditorForms.Controls
             InitializeComponent();
 
             FillAlignments();
+
+            UpdateInfoLabel();
         }
 
         private void FillAlignments()
         {
             foreach (var value in Enum.GetValues(typeof(Justification)))
             {
-                comboBox1.Items.Add(value);
+                JustificationComboBox.Items.Add(value);
             }
 
-            comboBox1.Text = comboBox1.Items[0].ToString();
+            JustificationComboBox.Text = JustificationComboBox.Items[0].ToString();
         }
 
         #endregion
@@ -139,6 +138,24 @@ namespace FlatRedBall.AnimationEditorForms.Controls
                     }
 
                     break;
+            }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateInfoLabel();
+        }
+
+        private void UpdateInfoLabel()
+        {
+            this.InformationLabel.Text = "";
+            var selectedItem = (Justification)JustificationComboBox.SelectedItem;
+            switch (selectedItem)
+            {
+                case Justification.Bottom:
+                    this.InformationLabel.Text = "Adjusts the offsets of all frames so that the bottoms all line up at 0,0. This is often used for platformers and other side-view games";
+                    break;
+
             }
         }
     }

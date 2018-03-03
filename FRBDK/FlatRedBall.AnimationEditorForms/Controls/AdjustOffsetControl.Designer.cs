@@ -31,10 +31,11 @@
             this.TextGroupBox = new System.Windows.Forms.GroupBox();
             this.JustifyRadioButton = new System.Windows.Forms.RadioButton();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.JustificationComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.OkButton = new System.Windows.Forms.Button();
             this.CancelButton = new System.Windows.Forms.Button();
+            this.InformationLabel = new System.Windows.Forms.Label();
             this.TextGroupBox.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -46,7 +47,7 @@
             this.TextGroupBox.Controls.Add(this.JustifyRadioButton);
             this.TextGroupBox.Location = new System.Drawing.Point(3, 3);
             this.TextGroupBox.Name = "TextGroupBox";
-            this.TextGroupBox.Size = new System.Drawing.Size(265, 70);
+            this.TextGroupBox.Size = new System.Drawing.Size(265, 44);
             this.TextGroupBox.TabIndex = 0;
             this.TextGroupBox.TabStop = false;
             this.TextGroupBox.Text = "Options";
@@ -68,21 +69,23 @@
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.Controls.Add(this.comboBox1);
+            this.panel1.Controls.Add(this.InformationLabel);
+            this.panel1.Controls.Add(this.JustificationComboBox);
             this.panel1.Controls.Add(this.label1);
-            this.panel1.Location = new System.Drawing.Point(3, 79);
+            this.panel1.Location = new System.Drawing.Point(3, 45);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(265, 130);
+            this.panel1.Size = new System.Drawing.Size(265, 164);
             this.panel1.TabIndex = 1;
             // 
-            // comboBox1
+            // JustificationComboBox
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(88, 1);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(122, 21);
-            this.comboBox1.TabIndex = 1;
+            this.JustificationComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.JustificationComboBox.FormattingEnabled = true;
+            this.JustificationComboBox.Location = new System.Drawing.Point(88, 1);
+            this.JustificationComboBox.Name = "JustificationComboBox";
+            this.JustificationComboBox.Size = new System.Drawing.Size(122, 21);
+            this.JustificationComboBox.TabIndex = 1;
+            this.JustificationComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -115,6 +118,14 @@
             this.CancelButton.UseVisualStyleBackColor = true;
             this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
+            // InformationLabel
+            // 
+            this.InformationLabel.Location = new System.Drawing.Point(3, 29);
+            this.InformationLabel.Name = "InformationLabel";
+            this.InformationLabel.Size = new System.Drawing.Size(262, 71);
+            this.InformationLabel.TabIndex = 2;
+            this.InformationLabel.Text = "label2 but I\'m making this really long so that it can text wrap okay?";
+            // 
             // AdjustOffsetControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -138,9 +149,10 @@
         private System.Windows.Forms.GroupBox TextGroupBox;
         private System.Windows.Forms.RadioButton JustifyRadioButton;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox JustificationComboBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button OkButton;
         private System.Windows.Forms.Button CancelButton;
+        private System.Windows.Forms.Label InformationLabel;
     }
 }
