@@ -21,9 +21,6 @@ namespace DialogTreePlugin.Generators
 
         internal void GenerateFor(string fileName, string contents)
         {
-
-  
-
             int numberOfTimesToTry = 4;
             int numberOfFailures = 0;
             bool succeeded = false;

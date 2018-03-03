@@ -64,7 +64,7 @@ namespace DialogTreePlugin.Generators
             var classBlock = nameSpaceBlock.Class("public partial", "DialogTree");
             var internalClassBlock = classBlock.Class("public", "Tag");
             var codeFileName = $"{FileManager.GetDirectory(GlueState.Self.CurrentGlueProjectFileName)}DialogTree.Tags.Generated.cs";
-
+            
             foreach (var tag in dialogTreeTags)
             {
                 internalClassBlock.Line($"{fieldType} {tag} = \"{tag}\";");
@@ -93,14 +93,43 @@ namespace DialogTreePlugin.Generators
             var classBlock = nameSpaceBlock.Class("public partial", "DialogTree");
             var codeFileName = $"{FileManager.GetDirectory(GlueState.Self.CurrentGlueProjectFileName)}DialogTree.Generated.cs";
 
+            //AutoGen the deserialization function.
+            //We do not need a try catch since we know the deserialization will work.
+            var deserializeFunction = classBlock.Function("public static Rootobject", "DeserializeDialogTree", "string fileName");
+            deserializeFunction.Line("var fileStream = new System.IO.FileStream(fileName, System.IO.FileMode.Open);");
+            deserializeFunction.Line("var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(Rootobject));");
+            deserializeFunction.Line("var toReturn = (Rootobject)serializer.ReadObject(fileStream);");
+            deserializeFunction.Line("fileStream.Close();");
+            deserializeFunction.Line("return toReturn;");
+
+            var getFileFromNameFunction = classBlock.Function("public static Rootobject", "GetFileFromName", "string fileName");
+            getFileFromNameFunction.Line("Rootobject toReturn = null;");
+            var switchStatement = getFileFromNameFunction.Switch("fileName");
+
+            var destroyFunction = classBlock.Function("public static void", "ClearTrees", string.Empty);
+
             foreach (var treeName in dialogTreeFileNames)
             {
                 var fileName = FileManager.RemovePath(treeName);
                 var fieldName = FileManager.RemoveExtension(fileName);
                 var localPath = FileManager.MakeRelative(treeName);
 
-                classBlock.Line($"{fieldType} {fieldName} = \"{localPath.ToLower()}\";");
+                classBlock.Line($"private static Rootobject m{fieldName};");
+                var property = classBlock.Property("public static Rootobject", $"{fieldName}");
+                var get = property.Get();
+                get.If($"m{fieldName} == null").Line($"m{fieldName} = DeserializeDialogTree(\"{localPath.ToLower()}\");");
+                get.Line($"return m{fieldName};");
+
+                destroyFunction.Line($"m{fieldName} = null;");
+
+                //classBlock.Line($"{fieldType} {fieldName} = \"{localPath.ToLower()}\";");
+
+                switchStatement.Line($"case \"{fieldName}\":");
+                switchStatement.Line($"    toReturn = DialogTree.{fieldName};");
+                switchStatement.Line($"    break;");
             }
+
+            getFileFromNameFunction.Line("return toReturn;");
 
             TaskManager.Self.AddAsyncTask(
                 () =>

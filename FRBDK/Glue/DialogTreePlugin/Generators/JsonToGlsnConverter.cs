@@ -91,6 +91,7 @@ namespace DialogTreePlugin.Generators
             {
                 //Strip the file name of the path and extenstion to use as the tree name and 
                 var strippedExtenstion = FileManager.RemoveExtension(newFile.Name);
+                //The root string will be for
                 var rootStringKeyName = FileManager.RemovePath(strippedExtenstion);
 
                 //Temporarily store the converted pasages in a list.
@@ -104,7 +105,9 @@ namespace DialogTreePlugin.Generators
 
                     //Generate a string key for the passage text.
                     //Se the new passage's stringid.
-                    var newPassageStringKey = stringKeyPrefix + rootStringKeyName + passageText + newPassage.pid;
+                    //As of v3.1.0 we will preserve the story name for design.
+                    //So they can quickly find the passage.
+                    var newPassageStringKey = stringKeyPrefix + rawDialogTree.name + "_" + rootStringKeyName + passageText + newPassage.pid;
                     newPassage.stringid = newPassageStringKey;
 
                     //Add the passage to the temp list of passages.
