@@ -2197,7 +2197,7 @@ namespace FlatRedBall.Glue.Plugins
                     if (WasExceptionCausedByPlugin(exception, plugin))
                     {
                         // We're going to blame this plugin for the error
-                        MessageBox.Show("A plugin has had an error.  Shutting down the plugin " + plugin.Name + "\n\nAdditional information:\n\n" + 
+                        MessageBox.Show($"A plugin has had an error.  Shutting down the plugin {plugin.Name} version {plugin.Plugin.Version} \n\nAdditional information:\n\n" + 
                             exception.ToString());
 
                         wasHandled = true;
