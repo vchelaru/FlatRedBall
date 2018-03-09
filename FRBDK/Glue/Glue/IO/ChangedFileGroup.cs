@@ -114,7 +114,14 @@ namespace FlatRedBall.Glue.IO
             }
             set
             {
-                mFileSystemWatcher.Path = value;
+                if(value?.EndsWith("/") == true)
+                {
+                    mFileSystemWatcher.Path = value.Substring(0, value.Length-1);
+                }
+                else
+                {
+                    mFileSystemWatcher.Path = value;
+                }
             }
         }
 
@@ -164,13 +171,32 @@ namespace FlatRedBall.Glue.IO
                 // then it renames it to
                 // MyFile.tmx
                 // We need to handle the filename changing or else Glue isn't notified of the change.
-                // Update - only do this for TMX (see below)
+                // Update - only do this for TMX (see below).
+                // Update 2 - We need to handle renames incase
+                //            the user renamed files to solve missing
+                //            file errors. Just don't handle the .glux
+                //            so we don't get double-loads.
                 NotifyFilters.FileName |
                 NotifyFilters.DirectoryName;
 
 
             mFileSystemWatcher.Deleted += new FileSystemEventHandler(HandleFileSystemDelete);
             mFileSystemWatcher.Changed += new FileSystemEventHandler(HandleFileSystemChange);
+            mFileSystemWatcher.Renamed += HandleRename;
+        }
+
+        private void HandleRename(object sender, RenamedEventArgs e)
+        {
+
+            var shouldProcess = FileManager.GetExtension(e.Name) != "glux";
+
+            if(shouldProcess)
+            {
+                // Process both the old and the new just in case someone depended on the old
+                AddChangedFileTo(e.OldFullPath, mChangedFiles);
+                AddChangedFileTo(e.FullPath, mChangedFiles);
+            }
+
         }
 
         public void ClearIgnores()
@@ -225,9 +251,14 @@ namespace FlatRedBall.Glue.IO
         {
             string fileName = e.FullPath;
 
-            bool shouldProcess =
-                e.ChangeType != WatcherChangeTypes.Renamed || FileManager.GetExtension(fileName) == "tmx";
+            bool shouldProcess = true;
 
+            if(e.ChangeType == WatcherChangeTypes.Renamed)
+            {
+                // don't process the .glux file, that gets renamed all the time
+                shouldProcess = FileManager.GetExtension(fileName) != "glux";
+            }
+            
             if(shouldProcess)
             {
                 ChangeInformation toAddTo = mChangedFiles;

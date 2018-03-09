@@ -299,6 +299,7 @@
     <Compile Include="Controls\AddEntityWindow.xaml.cs">
       <DependentUpon>AddEntityWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Errors\GeneralResponse.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="IO\FilePath.cs" />
     <Compile Include="Managers\HotkeyManager.cs" />

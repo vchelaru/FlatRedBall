@@ -189,7 +189,9 @@ namespace GumPlugin
             // - Huge reduction in every-frame memory allocation by pooling render state info lists
             // 0.9.3.3
             // - Lots more reduction in every-frame memory allocation by making Text objects only update when width has changed, removing LINQ calls
-            get { return new Version(0, 9, 3, 3); }
+            // 0.9.4.0
+            // - Updated plugin to use the latest error reporting in case an XML file can't be parsed
+            get { return new Version(0, 9, 4, 0); }
         }
 
         #endregion
@@ -224,7 +226,7 @@ namespace GumPlugin
 
             this.CanFileReferenceContent += FileReferenceTracker.CanTrackDependenciesOn;
 
-            this.GetFilesReferencedBy += FileReferenceTracker.Self.HandleGetFilesReferencedBy;
+            this.FillWithReferencedFiles += FileReferenceTracker.Self.HandleFillWithReferencedFiles;
 
             this.GetFilesNeededOnDiskBy += FileReferenceTracker.Self.HandleGetFilesNeededOnDiskBy;
 

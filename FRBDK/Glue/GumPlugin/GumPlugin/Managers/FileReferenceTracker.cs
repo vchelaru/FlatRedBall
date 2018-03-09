@@ -14,6 +14,8 @@ using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Plugins;
 using Microsoft.Build.Evaluation;
 using System.IO;
+using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.IO;
 
 namespace GumPlugin.Managers
 {
@@ -294,6 +296,8 @@ namespace GumPlugin.Managers
             }
         }
 
+
+
         string GetGumxDirectory(string possibleGumx)
         {
             string argumentExtension = FileManager.GetExtension(possibleGumx);
@@ -339,17 +343,27 @@ namespace GumPlugin.Managers
                 PluginManager.ReceiveError("Non-critical error: " + e.Message);
                 FileManager.RelativeDirectory = oldRelativeDirectory;
             }
-    }
-
-        public void HandleGetFilesReferencedBy(string fileName, TopLevelOrRecursive topLevelOrRecursive,
-            List<string> listToFill)
+        }
+        
+        internal GeneralResponse HandleFillWithReferencedFiles(FilePath filePath, List<FilePath> listToFill)
         {
             ProjectOrDisk projectOrDisk = ProjectOrDisk.Project;
-            GetReferencesInProjectOrDisk(fileName, topLevelOrRecursive, listToFill, projectOrDisk);
+
+            List<string> stringListToFill = new List<string>();
+
+            var respnse = GetReferencesInProjectOrDisk(filePath.Standardized, TopLevelOrRecursive.TopLevel,
+                stringListToFill, projectOrDisk);
+
+            listToFill.AddRange(stringListToFill
+                .Select(item => new FilePath(item)));
+
+            return respnse;
         }
 
-        private void GetReferencesInProjectOrDisk(string fileName, TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, ProjectOrDisk projectOrDisk)
+        private GeneralResponse GetReferencesInProjectOrDisk(string fileName, TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, ProjectOrDisk projectOrDisk)
         {
+            GeneralResponse generalResponse = GeneralResponse.SuccessfulResponse;
+
             if (CanTrackDependenciesOn(fileName))
             {
                 string extension = FileManager.GetExtension(fileName);
@@ -375,8 +389,16 @@ namespace GumPlugin.Managers
                     {
                         case "gumx":
                             {
-                                LoadGumxIfNecessaryFromDirectory(FileManager.RelativeDirectory, force:true);
-                                GetFilesReferencedBy(Gum.Managers.ObjectFinder.Self.GumProjectSave, topLevelOrRecursive, listToFill, projectOrDisk);
+                                try
+                                {
+                                    LoadGumxIfNecessaryFromDirectory(FileManager.RelativeDirectory, force:true);
+                                    GetFilesReferencedBy(Gum.Managers.ObjectFinder.Self.GumProjectSave, topLevelOrRecursive, listToFill, projectOrDisk);
+                                }
+                                catch(Exception e)
+                                {
+                                    errors =
+                                        "Error tracking Gum references for " + absoluteFileName + "\n" + e.ToString();
+                                }
                             }
                             break;
                         case "gucx":
@@ -392,8 +414,8 @@ namespace GumPlugin.Managers
                                 }
                                 catch (Exception e)
                                 {
-                                    FlatRedBall.Glue.Plugins.PluginManager.ReceiveError(
-                                        "Error tracking Gum references for " + absoluteFileName + "\n" + e.ToString());
+                                    errors =
+                                        "Error tracking Gum references for " + absoluteFileName + "\n" + e.ToString();
                                 }
                             }
                             break;
@@ -411,8 +433,8 @@ namespace GumPlugin.Managers
                                 }
                                 catch (Exception e)
                                 {
-                                    FlatRedBall.Glue.Plugins.PluginManager.ReceiveError(
-                                        "Error tracking Gum references for " + absoluteFileName + "\n" + e.ToString());
+                                    errors =
+                                        "Error tracking Gum references for " + absoluteFileName + "\n" + e.ToString();
                                 }
                             }
                             break;
@@ -430,18 +452,28 @@ namespace GumPlugin.Managers
                                 }
                                 catch (Exception e)
                                 {
-                                    FlatRedBall.Glue.Plugins.PluginManager.ReceiveError(
-                                        "Error tracking Gum references for " + absoluteFileName + "\n" + e.ToString());
+                                    errors =
+                                        "Error tracking Gum references for " + absoluteFileName + "\n" + e.ToString();
                                 }
                             }
                             break;
                     }
                 }
 
+                if(errors != null)
+                {
+                    generalResponse = new GeneralResponse
+                    {
+                        Succeeded = false,
+                        Message = errors
+                    };
+                }
 
                 FileManager.RelativeDirectory = oldRelative;
 
             }
+
+            return generalResponse;
         }
 
         public void LoadGumxIfNecessaryFromDirectory(string gumxDirectory, bool force = false)

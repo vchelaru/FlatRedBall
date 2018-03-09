@@ -28,6 +28,8 @@ using System.ComponentModel;
 using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Content.Instructions;
+using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.IO;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -493,6 +495,21 @@ namespace FlatRedBall.Glue.Plugins
             }
 
             return createdFile;
+        }
+
+        internal static void HandleFileReadError(FilePath filePath, GeneralResponse response)
+        {
+            CallMethodOnPluginNotUiThread(
+                delegate (PluginBase plugin)
+                {
+                    if (plugin.ReactToFileReadError != null)
+                    {
+                        plugin.ReactToFileReadError(filePath, response);
+                    }
+                },
+                "HandleFileReadError");
+
+            ResumeRelativeDirectory("HandleFileReadError");
         }
 
         internal static void ShareMenuStripReference(MenuStrip menuStrip, PluginCategories pluginCategories)
@@ -2111,10 +2128,13 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        internal static void GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill)
+        internal static GeneralResponse GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill)
         {
-
+            GeneralResponse generalResponse =  GeneralResponse.SuccessfulResponse;
             SaveRelativeDirectory();
+
+            List<FilePath> filePaths = new List<FilePath>();
+
             CallMethodOnPluginNotUiThread(
                 delegate(PluginBase plugin)
                 {
@@ -2123,10 +2143,24 @@ namespace FlatRedBall.Glue.Plugins
                         plugin.GetFilesReferencedBy(absoluteName, topLevelOrRecursive, listToFill);
 
                     }
+
+                    if(plugin.FillWithReferencedFiles != null)
+                    {
+                        var response = plugin.FillWithReferencedFiles(absoluteName, filePaths);
+
+                        if(!response.Succeeded)
+                        {
+                            generalResponse = response;
+                        }
+                    }
                 },
                 "GetFilesReferencedBy");
 
-            ResumeRelativeDirectory("GetFilesReferencedBy");
+            ResumeRelativeDirectory($"GetFilesReferencedBy for {absoluteName}");
+
+            listToFill.AddRange(filePaths.Select(item => item.Standardized));
+
+            return generalResponse;
         }
 
         internal static void GetFilesNeededOnDiskBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill)

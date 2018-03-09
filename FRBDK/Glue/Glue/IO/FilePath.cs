@@ -62,6 +62,10 @@ namespace FlatRedBall.Glue.IO
 
         #endregion
 
+        /// <summary>
+        /// Creates a file path for the original. If this is an absolute file, then it is stored as such and the Standaridzed property will return the same absolute file. If it is lower-case, then Standardized prepends the current relative directory.
+        /// </summary>
+        /// <param name="path"></param>
         public FilePath(string path)
         {
             original = path;
@@ -97,6 +101,11 @@ namespace FlatRedBall.Glue.IO
             var hashCode = 354063820;
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Standardized);
             return hashCode;
+        }
+
+        public bool Exists()
+        {
+            return System.IO.File.Exists(this.Standardized);
         }
 
         public bool IsRootOf(FilePath otherFilePath)

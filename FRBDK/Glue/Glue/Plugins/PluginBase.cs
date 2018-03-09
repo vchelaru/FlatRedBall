@@ -17,6 +17,8 @@ using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Content.Instructions;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Errors;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -120,7 +122,12 @@ namespace FlatRedBall.Glue.Plugins
 
         public AdjustDisplayedEntityDelegate AdjustDisplayedEntity { get; protected set; }
 
+        [Obsolete("Use FillWithReferencedFiles instead")]
         public Action<string, EditorObjects.Parsing.TopLevelOrRecursive, List<string>> GetFilesReferencedBy { get; protected set; }
+
+        public Func<FilePath, List<FilePath>, GeneralResponse> FillWithReferencedFiles { get; protected set; }
+        public Action<FilePath, GeneralResponse> ReactToFileReadError { get; protected set; }
+
         public Action<string, List<string>> GetFilesNeededOnDiskBy { get; protected set; }
 
 

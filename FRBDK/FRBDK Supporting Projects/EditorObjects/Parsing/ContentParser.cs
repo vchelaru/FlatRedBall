@@ -285,7 +285,8 @@ namespace EditorObjects.Parsing
             }
             else if (!FileManager.FileExists(fileName))
             {
-                throw new FileNotFoundException("Could not find file " + fileName, fileName);
+                // We used to throw an error here but now we just let the error window handle it:
+                //throw new FileNotFoundException("Could not find file " + fileName, fileName);
 
             }
             else

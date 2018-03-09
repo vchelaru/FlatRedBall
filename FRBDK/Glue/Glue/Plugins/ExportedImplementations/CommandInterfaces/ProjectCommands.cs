@@ -194,52 +194,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             var listOfReferencedFiles = new List<string>();
 
-            bool didErrorOccur = false;
-            try
+            // Glue is going to assume .cs files can't reference content:
+            if (!fileToAddAbsolute.EndsWith(".cs"))
             {
-                // Glue is going to assume .cs files can't reference content:
-                if (!fileToAddAbsolute.EndsWith(".cs"))
+                FileReferenceManager.Self.GetFilesReferencedBy(fileToAddAbsolute, TopLevelOrRecursive.TopLevel, listOfReferencedFiles);
+
+                if(alreadyReferencedFiles != null)
                 {
-                    FileReferenceManager.Self.GetFilesReferencedBy(fileToAddAbsolute, TopLevelOrRecursive.TopLevel, listOfReferencedFiles);
-
-                    if(alreadyReferencedFiles != null)
-                    {
-                        listOfReferencedFiles = listOfReferencedFiles.Except(alreadyReferencedFiles).ToList();
-                    }
+                    listOfReferencedFiles = listOfReferencedFiles.Except(alreadyReferencedFiles).ToList();
                 }
-            }
-            catch (FileNotFoundException fnfe)
-            {
-                string errorMessage = "Could not track dependencies because of a missing file:\n" + fnfe.FileName;
-
-                if (parentFile != null)
-                {
-                    errorMessage += "\n\nwhich is referenced by:\n" + parentFile;
-                }
-
-                didErrorOccur = true;
-                ErrorReporter.ReportError(fnfe.FileName, errorMessage, false);
-
-            }
-            catch (InvalidOperationException ioe)
-            {
-                string errorMessage = "Problem trying to track dependencies because of a problem parsing the XML file :\n" + fileToAddAbsolute;
-                didErrorOccur = true;
-                ErrorReporter.ReportError(fileToAddAbsolute, errorMessage, false);
-            }
-
-            // We should tell the user that a file is missing here if it can't be found.
-
-            if (!didErrorOccur && System.IO.File.Exists(fileToAddAbsolute) == false)
-            {
-                string message =
-                    "The file\n\n" + fileToAddAbsolute + "\n\nis missing and is needed in this project";
-
-                if (!string.IsNullOrEmpty(parentFile))
-                {
-                    message += " by\n\n" + parentFile;
-                }
-                ErrorReporter.ReportError(fileToAddAbsolute, message, false);
             }
 
             bool shouldAddChildren = true;

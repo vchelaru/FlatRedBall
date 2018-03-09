@@ -105,7 +105,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 // If it has a SourceFile, then no need to throw an error here, it will be built
                 if (!FileManager.FileExists(fullName) && string.IsNullOrEmpty(instance.SourceFile ))
                 {
-                    error = "Could not find the file " + fullName;
+
                 }
                 else
                 {

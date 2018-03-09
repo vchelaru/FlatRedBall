@@ -1,5 +1,7 @@
 ﻿using EditorObjects.IoC;
 using EditorObjects.Parsing;
+using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
@@ -43,6 +45,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return GetFilesReferencedBy(absolute, topLevelOrRecursive);
         }
 
+        public IEnumerable<FilePath> GetFilePathsReferencedBy(ReferencedFileSave file, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
+        {
+            var absolute = GlueCommands.GetAbsoluteFileName(file);
+
+            return GetFilesReferencedBy(absolute, topLevelOrRecursive).Select(item => new FilePath(item));
+        }
+
         public IEnumerable<string> GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
         {
 #if GLUE
@@ -50,6 +59,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 #else
             throw new NotImplementedException();
 #endif
+        }
+
+        public IEnumerable<FilePath> GetFilePathsReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
+        {
+            return GetFilesReferencedBy(absoluteName, topLevelOrRecursive).Select(item => new FilePath(item));
         }
 
         public void ClearFileCache(string absoluteName)
@@ -290,6 +304,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return null;
 
 
+        }
+
+        public GeneralResponse GetLastParseResponse(FilePath file)
+        {
+            // only return failure if there is an entry in the FileReferenceManager, otherwise return success:
+            if(FileReferenceManager.Self.FilesWithFailedGetReferenceCalls.ContainsKey(file))
+            {
+                return FileReferenceManager.Self.FilesWithFailedGetReferenceCalls[file];
+            }
+            else
+            {
+                return GeneralResponse.SuccessfulResponse;
+            }
         }
     }
 

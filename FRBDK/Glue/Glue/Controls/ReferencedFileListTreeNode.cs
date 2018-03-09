@@ -139,8 +139,6 @@ namespace FlatRedBall.Glue.Controls
                     else
                     {
                         nodeForFile.ForeColor = ElementViewWindow.MissingObjectColor;
-                        System.Windows.Forms.MessageBox.Show("Could not find the file\n" + fullFile +
-                            "\nwhich is referenced by " + ObjectFinder.Self.GetElementContaining(referencedFiles[i]).ToString());
                     }
                 }
                 else

@@ -6,6 +6,8 @@ using EditorObjects.Parsing;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.IO;
 using System.IO;
+using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Errors;
 
 namespace FlatRedBall.Glue.Managers
 {
@@ -25,6 +27,7 @@ namespace FlatRedBall.Glue.Managers
 
         Dictionary<string, FileReferenceInformation> fileReferences = new Dictionary<string, FileReferenceInformation>();
         Dictionary<string, FileReferenceInformation> filesNeededOnDisk = new Dictionary<string, FileReferenceInformation>();
+        public Dictionary<FilePath, GeneralResponse> FilesWithFailedGetReferenceCalls { get; private set; } = new Dictionary<FilePath, GeneralResponse>();
 
         internal void ClearFileCache(string absoluteName)
         {
@@ -98,28 +101,43 @@ namespace FlatRedBall.Glue.Managers
 
                 if(succeeded)
                 {
-                    PluginManager.GetFilesReferencedBy(absoluteName, TopLevelOrRecursive.TopLevel, topLevelOnly);
-                    // let's remove ../ if we can:
-                    for (int i = 0; i < topLevelOnly.Count; i++)
+                    var response = PluginManager.GetFilesReferencedBy(absoluteName, TopLevelOrRecursive.TopLevel, topLevelOnly);
+
+                    if(response.Succeeded)
                     {
-                        topLevelOnly[i] = FlatRedBall.IO.FileManager.RemoveDotDotSlash(topLevelOnly[i]);
+                        // let's remove ../ if we can:
+                        for (int i = 0; i < topLevelOnly.Count; i++)
+                        {
+                            topLevelOnly[i] = FlatRedBall.IO.FileManager.RemoveDotDotSlash(topLevelOnly[i]);
+                        }
+
+
+                        var referenceInfo = new FileReferenceInformation
+                        {
+                            LastWriteTime = File.Exists(standardized) ? File.GetLastWriteTime(standardized) : DateTime.MinValue,
+                            References = topLevelOnly
+                        };
+
+                        try
+                        {
+                            fileReferences[standardized] = referenceInfo;
+                        }
+                        catch(Exception e)
+                        {
+                            int m = 3;
+                            throw e;
+                        }
+                        if(FilesWithFailedGetReferenceCalls.ContainsKey(absoluteName))
+                        {
+                            FilesWithFailedGetReferenceCalls.Remove(absoluteName);
+                        }
                     }
-
-
-                    var referenceInfo = new FileReferenceInformation
+                    else
                     {
-                        LastWriteTime = File.Exists(standardized) ? File.GetLastWriteTime(standardized) : DateTime.MinValue,
-                        References = topLevelOnly
-                    };
+                        FilesWithFailedGetReferenceCalls[absoluteName] = response;
 
-                    try
-                    {
-                        fileReferences[standardized] = referenceInfo;
-                    }
-                    catch(Exception e)
-                    {
-                        int m = 3;
-                        throw e;
+                        // todo - need to raise an event here on parse error:
+                        PluginManager.HandleFileReadError(absoluteName, response);
                     }
 
                 }

@@ -119,6 +119,9 @@
     <Compile Include="..\Glue\Elements\VariableDefinition.cs">
       <Link>VariableDefinition.cs</Link>
     </Compile>
+    <Compile Include="..\Glue\Errors\GeneralResponse.cs">
+      <Link>Errors\GeneralResponse.cs</Link>
+    </Compile>
     <Compile Include="..\Glue\Events\EventManager.cs">
       <Link>Events\EventManager.cs</Link>
     </Compile>
@@ -199,6 +202,9 @@
     </Compile>
     <Compile Include="..\Glue\FormHelpers\StringConverters\IObjectsInFileConverter.cs">
       <Link>StringConverters\IObjectsInFileConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\IO\FilePath.cs">
+      <Link>IO\FilePath.cs</Link>
     </Compile>
     <Compile Include="..\Glue\IO\ImageHeader.cs">
       <Link>IO\ImageHeader.cs</Link>

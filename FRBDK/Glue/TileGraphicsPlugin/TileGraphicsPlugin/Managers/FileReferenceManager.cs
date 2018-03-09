@@ -1,4 +1,6 @@
-﻿using FlatRedBall.Glue.Plugins;
+﻿using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -42,37 +44,50 @@ namespace TileGraphicsPlugin.Managers
         }
 
 
-        public void HandleGetFilesReferencedBy(string fileName, EditorObjects.Parsing.TopLevelOrRecursive topOrRecursive, List<string> listToFill)
+        public GeneralResponse HandleGetFilesReferencedBy(FilePath filePath, List<FilePath> listToFill)
         {
-            var extension = FileManager.GetExtension(fileName);
+            GeneralResponse generalResponse = GeneralResponse.SuccessfulResponse;
+
+            var extension = filePath.Extension;
             if (extension == "tilb")
             {
-                GetTilbFileReferences(fileName, listToFill);
+                // .tilb files are no longer used much, so I don't care about maintaining this by adding a general response
+                GetTilbFileReferences(filePath, listToFill);
             }
             else if(extension == "tsx")
             {
-                GetTsxFileReferences(fileName, listToFill);
+                generalResponse = GetTsxFileReferences(filePath, listToFill);
             }
             else if(extension == "tmx")
             {
-                GetTmxFileReferences(fileName, listToFill);
+                generalResponse = GetTmxFileReferences(filePath, listToFill);
             }
+
+            return generalResponse;
         }
 
-        private void GetTsxFileReferences(string tsxFile, List<string> referencedFiles)
+        private GeneralResponse GetTsxFileReferences(FilePath tsxFile, List<FilePath> referencedFiles)
         {
             ExternalTileSet external = null;
 
+            GeneralResponse response = GeneralResponse.SuccessfulResponse;
+
             try
             {
-                external = FileManager.XmlDeserialize<ExternalTileSet>(tsxFile);
+                external = FileManager.XmlDeserialize<ExternalTileSet>(tsxFile.Standardized);
             }
             catch(Exception e)
             {
-                PluginManager.ReceiveError(e.ToString());
+                // This is now properly handled by the error window, so let's not clutter the output window
+                //PluginManager.ReceiveError(e.ToString());
+                response = new GeneralResponse
+                {
+                    Message = $"Failed to parse {tsxFile}:\n{e.ToString()}",
+                    Succeeded = false
+                };
             }
 
-            var directory = FileManager.GetDirectory(tsxFile);
+            var directory = FileManager.GetDirectory(tsxFile.Standardized);
 
             if (external != null && external.Images.Length != 0)
             {
@@ -80,54 +95,69 @@ namespace TileGraphicsPlugin.Managers
 
                 string fileName = directory + image.Source;
 
-                // keep it relative
                 referencedFiles.Add(fileName);
-
             }
+
+            return response;
         }
 
-        private void GetTmxFileReferences(string fileName, List<string> listToFill)
+        private GeneralResponse GetTmxFileReferences(FilePath fileName, List<FilePath> listToFill)
         {
             TiledMapSave tms = null;
+            GeneralResponse response = GeneralResponse.SuccessfulResponse;
+
+            var oldLoadValuesFromSource = Tileset.ShouldLoadValuesFromSource;
+            Tileset.ShouldLoadValuesFromSource = false;
 
             try
             {
-                tms = TiledMapSave.FromFile(fileName);
+                tms = TiledMapSave.FromFile(fileName.Standardized);
             }
             catch (Exception e)
             {
-                PluginManager.ReceiveError($"Error loading file {fileName}\n{e.ToString()}");
+                // This is now properly handled by the error window, so let's not clutter the output window
+                //PluginManager.ReceiveError($"Error loading file {fileName}\n{e.ToString()}");
+                response = new GeneralResponse
+                {
+                    Message = $"Failed to load {fileName}:\n{e.ToString()}",
+                    Succeeded = false
+                };
             }
 
-            if(tms != null)
+            Tileset.ShouldLoadValuesFromSource = oldLoadValuesFromSource;
+
+
+            if (tms != null)
             {
                 var referencedFiles = tms.GetReferencedFiles();
 
-                string directory = FileManager.GetDirectory(fileName);
+                string directory = FileManager.GetDirectory(fileName.Standardized);
                 for (int i = 0; i < referencedFiles.Count; i++)
                 {
                     referencedFiles[i] = directory + referencedFiles[i];
                 }
 
-                listToFill.AddRange(referencedFiles);
+                listToFill.AddRange(referencedFiles.Select(item =>new FilePath(item)));
             }
+
+            return response;
         }
 
-        private static void GetTilbFileReferences(string fileName, List<string> listToFill)
+        private static void GetTilbFileReferences(FilePath fileName, List<FilePath> listToFill)
         {
             try
             {
-                ReducedTileMapInfo rtmi = ReducedTileMapInfo.FromFile(fileName);
+                ReducedTileMapInfo rtmi = ReducedTileMapInfo.FromFile(fileName.Standardized);
 
                 var referencedFiles = rtmi.GetReferencedFiles();
 
-                string directory = FileManager.GetDirectory(fileName);
+                string directory = FileManager.GetDirectory(fileName.Standardized);
                 for (int i = 0; i < referencedFiles.Count; i++)
                 {
                     referencedFiles[i] = directory + referencedFiles[i];
                 }
 
-                listToFill.AddRange(referencedFiles);
+                listToFill.AddRange(referencedFiles.Select(item =>new FilePath(item)));
             }
             catch (EndOfStreamException e)
             {
@@ -190,8 +220,10 @@ namespace TileGraphicsPlugin.Managers
                         {
                             exception = e.InnerException;
                         }
+
                         PluginManager.ReceiveError("Error trying to load " + GetTsxFileFor(rfs) + ":\n" + exception.ToString());
                         succeeded = false;
+
                     }
 
                     if (succeeded)
@@ -231,7 +263,8 @@ namespace TileGraphicsPlugin.Managers
                 }
                 catch (Exception e)
                 {
-                    PluginManager.ReceiveError("Error trying to load " + GetTsxFileFor( rfs)+ ":\n" + e.ToString());
+                // This is now properly handled by the error window, so let's not clutter the output window
+                    //PluginManager.ReceiveError("Error trying to load " + GetTsxFileFor( rfs)+ ":\n" + e.ToString());
                     succeeded = false;
                 }
                 if(succeeded)

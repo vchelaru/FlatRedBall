@@ -172,6 +172,20 @@
     <Compile Include="ContentPipelinePlugin\ControlViewModel.cs" />
     <Compile Include="ContentPipelinePlugin\SaveLoadLogic.cs" />
     <Compile Include="ContentPipelinePlugin\SettingsSave.cs" />
+    <Compile Include="ErrorPlugin\Logic\ErrorCreateRemoveLogic.cs" />
+    <Compile Include="ErrorPlugin\Logic\RefreshLogic.cs" />
+    <Compile Include="ErrorPlugin\MainErrorPlugin.cs" />
+    <Compile Include="ErrorPlugin\ViewModels\ErrorListViewModel.cs" />
+    <Compile Include="ErrorPlugin\ViewModels\ErrorViewModel.cs" />
+    <Compile Include="ErrorPlugin\ViewModels\FileParseErrorViewModel.cs" />
+    <Compile Include="ErrorPlugin\ViewModels\IndirectMissingFileErrorViewModel.cs" />
+    <Compile Include="ErrorPlugin\ViewModels\MissingFileErrorViewModel.cs" />
+    <Compile Include="ErrorPlugin\Views\ErrorListItem.xaml.cs">
+      <DependentUpon>ErrorListItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ErrorPlugin\Views\ErrorWindow.xaml.cs">
+      <DependentUpon>ErrorWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FilesPlugin\Controls\FileReferenceControl.xaml.cs">
       <DependentUpon>FileReferenceControl.xaml</DependentUpon>
     </Compile>
@@ -325,6 +339,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ErrorPlugin\Views\ErrorListItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ErrorPlugin\Views\ErrorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="FilesPlugin\Controls\FileReferenceControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -332,6 +354,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Compiler\play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ErrorPlugin\Icons\ErrorWindowError.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

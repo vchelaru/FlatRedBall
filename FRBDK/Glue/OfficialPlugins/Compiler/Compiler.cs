@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using System;
@@ -46,14 +47,28 @@ namespace OfficialPlugins.Compiler
         internal void Compile(Action<string> printOutput, Action<string> printError, Action<bool> afterBuilt = null, 
             string configuration = "Debug")
         {
+            var shouldCompile = true;
 
             var message = GetMissingFrameworkMessage();
             if(!string.IsNullOrEmpty(message))
             {
                 printError("Cannot build due to missing .NET SDK:\n" + message);
+                shouldCompile = false;
             }
+
+            if(shouldCompile)
+            {
+                var errorPlugin = PluginManager.AllPluginContainers
+                    .FirstOrDefault(item => item.Plugin is ErrorPlugin.MainErrorPlugin)?.Plugin as ErrorPlugin.MainErrorPlugin;
+
+                if(errorPlugin?.HasErrors == true)
+                {
+                    printError("Cannot build due to project errors. See the Errors tab");
+                }
+            }
+
             //do we actually want to do this ?
-            else
+            if(shouldCompile)
             {
 
                TaskManager.Self.AddAsyncTask(() =>
