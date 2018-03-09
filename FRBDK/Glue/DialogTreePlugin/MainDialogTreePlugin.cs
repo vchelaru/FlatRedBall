@@ -35,7 +35,8 @@ namespace DialogTreePlugin
         //v3.0.0 Code gen now generates static references to each tree which will be cached after deserialization.
         // - There is a option to clear the trees.
         // - Preserving the story name in the string ids to help design find troublesome strings.
-        public override Version Version => new Version(3, 0, 0);
+        //V3.1.0 Fixed a bug where we were keeping track of the same tag multiple times.
+        public override Version Version => new Version(3, 1, 0);
 
         const string rawFileType = "json";
         const string convertedFileType = "glsn";

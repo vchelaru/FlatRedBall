@@ -44,16 +44,20 @@ namespace DialogTreePlugin.Generators
 
         internal void AddTrackedDialogTreeTag(string[] tags, bool isGlueLoad = false)
         {
-            var newTags = tags.Where(item => dialogTreeTags.Contains(item) == false).ToArray();
-            if(newTags.Length > 0)
+            var didAddTag = false;
+            foreach(var tag in tags)
             {
-                dialogTreeTags.AddRange(tags);
-
-                dialogTreeTags.Sort();
-                if(isGlueLoad == false)
+                if(dialogTreeTags.Contains(tag) == false)
                 {
-                    RegenCodeDialogTreeTags();
+                    dialogTreeTags.Add(tag);
+                    didAddTag = true;
                 }
+            }
+
+            dialogTreeTags.Sort();
+            if(didAddTag && isGlueLoad == false)
+            {
+                RegenCodeDialogTreeTags();
             }
         }
 
