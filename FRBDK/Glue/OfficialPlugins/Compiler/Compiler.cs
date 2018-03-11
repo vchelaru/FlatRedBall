@@ -56,17 +56,6 @@ namespace OfficialPlugins.Compiler
                 shouldCompile = false;
             }
 
-            if(shouldCompile)
-            {
-                var errorPlugin = PluginManager.AllPluginContainers
-                    .FirstOrDefault(item => item.Plugin is ErrorPlugin.MainErrorPlugin)?.Plugin as ErrorPlugin.MainErrorPlugin;
-
-                if(errorPlugin?.HasErrors == true)
-                {
-                    printError("Cannot build due to project errors. See the Errors tab");
-                }
-            }
-
             //do we actually want to do this ?
             if(shouldCompile)
             {

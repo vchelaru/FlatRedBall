@@ -175,6 +175,7 @@
     <Compile Include="ErrorPlugin\Logic\ErrorCreateRemoveLogic.cs" />
     <Compile Include="ErrorPlugin\Logic\RefreshLogic.cs" />
     <Compile Include="ErrorPlugin\MainErrorPlugin.cs" />
+    <Compile Include="ErrorPlugin\ViewModels\Command.cs" />
     <Compile Include="ErrorPlugin\ViewModels\ErrorListViewModel.cs" />
     <Compile Include="ErrorPlugin\ViewModels\ErrorViewModel.cs" />
     <Compile Include="ErrorPlugin\ViewModels\FileParseErrorViewModel.cs" />
@@ -357,6 +358,13 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="ErrorPlugin\Icons\ErrorWindowError.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ErrorPlugin\Icons\CopyAll.png" />
+    <Resource Include="ErrorPlugin\Icons\CopySingle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ErrorPlugin\Icons\Refresh.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

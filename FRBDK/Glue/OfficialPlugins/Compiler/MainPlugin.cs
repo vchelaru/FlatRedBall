@@ -129,9 +129,19 @@ namespace OfficialPlugins.Compiler
                 {
                     if (succeeded)
                     {
-                        PluginManager.ReceiveOutput("Building succeeded. Running project...");
+                        bool hasErrors = GetIfHasErrors();
+                        if (hasErrors)
+                        {
+                            var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
 
-                        runner.Run();
+                            GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, runner.Run);
+                        }
+                        else
+                        {
+                            PluginManager.ReceiveOutput("Building succeeded. Running project...");
+
+                            runner.Run();
+                        }
                     }
                     else
                     {
@@ -166,9 +176,28 @@ namespace OfficialPlugins.Compiler
 
             control.RunClicked += delegate
             {
-                runner.Run();
+                bool hasErrors = GetIfHasErrors();
+                if (hasErrors)
+                {
+                    var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
+
+                    GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, runner.Run);
+                }
+                else
+                {
+                    runner.Run();
+                }
 
             };
+        }
+
+        private static bool GetIfHasErrors()
+        {
+            var errorPlugin = PluginManager.AllPluginContainers
+                                .FirstOrDefault(item => item.Plugin is ErrorPlugin.MainErrorPlugin)?.Plugin as ErrorPlugin.MainErrorPlugin;
+
+            var hasErrors = errorPlugin?.HasErrors == true;
+            return hasErrors;
         }
 
         private void OutputSuccessOrFailure(bool succeeded)

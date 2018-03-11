@@ -9,32 +9,6 @@ using System.Windows.Input;
 
 namespace OfficialPlugins.ErrorPlugin.ViewModels
 {
-    #region Command Implementation
-
-    public class Command : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-
-        public Action ExecuteAction { get; set; }
-
-        public Command(Action executeAction)
-        {
-            this.ExecuteAction = executeAction;
-        }
-
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-
-        public void Execute(object parameter)
-        {
-            ExecuteAction?.Invoke();
-        }
-    }
-
-    #endregion
-
     public class ErrorViewModel : ViewModel
     {
         public string Details

@@ -211,9 +211,15 @@ namespace GumPlugin.Managers
                 Parallel.ForEach(elements, (element) =>
                 //foreach (var element in elements)
                 {
-                    var timeBefore = System.DateTime.Now;
-                    bool wasSaved = GenerateCodeFor(element);
-                    var timeAfter = System.DateTime.Now;
+                    bool wasSaved = false;
+                    try
+                    {
+                        wasSaved = GenerateCodeFor(element);
+                    }
+                    catch(Exception e)
+                    {
+                        GlueCommands.Self.PrintError(e.ToString());
+                    }
 
                     if (wasSaved)
                     {

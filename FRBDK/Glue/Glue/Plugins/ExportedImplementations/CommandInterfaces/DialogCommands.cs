@@ -38,7 +38,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 var option = nfw.GetOptionFor(resultAssetTypeInfo);
 
-                rfs = GlueProjectSaveExtensionMethods.AddReferencedFileSave(element, directory, name, resultAssetTypeInfo, 
+                rfs = GlueProjectSaveExtensionMethods.AddReferencedFileSave(element, directory, name, resultAssetTypeInfo,
                     option, out errorMessage);
 
 
@@ -48,9 +48,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     MessageBox.Show(errorMessage);
                 }
-                else if(rfs != null)
+                else if (rfs != null)
                 {
-                    
+
                     var createdFile = ProjectManager.MakeAbsolute(rfs.GetRelativePath());
 
                     if (createdFile.EndsWith(".csv"))
@@ -131,7 +131,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void SetFormOwner(Form form)
         {
-            if(MainGlueWindow.Self != null)
+            if (MainGlueWindow.Self != null)
                 form.Owner = MainGlueWindow.Self;
         }
 
@@ -205,7 +205,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 };
 
-                if(addObjectViewModel != null)
+                if (addObjectViewModel != null)
                 {
                     typeSelectControl.SourceType = addObjectViewModel.SourceType;
                     typeSelectControl.SourceFile = addObjectViewModel.SourceFile;
@@ -279,6 +279,27 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void ShowMessageBox(string message)
         {
             GlueGui.ShowMessageBox(message);
+        }
+
+        public void ShowYesNoMessageBox(string message, Action yesAction, Action noAction = null)
+        {
+            if (GlueGui.ShowGui)
+            {
+                GlueCommands.Self.DoOnUiThread(() =>
+               {
+                    var result = MessageBox.Show(message, "", MessageBoxButtons.YesNo);
+
+                   if(result == DialogResult.Yes)
+                   {
+                       yesAction?.Invoke();
+                   }
+                   else if(result == DialogResult.No)
+                   {
+                       noAction?.Invoke();
+                   }
+               });
+                
+            }
         }
 
 

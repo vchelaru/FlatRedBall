@@ -27,6 +27,7 @@ namespace OfficialPlugins.ErrorPlugin
 
         ErrorListViewModel errorListViewModel;
         PluginTab tab;
+        ErrorWindow control;
 
         public bool HasErrors => errorListViewModel?.Errors.Count > 0;
 
@@ -39,12 +40,12 @@ namespace OfficialPlugins.ErrorPlugin
 
         public override void StartUp()
         {
-            var control = new ErrorWindow();
+            control = new ErrorWindow();
             tab = AddToTab(PluginManager.BottomTab, control, "Errors");
 
             errorListViewModel = new ErrorListViewModel();
             errorListViewModel.Errors.CollectionChanged += HandleErrorsCollectionChanged;
-            control.DataContext = errorListViewModel;
+            errorListViewModel.RefreshClicked += HandleRefreshClicked;
 
             this.ReactToLoadedGlux += HandleLoadedGlux;
             this.ReactToFileChangeHandler += HandleFileChanged;
@@ -53,6 +54,10 @@ namespace OfficialPlugins.ErrorPlugin
             this.ReactToFileReadError += HandleFileReadError ;
         }
 
+        private void HandleRefreshClicked(object sender, EventArgs e)
+        {
+            RefreshLogic.RefreshAllErrors(errorListViewModel);
+        }
 
         private void HandleErrorsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -62,6 +67,11 @@ namespace OfficialPlugins.ErrorPlugin
             {
                 FocusTab();
             }
+
+            // If I don't do this the list shows an extra item. Not sure why...
+            control.DataContext = null;
+            control.DataContext = errorListViewModel;
+
         }
 
         private void HandleFileReadError(FilePath fileName, GeneralResponse response)

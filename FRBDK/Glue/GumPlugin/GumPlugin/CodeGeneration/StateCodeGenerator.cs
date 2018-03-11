@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Gum.DataTypes;
 using Gum.DataTypes.Behaviors;
 using Gum.DataTypes.Variables;
@@ -409,8 +410,17 @@ namespace GumPlugin.CodeGeneration
 
                         foreach (var variable in orderedVariables)
                         {
+                            var shouldGenerate = false;
+                            try
+                            {
+                                shouldGenerate = GetIfShouldGenerateStateVariable(variable, container);
+                            }
+                            catch(Exception e)
+                            {
+                                GlueCommands.Self.PrintError(e.ToString());
+                            }
                             // where block doesn't debug well for some reason, so I unrolled it...
-                            if (GetIfShouldGenerateStateVariable(variable, container))
+                            if (shouldGenerate)
                             {
                                 // Note that this could return values like "1,2" instead of "1.2" depending
                                 // on the current language, so the AdjustVariableValueIfNecessary needs to account for that.

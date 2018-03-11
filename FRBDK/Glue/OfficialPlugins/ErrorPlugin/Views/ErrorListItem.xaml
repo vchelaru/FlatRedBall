@@ -6,16 +6,14 @@
              xmlns:local="clr-namespace:OfficialPlugins.ErrorPlugin.Views"
              mc:Ignorable="d" 
              d:DesignHeight="0" d:DesignWidth="300">
-    <Grid>
+    <Grid HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Image VerticalAlignment="Top" Grid.Column="0" Source="/OfficialPlugins;component/ErrorPlugin/Icons/ErrorWindowError.png" />
 
-        <StackPanel Grid.Column="1">
-            <TextBlock Text="{Binding Details}"> Hi I am some text</TextBlock>
-        </StackPanel>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow" Text="{Binding Details}"></TextBlock>
         <Grid.InputBindings>
             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding DoubleClickCommand}" />
         </Grid.InputBindings>
