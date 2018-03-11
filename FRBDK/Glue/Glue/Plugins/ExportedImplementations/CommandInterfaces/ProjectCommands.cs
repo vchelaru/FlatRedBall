@@ -469,15 +469,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // Glue only scans the content folder, so
                 // we want to make sure this folder exists
                 // so it shows up okay.
-
-                string directory = FileManager.RelativeDirectory +
-                        treeNodeToAddTo.GetRelativePath() +
-                        folderName;
-                directory = ProjectManager.MakeAbsolute(directory, true);
-
-                Directory.CreateDirectory(directory);
-
-                directory = ProjectManager.ContentDirectory +
+                // Update March 11, 2018
+                // If we create a folder in the code directory,
+                // then Glue will pick that up when constructing
+                // the entities tree structure and will add empty
+                // folders there. We only want to add to the code whenever
+                // an entity is created, or when a user adds a folder to the
+                // entities tree node.
+                // Therefore, only create a folder in the content folder path,
+                // and code folders will be created only when the user explicitly
+                // adds a folder to the Entities tree node
+                string directory;
+                
+                directory = GlueState.Self.ContentDirectory +
                         treeNodeToAddTo.GetRelativePath() +
                         folderName;
                 directory = ProjectManager.MakeAbsolute(directory, true);

@@ -75,9 +75,13 @@ namespace GumPlugin.ViewModels
             get { return behavior == FileAdditionBehavior.EmbedCodeFiles; }
             set
             {
-                if (value) behavior = FileAdditionBehavior.EmbedCodeFiles;
-                UpdateBehaviorOnRfs();
-                NotifyPropertyChanged(nameof(EmbedCodeFiles));
+
+                if (value && behavior != FileAdditionBehavior.EmbedCodeFiles)
+                {
+                    behavior = FileAdditionBehavior.EmbedCodeFiles;
+                    UpdateBehaviorOnRfs();
+                    NotifyPropertyChanged(nameof(EmbedCodeFiles));
+                }
             }
         }
 
@@ -86,10 +90,12 @@ namespace GumPlugin.ViewModels
             get { return behavior == FileAdditionBehavior.AddDll; }
             set
             {
-                if (value) behavior = FileAdditionBehavior.AddDll;
-                UpdateBehaviorOnRfs();
-                NotifyPropertyChanged(nameof(AddDll));
-
+                if (value && behavior != FileAdditionBehavior.AddDll)
+                {
+                    behavior = FileAdditionBehavior.AddDll;
+                    UpdateBehaviorOnRfs();
+                    NotifyPropertyChanged(nameof(AddDll));
+                }
             }
         }
 
@@ -121,10 +127,12 @@ namespace GumPlugin.ViewModels
             get { return behavior == FileAdditionBehavior.IncludeNoFiles; }
             set
             {
-                if (value) behavior = FileAdditionBehavior.IncludeNoFiles;
-                UpdateBehaviorOnRfs();
-                NotifyPropertyChanged(nameof(IncludeNoFiles));
-
+                if (value && behavior != FileAdditionBehavior.IncludeNoFiles)
+                {
+                    behavior = FileAdditionBehavior.IncludeNoFiles;
+                    UpdateBehaviorOnRfs();
+                    NotifyPropertyChanged(nameof(IncludeNoFiles));
+                }
             }
         }
 

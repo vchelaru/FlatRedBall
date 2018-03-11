@@ -158,7 +158,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         }
 
-
+        [Obsolete("This function does way too much. Moving this to GluxCommands")]
         public ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, string directoryInsideContainer, string absoluteFileName,
             PromptHandleEnum unknownTypeHandle, AssetTypeInfo ati, out string creationReport, out string errorMessage)
         {
@@ -282,7 +282,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return referencedFileSaveToReturn;
         }
 
-        private static string GetNameOfFileRelativeToContentFolder(string absoluteSourceFileName, string directoryThatFileShouldBeRelativeTo, string projectDirectory)
+        public static string GetNameOfFileRelativeToContentFolder(string absoluteSourceFileName, string directoryThatFileShouldBeRelativeTo, string projectDirectory)
         {
             string fileToAdd = "";
             var rfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(absoluteSourceFileName);
@@ -298,7 +298,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return fileToAdd;
         }
 
-        private static void CheckAndWarnAboutUnknownFileTypes(PromptHandleEnum unknownTypeHandle, string extension, out bool isValidExtensionOrIsConfirmedByUser, out bool isUnknownType)
+        public static void CheckAndWarnAboutUnknownFileTypes(PromptHandleEnum unknownTypeHandle, string extension, out bool isValidExtensionOrIsConfirmedByUser, out bool isUnknownType)
         {
             isValidExtensionOrIsConfirmedByUser = true;
             isUnknownType = false;

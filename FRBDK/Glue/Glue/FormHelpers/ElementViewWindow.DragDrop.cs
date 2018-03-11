@@ -312,10 +312,11 @@ namespace FlatRedBall.Glue.FormHelpers
             if (targetNode == null)
             {
                 ElementViewWindow.SelectedNode = nodeDroppedOn;
-                foreach (var fileName in (string[])e.Data.GetData("FileDrop"))
-                {
-                    string creationReport;
 
+                var droppedFiles = (string[])e.Data.GetData("FileDrop");
+
+                foreach (var fileName in droppedFiles)
+                {
                     string extension = FileManager.GetExtension(fileName);
 
                     if (extension == "entz" || extension == "scrz")
@@ -324,8 +325,6 @@ namespace FlatRedBall.Glue.FormHelpers
                     }
                     else
                     {
-                        string errorMessage;
-                        
                         RightClickHelper.AddSingleFile(fileName, ref userCancelled);
                     }
                 }

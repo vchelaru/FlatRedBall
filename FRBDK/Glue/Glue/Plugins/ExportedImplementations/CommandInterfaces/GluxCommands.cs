@@ -21,6 +21,8 @@ using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.Glue.SetVariable;
+using FlatRedBall.Glue.IO.Zip;
+using FlatRedBall.Glue.Errors;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -246,9 +248,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         directoryToUse = directoryOfTreeNode;
                     }
 
-                    toReturn = ElementCommands.CreateReferencedFileSaveForExistingFile(
+                    var assetTypeInfo = AvailableAssetTypes.Self.GetAssetTypeFromExtension(FileManager.GetExtension(targetFile));
+
+
+                    toReturn = CreateReferencedFileSaveForExistingFile(
                         sourceElement, directoryToUse, targetFile, PromptHandleEnum.Prompt,
-                        AvailableAssetTypes.Self.GetAssetTypeFromExtension(FileManager.GetExtension(targetFile)),
+                        assetTypeInfo,
                         out creationReport, out errorMessage);
 
                     // If toReturn was null, that means the object wasn't created
@@ -318,6 +323,124 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
             return toReturn;
+        }
+
+        public ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, string directoryInsideContainer, string absoluteFileName,
+            PromptHandleEnum unknownTypeHandle, AssetTypeInfo ati, out string creationReport, out string errorMessage)
+        {
+            creationReport = "";
+            errorMessage = null;
+
+            ReferencedFileSave referencedFileSaveToReturn = null;
+
+            string whyItIsntValid;
+            // Let's see if there is already an Entity with the same name
+            string fileWithoutPath = FileManager.RemovePath(FileManager.RemoveExtension(absoluteFileName));
+
+            bool isValid =
+                NameVerifier.IsReferencedFileNameValid(fileWithoutPath, ati, referencedFileSaveToReturn, containerForFile, out whyItIsntValid);
+
+            if (!isValid)
+            {
+                errorMessage = "Invalid file name:\n" + fileWithoutPath + "\n" + whyItIsntValid;
+            }
+            else
+            {
+                Zipper.UnzipAndModifyFileIfZip(ref absoluteFileName);
+                string extension = FileManager.GetExtension(absoluteFileName);
+
+                bool isValidExtensionOrIsConfirmedByUser;
+                bool isUnknownType;
+                FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.ElementCommands.CheckAndWarnAboutUnknownFileTypes(unknownTypeHandle, extension, out isValidExtensionOrIsConfirmedByUser, out isUnknownType);
+
+                string fileToAdd = null;
+                if (isValidExtensionOrIsConfirmedByUser)
+                {
+
+                    string directoryThatFileShouldBeRelativeTo =
+                        FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.ElementCommands.GetFullPathContentDirectory(containerForFile, directoryInsideContainer);
+
+                    string projectDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
+
+                    bool needsToCopy = !FileManager.IsRelativeTo(absoluteFileName, projectDirectory);
+
+
+                    if (needsToCopy)
+                    {
+                        fileToAdd = directoryThatFileShouldBeRelativeTo + FileManager.RemovePath(absoluteFileName);
+                        fileToAdd = FileManager.MakeRelative(fileToAdd, ProjectManager.ContentProject.GetAbsoluteContentFolder());
+
+                        try
+                        {
+                            FileHelper.RecursivelyCopyContentTo(absoluteFileName,
+                                FileManager.GetDirectory(absoluteFileName),
+                                directoryThatFileShouldBeRelativeTo);
+                        }
+                        catch (System.IO.FileNotFoundException fnfe)
+                        {
+                            errorMessage = "Could not copy the files because of a missing file: " + fnfe.Message;
+                        }
+                    }
+                    else
+                    {
+                        fileToAdd =
+                            FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.ElementCommands.GetNameOfFileRelativeToContentFolder(absoluteFileName, directoryThatFileShouldBeRelativeTo, projectDirectory);
+
+                    }
+
+                }
+
+                if (string.IsNullOrEmpty(errorMessage))
+                {
+                    BuildToolAssociation bta = null;
+
+                    if (ati != null && !string.IsNullOrEmpty(ati.CustomBuildToolName))
+                    {
+                        bta =
+                            BuildToolAssociationManager.Self.GetBuilderToolAssociationByName(ati.CustomBuildToolName);
+                    }
+
+                    if (containerForFile != null)
+                    {
+                        referencedFileSaveToReturn = containerForFile.AddReferencedFile(fileToAdd, ati, bta);
+                    }
+                    else
+                    {
+                        bool useFullPathAsName = false;
+                        // todo - support built files here
+                        referencedFileSaveToReturn = AddReferencedFileToGlobalContent(fileToAdd, useFullPathAsName);
+                    }
+
+
+
+                    // This will be null if there was an error above in creating this file
+                    if (referencedFileSaveToReturn != null)
+                    {
+                        if (containerForFile != null)
+                            containerForFile.HasChanged = true;
+
+                        if (fileToAdd.EndsWith(".csv"))
+                        {
+                            string fileToAddAbsolute = ProjectManager.MakeAbsolute(fileToAdd);
+                            CsvCodeGenerator.GenerateAndSaveDataClass(referencedFileSaveToReturn, referencedFileSaveToReturn.CsvDelimiter);
+                        }
+                        if (isUnknownType)
+                        {
+                            referencedFileSaveToReturn.LoadedAtRuntime = false;
+                        }
+
+                        string error;
+                        referencedFileSaveToReturn.RefreshSourceFileCache(false, out error);
+
+                        if (!string.IsNullOrEmpty(error))
+                        {
+                            ErrorReporter.ReportError(referencedFileSaveToReturn.Name, error, false);
+                        }
+                    }
+                }
+            }
+
+            return referencedFileSaveToReturn;
         }
 
         public NamedObjectSave AddNewNamedObjectToSelectedElement(AddObjectViewModel addObjectViewModel)
