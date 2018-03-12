@@ -1064,15 +1064,14 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static void GenerateCodeForLocalizationDatabase(ReferencedFileSave referencedFile, ICodeBlock codeBlock, string fileName, LoadType loadType)
         {
-            char delimiter = '\0';
-
-            delimiter = referencedFile.CsvDelimiter.ToChar();
 
             if (loadType == LoadType.MaintainInstance)
             {
                 throw new Exception("Reloading database isn't allowed");
             }
 
+            char delimiter = '\0';
+            delimiter = referencedFile.CsvDelimiter.ToChar();
             codeBlock.Line(
                 string.Format("LocalizationManager.AddDatabase(\"{0}\", '{1}');", fileName, delimiter));
         }

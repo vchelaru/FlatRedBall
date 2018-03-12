@@ -10,6 +10,8 @@ namespace FlatRedBall.Localization
 {
     public static class LocalizationManager
     {
+        #region Fields/Properties
+
         public static ReadOnlyCollection<string> Languages
         {
             get;
@@ -29,6 +31,8 @@ namespace FlatRedBall.Localization
             get;
             set;
         }
+
+        #endregion
 
         static LocalizationManager()
         {

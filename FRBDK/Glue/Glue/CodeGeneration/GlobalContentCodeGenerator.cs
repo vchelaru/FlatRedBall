@@ -413,7 +413,12 @@ namespace FlatRedBall.Glue.Parsing
                 .Function("public static void", "Reload", "object whatToReload");
 
             var toLoopThrough = ProjectManager.GlueProjectSave.GlobalFiles.Where(item =>
-                item.IsDatabaseForLocalizing == false && item.LoadedAtRuntime &&
+                // The reason localization databases can't be reloaded is because
+                // this function is called by passing an object (whatToReload). Localization
+                // databases don't create an object in GlobalContent, so there's nothing to reload.
+                // Therefore, the user will have to manually reload
+                item.IsDatabaseForLocalizing == false && 
+                item.LoadedAtRuntime &&
                 item.IsCsvOrTreatedAsCsv).ToList();
 
             foreach (var rfs in toLoopThrough)

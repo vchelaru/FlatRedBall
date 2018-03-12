@@ -212,7 +212,23 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
             foreach (var rfs in referencedFiles)
             {
-                var absolute = GlueCommands.GetAbsoluteFileName(rfs);
+                string absolute = null;
+                try
+                {
+                    absolute = GlueCommands.GetAbsoluteFileName(rfs);
+                }
+                catch(Exception e)
+                {
+                    // See if the project has been unloaded:
+                    if(GlueState.CurrentGlueProject == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        throw e;
+                    }
+                }
 
                 if (referencedFileNames.Any(item => Match(item, absolute)) == false)
                 {
@@ -221,14 +237,18 @@ namespace OfficialPlugins.ContentPipelinePlugin
                 }
             }
 
+            string[] referencedPngs = new string[0];
+            if(GlueState.CurrentGlueProject != null)
+            {
+                referencedPngs = referencedFileNames
+                    .Where(item => FileManager.GetExtension(item) == "png")
+                    .Distinct()
+                    .Select(item => FileManager.Standardize(item))
+                    // Alphabetize for debugging, can get rid of this once this feature works well and I don't need to look at the list anymore:
+                    .OrderBy(item =>item)
+                    .ToArray();
+            }
             // only get the PNGs:
-            var referencedPngs = referencedFileNames
-                .Where(item => FileManager.GetExtension(item) == "png")
-                .Distinct()
-                .Select(item => FileManager.Standardize(item))
-                // Alphabetize for debugging, can get rid of this once this feature works well and I don't need to look at the list anymore:
-                .OrderBy(item =>item)
-                .ToArray();
             return referencedPngs;
         }
 
