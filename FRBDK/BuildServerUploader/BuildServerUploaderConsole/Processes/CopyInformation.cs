@@ -26,13 +26,13 @@ namespace BuildServerUploaderConsole.Processes
             set;
         }
 
-        public static CopyInformation CreateEngineCopy(string fileLocation, string targetDirectory)
+        public static CopyInformation CreateEngineCopy(string engineFileToCopy, string targetDirectory)
         {
             var toReturn = new CopyInformation();
-            string engineDirectory = DirectoryHelper.EngineDirectory;
+            string checkoutDirectory = DirectoryHelper.CheckoutDirectory;
 
-            fileLocation = engineDirectory + fileLocation;
-            toReturn.SourceFile = fileLocation;
+            engineFileToCopy = checkoutDirectory + engineFileToCopy;
+            toReturn.SourceFile = engineFileToCopy;
 
             string targetLocation = DirectoryHelper.ReleaseDirectory + @"SingleDlls\" + targetDirectory + @"\";
 
@@ -41,7 +41,7 @@ namespace BuildServerUploaderConsole.Processes
                 System.IO.Directory.CreateDirectory(targetLocation);
             }
 
-            string fileName = FileManager.RemovePath(fileLocation);
+            string fileName = FileManager.RemovePath(engineFileToCopy);
 
             toReturn.DestinationFile = targetLocation + fileName;
             return toReturn;
@@ -50,9 +50,9 @@ namespace BuildServerUploaderConsole.Processes
         public static CopyInformation CreateTemplateCopy(string fileLocation, string targetDirectory)
         {
             var toReturn = new CopyInformation();
-            string engineDirectory = DirectoryHelper.EngineDirectory;
+            string checkoutDirectory = DirectoryHelper.CheckoutDirectory;
 
-            fileLocation = engineDirectory + fileLocation;
+            fileLocation = checkoutDirectory + fileLocation;
             toReturn.SourceFile = fileLocation;
 
             string targetLocation = DirectoryHelper.TemplateDirectory + targetDirectory + @"\";

@@ -19,11 +19,11 @@ namespace BuildServerUploaderConsole.Data
                 engine.RelativeToLibrariesReleaseFolder = @"Xna4Pc\Release";
                 engine.TemplateFolder = @"FlatRedBallXna4Template\FlatRedBallXna4Template\FlatRedBallXna4Template\";
 
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\x86\Debug\Xna4.0\FlatRedBall.dll");
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\x86\Debug\Xna4.0\FlatRedBall.xml");
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall.Content\bin\x86\Debug\Xna4.0\FlatRedBall.Content.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\x86\Debug\Xna4.0\FlatRedBall.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\x86\Debug\Xna4.0\FlatRedBall.xml");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall.Content\bin\x86\Debug\Xna4.0\FlatRedBall.Content.dll");
 
-                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\x86\Release\Xna4.0\FlatRedBall.dll");
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\x86\Release\Xna4.0\FlatRedBall.dll");
                 engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\x86\Release\Xna4.0\FlatRedBall.xml");
                 engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall.Content\bin\x86\Release\Xna4.0\FlatRedBall.Content.dll");
 
@@ -38,10 +38,10 @@ namespace BuildServerUploaderConsole.Data
                 engine.RelativeToLibrariesReleaseFolder = @"Android\Release";
                 engine.TemplateFolder = @"FlatRedBallAndroidTemplate\FlatRedBallAndroidTemplate\";
 
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\Android\Debug\FlatRedBallAndroid.dll");
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\Android\Debug\FlatRedBallAndroid.pdb");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\Android\Debug\FlatRedBallAndroid.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\Android\Debug\FlatRedBallAndroid.pdb");
 
-                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\Android\Release\FlatRedBallAndroid.dll");
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\Android\Release\FlatRedBallAndroid.dll");
                 // I don't think we have a .pdb for release projects
                 //Add(@"FlatRedBallXNA\FlatRedBall\bin\Android\Release\FlatRedBallAndroid.pdb", @"Android\Release");
                 Engines.Add(engine);
@@ -55,32 +55,15 @@ namespace BuildServerUploaderConsole.Data
                 engine.RelativeToLibrariesReleaseFolder = @"iOS\Release";
                 engine.TemplateFolder = @"FlatRedBalliOSTemplate\FlatRedBalliOSTemplate\";
 
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\iOS\Debug\FlatRedBalliOS.dll");
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\iOS\Debug\FlatRedBalliOS.pdb");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\iOS\Debug\FlatRedBalliOS.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\iOS\Debug\FlatRedBalliOS.pdb");
 
-                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\iOS\Release\FlatRedBalliOS.dll");
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\iOS\Release\FlatRedBalliOS.dll");
 
                 Engines.Add(engine);
             }
 
-            // WinRT
-            // retiring September 24, 2017
-            {
-                //var engine = new EngineData();
-
-                //engine.RelativeToLibrariesDebugFolder = @"Windows8\Debug";
-                //engine.RelativeToLibrariesReleaseFolder = @"Windows8\Release";
-                //engine.TemplateFolder = @"Windows8Template\Windows8Template\";
-
-                //engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBallW8\bin\Debug\FlatRedBallW8.dll");
-                //engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBallW8\bin\Debug\FlatRedBallW8.pdb");
-
-                //engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBallW8\bin\Release\FlatRedBallW8.dll");
-                //engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBallW8\bin\Release\FlatRedBallW8.pdb");
-
-                //Engines.Add(engine);
-            }
-
+            // UWP
             {
                 var engine = new EngineData();
 
@@ -88,16 +71,17 @@ namespace BuildServerUploaderConsole.Data
                 engine.RelativeToLibrariesReleaseFolder = @"UWP\Release";
                 engine.TemplateFolder = @"FlatRedBallUwpTemplate\FlatRedBallUwpTemplate\";
 
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\x86\Debug\FlatRedBallUwp.dll");
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\x86\Debug\FlatRedBallUwp.pdb");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\x86\Debug\FlatRedBallUwp.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\x86\Debug\FlatRedBallUwp.pdb");
 
 
-                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\x86\Release\FlatRedBallUwp.dll");
-                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\x86\Release\FlatRedBallUwp.pdb");
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\x86\Release\FlatRedBallUwp.dll");
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallUwp\bin\x86\Release\FlatRedBallUwp.pdb");
 
                 Engines.Add(engine);
             }
 
+            // Desktop GL
             {
                 var engine = new EngineData();
 
@@ -105,12 +89,12 @@ namespace BuildServerUploaderConsole.Data
                 engine.RelativeToLibrariesReleaseFolder = @"DesktopGl\Release";
                 engine.TemplateFolder = @"FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\";
 
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Debug\FlatRedBallDesktopGL.dll");
-                engine.DebugFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Debug\FlatRedBallDesktopGL.pdb");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Debug\FlatRedBallDesktopGL.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Debug\FlatRedBallDesktopGL.pdb");
 
 
-                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Release\FlatRedBallDesktopGL.dll");
-                engine.ReleaseFiles.Add(@"FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Release\FlatRedBallDesktopGL.pdb");
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Release\FlatRedBallDesktopGL.dll");
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Release\FlatRedBallDesktopGL.pdb");
 
                 Engines.Add(engine);
 

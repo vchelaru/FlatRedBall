@@ -46,6 +46,15 @@ namespace BuildServerUploaderConsole.Processes
             }
         }
 
+        public static string CheckoutDirectory
+        {
+            get
+            {
+                return FileManager.MakeAbsolute("../../../../../../../");
+
+            }
+        }
+
         public static string EngineDirectory
         {
             get
