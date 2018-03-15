@@ -44,9 +44,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FlatRedBall.Forms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\DesktopGl\Debug\FlatRedBall.Forms.dll</HintPath>
+    </Reference>
     <Reference Include="FlatRedBallDesktopGL, Version=2016.3.17.461, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\DesktopGl\Debug\FlatRedBallDesktopGL.dll</HintPath>
+    </Reference>
+    <Reference Include="GumCoreXnaPc, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\DesktopGl\Debug\GumCoreXnaPc.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -60,10 +68,20 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\DesktopGl\Debug\OpenTK.dll</HintPath>
     </Reference>
+    <Reference Include="StateInterpolation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\DesktopGl\Debug\StateInterpolation.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Libraries\DesktopGl\Debug\FlatRedBall.Forms.dll" />
+    <None Include="Libraries\DesktopGl\Debug\GumCoreXnaPc.dll" />
+    <None Include="Libraries\DesktopGl\Debug\StateInterpolation.dll" />
+    <None Include="Libraries\DesktopGl\Release\FlatRedBall.Forms.dll" />
+    <None Include="Libraries\DesktopGl\Release\GumCoreXnaPc.dll" />
+    <None Include="Libraries\DesktopGl\Release\StateInterpolation.dll" />
     <Content Include="MonoGame.Framework.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
