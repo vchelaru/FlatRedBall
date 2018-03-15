@@ -13,7 +13,8 @@ namespace GumPlugin.ViewModels
     public enum FileAdditionBehavior
     {
         EmbedCodeFiles = 0,
-        AddDll,
+        // DLLs are now going to ship as part of the templates, so no need for the plugin to handle it
+        //AddDll,
         IncludeNoFiles
     }
 
@@ -84,21 +85,7 @@ namespace GumPlugin.ViewModels
                 }
             }
         }
-
-        public bool AddDll
-        {
-            get { return behavior == FileAdditionBehavior.AddDll; }
-            set
-            {
-                if (value && behavior != FileAdditionBehavior.AddDll)
-                {
-                    behavior = FileAdditionBehavior.AddDll;
-                    UpdateBehaviorOnRfs();
-                    NotifyPropertyChanged(nameof(AddDll));
-                }
-            }
-        }
-
+        
         public bool IncludeFormsInComponents
         {
             get { return Get<bool>(); }
@@ -162,7 +149,6 @@ namespace GumPlugin.ViewModels
                 ShowDottedOutlines = backingRfs.Properties.GetValue<bool>(nameof(ShowDottedOutlines));
                 FileAdditionBehavior behavior = (FileAdditionBehavior) backingRfs.Properties.GetValue<int>(nameof(FileAdditionBehavior));
 
-                AddDll = behavior == FileAdditionBehavior.AddDll;
                 EmbedCodeFiles = behavior == FileAdditionBehavior.EmbedCodeFiles;
                 IncludeNoFiles = behavior == FileAdditionBehavior.IncludeNoFiles;
                 IncludeFormsInComponents = backingRfs.Properties.GetValue<bool>(nameof(IncludeFormsInComponents));
@@ -172,11 +158,7 @@ namespace GumPlugin.ViewModels
 
         private void UpdateBehaviorOnRfs()
         {
-            if(AddDll)
-            {
-                backingRfs.Properties.SetValue(nameof(FileAdditionBehavior), (int)FileAdditionBehavior.AddDll);
-            }
-            else if(EmbedCodeFiles)
+            if(EmbedCodeFiles)
             {
                 backingRfs.Properties.SetValue(nameof(FileAdditionBehavior), (int)FileAdditionBehavior.EmbedCodeFiles);
             }

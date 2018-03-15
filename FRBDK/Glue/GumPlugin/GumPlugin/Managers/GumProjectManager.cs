@@ -3,6 +3,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
+using GumPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,15 +82,23 @@ namespace GumPlugin.Managers
             }
             else
             {
-                string gumProjectDirectory = ProjectManager.ContentDirectory + "GumProject/";
+                string gumProjectDirectory = GlueState.Self.ContentDirectory + "GumProject/";
                 EmbeddedResourceManager.Self.SaveEmptyProject(gumProjectDirectory);
 
                 EditorLogic.CurrentTreeNode = FlatRedBall.Glue.FormHelpers.ElementViewWindow.GlobalContentFileNode;
 
                 bool userCancelled = false;
 
+                // ignore changes while this is being added, because we don't want to add then remove files:
+
+
                 var rfs = FlatRedBall.Glue.FormHelpers.RightClickHelper.AddSingleFile(
                     gumProjectDirectory + "GumProject.gumx", ref userCancelled);
+
+                rfs.Properties.SetValue(
+                    nameof(FileAdditionBehavior), 
+                    (int)FileAdditionBehavior.IncludeNoFiles);
+
 
                 added = !userCancelled;
 

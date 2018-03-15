@@ -109,10 +109,6 @@ namespace GumPlugin.Managers
                 , "Adding interpolation files for Gum");
 
             }
-            else if(behavior == FileAdditionBehavior.AddDll)
-            {
-                // todo
-            }
             else if(behavior == FileAdditionBehavior.IncludeNoFiles)
             {
                 TaskManager.Self.AddSync(() =>
@@ -127,20 +123,7 @@ namespace GumPlugin.Managers
         {
             var codeItemAdder = GetGumCoreCodeItemAdder(assemblyContainingResources);
 
-            var gumCoreDllAdder = new CodeBuildItemAdder();
-            gumCoreDllAdder.OutputFolderInProject = "GumCore";
-            // todo: make this depend on the project type (PC XNA, DesktopGL, etc)
-            gumCoreDllAdder.Add("GumPlugin/Embedded/LibraryFiles/GumCoreXnaPc.dll");
-
-            if(behavior == FileAdditionBehavior.AddDll)
-            {
-                TaskManager.Self.AddSync(() =>
-                {
-                    codeItemAdder.PerformRemoveAndSave(assemblyContainingResources);
-                    gumCoreDllAdder.PerformAddAndSave(assemblyContainingResources);
-                }, "Adding standard Gum files");
-            }
-            else if(behavior == FileAdditionBehavior.EmbedCodeFiles)
+            if(behavior == FileAdditionBehavior.EmbedCodeFiles)
             {
                 // April 14, 2017
                 // Used to only copy
@@ -159,7 +142,6 @@ namespace GumPlugin.Managers
                     if(GlueState.Self.CurrentGlueProject != null)
                     {
                         codeItemAdder.PerformAddAndSave(assemblyContainingResources);
-                        gumCoreDllAdder.PerformRemoveAndSave(assemblyContainingResources);
                     }
 
                 }, "Adding standard Gum files");
@@ -169,7 +151,6 @@ namespace GumPlugin.Managers
                 TaskManager.Self.AddSync(() =>
                 {
                     codeItemAdder.PerformRemoveAndSave(assemblyContainingResources);
-                    gumCoreDllAdder.PerformRemoveAndSave(assemblyContainingResources);
 
                 }, "Removing standard Gum files");
             }

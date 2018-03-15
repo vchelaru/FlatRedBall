@@ -190,18 +190,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, string extraCommandLineArguments,
             BuildToolAssociation buildToolAssociation, bool isBuiltFile, string options, IElement sourceElement, string directoryOfTreeNode)
         {
-            // Is the file relative to the project?
-            // If not, don't allow the addition.
-            string projectRoot = ProjectManager.ProjectRootDirectory;
-
             ReferencedFileSave toReturn = null;
 
             //string directoryOfTreeNode = EditorLogic.CurrentTreeNode.GetRelativePath();
 
             string targetDirectory = FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.ElementCommands.GetFullPathContentDirectory(sourceElement, directoryOfTreeNode);
             string targetFile = fileName;
-            string errorMessage = null;
 
+            string errorMessage = null;
             bool failed = false;
 
             if (isBuiltFile)
@@ -213,15 +209,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             bool copied = false;
 
-            if (!FileManager.IsRelativeTo(fileName, projectRoot) && isBuiltFile)
+            if (!FileManager.IsRelativeTo(fileName, ProjectManager.ProjectRootDirectory) && isBuiltFile)
             {
                 copied = PluginManager.TryCopyFile(fileName, targetFileWithOriginalExtension);
 
-
-
                 if (!copied)
                 {
-                    MessageBox.Show("Could not add the file\n" + fileName + "\n\nBecause it is not relative to\n" + projectRoot + "\n\nPlease move this file to a folder inside your project and try again");
+                    errorMessage = $"Could not add the file\n{fileName}\n\nBecause it is not relative to\n{ProjectManager.ProjectRootDirectory}\n\nPlease move this file to a folder inside your project and try again";
                     failed = true;
                 }
                 else
@@ -236,76 +230,76 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 if (isBuiltFile)
                 {
                     errorMessage = buildToolAssociation.PerformBuildOn(fileName, targetFile, extraCommandLineArguments, PluginManager.ReceiveOutput, PluginManager.ReceiveError);
+                    failed = true;
                 }
+            }
+
+            if (!failed)
+            {
                 string creationReport;
 
-                if (String.IsNullOrWhiteSpace(errorMessage))
+                string directoryToUse = null;
+
+                if (!isBuiltFile)
                 {
-                    string directoryToUse = null;
-
-                    if (!isBuiltFile)
-                    {
-                        directoryToUse = directoryOfTreeNode;
-                    }
-
-                    var assetTypeInfo = AvailableAssetTypes.Self.GetAssetTypeFromExtension(FileManager.GetExtension(targetFile));
-
-
-                    toReturn = CreateReferencedFileSaveForExistingFile(
-                        sourceElement, directoryToUse, targetFile, PromptHandleEnum.Prompt,
-                        assetTypeInfo,
-                        out creationReport, out errorMessage);
-
-                    // If toReturn was null, that means the object wasn't created
-                    // The user could have said No/Cancel to some option
-                    if (toReturn != null)
-                    {
-                        TaskManager.Self.OnUiThread(() =>
-                            {
-                                ElementViewWindow.UpdateChangedElements();
-                            });
-
-                        if (sourceElement == null)
-                        {
-                            GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
-                        }
-
-                        if (!string.IsNullOrEmpty(errorMessage))
-                        {
-                            // this is handled below
-                            //MessageBox.Show(errorMessage);
-                        }
-                        else if (string.IsNullOrEmpty(toReturn.Name))
-                        {
-                            MessageBox.Show("There was an error creating the named object for\n" + fileName);
-
-                        }
-                        else
-                        {
-                            if (isBuiltFile)
-                            {
-                                toReturn.SourceFile = ProjectManager.MakeRelativeContent(fileName);
-                                toReturn.AdditionalArguments = extraCommandLineArguments;
-                                toReturn.BuildTool = buildToolAssociation.ToString();
-
-                                // If a background sync is happening, this can lock the thread, so we want to
-                                // make sure this doesn't happen at the same time as a background sync:
-                                TaskManager.Self.AddAsyncTask(() =>
-                                    {
-                                        UpdateReactor.UpdateFile(ProjectManager.MakeAbsolute(toReturn.Name));
-                                    },
-                                    "Updating file " + toReturn.Name);
-                                string directoryOfFile = FileManager.GetDirectory(ProjectManager.MakeAbsolute(fileName));
-
-                                RightClickHelper.SetExternallyBuiltFileIfHigherThanCurrent(directoryOfFile, false);
-                            }
-                            PluginManager.ReactToNewFile(toReturn);
-                            GluxCommands.Self.SaveGlux();
-                        }
-                    }
+                    directoryToUse = directoryOfTreeNode;
                 }
 
-                
+                var assetTypeInfo = AvailableAssetTypes.Self.GetAssetTypeFromExtension(FileManager.GetExtension(targetFile));
+
+
+                toReturn = CreateReferencedFileSaveForExistingFile(
+                    sourceElement, directoryToUse, targetFile, PromptHandleEnum.Prompt,
+                    assetTypeInfo,
+                    out creationReport, out errorMessage);
+
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    failed = true;
+                }
+                else if(toReturn != null && string.IsNullOrEmpty(toReturn.Name))
+                {
+                    errorMessage = "There was an error creating the named object for\n" + fileName;
+                    failed = true;
+
+                }
+            }
+            
+            if (!failed)
+            {
+                if (isBuiltFile)
+                {
+                    toReturn.SourceFile = ProjectManager.MakeRelativeContent(fileName);
+                    toReturn.AdditionalArguments = extraCommandLineArguments;
+                    toReturn.BuildTool = buildToolAssociation.ToString();
+
+                    // If a background sync is happening, this can lock the thread, so we want to
+                    // make sure this doesn't happen at the same time as a background sync:
+                    TaskManager.Self.AddAsyncTask(() =>
+                        {
+                            UpdateReactor.UpdateFile(ProjectManager.MakeAbsolute(toReturn.Name));
+                        },
+                        "Updating file " + toReturn.Name);
+                    string directoryOfFile = FileManager.GetDirectory(ProjectManager.MakeAbsolute(fileName));
+
+                    RightClickHelper.SetExternallyBuiltFileIfHigherThanCurrent(directoryOfFile, false);
+                }
+            }
+
+            if(!failed)
+            {
+                TaskManager.Self.OnUiThread(() =>
+                {
+                    ElementViewWindow.UpdateChangedElements();
+                });
+
+                if (sourceElement == null)
+                {
+                    GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+                }
+
+                PluginManager.ReactToNewFile(toReturn);
+                GluxCommands.Self.SaveGlux();
             }
 
             if (!string.IsNullOrWhiteSpace(errorMessage))
@@ -324,6 +318,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             return toReturn;
         }
+
 
         public ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, string directoryInsideContainer, string absoluteFileName,
             PromptHandleEnum unknownTypeHandle, AssetTypeInfo ati, out string creationReport, out string errorMessage)

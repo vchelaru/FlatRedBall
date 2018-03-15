@@ -45,23 +45,15 @@ namespace GumPlugin.Controls
             // don't know why, but this doesn't update like it should:
             var viewModel = DataContext as GumViewModel;
 
-            if (viewModel.AddDll)
-            {
-                AddDllRadio.IsChecked = true;
-                EmbedCodeFilesRadio.IsChecked = false;
-                IncludeNoFilesRadio.IsChecked = false;
-            }
-            else if(viewModel.EmbedCodeFiles)
+            if(viewModel.EmbedCodeFiles)
             {
                 EmbedCodeFilesRadio.IsChecked = true;
-                AddDllRadio.IsChecked = false;
                 IncludeNoFilesRadio.IsChecked = false;
             }
             else if(viewModel.IncludeNoFiles)
             {
                 IncludeNoFilesRadio.IsChecked = true;
                 EmbedCodeFilesRadio.IsChecked = false;
-                AddDllRadio.IsChecked = false;
             }
         }
 

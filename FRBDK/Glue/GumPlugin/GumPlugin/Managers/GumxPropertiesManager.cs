@@ -15,6 +15,9 @@ namespace GumPlugin.Managers
 {
     class GumxPropertiesManager
     {
+
+        public bool IsReactingToProperyChanges { get; internal set; }
+
         public bool GetAutoCreateGumScreens()
         {
             var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
@@ -30,39 +33,41 @@ namespace GumPlugin.Managers
 
         public void HandlePropertyChanged(string propertyChanged)
         {
-            if (propertyChanged == "UseAtlases")
+            if(IsReactingToProperyChanges)
             {
-                UpdateUseAtlases();
-            }
-            else if(propertyChanged == "AutoCreateGumScreens")
-            {
-                // Do we need to do anything?
-            }
-            else if(propertyChanged == nameof(GumViewModel.ShowDottedOutlines))
-            {
-                UpdateShowDottedOutlines();
-            }
-            else if(propertyChanged == nameof(GumViewModel.AddDll) ||
-                propertyChanged == nameof(GumViewModel.EmbedCodeFiles) ||
-                propertyChanged == nameof(GumViewModel.IncludeNoFiles)
-                )
-            {
-                UpdateCodeOrDllAdd();
-            }
-            else if (propertyChanged == nameof(GumViewModel.IncludeFormsInComponents))
-            {
-                TaskManager.Self.AddSync(
-                    CodeGeneratorManager.Self.GenerateDerivedGueRuntimes,
-                    $"Regenerating Gum derived runtimes because of changed {propertyChanged}");
+                if (propertyChanged == "UseAtlases")
+                {
+                    UpdateUseAtlases();
+                }
+                else if(propertyChanged == "AutoCreateGumScreens")
+                {
+                    // Do we need to do anything?
+                }
+                else if(propertyChanged == nameof(GumViewModel.ShowDottedOutlines))
+                {
+                    UpdateShowDottedOutlines();
+                }
+                else if(propertyChanged == nameof(GumViewModel.EmbedCodeFiles) ||
+                    propertyChanged == nameof(GumViewModel.IncludeNoFiles)
+                    )
+                {
+                    UpdateCodeOrDllAdd();
+                }
+                else if (propertyChanged == nameof(GumViewModel.IncludeFormsInComponents))
+                {
+                    TaskManager.Self.AddSync(
+                        CodeGeneratorManager.Self.GenerateDerivedGueRuntimes,
+                        $"Regenerating Gum derived runtimes because of changed {propertyChanged}");
 
+                }
+                else if(propertyChanged == nameof(GumViewModel.IncludeComponentToFormsAssociation))
+                {
+                    TaskManager.Self.AddSync(
+                        () => { CodeGeneratorManager.Self.GenerateAndSaveRuntimeAssociations(); },
+                        $"Regenerating runtime associations because of changed {propertyChanged}");
+                }
+                GlueCommands.Self.GluxCommands.SaveGlux();
             }
-            else if(propertyChanged == nameof(GumViewModel.IncludeComponentToFormsAssociation))
-            {
-                TaskManager.Self.AddSync(
-                    () => { CodeGeneratorManager.Self.GenerateAndSaveRuntimeAssociations(); },
-                    $"Regenerating runtime associations because of changed {propertyChanged}");
-            }
-            GlueCommands.Self.GluxCommands.SaveGlux();
         }
 
         private void UpdateCodeOrDllAdd()

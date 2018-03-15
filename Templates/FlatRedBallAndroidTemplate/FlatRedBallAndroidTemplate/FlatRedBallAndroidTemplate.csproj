@@ -41,12 +41,21 @@
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FlatRedBall.Forms.Android">
+      <HintPath>Libraries\Android\Debug\FlatRedBall.Forms.Android.dll</HintPath>
+    </Reference>
+    <Reference Include="GumCoreAndroid">
+      <HintPath>Libraries\Android\Debug\GumCoreAndroid.dll</HintPath>
+    </Reference>
     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Android\Debug\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="OpenTK-1.0" />
+    <Reference Include="StateInterpolation.Android">
+      <HintPath>Libraries\Android\Debug\StateInterpolation.Android.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

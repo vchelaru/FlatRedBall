@@ -360,7 +360,12 @@ namespace GumPlugin
                     var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
                     var behavior = GetBehavior(gumRfs);
 
-                    EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
+                    // only do this if the property reactor is reacting to changes - if it's not, then we're still
+                    // setting up the new file:
+                    if(this.propertiesManager.IsReactingToProperyChanges)
+                    {
+                        EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
+                    }
                 }
 
             }
@@ -449,20 +454,22 @@ namespace GumPlugin
 
         private void HandleAddNewGumProject(object sender, EventArgs e)
         {
+            propertiesManager.IsReactingToProperyChanges = false;
+
             var added = GumProjectManager.Self.TryAddNewGumProject();
 
             if (added)
             {
                 var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
-                bool addDll = false;
-                if (gumRfs != null)
-                {
-                    addDll = gumRfs.Properties.GetValue<bool>(nameof(GumViewModel.AddDll));
-                }
+
+
                 var behavior = GetBehavior(gumRfs);
 
                 EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
             }
+
+            propertiesManager.IsReactingToProperyChanges = true;
+
         }
 
         private void HandleGluxLoadEarly()
@@ -486,12 +493,9 @@ namespace GumPlugin
             var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
             var behavior = GetBehavior(gumRfs);
 
-
             // todo: Removing a file should cause this to get called, but I don't think Gum lets us subscribe to that yet.
-
             TaskManager.Self.AddSync(() =>
             {
-
                 EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 
                 CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
@@ -499,6 +503,7 @@ namespace GumPlugin
                 CodeGeneratorManager.Self.GenerateAllBehaviors();
 
                 FileReferenceTracker.Self.RemoveUnreferencedFilesFromVsProject();
+
                 UpdateMenuItemVisibility();
             }, "Gum plugin reacting to glux load");
         }

@@ -18,12 +18,10 @@
                   Content="Use Atlases" IsChecked="{Binding UseAtlases}"></CheckBox>
         <GroupBox Header="Core Gum Addition">
             <StackPanel >
-                <RadioButton GroupName="AdditionType" x:Name="EmbedCodeFilesRadio" 
-                             VerticalContentAlignment="Center" Content="Embed Code Files" IsChecked="{Binding EmbedCodeFiles, FallbackValue=true, Mode=TwoWay}" />
-                <RadioButton GroupName="AdditionType" x:Name="AddDllRadio" 
-                             VerticalContentAlignment="Center" Content="Add .dll" IsChecked="{Binding AddDll, Mode=TwoWay}"/>
                 <RadioButton GroupName="AdditionType" x:Name="IncludeNoFilesRadio" 
-                             VerticalContentAlignment="Center" Content="Include No Files (if linking Gum source in game)" IsChecked="{Binding IncludeNoFiles, Mode=TwoWay}"/>                
+                             VerticalContentAlignment="Center" Content="Include No Files (use linked .dlls or source)" IsChecked="{Binding IncludeNoFiles, FallbackValue=true, Mode=TwoWay}"/>                
+                <RadioButton GroupName="AdditionType" x:Name="EmbedCodeFilesRadio" 
+                             VerticalContentAlignment="Center" Content="Embed Code Files (legacy)" IsChecked="{Binding EmbedCodeFiles, Mode=TwoWay}" />
             </StackPanel>
             
         </GroupBox>
