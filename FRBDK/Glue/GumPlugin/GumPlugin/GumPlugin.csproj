@@ -103,7 +103,11 @@
     <Compile Include="CodeGeneration\BehaviorCodeGenerator.cs" />
     <Compile Include="CodeGeneration\EventCodeGenerator.cs" />
     <Compile Include="CodeGeneration\GumLayerAssociationCodeGenerator.cs" />
+    <Compile Include="Controls\GumToolbar.xaml.cs">
+      <DependentUpon>GumToolbar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DataGeneration\BehaviorGenerator.cs" />
+    <Compile Include="DataGeneration\FormsControlAdder.cs" />
     <Compile Include="Managers\AppCommands.cs" />
     <Compile Include="Managers\GumxPropertiesManager.cs" />
     <Compile Include="Resource1.Designer.cs">
@@ -483,6 +487,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\GumToolbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\..\..\..\..\Gum\GumCore\GumCoreXnaPc\bin\Debug\GumCoreXnaPc.dll">
@@ -490,7 +498,24 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\GumIcon.png" />
+    <EmbeddedResource Include="Embedded\FormsControls\Button.gucx" />
+    <EmbeddedResource Include="Embedded\FormsControls\CheckBox.gucx" />
+    <EmbeddedResource Include="Embedded\FormsControls\ColoredFrame.gucx" />
+    <EmbeddedResource Include="Embedded\FormsControls\ComboBox.gucx" />
+    <EmbeddedResource Include="Embedded\FormsControls\ListBox.gucx" />
+    <EmbeddedResource Include="Embedded\FormsControls\ListBoxItem.gucx" />
+    <EmbeddedResource Include="Embedded\FormsControls\RadioButton.gucx" />
+    <EmbeddedResource Include="Embedded\FormsControls\ScrollBar.gucx" />
+    <EmbeddedResource Include="Embedded\FormsControls\ScrollBarThumb.gucx" />
+    <EmbeddedResource Include="Embedded\FormsControls\ScrollViewer.gucx" />
+    <EmbeddedResource Include="Embedded\FormsControls\Slider.gucx" />
+    <EmbeddedResource Include="Embedded\FormsControls\TextBox.gucx" />
+    <EmbeddedResource Include="Embedded\FormsControls\ToggleButton.gucx" />
+    <Resource Include="Icons\GumIcon.png" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Embedded\FormsControls\Content\UISpriteSheet.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

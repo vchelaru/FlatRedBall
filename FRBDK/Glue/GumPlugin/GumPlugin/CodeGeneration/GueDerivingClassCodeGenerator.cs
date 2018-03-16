@@ -470,6 +470,15 @@ namespace GumPlugin.CodeGeneration
                         variableType = FlatRedBall.IO.FileManager.RemovePath(elementSave.Name) + "Runtime." + foundCategory.Name ;
                     }
                 }
+                else if(variableSave.IsState(elementSave))
+                {
+                    var foundCategory = elementSave.Categories.FirstOrDefault(item => item.Name == variableSave.Type);
+                    if (foundCategory != null)
+                    {
+
+                        variableType = FlatRedBall.IO.FileManager.RemovePath(elementSave.Name) + "Runtime." + foundCategory.Name;
+                    }
+                }
             }
             else if(variableSave.IsFile)
             {

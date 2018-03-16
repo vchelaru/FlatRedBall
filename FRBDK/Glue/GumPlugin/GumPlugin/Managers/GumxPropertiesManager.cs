@@ -35,11 +35,11 @@ namespace GumPlugin.Managers
         {
             if(IsReactingToProperyChanges)
             {
-                if (propertyChanged == "UseAtlases")
+                if (propertyChanged == nameof(GumViewModel.UseAtlases))
                 {
                     UpdateUseAtlases();
                 }
-                else if(propertyChanged == "AutoCreateGumScreens")
+                else if(propertyChanged == nameof(GumViewModel.AutoCreateGumScreens))
                 {
                     // Do we need to do anything?
                 }
@@ -114,7 +114,7 @@ namespace GumPlugin.Managers
             if (gumRfs != null)
             {
                 bool useAtlases = 
-                    gumRfs.Properties.GetValue<bool>("UseAtlases");
+                    gumRfs.Properties.GetValue<bool>(nameof(GumViewModel.UseAtlases));
 
                 FileReferenceTracker.Self.UseAtlases = useAtlases;
 

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace GumPlugin.ViewModels
 {
@@ -138,6 +139,16 @@ namespace GumPlugin.ViewModels
             }
         }
 
+        public bool ShowAdvanced
+        {
+            get { return Get<bool>(); }
+            set { Set(value); }
+        }
+
+        [DependsOn(nameof(ShowAdvanced))]
+        public Visibility BasicVisibility => ShowAdvanced ? Visibility.Collapsed : Visibility.Visible;
+        [DependsOn(nameof(ShowAdvanced))]
+        public Visibility AdvancedVisibility => ShowAdvanced ? Visibility.Visible : Visibility.Collapsed;
 
         public void SetFrom(GumProjectSave gumProjectSave, ReferencedFileSave referencedFileSave)
         {

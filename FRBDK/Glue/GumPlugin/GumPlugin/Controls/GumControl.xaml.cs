@@ -1,4 +1,5 @@
-﻿using Gum.DataTypes.Behaviors;
+﻿using FlatRedBall.Glue.Managers;
+using Gum.DataTypes.Behaviors;
 using GumPlugin.DataGeneration;
 using GumPlugin.Managers;
 using GumPlugin.ViewModels;
@@ -57,26 +58,44 @@ namespace GumPlugin.Controls
             }
         }
 
+        private void HandleAddAllForms(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as GumViewModel;
+
+            viewModel.IncludeFormsInComponents = true;
+            viewModel.IncludeComponentToFormsAssociation = true;
+            HandleGenerateBehaviors(this, null);
+            HandleAddFormsComponentsClick(this, null);
+        }
+
         private void HandleGenerateBehaviors(object sender, RoutedEventArgs e)
         {
-            bool didAdd = false;
+            TaskManager.Self.AddSync(() =>
+           {
+               bool didAdd = false;
 
-            didAdd = AddIfDoesntHave(BehaviorGenerator.CreateButtonBehavior());
-            didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateCheckBoxBehavior());
-            didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateComboBoxBehavior());
-            didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateListBoxItemBehavior());
-            didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateListBoxBehavior());
-            didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateRadioButtonBehavior());
-            didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateScrollBarBehavior());
-            didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateScrollViewerBehavior());
-            didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateSliderBehavior());
-            didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateTextBoxBehavior());
-            didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateToggleBehavior());
+               didAdd = AddIfDoesntHave(BehaviorGenerator.CreateButtonBehavior());
+               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateCheckBoxBehavior());
+               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateComboBoxBehavior());
+               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateListBoxItemBehavior());
+               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateListBoxBehavior());
+               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateRadioButtonBehavior());
+               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateScrollBarBehavior());
+               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateScrollViewerBehavior());
+               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateSliderBehavior());
+               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateTextBoxBehavior());
+               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateToggleBehavior());
 
-            if(didAdd)
-            {
-                AppCommands.Self.SaveGumx();
-            }
+               if (didAdd)
+               {
+                   AppCommands.Self.SaveGumx();
+               }
+           }, "Adding Gum Forms Behaviors");
+        }
+
+        private void HandleAddFormsComponentsClick(object sender, RoutedEventArgs e)
+        {
+            FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
         }
 
         private bool AddIfDoesntHave(BehaviorSave behaviorSave)
@@ -94,6 +113,18 @@ namespace GumPlugin.Controls
             AppCommands.Self.SaveBehavior(behaviorSave);
 
             return doesProjectAlreadyHaveBehavior == false;
+        }
+
+        private void AdvancedClick(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as GumViewModel;
+            viewModel.ShowAdvanced = true;
+        }
+
+        private void SimpleClick(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as GumViewModel;
+            viewModel.ShowAdvanced = false;
         }
     }
 }

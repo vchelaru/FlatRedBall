@@ -100,6 +100,10 @@ namespace GumPlugin.Managers
                     (int)FileAdditionBehavior.IncludeNoFiles);
 
 
+                rfs.Properties.SetValue(
+                    nameof(GumViewModel.AutoCreateGumScreens),
+                    true);
+
                 added = !userCancelled;
 
                 if(added)

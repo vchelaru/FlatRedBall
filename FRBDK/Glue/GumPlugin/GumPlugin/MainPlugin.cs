@@ -210,10 +210,35 @@ namespace GumPlugin
 
             AssignEvents();
 
+            CreateToolbar();
+
             CodeGeneratorManager.Self.CreateElementComponentCodeGenerators();
 
             Gum.Managers.StandardElementsManager.Self.Initialize();
 
+        }
+
+        private void CreateToolbar()
+        {
+            var gumToolbar = new GumToolbar();
+            gumToolbar.GumButtonClicked += HandleToolbarButtonClick;
+            base.AddToToolBar(gumToolbar, "Standard");
+        }
+
+        private void HandleToolbarButtonClick(object sender, EventArgs e)
+        {
+            var alreadyHasGumProject = AppState.Self.GumProjectSave != null;
+
+            if(alreadyHasGumProject == false)
+            {
+                HandleAddNewGumProject(null, null);
+            }
+            else
+            {
+                // open the Gum file:
+                var fileName = AppState.Self.GumProjectSave.FullFileName;
+                System.Diagnostics.Process.Start(fileName);
+            }
         }
 
         private void AssignEvents()
@@ -339,6 +364,8 @@ namespace GumPlugin
         private void HandleUnloadedGlux()
         {
             AssetTypeInfoManager.Self.UnloadProjectSpecificAtis();
+
+            AppState.Self.GumProjectSave = null;
 
             UpdateMenuItemVisibility();
         }
@@ -466,6 +493,9 @@ namespace GumPlugin
                 var behavior = GetBehavior(gumRfs);
 
                 EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
+
+                // show the tab for the new file:
+                this.FocusTab();
             }
 
             propertiesManager.IsReactingToProperyChanges = true;
