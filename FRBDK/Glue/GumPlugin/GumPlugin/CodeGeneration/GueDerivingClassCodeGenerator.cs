@@ -574,7 +574,15 @@ namespace GumPlugin.CodeGeneration
             }
             else if(variableSave.GetRootName() == "Parent")
             {
-                variableValue = $"this.ContainedElements.FirstOrDefault(item =>item.Name == \"{variableValue}\")";
+                if(container is ComponentSave)
+                {
+                    variableValue = $"this.ContainedElements.FirstOrDefault(item =>item.Name == \"{variableValue}\") ?? this";
+
+                }
+                else
+                {
+                    variableValue = $"this.ContainedElements.FirstOrDefault(item =>item.Name == \"{variableValue}\")";
+                }
             }
             else if(variableSave.IsFile)
             {
