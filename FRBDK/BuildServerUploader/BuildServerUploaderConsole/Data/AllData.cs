@@ -41,8 +41,8 @@ namespace BuildServerUploaderConsole.Data
                 engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\Android\Debug\FlatRedBallAndroid.dll");
                 engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\Android\Debug\FlatRedBallAndroid.pdb");
 
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\bin\Android\Debug\StateInterpolation.dll");
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\bin\Android\Debug\StateInterpolation.pdb");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\bin\Android\Debug\StateInterpolation.Android.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\bin\Android\Debug\StateInterpolation.Android.pdb");
 
                 engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\bin\Android\Debug\FlatRedBall.Forms.dll");
                 engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\bin\Android\Debug\FlatRedBall.Forms.pdb");
@@ -55,8 +55,8 @@ namespace BuildServerUploaderConsole.Data
                 // I don't think we have a .pdb for release projects
                 //Add(@"FlatRedBallXNA\FlatRedBall\bin\Android\Release\FlatRedBallAndroid.pdb", @"Android\Release");
 
-                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\bin\Android\Release\StateInterpolation.dll");
-                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\bin\Android\Release\StateInterpolation.pdb");
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\bin\Android\Release\StateInterpolation.Android.dll");
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\bin\Android\Release\StateInterpolation.Android.pdb");
 
                 engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\bin\Android\Release\FlatRedBall.Forms.dll");
                 engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\bin\Android\Release\FlatRedBall.Forms.pdb");
