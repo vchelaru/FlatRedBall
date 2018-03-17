@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Gum.DataTypes;
 using Gum.DataTypes.Behaviors;
 using Gum.DataTypes.Variables;
+using Gum.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -259,10 +260,10 @@ namespace GumPlugin.CodeGeneration
                 // variables exist
                 bool isComponent = container is ComponentSave;
 
-                var rootComponent = Gum.Managers.ObjectFinder.Self.GetRootStandardElementSave(container);
+                var rootStandardElementSave = Gum.Managers.ObjectFinder.Self.GetRootStandardElementSave(container);
 
                 // If the Container is a Screen, then rootComponent will be null, so we don't need to do anything
-                if (rootComponent == null)
+                if (rootStandardElementSave == null)
                 {
                     toReturn = false;
                 }
@@ -270,17 +271,24 @@ namespace GumPlugin.CodeGeneration
                 {
                     IEnumerable<VariableSave> variablesToCheck;
 
+                    // This code used to get the default state from the rootStandardElementSave, 
+                    // but the standard element save can have variables missing from the Gum XML,
+                    // but it should still support them based on the definition in the StandardElementsManager,
+                    // especially if new variables have been added in the future. Therefore, use the StandardElementsManager
+                    // rather than the DefaultState:
+                    //var rootStandardElementVariables = rootStandardElementSave.DefaultState.Variables;
+                    var rootStandardElementVariables = StandardElementsManager.Self
+                        .DefaultStates[rootStandardElementSave.Name].Variables;
+
                     if (isComponent)
                     {
                         var component = Gum.Managers.ObjectFinder.Self.GetStandardElement("Component");
 
-                        variablesToCheck = rootComponent.DefaultState.Variables.Concat(component.DefaultState.Variables);
+                        variablesToCheck = rootStandardElementVariables.Concat(component.DefaultState.Variables).ToList();
                     }
                     else
                     {
-                        var defaultState = rootComponent.DefaultState;
-
-                        variablesToCheck = defaultState.Variables;
+                        variablesToCheck = rootStandardElementVariables.ToList();
                     }
 
 
@@ -406,7 +414,7 @@ namespace GumPlugin.CodeGeneration
                         // If they're attached in the wrong order, then stacking won't work properly:
                         var instanceNames = container.Instances.Select(item => item.Name).ToList();
 
-                        var orderedVariables = state.Variables.OrderBy(variable => instanceNames.IndexOf(variable.SourceObject));
+                        var orderedVariables = state.Variables.OrderBy(variable => instanceNames.IndexOf(variable.SourceObject)).ToList();
 
                         foreach (var variable in orderedVariables)
                         {
