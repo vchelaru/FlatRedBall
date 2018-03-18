@@ -511,13 +511,24 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateInstanceProperties(ElementSave elementSave, ICodeBlock currentBlock)
         {
+
+            string publicOrPrivate;
+            if(elementSave is ScreenSave)
+            {
+                // make these public for screens because the only time this will be accessed is in the Glue screen that owns it
+                publicOrPrivate = "public";
+            }
+            else
+            {
+                publicOrPrivate = "private";
+            }
             foreach (var instance in elementSave.Instances)
             {
                 string type = GetQualifiedRuntimeTypeFor(instance);
 
                 if (GetIfInstanceReferencesValidComponent(instance))
                 {
-                    ICodeBlock property = currentBlock.AutoProperty("private " + type, instance.MemberNameInCode());
+                    ICodeBlock property = currentBlock.AutoProperty($"{publicOrPrivate} " + type, instance.MemberNameInCode());
                 }
                 else
                 {

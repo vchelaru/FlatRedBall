@@ -102,6 +102,7 @@
     </EmbeddedResource>
     <Compile Include="CodeGeneration\BehaviorCodeGenerator.cs" />
     <Compile Include="CodeGeneration\EventCodeGenerator.cs" />
+    <Compile Include="CodeGeneration\GlobalContentCodeGenerator.cs" />
     <Compile Include="CodeGeneration\GumLayerAssociationCodeGenerator.cs" />
     <Compile Include="Controls\GumToolbar.xaml.cs">
       <DependentUpon>GumToolbar.xaml</DependentUpon>

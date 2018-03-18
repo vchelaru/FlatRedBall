@@ -16,14 +16,14 @@ namespace GumPlugin.Managers
     class GumxPropertiesManager
     {
 
-        public bool IsReactingToProperyChanges { get; internal set; }
+        public bool IsReactingToProperyChanges { get; internal set; } = true;
 
         public bool GetAutoCreateGumScreens()
         {
             var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
             if (gumRfs != null)
             {
-                return gumRfs.Properties.GetValue<bool>("AutoCreateGumScreens");
+                return gumRfs.Properties.GetValue<bool>(nameof(GumViewModel.AutoCreateGumScreens));
             }
             else
             {
@@ -65,6 +65,13 @@ namespace GumPlugin.Managers
                     TaskManager.Self.AddSync(
                         () => { CodeGeneratorManager.Self.GenerateAndSaveRuntimeAssociations(); },
                         $"Regenerating runtime associations because of changed {propertyChanged}");
+                }
+                else if(propertyChanged == nameof(GumViewModel.ShowMouse))
+                {
+                    TaskManager.Self.AddSync(
+                        () => { GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode(); },
+                        $"Regenerating global content because of changed property {nameof(GumViewModel.ShowMouse)}"
+                        );
                 }
                 GlueCommands.Self.GluxCommands.SaveGlux();
             }

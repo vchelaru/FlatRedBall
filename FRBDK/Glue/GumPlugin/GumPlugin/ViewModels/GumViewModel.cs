@@ -68,6 +68,24 @@ namespace GumPlugin.ViewModels
             }
         }
 
+        bool showMouse;
+        public bool ShowMouse
+        {
+            get { return showMouse; }
+            set
+            {
+                if(showMouse != value)
+                {
+                    showMouse = value;
+
+                    backingRfs.Properties.SetValue(
+                        nameof(ShowMouse), value);
+
+                    base.NotifyPropertyChanged(nameof(ShowMouse));
+                }
+            }
+        }
+
         // We don't use this to adjust the data (ReferencedFileSave, settings file), but it's here
         // for when we first adjust to the ReferencedFileSave so that we can check or uncheck the radio.
 
@@ -152,18 +170,20 @@ namespace GumPlugin.ViewModels
 
         public void SetFrom(GumProjectSave gumProjectSave, ReferencedFileSave referencedFileSave)
         {
-                backingGumProject = gumProjectSave;
-                backingRfs = referencedFileSave;
+            backingGumProject = gumProjectSave;
+            backingRfs = referencedFileSave;
 
-                UseAtlases = backingRfs.Properties.GetValue<bool>(nameof(UseAtlases));
-                AutoCreateGumScreens = backingRfs.Properties.GetValue<bool>(nameof(AutoCreateGumScreens));
-                ShowDottedOutlines = backingRfs.Properties.GetValue<bool>(nameof(ShowDottedOutlines));
-                FileAdditionBehavior behavior = (FileAdditionBehavior) backingRfs.Properties.GetValue<int>(nameof(FileAdditionBehavior));
+            UseAtlases = backingRfs.Properties.GetValue<bool>(nameof(UseAtlases));
+            AutoCreateGumScreens = backingRfs.Properties.GetValue<bool>(nameof(AutoCreateGumScreens));
+            ShowDottedOutlines = backingRfs.Properties.GetValue<bool>(nameof(ShowDottedOutlines));
+            FileAdditionBehavior behavior = (FileAdditionBehavior) backingRfs.Properties.GetValue<int>(nameof(FileAdditionBehavior));
 
-                EmbedCodeFiles = behavior == FileAdditionBehavior.EmbedCodeFiles;
-                IncludeNoFiles = behavior == FileAdditionBehavior.IncludeNoFiles;
-                IncludeFormsInComponents = backingRfs.Properties.GetValue<bool>(nameof(IncludeFormsInComponents));
-                IncludeComponentToFormsAssociation = backingRfs.Properties.GetValue<bool>(nameof(IncludeComponentToFormsAssociation));
+            EmbedCodeFiles = behavior == FileAdditionBehavior.EmbedCodeFiles;
+            IncludeNoFiles = behavior == FileAdditionBehavior.IncludeNoFiles;
+            IncludeFormsInComponents = backingRfs.Properties.GetValue<bool>(nameof(IncludeFormsInComponents));
+            IncludeComponentToFormsAssociation = backingRfs.Properties.GetValue<bool>(nameof(IncludeComponentToFormsAssociation));
+
+            ShowMouse = backingRfs.Properties.GetValue<bool>(nameof(ShowMouse));
         }
 
 

@@ -104,6 +104,10 @@ namespace GumPlugin.Managers
                     nameof(GumViewModel.AutoCreateGumScreens),
                     true);
 
+                rfs.Properties.SetValue(
+                    nameof(GumViewModel.ShowMouse),
+                    true);
+
                 added = !userCancelled;
 
                 if(added)

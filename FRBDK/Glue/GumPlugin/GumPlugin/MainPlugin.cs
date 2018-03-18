@@ -38,6 +38,8 @@ namespace GumPlugin
 
         ToolStripMenuItem addGumProjectMenuItem;
 
+        GlobalContentCodeGenerator globalContentCodeGenerator;
+
         bool raiseViewModelEvents = true;
 
         #endregion
@@ -213,6 +215,9 @@ namespace GumPlugin
             CreateToolbar();
 
             CodeGeneratorManager.Self.CreateElementComponentCodeGenerators();
+
+            globalContentCodeGenerator = new GlobalContentCodeGenerator();
+            FlatRedBall.Glue.Parsing.CodeWriter.GlobalContentCodeGenerators.Add(globalContentCodeGenerator);
 
             Gum.Managers.StandardElementsManager.Self.Initialize();
 
@@ -559,6 +564,8 @@ namespace GumPlugin
             Glue.MainGlueWindow.Self.Invoke((MethodInvoker)RemoveAllMenuItems);
 
             CodeGeneratorManager.Self.RemoveCodeGenerators();
+
+            FlatRedBall.Glue.Parsing.CodeWriter.GlobalContentCodeGenerators.Remove(globalContentCodeGenerator);
 
 
             return true;

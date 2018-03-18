@@ -7,27 +7,28 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-    <StackPanel>
-        <TextBlock HorizontalAlignment="Center" FontSize="16" Text="Gum Project Properties"></TextBlock>
-        <CheckBox x:Name="ShowDottedOutlines" VerticalContentAlignment="Center" 
+        <StackPanel>
+            <TextBlock HorizontalAlignment="Center" FontSize="16" Text="Gum Project Properties"></TextBlock>
+            <CheckBox x:Name="ShowDottedOutlines" VerticalContentAlignment="Center" 
                   Content="Show Dotted Outlines" IsChecked="{Binding ShowDottedOutlines}"></CheckBox>
+            <CheckBox VerticalContentAlignment="Center" 
+                      Content="Show Mouse" IsChecked="{Binding ShowMouse}" ></CheckBox>
 
-
-        <CheckBox x:Name="AutoCreateGumScreens" VerticalContentAlignment="Center" 
+            <CheckBox x:Name="AutoCreateGumScreens" VerticalContentAlignment="Center" 
                   Content="Automatically Create Gum Screens for Glue Screens" IsChecked="{Binding AutoCreateGumScreens}"></CheckBox>
-        <CheckBox x:Name="UseAtlasesCheckBox" VerticalContentAlignment="Center" 
+            <CheckBox x:Name="UseAtlasesCheckBox" VerticalContentAlignment="Center" 
                   Content="Use Atlases" IsChecked="{Binding UseAtlases}"></CheckBox>
-        <GroupBox Header="Core Gum Addition">
-            <StackPanel >
-                <RadioButton GroupName="AdditionType" x:Name="IncludeNoFilesRadio" 
-                             VerticalContentAlignment="Center" Content="Include No Files (use linked .dlls or source)" IsChecked="{Binding IncludeNoFiles, FallbackValue=true, Mode=TwoWay}"/>                
-                <RadioButton GroupName="AdditionType" x:Name="EmbedCodeFilesRadio" 
+            <GroupBox Header="Core Gum Addition">
+                <StackPanel >
+                    <RadioButton GroupName="AdditionType" x:Name="IncludeNoFilesRadio" 
+                             VerticalContentAlignment="Center" Content="Include No Files (use linked .dlls or source)" IsChecked="{Binding IncludeNoFiles, FallbackValue=true, Mode=TwoWay}"/>
+                    <RadioButton GroupName="AdditionType" x:Name="EmbedCodeFilesRadio" 
                              VerticalContentAlignment="Center" Content="Embed Code Files (legacy)" IsChecked="{Binding EmbedCodeFiles, Mode=TwoWay}" />
-            </StackPanel>
-            
-        </GroupBox>
+                </StackPanel>
 
-        <GroupBox Header="FlatRedBall.Forms">
+            </GroupBox>
+
+            <GroupBox Header="FlatRedBall.Forms">
                 <StackPanel>
                     <StackPanel x:Name="Basic" Visibility="{Binding BasicVisibility}">
                         <Button HorizontalAlignment="Left" Margin="0,5,0,0" Width="200" Click="HandleAddAllForms">Add Forms to Project</Button>
@@ -40,7 +41,7 @@
 
                     </StackPanel>
                     <StackPanel x:Name="Advanced" Visibility="{Binding AdvancedVisibility}">
-                
+
                         <CheckBox VerticalContentAlignment="Center"
                                   Content="Include Forms in Components With Behaviors" IsChecked="{Binding IncludeFormsInComponents, Mode=TwoWay}"></CheckBox>
 
@@ -56,7 +57,7 @@
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
-        
-    </StackPanel>
+
+        </StackPanel>
     </ScrollViewer>
 </UserControl>
