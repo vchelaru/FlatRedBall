@@ -21,16 +21,16 @@ namespace FlatRedBall.AnimationEditorForms.Controls
 
     public enum AdjustmentType
     {
+        None,
         Justify,
         AdjustOffset,
-        None
     }
 
     public enum OffSetType
     {
+        None,
         Absolute,
         Relative,
-        None
     }
 
     #endregion
