@@ -21,7 +21,16 @@ namespace FlatRedBall.AnimationEditorForms.Controls
 
     public enum AdjustmentType
     {
-        Justify
+        Justify,
+        AdjustOffset,
+        None
+    }
+
+    public enum OffSetType
+    {
+        Absolute,
+        Relative,
+        None
     }
 
     #endregion
@@ -35,7 +44,19 @@ namespace FlatRedBall.AnimationEditorForms.Controls
         {
             get
             {
-                return AdjustmentType.Justify;
+                if (JustifyRadioButton.Checked) return AdjustmentType.Justify;
+                if (AdjustAllOffsetsRadioButton.Checked) return AdjustmentType.AdjustOffset;
+                return AdjustmentType.None;
+            }
+        }
+
+        public OffSetType OffSetType
+        {
+            get
+            {
+                if (AdjustAbsoluteRadioButton.Checked) return OffSetType.Absolute;
+                if (AdjustRelativeRadioButton.Checked) return OffSetType.Relative;
+                return OffSetType.None;
             }
         }
 
@@ -46,7 +67,6 @@ namespace FlatRedBall.AnimationEditorForms.Controls
                 return (Justification)JustificationComboBox.SelectedItem;
             }
         }
-
 
         #endregion
 
@@ -101,10 +121,19 @@ namespace FlatRedBall.AnimationEditorForms.Controls
         {
             switch (this.AdjustmentType)
             {
-                case AnimationEditorForms.Controls.AdjustmentType.Justify:
-
+                case AdjustmentType.Justify:
                     ApplyJustifyOffsets();
-
+                    break;
+                case AdjustmentType.AdjustOffset:
+                    switch (this.OffSetType)
+                    {
+                        case OffSetType.Absolute:
+                            ApplyFrameOffsets(OffsetXTextbox.Text, OffsetYTextBox.Text, false);
+                            break;
+                        case OffSetType.Relative:
+                            ApplyFrameOffsets(OffsetXTextbox.Text, OffsetYTextBox.Text, true);
+                            break;
+                    }
                     break;
             }
 
@@ -113,18 +142,52 @@ namespace FlatRedBall.AnimationEditorForms.Controls
             PropertyGridManager.Self.Refresh();
         }
 
+        private void ApplyFrameOffsets(string xString, string yString, bool isRelative)
+        {
+            var chain = SelectedState.Self.SelectedChain;
+
+            var shouldAdjustX = !string.IsNullOrWhiteSpace(xString);
+            var shouldAdjustY = !string.IsNullOrWhiteSpace(yString);
+
+            StringToValue(xString, out float xOffset);
+            StringToValue(yString, out float yOffset);
+
+            if (chain != null && (shouldAdjustX || shouldAdjustY))
+            {
+                foreach (var frame in chain.Frames)
+                {
+                    var texture = WireframeManager.Self.GetTextureForFrame(frame);
+
+                    if (texture != null)
+                    {
+                        if (shouldAdjustX) frame.RelativeX = (isRelative ? frame.RelativeX : 0) + xOffset;
+                        if (shouldAdjustY) frame.RelativeY = (isRelative ? frame.RelativeY : 0) + yOffset;
+                    }
+                }
+            }
+        }
+
+        private void StringToValue(string stringValue, out float outValue)
+        {
+            if (string.IsNullOrWhiteSpace(stringValue)) outValue = 0;
+            else
+            {
+                float.TryParse(stringValue, out outValue);
+            }
+        }
+
         private void ApplyJustifyOffsets()
         {
             switch (this.Justification)
             {
-                case AnimationEditorForms.Controls.Justification.Bottom:
-                    AnimationChainSave chain = SelectedState.Self.SelectedChain;
+                case Justification.Bottom:
+                    var chain = SelectedState.Self.SelectedChain;
 
                     if (chain != null)
                     {
                         foreach (var frame in chain.Frames)
                         {
-                            Texture2D texture = WireframeManager.Self.GetTextureForFrame(frame);
+                            var texture = WireframeManager.Self.GetTextureForFrame(frame);
 
                             if (texture != null)
                             {
@@ -149,14 +212,44 @@ namespace FlatRedBall.AnimationEditorForms.Controls
         private void UpdateInfoLabel()
         {
             this.InformationLabel.Text = "";
-            var selectedItem = (Justification)JustificationComboBox.SelectedItem;
-            switch (selectedItem)
+            var selectedJustification = (Justification)JustificationComboBox.SelectedItem;
+            switch (selectedJustification)
             {
                 case Justification.Bottom:
                     this.InformationLabel.Text = "Adjusts the offsets of all frames so that the bottoms all line up at 0,0. This is often used for platformers and other side-view games";
                     break;
 
             }
+            if (AdjustRelativeRadioButton.Checked) AdjustmentTypeLabel.Text = "Modifies the existing RelativeX/Y of every frame by these amounts.";
+            if (AdjustAbsoluteRadioButton.Checked) AdjustmentTypeLabel.Text = "Sets these exact values to the RelativeX/Y of every frame, overwriting what is currently there.";
+
+        }
+
+        private void JustifyRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateAdjustOffsetPanels();
+        }
+
+        private void AdjustAllOffsetsRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateAdjustOffsetPanels();
+        }
+
+        private void AdjustAbsoluteRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateAdjustOffsetPanels();
+        }
+
+        private void AdjustRelativeRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateAdjustOffsetPanels();
+        }
+
+        private void UpdateAdjustOffsetPanels()
+        {
+            JustifyPanel.Visible = JustifyRadioButton.Checked;
+            AdjustAllPanel.Visible = AdjustAllOffsetsRadioButton.Checked;
+            UpdateInfoLabel();
         }
     }
 }
