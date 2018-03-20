@@ -5,6 +5,8 @@ using System.Net;
 using FlatRedBall.IO;
 using System.Windows.Forms;
 using System.Threading;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 
 namespace FRBDKUpdater
 {
@@ -283,11 +285,22 @@ namespace FRBDKUpdater
 
         private HttpWebResponse GetResponseForRequest()
         {
+            ServicePointManager.ServerCertificateValidationCallback += new RemoteCertificateValidationCallback(AlwaysGoodCertificate);
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+                | SecurityProtocolType.Tls11
+                | SecurityProtocolType.Tls12
+                | SecurityProtocolType.Ssl3;
+
             var url = new Uri(mSettings.Url);
             var request = (HttpWebRequest)WebRequest.Create(url);
             var response = (HttpWebResponse)request.GetResponse();
             response.Close();
             return response;
+        }
+
+        private static bool AlwaysGoodCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors policyErrors)
+        {
+            return true;
         }
 
         private void HandleErrorDefault(Exception ex)
