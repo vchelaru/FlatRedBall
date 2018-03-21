@@ -20,6 +20,8 @@ using FlatRedBall.AnimationEditorForms.Textures;
 using FlatRedBall.AnimationEditorForms.CommandsAndState;
 using FlatRedBall.SpecializedXnaControls.RegionSelection;
 using FlatRedBall.AnimationEditorForms.Preview;
+using FlatRedBall.AnimationEditorForms.ViewModels;
+using System.ComponentModel;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -105,6 +107,10 @@ namespace FlatRedBall.AnimationEditorForms
             get { return mManagers; }
         }
 
+        private WireframeEditControlsViewModel WireframeEditControlsViewModel
+        {
+            get; set;
+        }
 
         #endregion
 
@@ -286,7 +292,8 @@ namespace FlatRedBall.AnimationEditorForms
 
         #endregion
 
-        public void Initialize(ImageRegionSelectionControl control, SystemManagers managers, WireframeEditControls wireframeControl)
+        public void Initialize(ImageRegionSelectionControl control, SystemManagers managers, 
+            WireframeEditControls wireframeControl, WireframeEditControlsViewModel wireframeEditControlsViewModel)
         {
             mManagers = managers;
             mManagers.Renderer.SamplerState = SamplerState.PointClamp;
@@ -323,6 +330,21 @@ namespace FlatRedBall.AnimationEditorForms
 
             mStatusText = new StatusTextController(managers);
             mControl_XnaInitialize();
+
+            WireframeEditControlsViewModel = wireframeEditControlsViewModel;
+            WireframeEditControlsViewModel.PropertyChanged += HandleWireframePropertyChanged;
+        }
+
+        private void HandleWireframePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case nameof(WireframeEditControlsViewModel.SelectedTextureFilePath):
+
+                    UpdateToSelectedAnimationTextureFile(WireframeEditControlsViewModel.SelectedTextureFilePath);
+
+                    break;
+            }
         }
 
         private void HandlePanning()
@@ -384,19 +406,23 @@ namespace FlatRedBall.AnimationEditorForms
                     int changedBottom = FlatRedBall.Math.MathFunctions.RoundToInt( mPushedRegion.Bottom - mPushedRegion.OldBottom);
                     int changedRight = FlatRedBall.Math.MathFunctions.RoundToInt(mPushedRegion.Right - mPushedRegion.OldRight);
 
-                    foreach (var containedFrame in SelectedState.Self.SelectedChain.Frames)
+                    if(changedLeft != 0 || changedTop != 0 || changedRight != 0 || changedBottom != 0)
                     {
-                        // shift this by pixels!
+                        // only move the regions that are shown
+                        foreach(var region in mControl.RectangleSelectors)
+                        {
+                            var frameForRegion = region.Tag as AnimationFrameSave;
 
-                        containedFrame.LeftCoordinate += changedLeft / (float)texture.Width;
-                        containedFrame.RightCoordinate += changedRight / (float)texture.Width;
+                            frameForRegion.LeftCoordinate += changedLeft / (float)texture.Width;
+                            frameForRegion.RightCoordinate += changedRight / (float)texture.Width;
 
-                        containedFrame.TopCoordinate += changedTop / (float)texture.Height;
-                        containedFrame.BottomCoordinate += changedBottom / (float)texture.Height;
+                            frameForRegion.TopCoordinate += changedTop / (float)texture.Height;
+                            frameForRegion.BottomCoordinate += changedBottom / (float)texture.Height;
+                        }
+
+                        UpdateSelectorsToAnimation(skipPushed:true, texture:texture);
+                        PreviewManager.Self.ReactToAnimationChainSelected();
                     }
-
-                    UpdateSelectorsToAnimation(skipPushed:true, texture:texture);
-                    PreviewManager.Self.ReactToAnimationChainSelected();
                 }
             }
             // This is causing spamming of the save - we only want to do this on a mouse click
@@ -493,26 +519,38 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void UpdateToSelectedAnimation(bool skipPushed = false)
         {
+            PopulateViewModelTextures();
+
             if (mControl.RectangleSelector != null)
             {
                 mControl.RectangleSelector.Visible = false;
             }
 
-            AnimationFrameSave afs = null;
+            var selectedFilePath = WireframeEditControlsViewModel.SelectedTextureFilePath;
 
-            afs = SelectedState.Self.SelectedChain.Frames[0];
-            if (afs.TextureName != null)
+            UpdateToSelectedAnimationTextureFile(selectedFilePath, skipPushed);
+
+        }
+
+        private void UpdateToSelectedAnimationTextureFile(ToolsUtilities.FilePath selectedFilePath, bool skipPushed = false)
+        {
+            var fileName = selectedFilePath?.Standardized;
+
+            if (!string.IsNullOrEmpty(fileName))
             {
-                Texture2D texture = GetTextureForFrame(afs);
+                Texture2D texture = GetTextureFromFile(fileName);
                 Texture = texture;
 
                 ShowSpriteOutlineForTexture(texture);
                 UpdateLineGridToTexture(texture);
 
+                string folder = FileManager.GetDirectory(SelectedState.Self.AnimationChainListSave.FileName);
 
-                bool anyDiffer = SelectedState.Self.SelectedChain.Frames.Any(item => item.TextureName != afs.TextureName);
 
-                if (!anyDiffer)
+                var doAnyFramesUseThisTexture =
+                    SelectedState.Self.SelectedChain.Frames.Any(item => new ToolsUtilities.FilePath(folder + item.TextureName) == selectedFilePath);
+
+                if (doAnyFramesUseThisTexture)
                 {
                     UpdateSelectorsToAnimation(skipPushed, texture);
 
@@ -528,16 +566,45 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 ApplicationEvents.Self.CallWireframeTextureChange();
             }
+        }
+
+        private void PopulateViewModelTextures()
+        {
+            string folder = FileManager.GetDirectory(SelectedState.Self.AnimationChainListSave.FileName);
+            var filePaths = SelectedState.Self.SelectedChain?.Frames
+                .Select(item => new ToolsUtilities.FilePath( folder +  item.TextureName))
+                .Distinct()
+                .ToList();
+
+            WireframeEditControlsViewModel.AvailableTextures.Clear();
+
+            foreach(var filePath in filePaths)
+            {
+                WireframeEditControlsViewModel.AvailableTextures.Add(filePath);
+            }
+
+            WireframeEditControlsViewModel.SelectedTextureFilePath = filePaths.FirstOrDefault();
+
+
 
         }
 
         private void UpdateSelectorsToAnimation(bool skipPushed, Texture2D texture)
         {
             // Everything here is 
-            mControl.DesiredSelectorCount = SelectedState.Self.SelectedChain.Frames.Count;
-            for (int i = 0; i < SelectedState.Self.SelectedChain.Frames.Count; i++)
+
+            string folder = FileManager.GetDirectory(SelectedState.Self.AnimationChainListSave.FileName);
+            var textureFilePath = new ToolsUtilities.FilePath(texture.Name);
+
+            var framesOnThisTexture = SelectedState.Self.SelectedChain.Frames
+                .Where(item => new ToolsUtilities.FilePath(folder + item.TextureName) == textureFilePath)
+                .ToList();
+
+            mControl.DesiredSelectorCount = framesOnThisTexture.Count;
+
+            for (int i = 0; i < framesOnThisTexture.Count; i++)
             {
-                var frame = SelectedState.Self.SelectedChain.Frames[i];
+                var frame = framesOnThisTexture[i];
 
                 var rectangleSelector = mControl.RectangleSelectors[i];
                 if (skipPushed == false || rectangleSelector != mPushedRegion)
@@ -545,10 +612,12 @@ namespace FlatRedBall.AnimationEditorForms
                     bool hasAlreadyBeenInitialized = rectangleSelector.Tag != null;
                     UpdateRectangleSelectorToFrame(frame, texture, mControl.RectangleSelectors[i]);
                     rectangleSelector.ShowHandles = false;
+
+                    rectangleSelector.Tag = frame;
+
                     if (!hasAlreadyBeenInitialized)
                     {
 
-                        rectangleSelector.Tag = frame;
                         rectangleSelector.ShowHandles = false;
                         rectangleSelector.RoundToUnitCoordinates = true;
                         rectangleSelector.AllowMoveWithoutHandles = true;
@@ -692,7 +761,11 @@ namespace FlatRedBall.AnimationEditorForms
         {
             string fileName = GetTextureFileNameForFrame(frame);
 
+            return GetTextureFromFile(fileName);
+        }
 
+        private static Texture2D GetTextureFromFile(string fileName)
+        {
             Texture2D texture = null;
             if (!string.IsNullOrEmpty(fileName) && System.IO.File.Exists(fileName))
             {

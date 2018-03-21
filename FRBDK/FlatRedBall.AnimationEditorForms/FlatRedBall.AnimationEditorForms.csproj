@@ -165,6 +165,9 @@
     <Compile Include="Controls\WireframeEditControls.Designer.cs">
       <DependentUpon>WireframeEditControls.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\WireframeEditControlsWpf.xaml.cs">
+      <DependentUpon>WireframeEditControlsWpf.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ZoomControlLogic.cs" />
     <Compile Include="Converters\AnimationChainListSaveConverter.cs" />
     <Compile Include="CopyManager.cs" />
@@ -216,6 +219,8 @@
     <Compile Include="TimeManager.cs" />
     <Compile Include="TreeViewManager.cs" />
     <Compile Include="TreeViewManager.RightClick.cs" />
+    <Compile Include="ViewModels\ViewModel.cs" />
+    <Compile Include="ViewModels\WireframeEditControlsViewModel.cs" />
     <Compile Include="Wireframe\Ruler.cs" />
     <Compile Include="Wireframe\StatusTextController.cs" />
     <Compile Include="Wireframe\WireframeManager.cs" />
@@ -288,7 +293,12 @@
   <ItemGroup>
     <Content Include="Libraries\Jillzhang.GifUtility.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Page Include="Controls\WireframeEditControlsWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

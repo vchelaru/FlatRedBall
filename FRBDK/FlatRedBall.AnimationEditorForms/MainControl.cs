@@ -18,6 +18,7 @@ using FlatRedBall.IO;
 using FlatRedBall.AnimationEditorForms.Converters;
 using FlatRedBall.AnimationEditorForms.Gif;
 using Microsoft.Xna.Framework.Graphics;
+using FlatRedBall.AnimationEditorForms.ViewModels;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -59,7 +60,10 @@ namespace FlatRedBall.AnimationEditorForms
 
         // Use SelectedState
         //public AnimationChainSave SelectedAnimationChain
-
+        public WireframeEditControlsViewModel WireframeEditControlsViewModel
+        {
+            get; private set;
+        }
 
         #endregion
 
@@ -76,6 +80,7 @@ namespace FlatRedBall.AnimationEditorForms
             mSelf = this;
             InitializeComponent();
 
+            CreateViewModel();
 
             mScrollBarControlLogic = new ScrollBarControlLogic(PreviewSplitContainer.Panel1);
 
@@ -132,6 +137,14 @@ namespace FlatRedBall.AnimationEditorForms
             PopulateUnitTypeComboBox();
 
             PreviewManager.Self.Initialize(PreviewGraphicsControl, previewControls1);
+        }
+
+        private void CreateViewModel()
+        {
+
+            // move this out :
+            WireframeEditControlsViewModel = new WireframeEditControlsViewModel();
+            this.zoomControl1.DataContext = WireframeEditControlsViewModel;
         }
 
         private void HandleEditorControlsPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -225,7 +238,7 @@ namespace FlatRedBall.AnimationEditorForms
         {
             try
             {
-                WireframeManager.Self.Initialize(imageRegionSelectionControl1, imageRegionSelectionControl1.SystemManagers, zoomControl1);
+                WireframeManager.Self.Initialize(imageRegionSelectionControl1, imageRegionSelectionControl1.SystemManagers, zoomControl1, WireframeEditControlsViewModel);
                 WireframeManager.Self.AnimationChainChange += RaiseAnimationChainChanges;
 
                 mScrollBarControlLogic.Managers = imageRegionSelectionControl1.SystemManagers;

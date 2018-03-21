@@ -33,6 +33,8 @@
             this.SnapToGridCheckBox = new System.Windows.Forms.CheckBox();
             this.GridSizeTextBox = new System.Windows.Forms.TextBox();
             this.ShowFullAlphaCheckBox = new System.Windows.Forms.CheckBox();
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
+            this.wireframeEditControlsWpf1 = new FlatRedBall.AnimationEditorForms.Controls.WireframeEditControlsWpf();
             this.SuspendLayout();
             // 
             // ComboBox
@@ -77,28 +79,38 @@
             this.GridSizeTextBox.TabIndex = 3;
             this.GridSizeTextBox.Text = "16";
             // 
-            // ShowFullAlpha
+            // ShowFullAlphaCheckBox
             // 
             this.ShowFullAlphaCheckBox.AutoSize = true;
             this.ShowFullAlphaCheckBox.Location = new System.Drawing.Point(320, 4);
-            this.ShowFullAlphaCheckBox.Name = "ShowFullAlpha";
+            this.ShowFullAlphaCheckBox.Name = "ShowFullAlphaCheckBox";
             this.ShowFullAlphaCheckBox.Size = new System.Drawing.Size(102, 17);
             this.ShowFullAlphaCheckBox.TabIndex = 4;
             this.ShowFullAlphaCheckBox.Text = "Show Full Alpha";
             this.ShowFullAlphaCheckBox.UseVisualStyleBackColor = true;
             this.ShowFullAlphaCheckBox.CheckedChanged += new System.EventHandler(this.ShowFullAlpha_CheckedChanged);
             // 
+            // elementHost1
+            // 
+            this.elementHost1.Location = new System.Drawing.Point(436, 0);
+            this.elementHost1.Name = "elementHost1";
+            this.elementHost1.Size = new System.Drawing.Size(200, 23);
+            this.elementHost1.TabIndex = 5;
+            this.elementHost1.Text = "elementHost1";
+            this.elementHost1.Child = this.wireframeEditControlsWpf1;
+            // 
             // WireframeEditControls
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.elementHost1);
             this.Controls.Add(this.ShowFullAlphaCheckBox);
             this.Controls.Add(this.GridSizeTextBox);
             this.Controls.Add(this.SnapToGridCheckBox);
             this.Controls.Add(this.MagicWandCheckBox);
             this.Controls.Add(this.ComboBox);
             this.Name = "WireframeEditControls";
-            this.Size = new System.Drawing.Size(530, 23);
+            this.Size = new System.Drawing.Size(636, 23);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -111,5 +123,7 @@
         private System.Windows.Forms.CheckBox SnapToGridCheckBox;
         private System.Windows.Forms.TextBox GridSizeTextBox;
         private System.Windows.Forms.CheckBox ShowFullAlphaCheckBox;
+        private System.Windows.Forms.Integration.ElementHost elementHost1;
+        private WireframeEditControlsWpf wireframeEditControlsWpf1;
     }
 }

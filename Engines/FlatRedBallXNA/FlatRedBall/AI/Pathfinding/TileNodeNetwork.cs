@@ -71,9 +71,12 @@ namespace FlatRedBall.AI.Pathfinding
         /// <summary>
         /// Creates a new, empty TileNodeNetwork matching the arguments.
         /// </summary>
-        /// <param name="xOrigin">The X position of the left-most nodes. This, along with the ySeed, define the bottom-left of the node network.</param>
-        /// <param name="yOrigin">The y position of the bottom-most nodes. This, along with xSeed, define the bottom-left of the node network.</param>
-        /// <param name="gridSpacing">The X and Y distance between each node.</param>
+        /// <param name="xOrigin">The X position of the left-most nodes. This, along with the ySeed, define the bottom-left of the node network. 
+        /// For tile maps this should be the center X of the first tile column (typically TileWidth / 2).</param>
+        /// <param name="yOrigin">The y position of the bottom-most nodes. This, along with xSeed, define the bottom-left of the node network. 
+        /// For tile maps this should be the center Y of the bottom tile row. 
+        /// If the top-left of the map is at 0,0, then this value would be (-EntireMapHeight + TileHeight/2)</param>
+        /// <param name="gridSpacing">The X and Y distance between each node. That is, the X distance between two adjacent nodes (assumed to be equal to the Y distance). For a tile map this will equal the width of a tile.</param>
         /// <param name="numberOfXTiles">The number of nodes vertically.</param>
         /// <param name="numberOfYTiles">The number of nodes horizontally.</param>
         /// <param name="directionalType">Whether to create a Four-way or Eight-way node network. Eight creates diagonal links, enabling diagonal movement when following the node network.</param>
