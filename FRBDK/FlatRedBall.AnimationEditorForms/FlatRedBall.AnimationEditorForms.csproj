@@ -88,15 +88,21 @@
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Glue\Glue\Controls\MultiButtonMessageBox.cs">
@@ -154,6 +160,9 @@
     <Compile Include="Controls\WireframeEditControls.Designer.cs">
       <DependentUpon>WireframeEditControls.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\WireframeEditControlsWpf.xaml.cs">
+      <DependentUpon>WireframeEditControlsWpf.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ZoomControlLogic.cs" />
     <Compile Include="Converters\AnimationChainListSaveConverter.cs" />
     <Compile Include="CopyManager.cs" />
@@ -205,6 +214,8 @@
     <Compile Include="TimeManager.cs" />
     <Compile Include="TreeViewManager.cs" />
     <Compile Include="TreeViewManager.RightClick.cs" />
+    <Compile Include="ViewModels\ViewModel.cs" />
+    <Compile Include="ViewModels\WireframeEditControlsViewModel.cs" />
     <Compile Include="Wireframe\Ruler.cs" />
     <Compile Include="Wireframe\StatusTextController.cs" />
     <Compile Include="Wireframe\WireframeManager.cs" />
@@ -277,7 +288,12 @@
   <ItemGroup>
     <Content Include="Libraries\Jillzhang.GifUtility.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Page Include="Controls\WireframeEditControlsWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

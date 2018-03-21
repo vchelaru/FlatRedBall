@@ -259,9 +259,6 @@ namespace AnimationEditorPlugin
 
             bool shouldShowAnimationChainUi = rfs != null && rfs.Name != null && FileManager.GetExtension(rfs.Name) == "achx";
 
-
-
-
             if (shouldShowAnimationChainUi)
             {
                 if (!mContainer.Controls.Contains(mTab))
@@ -285,6 +282,15 @@ namespace AnimationEditorPlugin
                     mAchxControl.AnimationChainChange += new EventHandler(HandleAnimationChainChange);
                     mAchxControl.Dock = DockStyle.Fill;
                 }
+
+                // add any files here from
+                // the entity or global content
+                // if they're not already added.
+                var viewModel =
+                    mAchxControl.WireframeEditControlsViewModel;
+
+                // get any file from the current element as well as global content, and add them here if not already...
+
 
                 mTab.Text = "  Animation"; // add spaces to make room for the X to close the plugin
 

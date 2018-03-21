@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using FlatRedBall.AnimationEditorForms.ViewModels;
 
 namespace FlatRedBall.AnimationEditorForms.Controls
 {
@@ -94,9 +95,15 @@ namespace FlatRedBall.AnimationEditorForms.Controls
             }
         }
 
+        public WireframeEditControlsViewModel DataContext
+        {
+            get { return wireframeEditControlsWpf1.DataContext as WireframeEditControlsViewModel; }
+            set { wireframeEditControlsWpf1.DataContext = value; }
+        }
+
         #endregion
 
-        
+
         #region Event
 
         public event EventHandler WandSelectionChanged;
