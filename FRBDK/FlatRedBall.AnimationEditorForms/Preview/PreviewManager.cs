@@ -206,7 +206,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             ShapeManager shapeManager = mManagers.ShapeManager;
 
             mSprite = new RenderingLibrary.Graphics.Sprite(null);
-
+            mSprite.Name = "Animation PreviewManager Main Sprite";
 
             mRectangle = new LineRectangle(mManagers);
             mManagers.ShapeManager.Add(mRectangle);

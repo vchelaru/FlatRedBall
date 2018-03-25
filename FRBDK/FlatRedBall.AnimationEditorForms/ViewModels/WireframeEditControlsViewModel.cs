@@ -16,6 +16,12 @@ namespace FlatRedBall.AnimationEditorForms.ViewModels
             set { Set(value); }
         }
 
+        public bool IsMagicWandSelected
+        {
+            get { return Get<bool>(); }
+            set { Set(value); }
+        }
+
         public ObservableCollection<FilePath> AvailableTextures
         {
             get; private set;

@@ -219,6 +219,7 @@ namespace FlatRedBall.SpecializedXnaControls
         private void CreateVisuals()
         {
             mCurrentTextureSprite = new Sprite(mCurrentTexture);
+            mCurrentTextureSprite.Name = "Image Region Selection Main Sprite";
             mManagers.SpriteManager.Add(mCurrentTextureSprite);
         }
 
@@ -281,6 +282,9 @@ namespace FlatRedBall.SpecializedXnaControls
             }
         }
 
+        /// <summary>
+        /// Creates and destroys the internal rectangle selectors to match the desired count.
+        /// </summary>
         public int DesiredSelectorCount
         {
             set
@@ -294,7 +298,7 @@ namespace FlatRedBall.SpecializedXnaControls
                 {
                     var selector = mRectangleSelectors.Last();
 
-                    selector.RemoveFromManagers(mManagers);
+                    selector.RemoveFromManagers();
                     mRectangleSelectors.RemoveAt(mRectangleSelectors.Count - 1);
                 }
             }
@@ -443,7 +447,7 @@ namespace FlatRedBall.SpecializedXnaControls
 
             foreach (var item in mRectangleSelectors)
             {
-                item.Activity(mCursor, mKeyboard, this, mManagers);
+                item.Activity(mCursor, mKeyboard, this);
             }
         }
 

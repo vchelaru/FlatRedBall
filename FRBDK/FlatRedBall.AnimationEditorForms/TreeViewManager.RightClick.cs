@@ -423,6 +423,8 @@ namespace FlatRedBall.AnimationEditorForms
 
                     TreeViewManager.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
 
+                    WireframeManager.Self.RefreshAll();
+
                     CallAnimationChainsChange();
                 }
 

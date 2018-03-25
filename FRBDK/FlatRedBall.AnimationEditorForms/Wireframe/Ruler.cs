@@ -149,6 +149,7 @@ namespace FlatRedBall.AnimationEditorForms.Wireframe
         private void CreateVisualRepresentation()
         {
             mOffsetSprite = new RenderingLibrary.Graphics.Sprite(null);
+            mOffsetSprite.Name = "Ruler Offset Sprite";
 
             mRectangle = new SolidRectangle();
             mRectangle.Color = Color.Yellow;

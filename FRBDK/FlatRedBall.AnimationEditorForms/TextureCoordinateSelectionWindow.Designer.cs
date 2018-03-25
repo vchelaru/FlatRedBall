@@ -34,7 +34,6 @@
             // wireframeEditControls1
             // 
             this.wireframeEditControls1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.wireframeEditControls1.IsMagicWandSelected = false;
             this.wireframeEditControls1.Location = new System.Drawing.Point(0, 0);
             this.wireframeEditControls1.Name = "wireframeEditControls1";
             this.wireframeEditControls1.PercentageValue = 100;

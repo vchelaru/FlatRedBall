@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.ComboBox = new System.Windows.Forms.ComboBox();
-            this.MagicWandCheckBox = new System.Windows.Forms.CheckBox();
             this.SnapToGridCheckBox = new System.Windows.Forms.CheckBox();
             this.GridSizeTextBox = new System.Windows.Forms.TextBox();
             this.ShowFullAlphaCheckBox = new System.Windows.Forms.CheckBox();
@@ -46,23 +45,10 @@
             this.ComboBox.TabIndex = 0;
             this.ComboBox.SelectedIndexChanged += new System.EventHandler(this.ComboBox_SelectedIndexChanged);
             // 
-            // MagicWandCheckBox
-            // 
-            this.MagicWandCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
-            this.MagicWandCheckBox.AutoSize = true;
-            this.MagicWandCheckBox.Location = new System.Drawing.Point(77, 0);
-            this.MagicWandCheckBox.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
-            this.MagicWandCheckBox.Name = "MagicWandCheckBox";
-            this.MagicWandCheckBox.Size = new System.Drawing.Size(78, 23);
-            this.MagicWandCheckBox.TabIndex = 1;
-            this.MagicWandCheckBox.Text = "Magic Wand";
-            this.MagicWandCheckBox.UseVisualStyleBackColor = true;
-            this.MagicWandCheckBox.CheckedChanged += new System.EventHandler(this.MagicWandCheckBox_CheckedChanged);
-            // 
             // SnapToGridCheckBox
             // 
             this.SnapToGridCheckBox.AutoSize = true;
-            this.SnapToGridCheckBox.Location = new System.Drawing.Point(174, 4);
+            this.SnapToGridCheckBox.Location = new System.Drawing.Point(419, 4);
             this.SnapToGridCheckBox.Name = "SnapToGridCheckBox";
             this.SnapToGridCheckBox.Size = new System.Drawing.Size(85, 17);
             this.SnapToGridCheckBox.TabIndex = 2;
@@ -73,7 +59,7 @@
             // GridSizeTextBox
             // 
             this.GridSizeTextBox.Enabled = false;
-            this.GridSizeTextBox.Location = new System.Drawing.Point(257, 2);
+            this.GridSizeTextBox.Location = new System.Drawing.Point(502, 2);
             this.GridSizeTextBox.Name = "GridSizeTextBox";
             this.GridSizeTextBox.Size = new System.Drawing.Size(43, 20);
             this.GridSizeTextBox.TabIndex = 3;
@@ -82,7 +68,7 @@
             // ShowFullAlphaCheckBox
             // 
             this.ShowFullAlphaCheckBox.AutoSize = true;
-            this.ShowFullAlphaCheckBox.Location = new System.Drawing.Point(320, 4);
+            this.ShowFullAlphaCheckBox.Location = new System.Drawing.Point(565, 4);
             this.ShowFullAlphaCheckBox.Name = "ShowFullAlphaCheckBox";
             this.ShowFullAlphaCheckBox.Size = new System.Drawing.Size(102, 17);
             this.ShowFullAlphaCheckBox.TabIndex = 4;
@@ -92,9 +78,10 @@
             // 
             // elementHost1
             // 
-            this.elementHost1.Location = new System.Drawing.Point(436, 0);
+            this.elementHost1.ForeColor = System.Drawing.SystemColors.Control;
+            this.elementHost1.Location = new System.Drawing.Point(79, 0);
             this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(200, 23);
+            this.elementHost1.Size = new System.Drawing.Size(334, 23);
             this.elementHost1.TabIndex = 5;
             this.elementHost1.Text = "elementHost1";
             this.elementHost1.Child = this.wireframeEditControlsWpf1;
@@ -107,10 +94,9 @@
             this.Controls.Add(this.ShowFullAlphaCheckBox);
             this.Controls.Add(this.GridSizeTextBox);
             this.Controls.Add(this.SnapToGridCheckBox);
-            this.Controls.Add(this.MagicWandCheckBox);
             this.Controls.Add(this.ComboBox);
             this.Name = "WireframeEditControls";
-            this.Size = new System.Drawing.Size(636, 23);
+            this.Size = new System.Drawing.Size(710, 23);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -119,7 +105,6 @@
         #endregion
 
         private System.Windows.Forms.ComboBox ComboBox;
-        private System.Windows.Forms.CheckBox MagicWandCheckBox;
         private System.Windows.Forms.CheckBox SnapToGridCheckBox;
         private System.Windows.Forms.TextBox GridSizeTextBox;
         private System.Windows.Forms.CheckBox ShowFullAlphaCheckBox;

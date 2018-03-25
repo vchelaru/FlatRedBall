@@ -78,7 +78,12 @@ namespace AnimationEditorPlugin
             // - Editor remembers coordinate mode per .achx
             // 2.2.5
             // - Derived entities entity will now show the texture in the texture selection window when a Sprite uses the file from the base
-            get { return new Version(2, 2, 5); }
+            // 3.0 
+            // - Added texture selection combo box which populates with textures in animation frame, file, and Gum context
+            // - Added preview of magic wand 
+            // - Added CTRL+click showing the + icon next to the cursor
+            // - Magic wand is now a checkbox instead of a toggle button - reads better
+            get { return new Version(3, 0, 0); }
         }
 
         public bool IsSelectedItemSprite
@@ -280,25 +285,18 @@ namespace AnimationEditorPlugin
 
 
                     mAchxControl.AnimationChainChange += new EventHandler(HandleAnimationChainChange);
+                    mAchxControl.AnimationChainSelected += HandleAnimationChainInFileSelected;
                     mAchxControl.Dock = DockStyle.Fill;
                 }
-
-                // add any files here from
-                // the entity or global content
-                // if they're not already added.
-                var viewModel =
-                    mAchxControl.WireframeEditControlsViewModel;
-
-                // get any file from the current element as well as global content, and add them here if not already...
 
 
                 mTab.Text = "  Animation"; // add spaces to make room for the X to close the plugin
 
-                if(!mTab.Controls.Contains(mAchxControl))
+                if (!mTab.Controls.Contains(mAchxControl))
                 {
                     mTab.Controls.Add(mAchxControl);
                 }
-                if(mTab.Controls.Contains(mTextureCoordinateControl))
+                if (mTab.Controls.Contains(mTextureCoordinateControl))
                 {
                     mTab.Controls.Remove(mTextureCoordinateControl);
                 }
@@ -315,6 +313,34 @@ namespace AnimationEditorPlugin
             {
                 mContainer.Controls.Remove(mTab);
             }
+        }
+
+        private void AddAdditionalTextureFilesToDropDown()
+        {
+            var currentElement = GlueState.CurrentElement;
+
+            // add any files here from
+            // the entity or global content
+            // if they're not already added.
+            var viewModel =
+                mAchxControl.WireframeEditControlsViewModel;
+
+            var pngFiles = GlueState.CurrentElement.ReferencedFiles.Concat(GlueState.CurrentGlueProject.GlobalFiles)
+                .Select(item => new ToolsUtilities.FilePath(GlueCommands.GetAbsoluteFileName(item)))
+                .Where(item => item.Extension == "png")
+                .Distinct()
+                .Except(viewModel.AvailableTextures);
+
+            foreach(var file in pngFiles)
+            {
+                viewModel.AvailableTextures.Add(file);
+            }
+
+            if(viewModel.SelectedTextureFilePath == null && viewModel.AvailableTextures.Any())
+            {
+                viewModel.SelectedTextureFilePath = viewModel.AvailableTextures.First();
+            }
+            
         }
 
         private void HandleForceSaveAll(object sender, EventArgs e)
@@ -364,6 +390,11 @@ namespace AnimationEditorPlugin
         {
             mReloadsToIgnore++;
             mAchxControl.SaveCurrentAnimationChain();
+        }
+
+        void HandleAnimationChainInFileSelected(object sender, EventArgs e)
+        {
+            AddAdditionalTextureFilesToDropDown();
         }
 
         void OnClosedByUser(object sender)

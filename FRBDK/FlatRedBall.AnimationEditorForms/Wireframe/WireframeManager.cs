@@ -29,6 +29,8 @@ namespace FlatRedBall.AnimationEditorForms
     {
         #region Fields
 
+        System.Windows.Forms.Cursor addCursor;
+
         static WireframeManager mSelf;
 
         ImageRegionSelectionControl mControl;
@@ -36,10 +38,13 @@ namespace FlatRedBall.AnimationEditorForms
         SystemManagers mManagers;
 
         LineRectangle mSpriteOutline;
+        LineRectangle mMagicWandPreviewRectangle;
+
         LineGrid mLineGrid;
         WireframeEditControls mWireframeControl;
 
         public Color OutlineColor = new Microsoft.Xna.Framework.Color(1, 1, 1, .3f);
+        public Color MagicWandPreviewColor = new Color(1, 1, 0, .4f);
 
         StatusTextController mStatusText;
 
@@ -152,7 +157,8 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void TryHandleMagicWandClicking()
         {
-            if (mWireframeControl.IsMagicWandSelected &&
+            
+            if (WireframeEditControlsViewModel.IsMagicWandSelected &&
                 mControl.CurrentTexture != null)
             {
                 float worldX = mControl.XnaCursor.GetWorldX(mManagers);
@@ -252,8 +258,8 @@ namespace FlatRedBall.AnimationEditorForms
 
                 // We add 1 because if the min and max X are equal, that means we'd
                 // have a 1x1 pixel area, and the rectangle's width would need to be 1.
-                mControl.RectangleSelector.Width = maxX - minX + 1;
-                mControl.RectangleSelector.Height = maxY - minY + 1;
+                mControl.RectangleSelector.Width = maxX - minX;
+                mControl.RectangleSelector.Height = maxY - minY;
 
                 HandleRegionChanged(null, null);
             }
@@ -295,6 +301,8 @@ namespace FlatRedBall.AnimationEditorForms
         public void Initialize(ImageRegionSelectionControl control, SystemManagers managers, 
             WireframeEditControls wireframeControl, WireframeEditControlsViewModel wireframeEditControlsViewModel)
         {
+            addCursor = new System.Windows.Forms.Cursor(this.GetType(), "Content.AddCursor.cur");
+
             mManagers = managers;
             mManagers.Renderer.SamplerState = SamplerState.PointClamp;
 
@@ -306,7 +314,6 @@ namespace FlatRedBall.AnimationEditorForms
             mManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
 
             mWireframeControl = wireframeControl;
-            mWireframeControl.WandSelectionChanged += ReactToMagicWandChange;
 
             mControl.RegionChanged += new EventHandler(HandleRegionChanged);
 
@@ -320,6 +327,13 @@ namespace FlatRedBall.AnimationEditorForms
             managers.ShapeManager.Add(mSpriteOutline);
             mSpriteOutline.Visible = false;
             mSpriteOutline.Color = OutlineColor;
+
+            mMagicWandPreviewRectangle = new LineRectangle(managers);
+            managers.ShapeManager.Add(mMagicWandPreviewRectangle);
+            mMagicWandPreviewRectangle.Visible = false;
+            mMagicWandPreviewRectangle.Color = MagicWandPreviewColor;
+            // Move them up one Z to put them above the sprites:
+            mMagicWandPreviewRectangle.Z = 1;
 
             mLineGrid = new LineGrid(managers);
             managers.ShapeManager.Add(mLineGrid);
@@ -344,6 +358,9 @@ namespace FlatRedBall.AnimationEditorForms
                     UpdateToSelectedAnimationTextureFile(WireframeEditControlsViewModel.SelectedTextureFilePath);
 
                     break;
+                case nameof(WireframeEditControlsViewModel.IsMagicWandSelected):
+                    ReactToMagicWandChange(this, null);
+                    break;
             }
         }
 
@@ -355,6 +372,11 @@ namespace FlatRedBall.AnimationEditorForms
         void ReactToMagicWandChange(object sender, EventArgs e)
         {
             RefreshAll();
+
+            if(WireframeEditControlsViewModel.IsMagicWandSelected)
+            {
+                mControl.Focus();
+            }
         }
 
         void mControl_XnaInitialize()
@@ -372,11 +394,97 @@ namespace FlatRedBall.AnimationEditorForms
                 MoveOriginToTopLeft(mManagers.Renderer.Camera);
             }
 
+            PerformMagicWandPreviewLogic();
+
             if (mControl.XnaCursor.IsInWindow)
             {
+                PerformCursorUpdateLogic();
+
+
                 StatusBarManager.Self.SetCursorPosition(
                     mControl.XnaCursor.GetWorldX(mManagers),
                     mControl.XnaCursor.GetWorldY(mManagers));
+            }
+        }
+
+        double lastUpdate;
+
+        private void PerformMagicWandPreviewLogic()
+        {
+            if(WireframeEditControlsViewModel.IsMagicWandSelected && mControl.XnaCursor.IsInWindow)
+            {
+                var timeSinceLastUpdate = TimeManager.Self.CurrentTime - lastUpdate;
+                const double UpateFrequency = 1;
+
+                float worldX = mControl.XnaCursor.GetWorldX(mManagers);
+                float worldY = mControl.XnaCursor.GetWorldY(mManagers);
+
+                var isOutsideOfPreview = mMagicWandPreviewRectangle.Visible == false ||
+                    worldX < mMagicWandPreviewRectangle.GetAbsoluteLeft() ||
+                    worldX > mMagicWandPreviewRectangle.GetAbsoluteRight() ||
+                    worldY < mMagicWandPreviewRectangle.GetAbsoluteTop() ||
+                    worldY > mMagicWandPreviewRectangle.GetAbsoluteBottom();
+
+                if(timeSinceLastUpdate > UpateFrequency || isOutsideOfPreview)
+                {
+
+                    int pixelX = (int)worldX;
+                    int pixelY = (int)worldY;
+
+                    int minX, minY, maxX, maxY;
+
+                    this.mInspectableTexture.GetOpaqueWandBounds(pixelX, pixelY, out minX, out minY, out maxX, out maxY);
+
+                    if(minX != maxX && minY != maxY)
+                    {
+                        lastUpdate = TimeManager.Self.CurrentTime;
+                    }
+
+                    mMagicWandPreviewRectangle.Visible = true;
+                    mMagicWandPreviewRectangle.X = minX;
+                    mMagicWandPreviewRectangle.Y = minY;
+                    mMagicWandPreviewRectangle.Width = maxX - minX;
+                    mMagicWandPreviewRectangle.Height = maxY - minY;
+
+                }
+            }
+            else
+            {
+                mMagicWandPreviewRectangle.Visible = false;
+            }
+        }
+
+        private void PerformCursorUpdateLogic()
+        {
+            System.Windows.Forms.Cursor cursorToAssign = Cursors.Arrow;
+
+            bool isCtrlDown =
+                keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl) ||
+                keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.RightControl); ;
+
+            if (isCtrlDown && WireframeEditControlsViewModel.IsMagicWandSelected)
+            {
+                cursorToAssign = addCursor;
+            }
+            else
+            {
+                foreach (var selector in mControl.RectangleSelectors)
+                {
+                    var cursorFromRect = selector.GetCursorToSet(mControl.XnaCursor);
+
+                    if (cursorFromRect != null)
+                    {
+                        cursorToAssign = cursorFromRect;
+                        break;
+                    }
+                }
+            }
+
+
+            if (System.Windows.Forms.Cursor.Current != cursorToAssign)
+            {
+                System.Windows.Forms.Cursor.Current = cursorToAssign;
+                mControl.Cursor = cursorToAssign;
             }
         }
 
@@ -420,7 +528,7 @@ namespace FlatRedBall.AnimationEditorForms
                             frameForRegion.BottomCoordinate += changedBottom / (float)texture.Height;
                         }
 
-                        UpdateSelectorsToAnimation(skipPushed:true, texture:texture);
+                        UpdateSelectorsToAnimation(skipUpdatingRectangleSelector:true, texture:texture);
                         PreviewManager.Self.ReactToAnimationChainSelected();
                     }
                 }
@@ -428,7 +536,7 @@ namespace FlatRedBall.AnimationEditorForms
             // This is causing spamming of the save - we only want to do this on a mouse click
             //if (AnimationChainChange != null)
             //{
-            //    AnimationChainChange(this, null);
+            //    AnimationChainChange(this, null); b
             //}
             if (AnimationFrameChange != null)
             {
@@ -451,20 +559,9 @@ namespace FlatRedBall.AnimationEditorForms
                 UpdateHandlesAndMoveCursor();
             }
 
-            else if (SelectedState.Self.SelectedChain != null && SelectedState.Self.SelectedChain.Frames.Count != 0) 
-            {
-                UpdateToSelectedAnimation();
-            }
             else
             {
-                if (mControl.RectangleSelector != null)
-                {
-                    mControl.RectangleSelector.Visible = false;
-                }
-                Texture = null;
-                mSpriteOutline.Visible = false;
-                mLineGrid.Visible = false;
-
+                UpdateToSelectedAnimation();
             }
             mStatusText.UpdateText();
         }
@@ -505,7 +602,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void UpdateHandlesAndMoveCursor()
         {
-            if (PropertyGridManager.Self.UnitType == UnitType.SpriteSheet || mWireframeControl.IsMagicWandSelected)
+            if (PropertyGridManager.Self.UnitType == UnitType.SpriteSheet || WireframeEditControlsViewModel.IsMagicWandSelected)
             {
                 this.mControl.RectangleSelector.ShowHandles = false;
                 this.mControl.RectangleSelector.ShowMoveCursorWhenOver = false;
@@ -526,7 +623,7 @@ namespace FlatRedBall.AnimationEditorForms
                 mControl.RectangleSelector.Visible = false;
             }
 
-            var selectedFilePath = WireframeEditControlsViewModel.SelectedTextureFilePath;
+            var selectedFilePath = WireframeEditControlsViewModel?.SelectedTextureFilePath;
 
             UpdateToSelectedAnimationTextureFile(selectedFilePath, skipPushed);
 
@@ -541,14 +638,21 @@ namespace FlatRedBall.AnimationEditorForms
                 Texture2D texture = GetTextureFromFile(fileName);
                 Texture = texture;
 
-                ShowSpriteOutlineForTexture(texture);
-                UpdateLineGridToTexture(texture);
+                ShowSpriteOutlineForTexture(Texture);
+                UpdateLineGridToTexture(Texture);
 
-                string folder = FileManager.GetDirectory(SelectedState.Self.AnimationChainListSave.FileName);
+                string folder = null;
+                bool doAnyFramesUseThisTexture = false;
+
+                if (SelectedState.Self.AnimationChainListSave != null && SelectedState.Self.SelectedChain != null) 
+                {
+                    folder = FileManager.GetDirectory(SelectedState.Self.AnimationChainListSave.FileName);
+
+                    doAnyFramesUseThisTexture =
+                        SelectedState.Self.SelectedChain.Frames.Any(item => new ToolsUtilities.FilePath(folder + item.TextureName) == selectedFilePath);
+                }
 
 
-                var doAnyFramesUseThisTexture =
-                    SelectedState.Self.SelectedChain.Frames.Any(item => new ToolsUtilities.FilePath(folder + item.TextureName) == selectedFilePath);
 
                 if (doAnyFramesUseThisTexture)
                 {
@@ -560,6 +664,13 @@ namespace FlatRedBall.AnimationEditorForms
                     mControl.DesiredSelectorCount = 0;
                 }
             }
+            else
+            {
+                Texture = null;
+
+                ShowSpriteOutlineForTexture(Texture);
+                UpdateLineGridToTexture(Texture);
+            }
 
             // Do we need to check if it's changed?
             //if (Texture != textureBefore)
@@ -570,29 +681,34 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void PopulateViewModelTextures()
         {
-            string folder = FileManager.GetDirectory(SelectedState.Self.AnimationChainListSave.FileName);
-            var filePaths = SelectedState.Self.SelectedChain?.Frames
-                .Select(item => new ToolsUtilities.FilePath( folder +  item.TextureName))
-                .Distinct()
-                .ToList();
+            // It may not have yet been initialized...
+            WireframeEditControlsViewModel?.AvailableTextures.Clear();
 
-            WireframeEditControlsViewModel.AvailableTextures.Clear();
 
-            foreach(var filePath in filePaths)
+            if(SelectedState.Self.AnimationChainListSave != null)
             {
-                WireframeEditControlsViewModel.AvailableTextures.Add(filePath);
+                string folder = FileManager.GetDirectory(SelectedState.Self.AnimationChainListSave.FileName);
+                var animationsSelectedFirst = SelectedState.Self.AnimationChainListSave.AnimationChains
+                    .OrderBy(item => item != SelectedState.Self.SelectedChain);
+
+                var frames = animationsSelectedFirst.SelectMany(item => item.Frames);
+
+                var filePaths = frames
+                    .Select(item => new ToolsUtilities.FilePath(folder + item.TextureName))
+                    .Distinct()
+                    .ToList();
+
+                foreach(var filePath in filePaths)
+                {
+                    WireframeEditControlsViewModel.AvailableTextures.Add(filePath);
+                }
+
+                WireframeEditControlsViewModel.SelectedTextureFilePath = filePaths.FirstOrDefault();
             }
-
-            WireframeEditControlsViewModel.SelectedTextureFilePath = filePaths.FirstOrDefault();
-
-
-
         }
 
-        private void UpdateSelectorsToAnimation(bool skipPushed, Texture2D texture)
+        private void UpdateSelectorsToAnimation(bool skipUpdatingRectangleSelector, Texture2D texture)
         {
-            // Everything here is 
-
             string folder = FileManager.GetDirectory(SelectedState.Self.AnimationChainListSave.FileName);
             var textureFilePath = new ToolsUtilities.FilePath(texture.Name);
 
@@ -602,12 +718,18 @@ namespace FlatRedBall.AnimationEditorForms
 
             mControl.DesiredSelectorCount = framesOnThisTexture.Count;
 
+            foreach(var selector in mControl.RectangleSelectors)
+            {
+                // We'll do it ourselves, to consider hotkeys
+                selector.AutoSetsCursor = false;
+            }
+
             for (int i = 0; i < framesOnThisTexture.Count; i++)
             {
                 var frame = framesOnThisTexture[i];
 
                 var rectangleSelector = mControl.RectangleSelectors[i];
-                if (skipPushed == false || rectangleSelector != mPushedRegion)
+                if (skipUpdatingRectangleSelector == false || rectangleSelector != mPushedRegion)
                 {
                     bool hasAlreadyBeenInitialized = rectangleSelector.Tag != null;
                     UpdateRectangleSelectorToFrame(frame, texture, mControl.RectangleSelectors[i]);
@@ -643,19 +765,25 @@ namespace FlatRedBall.AnimationEditorForms
             Texture = texture;
 
 
-            mControl.DesiredSelectorCount = 1;
             if (texture != null)
             {
-                var rectangleSelector = mControl.RectangleSelector;
                 
                 mControl.DesiredSelectorCount = 1;
+                foreach (var selector in mControl.RectangleSelectors)
+                {
+                    // We'll do it ourselves, to consider hotkeys
+                    selector.AutoSetsCursor = false;
+                }
 
+                var rectangleSelector = mControl.RectangleSelector;
                 UpdateRectangleSelectorToFrame(frame, texture, rectangleSelector);
 
                 ShowSpriteOutlineForTexture(texture);
             }
             else
             {
+
+                mControl.DesiredSelectorCount = 0;
                 mControl.RectangleSelector.Visible = false;
 
             }

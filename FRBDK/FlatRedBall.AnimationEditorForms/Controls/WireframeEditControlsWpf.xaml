@@ -5,9 +5,22 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FlatRedBall.AnimationEditorForms.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="40" Width="300" Background="#FFEBEBEB">
     <StackPanel Orientation="Horizontal">
-        <ComboBox SelectedItem="{Binding SelectedTextureFilePath}" ItemsSource="{Binding AvailableTextures}">
+        <CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IsMagicWandSelected}">
+            <Image Source="/FlatRedBall.AnimationEditorForms;component/Content/MagicWand.png"></Image>
+        </CheckBox>
+        <ComboBox Margin="30,0,0,0" SelectedItem="{Binding SelectedTextureFilePath}" 
+                  Width="250" ItemsSource="{Binding AvailableTextures}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontWeight="Bold" Text="{Binding FileNameNoPath}"></TextBlock>
+                        <TextBlock Margin="10,0,0,0" Text="{Binding FullPath}"></TextBlock>
+
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
         </ComboBox>
     </StackPanel>
 </UserControl>

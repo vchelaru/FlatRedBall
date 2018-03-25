@@ -43,12 +43,15 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
 
     #endregion
 
+    
     public class RectangleSelector
     {
         #region Fields
 
         float xBeforeSnapping;
         float yBeforeSnapping;
+
+        SystemManagers managers;
 
         List<LineCircle> mHandles;
 
@@ -236,11 +239,24 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
             set;
         }
 
+        /// <summary>
+        /// If true, the Windows cursor will get set back to an arrow if not over this rectangle selector
+        /// </summary>
         public bool ResetsCursorIfNotOver
         {
             get;
             set;
         }
+
+        /// <summary>
+        /// Whether the rectangle selector should automatically assign the Windows cursor in its activity.
+        /// Simple projectxs should set true for this, but more complex projects may want to set this to false
+        /// to handle cursor setting themselves (such as to handle modifiers for adiditonal cursor assignment).
+        /// </summary>
+        public bool AutoSetsCursor
+        {
+            get; set;
+        } = true;
 
         public object Tag
         {
@@ -270,6 +286,7 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
 
         public RectangleSelector(SystemManagers managers)
         {
+            this.managers = managers;
             HandleSize = 4;
             ResetsCursorIfNotOver = true;
             mShowHandles = true;
@@ -287,7 +304,7 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
             Height = 34;
         }
 
-        public bool HasCursorOver(Cursor cursor, SystemManagers managers)
+        public bool HasCursorOver(Cursor cursor)
         {
             float worldX = cursor.GetWorldX(managers);
             float worldY = cursor.GetWorldY(managers);
@@ -310,8 +327,10 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
             return false;
         }
 
+        // Vic asks - why does this take a managers argument when we also take one in the constructor?
         public void AddToManagers(SystemManagers managers)
         {
+            this.managers = managers;
             mLineRectangle.Z = 1;
             managers.ShapeManager.Add(mLineRectangle);
 
@@ -322,7 +341,7 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
             }
         }
 
-        public void RemoveFromManagers(SystemManagers managers)
+        public void RemoveFromManagers()
         {
             mLineRectangle.Z = 1;
             managers.ShapeManager.Remove(mLineRectangle);
@@ -360,15 +379,28 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
             mHandles[7].Y = CenterY;
         }
 
-        public void Activity(Cursor cursor, Keyboard keyboard, System.Windows.Forms.Control container, SystemManagers managers)
+        public void Activity(Cursor cursor, Keyboard keyboard, System.Windows.Forms.Control container)
         {
-            MouseAndCursorActivity(cursor, container, managers);
+            if(AutoSetsCursor)
+            {
+                WinCursor cursorToSet = GetCursorToSet(cursor);
+
+                if (WinCursor.Current != cursorToSet && cursorToSet != null)
+                {
+                    WinCursor.Current = cursorToSet;
+                    container.Cursor = cursorToSet;
+                }
+            }
+
+
+
+            MouseActivity(cursor, container);
             
             KeyboardActivity(keyboard);
 
             // Resize even if the cursor isn't in the window - because these may have been made visible by clicking on some winforms UI and we want
             // the size to be properly set
-            ResizeCircleActivity(managers);
+            ResizeCircleActivity();
 
         }
 
@@ -441,36 +473,20 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
             OldBottom = Bottom;
         }
 
-        private void MouseAndCursorActivity(Cursor cursor, System.Windows.Forms.Control container, SystemManagers managers)
+        private void MouseActivity(Cursor cursor, System.Windows.Forms.Control container)
         {
+
             if (mVisible && cursor.IsInWindow)
             {
-                float worldX = cursor.GetWorldX(managers);
-                float worldY = cursor.GetWorldY(managers);
+                PushActivity(cursor);
 
-                var sideOver = GetSideOver(
-                    worldX,
-                    worldY);
-
-                SetWindowsCursor(container, mSideGrabbed, sideOver, ResetsCursorIfNotOver, Width < 0, Height < 0);
-
-                PushActivity(sideOver, cursor);
-
-                DragActivity(cursor, managers);
+                DragActivity(cursor);
 
                 ClickActivity(cursor);
             }
-            else
-            {
-                //WinCursor.Current = Cursors.Arrow;
-                if (ResetsCursorIfNotOver)
-                {
-                    container.Cursor = Cursors.Arrow;
-                }
-            }
         }
 
-        private void ResizeCircleActivity(SystemManagers managers)
+        private void ResizeCircleActivity()
         {
             if (Visible && ShowHandles)
             {
@@ -525,7 +541,7 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
             }
         }
 
-        private void DragActivity(Cursor cursor, SystemManagers managers)
+        private void DragActivity(Cursor cursor)
         {
             if (cursor.PrimaryDown && 
                 (cursor.XChange != 0 || cursor.YChange != 0) &&
@@ -609,10 +625,18 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
             }
         }
 
-        private void PushActivity(ResizeSide sideOver, Cursor cursor)
+        private void PushActivity(Cursor cursor)
         {
             if (cursor.PrimaryPush)
             {
+                float worldX = cursor.GetWorldX(managers);
+                float worldY = cursor.GetWorldY(managers);
+
+                var sideOver = GetSideOver(
+                    worldX,
+                    worldY);
+
+
                 mSideGrabbed = sideOver;
 
                 if (mSideGrabbed != ResizeSide.None && this.Pushed != null)
@@ -622,79 +646,101 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
             }
         }
 
-        private void SetWindowsCursor(System.Windows.Forms.Control container, 
-            ResizeSide sideGrabbed, ResizeSide sideOver, bool resetToArrow, bool flipHorizontal, bool flipVertical)
+
+        /// <summary>
+        /// Returns the cursor to set, considering the width and height of the RectangleSelector, the positiion
+        /// of the cursor relative to parts of the relative selector, and whether the relative selector should
+        /// reset the cursor to the arrow if not over.
+        /// </summary>
+        /// <param name="sideGrabbed">The side that the user has grabbed for resizing.</param>
+        /// <param name="cursor">The InputLibrary.Cursor.</param>
+        /// <returns>The windows Cursor to set. If null, then this does not reset the cursor.</returns>
+        public WinCursor GetCursorToSet(Cursor cursor)
         {
-            System.Windows.Forms.Cursor cursorToSet = Cursors.Arrow;
 
-            var sideToUse = sideOver;
-            if (sideGrabbed != ResizeSide.None)
+            System.Windows.Forms.Cursor cursorToSet = null;
+
+            if (mVisible && cursor.IsInWindow)
             {
-                sideToUse = sideGrabbed;
-            }
 
-            bool flipCorners = (flipHorizontal && !flipVertical) ||
-                (!flipHorizontal && flipVertical);
+                float worldX = cursor.GetWorldX(managers);
+                float worldY = cursor.GetWorldY(managers);
+
+                var sideOver = GetSideOver(
+                    worldX,
+                    worldY);
 
 
-
-            if (sideToUse != ResizeSide.None)
-            {
-                switch (sideToUse)
+                var sideToUse = sideOver;
+                if (mSideGrabbed != ResizeSide.None)
                 {
-                    case ResizeSide.TopLeft:
-                    case ResizeSide.BottomRight:
+                    sideToUse = mSideGrabbed;
+                }
 
-                        if(flipCorners)
-                        {
-                            cursorToSet = Cursors.SizeNESW;
-                        }
-                        else
-                        {
-                            cursorToSet = Cursors.SizeNWSE;
-                        }
-                        break;
-                    case ResizeSide.TopRight:
-                    case ResizeSide.BottomLeft:
-                        if(flipCorners)
-                        {
-                            cursorToSet = Cursors.SizeNWSE;
-                        }
-                        else
-                        {
-                            cursorToSet = Cursors.SizeNESW;
-                        }
-                        break;
-                    case ResizeSide.Top:
-                    case ResizeSide.Bottom:
-                        cursorToSet = Cursors.SizeNS;
-                        break;
-                    case ResizeSide.Left:
-                    case ResizeSide.Right:
-                        cursorToSet = Cursors.SizeWE;
-                        break;
-                    case ResizeSide.Middle:
-                        if(ShowMoveCursorWhenOver)
-                        {
-                            cursorToSet = Cursors.SizeAll;
-                        }
-                        break;
-                    case ResizeSide.None:
+                var flipHorizontal = Width < 0;
+                var flipVertical = Height < 0;
 
-                        break;
+                bool flipCorners = (flipHorizontal && !flipVertical) ||
+                    (!flipHorizontal && flipVertical);
+
+
+
+                if (sideToUse != ResizeSide.None)
+                {
+                    switch (sideToUse)
+                    {
+                        case ResizeSide.TopLeft:
+                        case ResizeSide.BottomRight:
+
+                            if (flipCorners)
+                            {
+                                cursorToSet = Cursors.SizeNESW;
+                            }
+                            else
+                            {
+                                cursorToSet = Cursors.SizeNWSE;
+                            }
+                            break;
+                        case ResizeSide.TopRight:
+                        case ResizeSide.BottomLeft:
+                            if (flipCorners)
+                            {
+                                cursorToSet = Cursors.SizeNWSE;
+                            }
+                            else
+                            {
+                                cursorToSet = Cursors.SizeNESW;
+                            }
+                            break;
+                        case ResizeSide.Top:
+                        case ResizeSide.Bottom:
+                            cursorToSet = Cursors.SizeNS;
+                            break;
+                        case ResizeSide.Left:
+                        case ResizeSide.Right:
+                            cursorToSet = Cursors.SizeWE;
+                            break;
+                        case ResizeSide.Middle:
+                            if (ShowMoveCursorWhenOver)
+                            {
+                                cursorToSet = Cursors.SizeAll;
+                            }
+                            break;
+                        case ResizeSide.None:
+
+                            break;
+                    }
+
                 }
 
             }
-            if (WinCursor.Current != cursorToSet)
+            else if (ResetsCursorIfNotOver)
             {
-                if (cursorToSet != Cursors.Arrow || resetToArrow)
-                {
-                    WinCursor.Current = cursorToSet;
-                    container.Cursor = cursorToSet;
-                }
+                cursorToSet = Cursors.Arrow;
             }
+
+            return cursorToSet;
         }
-
 
         public ResizeSide GetSideOver(float x, float y)
         {

@@ -45,6 +45,7 @@ namespace FlatRedBall.AnimationEditorForms
 
 
         public event EventHandler AnimationChainsChange;
+        public event EventHandler AnimationChainSelected;
 
         #endregion
 
@@ -161,8 +162,6 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
-        
-
         private void WithoutEnvokeRefreshTreeNode(TreeNode treeNode, AnimationChainSave animationChain)
         {
             treeNode.Nodes.Clear();
@@ -213,6 +212,7 @@ namespace FlatRedBall.AnimationEditorForms
                 // handle new chain selected here
                 WireframeManager.Self.HandleAnimationChainChanged();
                 PreviewManager.Self.ReactToAnimationChainSelected();
+                AnimationChainSelected?.Invoke(this, null);
             }
             if (lastFrame != SelectedState.Self.SelectedFrame)
             {

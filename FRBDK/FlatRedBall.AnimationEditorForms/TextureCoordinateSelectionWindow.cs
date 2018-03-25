@@ -21,7 +21,11 @@ namespace FlatRedBall.AnimationEditorForms
         // we do it here in code.
         private SpecializedXnaControls.ImageRegionSelectionControl imageRegionSelectionControl1;
 
-        InspectableTexture inspectableTexture = new InspectableTexture();
+        public InspectableTexture InspectableTexture
+        {
+            get;
+            private set;
+        } = new InspectableTexture();
 
         public new event Action RegionChanged;
         public event Action EndRegionChanged;
@@ -94,7 +98,8 @@ namespace FlatRedBall.AnimationEditorForms
                 var cursor = imageRegionSelectionControl1.XnaCursor;
 
                 bool shouldApplyMagicWandClick =
-                    this.wireframeEditControls1.IsMagicWandSelected && 
+                    
+                    this.wireframeEditControls1.DataContext.IsMagicWandSelected && 
                     cursor.IsInWindow && 
                     imageRegionSelectionControl1.CurrentTexture != null;
 
@@ -118,16 +123,12 @@ namespace FlatRedBall.AnimationEditorForms
             float worldY;
             camera.ScreenToWorld(cursor.X, cursor.Y, out worldX, out worldY); ;
 
-            inspectableTexture.GetOpaqueWandBounds((int)worldX, (int)worldY, out minX, out minY, out maxX, out maxY);
+            InspectableTexture.GetOpaqueWandBounds((int)worldX, (int)worldY, out minX, out minY, out maxX, out maxY);
 
             bool hasValidSelection = minX > 0 && maxX > 0;
 
             if (hasValidSelection)
             {
-                // increase by 1 to capture the extra pixels:
-                maxX += 1;
-                maxY += 1;
-
                 var texture = imageRegionSelectionControl1.CurrentTexture;
                 SetSelectionTextureCoordinates(minY, maxY , minX , maxX );
 
@@ -175,7 +176,7 @@ namespace FlatRedBall.AnimationEditorForms
                 }
 
                 imageRegionSelectionControl1.CurrentTexture = texture;
-                inspectableTexture.Texture = texture;
+                InspectableTexture.Texture = texture;
 
             }
             SetSelectionTextureCoordinates(topTexture, bottomTexture, leftTexture, rightTexture);

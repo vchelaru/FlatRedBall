@@ -49,8 +49,10 @@ namespace FlatRedBall.AnimationEditorForms.Wireframe
             }
             else if (SelectedState.Self.SelectedChain.Frames.Count == 0)
             {
-                mText.Visible = true;
-                mText.RawText = "This animation contains no frames.  Add a frame to view it.";
+                // March 2018
+                // We now show textures which may overlap this text, so don't show this text
+                mText.Visible = false;
+                //mText.RawText = "This animation contains no frames.  Add a frame to view it.";
             }
             else if (SelectedState.Self.SelectedFrame != null &&
                 string.IsNullOrEmpty(SelectedState.Self.SelectedFrame.TextureName))

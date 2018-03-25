@@ -149,6 +149,9 @@
     <Compile Include="Controls\AnimationChainTimeScaleWindow.Designer.cs">
       <DependentUpon>AnimationChainTimeScaleWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\AnimationsListToolBar.xaml.cs">
+      <DependentUpon>AnimationsListToolBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\CustomNodeColorTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -291,14 +294,22 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Content\BluePlus.png" />
+    <EmbeddedResource Include="Content\AddCursor.cur" />
+    <Resource Include="Content\MagicWand.png" />
     <Content Include="Libraries\Jillzhang.GifUtility.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\AnimationsListToolBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\WireframeEditControlsWpf.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

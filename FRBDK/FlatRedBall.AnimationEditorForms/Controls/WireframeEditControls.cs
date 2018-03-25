@@ -83,18 +83,6 @@ namespace FlatRedBall.AnimationEditorForms.Controls
             }
         }
 
-        public bool IsMagicWandSelected
-        {
-            get
-            {
-                return MagicWandCheckBox.Checked;
-            }
-            set
-            {
-                MagicWandCheckBox.Checked = value;
-            }
-        }
-
         public WireframeEditControlsViewModel DataContext
         {
             get { return wireframeEditControlsWpf1.DataContext as WireframeEditControlsViewModel; }
@@ -106,7 +94,6 @@ namespace FlatRedBall.AnimationEditorForms.Controls
 
         #region Event
 
-        public event EventHandler WandSelectionChanged;
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
@@ -146,14 +133,6 @@ namespace FlatRedBall.AnimationEditorForms.Controls
             if (this.ZoomChanged != null)
             {
                 ZoomChanged(this, null);
-            }
-        }
-
-        private void MagicWandCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (WandSelectionChanged != null)
-            {
-                WandSelectionChanged(this, null);
             }
         }
 

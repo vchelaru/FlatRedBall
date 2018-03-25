@@ -124,6 +124,14 @@ namespace FlatRedBall.AnimationEditorForms.Textures
 
             }
 
+            if(maxX > minX && maxY > minY)
+            {
+                // We have to add 1 here to capture the last row/column. Before this was done by the caller,
+                // but that doesn't make sense, this method should just return everything ready-to-use.
+                maxX += 1;
+                maxY += 1;
+            }
+
         }
 
 

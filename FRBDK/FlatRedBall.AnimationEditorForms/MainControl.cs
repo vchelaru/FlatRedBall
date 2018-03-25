@@ -73,12 +73,16 @@ namespace FlatRedBall.AnimationEditorForms
 
         public event EventHandler AnimationChainChange;
 
+        public event EventHandler AnimationChainSelected;
+
         #endregion
 
         public MainControl()
         {
             mSelf = this;
             InitializeComponent();
+
+            this.animationsListToolBar1.AddAnimationClick += AddAnimationToolStripMenuItem_Click;
 
             CreateViewModel();
 
@@ -129,10 +133,12 @@ namespace FlatRedBall.AnimationEditorForms
 
             TreeViewManager.Self.Initialize(AnimationTreeView);
             TreeViewManager.Self.AnimationChainsChange += RaiseAnimationChainChanges;
+            TreeViewManager.Self.AnimationChainSelected += (not, used) => AnimationChainSelected?.Invoke(this, null);
 
             StatusBarManager.Self.Initialize(statusStrip1, CursorStatusLabel);
 
             WireframeManager.Self.AnimationFrameChange += HandleAnimationFrameChanges;
+
 
             PopulateUnitTypeComboBox();
 
@@ -258,6 +264,7 @@ namespace FlatRedBall.AnimationEditorForms
         {
             lock (RenderingLibrary.Graphics.Renderer.LockObject)
             {
+                WireframeEditControlsViewModel.SelectedTextureFilePath = null;
                 ProjectManager.Self.LoadAnimationChain(fileName);
 
                 TreeViewManager.Self.RefreshTreeView();
