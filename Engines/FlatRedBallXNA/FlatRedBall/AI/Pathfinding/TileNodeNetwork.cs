@@ -107,6 +107,17 @@ namespace FlatRedBall.AI.Pathfinding
 
         #region Public Methods
 
+        public override void Shift(Vector3 shiftVector)
+        {
+            mXSeed += shiftVector.X;
+            mYSeed += shiftVector.Y;
+            
+            for (int i = 0; i < this.Nodes.Count; i++)
+            {
+                this.Nodes[i].Position += shiftVector;
+            }
+        }
+
         public PositionedNode AddAndLinkTiledNodeWorld(float worldX, float worldY)
         {
             int x;

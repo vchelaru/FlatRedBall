@@ -838,7 +838,7 @@ namespace FlatRedBall.AI.Pathfinding
 
         }
 
-        public void Shift(Vector3 shiftVector)
+        public virtual void Shift(Vector3 shiftVector)
         {
             for (int i = 0; i < this.Nodes.Count; i++)
             {
