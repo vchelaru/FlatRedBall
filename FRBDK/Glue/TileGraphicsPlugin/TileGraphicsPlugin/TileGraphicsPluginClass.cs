@@ -100,7 +100,10 @@ namespace TileGraphicsPlugin
             // - Added TileShapeCollection CollideAgainst Polygon
             // 1.2.3
             // - Default properties from the TileSet now get assigned on created entities for object layers
-            get { return new Version(1, 2, 3, 0); }
+            // 1.2.3.1
+            // - Fixed polygon conversion not doing conversions using culture invariant values - fixes games running in Finnish
+            // - Fixed tile entity instantiation not doing float conversions using culture invariant values - also Finnish fix.
+            get { return new Version(1, 2, 3, 1); }
         }
 
 
