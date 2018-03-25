@@ -401,7 +401,11 @@ namespace FlatRedBall.AnimationEditorForms
                 {
                     ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(SelectedState.Self.SelectedChain);
 
+                    // refresh the tree view before refreshing the PreviewManager, since refreshing the tree view deselects the animation
                     TreeViewManager.Self.RefreshTreeView();
+
+                    PreviewManager.Self.RefreshAll();
+
 
                     CallAnimationChainsChange();
 

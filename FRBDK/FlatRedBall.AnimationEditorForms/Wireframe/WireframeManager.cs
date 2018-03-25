@@ -371,9 +371,12 @@ namespace FlatRedBall.AnimationEditorForms
 
         void ReactToMagicWandChange(object sender, EventArgs e)
         {
-            RefreshAll();
+            if (SelectedState.Self.SelectedFrame != null)
+            {
+                UpdateHandlesAndMoveCursor();
+            }
 
-            if(WireframeEditControlsViewModel.IsMagicWandSelected)
+            if (WireframeEditControlsViewModel.IsMagicWandSelected)
             {
                 mControl.Focus();
             }
@@ -411,7 +414,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void PerformMagicWandPreviewLogic()
         {
-            if(WireframeEditControlsViewModel.IsMagicWandSelected && mControl.XnaCursor.IsInWindow)
+            if(WireframeEditControlsViewModel.IsMagicWandSelected && mControl.XnaCursor.IsInWindow && mControl.CurrentTexture != null)
             {
                 var timeSinceLastUpdate = TimeManager.Self.CurrentTime - lastUpdate;
                 const double UpateFrequency = 1;
@@ -462,7 +465,8 @@ namespace FlatRedBall.AnimationEditorForms
                 keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl) ||
                 keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.RightControl); ;
 
-            if (isCtrlDown && WireframeEditControlsViewModel.IsMagicWandSelected)
+            if (isCtrlDown && WireframeEditControlsViewModel.IsMagicWandSelected && 
+                SelectedState.Self.SelectedChain != null)
             {
                 cursorToAssign = addCursor;
             }
@@ -667,6 +671,7 @@ namespace FlatRedBall.AnimationEditorForms
             else
             {
                 Texture = null;
+                mControl.DesiredSelectorCount = 0;
 
                 ShowSpriteOutlineForTexture(Texture);
                 UpdateLineGridToTexture(Texture);

@@ -60,7 +60,13 @@ namespace FlatRedBall.AnimationEditorForms.Textures
 
         public void GetOpaqueWandBounds(int xPixel, int yPixel, out int minX, out int minY, out int maxX, out int maxY)
         {
+#if DEBUG
+            if(mImageData == null)
+            {
+                throw new NullReferenceException(nameof(mImageData));
+            }
 
+#endif
             for (int i = 0; i < mVisistedPoints.Length; i++)
             {
                 Array.Clear(mVisistedPoints[i], 0, mVisistedPoints[i].Length);

@@ -83,7 +83,9 @@ namespace AnimationEditorPlugin
             // - Added preview of magic wand 
             // - Added CTRL+click showing the + icon next to the cursor
             // - Magic wand is now a checkbox instead of a toggle button - reads better
-            get { return new Version(3, 0, 0); }
+            // 3.0.1
+            // - Fixed lots of little issues with preview/wireframe window not refreshing when it should
+            get { return new Version(3, 0, 1); }
         }
 
         public bool IsSelectedItemSprite
