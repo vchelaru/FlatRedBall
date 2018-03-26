@@ -85,7 +85,9 @@ namespace AnimationEditorPlugin
             // - Magic wand is now a checkbox instead of a toggle button - reads better
             // 3.0.1
             // - Fixed lots of little issues with preview/wireframe window not refreshing when it should
-            get { return new Version(3, 0, 1); }
+            // 3.0.2
+            // - Fixed a few null ref exceptions
+            get { return new Version(3, 0, 2); }
         }
 
         public bool IsSelectedItemSprite

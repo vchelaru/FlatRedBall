@@ -573,11 +573,14 @@ namespace FlatRedBall.AnimationEditorForms
 
         internal void FocusSelectionIfOffScreen()
         {
-            bool isSelectionOnScreen = GetIfSelectionIsOnScreen();
-
-            if (isSelectionOnScreen == false)
+            if(this.mControl.RectangleSelector != null)
             {
-                FocusOnSelection();
+                bool isSelectionOnScreen = GetIfSelectionIsOnScreen();
+
+                if (isSelectionOnScreen == false)
+                {
+                    FocusOnSelection();
+                }
             }
         }
 
@@ -606,15 +609,18 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void UpdateHandlesAndMoveCursor()
         {
-            if (PropertyGridManager.Self.UnitType == UnitType.SpriteSheet || WireframeEditControlsViewModel.IsMagicWandSelected)
+            if(this.mControl.RectangleSelector != null)
             {
-                this.mControl.RectangleSelector.ShowHandles = false;
-                this.mControl.RectangleSelector.ShowMoveCursorWhenOver = false;
-            }
-            else
-            {
-                this.mControl.RectangleSelector.ShowHandles = true;
-                this.mControl.RectangleSelector.ShowMoveCursorWhenOver = true;
+                if (PropertyGridManager.Self.UnitType == UnitType.SpriteSheet || WireframeEditControlsViewModel.IsMagicWandSelected)
+                {
+                    this.mControl.RectangleSelector.ShowHandles = false;
+                    this.mControl.RectangleSelector.ShowMoveCursorWhenOver = false;
+                }
+                else
+                {
+                    this.mControl.RectangleSelector.ShowHandles = true;
+                    this.mControl.RectangleSelector.ShowMoveCursorWhenOver = true;
+                }
             }
         }
 
@@ -658,7 +664,7 @@ namespace FlatRedBall.AnimationEditorForms
 
 
 
-                if (doAnyFramesUseThisTexture)
+                if (doAnyFramesUseThisTexture && texture != null)
                 {
                     UpdateSelectorsToAnimation(skipPushed, texture);
 
@@ -787,17 +793,13 @@ namespace FlatRedBall.AnimationEditorForms
             }
             else
             {
-
                 mControl.DesiredSelectorCount = 0;
-                mControl.RectangleSelector.Visible = false;
 
             }
 
             UpdateLineGridToTexture(texture);
 
-
-
-
+            
             this.mControl.RoundRectangleSelectorToUnit = PropertyGridManager.Self.UnitType == UnitType.Pixel;
 
             if (Texture != textureBefore)

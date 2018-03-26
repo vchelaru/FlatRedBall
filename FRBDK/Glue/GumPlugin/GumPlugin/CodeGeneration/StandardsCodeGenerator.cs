@@ -301,33 +301,17 @@ namespace GumPlugin.CodeGeneration
         {
             if(variable.GetRootName() == "SourceFile" && elementSave.Name == "NineSlice")
             {
-
-                //setter.Line("bool usePattern = RenderingLibrary.Graphics.NineSlice.GetIfShouldUsePattern(value);");
-                
-                //var ifBlock = setter.If("usePattern");
-                //{
-                //    ifBlock.Line("this.SetTexturesUsingPattern(value, null);");
-                //}
-                //var elseBlock = ifBlock.End().Else();
-                //{
-                //    var internalIf = elseBlock.If("if (!string.IsNullOrEmpty(value))");
-                //    {
-                //        internalIf.Line("this.SetSingleTexture(RenderingLibrary.Content.LoaderManager.Self.Load(value, RenderingLibrary.SystemManagers.Default));");
-                //    }
-
-                //}
-
-                //return true;
-
-
                 setter.Line("ContainedNineSlice.SetSingleTexture(value);");
-
-
                 return true;
-
             }
 
-
+            if(elementSave.Name == "Circle" && variable.GetRootName() == "Radius")
+            {
+                setter.Line("mWidth = value/2;");
+                setter.Line("mHeight = value/2;");
+                setter.Line("ContainedCircle.Radius = value;");
+                return true;
+            }
 
             if (elementSave.Name == "Circle" || elementSave.Name == "Rectangle")
             {
