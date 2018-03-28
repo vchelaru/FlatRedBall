@@ -109,6 +109,7 @@
     </Compile>
     <Compile Include="DataGeneration\BehaviorGenerator.cs" />
     <Compile Include="DataGeneration\FormsControlAdder.cs" />
+    <EmbeddedResource Include="Embedded\PositionedObjectGueWrapper.cs" />
     <Compile Include="Managers\AppCommands.cs" />
     <Compile Include="Managers\GumxPropertiesManager.cs" />
     <Compile Include="Resource1.Designer.cs">

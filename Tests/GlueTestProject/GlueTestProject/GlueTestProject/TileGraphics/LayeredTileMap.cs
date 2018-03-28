@@ -417,7 +417,7 @@ namespace FlatRedBall.TileGraphics
                         if (objectInstance.gid != null)
                         {
                             tileset = tms.GetTilesetForGid(objectInstance.gid.Value);
-                            if (tileset.TileDictionary.ContainsKey(objectInstance.gid.Value - tileset.Firstgid))
+                            if(tileset.TileDictionary.ContainsKey(objectInstance.gid.Value - tileset.Firstgid))
                             {
                                 tilesetProperties = tileset.TileDictionary[objectInstance.gid.Value - tileset.Firstgid].properties;
                                 propertyCountFromTileset = tilesetProperties.Count;

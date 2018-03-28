@@ -839,6 +839,7 @@
     <Compile Include="GumCore\NineSlice.cs" />
     <Compile Include="GumCore\ObjectFinder.cs" />
     <Compile Include="GumCore\PlatformCompatability.cs" />
+    <Compile Include="GumCore\PositionedObjectGueWrapper.cs" />
     <Compile Include="GumCore\RecursiveVariableFinder.cs" />
     <Compile Include="GumCore\ReflectionManager.cs" />
     <Compile Include="GumCore\Renderer.cs" />

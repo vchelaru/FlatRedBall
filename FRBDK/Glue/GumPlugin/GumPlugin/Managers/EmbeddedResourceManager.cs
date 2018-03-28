@@ -165,6 +165,7 @@ namespace GumPlugin.Managers
 
             codeItemAdder.Add("GumPlugin/Embedded/GumIdb.cs");
             codeItemAdder.Add("GumPlugin/Embedded/PlatformCompatability.cs");
+            codeItemAdder.Add("GumPlugin/Embedded/PositionedObjectGueWrapper.cs");
 
             codeItemAdder.Add("GumPlugin/Embedded/GraphicalUiElement.IWindow.cs");
             codeItemAdder.Add("GumPlugin/Embedded/SystemManagers.FlatRedBall.cs");

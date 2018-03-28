@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-#if FRB_MDX
-using Microsoft.DirectX;
-#elif FRB_XNA || ZUNE
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-#endif
 
 namespace FlatRedBall.Graphics
 {
@@ -73,11 +69,9 @@ namespace FlatRedBall.Graphics
         #endregion
         void Draw(Camera camera);
 
-        #region XML Docs
         /// <summary>
         /// Used to update the drawable batch
         /// </summary>
-        #endregion
         void Update();
 
         #region XML Docs

@@ -125,8 +125,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>IF NOT EXIST %2525AppData%2525\FRBDK\Plugins\StateInterpolation\ MD %2525AppData%2525\FRBDK\Plugins\StateInterpolation\
+copy "$(TargetDir)\StateInterpolationPlugin.dll" "%2525AppData%2525\FRBDK\Plugins\StateInterpolation\StateInterpolationPlugin.dll"	
+	
+copy "$(TargetDir)\StateInterpolationPlugin.pdb" "%2525AppData%2525\FRBDK\Plugins\StateInterzpolation\StateInterpolationPlugin.pdb"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

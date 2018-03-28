@@ -45,9 +45,10 @@ namespace OfficialPlugins.StateInterpolation
         // 1.2.0 - Added instant interpolation type
         // 1.2.1 - Fixed bug where Running would remain true after its duration
         // 1.2.2 - Removed event that fired when a tweener finished - now we just rely on the TweenerManager to do it.
+        // 1.3 - Plugin no longer injects the state interpolation values - that's part of new projects autoatically now
         public override Version Version
         {
-            get { return new Version(1, 2, 2); }
+            get { return new Version(1, 3, 0); }
         }
 
         #endregion
@@ -91,7 +92,8 @@ namespace OfficialPlugins.StateInterpolation
 
         void HandleGluxLoad()
         {
-            UpdateCodeInProjectPresence();
+            // Update March 28, 2018 - we no longer add these files to projects because they're part of new templates automatically
+            //UpdateCodeInProjectPresence();
         }
 
         private void HandleAdjustDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer displayer)

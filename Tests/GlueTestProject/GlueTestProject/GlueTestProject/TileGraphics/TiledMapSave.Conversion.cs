@@ -1350,11 +1350,20 @@ namespace TMXGlueLib
             catch
             {
             }
-            var tms = FileManager.XmlDeserialize<TiledMapSave>(fileName);
-            FileManager.RelativeDirectory = oldRelativeDirectory;
+            TiledMapSave tms = null;
+
+            try
+            {
+                tms = FileManager.XmlDeserialize<TiledMapSave>(fileName);
+                tms.FileName = fileName;
+            }
+            finally
+            {
+                FileManager.RelativeDirectory = oldRelativeDirectory;
+
+            }
 
 
-            tms.FileName = fileName;
 
 
             foreach (MapLayer layer in tms.Layers)
