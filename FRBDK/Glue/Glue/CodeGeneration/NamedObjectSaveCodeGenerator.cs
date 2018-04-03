@@ -1662,7 +1662,11 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-
+        /// <summary>
+        /// Generates variable assignment, this is used in PostInitialize
+        /// </summary>
+        /// <param name="namedObject"></param>
+        /// <param name="codeBlock"></param>
         public static void GenerateVariableAssignment(NamedObjectSave namedObject, ICodeBlock codeBlock)
         {
 

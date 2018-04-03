@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Gum.DataTypes.Behaviors;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace GumPlugin.CodeGeneration
 {
@@ -366,6 +367,41 @@ namespace GumPlugin.CodeGeneration
             GenerateExposedVariableProperties(elementSave, currentBlock);
         }
 
+        internal string GetAddToManagersFunc(IElement glueElement, NamedObjectSave namedObjectSave, ReferencedFileSave referencedFileSave, string layerName)
+        {
+            var stringBuilder = new StringBuilder();
+
+            var namedObjectName = namedObjectSave.FieldName;
+            string layerCode = "null";
+            if(!string.IsNullOrEmpty(layerName))
+            {
+                layerCode = $"System.Linq.Enumerable.FirstOrDefault(FlatRedBall.Gum.GumIdb.AllGumLayersOnFrbLayer({layerName}))";
+            }
+            if(glueElement is EntitySave)
+            {
+                stringBuilder.AppendLine( "{");
+                stringBuilder.AppendLine( $"{namedObjectName}.AddToManagers(RenderingLibrary.SystemManagers.Default, {layerCode});");
+
+                var shouldGenerateWrapper = namedObjectSave.AttachToContainer;
+
+                if(shouldGenerateWrapper)
+                {
+                    stringBuilder.AppendLine( $"var wrapperForAttachment = new GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper(this, {namedObjectName});");
+                    stringBuilder.AppendLine(  "FlatRedBall.SpriteManager.AddPositionedObject(wrapperForAttachment);");
+                    stringBuilder.AppendLine("gumAttachmentWrappers.Add(wrapperForAttachment);");
+                }
+
+
+                stringBuilder.AppendLine( "}");
+            }
+            else
+            {
+                stringBuilder.AppendLine($"{namedObjectName}.AddToManagers(RenderingLibrary.SystemManagers.Default, {layerCode});");
+            }
+
+            return stringBuilder.ToString();
+        }
+
         private void GenerateExposedVariableProperties(ElementSave elementSave, ICodeBlock currentBlock)
         {
             // Get all exposed variables and make properties out of them.
@@ -513,7 +549,7 @@ namespace GumPlugin.CodeGeneration
         {
 
             string publicOrPrivate;
-            if(elementSave is ScreenSave)
+            if(elementSave is Gum.DataTypes.ScreenSave)
             {
                 // make these public for screens because the only time this will be accessed is in the Glue screen that owns it
                 publicOrPrivate = "public";
@@ -554,7 +590,7 @@ namespace GumPlugin.CodeGeneration
             isEntireAssignment = false;
 
             ElementSave categoryContainer;
-            StateSaveCategory stateSaveCategory;
+            Gum.DataTypes.Variables.StateSaveCategory stateSaveCategory;
 
             string variableType = variableSave.Type;
 
@@ -799,7 +835,7 @@ namespace GumPlugin.CodeGeneration
             {
                 componentScreenOrStandard = "Components";
             }
-            else if(elementSave is ScreenSave)
+            else if(elementSave is Gum.DataTypes.ScreenSave)
             {
                 componentScreenOrStandard = "Screens";  
             }

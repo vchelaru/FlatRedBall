@@ -805,7 +805,21 @@ namespace FlatRedBall.Math.Geometry
             return false;
         }
 
-
+        /// <summary>
+        /// Performs a "move" collision (a collision that adjusts the Position of the calling objects 
+        /// to separate them if they overlap), moving each object according to its respective mass.
+        /// </summary>
+        /// <param name="polygon">The polygon to collide against.</param>
+        /// <param name="thisMass">The mass of the AxisAlignedRectangle. 
+        /// If value this is 0, the AxisAlignedRectangle will act as if it has no mass - the Polygon will not be pushed or stopped.</param>
+        /// <param name="otherMass">The mass of the Polygon. 
+        /// If this value is 0, The Polygon will act as if it has no mass - the AxisAlignedRectangle will not be pushed or stopped.</param>
+        /// <returns>Whether the caller collides against the argument Polygon.</returns>
+        /// <example>
+        /// // This shows how to perform a collision where the polygon is static - a common
+        /// // situation if the polygon is part of the static environment:
+        /// axisAlignedRectangle.CollideAgainstMove(polygon, 0, 1);
+        /// </example>
         public bool CollideAgainstMove(Polygon polygon, float thisMass, float otherMass)
         {
             return polygon.CollideAgainstMove(this, otherMass, thisMass);

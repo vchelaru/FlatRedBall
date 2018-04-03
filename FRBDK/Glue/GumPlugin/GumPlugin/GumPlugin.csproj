@@ -104,6 +104,7 @@
     <Compile Include="CodeGeneration\EventCodeGenerator.cs" />
     <Compile Include="CodeGeneration\GlobalContentCodeGenerator.cs" />
     <Compile Include="CodeGeneration\GumLayerAssociationCodeGenerator.cs" />
+    <Compile Include="CodeGeneration\GumToFlatRedBallAttachmentCodeGenerator.cs" />
     <Compile Include="Controls\GumToolbar.xaml.cs">
       <DependentUpon>GumToolbar.xaml</DependentUpon>
     </Compile>

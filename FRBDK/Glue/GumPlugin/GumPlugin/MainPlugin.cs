@@ -275,6 +275,21 @@ namespace GumPlugin
             this.ReactToNewScreenCreated += HandleNewScreen;
 
             this.GetEventSignatureArgs += HandleGetEventSignatureArgs;
+
+            this.GetUsedTypes = HandleGetUsedTypes;
+        }
+
+        private List<Type> HandleGetUsedTypes()
+        {
+            List<Type> toReturn = new List<Type>();
+
+            toReturn.AddRange(typeof(ChildrenLayout)
+                .Assembly.GetTypes().Where(item => item.IsEnum));
+            toReturn.AddRange(typeof(RenderingLibrary.Graphics.HorizontalAlignment)
+                .Assembly.GetTypes().Where(item => item.IsEnum));
+            toReturn.AddRange(typeof(Gum.Converters.GeneralUnitType)
+                .Assembly.GetTypes().Where(item => item.IsEnum));
+            return toReturn;
         }
 
         private void HandleGetEventSignatureArgs(NamedObjectSave namedObject, EventResponseSave eventResponseSave, out string type, out string args)
