@@ -323,28 +323,31 @@ namespace AnimationEditorPlugin
         {
             var currentElement = GlueState.CurrentElement;
 
-            // add any files here from
-            // the entity or global content
-            // if they're not already added.
-            var viewModel =
-                mAchxControl.WireframeEditControlsViewModel;
-
-            var pngFiles = GlueState.CurrentElement.ReferencedFiles.Concat(GlueState.CurrentGlueProject.GlobalFiles)
-                .Select(item => new ToolsUtilities.FilePath(GlueCommands.GetAbsoluteFileName(item)))
-                .Where(item => item.Extension == "png")
-                .Distinct()
-                .Except(viewModel.AvailableTextures);
-
-            foreach(var file in pngFiles)
+            if (currentElement != null)
             {
-                viewModel.AvailableTextures.Add(file);
-            }
 
-            if(viewModel.SelectedTextureFilePath == null && viewModel.AvailableTextures.Any())
-            {
-                viewModel.SelectedTextureFilePath = viewModel.AvailableTextures.First();
+                // add any files here from
+                // the entity or global content
+                // if they're not already added.
+                var viewModel =
+                    mAchxControl.WireframeEditControlsViewModel;
+
+                var pngFiles = currentElement.ReferencedFiles.Concat(GlueState.CurrentGlueProject.GlobalFiles)
+                    .Select(item => new ToolsUtilities.FilePath(GlueCommands.GetAbsoluteFileName(item)))
+                    .Where(item => item.Extension == "png")
+                    .Distinct()
+                    .Except(viewModel.AvailableTextures);
+
+                foreach (var file in pngFiles)
+                {
+                    viewModel.AvailableTextures.Add(file);
+                }
+
+                if (viewModel.SelectedTextureFilePath == null && viewModel.AvailableTextures.Any())
+                {
+                    viewModel.SelectedTextureFilePath = viewModel.AvailableTextures.First();
+                }
             }
-            
         }
 
         private void HandleForceSaveAll(object sender, EventArgs e)
