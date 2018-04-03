@@ -328,20 +328,43 @@ namespace GumPlugin.Managers
             // on this line of code
             // with a NullReferenceException.
             // I'm going to wrap this in if-s to be sure it's safe.
-            if (element != null && element.DefaultState != null && element.DefaultState.Variables != null)
+            if (element != null )
             {
-                foreach (var variable in element.DefaultState.Variables.Where(item => !string.IsNullOrEmpty(item.ExposedAsName) || string.IsNullOrEmpty(item.SourceObject)))
+                var states = new List<Gum.DataTypes.Variables.StateSave>();
+                states.Add(element.DefaultState);
+
+                var parentElement = Gum.Managers.ObjectFinder.Self.GetElementSave(element.BaseType);
+                while(parentElement != null)
                 {
-                    var variableDefinition = new VariableDefinition();
-                    variableDefinition.Category = variable.Category;
-                    variableDefinition.DefaultValue = variable.Value?.ToString();
-                    variableDefinition.Name = (variable.ExposedAsName ?? variable.Name).Replace(" ", ""); // gum variables can have spaces, but Glue variables can't
+                    states.Add(parentElement.DefaultState);
+                    parentElement = Gum.Managers.ObjectFinder.Self.GetElementSave(parentElement.BaseType);
+                }
 
-                    variableDefinition.Type = QualifyGumVariableType(variable, element);
+                foreach (var state in states)
+                {
 
-                    ChangePositionUnitTypes(variableDefinition);
+                    foreach (var variable in state.Variables.Where(item => !string.IsNullOrEmpty(item.ExposedAsName) || string.IsNullOrEmpty(item.SourceObject)))
+                    {
+                        string variableName = (variable.ExposedAsName ?? variable.Name).Replace(" ", "");
 
-                    newAti.VariableDefinitions.Add(variableDefinition);
+                        var hasAlreadyBeenAdded = newAti.VariableDefinitions.Any(item => item.Name == variableName);
+
+                        if(!hasAlreadyBeenAdded)
+                        {
+
+                            var variableDefinition = new VariableDefinition();
+                            variableDefinition.Category = variable.Category;
+                            variableDefinition.DefaultValue = variable.Value?.ToString();
+                            variableDefinition.Name = variableName; // gum variables can have spaces, but Glue variables can't
+
+                            variableDefinition.Type = QualifyGumVariableType(variable, element);
+
+                            ChangePositionUnitTypes(variableDefinition);
+
+                            newAti.VariableDefinitions.Add(variableDefinition);
+
+                        }
+                    }
                 }
             }
 
