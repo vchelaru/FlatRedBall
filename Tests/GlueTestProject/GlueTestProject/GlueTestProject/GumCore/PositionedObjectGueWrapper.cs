@@ -10,7 +10,7 @@ namespace GumCoreShared.FlatRedBall.Embedded
     public class PositionedObjectGueWrapper : PositionedObject
     {
         PositionedObject frbObject;
-        global::FlatRedBall.Math.Geometry.IScalable frbObjectAsScalable;
+        global::FlatRedBall.Math.Geometry.IReadOnlyScalable frbObjectAsScalable;
 
         public PositionedObject FrbObject
         {
@@ -18,7 +18,7 @@ namespace GumCoreShared.FlatRedBall.Embedded
             set
             {
                 frbObject = value;
-                frbObjectAsScalable = value as global::FlatRedBall.Math.Geometry.IScalable;
+                frbObjectAsScalable = value as global::FlatRedBall.Math.Geometry.IReadOnlyScalable;
             }
         }
 

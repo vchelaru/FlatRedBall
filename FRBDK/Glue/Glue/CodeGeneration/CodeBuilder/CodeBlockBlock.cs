@@ -11,6 +11,11 @@
 
     public static class CodeBlockBlockExtensions
     {
+        /// <summary>
+        /// Creates an indented block with { and } brackets
+        /// </summary>
+        /// <param name="pCodeBlock"></param>
+        /// <returns></returns>
         public static ICodeBlock Block(this ICodeBlock pCodeBlock)
         {
             return new CodeBlockBlock(pCodeBlock);

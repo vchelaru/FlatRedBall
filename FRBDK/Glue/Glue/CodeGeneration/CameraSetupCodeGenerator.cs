@@ -109,22 +109,80 @@ namespace FlatRedBall.Glue.CodeGeneration
             fileCode.Line("using Camera = FlatRedBall.Camera;");
 
             var namespaceContents = fileCode.Namespace(ProjectManager.ProjectNamespace);
+
+            GenerateCameraSetupData(namespaceContents);
+
+            GenerateResizeBehaviorEnum(namespaceContents);
+
             var classContents = namespaceContents.Class("internal static", "CameraSetup");
 
-            classContents.Line($"const float Scale = {(displaySettings.Scale / 100.0m).ToString(CultureInfo.InvariantCulture)}f;");
+            classContents.Line("static Microsoft.Xna.Framework.GraphicsDeviceManager graphicsDeviceManager;");
 
-            GenerateResetMethodNew(displaySettings, classContents);
+            GenerateStaticCameraSetupData(classContents);
 
-            GenerateSetupCameraMethodNew(displaySettings, classContents);
+            GenerateResetMethodNew(displaySettings.GenerateDisplayCode, classContents);
 
-            GenerateHandleResize(displaySettings, classContents);
+            GenerateSetupCameraMethodNew(displaySettings.GenerateDisplayCode, classContents);
 
-            GenerateSetAspectRatio(displaySettings, classContents);
+            GenerateResetWindow(displaySettings.GenerateDisplayCode, classContents);
+
+            GenerateHandleResize(classContents);
+
+            GenerateSetAspectRatio(classContents);
 
             return fileCode.ToString();
         }
 
-        private static void GenerateSetAspectRatio(DisplaySettings displaySettings, ICodeBlock classContents)
+        private static void GenerateResizeBehaviorEnum(CodeBlockNamespace namespaceContents)
+        {
+            var enumBlock = namespaceContents.Enum("public", "ResizeBehavior");
+            enumBlock.Line("StretchVisibleArea,");
+            enumBlock.Line("IncreaseVisibleArea");
+        }
+
+        private static void GenerateStaticCameraSetupData(ICodeBlock classContents)
+        {
+            classContents.Line("public static CameraSetupData Data = new CameraSetupData");
+            var block = classContents.Block();
+
+            var displaySettings = GlueState.Self.CurrentGlueProject.DisplaySettings;
+
+            block.Line($"Scale = {(displaySettings.Scale ).ToString(CultureInfo.InvariantCulture)}f,");
+            block.Line($"ResolutionWidth = {displaySettings.ResolutionWidth},");
+            block.Line($"ResolutionHeight = {displaySettings.ResolutionHeight},");
+            block.Line($"Is2D = {displaySettings.Is2D.ToString().ToLowerInvariant()},");
+
+            if(displaySettings.FixedAspectRatio)
+            {
+                block.Line($"AspectRatio = {(displaySettings.AspectRatioWidth / displaySettings.AspectRatioHeight).ToString().ToLowerInvariant()}m,");
+            }
+
+            block.Line($"IsFullScreen = {displaySettings.RunInFullScreen.ToString().ToLowerInvariant()},");
+            block.Line($"AllowWidowResizing = {displaySettings.AllowWindowResizing.ToString().ToLowerInvariant()},");
+            block.Line($"ResizeBehavior = ResizeBehavior.{displaySettings.ResizeBehavior},");
+            classContents.Line(";");
+        }
+
+        private static void GenerateCameraSetupData(CodeBlockNamespace namespaceContents)
+        {
+            var classBlock = namespaceContents.Class("public", "CameraSetupData");
+
+            classBlock.AutoProperty("public float", "Scale");
+            classBlock.AutoProperty("public bool", "Is2D");
+            classBlock.AutoProperty("public int", "ResolutionWidth");
+            classBlock.AutoProperty("public int", "ResolutionHeight");
+            classBlock.AutoProperty("public decimal?", "AspectRatio");
+            classBlock.AutoProperty("public bool", "AllowWidowResizing");
+            classBlock.AutoProperty("public bool", "IsFullScreen");
+            classBlock.AutoProperty("public ResizeBehavior", "ResizeBehavior");
+
+            
+
+            // set up here
+
+        }
+
+        private static void GenerateSetAspectRatio(ICodeBlock classContents)
         {
             var functionBlock = classContents.Function("private static void", "SetAspectRatioTo", "decimal aspectRatio");
             {
@@ -154,61 +212,77 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void GenerateHandleResize(DisplaySettings displaySettings, ICodeBlock classContents)
+        private static void GenerateHandleResize(ICodeBlock classContents)
         {
             var functionBlock = classContents.Function("private static void", "HandleResolutionChange", "object sender, System.EventArgs args");
             {
-                functionBlock.Line($"SetAspectRatioTo({displaySettings.AspectRatioWidth.ToString(CultureInfo.InvariantCulture)} / {displaySettings.AspectRatioHeight.ToString(CultureInfo.InvariantCulture)}m);");
+                functionBlock
+                    .If("Data.AspectRatio != null")
+                    .Line($"SetAspectRatioTo(Data.AspectRatio.Value);");
 
-                if(displaySettings.Is2D && displaySettings.ResizeBehavior == ResizeBehavior.IncreaseVisibleArea)
-                {
-                    functionBlock.Line("FlatRedBall.Camera.Main.OrthogonalHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / Scale;");
-                    functionBlock.Line("FlatRedBall.Camera.Main.FixAspectRatioYConstant();");
-
-
-                }
+                functionBlock.If("Data.Is2D && Data.ResizeBehavior == ResizeBehavior.IncreaseVisibleArea")
+                    .Line("FlatRedBall.Camera.Main.OrthogonalHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / (Data.Scale/ 100.0f);")
+                    .Line("FlatRedBall.Camera.Main.FixAspectRatioYConstant();");
             }
         }
 
-        private static void GenerateSetupCameraMethodNew(DisplaySettings displaySettings, ICodeBlock classContents)
+        private static void GenerateSetupCameraMethodNew(bool generateDisplayCode, ICodeBlock classContents)
         {
             var methodContents = classContents.Function(
                 "internal static void",
                 "SetupCamera",
-                $"Camera cameraToSetUp, Microsoft.Xna.Framework.GraphicsDeviceManager graphicsDeviceManager, int width = {displaySettings.ResolutionWidth}, int height = {displaySettings.ResolutionHeight}");
+                $"Camera cameraToSetUp, Microsoft.Xna.Framework.GraphicsDeviceManager graphicsDeviceManager");
 
-            if (displaySettings.GenerateDisplayCode)
+            if (generateDisplayCode)
             {
+                methodContents.Line("CameraSetup.graphicsDeviceManager = graphicsDeviceManager;");
+                methodContents.Line("ResetWindow();");
+                methodContents.Line("ResetCamera(cameraToSetUp);");
 
+
+                methodContents.Line(
+                    $"FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += HandleResolutionChange;");
+            }
+        }
+
+        private static void GenerateResetWindow(bool generateDisplayCode, ICodeBlock classContents)
+        {
+            var methodContents = classContents.Function(
+                "internal static void",
+                "ResetWindow",
+                "");
+            if(generateDisplayCode)
+            {
 
                 methodContents.Line("#if WINDOWS || DESKTOP_GL");
 
                 // This needs to come before the fullscreen assignment, because if not it changes the border style
-                methodContents.Line($"FlatRedBall.FlatRedBallServices.Game.Window.AllowUserResizing = {displaySettings.AllowWindowResizing.ToString().ToLowerInvariant()};");
+                methodContents.Line($"FlatRedBall.FlatRedBallServices.Game.Window.AllowUserResizing = Data.AllowWidowResizing;");
 
-                string widthVariable = "width";
-                string heightVariable = "height";
-                if (displaySettings.RunInFullScreen)
+                string widthVariable = "Data.ResolutionWidth";
+                string heightVariable = "Data.ResolutionHeight";
+                var ifBlock = methodContents.If("Data.IsFullScreen");
                 {
-                    methodContents.Line("#if DESKTOP_GL");
+
+                    ifBlock.Line("#if DESKTOP_GL");
 
                     // We used to do this on WINDOWS too but that isn't stable so we use borderless
                     // Actually no, we should just use borderless everywhere so it works the same on all platforms:
 
                     bool useActualFullscreenOnDesktopGl = false;
-                    if(useActualFullscreenOnDesktopGl)
+                    if (useActualFullscreenOnDesktopGl)
                     {
-                        methodContents.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(width, height);");
+                        ifBlock.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(Data.ResolutionWidth, Data.ResolutionHeight);");
                     }
                     else
                     {
                         // from here:
                         // http://community.monogame.net/t/how-to-implement-borderless-fullscreen-on-desktopgl-project/8359
-                        methodContents.Line("graphicsDeviceManager.HardwareModeSwitch = false;");
+                        ifBlock.Line("graphicsDeviceManager.HardwareModeSwitch = false;");
 
                         // If in fullscreen we want the widow to take up just the resolution of the screen:
 
-                        methodContents.Line(
+                        ifBlock.Line(
                             "FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(" +
                             "Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, " +
                             "Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, " +
@@ -217,24 +291,21 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
 
 
-                    methodContents.Line("#elif WINDOWS");
-                    methodContents.Line("System.IntPtr hWnd = FlatRedBall.FlatRedBallServices.Game.Window.Handle;");
-                    methodContents.Line("var control = System.Windows.Forms.Control.FromHandle(hWnd);");
-                    methodContents.Line("var form = control.FindForm();");
+                    ifBlock.Line("#elif WINDOWS");
+                    ifBlock.Line("System.IntPtr hWnd = FlatRedBall.FlatRedBallServices.Game.Window.Handle;");
+                    ifBlock.Line("var control = System.Windows.Forms.Control.FromHandle(hWnd);");
+                    ifBlock.Line("var form = control.FindForm();");
 
 
-                    methodContents.Line("form.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;");
-                    methodContents.Line("form.WindowState = System.Windows.Forms.FormWindowState.Maximized;");
-                    methodContents.Line("#endif");
+                    ifBlock.Line("form.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;");
+                    ifBlock.Line("form.WindowState = System.Windows.Forms.FormWindowState.Maximized;");
+                    ifBlock.Line("#endif");
                 }
-                else
+                var elseBlock = ifBlock.End().Else();
                 {
-                    if (displaySettings.Scale != 100)
-                    {
-                        widthVariable = $"(int)({widthVariable} * Scale)";
-                        heightVariable = $"(int)({heightVariable} * Scale)";
-                    }
-                    methodContents.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution({widthVariable}, {heightVariable});");
+                    widthVariable = $"(int)({widthVariable} * Data.Scale/ 100.0f)";
+                    heightVariable = $"(int)({heightVariable} * Data.Scale/ 100.0f)";
+                    elseBlock.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution({widthVariable}, {heightVariable});");
                 }
 
 
@@ -252,51 +323,38 @@ namespace FlatRedBall.Glue.CodeGeneration
                     "FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight);"
                     );
                 methodContents.Line("#elif UWP");
-                if (displaySettings.RunInFullScreen)
-                {
-                    methodContents.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(width, height);");
-                }
-                else
-                {
-                    methodContents.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution({widthVariable}, {heightVariable});");
-                }
+
+                methodContents
+                    .If("Data.IsFullScreen")
+                    .Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(Data.ResolutionWidth, Data.ResolutionHeight);")
+                    .End()
+                    .Else()
+                    .Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution({widthVariable}, {heightVariable});");
+
                 // closes the #if platform section
                 methodContents.Line("#endif");
-
-
-                methodContents.Line("ResetCamera(cameraToSetUp);");
-
-                if (displaySettings.FixedAspectRatio)
-                {
-                    methodContents.Line(
-                        $"FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += HandleResolutionChange;");
-                }
             }
         }
 
-        private static void GenerateResetMethodNew(SaveClasses.DisplaySettings displaySettings, ICodeBlock classContents)
+        private static void GenerateResetMethodNew(bool generateDisplayCode, ICodeBlock classContents)
         {
             var resetMethod = classContents.Function(
-                "internal static void", "ResetCamera", "Camera cameraToReset");
+                "internal static void", "ResetCamera", "Camera cameraToReset = null");
             {
-                if (displaySettings.GenerateDisplayCode)
+                if (generateDisplayCode)
                 {
-                    if (displaySettings.Is2D)
-                    {
-                        resetMethod.Line($"FlatRedBall.Camera.Main.Orthogonal = true;");
-                        resetMethod.Line($"FlatRedBall.Camera.Main.OrthogonalHeight = {displaySettings.ResolutionHeight};");
-                        resetMethod.Line($"FlatRedBall.Camera.Main.OrthogonalWidth = {displaySettings.ResolutionWidth};");
+                    resetMethod.If("cameraToReset == null")
+                        .Line("cameraToReset = FlatRedBall.Camera.Main;");
 
-                        // Even though we reset the camera, we want to make sure the aspect ratio matches the destination rect...
-                        // Because the user may not have forced an aspect ratio setting in the settings:
-                        resetMethod.Line($"FlatRedBall.Camera.Main.FixAspectRatioYConstant();");
-                    }
+                    resetMethod.Line($"cameraToReset.Orthogonal = Data.Is2D;");
+                    var ifStatement = resetMethod.If("Data.Is2D")
+                        .Line($"cameraToReset.OrthogonalHeight = Data.ResolutionHeight;")
+                        .Line($"cameraToReset.OrthogonalWidth = Data.ResolutionWidth;")
+                        .Line($"cameraToReset.FixAspectRatioYConstant();");
 
-                    if(displaySettings.FixedAspectRatio)
-                    {
-                        resetMethod.Line(
-                            $"SetAspectRatioTo({displaySettings.AspectRatioWidth.ToString(CultureInfo.InvariantCulture)} / {displaySettings.AspectRatioHeight.ToString(CultureInfo.InvariantCulture)}m);");
-                    }
+                    ifStatement = resetMethod.If("Data.AspectRatio != null")
+                        .Line(
+                            $"SetAspectRatioTo(Data.AspectRatio.Value);");
                 }
             }
         }

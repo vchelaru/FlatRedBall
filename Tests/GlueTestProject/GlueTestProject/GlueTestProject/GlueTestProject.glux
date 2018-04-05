@@ -8367,6 +8367,11 @@
             <ValueAsFloat>100</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
+            <Type>Gum.DataTypes.DimensionUnitType</Type>
+            <Member>HeightUnits</Member>
+            <ValueAsInt>2</ValueAsInt>
+          </CustomProperty>
+          <CustomProperty>
             <Type>string</Type>
             <Member>Text</Member>
             <ValueAsString>This is some text</ValueAsString>
@@ -8382,6 +8387,11 @@
             <ValueAsFloat>100</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
+            <Type>Gum.DataTypes.DimensionUnitType</Type>
+            <Member>WidthUnits</Member>
+            <ValueAsInt>4</ValueAsInt>
+          </CustomProperty>
+          <CustomProperty>
             <Type>bool</Type>
             <Member>WrapsChildren</Member>
             <ValueAsBool>false</ValueAsBool>
@@ -8392,6 +8402,11 @@
             <ValueAsFloat>50</ValueAsFloat>
           </CustomProperty>
           <CustomProperty>
+            <Type>RenderingLibrary.Graphics.HorizontalAlignment</Type>
+            <Member>XOrigin</Member>
+            <ValueAsInt>2</ValueAsInt>
+          </CustomProperty>
+          <CustomProperty>
             <Type>PositionUnitType</Type>
             <Member>XUnits</Member>
             <ValueAsInt>0</ValueAsInt>
@@ -8400,6 +8415,16 @@
             <Type>float</Type>
             <Member>Y</Member>
             <ValueAsFloat>33</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>RenderingLibrary.Graphics.VerticalAlignment</Type>
+            <Member>YOrigin</Member>
+            <ValueAsInt>1</ValueAsInt>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>Gum.Converters.GeneralUnitType</Type>
+            <Member>YUnits</Member>
+            <ValueAsInt>3</ValueAsInt>
           </CustomProperty>
           <CustomProperty>
             <Type>bool</Type>
@@ -8415,31 +8440,6 @@
             <Type>VerticalAlignment</Type>
             <Member>Y Origin</Member>
             <ValueAsInt>1</ValueAsInt>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>RenderingLibrary.Graphics.HorizontalAlignment</Type>
-            <Member>XOrigin</Member>
-            <ValueAsInt>2</ValueAsInt>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>Gum.DataTypes.DimensionUnitType</Type>
-            <Member>HeightUnits</Member>
-            <ValueAsInt>2</ValueAsInt>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>Gum.DataTypes.DimensionUnitType</Type>
-            <Member>WidthUnits</Member>
-            <ValueAsInt>4</ValueAsInt>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>RenderingLibrary.Graphics.VerticalAlignment</Type>
-            <Member>YOrigin</Member>
-            <ValueAsInt>1</ValueAsInt>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>Gum.Converters.GeneralUnitType</Type>
-            <Member>YUnits</Member>
-            <ValueAsInt>3</ValueAsInt>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
@@ -15023,11 +15023,11 @@
     <ResolutionHeight>600</ResolutionHeight>
     <FixedAspectRatio>true</FixedAspectRatio>
     <AspectRatioWidth>4</AspectRatioWidth>
-    <AspectRatioHeight>3</AspectRatioHeight>
+    <AspectRatioHeight>2</AspectRatioHeight>
     <SupportLandscape>true</SupportLandscape>
     <SupportPortrait>false</SupportPortrait>
     <RunInFullScreen>false</RunInFullScreen>
-    <AllowWindowResizing>false</AllowWindowResizing>
+    <AllowWindowResizing>true</AllowWindowResizing>
     <Scale>100</Scale>
     <ResizeBehavior>StretchVisibleArea</ResizeBehavior>
   </DisplaySettings>

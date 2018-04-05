@@ -3,33 +3,97 @@
     using Camera = FlatRedBall.Camera;
     namespace GlueTestProject
     {
+        public class CameraSetupData
+        {
+            public float Scale { get; set; }
+            public bool Is2D { get; set; }
+            public int ResolutionWidth { get; set; }
+            public int ResolutionHeight { get; set; }
+            public decimal? AspectRatio { get; set; }
+            public bool AllowWidowResizing { get; set; }
+            public bool IsFullScreen { get; set; }
+            public ResizeBehavior ResizeBehavior { get; set; }
+        }
+        public enum ResizeBehavior
+        {
+            StretchVisibleArea,
+            IncreaseVisibleArea
+        }
         internal static class CameraSetup
         {
-            const float Scale = 1f;
+            public static CameraSetupData Data = new CameraSetupData
+            {
+                Scale = 1f,
+                ResolutionWidth = 1000,
+                ResolutionHeight = 600,
+                Is2D = true,
+                AspectRatio = 2m,
+                IsFullScreen = false,
+                AllowWidowResizing = true,
+                ResizeBehavior = ResizeBehavior.StretchVisibleArea,
+            }
+            ;
             internal static void ResetCamera (Camera cameraToReset) 
             {
-                FlatRedBall.Camera.Main.Orthogonal = true;
-                FlatRedBall.Camera.Main.OrthogonalHeight = 600;
-                FlatRedBall.Camera.Main.OrthogonalWidth = 1000;
-                FlatRedBall.Camera.Main.FixAspectRatioYConstant();
-                SetAspectRatioTo(4 / 3m);
+                FlatRedBall.Camera.Main.Orthogonal = Data.Is2D;
+                if (Data.Is2D)
+                {
+                    FlatRedBall.Camera.Main.OrthogonalHeight = Data.ResolutionHeight;
+                    FlatRedBall.Camera.Main.OrthogonalWidth = Data.ResolutionWidth;
+                    FlatRedBall.Camera.Main.FixAspectRatioYConstant();
+                }
+                if (Data.AspectRatio != null)
+                {
+                    SetAspectRatioTo(Data.AspectRatio.Value);
+                }
             }
-            internal static void SetupCamera (Camera cameraToSetUp, Microsoft.Xna.Framework.GraphicsDeviceManager graphicsDeviceManager, int width = 1000, int height = 600) 
+            internal static void SetupCamera (Camera cameraToSetUp, Microsoft.Xna.Framework.GraphicsDeviceManager graphicsDeviceManager) 
             {
                 #if WINDOWS || DESKTOP_GL
-                FlatRedBall.FlatRedBallServices.Game.Window.AllowUserResizing = false;
-                FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(width, height);
+                FlatRedBall.FlatRedBallServices.Game.Window.AllowUserResizing = Data.AllowWidowResizing;
+                if (Data.IsFullScreen)
+                {
+                    #if DESKTOP_GL
+                    graphicsDeviceManager.HardwareModeSwitch = false;
+                    FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, FlatRedBall.Graphics.WindowedFullscreenMode.FullscreenBorderless);
+                    #elif WINDOWS
+                    System.IntPtr hWnd = FlatRedBall.FlatRedBallServices.Game.Window.Handle;
+                    var control = System.Windows.Forms.Control.FromHandle(hWnd);
+                    var form = control.FindForm();
+                    form.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+                    form.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+                    #endif
+                }
+                else
+                {
+                    FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution((int)(Data.ResolutionWidth * Data.Scale), (int)(Data.ResolutionHeight * Data.Scale));
+                }
                 #elif IOS || ANDROID
                 FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight);
                 #elif UWP
-                FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(width, height);
+                if (Data.IsFullScreen)
+                {
+                    FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(Data.ResolutionWidth, Data.ResolutionHeight);
+                }
+                else
+                {
+                    FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution((int)(Data.ResolutionWidth * Data.Scale), (int)(Data.ResolutionHeight * Data.Scale));
+                }
                 #endif
                 ResetCamera(cameraToSetUp);
                 FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += HandleResolutionChange;
             }
             private static void HandleResolutionChange (object sender, System.EventArgs args) 
             {
-                SetAspectRatioTo(4 / 3m);
+                if (Data.AspectRatio != null)
+                {
+                    SetAspectRatioTo(Data.AspectRatio.Value);
+                }
+                if (Data.Is2D && Data.ResizeBehavior == ResizeBehavior.IncreaseVisibleArea)
+                {
+                    FlatRedBall.Camera.Main.OrthogonalHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / Data.Scale;
+                    FlatRedBall.Camera.Main.FixAspectRatioYConstant();
+                }
             }
             private static void SetAspectRatioTo (decimal aspectRatio) 
             {
