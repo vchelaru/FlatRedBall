@@ -225,9 +225,20 @@ namespace TileGraphicsPlugin
 
             this.ReactToChangedPropertyHandler += (changedMember, oldalue) =>
             {
-                if (changedMember == nameof(EntitySave.CreatedByOtherEntities))
+                if(GlueState.CurrentCustomVariable != null)
                 {
-                    tiledObjectTypeCreator.RefreshFile();
+                    if (changedMember == nameof(CustomVariable.Name))
+                    {
+                        tiledObjectTypeCreator.RefreshFile();
+                    }
+
+                }
+                else if(GlueState.CurrentEntitySave != null)
+                {
+                    if (changedMember == nameof(EntitySave.CreatedByOtherEntities))
+                    {
+                        tiledObjectTypeCreator.RefreshFile();
+                    }
                 }
             };
 
