@@ -76,13 +76,11 @@ namespace FlatRedBall.Math.Geometry
         // Internal so that other objects like Line can set this when performing collision
         internal Point mLastCollisionPoint;
 
-#if FRB_MDX
-        bool mIsFilled;
-#endif
-
-#if !SILVERLIGHT
         internal Layer mLayerBelongingTo;
-#endif
+
+        // Whether this is concave, calculated whenever the poits are set
+        bool isConcaveCache;
+
 
         #endregion
 
@@ -122,6 +120,7 @@ namespace FlatRedBall.Math.Geometry
                     {
                         throw new System.IndexOutOfRangeException("Cannot set the Points to null.");
                     }
+                    isConcaveCache = false;
                 }
                 else
                 {
@@ -144,6 +143,9 @@ namespace FlatRedBall.Math.Geometry
 
                     pointCollection = new ReadOnlyCollection<Point>(mPoints);
                     OnPointsChanged(EventArgs.Empty);
+
+                    this.FillVertexArray();
+                    isConcaveCache = this.IsConcave();
                 }
             }
         }
@@ -787,7 +789,8 @@ namespace FlatRedBall.Math.Geometry
                 Vector3 thisMoveCollisionReposition = new Vector3();
                 Vector3 otherMoveCollisionReposition = new Vector3();
 
-                CollideAgainstMovePreview(thisMass, otherMass, ref thisMoveCollisionReposition, ref otherMoveCollisionReposition, mVerticesForRectCollision);
+                CollideAgainstMovePreview(thisMass, otherMass, ref thisMoveCollisionReposition, ref otherMoveCollisionReposition, mVerticesForRectCollision,
+                    !this.isConcaveCache, true);
 
                 mLastMoveCollisionReposition = thisMoveCollisionReposition;
                 rectangle.mLastMoveCollisionReposition.X = otherMoveCollisionReposition.X;
@@ -1036,7 +1039,7 @@ namespace FlatRedBall.Math.Geometry
 
                 VertexPositionColor[] otherVertices = polygon.mVertices;
 
-                CollideAgainstMovePreview(thisMass, otherMass, ref thisMoveCollisionReposition, ref argumentPolygonMoveCollisionReposition, otherVertices);
+                CollideAgainstMovePreview(thisMass, otherMass, ref thisMoveCollisionReposition, ref argumentPolygonMoveCollisionReposition, otherVertices, !this.isConcaveCache, !polygon.isConcaveCache);
 
                 toReturn = true;
 				return toReturn;
@@ -1044,292 +1047,396 @@ namespace FlatRedBall.Math.Geometry
             return toReturn;
         }
 
-        private void CollideAgainstMovePreview(float thisMass, float otherMass, ref Vector3 thisMoveCollisionReposition, ref Vector3 otherMoveCollisionReposition, VertexPositionColor[] otherVertices)
+        private void CollideAgainstMovePreview(float thisMass, float otherMass, ref Vector3 thisMoveCollisionReposition, ref Vector3 otherMoveCollisionReposition, VertexPositionColor[] otherVertices,
+            bool isThisConvex, bool isOtherConvex)
         {
-            thisMoveCollisionReposition = new Vector3(0, 0, 0);
-            otherMoveCollisionReposition = new Vector3(0, 0, 0);
-
-            Vector3 positionBefore = Position;
-
-            // declare some variables
-            double longestDistanceSquared = double.NegativeInfinity;
-            Point3D tempVector;
-            Point3D vectorTo = new Point3D(0, 0, 0);
-
-            #region Point inside Polygon tests
-
-
-
-            int throwaway;
-
-            for (int i = 0; i < mPoints.Length; i++)
+            if(isThisConvex && isOtherConvex)
             {
-                // The other polygon should have already been updated, so no 
-                // need to do the calculation for the points again:
-                //if (polygon.IsPointInside(ref mPoints[i], ref Position, ref mRotationMatrix)) 
-                //if (polygon.IsPointInside(ref mVertices[i].Position))
-                if (Polygon.IsPointInside(mVertices[i].Position.X, mVertices[i].Position.Y, otherVertices))
+                PerformAxisSeparatingTheoremCollision(this.mVertices, otherVertices, thisMass, otherMass, out thisMoveCollisionReposition, out otherMoveCollisionReposition);
+            }
+            else
+            {
+                thisMoveCollisionReposition = new Vector3(0, 0, 0);
+                otherMoveCollisionReposition = new Vector3(0, 0, 0);
+
+                Vector3 positionBefore = Position;
+
+                // declare some variables
+                double longestDistanceSquared = double.NegativeInfinity;
+                Point3D tempVector;
+                Point3D vectorTo = new Point3D(0, 0, 0);
+
+                #region Point inside Polygon tests
+
+
+
+                int throwaway;
+
+                for (int i = 0; i < mPoints.Length; i++)
                 {
-                    tempVector = Polygon.VectorFrom(mVertices[i].Position.X, mVertices[i].Position.Y, otherVertices, out throwaway);
-                    //tempVector = polygon.VectorFrom(mVertices[i].Position.X, mVertices[i].Position.Y);
-                    if (tempVector.LengthSquared() > longestDistanceSquared)
+                    // The other polygon should have already been updated, so no 
+                    // need to do the calculation for the points again:
+                    //if (polygon.IsPointInside(ref mPoints[i], ref Position, ref mRotationMatrix)) 
+                    //if (polygon.IsPointInside(ref mVertices[i].Position))
+                    if (Polygon.IsPointInside(mVertices[i].Position.X, mVertices[i].Position.Y, otherVertices))
                     {
-                        vectorTo = tempVector;
-                        longestDistanceSquared = tempVector.LengthSquared();
+                        tempVector = Polygon.VectorFrom(mVertices[i].Position.X, mVertices[i].Position.Y, otherVertices, out throwaway);
+                        //tempVector = polygon.VectorFrom(mVertices[i].Position.X, mVertices[i].Position.Y);
+                        if (tempVector.LengthSquared() > longestDistanceSquared)
+                        {
+                            vectorTo = tempVector;
+                            longestDistanceSquared = tempVector.LengthSquared();
+                        }
                     }
                 }
-            }
 
 
-            for (int i = 0; i < otherVertices.Length; i++)
-            {
-                if (IsPointInside(ref otherVertices[i].Position))
+                for (int i = 0; i < otherVertices.Length; i++)
                 {
-                    tempVector = VectorFrom(otherVertices[i].Position.X, otherVertices[i].Position.Y);
-                    if (tempVector.LengthSquared() > longestDistanceSquared)
+                    if (IsPointInside(ref otherVertices[i].Position))
                     {
-                        vectorTo = tempVector;
-                        longestDistanceSquared = tempVector.LengthSquared();
+                        tempVector = VectorFrom(otherVertices[i].Position.X, otherVertices[i].Position.Y);
+                        if (tempVector.LengthSquared() > longestDistanceSquared)
+                        {
+                            vectorTo = tempVector;
+                            longestDistanceSquared = tempVector.LengthSquared();
 
-                        // We want to reverse the vector here because this instance is going to be moved.
-                        vectorTo.X = -vectorTo.X;
-                        vectorTo.Y = -vectorTo.Y;
+                            // We want to reverse the vector here because this instance is going to be moved.
+                            vectorTo.X = -vectorTo.X;
+                            vectorTo.Y = -vectorTo.Y;
+                        }
                     }
                 }
-            }
 
-            #endregion
+                #endregion
 
-            #region Center-point inside polygon tests
+                #region Center-point inside polygon tests
 
-            // It's possible that the two polygons overlap but their points are not inside of eachother
-            // Although a side intersection will usually solve the problem, it won't solve it every time
-            // as in the case of two equal squares on the same axis overlapping.
-            // To make the collisions more accurate, test the midpoints.
+                // It's possible that the two polygons overlap but their points are not inside of eachother
+                // Although a side intersection will usually solve the problem, it won't solve it every time
+                // as in the case of two equal squares on the same axis overlapping.
+                // To make the collisions more accurate, test the midpoints.
 
-            for (int i = 0; i < mCenterPoints.Length; i++)
-            {
-                int afterI = i + 1;
-                mCenterPoints[i].X = (mVertices[i].Position.X + mVertices[afterI].Position.X) / 2.0f;
-                mCenterPoints[i].Y = (mVertices[i].Position.Y + mVertices[afterI].Position.Y) / 2.0f;
-                mCenterPoints[i].Z = (mVertices[i].Position.Z + mVertices[afterI].Position.Z) / 2.0f;
-            }
-
-
-            for (int i = 0; i < mCenterPoints.Length; i++)
-            {
-                //if (polygon.IsPointInside(mCenterPoints[i]))
-                if (Polygon.IsPointInside((float)mCenterPoints[i].X, (float)mCenterPoints[i].Y, otherVertices))
+                for (int i = 0; i < mCenterPoints.Length; i++)
                 {
-                    tempVector = Polygon.VectorFrom(mCenterPoints[i].X, mCenterPoints[i].Y, otherVertices, out sThrowAwayInt);
-                    //tempVector = polygon.VectorFrom(mCenterPoints[i]);
-                    if (tempVector.LengthSquared() > longestDistanceSquared)
-                    {
-                        vectorTo = tempVector;
-                        longestDistanceSquared = tempVector.LengthSquared();
-
-                    }
-                }
-            }
-
-            #endregion
-
-            #region Test side vs. side
-
-            bool hasIntersections = false;
-
-            // it's possible that there could still be a collision.  In this case, the points might not fall
-            // inside of eachother, but the edges will still overlap
-            //if (double.IsNegativeInfinity(longestDistanceSquared))
-            {
-
-                List<List<int>> sidesTouching = new List<List<int>>();
-
-                // Find all of the sides that are intersecting and store it in a List<List<int>>
-                // the first index represents the the side on this, the second represents the
-                // segments on the argument polygon that the first index is intersecting with.
-                for (int i = 0; i < mVertices.Length - 1; i++)
-                {
-                    List<int> currentIntersections = new List<int>();
-                    sidesTouching.Add(currentIntersections);
                     int afterI = i + 1;
-
-                    Segment thisSegment = new Segment(ref mVertices[i], ref mVertices[afterI]);
-
-
-                    for (int j = 0; j < otherVertices.Length - 1; j++)
-                    {
-                        int afterJ = j + 1;
-                        Segment otherSegment = new Segment(ref otherVertices[j], ref otherVertices[afterJ]);
-                        if (thisSegment.Intersects(otherSegment))
-                        {
-                            currentIntersections.Add(j);
-                            hasIntersections = true;
-                        }
-                    }
+                    mCenterPoints[i].X = (mVertices[i].Position.X + mVertices[afterI].Position.X) / 2.0f;
+                    mCenterPoints[i].Y = (mVertices[i].Position.Y + mVertices[afterI].Position.Y) / 2.0f;
+                    mCenterPoints[i].Z = (mVertices[i].Position.Z + mVertices[afterI].Position.Z) / 2.0f;
                 }
 
-                float longestDistance = (float)System.Math.Sqrt(longestDistanceSquared);
-                if (double.IsNegativeInfinity(longestDistanceSquared))
-                    longestDistance = float.NegativeInfinity;
 
-
-                // todo - we do this vs. other, now need to do other vs. this and get the shortest of the two, I think
-
-                float longestDistanceStep4This = float.NegativeInfinity;
-                Vector3 vector3Step4This = Vector3.Zero;
-
-                // Step 1: This segment that intersects with other segment can be moved one of two ways. Get each distance
-                // Step 2: Get the shortest distance of the two values obtained in step 1 
-                // Step 3: Perform step 1 and step 2 on the other segment against this segment (opposite order) and get the shortest distance of the two
-                // Step 4: See if the result of step 3 is the shortest distance obtained so far
-                for (int i = 0; i < sidesTouching.Count; i++)
+                for (int i = 0; i < mCenterPoints.Length; i++)
                 {
-                    var thisSegment = new Segment(ref mVertices[i], ref mVertices[i + 1]);
-                    for (int j = 0; j < sidesTouching[i].Count; j++)
+                    //if (polygon.IsPointInside(mCenterPoints[i]))
+                    if (Polygon.IsPointInside((float)mCenterPoints[i].X, (float)mCenterPoints[i].Y, otherVertices))
                     {
-                        var otherSegment = new Segment(ref otherVertices[sidesTouching[i][j]], ref otherVertices[sidesTouching[i][j] + 1]);
-
-                        // step 1 for this:
-                        var thisDistance1 = otherSegment.DistanceTo(thisSegment.Point1);
-                        var thisDistance2 = otherSegment.DistanceTo(thisSegment.Point2);
-
-
-                        // step 2 for this/other:
-                        var shortestDistanceThis = System.Math.Min(thisDistance1, thisDistance2);
-
-                        float step3ShortestDistance;
-                        Point step3Endpoint;
-                        Segment step3Segment;
-                        // step 3:
-
-                        step3Segment = otherSegment;
-                        if (shortestDistanceThis == thisDistance1)
+                        tempVector = Polygon.VectorFrom(mCenterPoints[i].X, mCenterPoints[i].Y, otherVertices, out sThrowAwayInt);
+                        //tempVector = polygon.VectorFrom(mCenterPoints[i]);
+                        if (tempVector.LengthSquared() > longestDistanceSquared)
                         {
-                            step3Endpoint = thisSegment.Point1;
-                            step3ShortestDistance = thisDistance1;
-                        }
-                        else // thisDistance2
-                        {
-                            step3Endpoint = thisSegment.Point2;
-                            step3ShortestDistance = thisDistance2;
-                        }
-
-
-                        if (step3ShortestDistance > longestDistanceStep4This)
-                        {
-                            longestDistanceStep4This = step3ShortestDistance;
-                            var step3ClosestPoint = step3Segment.ClosestPointTo(step3Endpoint);
-                            vector3Step4This = new Vector3((float)(step3ClosestPoint.X - step3Endpoint.X), (float)(step3ClosestPoint.Y - step3Endpoint.Y), 0);
+                            vectorTo = tempVector;
+                            longestDistanceSquared = tempVector.LengthSquared();
 
                         }
                     }
                 }
 
-                float longestDistanceStep4Other = float.NegativeInfinity;
-                Vector3 vector3Step4Other = Vector3.Zero;
+                #endregion
 
+                #region Test side vs. side
 
-                // now do the 2nd polygon vs. the first
-                for (int i = 0; i < sidesTouching.Count; i++)
+                bool hasIntersections = false;
+
+                // it's possible that there could still be a collision.  In this case, the points might not fall
+                // inside of eachother, but the edges will still overlap
+                //if (double.IsNegativeInfinity(longestDistanceSquared))
                 {
-                    var thisSegment = new Segment(ref mVertices[i], ref mVertices[i + 1]);
-                    for (int j = 0; j < sidesTouching[i].Count; j++)
+
+                    List<List<int>> sidesTouching = new List<List<int>>();
+
+                    // Find all of the sides that are intersecting and store it in a List<List<int>>
+                    // the first index represents the the side on this, the second represents the
+                    // segments on the argument polygon that the first index is intersecting with.
+                    for (int i = 0; i < mVertices.Length - 1; i++)
                     {
-                        var otherSegment = new Segment(ref otherVertices[sidesTouching[i][j]], ref otherVertices[sidesTouching[i][j] + 1]);
+                        List<int> currentIntersections = new List<int>();
+                        sidesTouching.Add(currentIntersections);
+                        int afterI = i + 1;
 
-                        // step 1 for this:
-                        var otherDistance1 = thisSegment.DistanceTo(otherSegment.Point1);
-                        var otherDistance2 = thisSegment.DistanceTo(otherSegment.Point2);
+                        Segment thisSegment = new Segment(ref mVertices[i], ref mVertices[afterI]);
 
 
-                        // step 2 for this/other:
-                        var shortestDistanceOther = System.Math.Min(otherDistance1, otherDistance2);
-
-                        float step3ShortestDistance;
-                        Point step3Endpoint;
-                        Segment step3Segment;
-                        // step 3:
-
-                        step3Segment = thisSegment;
-                        if (shortestDistanceOther == otherDistance1)
+                        for (int j = 0; j < otherVertices.Length - 1; j++)
                         {
-                            step3Endpoint = otherSegment.Point1;
-                            step3ShortestDistance = otherDistance1;
-                        }
-                        else // thisDistance2
-                        {
-                            step3Endpoint = otherSegment.Point2;
-                            step3ShortestDistance = otherDistance2;
-                        }
-
-
-                        if (step3ShortestDistance > longestDistanceStep4Other)
-                        {
-                            longestDistanceStep4Other = step3ShortestDistance;
-                            var step3ClosestPoint = step3Segment.ClosestPointTo(step3Endpoint);
-                            vector3Step4Other = new Vector3((float)(step3ClosestPoint.X - step3Endpoint.X), (float)(step3ClosestPoint.Y - step3Endpoint.Y), 0);
-
+                            int afterJ = j + 1;
+                            Segment otherSegment = new Segment(ref otherVertices[j], ref otherVertices[afterJ]);
+                            if (thisSegment.Intersects(otherSegment))
+                            {
+                                currentIntersections.Add(j);
+                                hasIntersections = true;
+                            }
                         }
                     }
-                }
 
-                float distanceToConsider = float.NegativeInfinity;
-                if(float.IsPositiveInfinity(longestDistanceStep4This) && float.IsPositiveInfinity(longestDistanceStep4Other))
-                {
-                    // do nothing
-                }
-                else if (!float.IsPositiveInfinity(longestDistanceStep4This) && float.IsPositiveInfinity(longestDistanceStep4Other))
-                {
-                    distanceToConsider = longestDistanceStep4This;
-                }
-                else if (float.IsPositiveInfinity(longestDistanceStep4This) && !float.IsPositiveInfinity(longestDistanceStep4Other))
-                {
-                    distanceToConsider = longestDistanceStep4Other;
-                }
-                else if(longestDistanceStep4This < longestDistanceStep4Other)
-                {
-                    distanceToConsider = longestDistanceStep4This;
-                }
-                else
-                {
-                    distanceToConsider = longestDistanceStep4Other;
-                }
+                    float longestDistance = (float)System.Math.Sqrt(longestDistanceSquared);
+                    if (double.IsNegativeInfinity(longestDistanceSquared))
+                        longestDistance = float.NegativeInfinity;
 
-                if(!float.IsNegativeInfinity(distanceToConsider) && distanceToConsider > longestDistance)
-                {
-                    if(distanceToConsider == longestDistanceStep4This)
+
+                    // todo - we do this vs. other, now need to do other vs. this and get the shortest of the two, I think
+
+                    float longestDistanceStep4This = float.NegativeInfinity;
+                    Vector3 vector3Step4This = Vector3.Zero;
+
+                    // Step 1: This segment that intersects with other segment can be moved one of two ways. Get each distance
+                    // Step 2: Get the shortest distance of the two values obtained in step 1 
+                    // Step 3: Perform step 1 and step 2 on the other segment against this segment (opposite order) and get the shortest distance of the two
+                    // Step 4: See if the result of step 3 is the shortest distance obtained so far
+                    for (int i = 0; i < sidesTouching.Count; i++)
                     {
-                        vectorTo.X = vector3Step4This.X;
-                        vectorTo.Y = vector3Step4This.Y;
+                        var thisSegment = new Segment(ref mVertices[i], ref mVertices[i + 1]);
+                        for (int j = 0; j < sidesTouching[i].Count; j++)
+                        {
+                            var otherSegment = new Segment(ref otherVertices[sidesTouching[i][j]], ref otherVertices[sidesTouching[i][j] + 1]);
+
+                            // step 1 for this:
+                            var thisDistance1 = otherSegment.DistanceTo(thisSegment.Point1);
+                            var thisDistance2 = otherSegment.DistanceTo(thisSegment.Point2);
+
+
+                            // step 2 for this/other:
+                            var shortestDistanceThis = System.Math.Min(thisDistance1, thisDistance2);
+
+                            float step3ShortestDistance;
+                            Point step3Endpoint;
+                            Segment step3Segment;
+                            // step 3:
+
+                            step3Segment = otherSegment;
+                            if (shortestDistanceThis == thisDistance1)
+                            {
+                                step3Endpoint = thisSegment.Point1;
+                                step3ShortestDistance = thisDistance1;
+                            }
+                            else // thisDistance2
+                            {
+                                step3Endpoint = thisSegment.Point2;
+                                step3ShortestDistance = thisDistance2;
+                            }
+
+
+                            if (step3ShortestDistance > longestDistanceStep4This)
+                            {
+                                longestDistanceStep4This = step3ShortestDistance;
+                                var step3ClosestPoint = step3Segment.ClosestPointTo(step3Endpoint);
+                                vector3Step4This = new Vector3((float)(step3ClosestPoint.X - step3Endpoint.X), (float)(step3ClosestPoint.Y - step3Endpoint.Y), 0);
+
+                            }
+                        }
+                    }
+
+                    float longestDistanceStep4Other = float.NegativeInfinity;
+                    Vector3 vector3Step4Other = Vector3.Zero;
+
+
+                    // now do the 2nd polygon vs. the first
+                    for (int i = 0; i < sidesTouching.Count; i++)
+                    {
+                        var thisSegment = new Segment(ref mVertices[i], ref mVertices[i + 1]);
+                        for (int j = 0; j < sidesTouching[i].Count; j++)
+                        {
+                            var otherSegment = new Segment(ref otherVertices[sidesTouching[i][j]], ref otherVertices[sidesTouching[i][j] + 1]);
+
+                            // step 1 for this:
+                            var otherDistance1 = thisSegment.DistanceTo(otherSegment.Point1);
+                            var otherDistance2 = thisSegment.DistanceTo(otherSegment.Point2);
+
+
+                            // step 2 for this/other:
+                            var shortestDistanceOther = System.Math.Min(otherDistance1, otherDistance2);
+
+                            float step3ShortestDistance;
+                            Point step3Endpoint;
+                            Segment step3Segment;
+                            // step 3:
+
+                            step3Segment = thisSegment;
+                            if (shortestDistanceOther == otherDistance1)
+                            {
+                                step3Endpoint = otherSegment.Point1;
+                                step3ShortestDistance = otherDistance1;
+                            }
+                            else // thisDistance2
+                            {
+                                step3Endpoint = otherSegment.Point2;
+                                step3ShortestDistance = otherDistance2;
+                            }
+
+
+                            if (step3ShortestDistance > longestDistanceStep4Other)
+                            {
+                                longestDistanceStep4Other = step3ShortestDistance;
+                                var step3ClosestPoint = step3Segment.ClosestPointTo(step3Endpoint);
+                                vector3Step4Other = new Vector3((float)(step3ClosestPoint.X - step3Endpoint.X), (float)(step3ClosestPoint.Y - step3Endpoint.Y), 0);
+
+                            }
+                        }
+                    }
+
+                    float distanceToConsider = float.NegativeInfinity;
+                    if(float.IsPositiveInfinity(longestDistanceStep4This) && float.IsPositiveInfinity(longestDistanceStep4Other))
+                    {
+                        // do nothing
+                    }
+                    else if (!float.IsPositiveInfinity(longestDistanceStep4This) && float.IsPositiveInfinity(longestDistanceStep4Other))
+                    {
+                        distanceToConsider = longestDistanceStep4This;
+                    }
+                    else if (float.IsPositiveInfinity(longestDistanceStep4This) && !float.IsPositiveInfinity(longestDistanceStep4Other))
+                    {
+                        distanceToConsider = longestDistanceStep4Other;
+                    }
+                    else if(longestDistanceStep4This < longestDistanceStep4Other)
+                    {
+                        distanceToConsider = longestDistanceStep4This;
                     }
                     else
                     {
-                        vectorTo.X = vector3Step4Other.X;
-                        vectorTo.Y = vector3Step4Other.Y;
+                        distanceToConsider = longestDistanceStep4Other;
                     }
-                }
+
+                    if(!float.IsNegativeInfinity(distanceToConsider) && distanceToConsider > longestDistance)
+                    {
+                        if(distanceToConsider == longestDistanceStep4This)
+                        {
+                            vectorTo.X = vector3Step4This.X;
+                            vectorTo.Y = vector3Step4This.Y;
+                        }
+                        else
+                        {
+                            vectorTo.X = vector3Step4Other.X;
+                            vectorTo.Y = vector3Step4Other.Y;
+                        }
+                    }
                 
 
 
+                }
+
+
+                #endregion
+
+                #region Shift polygons
+
+                float thisRatio = thisMass / (thisMass + otherMass);
+
+
+                thisMoveCollisionReposition.X = (float)vectorTo.X * (1 - thisRatio);
+                thisMoveCollisionReposition.Y = (float)vectorTo.Y * (1 - thisRatio);
+
+
+                otherMoveCollisionReposition.X = -(float)vectorTo.X * thisRatio;
+                otherMoveCollisionReposition.Y = -(float)vectorTo.Y * thisRatio;
+
+                #endregion
+            }
+        }
+
+        private void PerformAxisSeparatingTheoremCollision(VertexPositionColor[] vertices, VertexPositionColor[] otherVertices, float thisMass, float otherMass, 
+            out Vector3 thisMoveCollisionReposition, out Vector3 otherMoveCollisionReposition)
+        {
+            Vector3 firstVectorResult, secondVectorResult;
+            GetSeparatingVectors(vertices, otherVertices, thisMass, otherMass, out firstVectorResult, out secondVectorResult);
+
+            // invert them, test that so that we check the edges of the 2nd object
+            Vector3 firstVectorResultInvertOrder, secondVectorResultInvertOrder;
+            GetSeparatingVectors(otherVertices, vertices, otherMass, thisMass, out secondVectorResultInvertOrder, out firstVectorResultInvertOrder);
+
+            if (firstVectorResult.Length() + secondVectorResult.Length() < firstVectorResultInvertOrder.Length() + secondVectorResultInvertOrder.Length())
+            {
+                thisMoveCollisionReposition = firstVectorResult;
+                otherMoveCollisionReposition = secondVectorResult;
+            }
+            else
+            {
+                thisMoveCollisionReposition = firstVectorResultInvertOrder;
+                otherMoveCollisionReposition = secondVectorResultInvertOrder;
+            }
+        }
+
+        private static void GetSeparatingVectors(VertexPositionColor[] firstVertices, VertexPositionColor[] secondVertices, float thisMass, float otherMass, out Vector3 firstVectorResult, out Vector3 secondVectorResult)
+        {
+            firstVectorResult = new Vector3();
+            secondVectorResult = new Vector3();
+            int firstLengthMinusOne = firstVertices.Length - 1;
+            int secondLengthMinusOne = secondVertices.Length - 1;
+
+            Vector2 smallestOverlapVector = new Vector2();
+            float? smallestOverlapLength = null;
+
+            Vector2 vectorForPoint = new Vector2();
+
+            for (int i = 0; i < firstLengthMinusOne; i++)
+            {
+
+                float firstVectorX = firstVertices[i + 1].Position.X - firstVertices[i].Position.X;
+                float firstVectorY = firstVertices[i + 1].Position.Y - firstVertices[i].Position.Y;
+
+                // normal is -y, x
+                var normalizedSurface = Vector2.Normalize(new Vector2(-firstVectorY, firstVectorX));
+
+                float minSecond = float.PositiveInfinity;
+
+                for (int j = 0; j < secondLengthMinusOne; j++)
+                {
+                    vectorForPoint.X = secondVertices[j].Position.X - firstVertices[i].Position.X;
+                    vectorForPoint.Y = secondVertices[j].Position.Y - firstVertices[i].Position.Y;
+
+                    var result = Vector2.Dot(vectorForPoint, normalizedSurface);
+
+                    if (result < minSecond)
+                    {
+                        minSecond = result;
+                    }
+                }
+
+                var overlaps = minSecond < 0;
+
+                if (overlaps)
+                {
+                    var valueToUse = -minSecond;
+
+                    if (smallestOverlapLength == null || System.Math.Abs(valueToUse) < System.Math.Abs(smallestOverlapLength.Value))
+                    {
+                        smallestOverlapLength = valueToUse;
+                        smallestOverlapVector = normalizedSurface;
+                    }
+                }
+                else
+                {
+                    smallestOverlapLength = null;
+
+                    // no possible collision
+                    break;
+                }
+
             }
 
+            if (smallestOverlapLength != null)
+            {
+                var totalMass = thisMass + otherMass;
+                var thisRatioToMove = 1 - (thisMass / totalMass);
+                var otherRatiotoMove = (thisMass / totalMass);
 
-            #endregion
-
-            #region Shift polygons
-
-            float thisRatio = thisMass / (thisMass + otherMass);
-
-
-            thisMoveCollisionReposition.X = (float)vectorTo.X * (1 - thisRatio);
-            thisMoveCollisionReposition.Y = (float)vectorTo.Y * (1 - thisRatio);
+                firstVectorResult.X = -thisRatioToMove * smallestOverlapVector.X * smallestOverlapLength.Value;
+                firstVectorResult.Y = -thisRatioToMove * smallestOverlapVector.Y * smallestOverlapLength.Value;
 
 
-            otherMoveCollisionReposition.X = -(float)vectorTo.X * thisRatio;
-            otherMoveCollisionReposition.Y = -(float)vectorTo.Y * thisRatio;
+                secondVectorResult.X = otherRatiotoMove * smallestOverlapVector.X * smallestOverlapLength.Value;
+                secondVectorResult.Y = otherRatiotoMove * smallestOverlapVector.Y * smallestOverlapLength.Value;
 
-            #endregion
+            }
         }
         #endregion
 
