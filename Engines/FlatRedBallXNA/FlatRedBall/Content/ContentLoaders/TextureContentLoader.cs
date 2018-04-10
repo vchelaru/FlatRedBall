@@ -36,25 +36,21 @@ namespace FlatRedBall.Content.ContentLoaders
                 throw new NullReferenceException("The Renderer's Graphics is null.  Call FlatRedBallServices.Initialize before attempting to load any textures");
             }
 
-
-
-#if FRB_MDX
-#else
             switch (extension.ToLowerInvariant())
             {
                 case "bmp":
                     {
 
-                            ImageData bmp = FlatRedBall.IO.BmpLoader.GetPixelData(assetName);
+                        ImageData bmp = FlatRedBall.IO.BmpLoader.GetPixelData(assetName);
 
-                            bmp.Replace(FlatRedBallServices.GraphicsOptions.TextureLoadingColorKey, Color.Transparent);
+                        bmp.Replace(FlatRedBallServices.GraphicsOptions.TextureLoadingColorKey, Color.Transparent);
 
-                            Texture2D texture = bmp.ToTexture2D();
-                            //new Texture2D(FlatRedBallServices.GraphicsDevice, bmp.Width, bmp.Height, 0, TextureUsage.None, SurfaceFormat.Color);
-                            //texture.SetData<Color>(bmp.Data);
-                            texture.Name = assetName;
-                            loadedAsset = texture;
-                            break;
+                        Texture2D texture = bmp.ToTexture2D();
+                        //new Texture2D(FlatRedBallServices.GraphicsDevice, bmp.Width, bmp.Height, 0, TextureUsage.None, SurfaceFormat.Color);
+                        //texture.SetData<Color>(bmp.Data);
+                        texture.Name = assetName;
+                        loadedAsset = texture;
+                        break;
 
                     }
                 case "png":
@@ -63,7 +59,7 @@ namespace FlatRedBall.Content.ContentLoaders
 
                     if (useFrbPngLoader)
                     {
-#if WINDOWS_8 || MONOGAME
+#if MONOGAME
 						throw new NotImplementedException();
 #else
                         ImageData png = FlatRedBall.IO.PngLoader.GetPixelData(assetName);
@@ -96,7 +92,7 @@ namespace FlatRedBall.Content.ContentLoaders
                     }
                 case "gif":
                     {
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME
 						throw new NotImplementedException();
 #else
                         ImageDataList imageDataList = GifLoader.GetImageDataList(assetName);
@@ -123,7 +119,6 @@ namespace FlatRedBall.Content.ContentLoaders
                     throw new ArgumentException("FlatRedBall does not support the " + extension + " file type passed for loading a Texture2D");
                     //break;
             }
-#endif
             return loadedAsset;
         }
 
