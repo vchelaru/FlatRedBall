@@ -74,6 +74,10 @@ namespace FlatRedBall.TileCollisions
 
         public string Name { get; set; }
 
+
+        public List<Polygon> LastCollisionPolygons => mShapes.LastCollisionPolygons;
+        public List<AxisAlignedRectangle> LastCollisionAxisAlignedRectangles => mShapes.LastCollisionAxisAlignedRectangles;
+
         public bool Visible
         {
             get { return mVisible; }
@@ -389,7 +393,7 @@ namespace FlatRedBall.TileCollisions
             this.mShapes.MakeOneWay();
             this.mShapes.RemoveFromManagers();
             this.mShapes.MakeTwoWay();
-        }
+        } 
 
         public void RemoveFromManagers()
         {

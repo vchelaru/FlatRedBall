@@ -1047,7 +1047,8 @@ namespace FlatRedBall.Math.Geometry
             return toReturn;
         }
 
-        private void CollideAgainstMovePreview(float thisMass, float otherMass, ref Vector3 thisMoveCollisionReposition, ref Vector3 otherMoveCollisionReposition, VertexPositionColor[] otherVertices,
+        private void CollideAgainstMovePreview(float thisMass, float otherMass, ref Vector3 thisMoveCollisionReposition, ref Vector3 otherMoveCollisionReposition, 
+            VertexPositionColor[] otherVertices,
             bool isThisConvex, bool isOtherConvex)
         {
             if(isThisConvex && isOtherConvex)
@@ -1347,11 +1348,13 @@ namespace FlatRedBall.Math.Geometry
             out Vector3 thisMoveCollisionReposition, out Vector3 otherMoveCollisionReposition)
         {
             Vector3 firstVectorResult, secondVectorResult;
-            GetSeparatingVectors(vertices, otherVertices, thisMass, otherMass, out firstVectorResult, out secondVectorResult);
+            int firstDeepestIndex;
+            GetSeparatingVectors(vertices, otherVertices, thisMass, otherMass, out firstVectorResult, out secondVectorResult, out firstDeepestIndex);
 
             // invert them, test that so that we check the edges of the 2nd object
             Vector3 firstVectorResultInvertOrder, secondVectorResultInvertOrder;
-            GetSeparatingVectors(otherVertices, vertices, otherMass, thisMass, out secondVectorResultInvertOrder, out firstVectorResultInvertOrder);
+            int secondDeepestIndex;
+            GetSeparatingVectors(otherVertices, vertices, otherMass, thisMass, out secondVectorResultInvertOrder, out firstVectorResultInvertOrder, out secondDeepestIndex);
 
             if (firstVectorResult.Length() + secondVectorResult.Length() < firstVectorResultInvertOrder.Length() + secondVectorResultInvertOrder.Length())
             {
@@ -1365,7 +1368,8 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-        private static void GetSeparatingVectors(VertexPositionColor[] firstVertices, VertexPositionColor[] secondVertices, float thisMass, float otherMass, out Vector3 firstVectorResult, out Vector3 secondVectorResult)
+        private static void GetSeparatingVectors(VertexPositionColor[] firstVertices, VertexPositionColor[] secondVertices, float firstMass, float secondMass, 
+            out Vector3 firstVectorResult, out Vector3 secondVectorResult, out int secondVectorIndex)
         {
             firstVectorResult = new Vector3();
             secondVectorResult = new Vector3();
@@ -1376,6 +1380,8 @@ namespace FlatRedBall.Math.Geometry
             float? smallestOverlapLength = null;
 
             Vector2 vectorForPoint = new Vector2();
+
+            secondVectorIndex = -1;
 
             for (int i = 0; i < firstLengthMinusOne; i++)
             {
@@ -1388,6 +1394,7 @@ namespace FlatRedBall.Math.Geometry
 
                 float minSecond = float.PositiveInfinity;
 
+                int smallestIndexForThisEdge = -1;
                 for (int j = 0; j < secondLengthMinusOne; j++)
                 {
                     vectorForPoint.X = secondVertices[j].Position.X - firstVertices[i].Position.X;
@@ -1398,6 +1405,7 @@ namespace FlatRedBall.Math.Geometry
                     if (result < minSecond)
                     {
                         minSecond = result;
+                        smallestIndexForThisEdge = j;
                     }
                 }
 
@@ -1411,6 +1419,7 @@ namespace FlatRedBall.Math.Geometry
                     {
                         smallestOverlapLength = valueToUse;
                         smallestOverlapVector = normalizedSurface;
+                        secondVectorIndex = smallestIndexForThisEdge;
                     }
                 }
                 else
@@ -1425,9 +1434,9 @@ namespace FlatRedBall.Math.Geometry
 
             if (smallestOverlapLength != null)
             {
-                var totalMass = thisMass + otherMass;
-                var thisRatioToMove = 1 - (thisMass / totalMass);
-                var otherRatiotoMove = (thisMass / totalMass);
+                var totalMass = firstMass + secondMass;
+                var thisRatioToMove = 1 - (firstMass / totalMass);
+                var otherRatiotoMove = (firstMass / totalMass);
 
                 firstVectorResult.X = -thisRatioToMove * smallestOverlapVector.X * smallestOverlapLength.Value;
                 firstVectorResult.Y = -thisRatioToMove * smallestOverlapVector.Y * smallestOverlapLength.Value;

@@ -637,8 +637,83 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 codeBlock.Line(@"
         public void CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, bool isCloudCollision = false)
         {
+            var positionBefore = this.Position;
+            var velocityBefore = this.Velocity;
+
+
             CollideAgainst(() => shapeCollection.CollideAgainstSolid(this), isCloudCollision);
+
+            var wasMovedHorizontally = this.X != positionBefore.X;
+
+            var wasSlowedByPolygons = wasMovedHorizontally && shapeCollection.LastCollisionPolygons.Count != 0;
+
+            if(wasSlowedByPolygons)
+            {
+                var repositionVector = new Microsoft.Xna.Framework.Vector2(0, 1);
+                foreach(var rect in this.Collision.AxisAlignedRectangles)
+                {
+                    if(rect.LastMoveCollisionReposition.X != 0)
+                    {
+                        repositionVector = rect.LastMoveCollisionReposition;
+                        break;
+                    }
+                }
+                var shouldPreserve = DetermineIfHorizontalVelocityShouldBePreserved(velocityBefore.X, shapeCollection, repositionVector);
+
+                if(shouldPreserve)
+                {
+                    // keep the velocity and the position:
+                    var xDifference = positionBefore.X - this.Position.X;
+
+                    var tangent = new Microsoft.Xna.Framework.Vector2(repositionVector.Y, -repositionVector.X);
+
+                    var multiplier = xDifference / tangent.X;
+
+                    this.Velocity.X = velocityBefore.X;
+                    this.Position.X = positionBefore.X;
+                    this.Position.Y += multiplier * tangent.Y;
+                    this.ForceUpdateDependenciesDeep();
+                }
+            }
         }
+
+        
+        private bool DetermineIfHorizontalVelocityShouldBePreserved(float oldHorizontalVelocity, FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, 
+            Microsoft.Xna.Framework.Vector2 repositionVector)
+        {
+            const float maxSlope = 80; // degrees
+            var maxSlopeInRadians = Microsoft.Xna.Framework.MathHelper.ToRadians(maxSlope);
+            // The reposition is the normal of the slope, so it's the X
+            // That is, on a slope like this:
+            // \
+            //  \
+            //   \
+            //    \
+            //     \
+            // If the slope ^^ is nearly 90, then the X will be nearly 1. To get that, we will do the sin of the slope
+
+            var maxRepositionDirectionX = System.Math.Sin(maxSlopeInRadians);
+
+            bool collidedWithSlopeGreaterThanMax = repositionVector.Y <= 0;
+
+            if(collidedWithSlopeGreaterThanMax == false)
+            {
+                if(repositionVector.X != 0 || repositionVector.Y != 0)
+                {
+                    var normalized = Microsoft.Xna.Framework.Vector2.Normalize(repositionVector);
+
+                    if(normalized.X > maxRepositionDirectionX || normalized.X < -maxRepositionDirectionX)
+                    {
+                        collidedWithSlopeGreaterThanMax = true;
+                    }
+
+                }
+            }
+            var shouldBePreserved = collidedWithSlopeGreaterThanMax == false;
+
+            return shouldBePreserved;
+        }
+
 
         public void CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, FlatRedBall.Math.Geometry.AxisAlignedRectangle thisCollision, bool isCloudCollision = false)
         {
