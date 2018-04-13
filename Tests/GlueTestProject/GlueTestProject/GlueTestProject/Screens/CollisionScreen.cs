@@ -79,6 +79,8 @@ namespace GlueTestProject.Screens
         {
             var subcollision = CollisionManager.Self.CreateRelationship(PlayerList, ShipList);
 
+            var selfCollidingRelationship = CollisionManager.Self.CreateRelationship(SelfCollisionList, SelfCollisionList);
+            selfCollidingRelationship.SetMoveCollision(1, 1);
 
         }
 
@@ -132,6 +134,12 @@ namespace GlueTestProject.Screens
             var shouldContinue = this.ActivityCallCount > 5;
 
             // give the screen a chance to call 
+
+            if(!firstTimeCalled)
+            {
+                var areAllDifferent = C1.X != C2.X && C2.X != C3.X && C3.X != C4.X;
+                areAllDifferent.ShouldBe(true, "because all items in this list should self move collide");
+            }
 
             if (shouldContinue)
             {
