@@ -147,7 +147,20 @@ namespace FlatRedBall.TileGraphics
             {
                 return mTexture;
             }
+            set
+            {
+                if (value == null)
+                {
+                    throw new Exception("Texture can't be null.");
+                }
 
+                if (mTexture != null && (mTexture.Width != value.Width || mTexture.Height != value.Height))
+                {
+                    throw new Exception("New texture must match previous texture dimensions.");
+                }
+
+                mTexture = value;
+            }
         }
 
         // Doing these properties this way lets me avoid a computational step of 1 - ParallaxMultiplier in the Update() function
