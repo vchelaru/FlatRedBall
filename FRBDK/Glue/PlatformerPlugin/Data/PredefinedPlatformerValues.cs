@@ -37,7 +37,14 @@ namespace FlatRedBall.PlatformerPlugin.Data
                     Gravity = 900,
                     MaxFallSpeed = 500,
                     CanFallThroughCloudPlatforms = true,
-                    CloudFallThroughDistance = 16
+                    CloudFallThroughDistance = 16,
+
+                    MoveSameSpeedOnSlopes = false,
+                    UphillFullSpeedSlope = 0,
+                    UphillStopSpeedSlope= 60,
+                    DownhillFullSpeedSlope = 0,
+                    DownhillMaxSpeedSlope = 60,
+                    DownhillMaxSpeedBoostPercentage = 50
                 };
                 platformerValues.Add(defaultGround.Name, defaultGround);
             }
@@ -54,7 +61,9 @@ namespace FlatRedBall.PlatformerPlugin.Data
                     JumpVelocity = 0,
                     Gravity = 900,
                     MaxFallSpeed = 500,
-                    CanFallThroughCloudPlatforms = false
+                    CanFallThroughCloudPlatforms = false,
+
+                    MoveSameSpeedOnSlopes = true
             
             };
                 platformerValues.Add(defaultInAir.Name, defaultInAir);

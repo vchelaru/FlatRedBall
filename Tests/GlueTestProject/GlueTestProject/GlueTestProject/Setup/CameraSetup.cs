@@ -21,26 +21,30 @@
         }
         internal static class CameraSetup
         {
+            static Microsoft.Xna.Framework.GraphicsDeviceManager graphicsDeviceManager;
             public static CameraSetupData Data = new CameraSetupData
             {
-                Scale = 1f,
+                Scale = 100f,
                 ResolutionWidth = 1000,
                 ResolutionHeight = 600,
                 Is2D = true,
-                AspectRatio = 2m,
                 IsFullScreen = false,
                 AllowWidowResizing = true,
                 ResizeBehavior = ResizeBehavior.StretchVisibleArea,
             }
             ;
-            internal static void ResetCamera (Camera cameraToReset) 
+            internal static void ResetCamera (Camera cameraToReset = null) 
             {
-                FlatRedBall.Camera.Main.Orthogonal = Data.Is2D;
+                if (cameraToReset == null)
+                {
+                    cameraToReset = FlatRedBall.Camera.Main;
+                }
+                cameraToReset.Orthogonal = Data.Is2D;
                 if (Data.Is2D)
                 {
-                    FlatRedBall.Camera.Main.OrthogonalHeight = Data.ResolutionHeight;
-                    FlatRedBall.Camera.Main.OrthogonalWidth = Data.ResolutionWidth;
-                    FlatRedBall.Camera.Main.FixAspectRatioYConstant();
+                    cameraToReset.OrthogonalHeight = Data.ResolutionHeight;
+                    cameraToReset.OrthogonalWidth = Data.ResolutionWidth;
+                    cameraToReset.FixAspectRatioYConstant();
                 }
                 if (Data.AspectRatio != null)
                 {
@@ -48,6 +52,13 @@
                 }
             }
             internal static void SetupCamera (Camera cameraToSetUp, Microsoft.Xna.Framework.GraphicsDeviceManager graphicsDeviceManager) 
+            {
+                CameraSetup.graphicsDeviceManager = graphicsDeviceManager;
+                ResetWindow();
+                ResetCamera(cameraToSetUp);
+                FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += HandleResolutionChange;
+            }
+            internal static void ResetWindow () 
             {
                 #if WINDOWS || DESKTOP_GL
                 FlatRedBall.FlatRedBallServices.Game.Window.AllowUserResizing = Data.AllowWidowResizing;
@@ -66,7 +77,7 @@
                 }
                 else
                 {
-                    FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution((int)(Data.ResolutionWidth * Data.Scale), (int)(Data.ResolutionHeight * Data.Scale));
+                    FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution((int)(Data.ResolutionWidth * Data.Scale/ 100.0f), (int)(Data.ResolutionHeight * Data.Scale/ 100.0f));
                 }
                 #elif IOS || ANDROID
                 FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight);
@@ -77,11 +88,9 @@
                 }
                 else
                 {
-                    FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution((int)(Data.ResolutionWidth * Data.Scale), (int)(Data.ResolutionHeight * Data.Scale));
+                    FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution((int)(Data.ResolutionWidth * Data.Scale/ 100.0f), (int)(Data.ResolutionHeight * Data.Scale/ 100.0f));
                 }
                 #endif
-                ResetCamera(cameraToSetUp);
-                FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += HandleResolutionChange;
             }
             private static void HandleResolutionChange (object sender, System.EventArgs args) 
             {
@@ -91,7 +100,7 @@
                 }
                 if (Data.Is2D && Data.ResizeBehavior == ResizeBehavior.IncreaseVisibleArea)
                 {
-                    FlatRedBall.Camera.Main.OrthogonalHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / Data.Scale;
+                    FlatRedBall.Camera.Main.OrthogonalHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / (Data.Scale/ 100.0f);
                     FlatRedBall.Camera.Main.FixAspectRatioYConstant();
                 }
             }

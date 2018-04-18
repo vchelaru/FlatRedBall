@@ -2146,7 +2146,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                             {
                                 var displaySettings = GlueState.Self.CurrentGlueProject.DisplaySettings;
                                 decimal effectiveWidth = displaySettings.ResolutionWidth;
-                                if(displaySettings.FixedAspectRatio)
+
+                                // April 13, 2018
+                                // Vic says: I'm not sure why I wrote this code. Consider a situation where the game has an aspect ratio of 2,
+                                // and is running at a resolution of 1000x600. In this case it will be letterboxed, but the resolution is still 1000
+                                if(displaySettings.FixedAspectRatio && displaySettings.AspectRatioWidth/displaySettings.AspectRatioHeight < displaySettings.ResolutionWidth / (decimal)displaySettings.ResolutionHeight )
                                 {
                                     var aspectRatio = displaySettings.AspectRatioWidth / displaySettings.AspectRatioHeight;
 

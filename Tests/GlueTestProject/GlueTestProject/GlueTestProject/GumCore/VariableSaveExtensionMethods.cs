@@ -302,8 +302,19 @@ namespace Gum.DataTypes
             {
                 Array array = Enum.GetValues(variableSave.GetRuntimeType());
 
-                variableSave.Value = array.GetValue((int)variableSave.Value);
-                return true;
+                // GetValue returns the value at an index, which is bad if there are
+                // gaps in the index
+                // variableSave.Value = array.GetValue((int)variableSave.Value);
+                for(int i = 0; i < array.Length; i++)
+                {
+                    if((int)array.GetValue(i) == (int)variableSave.Value)
+                    {
+                        variableSave.Value = array.GetValue(i);
+                        return true;
+                    }
+                }
+
+                return false;
             }
             return false;
 #else

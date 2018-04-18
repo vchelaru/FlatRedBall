@@ -66,7 +66,17 @@ namespace FlatRedBall.TileCollisions
             get { return mShapes.AxisAlignedRectangles; }
         }
 
+
+        public PositionedObjectList<Polygon> Polygons
+        {
+            get { return mShapes.Polygons; }
+        }
+
         public string Name { get; set; }
+
+
+        public List<Polygon> LastCollisionPolygons => mShapes.LastCollisionPolygons;
+        public List<AxisAlignedRectangle> LastCollisionAxisAlignedRectangles => mShapes.LastCollisionAxisAlignedRectangles;
 
         public bool Visible
         {
@@ -77,6 +87,15 @@ namespace FlatRedBall.TileCollisions
                 for (int i = 0; i < mShapes.AxisAlignedRectangles.Count; i++)
                 {
                     mShapes.AxisAlignedRectangles[i].Visible = value;
+                }
+                for (int i = 0; i < mShapes.Polygons.Count; i++)
+                {
+                    if (value)
+                    {
+                        // to get the verts to show up
+                        mShapes.Polygons[i].ForceUpdateDependencies();
+                    }
+                    mShapes.Polygons[i].Visible = value;
                 }
             }
         }
@@ -369,6 +388,13 @@ namespace FlatRedBall.TileCollisions
 
         }
 
+        public void RemoveFromManagersOneWay()
+        {
+            this.mShapes.MakeOneWay();
+            this.mShapes.RemoveFromManagers();
+            this.mShapes.MakeTwoWay();
+        } 
+
         public void RemoveFromManagers()
         {
             this.mShapes.RemoveFromManagers();
@@ -380,12 +406,15 @@ namespace FlatRedBall.TileCollisions
             {
                 case Axis.X:
                     mShapes.AxisAlignedRectangles.SortXInsertionAscending();
+                    mShapes.Polygons.SortXInsertionAscending();
                     break;
                 case Axis.Y:
                     mShapes.AxisAlignedRectangles.SortYInsertionAscending();
+                    mShapes.Polygons.SortYInsertionAscending();
                     break;
                 case Axis.Z:
                     mShapes.AxisAlignedRectangles.SortZInsertionAscending();
+                    mShapes.Polygons.SortZInsertionAscending();
                     break;
             }
         }

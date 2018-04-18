@@ -80,7 +80,7 @@ namespace FlatRedBall.Math.Geometry
 
         // Whether this is concave, calculated whenever the poits are set
         bool isConcaveCache;
-
+        bool isClockwiseCache;
 
         #endregion
 
@@ -121,6 +121,7 @@ namespace FlatRedBall.Math.Geometry
                         throw new System.IndexOutOfRangeException("Cannot set the Points to null.");
                     }
                     isConcaveCache = false;
+                    isClockwiseCache = false;
                 }
                 else
                 {
@@ -146,6 +147,7 @@ namespace FlatRedBall.Math.Geometry
 
                     this.FillVertexArray();
                     isConcaveCache = this.IsConcave();
+                    isClockwiseCache = this.IsClockwise();
                 }
             }
         }
@@ -790,7 +792,7 @@ namespace FlatRedBall.Math.Geometry
                 Vector3 otherMoveCollisionReposition = new Vector3();
 
                 CollideAgainstMovePreview(thisMass, otherMass, ref thisMoveCollisionReposition, ref otherMoveCollisionReposition, mVerticesForRectCollision,
-                    !this.isConcaveCache, true);
+                    !this.isConcaveCache && this.isClockwiseCache, true);
 
                 mLastMoveCollisionReposition = thisMoveCollisionReposition;
                 rectangle.mLastMoveCollisionReposition.X = otherMoveCollisionReposition.X;
@@ -1049,9 +1051,9 @@ namespace FlatRedBall.Math.Geometry
 
         private void CollideAgainstMovePreview(float thisMass, float otherMass, ref Vector3 thisMoveCollisionReposition, ref Vector3 otherMoveCollisionReposition, 
             VertexPositionColor[] otherVertices,
-            bool isThisConvex, bool isOtherConvex)
+            bool canUseAxisSeparating, bool canOtherUseAxisSeparating)
         {
-            if(isThisConvex && isOtherConvex)
+            if(canUseAxisSeparating && canOtherUseAxisSeparating)
             {
                 PerformAxisSeparatingTheoremCollision(this.mVertices, otherVertices, thisMass, otherMass, out thisMoveCollisionReposition, out otherMoveCollisionReposition);
             }
@@ -1740,6 +1742,21 @@ namespace FlatRedBall.Math.Geometry
 
         }
 
+        // From:
+        // https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
+        public bool IsClockwise()
+        {
+            double sum = 0;
+            for(int i = 0; i < Points.Count-1; i++)
+            {
+                var point = Points[i];
+                var pointAfter = Points[i + 1];
+
+                sum += (pointAfter.X - point.X) * (pointAfter.Y + point.Y);
+            }
+
+            return sum > 0;
+        }
 
         #region IsPointInside
 

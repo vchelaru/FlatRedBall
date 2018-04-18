@@ -327,7 +327,6 @@ namespace Gum.Wireframe
         #endregion
 
         public GeneralUnitType XUnits
-
         {
             get { return mXUnits; }
             set

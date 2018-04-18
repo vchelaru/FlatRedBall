@@ -409,7 +409,10 @@ namespace FlatRedBall
         }
 
         /// <summary>
-        /// Gets and sets whether the parent's rotation should change the object's rotation.
+        /// Gets and sets whether the parent's rotation should change the object's rotation. The default is true, which means
+        /// if this is attached to a parent, it will rotate along with the parent, and it can have additional rotation applied through
+        /// its relative rotation values.
+        /// If this value is false, then the relative values are applied directly to the absolute values, ignoring the parent's rotation.
         /// </summary>
         public bool ParentRotationChangesRotation
         {
