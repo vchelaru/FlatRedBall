@@ -1384,11 +1384,11 @@ namespace FlatRedBall.Math.Geometry
                     otherMoveCollisionReposition = secondVectorResultInvertOrder;
                 }
             }
-            else
-            {
-                thisMoveCollisionReposition = firstVectorResult;
-                otherMoveCollisionReposition = secondVectorResult;
-            }
+            //else
+            //{
+            //    thisMoveCollisionReposition = firstVectorResult;
+            //    otherMoveCollisionReposition = secondVectorResult;
+            //}
 
         }
 
