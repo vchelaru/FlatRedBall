@@ -706,6 +706,39 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 if(shouldPreserve)
                 {
+                    // This was an attempt to fix snagging...
+                    // The problem is that when a rectangle collides
+                    // against a polygon, the point on the polygon may
+                    // be the one that defines the reposition direction.
+                    // This means a rectangle could be sitting on a slope
+                    // but still have a perfectly vertical reposition. I tried
+                    // to fix this by only getting reposition vectors from the polygon
+                    // but that caused the platformer to hop in place in some situations.
+
+                    //float maxYMap = float.NegativeInfinity;
+                    //for (int i = 0; i < shapeCollection.LastCollisionPolygons.Count; i++)
+                    //{
+                    //    var polygon = shapeCollection.LastCollisionPolygons[i];
+                    //    for (int j = 0; j < polygon.Points.Count; j++)
+                    //    {
+                    //        maxYMap = Math.Max(maxYMap, polygon.AbsolutePointPosition(j).Y);
+                    //    }
+                    //}
+                    //for(int i = 0; i < shapeCollection.LastCollisionAxisAlignedRectangles.Count; i++)
+                    //{
+                    //    var rectangle = shapeCollection.LastCollisionAxisAlignedRectangles[i];
+                    //    maxYMap = Math.Max(maxYMap, rectangle.Y + rectangle.ScaleY);
+                    //}
+
+
+                    //float maxCollisionOffset = 0;
+                    //foreach(var rectangle in this.Collision.AxisAlignedRectangles)
+                    //{
+                    //    maxCollisionOffset = -rectangle.RelativeY + rectangle.ScaleY;
+                    //}
+
+                    //float maxYAfterReposition = maxCollisionOffset + maxYMap;
+
                     // keep the velocity and the position:
                     var xDifference = positionBefore.X - this.Position.X;
 
@@ -723,6 +756,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     this.Velocity.X = velocityBefore.X;
                     this.Position.X = positionBefore.X;
                     this.Position.Y += multiplier * tangent.Y;
+                    //this.Position.Y = Math.Min(this.Position.Y, maxYAfterReposition);
                     this.ForceUpdateDependenciesDeep();
                 }
             }

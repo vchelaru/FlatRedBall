@@ -684,6 +684,8 @@ namespace FlatRedBall.TileGraphics
                 toReturn.SortAxis = Math.Axis.X;
             }
 
+            toReturn.RefreshAllRepositionDirections();
+            
             return toReturn;
         }
 

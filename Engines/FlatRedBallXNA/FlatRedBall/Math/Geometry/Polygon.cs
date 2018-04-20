@@ -85,6 +85,10 @@ namespace FlatRedBall.Math.Geometry
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Sets the directions that the polygon can perform collision - this is only considered if the polygon is convex and clockwise.
+        /// </summary>
+        public RepositionDirections RepositionDirections { get; set; } = RepositionDirections.All;
 
         public float BoundingRadius
         {
@@ -1351,27 +1355,48 @@ namespace FlatRedBall.Math.Geometry
         {
             Vector3 firstVectorResult, secondVectorResult;
             int firstDeepestIndex;
-            GetSeparatingVectors(vertices, otherVertices, thisMass, otherMass, out firstVectorResult, out secondVectorResult, out firstDeepestIndex);
+            GetSeparatingVectors(vertices, otherVertices, thisMass, otherMass,
+                // for now the 2nd will use "all", but we could change this later...
 
-            // invert them, test that so that we check the edges of the 2nd object
-            Vector3 firstVectorResultInvertOrder, secondVectorResultInvertOrder;
-            int secondDeepestIndex;
-            GetSeparatingVectors(otherVertices, vertices, otherMass, thisMass, out secondVectorResultInvertOrder, out firstVectorResultInvertOrder, out secondDeepestIndex);
+                this.RepositionDirections, RepositionDirections.All,
+                out firstVectorResult, out secondVectorResult, out firstDeepestIndex);
 
-            if (firstVectorResult.Length() + secondVectorResult.Length() < firstVectorResultInvertOrder.Length() + secondVectorResultInvertOrder.Length())
+            // This was a test for fixing slopes reporting flat in certain situations
+            // See comments in the platformer plugin
+            //bool testInvert = false;
+            //if(testInvert)
+            {
+                // invert them, test that so that we check the edges of the 2nd object
+                Vector3 firstVectorResultInvertOrder, secondVectorResultInvertOrder;
+                int secondDeepestIndex;
+                GetSeparatingVectors(otherVertices, vertices, otherMass, thisMass,
+                    RepositionDirections.All, this.RepositionDirections, 
+                    out secondVectorResultInvertOrder, out firstVectorResultInvertOrder, out secondDeepestIndex);
+
+                if (firstVectorResult.Length() + secondVectorResult.Length() < firstVectorResultInvertOrder.Length() + secondVectorResultInvertOrder.Length())
+                {
+                    thisMoveCollisionReposition = firstVectorResult;
+                    otherMoveCollisionReposition = secondVectorResult;
+                }
+                else
+                {
+                    thisMoveCollisionReposition = firstVectorResultInvertOrder;
+                    otherMoveCollisionReposition = secondVectorResultInvertOrder;
+                }
+            }
+            else
             {
                 thisMoveCollisionReposition = firstVectorResult;
                 otherMoveCollisionReposition = secondVectorResult;
             }
-            else
-            {
-                thisMoveCollisionReposition = firstVectorResultInvertOrder;
-                otherMoveCollisionReposition = secondVectorResultInvertOrder;
-            }
+
         }
 
-        private static void GetSeparatingVectors(VertexPositionColor[] firstVertices, VertexPositionColor[] secondVertices, float firstMass, float secondMass, 
-            out Vector3 firstVectorResult, out Vector3 secondVectorResult, out int secondVectorIndex)
+        private static void GetSeparatingVectors(VertexPositionColor[] firstVertices, VertexPositionColor[] secondVertices, 
+            float firstMass, float secondMass, 
+            RepositionDirections firstRepositionDirections, RepositionDirections secondRepositionDirections,
+            out Vector3 firstVectorResult, out Vector3 secondVectorResult, 
+            out int secondVectorIndex)
         {
             firstVectorResult = new Vector3();
             secondVectorResult = new Vector3();
@@ -1417,7 +1442,13 @@ namespace FlatRedBall.Math.Geometry
                 {
                     var valueToUse = -minSecond;
 
-                    if (smallestOverlapLength == null || System.Math.Abs(valueToUse) < System.Math.Abs(smallestOverlapLength.Value))
+                    bool shouldConsider = (normalizedSurface.X < 0 && (firstRepositionDirections & RepositionDirections.Left) == RepositionDirections.Left) ||
+                        (normalizedSurface.X > 0 && (firstRepositionDirections & RepositionDirections.Right) == RepositionDirections.Right) ||
+                        (normalizedSurface.Y < 0 && (firstRepositionDirections & RepositionDirections.Down) == RepositionDirections.Down) ||
+                        (normalizedSurface.Y > 0 && (firstRepositionDirections & RepositionDirections.Up) == RepositionDirections.Up);
+
+
+                    if (shouldConsider && (smallestOverlapLength == null || System.Math.Abs(valueToUse) < System.Math.Abs(smallestOverlapLength.Value)))
                     {
                         smallestOverlapLength = valueToUse;
                         smallestOverlapVector = normalizedSurface;
@@ -1449,6 +1480,8 @@ namespace FlatRedBall.Math.Geometry
 
             }
         }
+
+
         #endregion
 
 
