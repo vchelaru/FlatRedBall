@@ -141,6 +141,15 @@ namespace FlatRedBall.TileCollisions
             return toReturn;
         }
 
+        public bool CollideAgainstSolid(Line movableObject)
+        {
+            bool toReturn = false;
+
+            toReturn = mShapes.CollideAgainstBounce(movableObject, true, mSortAxis, 1, 0, 0);
+
+            return toReturn;
+        }
+
         public bool CollideAgainst(AxisAlignedRectangle rectangle)
         {
             return mShapes.CollideAgainst(rectangle, true, mSortAxis);
@@ -154,6 +163,11 @@ namespace FlatRedBall.TileCollisions
         public bool CollideAgainst(Polygon polygon)
         {
             return mShapes.CollideAgainst(polygon, true, mSortAxis);
+        }
+
+        public bool CollideAgainst(Line line)
+        {
+            return mShapes.CollideAgainst(line, true, mSortAxis);
         }
 
         public bool CollideAgainst(ICollidable collidable)
