@@ -29,7 +29,10 @@ namespace FlatRedBall.Forms.Controls
 
         public string Text
         {
-            get { return coreTextObject.RawText;  }
+            get
+            {
+                return coreTextObject.RawText;
+            }
             set
             {
                 if(value != Text)
@@ -159,14 +162,13 @@ namespace FlatRedBall.Forms.Controls
         {
             var cursorScreenX = GuiManager.Cursor.ScreenX;
             var leftOfText = this.textComponent.AbsoluteX;
-
             var offset = cursorScreenX - leftOfText;
 
-            var index = Text.Length;
+            var index = Text?.Length ?? 0;
             float distanceMeasuredSoFar = 0;
             var bitmapFont = this.coreTextObject.BitmapFont;
 
-            for (int i = 0; i < this.Text.Length; i++)
+            for (int i = 0; i < (Text?.Length ?? 0); i++)
             {
                 char character = Text[i];
                 RenderingLibrary.Graphics.BitmapCharacterInfo characterInfo = bitmapFont.GetCharacterInfo(character);
@@ -204,19 +206,19 @@ namespace FlatRedBall.Forms.Controls
                         caretIndex = 0;
                         break;
                     case Keys.End:
-                        caretIndex = Text.Length;
+                        caretIndex = (Text?.Length ?? 0);
                         break;
                     case Keys.Back:
                         HandleBackspace(isCtrlDown);
                         break;
                     case Microsoft.Xna.Framework.Input.Keys.Right:
-                        if (caretIndex < Text.Length)
+                        if (caretIndex < (Text?.Length ?? 0))
                         {
                             caretIndex++;
                         }
                         break;
                     case Microsoft.Xna.Framework.Input.Keys.Delete:
-                        if (caretIndex < Text.Length)
+                        if (caretIndex < (Text?.Length ?? 0))
                         {
                             this.Text = this.Text.Remove(caretIndex, 1);
                         }
@@ -235,6 +237,9 @@ namespace FlatRedBall.Forms.Controls
         {
             if(hasFocus)
             {
+                // If text is null force it to be an empty string so we can add characters
+                Text = Text ?? "";
+
                 // Do we want to handle backspace here or should it be in the Keys handler?
                 if (character == '\b'  
                     // I think CTRL Backspace?
@@ -262,7 +267,7 @@ namespace FlatRedBall.Forms.Controls
 
         private void HandleBackspace(bool isCtrlDown)
         {
-            if (caretIndex > 0)
+            if (hasFocus && caretIndex > 0 && Text != null)
             {
                 if(isCtrlDown)
                 {
@@ -281,8 +286,7 @@ namespace FlatRedBall.Forms.Controls
                     // caret is at the end of the word, modifying the word will shift the caret to the left, 
                     // and that could cause it to shift over two times.
                     caretIndex--;
-                    this.Text =
-                        this.Text.Remove(whereToRemoveFrom, 1);
+                    this.Text = this.Text.Remove(whereToRemoveFrom, 1);
                 }
             }
         }
@@ -400,29 +404,37 @@ namespace FlatRedBall.Forms.Controls
 
         int? GetSpaceIndexBefore(int index)
         {
-            for(int i = index - 1; i > 0; i--)
+            if(Text != null)
             {
-                var isSpace = Char.IsWhiteSpace(Text[i]);
-
-                if(isSpace)
+                for (int i = index - 1; i > 0; i--)
                 {
-                    return i;
+                    var isSpace = Char.IsWhiteSpace(Text[i]);
+
+                    if (isSpace)
+                    {
+                        return i;
+                    }
                 }
             }
+            
             return null;
         }
 
         int? GetSpaceIndexAfter(int index)
         {
-            for (int i = index; i < Text.Length; i++)
+            if(Text != null)
             {
-                var isSpace = Char.IsWhiteSpace(Text[i]);
-
-                if (isSpace)
+                for (int i = index; i < Text.Length; i++)
                 {
-                    return i;
+                    var isSpace = Char.IsWhiteSpace(Text[i]);
+
+                    if (isSpace)
+                    {
+                        return i;
+                    }
                 }
             }
+            
             return null;
         }
 
