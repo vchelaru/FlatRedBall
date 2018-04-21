@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="FlatRedBall.PlatformerPlugin.Views.SlopeDisplay"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FlatRedBall.PlatformerPlugin.Views"
+             mc:Ignorable="d" 
+             Height="40">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Canvas Grid.Column="0" x:Name="Diagram" RenderTransformOrigin=".5,.5">
+            <Canvas.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="{Binding Path=DiagramAngle}"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Canvas.RenderTransform>
+            <Ellipse Grid.Column="0" Width="40" Height="40" Stroke="Black" >
+                <Ellipse.Fill>
+                    <SolidColorBrush Color="LightBlue">
+                        
+                    </SolidColorBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+            <Path Stroke="Black" Fill="Green">
+                <Path.Data>
+                    <PathGeometry>
+                        <PathGeometry.Figures>
+                            <PathFigureCollection>
+                                <PathFigure StartPoint=".5,20">
+                                    <PathFigure.Segments>
+                                        <PathSegmentCollection>
+                                            <ArcSegment Size="19.5,19.5"
+                                            IsLargeArc="True"
+                                            SweepDirection="CounterClockwise"
+                                            Point="39.5,20" />
+                                        </PathSegmentCollection>
+                                    </PathFigure.Segments>
+                                </PathFigure>
+                            </PathFigureCollection>
+                        </PathGeometry.Figures>
+                    </PathGeometry>
+                </Path.Data>
+            </Path>
+            <Line Canvas.Left="0" Canvas.Top="20" X1="0" Y1="0" X2="40" Y2="0"
+                  Stroke="Black"></Line>
+            <Line Canvas.Left="9" Canvas.Top="13" X1="0" Y1="0" X2="22" Y2="0"
+                  Stroke="Black"></Line>
+            <Polygon Canvas.Left="28" Canvas.Top="10" 
+                     Points="0,0 4,3, 0,6" Stroke="Black" Fill="Black" />
+        </Canvas>
+
+        <TextBox Width="20" Height="18" Grid.Column="1" 
+                 x:Name="DegreeTextBox"
+                PreviewKeyDown="TextBox_PreviewKeyDown_1" 
+                LostFocus="TextBox_LostFocus_1"></TextBox>
+
+        <TextBlock VerticalAlignment="Center"  Grid.Column="2">°</TextBlock>
+    </Grid>
+</UserControl>

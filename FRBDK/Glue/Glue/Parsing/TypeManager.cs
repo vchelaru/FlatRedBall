@@ -34,6 +34,7 @@ namespace FlatRedBall.Glue.Parsing
         static Type[] mTypesInMicrosoftXnaFramework;
         static Type[] mTypesInMicrosoftXnaFrameworkGame;
         static Type[] mTypesInMicrosoftXnaFrameworkGraphics;
+        static Type[] pluginTypes;
 
         static List<Type> mAdditionalTypes = new List<Type>();
 
@@ -311,7 +312,8 @@ namespace FlatRedBall.Glue.Parsing
                             typeToReturn = type;
                             break;
                         }
-                        else if (type.Name == unqualifiedType)
+                        // If it's fully qualified, then we want to prevent false matches
+                        else if (isFullyQualified == false && type.Name == unqualifiedType)
                         {
                             typeToReturn = type;
                             break;
@@ -319,6 +321,18 @@ namespace FlatRedBall.Glue.Parsing
                     }
                 }
 
+#if GLUE
+
+                if(typeToReturn == null && isFullyQualified)
+                {
+                    var foundPluginType = pluginTypes.FirstOrDefault(item => item.FullName == typeString);
+                    if(foundPluginType != null)
+                    {
+                        typeToReturn = foundPluginType;
+                    }
+                }
+
+#endif
                 
                 foreach (AssetTypeInfo ati in AvailableAssetTypes.Self.AllAssetTypes)
                 {
@@ -461,7 +475,7 @@ namespace FlatRedBall.Glue.Parsing
                     Assembly assembly = null;
                     string location = "";
 
-                    #region FlatRedBall
+#region FlatRedBall
 
                     string programFilesLocation = Environment.GetEnvironmentVariable("ProgramFiles(x86)") + "\\"; ;
                     string alternativeProgramFilesLocation = @"C:\Program Files\";//Environment.GetEnvironmentVariable("ProgramFiles");
@@ -469,23 +483,23 @@ namespace FlatRedBall.Glue.Parsing
                     Assembly frbAssembly = Assembly.GetAssembly(typeof(Sprite));
 
                     FlatRedBallTypes = frbAssembly.GetTypes();
-                    #endregion
+#endregion
 
 
 
-                    #region Microsoft.Xna.Framework
+#region Microsoft.Xna.Framework
 
                     assembly = Assembly.GetAssembly(typeof(Microsoft.Xna.Framework.Matrix));
                     mTypesInMicrosoftXnaFramework = assembly.GetTypes();
 
-                    #endregion
+#endregion
 
-                    #region Microsoft.Xna.Framework.Game
+#region Microsoft.Xna.Framework.Game
 
                     assembly = Assembly.GetAssembly(typeof(Microsoft.Xna.Framework.Game));// Assembly.LoadFile(location);
                     mTypesInMicrosoftXnaFrameworkGame = assembly.GetTypes();
 
-                    #endregion
+#endregion
 
 #if XNA4
 
@@ -516,7 +530,7 @@ namespace FlatRedBall.Glue.Parsing
 #endif
 
 
-                    #region Common Types
+#region Common Types
 
                     mCommonTypes = new Dictionary<string, Type>();
 
@@ -536,9 +550,53 @@ namespace FlatRedBall.Glue.Parsing
 
 
 
-                    #endregion
+#endregion
 
                 }
+
+#if GLUE
+                if(pluginTypes == null)
+                {
+                    var listOfTypesInAllPlugins = new List<Type>();
+                    foreach(var pluginManager in Plugins.PluginManager.GetInstances())
+                    {
+                        // Ignore embedded plugin, it's this assembly
+                        foreach(var pluginContainer in pluginManager.PluginContainers
+                            .Where(container => container.Value.Plugin is Plugins.EmbeddedPlugins.EmbeddedPlugin == false))
+                        {
+                            var plugin = pluginContainer.Value.Plugin;
+
+                            var typesInThisPlugin = plugin.GetType().Assembly.GetTypes()
+                                // for now just consider enums, but we may want to expand this later
+                                .Where(item =>item.IsEnum)
+                                .ToList() ;
+
+                            if(plugin is Plugins.PluginBase)
+                            {
+                                var additionalTypesForThisPlugin = (plugin as Plugins.PluginBase)?.GetUsedTypes?.Invoke();
+
+                                if (additionalTypesForThisPlugin != null)
+                                {
+                                    typesInThisPlugin.AddRange(additionalTypesForThisPlugin);
+                                }
+
+                            }
+
+
+
+                            foreach(var typeInThisPlugin in typesInThisPlugin)
+                            {
+                                if(listOfTypesInAllPlugins.Contains(typeInThisPlugin) == false)
+                                {
+                                    listOfTypesInAllPlugins.Add(typeInThisPlugin);
+                                }
+                            }
+                        }
+                    }
+
+                    pluginTypes = listOfTypesInAllPlugins.ToArray();
+                }
+#endif
             }
         }
 

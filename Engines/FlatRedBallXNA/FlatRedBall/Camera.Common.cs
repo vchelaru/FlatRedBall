@@ -818,12 +818,14 @@ namespace FlatRedBall
                     topDestination = cameraToUse.TopDestination;
                 }
 
+                // Make sure the destinations aren't equal or else we'd divide by 0
                 if (lcs.Orthogonal && bottomDestination != topDestination)
                 {
                     layerMultiplier = lcs.OrthogonalHeight / (float)(bottomDestination - topDestination);
                 }
 
                 float cameraMultiplier = 1;
+                // Make sure the destinations aren't equal or else we'd divide by 0
                 if (cameraToUse.Orthogonal && cameraToUse.BottomDestination != cameraToUse.TopDestination)
                 {
                     cameraMultiplier = cameraToUse.OrthogonalHeight / (float)(cameraToUse.BottomDestination - cameraToUse.TopDestination);

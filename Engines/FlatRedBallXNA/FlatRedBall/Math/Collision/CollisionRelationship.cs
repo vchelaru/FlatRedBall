@@ -883,7 +883,7 @@ namespace FlatRedBall.Math.Collision
                         int startInclusive;
                         int endExclusive;
 
-                        GetCollisionStartAndInt(first, out startInclusive, out endExclusive);
+                        GetCollisionStartAndInt(first, i, out startInclusive, out endExclusive);
 
                         for (int j = startInclusive; j > endExclusive; j--)
                         {
@@ -904,7 +904,7 @@ namespace FlatRedBall.Math.Collision
             }
         }
 
-        private void GetCollisionStartAndInt(FirstCollidableT first, out int startInclusive, out int endExclusive)
+        private void GetCollisionStartAndInt(FirstCollidableT first, int firstIndex, out int startInclusive, out int endExclusive)
         {
             PartitionedValuesBase firstPartition = null;
             PartitionedValuesBase secondPartition = null;
@@ -924,17 +924,27 @@ namespace FlatRedBall.Math.Collision
             float firstSize = 0;
             float secondSize = 0;
 
+            // By default the last possible bound is set by the second list...
+            int lastExclusiveBound = secondList.Count;
+            // .. but if the two lists are the same, then we don't want to go past the current item
+            // since we collide back-to-front
+            if(this.firstList == (object)this.secondList)
+            {
+                lastExclusiveBound = firstIndex;
+            }
+
+
             if (firstPartition != null && secondPartition != null)
             {
                 firstSize = this.firstPartitioningSize ?? firstPartition.MaxWidthOrHeight;
                 secondSize = this.secondPartitioningSize ?? secondPartition.MaxWidthOrHeight;
             }
 
-            if (firstPartition?.axis == Axis.X && firstPartition?.axis == Axis.X)
+            if (firstPartition?.axis == Axis.X && secondPartition?.axis == Axis.X)
             {
                 // -1 to make it exclusive
-                endExclusive = secondList.GetFirstAfter(first.X - firstSize / 2 - secondSize / 2, Axis.X, 0, secondList.Count) - 1;
-                startInclusive = secondList.GetFirstAfter(first.X + firstSize / 2 + secondSize / 2, Axis.X, 0, secondList.Count);
+                endExclusive = secondList.GetFirstAfter(first.X - firstSize / 2 - secondSize / 2, Axis.X, 0, lastExclusiveBound) - 1;
+                startInclusive = secondList.GetFirstAfter(first.X + firstSize / 2 + secondSize / 2, Axis.X, 0, lastExclusiveBound);
 
                 if (startInclusive > 0 && startInclusive == secondList.Count)
                 {
@@ -942,11 +952,11 @@ namespace FlatRedBall.Math.Collision
                 }
 
             }
-            else if (firstPartition?.axis == Axis.Y && firstPartition?.axis == Axis.Y)
+            else if (firstPartition?.axis == Axis.Y && secondPartition?.axis == Axis.Y)
             {
                 // -1 to make it exclusive
-                endExclusive = secondList.GetFirstAfter(first.Y - firstSize / 2 - secondSize / 2, Axis.Y, 0, secondList.Count) - 1;
-                startInclusive = secondList.GetFirstAfter(first.Y + firstSize / 2 + secondSize / 2, Axis.Y, 0, secondList.Count);
+                endExclusive = secondList.GetFirstAfter(first.Y - firstSize / 2 - secondSize / 2, Axis.Y, 0, lastExclusiveBound) - 1;
+                startInclusive = secondList.GetFirstAfter(first.Y + firstSize / 2 + secondSize / 2, Axis.Y, 0, lastExclusiveBound);
                 if (startInclusive > 0 && startInclusive == secondList.Count)
                 {
                     startInclusive--;
@@ -954,7 +964,7 @@ namespace FlatRedBall.Math.Collision
             }
             else
             {
-                startInclusive = secondList.Count - 1;
+                startInclusive = lastExclusiveBound - 1;
                 endExclusive = -1;
             }
         }
@@ -971,7 +981,7 @@ namespace FlatRedBall.Math.Collision
                 var first = firstList[i];
                 int startInclusive;
                 int endExclusive;
-                GetCollisionStartAndInt(first, out startInclusive, out endExclusive);
+                GetCollisionStartAndInt(first, i, out startInclusive, out endExclusive);
 
 
                 for (int j = startInclusive; j > endExclusive; j--)

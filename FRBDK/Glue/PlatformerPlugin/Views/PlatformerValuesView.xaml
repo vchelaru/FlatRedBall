@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:FlatRedBall.PlatformerPlugin.Views"
              xmlns:b="clr-namespace:FlatRedBall.PlatformerPlugin.WpfBehaviors"
              mc:Ignorable="d" 
-             d:DesignHeight="185" d:DesignWidth="550">
+             d:DesignHeight="230" d:DesignWidth="905">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -17,26 +17,28 @@
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Button Grid.Column="4" Width="24" Click="HandleXClick">X</Button>
+        <Button Grid.Column="5" Width="24" Click="HandleXClick">X</Button>
 
-        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="3" VerticalAlignment="Stretch" Fill="LightGray" />
+        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="4" VerticalAlignment="Stretch" Fill="LightGray" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" HorizontalAlignment="Left" Width="1" Fill="Gray" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Left" Width="1" Fill="Gray" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" HorizontalAlignment="Left" Width="1" Fill="Gray" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" HorizontalAlignment="Left" Width="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" HorizontalAlignment="Left" Width="1" Fill="Gray" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="5" HorizontalAlignment="Right" Width="1" Fill="Gray" />
 
 
-        <Rectangle Grid.Row="0" Grid.ColumnSpan="5" VerticalAlignment="Top" Height="1" Fill="Black" />
-        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.ColumnSpan="6" VerticalAlignment="Top" Height="1" Fill="Black" />
+        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="4" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
 
 
 
-        <Rectangle Grid.Row="1" Grid.ColumnSpan="5" Grid.Column="0" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
+        <Rectangle Grid.Row="1" Grid.ColumnSpan="6" Grid.Column="0" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
 
 
         <!--Name-->
@@ -69,9 +71,50 @@
             
         </StackPanel>
 
+        <!--Slope Movement -->
+        <TextBlock Grid.Column="2" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Slope Movement</TextBlock>
+        <StackPanel Grid.Row="1" Grid.Column="2" Margin="12,3,8,3">
+            <RadioButton IsChecked="{Binding MoveSameSpeedOnSlopes}" VerticalContentAlignment="Center">Move the same speed</RadioButton>
+            <RadioButton IsChecked="{Binding AdjustSpeedOnSlopes}" VerticalContentAlignment="Center">Slopes change speed</RadioButton>
+            <StackPanel Margin="10,0,0,0" Visibility="{Binding SlopeMovementSpeedUiVisibility}">
+
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Width="255">
+                        <TextBlock>Character moves uphill at full speed on slope</TextBlock>
+                    </StackPanel>
+                    <local:SlopeDisplay Angle="{Binding UphillFullSpeedSlope}"></local:SlopeDisplay>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Width="255">
+                        <TextBlock>Character stops moving uphill on slope</TextBlock>
+                    </StackPanel>
+                    <local:SlopeDisplay Angle="{Binding UphillStopSpeedSlope}"></local:SlopeDisplay>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Width="255">
+                        <TextBlock>Character moves downhill at full speed on slope</TextBlock>
+                    </StackPanel>
+                    <local:SlopeDisplay IsInverted="True" Angle="{Binding DownhillFullSpeedSlope}"></local:SlopeDisplay>
+
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Width="255">
+                        <TextBlock VerticalAlignment="Center" >Character moves downhill</TextBlock>
+                        <TextBox Width="24" Height="18" Text="{Binding Path=DownhillMaxSpeedBoostPercentage, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <TextBlock VerticalAlignment="Center" >% faster on slope</TextBlock>
+                    </StackPanel>
+                    <local:SlopeDisplay IsInverted="True" Angle="{Binding DownhillMaxSpeedSlope}"></local:SlopeDisplay>
+                </StackPanel>
+
+            </StackPanel>
+        </StackPanel>
+
         <!--Jumping-->
-        <TextBlock Grid.Column="2" FontSize="16" HorizontalAlignment="Left" Margin="3">Jumping</TextBlock>
-        <StackPanel Grid.Column="2" Grid.Row="1" Margin="12,3,8,3">
+        <TextBlock Grid.Column="3" FontSize="16" HorizontalAlignment="Left" Margin="3">Jumping</TextBlock>
+        <StackPanel Grid.Column="3" Grid.Row="1" Margin="12,3,8,3">
             <TextBlock>Jump Speed:</TextBlock>
             <TextBox HorizontalAlignment="Left" Width="70"  Text="{Binding JumpVelocity}" Margin="1,0,-1,5"
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
@@ -92,8 +135,8 @@
         </StackPanel>
 
         <!--Falling-->
-        <TextBlock Grid.Column="3" FontSize="16" HorizontalAlignment="Left" Margin="3">Falling</TextBlock>
-        <StackPanel Grid.Column="3" Grid.Row="1" Margin="12,3,8,3">
+        <TextBlock Grid.Column="4" FontSize="16" HorizontalAlignment="Left" Margin="3">Falling</TextBlock>
+        <StackPanel Grid.Column="4" Grid.Row="1" Margin="12,3,8,3">
             <TextBlock>Gravity:</TextBlock>
             <TextBox HorizontalAlignment="Left" Width="70" Text="{Binding Gravity}" Margin="0,0,0,5" 
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>

@@ -1607,9 +1607,9 @@ namespace FlatRedBall.Glue.Plugins
         }
 
         /// <summary>
-        /// Notifies all contained plugins that a property has changed. A propert, not
-        /// to be confused with a variable, is a value that is usually not related to the
-        /// type of object, and is not controlled by the user. 
+        /// Notifies all contained plugins that an property on an element or variable has changed. 
+        /// Properties are values which control how Glue generates the code of
+        /// an element or variable. 
         /// </summary>
         /// <param name="changedMember">The member that has changed</param>
         /// <param name="oldValue">The value of the member before the change</param>

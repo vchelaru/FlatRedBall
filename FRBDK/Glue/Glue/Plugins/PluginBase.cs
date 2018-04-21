@@ -82,6 +82,10 @@ namespace FlatRedBall.Glue.Plugins
         public OpenProjectDelegate OpenProjectHandler { get; protected set; }
         public OpenSolutionDelegate OpenSolutionHandler { get; protected set; }
 
+        /// <summary>
+        /// Delegate raised whenever a property on either a variable or an element has changed. Implementations
+        /// should check the current object to handle this properly.
+        /// </summary>
         public ReactToChangedPropertyDelegate ReactToChangedPropertyHandler { get; protected set; }
         public ReactToFileChangeDelegate ReactToFileChangeHandler { get; protected set; }
         public ReactToFileChangeDelegate ReactToBuiltFileChangeHandler { get; protected set; }
@@ -164,6 +168,12 @@ namespace FlatRedBall.Glue.Plugins
         
 
         public Func<string, bool> GetIfUsesContentPipeline { get; protected set; }
+
+        /// <summary>
+        /// Delegate used to return additional types used by the plugin. Currently this is only used to populate dropdowns, so plugins only need to return enumerations, but eventually
+        /// this could be used for other functionality.
+        /// </summary>
+        public Func<List<Type>> GetUsedTypes { get; protected set; }
 
         #endregion
 

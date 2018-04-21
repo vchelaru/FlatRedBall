@@ -25,14 +25,6 @@ namespace FlatRedBall.IO
             public Color[] Pixels;
         }
 
-        #region Fields
-        #endregion
-
-        #region Properties
-        #endregion
-
-        #region Event Methods
-        #endregion
 
         #region Methods
         #region Private Methods
@@ -119,11 +111,14 @@ namespace FlatRedBall.IO
 
         private static void ParseBytes(ref Stream file, ref BMPHeader bmpHeader)
         {
+            // detailed info:
+            // http://www.daubnet.com/en/file-format-bmp
+
             //every BMP header is 54 bytes, followed by the image data
             //SIZE of the BMP: 2 bytes in (4 bytes long)
             //WIDTH of the BMP: 18 bytes in (4 bytes long)...in pixels
             //HEIGHT of the BMP: 22 bytes in (4 bytes long)...in pixels
-            
+
             //PIXELDATA starts 54 bytes in, each row is 8 bytes long
 
             //grabs B[2,3,4,5] for the Size
@@ -132,8 +127,11 @@ namespace FlatRedBall.IO
             bmpHeader.Size = FormUint4(size);
 
             //current position is at Byte 6 => must go to 18
-            file.Position = 18;
 
+            // B[14,15,16,17]
+            // size of header
+
+            file.Position = 18;
             //grabs B[18,19,20,21] for the width
             byte[] width = { (byte)file.ReadByte(), (byte)file.ReadByte(),
                              (byte)file.ReadByte(), (byte)file.ReadByte()};
@@ -144,12 +142,18 @@ namespace FlatRedBall.IO
                               (byte)file.ReadByte(), (byte)file.ReadByte()};
             bmpHeader.Height = FormUint4(height);
 
+            // B[26, 27] Planes
+
             //current position is at Byte 26 => must go to 28
             file.Position = 28;
 
             //grabs B[28,29] for the BitCount
             byte[] bitCount = { (byte)file.ReadByte(), (byte)file.ReadByte()};
             bmpHeader.BitCount = FormUint2(bitCount);
+
+            // [30, 31, 32, 33] Compression
+            // [34, 35, 36, 37] ImageSize
+
 
             //current position is at Byte 30 => must go to 54
             file.Position = 54;
@@ -278,6 +282,11 @@ namespace FlatRedBall.IO
                     }
                 case 8:
                     {
+
+                        // Vic says - I'm not sure where this code came from, but it seems to set RGB values based on 8 bit
+                        // without a color table. Not sure why but this might mislead users so we're going to throw an exception:
+                        throw new NotImplementedException("This bmp is an 8-bit BMP with a color table. We currently do not support loading 8 bit BMPs. Consider using a PNG instead");
+
                         #region 1 Byte = 1 Pixel
                         //every byte holds 1 pixel
                         //padding each line with 0s up to a 32bit boundary will result in up to 28 0s = 7 'wasted pixels'.

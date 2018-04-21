@@ -69,6 +69,14 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             codeBlock.Line("bool mHitHead = false;");
 
             codeBlock.Line("/// <summary>");
+            codeBlock.Line("/// The current slope that the character is standing or walking on in degrees relative");
+            codeBlock.Line("/// to the direction that the character is facing. In other words, if the charater is");
+            codeBlock.Line("/// walking uphill to the right (positive slope), if the character turns around the value");
+            codeBlock.Line("/// will be negative.");
+            codeBlock.Line("/// </summary>");
+            codeBlock.Line("float currentSlope = 0;");
+
+            codeBlock.Line("/// <summary>");
             codeBlock.Line("/// Whether the character is in the air and has double-jumped.");
             codeBlock.Line("/// This is used to determine which movement variables are active,");
             codeBlock.Line("/// effectively preventing multiple double-jumps.");
@@ -366,13 +374,38 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 mDirectionFacing = HorizontalDirection.Left;
             }
 
+            var maxSpeed = CurrentMovement.MaxSpeedX;
+
+            var walkingUphill = (currentSlope > 0 && currentSlope < 90);
+
+            FlatRedBall.Debugging.Debugger.Write(currentSlope);
+
+            if (CurrentMovement.UphillStopSpeedSlope != CurrentMovement.UphillFullSpeedSlope &&
+                currentSlope >= (float)CurrentMovement.UphillFullSpeedSlope &&
+                // make sure actually walking uphill:
+                walkingUphill)
+            {
+                if ( currentSlope >= (float)CurrentMovement.UphillStopSpeedSlope)
+                {
+                    maxSpeed *= 0;
+                }
+                else
+                {
+                    var interpolationValue =
+                        1 - (currentSlope - (float)CurrentMovement.UphillFullSpeedSlope) /
+                        (float)(CurrentMovement.UphillStopSpeedSlope - CurrentMovement.UphillFullSpeedSlope);
+
+                    maxSpeed *= interpolationValue;
+                }
+            }
+
             if (this.CurrentMovement.AccelerationTimeX <= 0)
             {
-                this.XVelocity = horizontalRatio * CurrentMovement.MaxSpeedX;
+                this.XVelocity = horizontalRatio * maxSpeed;
             }
             else
             {
-                float acceleration = CurrentMovement.MaxSpeedX / CurrentMovement.AccelerationTimeX;
+                float acceleration = maxSpeed / CurrentMovement.AccelerationTimeX;
 
                 float sign = System.Math.Sign(horizontalRatio);
                 float magnitude = System.Math.Abs(horizontalRatio);
@@ -385,11 +418,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 if (XVelocity == 0 || sign == System.Math.Sign(XVelocity))
                 {
-                    this.XAcceleration = sign * magnitude * CurrentMovement.MaxSpeedX / CurrentMovement.AccelerationTimeX;
+                    this.XAcceleration = sign * magnitude * maxSpeed / CurrentMovement.AccelerationTimeX;
                 }
                 else
                 {
-                    float accelerationValue = magnitude * CurrentMovement.MaxSpeedX / CurrentMovement.DecelerationTimeX;
+                    float accelerationValue = magnitude * maxSpeed / CurrentMovement.DecelerationTimeX;
 
 
                     if (System.Math.Abs(XVelocity) < accelerationValue * FlatRedBall.TimeManager.SecondDifference)
@@ -406,8 +439,8 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 }
 
-                XVelocity = System.Math.Min(XVelocity, CurrentMovement.MaxSpeedX);
-                XVelocity = System.Math.Max(XVelocity, -CurrentMovement.MaxSpeedX);
+                XVelocity = System.Math.Min(XVelocity, maxSpeed);
+                XVelocity = System.Math.Max(XVelocity, -maxSpeed);
             }
         }
 
@@ -552,7 +585,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         /// </summary>
         /// <param name=""collisionFunction"">The collision function to execute.</param>
         /// <param name=""isCloudCollision"">Whether to perform cloud collision (only check when moving down)</param>
-        public void CollideAgainst(System.Func<bool> collisionFunction, bool isCloudCollision)
+        public bool CollideAgainst(System.Func<bool> collisionFunction, bool isCloudCollision)
         {
             Microsoft.Xna.Framework.Vector3 positionBeforeCollision = this.Position;
             Microsoft.Xna.Framework.Vector3 velocityBeforeCollision = this.Velocity;
@@ -583,11 +616,15 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     cloudCollisionFallThroughY == null;
             }
 
+            bool toReturn = false;
+
             if (canCheckCollision)
             {
 
                 if (collisionFunction())
                 {
+                    toReturn = true;
+
                     // make sure that we've been moved up, and that we're falling
                     bool shouldApplyCollision = true;
                     if (isCloudCollision)
@@ -621,6 +658,8 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     }
                 }
             }
+
+            return toReturn;
         }
 "
 
@@ -637,8 +676,129 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 codeBlock.Line(@"
         public void CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, bool isCloudCollision = false)
         {
-            CollideAgainst(() => shapeCollection.CollideAgainstSolid(this), isCloudCollision);
+            var positionBefore = this.Position;
+            var velocityBefore = this.Velocity;
+
+
+            var collided = CollideAgainst(() => shapeCollection.CollideAgainstSolid(this), isCloudCollision);
+
+            if(collided)
+            {
+                currentSlope = 0;
+            }
+
+            var wasMovedHorizontally = this.X != positionBefore.X;
+
+            var wasSlowedByPolygons = wasMovedHorizontally && shapeCollection.LastCollisionPolygons.Count != 0;
+
+            if(wasSlowedByPolygons)
+            {
+                var repositionVector = new Microsoft.Xna.Framework.Vector2(0, 1);
+                foreach(var rect in this.Collision.AxisAlignedRectangles)
+                {
+                    if(rect.LastMoveCollisionReposition.X != 0)
+                    {
+                        repositionVector = rect.LastMoveCollisionReposition;
+                        break;
+                    }
+                }
+                var shouldPreserve = DetermineIfHorizontalVelocityShouldBePreserved(velocityBefore.X, shapeCollection, repositionVector);
+
+                if(shouldPreserve)
+                {
+                    // This was an attempt to fix snagging...
+                    // The problem is that when a rectangle collides
+                    // against a polygon, the point on the polygon may
+                    // be the one that defines the reposition direction.
+                    // This means a rectangle could be sitting on a slope
+                    // but still have a perfectly vertical reposition. I tried
+                    // to fix this by only getting reposition vectors from the polygon
+                    // but that caused the platformer to hop in place in some situations.
+
+                    //float maxYMap = float.NegativeInfinity;
+                    //for (int i = 0; i < shapeCollection.LastCollisionPolygons.Count; i++)
+                    //{
+                    //    var polygon = shapeCollection.LastCollisionPolygons[i];
+                    //    for (int j = 0; j < polygon.Points.Count; j++)
+                    //    {
+                    //        maxYMap = Math.Max(maxYMap, polygon.AbsolutePointPosition(j).Y);
+                    //    }
+                    //}
+                    //for(int i = 0; i < shapeCollection.LastCollisionAxisAlignedRectangles.Count; i++)
+                    //{
+                    //    var rectangle = shapeCollection.LastCollisionAxisAlignedRectangles[i];
+                    //    maxYMap = Math.Max(maxYMap, rectangle.Y + rectangle.ScaleY);
+                    //}
+
+
+                    //float maxCollisionOffset = 0;
+                    //foreach(var rectangle in this.Collision.AxisAlignedRectangles)
+                    //{
+                    //    maxCollisionOffset = -rectangle.RelativeY + rectangle.ScaleY;
+                    //}
+
+                    //float maxYAfterReposition = maxCollisionOffset + maxYMap;
+
+                    // keep the velocity and the position:
+                    var xDifference = positionBefore.X - this.Position.X;
+
+                    var tangent = new Microsoft.Xna.Framework.Vector2(repositionVector.Y, -repositionVector.X);
+
+                    currentSlope = Microsoft.Xna.Framework.MathHelper.ToDegrees( (float) System.Math.Atan2(tangent.Y, tangent.X));
+
+                    if(DirectionFacing == HorizontalDirection.Left)
+                    {
+                        currentSlope *= -1;
+                    }
+
+                    var multiplier = xDifference / tangent.X;
+
+                    this.Velocity.X = velocityBefore.X;
+                    this.Position.X = positionBefore.X;
+                    this.Position.Y += multiplier * tangent.Y;
+                    //this.Position.Y = Math.Min(this.Position.Y, maxYAfterReposition);
+                    this.ForceUpdateDependenciesDeep();
+                }
+            }
         }
+
+        
+        private bool DetermineIfHorizontalVelocityShouldBePreserved(float oldHorizontalVelocity, FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, 
+            Microsoft.Xna.Framework.Vector2 repositionVector)
+        {
+            const float maxSlope = 80; // degrees
+            var maxSlopeInRadians = Microsoft.Xna.Framework.MathHelper.ToRadians(maxSlope);
+            // The reposition is the normal of the slope, so it's the X
+            // That is, on a slope like this:
+            // \
+            //  \
+            //   \
+            //    \
+            //     \
+            // If the slope ^^ is nearly 90, then the X will be nearly 1. To get that, we will do the sin of the slope
+
+            var maxRepositionDirectionX = System.Math.Sin(maxSlopeInRadians);
+
+            bool collidedWithSlopeGreaterThanMax = repositionVector.Y <= 0;
+
+            if(collidedWithSlopeGreaterThanMax == false)
+            {
+                if(repositionVector.X != 0 || repositionVector.Y != 0)
+                {
+                    var normalized = Microsoft.Xna.Framework.Vector2.Normalize(repositionVector);
+
+                    if(normalized.X > maxRepositionDirectionX || normalized.X < -maxRepositionDirectionX)
+                    {
+                        collidedWithSlopeGreaterThanMax = true;
+                    }
+
+                }
+            }
+            var shouldBePreserved = collidedWithSlopeGreaterThanMax == false;
+
+            return shouldBePreserved;
+        }
+
 
         public void CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, FlatRedBall.Math.Geometry.AxisAlignedRectangle thisCollision, bool isCloudCollision = false)
         {

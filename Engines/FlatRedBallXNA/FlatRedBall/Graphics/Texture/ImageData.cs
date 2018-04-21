@@ -562,21 +562,6 @@ namespace FlatRedBall.Graphics.Texture
             int textureWidth = Width;
             int textureHeight = Height;
 
-#if FRB_MDX
-
-
-            if (!Math.MathFunctions.IsPowerOfTwo(textureWidth) ||
-                !Math.MathFunctions.IsPowerOfTwo(textureHeight))
-            {
-                if (graphicsDevice.DeviceCaps.TextureCaps.SupportsPower2)
-                {
-                    textureHeight = Math.MathFunctions.NextPowerOfTwo(textureHeight);
-                    textureWidth = Math.MathFunctions.NextPowerOfTwo(textureWidth);
-                }
-            }
-
-#endif
-
             if (textureWidth != Width || textureHeight != Height)
             {
 
@@ -607,19 +592,7 @@ namespace FlatRedBall.Graphics.Texture
                     }
                 }
 
-#if FRB_MDX
-
-                // Even though the texture's bigger, give it a smaller size so that 
-                // pixel size stuff works right.
-                Microsoft.Xna.Framework.Graphics.Texture2D textureToReturn = ToTexture2D(mStaticData, textureWidth, textureHeight);
-
-                textureToReturn.Width = Width;
-                textureToReturn.Height = Height;
-
-                return textureToReturn;
-#else
                 return ToTexture2D(mStaticData, textureWidth, textureHeight, generateMipmaps, graphicsDevice);
-#endif
             }
             else
             {
@@ -636,9 +609,7 @@ namespace FlatRedBall.Graphics.Texture
                 // If it's disposed that means that the user is exiting the game, so we shouldn't
                 // do anything
 
-#if !SILVERLIGHT
                 if (!Renderer.Graphics.GraphicsDevice.IsDisposed)
-#endif
                 {
 #if XNA4 && !MONOGAME
                     textureToFill.SetData<Color>(this.mData, 0, textureToFill.Width * textureToFill.Height);

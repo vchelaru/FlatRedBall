@@ -61,7 +61,7 @@ namespace FlatRedBall.Instructions.Reflection
             Type typeToConvertTo = value.GetType();
 
             // Do the conversion
-#region Convert To String
+            #region Convert To String
 
             if (typeToConvertTo == typeof(bool))
             {
@@ -83,12 +83,17 @@ namespace FlatRedBall.Instructions.Reflection
                 return ((double)value).ToString();
             }
 
+            if(typeToConvertTo == typeof(decimal))
+            {
+                return ((decimal)value).ToString();
+            }
+
             if (typeToConvertTo == typeof(string))
             {
                 return (string)value;
             }
 
-#if !FRB_RAW
+            #if !FRB_RAW
             if (typeToConvertTo == typeof(Texture2D))
             {
                 return ((Texture2D)value).Name;
@@ -158,8 +163,8 @@ namespace FlatRedBall.Instructions.Reflection
                     ConvertTypeToString(v.Z) + "," +
                     ConvertTypeToString(v.W);
             }
-#endif
-#if WINDOWS_8 || UWP
+            #endif
+#if UWP
             if (typeToConvertTo.IsEnum())
 #else
             if (typeToConvertTo.IsEnum)
@@ -386,15 +391,27 @@ namespace FlatRedBall.Instructions.Reflection
                     return double.Parse(value, CultureInfo.InvariantCulture);
                 }
 
-#endregion
+                #endregion
 
 
+                #region Decimal
 
+                else if(desiredType == typeof(decimal).FullName)
+                {
+                    if (string.IsNullOrEmpty(value))
+                    {
+                        return 0.0m;
+                    }
+
+                    return decimal.Parse(value, CultureInfo.InvariantCulture);
+                }
+
+                #endregion
 
 
 #if !FRB_RAW
 
-#region Texture2D
+                #region Texture2D
 
                 else if (desiredType == typeof(Texture2D).FullName)
                 {

@@ -22,7 +22,8 @@ namespace GumPlugin.Managers
         AssetTypeInfo mGumxAti;
 
 
-        List<AssetTypeInfo> mAssetTypesForThisProject = new List<FlatRedBall.Glue.Elements.AssetTypeInfo>();
+        public List<AssetTypeInfo> AssetTypesForThisProject { get; private set; } = new List<FlatRedBall.Glue.Elements.AssetTypeInfo>();
+
 
         #endregion
         
@@ -140,12 +141,14 @@ namespace GumPlugin.Managers
                     //mGraphicalUiElementAti.AddToManagersMethod.Add("this.AddToManagers()");
                     // Update October 12, 2017 - since this can be added to layers, need to
                     // use the LayeredAddToManagers instead of AddToManagers:
+                    // Update March 28, 2018 - We now use custom code for this using the GetAddToManagersFunc
+                    //mGraphicalUiElementAti.LayeredAddToManagersMethod.Add(
+                    //    "this.AddToManagers(RenderingLibrary.SystemManagers.Default, " +
+                    //    "System.Linq.Enumerable.FirstOrDefault(FlatRedBall.Gum.GumIdb.AllGumLayersOnFrbLayer(mLayer)))");
+                    //mGraphicalUiElementAti.AddToManagersMethod.Add("this.AddToManagers()");
+                    mGraphicalUiElementAti.AddToManagersFunc = GueDerivingClassCodeGenerator.Self.GetAddToManagersFunc;
 
-                    mGraphicalUiElementAti.LayeredAddToManagersMethod.Add(
-                        "this.AddToManagers(RenderingLibrary.SystemManagers.Default, " +
-                        "System.Linq.Enumerable.FirstOrDefault(FlatRedBall.Gum.GumIdb.AllGumLayersOnFrbLayer(mLayer)))");
 
-                    mGraphicalUiElementAti.AddToManagersMethod.Add("this.AddToManagers()");
 
                     //gumComponentAti.CustomLoadMethod = "{THIS} = new GumIdb();  {THIS}.LoadFromFile(\"{FILE_NAME}\");";
                     mGraphicalUiElementAti.CanBeCloned = false;
@@ -265,7 +268,7 @@ namespace GumPlugin.Managers
         {
             var list = GetAtisForDerivedGues();
 
-            mAssetTypesForThisProject.AddRange(list);
+            AssetTypesForThisProject.AddRange(list);
 
             foreach (var item in list)
             {
@@ -292,12 +295,13 @@ namespace GumPlugin.Managers
         private AssetTypeInfo GetAtiFor(ElementSave element)
         {
             AssetTypeInfo newAti = FlatRedBall.IO.FileManager.CloneObject<AssetTypeInfo>(GraphicalUiElementAti);
-
+            newAti.AddToManagersFunc = GraphicalUiElementAti.AddToManagersFunc;
 
             newAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
             {
                 QualifiedType = GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(element)
             };
+
 
             if (element is ComponentSave)
             {
@@ -324,21 +328,99 @@ namespace GumPlugin.Managers
             // on this line of code
             // with a NullReferenceException.
             // I'm going to wrap this in if-s to be sure it's safe.
-            if (element != null && element.DefaultState != null && element.DefaultState.Variables != null)
+            if (element != null )
             {
-                foreach (var variable in element.DefaultState.Variables.Where(item => !string.IsNullOrEmpty(item.ExposedAsName) || string.IsNullOrEmpty(item.SourceObject)))
-                {
-                    var variableDefinition = new VariableDefinition();
-                    variableDefinition.Category = variable.Category;
-                    variableDefinition.DefaultValue = variable.Value?.ToString();
-                    variableDefinition.Name = variable.ExposedAsName ?? variable.Name;
-                    variableDefinition.Type = variable.Type;
+                var states = new List<Gum.DataTypes.Variables.StateSave>();
+                states.Add(element.DefaultState);
 
-                    newAti.VariableDefinitions.Add(variableDefinition);
+                var parentElement = Gum.Managers.ObjectFinder.Self.GetElementSave(element.BaseType);
+                while(parentElement != null)
+                {
+                    states.Add(parentElement.DefaultState);
+                    parentElement = Gum.Managers.ObjectFinder.Self.GetElementSave(parentElement.BaseType);
+                }
+
+                foreach (var state in states)
+                {
+
+                    foreach (var variable in state.Variables.Where(item => !string.IsNullOrEmpty(item.ExposedAsName) || string.IsNullOrEmpty(item.SourceObject)))
+                    {
+                        string variableName = (variable.ExposedAsName ?? variable.Name).Replace(" ", "");
+
+                        var hasAlreadyBeenAdded = newAti.VariableDefinitions.Any(item => item.Name == variableName);
+
+                        if(!hasAlreadyBeenAdded)
+                        {
+
+                            var variableDefinition = new VariableDefinition();
+                            variableDefinition.Category = variable.Category;
+                            variableDefinition.DefaultValue = variable.Value?.ToString();
+                            variableDefinition.Name = variableName; // gum variables can have spaces, but Glue variables can't
+
+                            variableDefinition.Type = QualifyGumVariableType(variable, element);
+
+                            ChangePositionUnitTypes(variableDefinition);
+
+                            newAti.VariableDefinitions.Add(variableDefinition);
+
+                        }
+                    }
                 }
             }
 
             return newAti;
+        }
+
+        private void ChangePositionUnitTypes(VariableDefinition variableDefinition)
+        {
+            var isPositionUnitVariable =
+                variableDefinition.Name == "XUnits" || variableDefinition.Name == "YUnits";
+
+            var isPositionUnitsType = variableDefinition.Type == "Gum.Managers.PositionUnitType";
+            if (isPositionUnitVariable && isPositionUnitsType)
+            {
+                variableDefinition.Type = "Gum.Converters.GeneralUnitType";
+            }
+        }
+
+        private static string QualifyGumVariableType(Gum.DataTypes.Variables.VariableSave variable, ElementSave container)
+        {
+            // If it is a state:
+            var isState = variable.IsState(container);
+            // todo: for now we'll return the unqualified name for the state, but eventually we may want to qualify it:
+            if(isState)
+            {
+                return variable.Type;
+            }
+            else
+            {
+                switch(variable.Type)
+                {
+                    case "int":
+                    case "bool":
+                    case "string":
+                    case "float":
+                        return variable.Type;
+                    case "HorizontalAlignment":
+                        return "RenderingLibrary.Graphics.HorizontalAlignment";
+                    case "VerticalAlignment":
+                        return "RenderingLibrary.Graphics.VerticalAlignment";
+                    case "PositionUnitType":
+                        return "Gum.Managers.PositionUnitType";
+                    case "Blend":
+                        return "Gum.RenderingLibrary.Blend";
+                    case "DimensionUnitType":
+                        return "Gum.DataTypes.DimensionUnitType";
+                    case "ChildrenLayout":
+                        return "Gum.Managers.ChildrenLayout";
+                    case "TextureAddress":
+                        return "Gum.Managers.TextureAddress";
+                    case "GeneralUnitType":
+                        return "Gum.Converters.GeneralUnitType";
+                }
+
+                return variable.Type;
+            }
         }
 
         private string GetGumElementConstructorFunct(IElement glueContainerElement, NamedObjectSave namedObject, ReferencedFileSave assetTypeInfo)
@@ -361,13 +443,13 @@ namespace GumPlugin.Managers
         public void UnloadProjectSpecificAtis()
         {
 
-            foreach(var item in mAssetTypesForThisProject)
+            foreach(var item in AssetTypesForThisProject)
             {
                 AvailableAssetTypes.Self.RemoveAssetType(item);
 
             }
 
-            mAssetTypesForThisProject.Clear();
+            AssetTypesForThisProject.Clear();
         }
 
     }

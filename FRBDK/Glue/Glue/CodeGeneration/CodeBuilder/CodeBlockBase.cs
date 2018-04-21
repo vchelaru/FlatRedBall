@@ -148,6 +148,11 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 
     public static class CodeBlockExtensions
     {
+        /// <summary>
+        /// Creates an indented code block without surrounding brackes - only indents
+        /// </summary>
+        /// <param name="codeBlock"></param>
+        /// <returns></returns>
         public static ICodeBlock CodeBlockIndented(this ICodeBlock codeBlock)
         {
             return new CodeBlockBase(codeBlock);

@@ -632,7 +632,13 @@ namespace FlatRedBall.Glue.SaveClasses
             CustomVariableInNamedObject instructionSave = new CustomVariableInNamedObject();
             instructionSave.Value = null; // make it the default
 
-            instructionSave.Type = type.Name;
+            // April 2, 2018
+            // This used to just assign type.Name, but that can cause ambiguity between 
+            // different systems like FRB's HorizontalAlignment and Gum's HorizontalAlignment,
+            // so we need to have the values be fully qualified.
+            //instructionSave.Type = type.Name;
+
+            instructionSave.Type = type.FullName;
             instructionSave.Type = TypeManager.ConvertToCommonType(instructionSave.Type);
             instructionSave.Member = member;
             // Create a new instruction

@@ -193,7 +193,12 @@ namespace GumPlugin
             // - Lots more reduction in every-frame memory allocation by making Text objects only update when width has changed, removing LINQ calls
             // 0.9.4.0
             // - Updated plugin to use the latest error reporting in case an XML file can't be parsed
-            get { return new Version(0, 9, 4, 0); }
+            // 1.0.0.0
+            // - HUGE update - Gum plugin can now create FlatRedBall.Forms default controls and inject them in the project.
+            // - Added Gum icon to add new project, or to open project instead of having to search for the .gumx
+            // - Changed defaults when creating Gum projects to auto-add to Glue screens
+            // - Simplified adding .Forms down to a single button
+            get { return new Version(1, 0, 0, 0); }
         }
 
         #endregion
@@ -275,6 +280,21 @@ namespace GumPlugin
             this.ReactToNewScreenCreated += HandleNewScreen;
 
             this.GetEventSignatureArgs += HandleGetEventSignatureArgs;
+
+            this.GetUsedTypes = HandleGetUsedTypes;
+        }
+
+        private List<Type> HandleGetUsedTypes()
+        {
+            List<Type> toReturn = new List<Type>();
+
+            toReturn.AddRange(typeof(ChildrenLayout)
+                .Assembly.GetTypes().Where(item => item.IsEnum));
+            toReturn.AddRange(typeof(RenderingLibrary.Graphics.HorizontalAlignment)
+                .Assembly.GetTypes().Where(item => item.IsEnum));
+            toReturn.AddRange(typeof(Gum.Converters.GeneralUnitType)
+                .Assembly.GetTypes().Where(item => item.IsEnum));
+            return toReturn;
         }
 
         private void HandleGetEventSignatureArgs(NamedObjectSave namedObject, EventResponseSave eventResponseSave, out string type, out string args)

@@ -7,86 +7,90 @@ using System.Xml.Serialization;
 namespace TMXGlueLib
 {
 
-        [XmlType(AnonymousType = true)]
-        public partial class mapTilesetTile
+    [XmlType(AnonymousType = true)]
+    public partial class mapTilesetTile
+    {
+        private IDictionary<string, string> propertyDictionaryField = null;
+
+        [XmlIgnore]
+        public IDictionary<string, string> PropertyDictionary
         {
-            private IDictionary<string, string> propertyDictionaryField = null;
-
-            [XmlIgnore]
-            public IDictionary<string, string> PropertyDictionary
+            get
             {
-                get
+                lock (this)
                 {
-                    lock (this)
+                    if (propertyDictionaryField == null)
                     {
-                        if (propertyDictionaryField == null)
-                        {
-                            ForceRebuildPropertyDictionary();
-                        }
-                        return propertyDictionaryField;
+                        ForceRebuildPropertyDictionary();
                     }
+                    return propertyDictionaryField;
                 }
-            }
-
-
-
-            List<property> mProperties = new List<property>();
-
-            public List<property> properties
-            {
-                get { return mProperties; }
-                set
-                {
-                    mProperties = value;
-                }
-            }
-
-            /// <remarks/>
-            [XmlAttribute()]
-            public int id
-            {
-                get;
-                set;
-            }
-
-            [XmlAttribute("type")]
-            public string Type { get; set; }
-
-            [XmlElement("animation")]
-            public TileAnimation Animation
-            {
-                get;
-                set;
-            }
-
-
-            public mapTilesetTile()
-            {
-            }
-
-
-            public override string ToString()
-            {
-                string toReturn = id.ToString();
-
-                if(PropertyDictionary.Count != 0)
-                {
-                    toReturn += " (";
-
-                    foreach (var kvp in PropertyDictionary)
-                    {
-                        toReturn += "(" + kvp.Key + "," + kvp.Value + ")";
-                    }
-
-
-                    toReturn += ")";
-                }
-                return toReturn;
-            }
-
-            public void ForceRebuildPropertyDictionary()
-            {
-                propertyDictionaryField = TiledMapSave.BuildPropertyDictionaryConcurrently(properties);
             }
         }
+
+
+
+        List<property> mProperties = new List<property>();
+
+        public List<property> properties
+        {
+            get { return mProperties; }
+            set
+            {
+                mProperties = value;
+            }
+        }
+
+        /// <remarks/>
+        [XmlAttribute()]
+        public int id
+        {
+            get;
+            set;
+        }
+
+        [XmlAttribute("type")]
+        public string Type { get; set; }
+
+        [XmlElement("animation")]
+        public TileAnimation Animation
+        {
+            get;
+            set;
+        }
+
+        [XmlElement("objectgroup")]
+        public mapObjectgroup Objects { get; set; }
+
+
+
+        public mapTilesetTile()
+            {
+            }
+
+
+        public override string ToString()
+        {
+            string toReturn = id.ToString();
+
+            if(PropertyDictionary.Count != 0)
+            {
+                toReturn += " (";
+
+                foreach (var kvp in PropertyDictionary)
+                {
+                    toReturn += "(" + kvp.Key + "," + kvp.Value + ")";
+                }
+
+
+                toReturn += ")";
+            }
+            return toReturn;
+        }
+
+        public void ForceRebuildPropertyDictionary()
+        {
+            propertyDictionaryField = TiledMapSave.BuildPropertyDictionaryConcurrently(properties);
+        }
+    }
 }

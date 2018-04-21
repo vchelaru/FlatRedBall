@@ -1433,6 +1433,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounce(ShapeCollection shapeCollection, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass, float elasticity)
         {
+            this.ClearCollisionLists();
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, shapeCollection, considerPartitioning, axisToUse, otherMass, thisMass, elasticity);
         }
 

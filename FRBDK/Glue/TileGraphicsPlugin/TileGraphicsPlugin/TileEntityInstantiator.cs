@@ -253,7 +253,7 @@ namespace FlatRedBall.TileEntities
             {
                 float floatValue;
 
-                if (float.TryParse((string)valueToSet, System.Globalization.NumberStyles.Any, System.Globalization.NumberFormatInfo.InvariantInfo, out floatValue))
+                if (float.TryParse((string)valueToSet, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out floatValue))
                 {
                     valueToSet = floatValue;
                 }

@@ -15,7 +15,12 @@ namespace GlueTestProject.TestFramework
 
             if(!equals)
             {
-                string message = $"Should be {desired} but was instead {thisObject}";
+                string desiredName = "null";
+                if(desired != null)
+                {
+                    desiredName = desired.ToString();
+                }
+                string message = $"Should be {desiredName} but was instead {thisObject}";
 
                 if(!string.IsNullOrEmpty(because))
                 {

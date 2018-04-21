@@ -36,7 +36,8 @@ namespace FlatRedBall.PlatformerPlugin
             get
             {
                 // 1.1 - Added ability to specify rectangle sub-collision, typically used for cloud collision
-                return new Version(1, 1);
+                // 1.2 - Added slope collision support
+                return new Version(1, 2);
             }
         }
 

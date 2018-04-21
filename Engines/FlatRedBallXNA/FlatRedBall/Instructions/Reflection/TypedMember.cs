@@ -53,8 +53,18 @@ namespace FlatRedBall.Instructions.Reflection
 		public static TypedMemberBase GetTypedMember(string memberName, Type memberType)
 		{
 			TypedMemberBase typedMember = null;
-                Type typedMemberType = typeof(TypedMember<>).MakeGenericType(memberType);
 
+            Type typedMemberType = null;
+            
+            try
+            {
+                typedMemberType = typeof(TypedMember<>).MakeGenericType(memberType);
+            }
+            catch(ArgumentException)
+            {
+                // Maybe it's not an equatable, so try unequatable:
+                typedMemberType = typeof(TypedMemberUnequatable<>).MakeGenericType(memberType);
+            }
 
 			typedMember = Activator.CreateInstance(typedMemberType, memberName) as TypedMemberBase;
 

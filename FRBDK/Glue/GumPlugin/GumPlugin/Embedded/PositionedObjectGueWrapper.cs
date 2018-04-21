@@ -9,10 +9,21 @@ namespace GumCoreShared.FlatRedBall.Embedded
 {
     public class PositionedObjectGueWrapper : PositionedObject
     {
-        public PositionedObject FrbObject { get; set; }
+        PositionedObject frbObject;
+        global::FlatRedBall.Math.Geometry.IReadOnlyScalable frbObjectAsScalable;
+
+        public PositionedObject FrbObject
+        {
+            get { return frbObject; }
+            set
+            {
+                frbObject = value;
+                frbObjectAsScalable = value as global::FlatRedBall.Math.Geometry.IReadOnlyScalable;
+            }
+        }
 
         GraphicalUiElement GumParent { get; set; }
-        public GraphicalUiElement GumObject { get; set; }
+        public GraphicalUiElement GumObject { get; private set; }
 
         public PositionedObjectGueWrapper(PositionedObject frbObject, GraphicalUiElement gumObject) : base()
         {
@@ -25,7 +36,9 @@ namespace GumCoreShared.FlatRedBall.Embedded
             GumParent.XUnits = Gum.Converters.GeneralUnitType.PixelsFromSmall;
             GumParent.YUnits = Gum.Converters.GeneralUnitType.PixelsFromSmall;
 
-            
+            GumParent.XOrigin = HorizontalAlignment.Center;
+            GumParent.YOrigin = VerticalAlignment.Center;
+
 
             this.FrbObject = frbObject;
             this.GumObject = gumObject;
@@ -52,6 +65,12 @@ namespace GumCoreShared.FlatRedBall.Embedded
 
             GumParent.X = screenX;
             GumParent.Y = screenY;
+
+            if(frbObjectAsScalable != null)
+            {
+                GumParent.Width = frbObjectAsScalable.ScaleX * 2;
+                GumParent.Height = frbObjectAsScalable.ScaleY * 2;
+            }
         }
     }
 }

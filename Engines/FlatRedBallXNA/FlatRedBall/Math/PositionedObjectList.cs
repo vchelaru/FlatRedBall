@@ -430,6 +430,14 @@ namespace FlatRedBall.Math
         // which could be resolved by writing a Swap method which shifts only the two objects
         // which need to be swapped and all elements inbetween the indexes of the two.
 
+        /// <summary>
+        /// Shuffles all elements in the list such that the are in random order afer the call finishes.
+        /// </summary>
+        /// <remarks>
+        /// The Shuffle method can be used for elements which should be presented in a random order. For example,
+        /// a list of players may be shuffled before a game begins to randomize the turn order to prevent one player from
+        /// always going first.
+        /// </remarks>
         public void Shuffle()
         {
             int count = Count;

@@ -6,42 +6,40 @@ using System.Threading.Tasks;
 using FlatRedBall.PlatformerPlugin.SaveClasses;
 using FlatRedBall.Glue.MVVM;
 using System.Windows;
+using System.ComponentModel;
 
 namespace FlatRedBall.PlatformerPlugin.ViewModels
 {
     public class PlatformerValuesViewModel : ViewModel
     {
+        #region Fields/Properties
 
-        string name;
         public string Name
         {
-            get { return name; }
-            set { base.ChangeAndNotify(ref name, value); }
+            get { return Get<string>(); }
+            set { Set(value); }
         }
 
-        float maxSpeedX;
         public float MaxSpeedX
         {
-            get { return maxSpeedX; }
-            set { base.ChangeAndNotify(ref maxSpeedX, value); }
+            get { return Get<float>(); }
+            set { Set(value); }
         }
 
-        bool canFallThroughCloudPlatforms;
         public bool CanFallThroughCloudPlatforms
         {
-            get { return canFallThroughCloudPlatforms; }
-            set { base.ChangeAndNotify(ref canFallThroughCloudPlatforms, value); }
+            get { return Get<bool>(); }
+            set { Set(value); }
         }
 
         [DependsOn(nameof(CanFallThroughCloudPlatforms))]
         public Visibility FallThroughCloudPlatformsVisibility =>
             CanFallThroughCloudPlatforms ? Visibility.Visible : Visibility.Hidden;
 
-        float cloudFallThroughDistance;
         public float CloudFallThroughDistance
         {
-            get { return cloudFallThroughDistance; }
-            set { base.ChangeAndNotify(ref cloudFallThroughDistance, value); }
+            get { return Get<float>(); }
+            set { Set(value); }
         }
 
         bool isImmediate = true;
@@ -56,6 +54,7 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             }
         }
 
+        // Can't use DependsOn because I think it's a circular refernece. Would have to update the VM to handle that...
         public bool UsesAcceleration
         {
             get { return !isImmediate; }
@@ -71,7 +70,7 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
         {
             get
             {
-                if(isImmediate)
+                if (isImmediate)
                 {
                     return Visibility.Collapsed;
                 }
@@ -81,56 +80,117 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
                 }
             }
         }
-        float accelerationTimeX;
-        public float AccelerationTimeX
-        {
-            get { return accelerationTimeX; }
-            set { base.ChangeAndNotify(ref accelerationTimeX, value); }
-        }
 
-        float decelerationTimeX;
-        public float DecelerationTimeX
+        bool moveSameSpeedOnSlopes;
+        public bool MoveSameSpeedOnSlopes
         {
-            get { return decelerationTimeX; }
-            set { base.ChangeAndNotify(ref decelerationTimeX, value); }
-        }
-
-        float gravity;
-        public float Gravity
-        {
-            get { return gravity; }
-            set { base.ChangeAndNotify(ref gravity, value); }
-        }
-
-        float maxFallSpeed;
-        public float MaxFallSpeed
-        {
-            get { return maxFallSpeed; }
-            set { base.ChangeAndNotify(ref maxFallSpeed, value); }
-        }
-
-        float jumpVelocity;
-        public float JumpVelocity
-        {
-            get { return jumpVelocity; }
-            set { base.ChangeAndNotify(ref jumpVelocity, value); }
-        }
-
-        float jumpApplyLength;
-        public float JumpApplyLength
-        {
-            get { return jumpApplyLength; }
-            set { base.ChangeAndNotify(ref jumpApplyLength, value); }
-        }
-
-        bool jumpApplyByButtonHold;
-        public bool JumpApplyByButtonHold
-        {
-            get { return jumpApplyByButtonHold; }
+            get { return moveSameSpeedOnSlopes; }
             set
             {
-                base.ChangeAndNotify(ref jumpApplyByButtonHold, value);
+                base.ChangeAndNotify(ref moveSameSpeedOnSlopes, value);
+                NotifyPropertyChanged(nameof(AdjustSpeedOnSlopes));
             }
+        }
+
+        public bool AdjustSpeedOnSlopes
+        {
+            get { return !moveSameSpeedOnSlopes; }
+            set
+            {
+                base.ChangeAndNotify(ref moveSameSpeedOnSlopes, !value);
+                NotifyPropertyChanged(nameof(MoveSameSpeedOnSlopes));
+
+            }
+        }
+
+        [DependsOn(nameof(MoveSameSpeedOnSlopes))]
+        public Visibility SlopeMovementSpeedUiVisibility
+        {
+            get
+            {
+                if (MoveSameSpeedOnSlopes)
+                {
+                    return Visibility.Collapsed;
+                }
+                else
+                {
+                    return Visibility.Visible;
+                }
+            }
+        }
+
+
+        public float AccelerationTimeX
+        {
+            get { return Get<float>(); }
+            set { Set(value); }
+        }
+
+        public float DecelerationTimeX
+        {
+            get { return Get<float>(); }
+            set { Set(value); }
+        }
+
+        public float Gravity
+        {
+            get { return Get<float>(); }
+            set { Set(value); }
+        }
+
+        public float MaxFallSpeed
+        {
+            get { return Get<float>(); }
+            set { Set(value); }
+        }
+
+        public float JumpVelocity
+        {
+            get { return Get<float>(); }
+            set { Set(value); }
+        }
+
+        public float JumpApplyLength
+        {
+            get { return Get<float>(); }
+            set { Set(value); }
+        }
+
+        public bool JumpApplyByButtonHold
+        {
+            get { return Get<bool>(); }
+            set { Set(value); }
+        }
+
+        public decimal UphillFullSpeedSlope
+        {
+            get { return Get<decimal>(); }
+            set { Set(value); }
+        }
+
+        public decimal UphillStopSpeedSlope
+        {
+            get { return Get<decimal>(); }
+            set { Set(value); }
+        }
+
+        public decimal DownhillFullSpeedSlope
+        {
+            get { return Get<decimal>(); }
+            set { Set(value); }
+        }
+
+
+        public decimal DownhillMaxSpeedSlope
+        {
+            get { return Get<decimal>(); }
+            set { Set(value); }
+        }
+
+        public decimal DownhillMaxSpeedBoostPercentage
+        {
+            get { return Get<decimal>(); }
+            set { Set(value); }
         }
 
         [DependsOn(nameof(JumpApplyByButtonHold))]
@@ -138,7 +198,7 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
         {
             get
             {
-                if(JumpApplyByButtonHold)
+                if (JumpApplyByButtonHold)
                 {
                     return Visibility.Visible;
                 }
@@ -146,6 +206,37 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
                 {
                     return Visibility.Collapsed;
                 }
+            }
+        }
+
+        #endregion
+
+        #region Constructor/Clone
+
+        public PlatformerValuesViewModel()
+        {
+            this.PropertyChanged += HandlePropertyChanged;
+        }
+
+        public PlatformerValuesViewModel Clone()
+        {
+            return (PlatformerValuesViewModel)this.MemberwiseClone();
+        }
+
+        #endregion
+
+        private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(UphillFullSpeedSlope):
+                case nameof(UphillStopSpeedSlope):
+                    ClampUphillValues();
+                    break;
+                case nameof(DownhillFullSpeedSlope):
+                case nameof(DownhillMaxSpeedSlope):
+                    ClampDownhillValues();
+                    break;
             }
         }
 
@@ -163,12 +254,46 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             UsesAcceleration = values.UsesAcceleration;
             CanFallThroughCloudPlatforms = values.CanFallThroughCloudPlatforms;
             CloudFallThroughDistance = values.CloudFallThroughDistance;
+
+            MoveSameSpeedOnSlopes = values.MoveSameSpeedOnSlopes;
+            UphillFullSpeedSlope = values.UphillFullSpeedSlope;
+            UphillStopSpeedSlope = values.UphillStopSpeedSlope;
+            DownhillFullSpeedSlope = values.DownhillFullSpeedSlope;
+            DownhillMaxSpeedSlope = values.DownhillMaxSpeedSlope;
+            DownhillMaxSpeedBoostPercentage = values.DownhillMaxSpeedBoostPercentage;
         }
 
-        public PlatformerValuesViewModel Clone()
+
+
+
+        private void ClampUphillValues()
         {
-            return (PlatformerValuesViewModel)this.MemberwiseClone();
+            UphillStopSpeedSlope =
+                System.Math.Max(0, UphillStopSpeedSlope);
+            UphillStopSpeedSlope =
+                System.Math.Min(90, UphillStopSpeedSlope);
+
+            UphillFullSpeedSlope =
+                System.Math.Max(0, UphillFullSpeedSlope);
+            UphillFullSpeedSlope =
+                System.Math.Min(UphillFullSpeedSlope, UphillStopSpeedSlope);
         }
+
+        private void ClampDownhillValues()
+        {
+            DownhillFullSpeedSlope =
+                System.Math.Max(0, DownhillFullSpeedSlope);
+            DownhillFullSpeedSlope =
+                System.Math.Min(90, DownhillFullSpeedSlope);
+
+            DownhillMaxSpeedSlope =
+                System.Math.Max(DownhillFullSpeedSlope, DownhillMaxSpeedSlope);
+
+            DownhillMaxSpeedSlope =
+                System.Math.Min(90, DownhillMaxSpeedSlope);
+
+        }
+
 
         internal PlatformerValues ToValues()
         {
@@ -187,6 +312,23 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             toReturn.UsesAcceleration = UsesAcceleration;
             toReturn.CanFallThroughCloudPlatforms = CanFallThroughCloudPlatforms;
             toReturn.CloudFallThroughDistance = CloudFallThroughDistance;
+
+            toReturn.MoveSameSpeedOnSlopes = MoveSameSpeedOnSlopes;
+            toReturn.UphillFullSpeedSlope = UphillFullSpeedSlope;
+            toReturn.UphillStopSpeedSlope = UphillStopSpeedSlope;
+            toReturn.DownhillFullSpeedSlope = DownhillFullSpeedSlope;
+            toReturn.DownhillMaxSpeedSlope = DownhillMaxSpeedSlope;
+            toReturn.DownhillMaxSpeedBoostPercentage = DownhillMaxSpeedBoostPercentage;
+
+
+
+
+
+
+
+
+
+
             return toReturn;
         }
     }

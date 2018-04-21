@@ -473,11 +473,7 @@ namespace FlatRedBall.Instructions
 
             ShapeManager.Pause(mUnpauseInstructions);
 
-#if SILVERLIGHT
-            throw new NotImplementedException();
-#else
             TextManager.Pause(mUnpauseInstructions);
-#endif
 
             InstructionListUnpause instructions = new InstructionListUnpause(mInstructions);
             mInstructions.Clear();

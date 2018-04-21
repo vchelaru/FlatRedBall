@@ -71,6 +71,9 @@ namespace GlueTestProject.Screens
             PerformDynamicParentAssignmentTest();
 
             PerformDependsOnChildrenTest();
+
+            // Move this to the right so it isn't at 0,0
+            GumComponentContainer_ForAttachment.X = 100;
         }
 
         private void PerformDependsOnChildrenTest()
@@ -148,8 +151,16 @@ namespace GlueTestProject.Screens
 
         void CustomActivity(bool firstTimeCalled)
 		{
+            int numberOfFramesToWait = 5;
 
-            if (this.ActivityCallCount > 5)
+            // give it a few frames...
+            if(this.ActivityCallCount == 2)
+            {
+                GumComponentContainer_ForAttachment.VerifyGumOnFrbAttachments();
+            }
+
+
+            if (this.ActivityCallCount > numberOfFramesToWait)
             {
                 IsActivityFinished = true;
 			}
