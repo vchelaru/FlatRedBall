@@ -335,11 +335,12 @@ namespace FlatRedBall.Forms.Controls
 
         private void UpdateToCaretIndex()
         {
-            var substring = Text.Substring(0, caretIndex);
+            // make sure we measure a valid string
+            var stringToMeasure = Text ?? "";
+
+            var substring = stringToMeasure.Substring(0, caretIndex);
             var measure = this.coreTextObject.BitmapFont.MeasureString(substring);
-
             caretComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
-
             caretComponent.X = measure + this.textComponent.X;
         }
 
