@@ -32,6 +32,13 @@ namespace FlatRedBall.Math.Collision
 
     public abstract class CollisionRelationship
     {
+        protected CollisionType CollisionType = CollisionType.EventOnlyCollision;
+
+        protected float moveFirstMass;
+        protected float moveSecondMass;
+        protected float bounceElasticity;
+
+
         public int DeepCollisionsThisFrame { get; set; }
 
         public CollisionLimit CollisionLimit { get; set; }
@@ -60,6 +67,33 @@ namespace FlatRedBall.Math.Collision
         // the user can call DoCollision and have it partition automatically.
         public IEnumerable<PartitionedValuesBase> Partitions { get; set; }
 
+        #region Set Collision Type Methods
+
+        // todo:
+        // SetPlatformerCollision 
+
+        public virtual void SetMoveCollision(float firstMass, float secondMass)
+        {
+            this.CollisionType = CollisionType.MoveCollision;
+            this.moveFirstMass = firstMass;
+            this.moveSecondMass = secondMass;
+        }
+
+        public virtual void SetBounceCollision(float firstMass, float secondMass, float elasticity)
+        {
+            this.CollisionType = CollisionType.BounceCollision;
+            this.moveFirstMass = firstMass;
+            this.moveSecondMass = secondMass;
+            this.bounceElasticity = elasticity;
+        }
+
+        public void SetEventOnlyCollision()
+        {
+            this.CollisionType = CollisionType.EventOnlyCollision;
+        }
+
+        #endregion
+
         public abstract void DoCollisions();
     }
 
@@ -77,11 +111,6 @@ namespace FlatRedBall.Math.Collision
         protected Func<SecondCollidableT, Polygon> secondSubCollisionPolygon;
         protected Func<SecondCollidableT, ICollidable> secondSubCollisionCollidable;
 
-        CollisionType CollisionType = CollisionType.EventOnlyCollision;
-
-        float moveFirstMass;
-        float moveSecondMass;
-        float bounceElasticity;
 
         public Action<FirstCollidableT, SecondCollidableT> CollisionOccurred;
 
@@ -98,33 +127,6 @@ namespace FlatRedBall.Math.Collision
         public void SetSecondSubCollision(Func<SecondCollidableT, AxisAlignedRectangle> subCollisionFunc) { secondSubCollisionRectangle = subCollisionFunc; }
         public void SetSecondSubCollision(Func<SecondCollidableT, Polygon> subCollisionFunc) { secondSubCollisionPolygon = subCollisionFunc; }
         public void SetSecondSubCollision(Func<SecondCollidableT, ICollidable> subCollisionFunc) { secondSubCollisionCollidable = subCollisionFunc; }
-
-        #endregion
-
-        #region Set Collision Type Methods
-
-        // todo:
-        // SetPlatformerCollision 
-
-        public void SetMoveCollision(float firstMass, float secondMass)
-        {
-            this.CollisionType = CollisionType.MoveCollision;
-            this.moveFirstMass = firstMass;
-            this.moveSecondMass = secondMass;
-        }
-
-        public void SetBounceCollision(float firstMass, float secondMass, float elasticity)
-        {
-            this.CollisionType = CollisionType.BounceCollision;
-            this.moveFirstMass = firstMass;
-            this.moveSecondMass = secondMass;
-            this.bounceElasticity = elasticity;
-        }
-
-        public void SetEventOnlyCollision()
-        {
-            this.CollisionType = CollisionType.EventOnlyCollision;
-        }
 
         #endregion
 
