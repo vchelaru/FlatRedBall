@@ -193,6 +193,27 @@ namespace FlatRedBall.TileCollisions
             return toReturn;
         }
 
+        public bool CollideAgainstBounce(AxisAlignedRectangle rectangle, float elasticity)
+        {
+            bool toReturn = mShapes.CollideAgainstBounce(rectangle, true, mSortAxis, 1, 0, elasticity);
+
+            return toReturn;
+        }
+
+        public bool CollideAgainstBounce(Circle circle, float elasticity)
+        {
+            bool toReturn = mShapes.CollideAgainstBounce(circle, true, mSortAxis, 1, 0, elasticity);
+
+            return toReturn;
+        }
+
+        public bool CollideAgainstBounce(Polygon polygon, float elasticity)
+        {
+            bool toReturn = mShapes.CollideAgainstBounce(polygon, true, mSortAxis, 1, 0, elasticity);
+
+            return toReturn;
+        }
+
         [Obsolete("Use GetRectangleAtPosition instead as it more clearly indicates what the method does.")]
         public AxisAlignedRectangle GetTileAt(float x, float y)
         {

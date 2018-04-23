@@ -52,6 +52,9 @@ namespace TileGraphicsPlugin.Managers
             mTileCollisionAdder.OutputFolderInProject = "TileCollisions";
             mTileCollisionAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
             mTileCollisionAdder.Add("TileGraphicsPlugin.TileShapeCollection.cs");
+            mTileCollisionAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/CollidableListVsTileShapeCollectionRelationship.cs");
+            mTileCollisionAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/CollidableVsTileShapeCollectionRelationship.cs");
+            mTileCollisionAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/CollisionManagerTileShapeCollectionExtensions.cs");
 
             mTileEntityAdder = new CodeBuildItemAdder();
             mTileEntityAdder.OutputFolderInProject = "TileEntities";

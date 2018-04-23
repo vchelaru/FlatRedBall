@@ -122,6 +122,9 @@
     <Compile Include="Behaviors\InputBindingsManager.cs" />
     <Compile Include="DataTypes\TiledObjectTypePropertySave.cs" />
     <Compile Include="DataTypes\TiledObjectTypeSave.cs" />
+    <EmbeddedResource Include="EmbeddedCodeFiles\CollidableListVsTileShapeCollectionRelationship.cs" />
+    <EmbeddedResource Include="EmbeddedCodeFiles\CollidableVsTileShapeCollectionRelationship.cs" />
+    <EmbeddedResource Include="EmbeddedCodeFiles\CollisionManagerTileShapeCollectionExtensions.cs" />
     <Compile Include="Managers\BuildToolSaver.cs" />
     <EmbeddedResource Include="TileNodeNetworkCreator.cs" />
     <Compile Include="Managers\TiledObjectTypeCreator.cs" />

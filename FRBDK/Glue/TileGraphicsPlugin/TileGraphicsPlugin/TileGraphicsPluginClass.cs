@@ -103,7 +103,9 @@ namespace TileGraphicsPlugin
             // 1.2.3.1
             // - Fixed polygon conversion not doing conversions using culture invariant values - fixes games running in Finnish
             // - Fixed tile entity instantiation not doing float conversions using culture invariant values - also Finnish fix.
-            get { return new Version(1, 2, 3, 1); }
+            // 1.3.0
+            // - Added TileShapeCollection + CollisionManager integration.
+            get { return new Version(1, 3, 0, 0); }
         }
 
 
