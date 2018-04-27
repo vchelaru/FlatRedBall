@@ -575,8 +575,11 @@ namespace NewProjectCreator
                 string newAssemblyName = $"<AssemblyName>{stringToReplaceWith}</AssemblyName>";
                 contents = contents.Replace(originalAssemblyName, newAssemblyName);
 
-                System.IO.File.WriteAllText(fileName, contents, Encoding.UTF8);
+                string originalProjectReference = $@"<ProjectReference Include=""..\{stringToReplace}Content\{stringToReplace}Content.contentproj"">";
+                string newProjectReference = $@"<ProjectReference Include=""..\{stringToReplaceWith}Content\{stringToReplaceWith}Content.contentproj"">";
+                contents = contents.Replace(originalProjectReference, newProjectReference);
 
+                System.IO.File.WriteAllText(fileName, contents, Encoding.UTF8);
             }
 
             filesToFix.Clear();
