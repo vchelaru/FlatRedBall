@@ -107,7 +107,9 @@ namespace TileGraphicsPlugin
             // - Added TileShapeCollection + CollisionManager integration.
             // 1.3.1
             // - Removed requirement for XNA HiDef so old machines and VMs will run this plugin better, but the edit window won't show
-            get { return new Version(1, 3, 1, 0); }
+            // 1.3.2
+            //  - Added support for adding rectangles on rotated tiles
+            get { return new Version(1, 3, 2, 0); }
         }
 
 

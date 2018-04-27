@@ -712,7 +712,9 @@ namespace FlatRedBall.TileGraphics
         {
             var i = y * layer.width + x;
 
-            if (tiles[i] == tilesetTileGid)
+            var stripedId = tiles[i] & 0x0fffffff;
+
+            if (stripedId == tilesetTileGid)
             {
                 float xIndex = i % layer.width;
                 // intentional int division

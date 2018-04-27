@@ -1381,7 +1381,9 @@ namespace FlatRedBall.Glue.Plugins
                 }
                 else
                 {
-                    foreach (PluginManager pluginManager in mInstances)
+                    var instances = mInstances.ToList();
+
+                    foreach (PluginManager pluginManager in instances)
                     {
                         PrintError(output, pluginManager);
                     }
