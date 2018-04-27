@@ -105,7 +105,9 @@ namespace TileGraphicsPlugin
             // - Fixed tile entity instantiation not doing float conversions using culture invariant values - also Finnish fix.
             // 1.3.0
             // - Added TileShapeCollection + CollisionManager integration.
-            get { return new Version(1, 3, 0, 0); }
+            // 1.3.1
+            // - Removed requirement for XNA HiDef so old machines and VMs will run this plugin better, but the edit window won't show
+            get { return new Version(1, 3, 1, 0); }
         }
 
 
@@ -336,13 +338,17 @@ namespace TileGraphicsPlugin
 
         private void ReactToRfsSelected(ReferencedFileSave rfs)
         {
-            if(this.PluginTab == null)
+            if(mControl != null)
             {
-                this.AddToTab(PluginManager.CenterTab, mControl, "TMX");
-            }
-            else if(this.PluginTab.Parent == null)
-            {
-                base.AddTab();
+                if(this.PluginTab == null)
+                {
+                    this.AddToTab(PluginManager.CenterTab, mControl, "TMX");
+                }
+                else if(this.PluginTab.Parent == null)
+                {
+                    base.AddTab();
+                }
+
             }
 
             // These aren't built anymore, so no command line
@@ -356,7 +362,7 @@ namespace TileGraphicsPlugin
 
             string fullFileName = FlatRedBall.Glue.ProjectManager.MakeAbsolute(fileNameToUse, true);
             mLastFile = fullFileName;
-            mControl.LoadFile(fullFileName);
+            mControl?.LoadFile(fullFileName);
         }
 
         private void HandleFileChange(string fileName)
@@ -396,7 +402,7 @@ namespace TileGraphicsPlugin
             {
                 if (changesToIgnore == 0)
                 {
-                    mControl.LoadFile(fileName);
+                    mControl?.LoadFile(fileName);
                 }
                 else
                 {
@@ -407,21 +413,32 @@ namespace TileGraphicsPlugin
 
         private void InitializeTab()
         {
-            mControl = new TmxEditor.TmxEditorControl();
-            mControl.AnyTileMapChange += HandleUserChangeTmx;
-            mControl.LoadEntities += OnLoadEntities;
-            var commandLineArgumentsView = new TileGraphicsPlugin.Views.CommandLineArgumentsView();
-            mCommandLineViewModel = new CommandLineViewModel();
+            try
+            {
+                mControl = new TmxEditor.TmxEditorControl();
+            }
+            catch(System.NotSupportedException exc)
+            {
+                GlueCommands.PrintError("Could not find a graphics device that supports XNA hi-def. Attempting to load Tiled plugin without the control tab");
+            }
 
-            mCommandLineViewModel.CommandLineChanged += HandleCommandLinePropertyChanged;
+            if(mControl != null)
+            {
+                mControl.AnyTileMapChange += HandleUserChangeTmx;
+                mControl.LoadEntities += OnLoadEntities;
+                var commandLineArgumentsView = new TileGraphicsPlugin.Views.CommandLineArgumentsView();
+                mCommandLineViewModel = new CommandLineViewModel();
 
-            commandLineArgumentsView.DataContext = mCommandLineViewModel;
-            mControl.AddTab("Command Line", commandLineArgumentsView);
+                mCommandLineViewModel.CommandLineChanged += HandleCommandLinePropertyChanged;
+
+                commandLineArgumentsView.DataContext = mCommandLineViewModel;
+                mControl.AddTab("Command Line", commandLineArgumentsView);
 
 
-            mTilesetXnaRightClickController = new TilesetXnaRightClickController();
-            mTilesetXnaRightClickController.Initialize(mControl.TilesetXnaContextMenu);
-            mControl.TilesetDisplayRightClick += (o, s) => mTilesetXnaRightClickController.RefreshMenuItems();
+                mTilesetXnaRightClickController = new TilesetXnaRightClickController();
+                mTilesetXnaRightClickController.Initialize(mControl.TilesetXnaContextMenu);
+                mControl.TilesetDisplayRightClick += (o, s) => mTilesetXnaRightClickController.RefreshMenuItems();
+            }
         }
 
         private void HandleCommandLinePropertyChanged()
@@ -442,7 +459,10 @@ namespace TileGraphicsPlugin
 
         private void OnLoadEntities(object sender, EventArgs args)
         {
-            mControl.Entities = (GlueState.CurrentGlueProject.Entities.Select(e => e.Name).ToList());
+            if(mControl != null)
+            {
+                mControl.Entities = (GlueState.CurrentGlueProject.Entities.Select(e => e.Name).ToList());
+            }
         }
 
         private void OnClosedByUser(object sender)
@@ -467,18 +487,21 @@ namespace TileGraphicsPlugin
 
         public void SaveTiledMapSave(ChangeType changeType)
         {
-            string fileName = mLastFile;
+            if(mControl != null)
+            {
+                string fileName = mLastFile;
 
-            FlatRedBall.Glue.Managers.TaskManager.Self.AddSync(() =>
-                {
+                FlatRedBall.Glue.Managers.TaskManager.Self.AddSync(() =>
+                    {
 
-                    changesToIgnore++;
+                        changesToIgnore++;
 
-                    bool saveTsxFiles = changeType == ChangeType.Tileset;
+                        bool saveTsxFiles = changeType == ChangeType.Tileset;
 
-                    mControl.SaveCurrentTileMap(saveTsxFiles);
-                },
-                "Saving tile map");
+                        mControl.SaveCurrentTileMap(saveTsxFiles);
+                    },
+                    "Saving tile map");
+            }
         }
 
         void HandleAdjustDisplayedReferencedFile(ReferencedFileSave rfs, ReferencedFileSavePropertyGridDisplayer displayer)
@@ -517,7 +540,7 @@ namespace TileGraphicsPlugin
 
         internal void UpdateTilesetDisplay()
         {
-            mControl.UpdateTilesetDisplay();
+            mControl?.UpdateTilesetDisplay();
         }
 
         #endregion
