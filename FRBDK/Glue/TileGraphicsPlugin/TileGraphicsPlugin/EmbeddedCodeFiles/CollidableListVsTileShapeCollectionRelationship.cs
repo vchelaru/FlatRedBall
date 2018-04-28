@@ -32,8 +32,9 @@ namespace FlatRedBall.Math.Collision
             this.list = list;
         }
 
-        public override void DoCollisions()
+        public override bool DoCollisions()
         {
+            bool didCollisionOccur = false;
             if (skippedFrames < FrameSkip)
             {
                 skippedFrames++;
@@ -74,12 +75,13 @@ namespace FlatRedBall.Math.Collision
 
                         if (didCollide)
                         {
-
+                            didCollisionOccur = true;
                             CollisionOccurred?.Invoke(singleObject, data.TileShapeCollection);
                         }
                     }
                 }
             }
+            return didCollisionOccur;
         }
     }
 }

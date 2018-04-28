@@ -49,6 +49,10 @@ namespace FlatRedBall.Math.Collision
         protected float? firstPartitioningSize;
         protected float? secondPartitioningSize;
 
+        /// <summary>
+        /// Whether the CollisionManager autoamtically calls DoCollisions on this relationship every frame.
+        /// If set to false, the CollisionManager will not call DoCollision, but DoCollision can be called automatically
+        /// </summary>
         public bool IsActive { get; set; } = true;
 
         /// <summary>
@@ -94,7 +98,7 @@ namespace FlatRedBall.Math.Collision
 
         #endregion
 
-        public abstract void DoCollisions();
+        public abstract bool DoCollisions();
     }
 
     public abstract class CollisionRelationship<FirstCollidableT, SecondCollidableT> : CollisionRelationship
@@ -548,8 +552,9 @@ namespace FlatRedBall.Math.Collision
         }
 
 
-        public override void DoCollisions()
+        public override bool DoCollisions()
         {
+            var didCollisionOccur = false;
             if(skippedFrames < FrameSkip)
             {
                 skippedFrames++;
@@ -561,8 +566,10 @@ namespace FlatRedBall.Math.Collision
                 if(CollideConsideringSubCollisions(first, second))
                 {
                     CollisionOccurred?.Invoke(first, second);
+                    didCollisionOccur = true;
                 }
             }
+            return didCollisionOccur;
         }
     }
 
@@ -650,8 +657,10 @@ namespace FlatRedBall.Math.Collision
             }
         }
 
-        public override void DoCollisions()
+        public override bool DoCollisions()
         {
+            var didCollisionOccur = false;
+
             if (skippedFrames < FrameSkip)
             {
                 skippedFrames++;
@@ -675,6 +684,7 @@ namespace FlatRedBall.Math.Collision
                         if (CollideConsideringSubCollisions(singleObject, atI))
                         {
                             CollisionOccurred?.Invoke(singleObject, atI);
+                            didCollisionOccur = true;
                             if (CollisionLimit == CollisionLimit.First)
                             {
                                 break;
@@ -683,7 +693,7 @@ namespace FlatRedBall.Math.Collision
                     }
                 }
             }
-
+            return didCollisionOccur;
         }
 
         private void DoClosestCollision()
@@ -805,8 +815,9 @@ namespace FlatRedBall.Math.Collision
         }
 
 
-        public override void DoCollisions()
+        public override bool DoCollisions()
         {
+            bool didCollisionOccur = false;
             if (skippedFrames < FrameSkip)
             {
                 skippedFrames++;
@@ -825,11 +836,12 @@ namespace FlatRedBall.Math.Collision
                     if (CollideConsideringSubCollisions(atI, singleObject))
                     {
                         CollisionOccurred?.Invoke(atI, singleObject);
-
+                        didCollisionOccur = true;
                         // Collision Limit doesn't do anything here
                     }
                 }
             }
+            return didCollisionOccur;
         }
     }
 
@@ -863,8 +875,9 @@ namespace FlatRedBall.Math.Collision
             this.secondList = secondList;
         }
 
-        public override void DoCollisions()
+        public override bool DoCollisions()
         {
+            bool collisionOccurred = false;
             if (skippedFrames < FrameSkip)
             {
                 skippedFrames++;
@@ -894,7 +907,7 @@ namespace FlatRedBall.Math.Collision
                             if (CollideConsideringSubCollisions(first, second))
                             {
                                 CollisionOccurred?.Invoke(first, second);
-
+                                collisionOccurred = true;
                                 if (CollisionLimit == CollisionLimit.First)
                                 {
                                     break;
@@ -904,6 +917,7 @@ namespace FlatRedBall.Math.Collision
                     }
                 }
             }
+            return collisionOccurred;
         }
 
         private void GetCollisionStartAndInt(FirstCollidableT first, int firstIndex, out int startInclusive, out int endExclusive)
