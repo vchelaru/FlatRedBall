@@ -18,13 +18,13 @@ namespace Windows8Template
     {
         GraphicsDeviceManager graphics;
 
-        public Game1() : base ()
+        public Game1() : base()
         {
             graphics = new GraphicsDeviceManager(this);
 
 #if WINDOWS_PHONE || ANDROID || IOS
 
-			// Frame rate is 30 fps by default for Windows Phone,
+            // Frame rate is 30 fps by default for Windows Phone,
             // so let's keep that for other phones too
             TargetElapsedTime = TimeSpan.FromTicks(333333);
             graphics.IsFullScreen = true;
@@ -43,15 +43,15 @@ namespace Windows8Template
 
         protected override void Initialize()
         {
-			#if IOS
-			var bounds = UIKit.UIScreen.MainScreen.Bounds;
-			var nativeScale = UIKit.UIScreen.MainScreen.Scale;
-			var screenWidth = (int)(bounds.Width * nativeScale);
-			var screenHeight = (int)(bounds.Height * nativeScale);
-			graphics.PreferredBackBufferWidth = screenWidth;
-			graphics.PreferredBackBufferHeight = screenHeight;
-			#endif
-		
+            #if IOS
+            var bounds = UIKit.UIScreen.MainScreen.Bounds;
+            var nativeScale = UIKit.UIScreen.MainScreen.Scale;
+            var screenWidth = (int)(bounds.Width * nativeScale);
+            var screenHeight = (int)(bounds.Height * nativeScale);
+            graphics.PreferredBackBufferWidth = screenWidth;
+            graphics.PreferredBackBufferHeight = screenHeight;
+            #endif
+        
             FlatRedBallServices.InitializeFlatRedBall(this, graphics);
 
             //ScreenManager.Start(typeof(SomeScreen).FullName);
