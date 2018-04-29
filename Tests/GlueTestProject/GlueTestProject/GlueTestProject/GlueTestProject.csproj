@@ -1149,6 +1149,9 @@
     <Compile Include="StateInterpolation\Tweener.cs" />
     <Compile Include="StateInterpolation\TweenerManager.cs" />
     <Compile Include="TestFramework\ShouldExtensions.cs" />
+    <Compile Include="TileCollisions\CollidableListVsTileShapeCollectionRelationship.cs" />
+    <Compile Include="TileCollisions\CollidableVsTileShapeCollectionRelationship.cs" />
+    <Compile Include="TileCollisions\CollisionManagerTileShapeCollectionExtensions.cs" />
     <Compile Include="TileCollisions\TileShapeCollection.cs" />
     <Compile Include="TileEntities\TileEntityInstantiator.cs" />
     <Compile Include="TileGraphics\AbstractMapLayer.cs" />

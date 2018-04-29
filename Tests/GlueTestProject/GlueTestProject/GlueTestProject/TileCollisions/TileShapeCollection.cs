@@ -141,6 +141,15 @@ namespace FlatRedBall.TileCollisions
             return toReturn;
         }
 
+        public bool CollideAgainstSolid(Line movableObject)
+        {
+            bool toReturn = false;
+
+            toReturn = mShapes.CollideAgainstBounce(movableObject, true, mSortAxis, 1, 0, 0);
+
+            return toReturn;
+        }
+
         public bool CollideAgainst(AxisAlignedRectangle rectangle)
         {
             return mShapes.CollideAgainst(rectangle, true, mSortAxis);
@@ -154,6 +163,11 @@ namespace FlatRedBall.TileCollisions
         public bool CollideAgainst(Polygon polygon)
         {
             return mShapes.CollideAgainst(polygon, true, mSortAxis);
+        }
+
+        public bool CollideAgainst(Line line)
+        {
+            return mShapes.CollideAgainst(line, true, mSortAxis);
         }
 
         public bool CollideAgainst(ICollidable collidable)
@@ -179,11 +193,38 @@ namespace FlatRedBall.TileCollisions
             return toReturn;
         }
 
+        public bool CollideAgainstBounce(AxisAlignedRectangle rectangle, float elasticity)
+        {
+            bool toReturn = mShapes.CollideAgainstBounce(rectangle, true, mSortAxis, 1, 0, elasticity);
+
+            return toReturn;
+        }
+
+        public bool CollideAgainstBounce(Circle circle, float elasticity)
+        {
+            bool toReturn = mShapes.CollideAgainstBounce(circle, true, mSortAxis, 1, 0, elasticity);
+
+            return toReturn;
+        }
+
+        public bool CollideAgainstBounce(Polygon polygon, float elasticity)
+        {
+            bool toReturn = mShapes.CollideAgainstBounce(polygon, true, mSortAxis, 1, 0, elasticity);
+
+            return toReturn;
+        }
+
+        [Obsolete("Use GetRectangleAtPosition instead as it more clearly indicates what the method does.")]
         public AxisAlignedRectangle GetTileAt(float x, float y)
         {
-            float roundedX = MathFunctions.RoundFloat(x, GridSize, mLeftSeedX + GridSize / 2.0f);
-            float roundedY = MathFunctions.RoundFloat(y, GridSize, mBottomSeedY + GridSize / 2.0f);
-            float keyValue = GetKeyValue(roundedX, roundedY);
+            return GetRectangleAtPosition(x, y);
+        }
+
+        public AxisAlignedRectangle GetRectangleAtPosition(float worldX, float worldY)
+        {
+            float middleOfTileX = MathFunctions.RoundFloat(worldX, GridSize, mLeftSeedX + GridSize / 2.0f);
+            float middleOfTileY = MathFunctions.RoundFloat(worldY, GridSize, mBottomSeedY + GridSize / 2.0f);
+            float keyValue = GetCoordinateValueForPartitioning(middleOfTileX, middleOfTileY);
 
             float keyValueBefore = keyValue - GridSize / 2.0f;
             float keyValueAfter = keyValue + GridSize / 2.0f;
@@ -195,12 +236,75 @@ namespace FlatRedBall.TileCollisions
             int endExclusive = mShapes.AxisAlignedRectangles.GetFirstAfter(keyValueAfter, mSortAxis,
                 0, mShapes.AxisAlignedRectangles.Count);
 
-            AxisAlignedRectangle toReturn = GetTileAt(x, y, startInclusive, endExclusive);
+            AxisAlignedRectangle toReturn = GetRectangleAtPosition(worldX, worldY, startInclusive, endExclusive);
 
             return toReturn;
         }
 
-        private AxisAlignedRectangle GetTileAt(float x, float y, int startInclusive, int endExclusive)
+        public Polygon GetPolygonAtPosition(float worldX, float worldY)
+        {
+            float middleOfTileX = MathFunctions.RoundFloat(worldX, GridSize, mLeftSeedX + GridSize / 2.0f);
+            float middleOfTileY = MathFunctions.RoundFloat(worldY, GridSize, mBottomSeedY + GridSize / 2.0f);
+            float keyValue = GetCoordinateValueForPartitioning(middleOfTileX, middleOfTileY);
+
+            var halfGridSize = GridSize / 2.0f;
+
+            float keyValueBefore = keyValue - halfGridSize;
+            float keyValueAfter = keyValue + halfGridSize;
+
+            int startInclusive = mShapes.Polygons.GetFirstAfter(keyValueBefore, mSortAxis,
+                0, mShapes.AxisAlignedRectangles.Count);
+
+
+            int endExclusive = mShapes.Polygons.GetFirstAfter(keyValueAfter, mSortAxis,
+                0, mShapes.AxisAlignedRectangles.Count);
+
+            var left = middleOfTileX - halfGridSize;
+            var right = middleOfTileX + halfGridSize;
+            var top = middleOfTileY + halfGridSize;
+            var bottom = middleOfTileY - halfGridSize;
+
+            for (int i = startInclusive; i < endExclusive; i++)
+            {
+                var polygon = mShapes.Polygons[i];
+
+                if (polygon.Position.X > left && polygon.Position.X < right &&
+                    polygon.Position.Y > bottom && polygon.Position.Y < top)
+                {
+                    return polygon;
+                }
+            }
+
+            return null;
+        }
+
+        private Polygon GetPolygonAtPosition(float worldX, float worldY, int startInclusive, int endExclusive)
+        {
+            float middleOfTileX = MathFunctions.RoundFloat(worldX, GridSize, mLeftSeedX + GridSize / 2.0f);
+            float middleOfTileY = MathFunctions.RoundFloat(worldY, GridSize, mBottomSeedY + GridSize / 2.0f);
+
+            var halfGridSize = GridSize / 2.0f;
+
+            var left = middleOfTileX - halfGridSize;
+            var right = middleOfTileX + halfGridSize;
+            var top = middleOfTileY + halfGridSize;
+            var bottom = middleOfTileY - halfGridSize;
+
+            for (int i = startInclusive; i < endExclusive; i++)
+            {
+                var polygon = mShapes.Polygons[i];
+
+                if (polygon.Position.X > left && polygon.Position.X < right &&
+                    polygon.Position.Y > bottom && polygon.Position.Y < top)
+                {
+                    return polygon;
+                }
+            }
+
+            return null;
+        }
+
+        private AxisAlignedRectangle GetRectangleAtPosition(float x, float y, int startInclusive, int endExclusive)
         {
             AxisAlignedRectangle toReturn = null;
             for (int i = startInclusive; i < endExclusive; i++)
@@ -217,7 +321,7 @@ namespace FlatRedBall.TileCollisions
         public void AddCollisionAtWorld(float x, float y)
         {
             // Make sure there isn't already collision here
-            if (GetTileAt(x, y) == null)
+            if (GetRectangleAtPosition(x, y) == null)
             {
                 // x and y
                 // represent
@@ -243,14 +347,16 @@ namespace FlatRedBall.TileCollisions
                     newAar.Visible = true;
                 }
 
-                float keyValue = GetKeyValue(roundedX, roundedY);
+                float keyValue = GetCoordinateValueForPartitioning(roundedX, roundedY);
 
                 int index = mShapes.AxisAlignedRectangles.GetFirstAfter(keyValue, mSortAxis,
                     0, mShapes.AxisAlignedRectangles.Count);
 
                 mShapes.AxisAlignedRectangles.Insert(index, newAar);
 
-                UpdateRepositionDirectionsFor(newAar);
+                var directions = UpdateRepositionForNeighborsAndGetThisRepositionDirection(newAar);
+
+                newAar.RepositionDirections = directions;
             }
         }
 
@@ -261,7 +367,7 @@ namespace FlatRedBall.TileCollisions
             {
                 ShapeManager.Remove(existing);
 
-                float keyValue = GetKeyValue(existing.X, existing.Y);
+                float keyValue = GetCoordinateValueForPartitioning(existing.X, existing.Y);
 
                 float keyValueBefore = keyValue - GridSize * 3 / 2.0f;
                 float keyValueAfter = keyValue + GridSize * 3 / 2.0f;
@@ -269,10 +375,10 @@ namespace FlatRedBall.TileCollisions
                 int before = Rectangles.GetFirstAfter(keyValueBefore, mSortAxis, 0, Rectangles.Count);
                 int after = Rectangles.GetFirstAfter(keyValueAfter, mSortAxis, 0, Rectangles.Count);
 
-                AxisAlignedRectangle leftOf = GetTileAt(existing.X - GridSize, existing.Y, before, after);
-                AxisAlignedRectangle rightOf = GetTileAt(existing.X + GridSize, existing.Y, before, after);
-                AxisAlignedRectangle above = GetTileAt(existing.X, existing.Y + GridSize, before, after);
-                AxisAlignedRectangle below = GetTileAt(existing.X, existing.Y - GridSize, before, after);
+                AxisAlignedRectangle leftOf = GetRectangleAtPosition(existing.X - GridSize, existing.Y, before, after);
+                AxisAlignedRectangle rightOf = GetRectangleAtPosition(existing.X + GridSize, existing.Y, before, after);
+                AxisAlignedRectangle above = GetRectangleAtPosition(existing.X, existing.Y + GridSize, before, after);
+                AxisAlignedRectangle below = GetRectangleAtPosition(existing.X, existing.Y - GridSize, before, after);
 
                 if (leftOf != null && (leftOf.RepositionDirections & RepositionDirections.Right) != RepositionDirections.Right)
                 {
@@ -314,7 +420,7 @@ namespace FlatRedBall.TileCollisions
         }
 
 
-        private float GetKeyValue(float x, float y)
+        private float GetCoordinateValueForPartitioning(float x, float y)
         {
             float keyValue = 0;
 
@@ -332,60 +438,130 @@ namespace FlatRedBall.TileCollisions
             return keyValue;
         }
 
-        private void UpdateRepositionDirectionsFor(AxisAlignedRectangle newAar)
+        private RepositionDirections UpdateRepositionForNeighborsAndGetThisRepositionDirection(PositionedObject positionedObject)
         {
             // Let's see what is surrounding this rectangle and update it and the surrounding rects appropriately
-            float keyValue = GetKeyValue(newAar.X, newAar.Y);
+            float keyValue = GetCoordinateValueForPartitioning(positionedObject.Position.X, positionedObject.Position.Y);
 
             float keyValueBefore = keyValue - GridSize * 3 / 2.0f;
             float keyValueAfter = keyValue + GridSize * 3 / 2.0f;
 
-            int before = Rectangles.GetFirstAfter(keyValueBefore, mSortAxis, 0, Rectangles.Count);
-            int after = Rectangles.GetFirstAfter(keyValueAfter, mSortAxis, 0, Rectangles.Count);
+            int rectanglesBeforeIndex = Rectangles.GetFirstAfter(keyValueBefore, mSortAxis, 0, Rectangles.Count);
+            int rectanglesAfterIndex = Rectangles.GetFirstAfter(keyValueAfter, mSortAxis, 0, Rectangles.Count);
 
-            AxisAlignedRectangle leftOf = GetTileAt(newAar.X - GridSize, newAar.Y, before, after);
-            AxisAlignedRectangle rightOf = GetTileAt(newAar.X + GridSize, newAar.Y, before, after);
-            AxisAlignedRectangle above = GetTileAt(newAar.X, newAar.Y + GridSize, before, after);
-            AxisAlignedRectangle below = GetTileAt(newAar.X, newAar.Y - GridSize, before, after);
+            int polygonsBeforeIndex = Polygons.GetFirstAfter(keyValueBefore, mSortAxis, 0, Polygons.Count);
+            int polygonsAfterIndex = Rectangles.GetFirstAfter(keyValueAfter, mSortAxis, 0, Polygons.Count);
+
+
+            float leftOfX = positionedObject.Position.X - GridSize;
+            float rightOfX = positionedObject.Position.X + GridSize;
+            float middleX = positionedObject.Position.X;
+
+            float aboveY = positionedObject.Position.Y + GridSize;
+            float belowY = positionedObject.Position.Y - GridSize;
+            float middleY = positionedObject.Position.Y;
+
+            AxisAlignedRectangle rectangleLeftOf = GetRectangleAtPosition(leftOfX, middleY, rectanglesBeforeIndex, rectanglesAfterIndex);
+            AxisAlignedRectangle rectangleRightOf = GetRectangleAtPosition(rightOfX, middleY, rectanglesBeforeIndex, rectanglesAfterIndex);
+            AxisAlignedRectangle rectangleAbove = GetRectangleAtPosition(middleX, aboveY, rectanglesBeforeIndex, rectanglesAfterIndex);
+            AxisAlignedRectangle rectangleBelow = GetRectangleAtPosition(middleX, belowY, rectanglesBeforeIndex, rectanglesAfterIndex);
 
             RepositionDirections directions = RepositionDirections.All;
-            if (leftOf != null)
+            if (rectangleLeftOf != null)
             {
                 directions -= RepositionDirections.Left;
-                if ((leftOf.RepositionDirections & RepositionDirections.Right) == RepositionDirections.Right)
+                if ((rectangleLeftOf.RepositionDirections & RepositionDirections.Right) == RepositionDirections.Right)
                 {
-                    leftOf.RepositionDirections -= RepositionDirections.Right;
+                    rectangleLeftOf.RepositionDirections -= RepositionDirections.Right;
                 }
             }
-            if (rightOf != null)
+            else
+            {
+                var polygon = GetPolygonAtPosition(leftOfX, middleY, polygonsBeforeIndex, polygonsAfterIndex);
+
+                if (polygon != null)
+                {
+                    directions -= RepositionDirections.Left;
+                    if ((polygon.RepositionDirections & RepositionDirections.Right) == RepositionDirections.Right)
+                    {
+                        polygon.RepositionDirections -= RepositionDirections.Right;
+                    }
+                }
+            }
+
+            if (rectangleRightOf != null)
             {
                 directions -= RepositionDirections.Right;
 
-                if ((rightOf.RepositionDirections & RepositionDirections.Left) == RepositionDirections.Left)
+                if ((rectangleRightOf.RepositionDirections & RepositionDirections.Left) == RepositionDirections.Left)
                 {
-                    rightOf.RepositionDirections -= RepositionDirections.Left;
+                    rectangleRightOf.RepositionDirections -= RepositionDirections.Left;
                 }
             }
-            if (above != null)
+            else
+            {
+                var polygon = GetPolygonAtPosition(rightOfX, middleY, polygonsBeforeIndex, polygonsAfterIndex);
+
+                if (polygon != null)
+                {
+                    directions -= RepositionDirections.Right;
+                    if ((polygon.RepositionDirections & RepositionDirections.Left) == RepositionDirections.Left)
+                    {
+                        polygon.RepositionDirections -= RepositionDirections.Left;
+                    }
+                }
+            }
+
+
+
+            if (rectangleAbove != null)
             {
                 directions -= RepositionDirections.Up;
 
-                if ((above.RepositionDirections & RepositionDirections.Down) == RepositionDirections.Down)
+                if ((rectangleAbove.RepositionDirections & RepositionDirections.Down) == RepositionDirections.Down)
                 {
-                    above.RepositionDirections -= RepositionDirections.Down;
+                    rectangleAbove.RepositionDirections -= RepositionDirections.Down;
                 }
             }
-            if (below != null)
+            else
+            {
+                var polygon = GetPolygonAtPosition(middleX, aboveY, polygonsBeforeIndex, polygonsAfterIndex);
+
+                if (polygon != null)
+                {
+                    directions -= RepositionDirections.Up;
+
+                    if ((polygon.RepositionDirections & RepositionDirections.Down) == RepositionDirections.Down)
+                    {
+                        polygon.RepositionDirections -= RepositionDirections.Down;
+                    }
+                }
+            }
+
+            if (rectangleBelow != null)
             {
                 directions -= RepositionDirections.Down;
-                if ((below.RepositionDirections & RepositionDirections.Up) == RepositionDirections.Up)
+                if ((rectangleBelow.RepositionDirections & RepositionDirections.Up) == RepositionDirections.Up)
                 {
-                    below.RepositionDirections -= RepositionDirections.Up;
+                    rectangleBelow.RepositionDirections -= RepositionDirections.Up;
+                }
+            }
+            else
+            {
+                var polygon = GetPolygonAtPosition(middleX, belowY, polygonsBeforeIndex, polygonsAfterIndex);
+
+                if (polygon != null)
+                {
+                    directions -= RepositionDirections.Down;
+
+                    if ((polygon.RepositionDirections & RepositionDirections.Up) == RepositionDirections.Up)
+                    {
+                        polygon.RepositionDirections -= RepositionDirections.Up;
+                    }
                 }
             }
 
-            newAar.RepositionDirections = directions;
-
+            return directions;
         }
 
         public void RemoveFromManagersOneWay()
@@ -393,7 +569,7 @@ namespace FlatRedBall.TileCollisions
             this.mShapes.MakeOneWay();
             this.mShapes.RemoveFromManagers();
             this.mShapes.MakeTwoWay();
-        } 
+        }
 
         public void RemoveFromManagers()
         {
@@ -424,6 +600,29 @@ namespace FlatRedBall.TileCollisions
             foreach (var rectangle in this.Rectangles)
             {
                 rectangle.Color = color;
+            }
+        }
+
+        public void RefreshAllRepositionDirections()
+        {
+            var count = this.mShapes.AxisAlignedRectangles.Count;
+            for (int i = 0; i < count; i++)
+            {
+                var rectangle = this.mShapes.AxisAlignedRectangles[i];
+
+                var directions = UpdateRepositionForNeighborsAndGetThisRepositionDirection(rectangle);
+
+                rectangle.RepositionDirections = directions;
+            }
+
+            count = this.mShapes.Polygons.Count;
+            for (int i = 0; i < count; i++)
+            {
+                var polygon = this.mShapes.Polygons[i];
+
+                var directions = UpdateRepositionForNeighborsAndGetThisRepositionDirection(polygon);
+
+                polygon.RepositionDirections = directions;
             }
         }
     }

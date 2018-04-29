@@ -1199,9 +1199,9 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 value = GetAssignmentToCsvItem(customVariable, entitySave, value);
             }
-            else if (instructionSave.Type == "Color")
+            else if (instructionSave.Type == "Color" || instructionSave.Type == "Microsoft.Xna.Framework.Color")
             {
-                value = "Color." + value.Replace("\"", "");
+                value = "Microsoft.Xna.Framework.Color." + value.Replace("\"", "");
 
             }
             else if ((customVariable != null && customVariable.GetIsVariableState()) || (customVariable == null && rootVariable == "CurrentState"))

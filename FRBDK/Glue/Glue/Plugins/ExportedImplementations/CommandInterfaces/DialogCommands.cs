@@ -139,8 +139,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
 
             TextInputWindow tiw = new TextInputWindow();
-            tiw.DisplayText = "Enter the new object's name";
+            tiw.Message = "Enter the new object's name";
             tiw.Text = "New Object";
+            // If windows is zoomed, the text may not wrap properly, so increase it:
+            tiw.Width = 450;
 
             var currentObject = GlueState.Self.CurrentNamedObjectSave;
 

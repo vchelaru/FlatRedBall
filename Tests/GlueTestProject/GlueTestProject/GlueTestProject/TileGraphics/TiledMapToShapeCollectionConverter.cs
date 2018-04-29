@@ -236,6 +236,11 @@ namespace TMXGlueLib
                 pointsList.Add(new Point(pointsList[0].X, pointsList[0].Y));
             }
 
+            if (IsClockwise(pointsList) == false)
+            {
+                pointsList.Reverse();
+            }
+
             polygon.Points = pointsList.ToArray();
             polygon.X = (float)x;
             polygon.Y = (float)-y;
@@ -244,6 +249,20 @@ namespace TMXGlueLib
             return polygon;
         }
 
+        // From:
+        // https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
+        private static bool IsClockwise(List<Point> pointsList)
+        {
+            double sum = 0;
+            for (int i = 0; i < pointsList.Count - 1; i++)
+            {
+                var point = pointsList[i];
+                var pointAfter = pointsList[i + 1];
 
+                sum += (pointAfter.X - point.X) * (pointAfter.Y + point.Y);
+            }
+
+            return sum > 0;
+        }
     }
 }

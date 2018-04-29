@@ -87,7 +87,7 @@
             this.groupBox1.Size = new System.Drawing.Size(205, 86);
             this.groupBox1.TabIndex = 30;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Select Object Type (can be done later):";
+            this.groupBox1.Text = "Select Object Type:";
             // 
             // FromFileRadioButton
             // 
