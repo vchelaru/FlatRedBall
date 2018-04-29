@@ -16,26 +16,26 @@ using FlatRedBall.Localization;
 
 namespace FlatRedBallAddOns.Screens
 {
-	public partial class ScreenTemplate
-	{
+    public partial class ScreenTemplate
+    {
 
-		void CustomInitialize()
-		{
-
-
-		}
-
-		void CustomActivity(bool firstTimeCalled)
-		{
+        void CustomInitialize()
+        {
 
 
-		}
+        }
 
-		void CustomDestroy()
-		{
+        void CustomActivity(bool firstTimeCalled)
+        {
 
 
-		}
+        }
+
+        void CustomDestroy()
+        {
+
+
+        }
 
         static void CustomLoadStaticContent(string contentManagerName)
         {
@@ -43,5 +43,5 @@ namespace FlatRedBallAddOns.Screens
 
         }
 
-	}
+    }
 }
