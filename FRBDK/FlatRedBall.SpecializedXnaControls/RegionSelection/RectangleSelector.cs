@@ -734,7 +734,8 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
                 }
 
             }
-            else if (ResetsCursorIfNotOver)
+
+            if (ResetsCursorIfNotOver && cursorToSet == null)
             {
                 cursorToSet = Cursors.Arrow;
             }
