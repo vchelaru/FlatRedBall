@@ -16,6 +16,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             get;
         }
 
+        IProjectCommands ProjectCommands { get; }
+
         void SaveGlux(bool sendPluginRefreshCommand = true);
 
         ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool useFullPathAsName);

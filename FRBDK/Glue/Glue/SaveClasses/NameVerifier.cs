@@ -629,7 +629,22 @@ namespace FlatRedBall.Glue.SaveClasses
 			}
 			else if(name.IndexOfAny(InvalidCharacters) != -1)
 			{
-				whyItIsntValid = "The name can't contain invalid character " + name[name.IndexOfAny(InvalidCharacters)];
+                // See which ones are contained
+                foreach(var invalidCharacter in InvalidCharacters)
+                {
+                    if(name.Contains(invalidCharacter))
+                    {
+                        string clarification = "";
+                        if(invalidCharacter == '.')
+                        {
+                            clarification = " (period)";
+                        }
+
+				        whyItIsntValid += $"The name can't contain invalid character {invalidCharacter}{clarification}\n";
+
+                    }
+                }
+
 			}
 			else if(name.Contains(' '))
 			{

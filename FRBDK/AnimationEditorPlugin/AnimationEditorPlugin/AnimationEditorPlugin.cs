@@ -87,7 +87,9 @@ namespace AnimationEditorPlugin
             // - Fixed lots of little issues with preview/wireframe window not refreshing when it should
             // 3.0.2
             // - Fixed a few null ref exceptions
-            get { return new Version(3, 0, 2); }
+            // 3.0.3
+            // - Fixed crash when clicking on texture coordinate window
+            get { return new Version(3, 0, 3); }
         }
 
         public bool IsSelectedItemSprite

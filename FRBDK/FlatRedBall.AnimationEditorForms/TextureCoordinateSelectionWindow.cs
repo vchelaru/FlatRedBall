@@ -99,7 +99,7 @@ namespace FlatRedBall.AnimationEditorForms
 
                 bool shouldApplyMagicWandClick =
                     
-                    this.wireframeEditControls1.DataContext.IsMagicWandSelected && 
+                    this.wireframeEditControls1.DataContext?.IsMagicWandSelected == true && 
                     cursor.IsInWindow && 
                     imageRegionSelectionControl1.CurrentTexture != null;
 

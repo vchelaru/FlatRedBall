@@ -32,6 +32,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         const string NoType = "<No Type>";
 
+        IProjectCommands projectCommands = new ProjectCommands();
 
         ElementCommands mElementCommands = new ElementCommands();
 
@@ -66,6 +67,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public IElementCommands ElementCommands
         {
             get { return mElementCommands; }
+        }
+
+        public IProjectCommands ProjectCommands
+        {
+            get { return projectCommands; }
         }
         #endregion
 
@@ -300,6 +306,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 PluginManager.ReactToNewFile(toReturn);
                 GluxCommands.Self.SaveGlux();
+                TaskManager.Self.AddSync(GluxCommands.Self.ProjectCommands.SaveProjects, "Saving projects after adding file");
             }
 
             if (!string.IsNullOrWhiteSpace(errorMessage))
