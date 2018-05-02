@@ -501,24 +501,25 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Embedded\FormsControls\Button.gucx" />
-    <EmbeddedResource Include="Embedded\FormsControls\CheckBox.gucx" />
-    <EmbeddedResource Include="Embedded\FormsControls\ColoredFrame.gucx" />
-    <EmbeddedResource Include="Embedded\FormsControls\ComboBox.gucx" />
-    <EmbeddedResource Include="Embedded\FormsControls\ListBox.gucx" />
-    <EmbeddedResource Include="Embedded\FormsControls\ListBoxItem.gucx" />
-    <EmbeddedResource Include="Embedded\FormsControls\RadioButton.gucx" />
-    <EmbeddedResource Include="Embedded\FormsControls\ScrollBar.gucx" />
-    <EmbeddedResource Include="Embedded\FormsControls\ScrollBarThumb.gucx" />
-    <EmbeddedResource Include="Embedded\FormsControls\ScrollViewer.gucx" />
-    <EmbeddedResource Include="Embedded\FormsControls\Slider.gucx" />
-    <EmbeddedResource Include="Embedded\FormsControls\TextBox.gucx" />
-    <EmbeddedResource Include="Embedded\FormsControls\ToggleButton.gucx" />
     <Resource Include="Icons\GumIcon.png" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="Embedded\FormsControls\Content\UISpriteSheet.png" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\Button.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\CheckBox.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ColoredFrame.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ComboBox.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ListBox.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ListBoxItem.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\RadioButton.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ScrollBar.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ScrollBarThumb.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ScrollViewer.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\Slider.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\TextBox.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ToggleButton.gucx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\UISpriteSheet.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

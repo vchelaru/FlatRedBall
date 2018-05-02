@@ -666,7 +666,9 @@ namespace FlatRedBall.IO
                 string message = "Could not find a resource stream for\n" + resourceName + "\n but found " +
                     "the following names:\n\n";
 
-                foreach (string containedResource in assemblyContainingResource.GetManifestResourceNames())
+                var existingNames = assemblyContainingResource.GetManifestResourceNames();
+
+                foreach (string containedResource in existingNames)
                 {
                     message += containedResource + "\n";
                 }

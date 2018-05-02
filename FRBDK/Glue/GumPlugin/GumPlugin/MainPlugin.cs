@@ -198,7 +198,9 @@ namespace GumPlugin
             // - Added Gum icon to add new project, or to open project instead of having to search for the .gumx
             // - Changed defaults when creating Gum projects to auto-add to Glue screens
             // - Simplified adding .Forms down to a single button
-            get { return new Version(1, 0, 0, 0); }
+            // 1.0.0.2
+            // - Moved all embedded Gum objects to a folder structure with a .gumx so it can be edited easily.
+            get { return new Version(1, 0, 0, 2); }
         }
 
         #endregion
