@@ -29,7 +29,8 @@ namespace GumPlugin.DataGeneration
             "ScrollViewer",
             "Slider",
             "TextBox",
-            "ToggleButton"
+            "ToggleButton",
+            "UserControl"
         };
 
         static List<string> ContentItems = new List<string>

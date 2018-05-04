@@ -215,7 +215,7 @@
     <Variable>
       <Type>ToggleCategory</Type>
       <Name>ToggleCategoryState</Name>
-      <SetsValue>false</SetsValue>
+      <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>float</Type>

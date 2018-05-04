@@ -255,14 +255,14 @@ namespace GumPlugin.CodeGeneration
                     case BehaviorGenerator.ComboBoxBehaviorName:
                         controlName = "ComboBox";
                         break;
-                    case BehaviorGenerator.ToggleBehaviorName:
-                        controlName = "ToggleButton";
+                    case BehaviorGenerator.ListBoxItemBehaviorName:
+                        controlName = "ListBoxItem";
+                        break;
+                    case BehaviorGenerator.ListBoxBehaviorName:
+                        controlName = "ListBox";
                         break;
                     case BehaviorGenerator.RadioButtonBehaviorName:
                         controlName = "RadioButton";
-                        break;
-                    case BehaviorGenerator.TextBoxBehaviorName:
-                        controlName = "TextBox";
                         break;
                     case BehaviorGenerator.ScrollBarBehaviorName:
                         controlName = "ScrollBar";
@@ -270,14 +270,17 @@ namespace GumPlugin.CodeGeneration
                     case BehaviorGenerator.ScrollViewerBehaviorName:
                         controlName = "ScrollViewer";
                         break;
-                    case BehaviorGenerator.ListBoxItemBehaviorName:
-                        controlName = "ListBoxItem";
-                        break;
-                    case BehaviorGenerator.ListBoxBehaviorName:
-                        controlName = "ListBox";
-                        break;
                     case BehaviorGenerator.SliderBehaviorName:
                         controlName = "Slider";
+                        break;
+                    case BehaviorGenerator.TextBoxBehaviorName:
+                        controlName = "TextBox";
+                        break;
+                    case BehaviorGenerator.ToggleBehaviorName:
+                        controlName = "ToggleButton";
+                        break;
+                    case BehaviorGenerator.UserControlBehaviorName:
+                        controlName = "UserControl";
                         break;
                 }
                 if(controlName != null)

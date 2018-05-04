@@ -40,7 +40,7 @@
     <Variable>
       <Type>GrayState</Type>
       <Name>GrayState</Name>
-      <SetsValue>false</SetsValue>
+      <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
@@ -211,16 +211,16 @@
       <Name>Gray</Name>
       <Variable>
         <Type>int</Type>
-        <Name>Texture Top</Name>
-        <Value xsi:type="xsd:int">1</Value>
-        <Category>Source</Category>
+        <Name>Alpha</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>Alpha</Name>
-        <Value xsi:type="xsd:int">255</Value>
-        <Category>Rendering</Category>
+        <Name>Texture Top</Name>
+        <Value xsi:type="xsd:int">1</Value>
+        <Category>Source</Category>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>
@@ -228,15 +228,15 @@
       <Name>Blue</Name>
       <Variable>
         <Type>int</Type>
-        <Name>Texture Top</Name>
-        <Value xsi:type="xsd:int">49</Value>
+        <Name>Alpha</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>Alpha</Name>
-        <Value xsi:type="xsd:int">255</Value>
-        <Category>Rendering</Category>
+        <Name>Texture Top</Name>
+        <Value xsi:type="xsd:int">49</Value>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>
@@ -244,16 +244,16 @@
       <Name>Green</Name>
       <Variable>
         <Type>int</Type>
-        <Name>Texture Top</Name>
-        <Value xsi:type="xsd:int">97</Value>
-        <Category>Source</Category>
+        <Name>Alpha</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>Alpha</Name>
-        <Value xsi:type="xsd:int">255</Value>
-        <Category>Rendering</Category>
+        <Name>Texture Top</Name>
+        <Value xsi:type="xsd:int">97</Value>
+        <Category>Source</Category>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>
@@ -261,16 +261,16 @@
       <Name>Yellow</Name>
       <Variable>
         <Type>int</Type>
-        <Name>Texture Top</Name>
-        <Value xsi:type="xsd:int">145</Value>
-        <Category>Source</Category>
+        <Name>Alpha</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>Alpha</Name>
-        <Value xsi:type="xsd:int">255</Value>
-        <Category>Rendering</Category>
+        <Name>Texture Top</Name>
+        <Value xsi:type="xsd:int">145</Value>
+        <Category>Source</Category>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>
@@ -278,16 +278,16 @@
       <Name>Red</Name>
       <Variable>
         <Type>int</Type>
-        <Name>Texture Top</Name>
-        <Value xsi:type="xsd:int">193</Value>
-        <Category>Source</Category>
+        <Name>Alpha</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>Alpha</Name>
-        <Value xsi:type="xsd:int">255</Value>
-        <Category>Rendering</Category>
+        <Name>Texture Top</Name>
+        <Value xsi:type="xsd:int">193</Value>
+        <Category>Source</Category>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>
@@ -295,16 +295,16 @@
       <Name>Black</Name>
       <Variable>
         <Type>int</Type>
-        <Name>Texture Top</Name>
-        <Value xsi:type="xsd:int">241</Value>
-        <Category>Source</Category>
+        <Name>Alpha</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <Category>Rendering</Category>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>Alpha</Name>
-        <Value xsi:type="xsd:int">255</Value>
-        <Category>Rendering</Category>
+        <Name>Texture Top</Name>
+        <Value xsi:type="xsd:int">241</Value>
+        <Category>Source</Category>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>

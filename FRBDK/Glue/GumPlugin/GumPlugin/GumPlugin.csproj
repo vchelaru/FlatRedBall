@@ -521,6 +521,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\UISpriteSheet.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\UserControl.gucx" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo PostBuild

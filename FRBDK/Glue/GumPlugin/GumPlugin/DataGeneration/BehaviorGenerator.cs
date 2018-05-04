@@ -22,6 +22,7 @@ namespace GumPlugin.DataGeneration
         public const string ComboBoxBehaviorName = "ComboBoxBehavior";
         public const string SliderBehaviorName = "SliderBehavior";
         public const string CheckBoxBehaviorName = "CheckBoxBehavior";
+        public const string UserControlBehaviorName = "UserControlBehavior";
         // if adding here, search for the const string usage and the "Get" function to see
         // where to add additional code.
         // Also look in the GueRuntimeTypeAssociationGenerator
@@ -221,6 +222,14 @@ namespace GumPlugin.DataGeneration
             category.States.Add(new StateSave { Name = "Enabled" });
             category.States.Add(new StateSave { Name = "Highlighted" });
             category.States.Add(new StateSave { Name = "Selected" });
+
+            return toReturn;
+        }
+
+        public static BehaviorSave CreateUserControlBehavior()
+        {
+            BehaviorSave toReturn = new BehaviorSave();
+            toReturn.Name = UserControlBehaviorName;
 
             return toReturn;
         }

@@ -120,7 +120,7 @@
       <Type>string</Type>
       <Name>TextInstance.Text</Name>
       <ExposedAsName>Text</ExposedAsName>
-      <SetsValue>false</SetsValue>
+      <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>

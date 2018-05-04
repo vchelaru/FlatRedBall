@@ -128,6 +128,7 @@ namespace GumPlugin.CodeGeneration
                 case "ScrollViewer":
                 case "Slider":
                 case "TextBox":
+                case "UserControl":
                     return true;
                     // These require a Text object
                 case "Button": 
@@ -159,6 +160,7 @@ namespace GumPlugin.CodeGeneration
                 case BehaviorGenerator.ComboBoxBehaviorName: controlType = "ComboBox"; break;
                 case BehaviorGenerator.SliderBehaviorName: controlType = "Slider"; break;
                 case BehaviorGenerator.CheckBoxBehaviorName: controlType = "CheckBox"; break;
+                case BehaviorGenerator.UserControlBehaviorName: controlType = "UserControl"; break;
             }
 
             return controlType;
