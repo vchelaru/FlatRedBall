@@ -7,8 +7,8 @@ namespace FlatRedBall.Forms.Controls
 {
     public class UserControl : FrameworkElement
     {
-        public Button() : base() { }
+        public UserControl() : base() { }
 
-        public Button(GraphicalUiElement visual) : base(visual) { }
+        public UserControl(GraphicalUiElement visual) : base(visual) { }
     }
 }
