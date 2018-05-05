@@ -898,7 +898,7 @@ namespace FlatRedBall.Math.Collision
                         int startInclusive;
                         int endExclusive;
 
-                        GetCollisionStartAndInt(first, i, out startInclusive, out endExclusive);
+                        GetSecondListCollisionStartAndInt(first, i, out startInclusive, out endExclusive);
 
                         for (int j = startInclusive; j > endExclusive; j--)
                         {
@@ -920,8 +920,16 @@ namespace FlatRedBall.Math.Collision
             return collisionOccurred;
         }
 
-        private void GetCollisionStartAndInt(FirstCollidableT first, int firstIndex, out int startInclusive, out int endExclusive)
+        private void GetSecondListCollisionStartAndInt(FirstCollidableT first, int firstIndex, out int startInclusive, out int endExclusive)
         {
+            // Early Out
+            if(secondList.Count == 0)
+            {
+                startInclusive = 0;
+                endExclusive = 0;
+                return;
+            }
+
             PartitionedValuesBase firstPartition = null;
             PartitionedValuesBase secondPartition = null;
 
@@ -997,7 +1005,7 @@ namespace FlatRedBall.Math.Collision
                 var first = firstList[i];
                 int startInclusive;
                 int endExclusive;
-                GetCollisionStartAndInt(first, i, out startInclusive, out endExclusive);
+                GetSecondListCollisionStartAndInt(first, i, out startInclusive, out endExclusive);
 
 
                 for (int j = startInclusive; j > endExclusive; j--)

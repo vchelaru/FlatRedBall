@@ -82,6 +82,14 @@ namespace GlueTestProject.Screens
             var selfCollidingRelationship = CollisionManager.Self.CreateRelationship(SelfCollisionList, SelfCollisionList);
             selfCollidingRelationship.SetMoveCollision(1, 1);
 
+            var fullVsEmptyRelationship = CollisionManager.Self.CreateRelationship(PlayerList, EmptyList1);
+
+            var emptyVsFullRelationship = CollisionManager.Self.CreateRelationship(EmptyList1, PlayerList);
+
+            var emptyVsEmptyRelationship = CollisionManager.Self.CreateRelationship(EmptyList1, EmptyList2);
+
+            var emptyVsSameEmptyRelationship = CollisionManager.Self.CreateRelationship(EmptyList1, EmptyList1);
+
         }
 
         private void Test_L_RepositonDirection()

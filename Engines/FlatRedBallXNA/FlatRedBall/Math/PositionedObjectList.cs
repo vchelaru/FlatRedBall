@@ -140,7 +140,6 @@ namespace FlatRedBall.Math
             return GetFirstAfter(value, axis, lowBound, highBound + 1);
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets the first object found after the argument "value" on the argument "axis".  Lists
         /// must be sorted ascending for this method to work effectively.
@@ -152,18 +151,17 @@ namespace FlatRedBall.Math
         /// the argument value.  In other words, if 0 is passed as the value, then objects with position values greater than (not equal to) will be returned.</param>
         /// <param name="axis">The axis representing the value to use (x, y, or z)</param>
         /// <param name="lowBoundIndex">The lower (inclusive) bound.</param>
-        /// <param name="highBoundIndex">The upper (exclusive) bound.</param>
-        /// <returns>The index of the first object after the given value.</returns>
-        #endregion
-        public int GetFirstAfter(float value, Axis axis, int lowBoundIndex, int highBoundIndex)
+        /// <param name="highBoundIndexExclusive">The upper (exclusive) bound.</param>
+        /// <returns>The index of the first object after the given value. If low bound equals high bound, then the low bound is returned.</returns>
+        public int GetFirstAfter(float value, Axis axis, int lowBoundIndex, int highBoundIndexExclusive)
         {
-            if (lowBoundIndex == highBoundIndex)
+            if (lowBoundIndex == highBoundIndexExclusive)
             {
                 return lowBoundIndex;
             }
 
             // We want it inclusive
-            highBoundIndex -= 1;
+            highBoundIndexExclusive -= 1;
             int current = 0;  
           
             switch(axis)
@@ -172,12 +170,12 @@ namespace FlatRedBall.Math
                 case Axis.X:
                     while (true)
                     {
-                        current = (lowBoundIndex + highBoundIndex) >> 1;
-                        if (highBoundIndex - lowBoundIndex < 2)
+                        current = (lowBoundIndex + highBoundIndexExclusive) >> 1;
+                        if (highBoundIndexExclusive - lowBoundIndex < 2)
                         {
-                            if (this[highBoundIndex].Position.X <= value)
+                            if (this[highBoundIndexExclusive].Position.X <= value)
                             {
-                                return highBoundIndex + 1;
+                                return highBoundIndexExclusive + 1;
                             }
                             else if (this[lowBoundIndex].Position.X <= value)
                             {
@@ -191,7 +189,7 @@ namespace FlatRedBall.Math
 
                         if (this[current].Position.X >= value)
                         {
-                            highBoundIndex = current;
+                            highBoundIndexExclusive = current;
                         }
                         else if (this[current].Position.X < value)
                         {
@@ -205,12 +203,12 @@ namespace FlatRedBall.Math
                 case Axis.Y:
                     while (true)
                     {
-                        current = (lowBoundIndex + highBoundIndex) >> 1;
-                        if (highBoundIndex - lowBoundIndex < 2)
+                        current = (lowBoundIndex + highBoundIndexExclusive) >> 1;
+                        if (highBoundIndexExclusive - lowBoundIndex < 2)
                         {
-                            if (this[highBoundIndex].Position.Y <= value)
+                            if (this[highBoundIndexExclusive].Position.Y <= value)
                             {
-                                return highBoundIndex + 1;
+                                return highBoundIndexExclusive + 1;
                             }
                             else if (this[lowBoundIndex].Position.Y <= value)
                             {
@@ -224,7 +222,7 @@ namespace FlatRedBall.Math
 
                         if (this[current].Position.Y >= value)
                         {
-                            highBoundIndex = current;
+                            highBoundIndexExclusive = current;
                         }
                         else if (this[current].Position.Y < value)
                         {
@@ -238,12 +236,12 @@ namespace FlatRedBall.Math
                 case Axis.Z:
                     while (true)
                     {
-                        current = (lowBoundIndex + highBoundIndex) >> 1;
-                        if (highBoundIndex - lowBoundIndex < 2)
+                        current = (lowBoundIndex + highBoundIndexExclusive) >> 1;
+                        if (highBoundIndexExclusive - lowBoundIndex < 2)
                         {
-                            if (this[highBoundIndex].Position.Z <= value)
+                            if (this[highBoundIndexExclusive].Position.Z <= value)
                             {
-                                return highBoundIndex + 1;
+                                return highBoundIndexExclusive + 1;
                             }
                             else if (this[lowBoundIndex].Position.Z <= value)
                             {
@@ -257,7 +255,7 @@ namespace FlatRedBall.Math
 
                         if (this[current].Position.Z >= value)
                         {
-                            highBoundIndex = current;
+                            highBoundIndexExclusive = current;
                         }
                         else if (this[current].Position.Z < value)
                         {
