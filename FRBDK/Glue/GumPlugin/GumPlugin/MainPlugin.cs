@@ -200,7 +200,9 @@ namespace GumPlugin
             // - Simplified adding .Forms down to a single button
             // 1.0.0.2
             // - Moved all embedded Gum objects to a folder structure with a .gumx so it can be edited easily.
-            get { return new Version(1, 0, 0, 2); }
+            // 1.1
+            // - Added support for UserControl
+            get { return new Version(1, 1, 0, 0); }
         }
 
         #endregion

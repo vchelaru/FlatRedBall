@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ComponentSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Name>defaultforms/UserControl</Name>
+  <Name>DefaultForms/UserControl</Name>
   <BaseType>Container</BaseType>
   <State>
     <Name>Default</Name>
@@ -92,5 +92,9 @@
     <Name>ColoredFrameInstance</Name>
     <BaseType>DefaultForms/ColoredFrame</BaseType>
   </Instance>
-  <Behaviors />
+  <Behaviors>
+    <ElementBehaviorReference>
+      <BehaviorName>UserControlBehavior</BehaviorName>
+    </ElementBehaviorReference>
+  </Behaviors>
 </ComponentSave>

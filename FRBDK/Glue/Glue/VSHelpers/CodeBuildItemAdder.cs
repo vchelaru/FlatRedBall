@@ -210,6 +210,10 @@ namespace FlatRedBall.Glue.VSHelpers
 
         private void GetDestination(string resourceName, out string destinationDirectory, out string destination)
         {
+            if(resourceName == null)
+            {
+                throw new ArgumentNullException(nameof(resourceName));
+            }
             if(ProjectManager.ProjectBase == null)
             {
                 destinationDirectory = null;

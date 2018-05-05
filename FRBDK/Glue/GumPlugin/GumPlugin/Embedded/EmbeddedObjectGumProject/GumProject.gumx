@@ -65,7 +65,7 @@
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
-    <Name>defaultforms/UserControl</Name>
+    <Name>DefaultForms/UserControl</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
   <StandardElementReference>
@@ -132,5 +132,8 @@
   </BehaviorReference>
   <BehaviorReference>
     <Name>ToggleBehavior</Name>
+  </BehaviorReference>
+  <BehaviorReference>
+    <Name>UserControlBehavior</Name>
   </BehaviorReference>
 </GumProjectSave>

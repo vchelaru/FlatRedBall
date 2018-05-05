@@ -59,7 +59,10 @@ namespace GumPlugin.CodeGeneration
         private void AddFormsAssociations(ICodeBlock currentBlock)
         {
             List<AssociationFulfillment> assocationFulfillments = new List<AssociationFulfillment>();
-            foreach (var element in AppState.Self.AllLoadedElements)
+
+            var loadedElements = AppState.Self.AllLoadedElements.ToList();
+
+            foreach (var element in loadedElements)
             {
                 var elementAsComponent = element as ComponentSave;
 
