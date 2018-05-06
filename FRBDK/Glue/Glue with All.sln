@@ -91,6 +91,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GumCoreShared", "..\..\..\G
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBall.Forms.Shared", "..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.shproj", "{728151F0-03E0-4253-94FE-46B9C77EDEA6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuntimeDebuggingPlugin", "RuntimeDebuggingPlugin\RuntimeDebuggingPlugin.csproj", "{938A83AE-9069-4F98-9C27-5AFB15A7F636}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
@@ -782,6 +784,28 @@ Global
 		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.UnitTest|x86.Build.0 = Release|Any CPU
 		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.UnitTests|x86.ActiveCfg = Release|Any CPU
 		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.UnitTests|x86.Build.0 = Release|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.AutomatedBuild|x86.ActiveCfg = Release|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.AutomatedBuild|x86.Build.0 = Release|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.Debug Docs|x86.ActiveCfg = Debug|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.Debug Docs|x86.Build.0 = Debug|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.Debug|x86.Build.0 = Debug|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.DebugProfile|x86.ActiveCfg = Debug|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.DebugProfile|x86.Build.0 = Debug|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.DebugWithPlugins|x86.ActiveCfg = Debug|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.DebugWithPlugins|x86.Build.0 = Debug|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.Profile|x86.ActiveCfg = Release|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.Profile|x86.Build.0 = Release|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.Release|x86.ActiveCfg = Release|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.Release|x86.Build.0 = Release|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.Submission Phone|x86.ActiveCfg = Release|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.Submission Phone|x86.Build.0 = Release|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.Submission|x86.ActiveCfg = Release|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.Submission|x86.Build.0 = Release|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.UnitTest|x86.ActiveCfg = Release|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.UnitTest|x86.Build.0 = Release|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.UnitTests|x86.ActiveCfg = Release|Any CPU
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636}.UnitTests|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -827,6 +851,7 @@ Global
 		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D} = {1D66D67D-064B-4AAC-94E1-AF754D281FA0}
 		{F919C045-EAC7-4806-9A1F-CE421F923E97} = {1D66D67D-064B-4AAC-94E1-AF754D281FA0}
 		{728151F0-03E0-4253-94FE-46B9C77EDEA6} = {3DDD0995-4B47-47A2-82A4-F0A6367C9FF2}
+		{938A83AE-9069-4F98-9C27-5AFB15A7F636} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {878CCBB8-EADE-4F25-9DE7-D55D999D414A}

@@ -49,6 +49,14 @@ namespace GlueTestProject.Screens
 		void CustomDestroy()
 		{
 #if !MONOGAME
+
+            if (GlobalContentEntity.burnOrb == null)
+            {
+                throw new Exception(
+                    "The GlobalContentEntity was never loaded, which means the screne that contains it (FileScreen) was never created. Did the file order change?");
+
+            }
+
             if (GlobalContentEntity.burnOrb.IsDisposed)
             {
                 throw new Exception("Entities with GlobalContent are getting their content destroyed by Screens.");

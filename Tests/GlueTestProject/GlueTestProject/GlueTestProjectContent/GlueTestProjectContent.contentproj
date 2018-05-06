@@ -457,6 +457,62 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ContainerOfInFolder</Name>
     </None>
+    <None Include="gumproject\components\defaultforms\button.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>button</Name>
+    </None>
+    <None Include="gumproject\components\defaultforms\checkbox.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>checkbox</Name>
+    </None>
+    <None Include="gumproject\components\defaultforms\coloredframe.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>coloredframe</Name>
+    </None>
+    <None Include="gumproject\components\defaultforms\combobox.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>combobox</Name>
+    </None>
+    <None Include="gumproject\components\defaultforms\listbox.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>listbox</Name>
+    </None>
+    <None Include="gumproject\components\defaultforms\listboxitem.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>listboxitem</Name>
+    </None>
+    <None Include="gumproject\components\defaultforms\radiobutton.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>radiobutton</Name>
+    </None>
+    <None Include="gumproject\components\defaultforms\scrollbar.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>scrollbar</Name>
+    </None>
+    <None Include="gumproject\components\defaultforms\scrollbarthumb.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>scrollbarthumb</Name>
+    </None>
+    <None Include="gumproject\components\defaultforms\scrollviewer.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>scrollviewer</Name>
+    </None>
+    <None Include="gumproject\components\defaultforms\slider.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>slider</Name>
+    </None>
+    <None Include="gumproject\components\defaultforms\textbox.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>textbox</Name>
+    </None>
+    <None Include="gumproject\components\defaultforms\togglebutton.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>togglebutton</Name>
+    </None>
+    <None Include="gumproject\components\defaultforms\usercontrol.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>usercontrol</Name>
+    </None>
     <None Include="GumProject\Components\NineSliceButton.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>NineSliceButton</Name>
@@ -549,9 +605,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Circle</Name>
     </None>
-    <None Include="GumProject\Standards\ColoredRectangle.gutx">
+    <None Include="gumproject\standards\coloredrectangle.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>ColoredRectangle</Name>
+      <Name>coloredrectangle</Name>
     </None>
     <None Include="GumProject\Standards\Component.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -566,8 +622,8 @@
       <Name>NineSlice</Name>
     </None>
     <None Include="GumProject\Standards\Rectangle.gutx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Rectangle</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="GumProject\Standards\Sprite.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -612,6 +668,10 @@
     <None Include="GumProject\Standards\Text.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Text</Name>
+    </None>
+    <None Include="gumproject\uispritesheet.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>uispritesheet</Name>
     </None>
     <None Include="LoadedOnlyWhenReferencedScene.scnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

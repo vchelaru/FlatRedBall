@@ -116,7 +116,7 @@
       <IsFile>true</IsFile>
       <Type>string</Type>
       <Name>SourceFile</Name>
-      <Value xsi:type="xsd:string" />
+      <Value xsi:type="xsd:string"></Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>

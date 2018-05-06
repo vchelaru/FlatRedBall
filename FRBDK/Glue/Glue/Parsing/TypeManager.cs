@@ -456,11 +456,11 @@ namespace FlatRedBall.Glue.Parsing
             }
             catch (TypeLoadException ex)
             {
-                int m = 3;
+
             }
             catch (Exception e)
             {
-                int f = 4;
+
             }
         }
 

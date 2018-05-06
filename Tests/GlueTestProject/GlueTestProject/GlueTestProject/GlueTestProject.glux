@@ -1611,6 +1611,14 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <NextScreen>Screens\FileScreen</NextScreen>
+      <Name>Screens\FormsScreen</Name>
+    </ScreenSave>
+    <ScreenSave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <NextScreen>Screens\XmlScreen</NextScreen>
       <Name>Screens\GlobalContentScreen</Name>
       <ReferencedFiles>
@@ -1845,7 +1853,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
-      <NextScreen>Screens\FileScreen</NextScreen>
+      <NextScreen>Screens\FormsScreen</NextScreen>
       <Name>Screens\GumScreenLayered</Name>
       <ReferencedFiles>
         <ReferencedFileSave>
@@ -14854,6 +14862,20 @@
       <ProjectsToExcludeFrom />
     </ReferencedFileSave>
     <ReferencedFileSave>
+      <Properties>
+        <PropertySave>
+          <Name>FileAdditionBehavior</Name>
+          <ValueAsInt>1</ValueAsInt>
+        </PropertySave>
+        <PropertySave>
+          <Name>IncludeFormsInComponents</Name>
+          <ValueAsBool>true</ValueAsBool>
+        </PropertySave>
+        <PropertySave>
+          <Name>IncludeComponentToFormsAssociation</Name>
+          <ValueAsBool>true</ValueAsBool>
+        </PropertySave>
+      </Properties>
       <Name>GumProject/GumProject.gumx</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>

@@ -776,101 +776,25 @@
     <Compile Include="Factories\ShapeEntityCreatedByOtherEntitiesFactory.Generated.cs" />
     <Compile Include="Factories\TextInheritingEntityFactory.Generated.cs" />
     <Compile Include="FileAliases.Generated.cs" />
+    <Compile Include="Forms\Controls\CustomUserControl.cs" />
     <Compile Include="Game1.Custom.cs">
       <DependentUpon>Game1.cs</DependentUpon>
     </Compile>
     <Compile Include="GlobalContent.Generated.cs" />
-    <Compile Include="GumCore\AnimationFrame.cs" />
-    <Compile Include="GumCore\Atlas.cs" />
-    <Compile Include="GumCore\AtlasedTexture.cs" />
-    <Compile Include="GumCore\BehaviorInstanceSave.cs" />
-    <Compile Include="GumCore\BehaviorReference.cs" />
-    <Compile Include="GumCore\BehaviorSave.cs" />
-    <Compile Include="GumCore\BitmapCharacterInfo.cs" />
-    <Compile Include="GumCore\BitmapFont.cs" />
-    <Compile Include="GumCore\Blend.cs" />
-    <Compile Include="GumCore\BmfcSave.cs" />
-    <Compile Include="GumCore\Camera.cs" />
-    <Compile Include="GumCore\ComponentSave.cs" />
-    <Compile Include="GumCore\ContentManagerWrapper.cs" />
-    <Compile Include="GumCore\CustomPropertySave.cs" />
-    <Compile Include="GumCore\DimensionUnitType.cs" />
-    <Compile Include="GumCore\ElementBehaviorReference.cs" />
-    <Compile Include="GumCore\ElementReference.cs" />
-    <Compile Include="GumCore\ElementSave.cs" />
-    <Compile Include="GumCore\ElementSaveExtensionMethods.cs" />
-    <Compile Include="GumCore\ElementSaveExtensions.GumRuntime.cs" />
-    <Compile Include="GumCore\ElementWithState.cs" />
-    <Compile Include="GumCore\EventSave.cs" />
-    <Compile Include="GumCore\FileManager.cs" />
-    <Compile Include="GumCore\GraphicalUiElement.cs" />
-    <Compile Include="GumCore\GraphicalUiElement.IWindow.cs">
-      <DependentUpon>GraphicalUiElement.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GumCore\GuideRectangle.cs" />
-    <Compile Include="GumCore\GumAnimation.cs" />
-    <Compile Include="GumCore\GumIdb.cs" />
-    <Compile Include="GumCore\GumProjectSave.cs" />
-    <Compile Include="GumCore\IAnimation.cs" />
-    <Compile Include="GumCore\IContentLoader.cs" />
-    <Compile Include="GumCore\ImageData.cs" />
-    <Compile Include="GumCore\InstanceSave.cs" />
-    <Compile Include="GumCore\InstanceSaveExtensionMethods.cs" />
-    <Compile Include="GumCore\InstanceSaveExtensionMethods.GumRuntime.cs">
-      <DependentUpon>InstanceSaveExtensionMethods.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GumCore\InvisibleRenderable.cs" />
-    <Compile Include="GumCore\IPositionedSizedObject.cs" />
-    <Compile Include="GumCore\IRenderable.cs" />
-    <Compile Include="GumCore\IRenderableIpso.cs" />
-    <Compile Include="GumCore\IStateContainer.cs" />
-    <Compile Include="GumCore\IVariableFinder.cs" />
-    <Compile Include="GumCore\IVisible.cs" />
-    <Compile Include="GumCore\Layer.cs" />
-    <Compile Include="GumCore\LayerCameraSettings.cs" />
-    <Compile Include="GumCore\Line.cs" />
-    <Compile Include="GumCore\LineCircle.cs" />
-    <Compile Include="GumCore\LineGrid.cs" />
-    <Compile Include="GumCore\LinePrimitive.cs" />
-    <Compile Include="GumCore\LineRectangle.cs" />
-    <Compile Include="GumCore\LoaderManager.cs" />
-    <Compile Include="GumCore\MathFunctions.cs" />
-    <Compile Include="GumCore\NamedRectangle.cs" />
-    <Compile Include="GumCore\NineSlice.cs" />
-    <Compile Include="GumCore\ObjectFinder.cs" />
-    <Compile Include="GumCore\PlatformCompatability.cs" />
-    <Compile Include="GumCore\PositionedObjectGueWrapper.cs" />
-    <Compile Include="GumCore\RecursiveVariableFinder.cs" />
-    <Compile Include="GumCore\ReflectionManager.cs" />
-    <Compile Include="GumCore\Renderer.cs" />
-    <Compile Include="GumCore\ScreenSave.cs" />
-    <Compile Include="GumCore\ShapeManager.cs" />
-    <Compile Include="GumCore\SolidRectangle.cs" />
-    <Compile Include="GumCore\SortableLayer.cs" />
-    <Compile Include="GumCore\Sprite.cs" />
-    <Compile Include="GumCore\SpriteBatchStack.cs" />
-    <Compile Include="GumCore\SpriteManager.cs" />
-    <Compile Include="GumCore\SpriteRenderer.cs" />
-    <Compile Include="GumCore\StandardElementSave.cs" />
-    <Compile Include="GumCore\StandardElementsManager.cs" />
-    <Compile Include="GumCore\StateSave.cs" />
-    <Compile Include="GumCore\StateSaveCategory.cs" />
-    <Compile Include="GumCore\StateSaveExtensionMethods.cs" />
-    <Compile Include="GumCore\StringFunctions.cs" />
-    <Compile Include="GumCore\SystemManagers.cs" />
-    <Compile Include="GumCore\SystemManagers.FlatRedBall.cs">
-      <DependentUpon>SystemManagers.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GumCore\Text.cs" />
-    <Compile Include="GumCore\TextManager.cs" />
-    <Compile Include="GumCore\TextureFlipAnimation.cs" />
-    <Compile Include="GumCore\TimedSpriteSheetAnimation.cs" />
-    <Compile Include="GumCore\UnitConverter.cs" />
-    <Compile Include="GumCore\VariableListSave.cs" />
-    <Compile Include="GumCore\VariableSave.cs" />
-    <Compile Include="GumCore\VariableSaveExtensionMethods.cs" />
     <Compile Include="GumRuntimes\AlignmentObjectRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\AnimatedComponentRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IButtonBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\ICheckBoxBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IComboBoxBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IListBoxBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IListBoxItemBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IRadioButtonBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IScrollBarBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IScrollViewerBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\ISliderBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\ITextBoxBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IToggleBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IUserControlBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\ChildStateComponentRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\CircleRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\ColoredRectangleRuntime.Generated.cs" />
@@ -882,6 +806,20 @@
     </Compile>
     <Compile Include="GumRuntimes\ContainerOfInFolderRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\ContainerRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ButtonRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\CheckBoxRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ColoredFrameRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ComboBoxRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ListBoxItemRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ListBoxRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\RadioButtonRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ScrollBarRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ScrollBarThumbRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ScrollViewerRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\SliderRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\TextBoxRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\ToggleButtonRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\UserControlRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\DerivedScreenGumRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\GumIdb.Generated.cs" />
     <Compile Include="GumRuntimes\GumScreenLayeredGumRuntime.Generated.cs" />
@@ -1008,6 +946,10 @@
     <Compile Include="Screens\FlatRedBallTypeScreen.Generated.cs">
       <DependentUpon>FlatRedBallTypeScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="Screens\FormsScreen.cs" />
+    <Compile Include="Screens\FormsScreen.Generated.cs">
+      <DependentUpon>FormsScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Screens\GlobalContentScreen.cs" />
     <Compile Include="Screens\GlobalContentScreen.Generated.cs">
       <DependentUpon>GlobalContentScreen.cs</DependentUpon>
@@ -1133,21 +1075,6 @@
       <DependentUpon>ZBufferedScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\CameraSetup.cs" />
-    <Compile Include="StateInterpolation\Back.cs" />
-    <Compile Include="StateInterpolation\Bounce.cs" />
-    <Compile Include="StateInterpolation\Circular.cs" />
-    <Compile Include="StateInterpolation\Cubic.cs" />
-    <Compile Include="StateInterpolation\Elastic.cs" />
-    <Compile Include="StateInterpolation\Exponential.cs" />
-    <Compile Include="StateInterpolation\Instant.cs" />
-    <Compile Include="StateInterpolation\Linear.cs" />
-    <Compile Include="StateInterpolation\Quadratic.cs" />
-    <Compile Include="StateInterpolation\Quartic.cs" />
-    <Compile Include="StateInterpolation\Quintic.cs" />
-    <Compile Include="StateInterpolation\ShakeTweener.cs" />
-    <Compile Include="StateInterpolation\Sinusoidal.cs" />
-    <Compile Include="StateInterpolation\Tweener.cs" />
-    <Compile Include="StateInterpolation\TweenerManager.cs" />
     <Compile Include="TestFramework\ShouldExtensions.cs" />
     <Compile Include="TileCollisions\CollidableListVsTileShapeCollectionRelationship.cs" />
     <Compile Include="TileCollisions\CollidableVsTileShapeCollectionRelationship.cs" />
@@ -1218,9 +1145,21 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCoreXnaPc.csproj">
+      <Project>{fc2030b0-e60b-434d-a513-400270b8d7c6}</Project>
+      <Name>GumCoreXnaPc</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
       <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
       <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\FlatRedBall.Forms.csproj">
+      <Project>{aa2297a1-6bb4-4165-89a6-c099f687085f}</Project>
+      <Name>FlatRedBall.Forms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.csproj">
+      <Project>{f0bdee46-0374-4278-b1c3-f91a76fe3a8d}</Project>
+      <Name>StateInterpolation</Name>
     </ProjectReference>
     <ProjectReference Include="..\GlueTestProjectContent\GlueTestProjectContent.contentproj">
       <Project>{64B23BEF-DD26-4B81-AAA6-D9F46B0140B4}</Project>

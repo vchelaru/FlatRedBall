@@ -112,7 +112,12 @@ namespace FlatRedBall.Forms.Controls
         protected static GraphicalUiElement GetGraphicalUiElementFor(FrameworkElement element)
         {
             var type = element.GetType();
-            if(DefaultFormsComponents.ContainsKey(type))
+            return GetGraphicalUiElementForFrameworkElement(type);
+        }
+
+        private static GraphicalUiElement GetGraphicalUiElementForFrameworkElement(Type type)
+        {
+            if (DefaultFormsComponents.ContainsKey(type))
             {
                 var gumType = DefaultFormsComponents[type];
                 var gumConstructor = gumType.GetConstructor(new[] { typeof(bool), typeof(bool) });
@@ -121,7 +126,15 @@ namespace FlatRedBall.Forms.Controls
             }
             else
             {
-                throw new Exception($"Could not find default Gum Component for {type}. You can solve this by adding a Gum type for {type} to {nameof(DefaultFormsComponents)}, or constructing the Gum object itself.");
+                var baseType = type.BaseType;
+                if(baseType == typeof(object))
+                {
+                    throw new Exception($"Could not find default Gum Component for {type}. You can solve this by adding a Gum type for {type} to {nameof(DefaultFormsComponents)}, or constructing the Gum object itself.");
+                }
+                else
+                {
+                    return GetGraphicalUiElementForFrameworkElement(baseType);
+                }
             }
         }
 

@@ -163,6 +163,13 @@
       <Name>CircleCategory2</Name>
       <Variable>
         <Type>float</Type>
+        <Name>Height</Name>
+        <Value xsi:type="xsd:float">16</Value>
+        <SetsValue>true</SetsValue>
+        <IsHiddenInPropertyGrid>true</IsHiddenInPropertyGrid>
+      </Variable>
+      <Variable>
+        <Type>float</Type>
         <Name>Radius</Name>
         <Value xsi:type="xsd:float">16</Value>
         <SetsValue>true</SetsValue>
@@ -170,13 +177,6 @@
       <Variable>
         <Type>float</Type>
         <Name>Width</Name>
-        <Value xsi:type="xsd:float">16</Value>
-        <SetsValue>true</SetsValue>
-        <IsHiddenInPropertyGrid>true</IsHiddenInPropertyGrid>
-      </Variable>
-      <Variable>
-        <Type>float</Type>
-        <Name>Height</Name>
         <Value xsi:type="xsd:float">16</Value>
         <SetsValue>true</SetsValue>
         <IsHiddenInPropertyGrid>true</IsHiddenInPropertyGrid>
