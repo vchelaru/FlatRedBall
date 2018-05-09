@@ -19,6 +19,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         {
             get;
         }
+
+        Managers.IFindManager Find { get; }
 #endif
 
         EntitySave CurrentEntitySave
@@ -84,9 +86,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
         string ProjectSpecificSettingsFolder { get; }
 
-        
 
-#endregion
+
+        #endregion
+
 
         IElement GetElement(string name);
         NamedObjectSave GetNamedObjectSave(string containerName, string name);
@@ -112,7 +115,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             get;
             set;
         }
+        public Managers.IFindManager Find { get; }
 #endif
+
 
         public EntitySave CurrentEntitySave
         {

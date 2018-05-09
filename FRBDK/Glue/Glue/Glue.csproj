@@ -811,6 +811,7 @@
     <Compile Include="ViewModels\AddObjectViewModel.cs" />
     <Compile Include="ViewModels\CustomClassViewModel.cs" />
     <Compile Include="VSHelpers\CodeBuildItemAdder.cs" />
+    <Compile Include="VSHelpers\ContentItemAdder.cs" />
     <Compile Include="VSHelpers\Projects\ClassLibraryProject.cs" />
     <Compile Include="VSHelpers\Projects\CombinedEmbeddedContentProject.cs" />
     <Compile Include="VSHelpers\Projects\ContentHybridProject.cs" />

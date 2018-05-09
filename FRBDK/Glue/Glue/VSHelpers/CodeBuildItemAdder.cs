@@ -174,7 +174,6 @@ namespace FlatRedBall.Glue.VSHelpers
                 throw new Exception("There is no project loaded.  You can't save a resource to a project without a project being loaded");
             }
 
-
             try
             {
                 string destinationDirectory, destination;

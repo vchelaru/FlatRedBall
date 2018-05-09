@@ -114,7 +114,7 @@ namespace GumPlugin.CodeGeneration
                     GueDerivingClassCodeGenerator.GueRuntimeNamespace + "." + unqualifiedName + "Runtime";
 
                 var line =
-                    $"Forms.Controls.FrameworkElement.DefaultFormsComponents[typeof({qualifiedControlType})] = typeof({gumRuntimeType});";
+                    $"FlatRedBall.Forms.Controls.FrameworkElement.DefaultFormsComponents[typeof({qualifiedControlType})] = typeof({gumRuntimeType});";
 
                 currentBlock.Line(line);
             }

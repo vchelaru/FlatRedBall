@@ -20,7 +20,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void SaveGlux(bool sendPluginRefreshCommand = true);
 
-        ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool useFullPathAsName);
+        /// <summary>
+        /// Adds a new file to the Glue project in global content. This method updates the in-memory GlueProjectSave,
+        /// adds the file to the Visual Studio project, and refreshes the global content tree node.
+        /// This method does not save the .glux.
+        /// </summary>
+        /// <param name="fileToAdd">The file name relative to the Glue project. 
+        /// For example, to add a png file to GlobalContent, the file name might be "GlobalContent/MyFile.png"</param>
+        /// <param name="includeDirectoryInGlobalContentInName">Whether to include the subdirectory 
+        /// in the name of the newly-created file.</param>
+        /// <returns>The new ReferencedFileSave.</returns>
+        ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool includeDirectoryInGlobalContentInName);
 
         ReferencedFileSave GetReferencedFileSaveFromFile(string fileName);
 

@@ -13,7 +13,51 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
 namespace FlatRedBall.Glue.Managers
 {
-    public class FindManager
+    public interface IFindManager
+    {
+
+        TreeNode TreeNodeForDirectory(string containingDirectory);
+
+        TreeNode TreeNodeForDirectoryOrEntityNode(string containingDirection, TreeNode containingNode);
+
+        TreeNode TreeNodeByDirectory(string containingDirection, TreeNode containingNode);
+
+        BaseElementTreeNode ElementTreeNode(IElement element);
+
+        EntityTreeNode EntityTreeNode(string entityFileName);
+
+        EntityTreeNode EntityTreeNode(EntitySave entitySave);
+
+        ScreenTreeNode ScreenTreeNode(string screenFileName);
+
+        ScreenTreeNode ScreenTreeNode(ScreenSave screenSave);
+
+        string GlobalContentFilesPath { get; }
+
+        TreeNode NamedObjectTreeNode(NamedObjectSave namedObjectSave);
+
+        TreeNode ReferencedFileSaveTreeNode(ReferencedFileSave referencedFileSave);
+
+        TreeNode TreeNodeByTagIn(object tag, TreeNodeCollection treeNodeCollection);
+
+        TreeNode CustomVariableTreeNode(CustomVariable variable);
+
+        TreeNode EventResponseTreeNode(EventResponseSave eventResponse);
+
+        TreeNode StateTreeNode(StateSave stateSave);
+
+        //TreeNode FindCustomVariableInEntities(CustomVariable variable, TreeNodeCollection nodeCollection);
+
+        //TreeNode FindEventResponseSaveInEntities(EventResponseSave eventResponse, TreeNodeCollection nodeCollection);
+
+        TreeNode StateCategoryTreeNode(StateSaveCategory category);
+
+        string ContentPathFor(IElement element);
+
+        bool IfReferencedFileSaveIsReferenced(ReferencedFileSave referencedFileSave);
+    }
+
+    public class FindManager : IFindManager
     {
 
         public string GlobalContentFilesPath

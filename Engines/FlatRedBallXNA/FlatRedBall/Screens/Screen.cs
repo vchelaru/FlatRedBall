@@ -17,8 +17,6 @@ using System.Threading;
 using FlatRedBall.Input;
 using FlatRedBall.IO;
 
-#if !SILVERLIGHT
-#endif
 
 #endregion
 
@@ -43,7 +41,7 @@ namespace FlatRedBall.Screens
 
         int mNumberOfThreadsBeforeAsync = -1;
 
-        protected bool IsPaused = false;
+        public bool IsPaused { get; private set; } = false;
 
         protected double mTimeScreenWasCreated;
         protected double mAccumulatedPausedTime = 0;
@@ -448,16 +446,14 @@ namespace FlatRedBall.Screens
                 ScreenDestroy();
         }
 
-        protected virtual void PauseThisScreen()
+        public virtual void PauseThisScreen()
         {
-            //base.PauseThisScreen();
-
             this.IsPaused = true;
             InstructionManager.PauseEngine();
 
         }
 
-        protected virtual void UnpauseThisScreen()
+        public virtual void UnpauseThisScreen()
         {
             InstructionManager.UnpauseEngine();
             this.IsPaused = false;

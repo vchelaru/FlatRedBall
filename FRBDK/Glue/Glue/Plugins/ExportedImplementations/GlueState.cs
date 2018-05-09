@@ -34,7 +34,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
-        public FindManager Find
+        public IFindManager Find
         {
             get;
             private set;

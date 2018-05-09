@@ -8,7 +8,7 @@
              d:DesignHeight="200" d:DesignWidth="400">
     <Grid>
         <StackPanel>
-            <CheckBox VerticalContentAlignment="Center">Include Control At Runtime</CheckBox>
+            <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding ShowRuntimeControls}">Include Control At Runtime</CheckBox>
         </StackPanel>
     </Grid>
 </UserControl>

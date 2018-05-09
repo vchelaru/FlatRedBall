@@ -383,8 +383,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
 
-        public ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool useFullPathAsName)
+        public ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool includeDirectoryInGlobalContentInName)
         {
+            if(FileManager.IsRelative(fileToAdd) == false)
+            {
+                throw new ArgumentException("The argument fileToAdd must be relative to the Glue project");
+            }
+
+
             var referencedFileSave = new ReferencedFileSave();
 
             referencedFileSave.SetNameNoCall(fileToAdd);
@@ -409,7 +415,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // on to GlobalContent from an Entity.
             // Therefore, we only want to do this if
             // the useFullPathAsName argument is true;
-            if (useFullPathAsName)
+            if (includeDirectoryInGlobalContentInName)
             {
                 referencedFileSave.IncludeDirectoryRelativeToContainer = true;
             }
