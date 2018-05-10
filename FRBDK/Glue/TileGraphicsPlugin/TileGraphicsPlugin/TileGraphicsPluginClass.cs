@@ -111,7 +111,11 @@ namespace TileGraphicsPlugin
             //  - Added support for adding rectangles on rotated tiles
             // 1.3.3
             //  - Updated the TileShapeCollection CollisionRelationship classes to return bool on DoCollision to match the base implementation
-            get { return new Version(1, 3, 3, 0); }
+            // 1.4.0
+            //  - Collision from shapes on tileset tiles will now check the name of the shape - if it has no name then it's added to a TileShapeCollection
+            //    with the name matching the layer. If the shape does have a name then it is added to a TileShapeCollection with the same name as the shape.
+            //    This allows games to easily organize their collision with no code and no custom properties.
+            get { return new Version(1, 4, 0, 0); }
         }
 
 
