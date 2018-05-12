@@ -625,6 +625,11 @@ namespace FlatRedBall.TileCollisions
                 polygon.RepositionDirections = directions;
             }
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
 

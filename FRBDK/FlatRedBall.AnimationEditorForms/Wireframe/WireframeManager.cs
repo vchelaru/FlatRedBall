@@ -247,7 +247,10 @@ namespace FlatRedBall.AnimationEditorForms
 
             Texture2D texture = GetTextureForFrame(frame);
 
-            mControl.RectangleSelector.Visible = texture != null;
+            if(mControl.RectangleSelector != null)
+            {
+                mControl.RectangleSelector.Visible = texture != null;
+            }
 
             this.RefreshAll();
 

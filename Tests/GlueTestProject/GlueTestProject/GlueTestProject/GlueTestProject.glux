@@ -421,6 +421,18 @@
           <CreatesDictionary>true</CreatesDictionary>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
+        <ReferencedFileSave>
+          <Name>Screens/CsvScreen/CsvCustomClass1.csv</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <CreatesDictionary>true</CreatesDictionary>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
+        <ReferencedFileSave>
+          <Name>Screens/CsvScreen/CsvCustomClass2.csv</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <CreatesDictionary>true</CreatesDictionary>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
       </ReferencedFiles>
       <NamedObjects>
         <NamedObjectSave>
@@ -14959,6 +14971,7 @@
       <RequiredProperties />
       <Name>SpreadsheetClass</Name>
       <GenerateCode>true</GenerateCode>
+      <CustomNamespace />
     </CustomClassSave>
     <CustomClassSave>
       <CsvFilesUsingThis>
@@ -15012,6 +15025,16 @@
       <Name>CustomDataType</Name>
       <GenerateCode>false</GenerateCode>
       <CustomNamespace>GlueTestProject.CustomDataTypes</CustomNamespace>
+    </CustomClassSave>
+    <CustomClassSave>
+      <CsvFilesUsingThis>
+        <string>Screens/CsvScreen/CsvCustomClass1.csv</string>
+        <string>Screens/CsvScreen/CsvCustomClass2.csv</string>
+      </CsvFilesUsingThis>
+      <RequiredProperties />
+      <Name>CustomClassForDupeTest</Name>
+      <GenerateCode>true</GenerateCode>
+      <CustomNamespace />
     </CustomClassSave>
   </CustomClasses>
   <TranslatedFiles>

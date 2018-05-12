@@ -127,6 +127,7 @@
     <Compile Include="DataTypes\CsvWithAnimationFrameSaveBase.Generated.cs" />
     <Compile Include="DataTypes\CsvWithCustomTypes.Generated.cs" />
     <Compile Include="DataTypes\CsvWithExtraCells.Generated.cs" />
+    <Compile Include="DataTypes\CustomClassForDupeTest.Generated.cs" />
     <Compile Include="DataTypes\DataTypeForCsv.cs" />
     <Compile Include="DataTypes\emptyMap1.Generated.cs" />
     <Compile Include="DataTypes\GlobalCsv.Generated.cs" />

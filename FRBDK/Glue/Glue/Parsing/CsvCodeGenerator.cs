@@ -279,37 +279,49 @@ namespace FlatRedBall.Glue
             }
 
 
+            Dictionary<ReferencedFileSave, RuntimeCsvRepresentation> representations = new Dictionary<ReferencedFileSave, RuntimeCsvRepresentation>();
 
+
+            List<string> allKeys = new List<string>();
             foreach (ReferencedFileSave rfs in rfsesForClass)
             {
-
                 if (rfs.CreatesDictionary)
                 {
                     string fileName = rfs.Name;
                     fileName = ProjectManager.MakeAbsolute(fileName);
 
                     var rcr = CsvFileManager.CsvDeserializeToRuntime(fileName);
+
+                    representations.Add(rfs, rcr);
                     rcr.RemoveHeaderWhitespaceAndDetermineIfRequired();
                     int requiredIndex = rcr.GetRequiredIndex();
                     if (requiredIndex == -1)
                     {
                         succeeded = false;
                         GlueGui.ShowMessageBox("The file " + rfs.Name + " is marked as a dictionary but has no column marked as required");
-
                     }
                     else
                     {
-                        string type = GetRequiredKeyType(rcr, members, untypedMembers, requiredIndex);
+                        var requiredValues = RequiredColumnValues(rcr);
+                        allKeys.AddRange(requiredValues);
 
-                        FillCodeBlockWithKeys(codeBlock, type, rcr);
-                        // The first entry will be the "primary" one?
-                        if (addToOrderedLists)
-                        {
-                            FillOrderedListWithKeys(codeBlock, type, rcr);
-                            addToOrderedLists = false;
-                        }
                     }
                 }
+            }
+
+            if(allKeys.Any())
+            {
+                var distinct = allKeys.Distinct();
+
+                var firstRcr = representations.First().Value;
+                int requiredIndex = firstRcr.GetRequiredIndex();
+
+                string type = GetRequiredKeyType(firstRcr, members, untypedMembers, requiredIndex);
+
+
+                FillCodeBlockWithKeys(codeBlock, type, firstRcr, allKeys.Distinct().ToArray());
+                // the first rcr defines the ordered keys. Others won't add themselves to this list
+                FillOrderedListWithKeys(codeBlock, type, firstRcr);
             }
 
             return succeeded;
@@ -434,10 +446,10 @@ namespace FlatRedBall.Glue
             }
         }
 
-        private static void FillCodeBlockWithKeys(ICodeBlock codeBlock, string keyType, RuntimeCsvRepresentation rcr)
+        private static void FillCodeBlockWithKeys(ICodeBlock codeBlock, string keyType, RuntimeCsvRepresentation rcr, ICollection<string> requiredColumnValues)
         {
 
-            foreach(string value in RequiredColumnValues(rcr))
+            foreach(string value in requiredColumnValues)
             {
                 string rightSideOfEquals = value;
 

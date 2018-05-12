@@ -681,6 +681,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>redball</Name>
     </None>
+    <None Include="Screens\CsvScreen\CsvCustomClass1.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvCustomClass1</Name>
+    </None>
     <None Include="Screens\CsvScreen\CsvManuallyLoadedForPropertyTest.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>CsvManuallyLoadedForPropertyTest</Name>
@@ -704,6 +708,10 @@
     <None Include="Screens\CsvScreen\SpreadsheetFile.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>SpreadsheetFile</Name>
+    </None>
+    <None Include="Screens\CsvScreen\CsvCustomClass2.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>CsvCustomClass2</Name>
     </None>
     <None Include="Screens\CustomContentTypeScreen\LineOfTextFile.lin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
