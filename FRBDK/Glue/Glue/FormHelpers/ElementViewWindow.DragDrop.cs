@@ -593,6 +593,8 @@ namespace FlatRedBall.Glue.FormHelpers
                 // This is updated at the bottom of this method
 
 
+                // In case it doesn't exist
+                System.IO.Directory.CreateDirectory(FileManager.GetDirectory(targetFile));
 
                 // 2 Move the file from one folder to another
                 File.Move(oldFileName, targetFile);

@@ -21,7 +21,7 @@ namespace FlatRedBall.PlatformerPlugin
 
         MainControl control;
 
-        CodeGenerator codeGenerator;
+        EntityCodeGenerator codeGenerator;
 
         public override string FriendlyName
         {
@@ -37,7 +37,9 @@ namespace FlatRedBall.PlatformerPlugin
             {
                 // 1.1 - Added ability to specify rectangle sub-collision, typically used for cloud collision
                 // 1.2 - Added slope collision support
-                return new Version(1, 2);
+                // 1.3 - Added support for multiple entities in a single project being marked as entities
+                //       by moving enums to a separate file.
+                return new Version(1, 3);
             }
         }
 
@@ -45,7 +47,7 @@ namespace FlatRedBall.PlatformerPlugin
 
         public override void StartUp()
         {
-            base.RegisterCodeGenerator(new CodeGenerator());
+            base.RegisterCodeGenerator(new EntityCodeGenerator());
             this.ReactToItemSelectHandler += HandleItemSelected;
         }
 

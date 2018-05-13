@@ -136,6 +136,7 @@
     <Compile Include="DataTypes\LoadedAtRuntimeFalseCsv.Generated.cs" />
     <Compile Include="DataTypes\LocalizationDatabase.Generated.cs" />
     <Compile Include="DataTypes\MovementValues.Generated.cs" />
+    <Compile Include="DataTypes\PlatformerValues.Generated.cs" />
     <Compile Include="DataTypes\Resources.Generated.cs" />
     <Compile Include="DataTypes\SharedClass1.Generated.cs" />
     <Compile Include="DataTypes\Spreadsheet.Generated.cs" />
@@ -578,6 +579,14 @@
     </Compile>
     <Compile Include="Entities\PlatformerCharacterBase.Generated.Event.cs">
       <DependentUpon>PlatformerCharacterBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PlatformerPluginEntity.cs" />
+    <Compile Include="Entities\PlatformerPluginEntity.Generated.cs">
+      <DependentUpon>PlatformerPluginEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PlatformerPluginEntity2.cs" />
+    <Compile Include="Entities\PlatformerPluginEntity2.Generated.cs">
+      <DependentUpon>PlatformerPluginEntity2.cs</DependentUpon>
     </Compile>
     <Compile Include="Entities\PolygonEntity.cs" />
     <Compile Include="Entities\PolygonEntity.Generated.cs">

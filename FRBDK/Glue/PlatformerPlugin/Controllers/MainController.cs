@@ -22,10 +22,16 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
         PlatformerEntityViewModel viewModel;
         MainControl mainControl;
+        EnumFileGenerator enumFileGenerator;
 
         bool ignoresPropertyChanges = false;
 
         #endregion
+
+        public MainController()
+        {
+            enumFileGenerator = new EnumFileGenerator();
+        }
 
         public MainControl GetControl()
         {
@@ -83,6 +89,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
             if (shouldGenerateCsv || shouldGenerateEntity || shouldAddPlatformerVariables)
             {
+                enumFileGenerator.GenerateAndSaveEnumFile();
                 TaskManager.Self.AddAsyncTask(
                     () => GlueCommands.Self.GluxCommands.SaveGlux(),
                     "Saving Glue Project");

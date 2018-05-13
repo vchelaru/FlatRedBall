@@ -87,8 +87,9 @@
   <ItemGroup>
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Data\PredefinedPlatformerValues.cs" />
-    <Compile Include="Generators\CodeGenerator.cs" />
+    <Compile Include="Generators\EntityCodeGenerator.cs" />
     <Compile Include="Generators\CsvGenerator.cs" />
+    <Compile Include="Generators\EnumFileGenerator.cs" />
     <Compile Include="MainPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveClasses\PlatformerValues.cs" />

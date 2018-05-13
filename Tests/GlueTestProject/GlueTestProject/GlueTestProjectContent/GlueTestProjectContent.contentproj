@@ -251,6 +251,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>MovementValues</Name>
     </None>
+    <None Include="Entities\PlatformerPluginEntity2\PlatformerValues.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>PlatformerValues</Name>
+    </None>
+    <None Include="Entities\PlatformerPluginEntity\PlatformerValues.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>PlatformerValues</Name>
+    </None>
     <None Include="Entities\PositioningEntity\SceneFile.scnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>SceneFile</Name>

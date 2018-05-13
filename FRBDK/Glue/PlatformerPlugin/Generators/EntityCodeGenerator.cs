@@ -11,7 +11,7 @@ using FlatRedBall.Glue.Plugins.Interfaces;
 
 namespace FlatRedBall.PlatformerPlugin.Generators
 {
-    class CodeGenerator : ElementComponentCodeGenerator
+    class EntityCodeGenerator : ElementComponentCodeGenerator
     {
 
         public override CodeLocation CodeLocation
@@ -20,25 +20,6 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             {
                 return CodeLocation.AfterStandardGenerated;
             }
-        }
-
-        public override void GenerateAdditionalClasses(ICodeBlock codeBlock, IElement element)
-        {
-            ///////////////Early Out//////////////////////
-            if(GetIfIsPlatformer(element) == false)
-            {
-                return;
-            }
-            /////////////End Early Out////////////////////
-
-            codeBlock.Enum("public", "MovementType")
-                .Line("Ground,")
-                .Line("Air,")
-                .Line("AfterDoubleJump");
-
-            codeBlock.Enum("public", "HorizontalDirection")
-                .Line("Left,")
-                .Line("Right");
         }
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
