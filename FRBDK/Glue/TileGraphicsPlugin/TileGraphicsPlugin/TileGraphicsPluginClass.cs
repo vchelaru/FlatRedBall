@@ -118,7 +118,9 @@ namespace TileGraphicsPlugin
             // 1.4.1
             //  - ShapeCollections in LayeredTileMap are now cleared out, so if they're made visible in custom code
             //    they don't have to be made invisible manually.
-            get { return new Version(1, 4, 0, 0); }
+            // 1.5.0
+            //  - TileEntityInstantiator can now assign properties from CSVs if the CSV dictionary is registered
+            get { return new Version(1, 5, 0, 0); }
         }
 
 

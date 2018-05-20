@@ -1,18 +1,19 @@
-﻿using $PROJECT_NAMESPACE$.DataTypes;
+﻿using BounceHouse.DataTypes;
 using FlatRedBall.TileGraphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using $PROJECT_NAMESPACE$.Performance;
+using BounceHouse.Performance;
 using FlatRedBall.Graphics;
 using System.Reflection;
 using TMXGlueLib.DataTypes;
-
+using System.Collections;
 
 namespace FlatRedBall.TileEntities
 {
     public static class TileEntityInstantiator
     {
+        static Dictionary<string, List<IDictionary>> allDictionaries = new Dictionary<string, List<IDictionary>>();
 
         /// <summary>
         /// Creates entities from a single layer for any tile with the EntityToCreate property.
@@ -184,13 +185,21 @@ namespace FlatRedBall.TileEntities
 
                 if (shouldSet)
                 {
-                    if(propertyName == "name")
+                    if (propertyName == "name")
                     {
                         propertyName = "Name";
                     }
 
                     var valueToSet = property.Value;
-                    valueToSet = SetValueAccordingToType(valueToSet, propertyName, property.Type, entityType);
+
+                    var propertyType = property.Type;
+
+                    if (string.IsNullOrEmpty(propertyType))
+                    {
+                        propertyType = TryGetPropertyType(entityType, propertyName);
+                    }
+
+                    valueToSet = SetValueAccordingToType(valueToSet, propertyName, propertyType, entityType);
                     try
                     {
                         lateBinder.SetValue(entity, propertyName, valueToSet);
@@ -223,8 +232,43 @@ namespace FlatRedBall.TileEntities
             }
         }
 
+        private static string TryGetPropertyType(Type entityType, string propertyName)
+        {
+            // todo - cache for perf
+            var property = entityType.GetProperty(propertyName);
 
+            if (property != null)
+            {
+                return property?.PropertyType.FullName;
+            }
+            else
+            {
+                var field = entityType.GetField(propertyName);
+                return field?.FieldType.FullName;
+            }
+        }
 
+        public static void RegisterDictionary<T>(Dictionary<string, T> data)
+        {
+#if DEBUG
+            if(data == null)
+            {
+                throw new ArgumentNullException("The argument data is null - do you need to call LoadStaticContent on the type containing this dictionary?");
+            }
+#endif
+
+            var type = typeof(T).FullName;
+
+            if (allDictionaries.ContainsKey(type) == false)
+            {
+                allDictionaries.Add(type, new List<IDictionary>());
+            }
+
+            if (allDictionaries[type].Contains(data) == false)
+            {
+                allDictionaries[type].Add(data);
+            }
+        }
 
         private static string GetFriendlyNameForType(string type)
         {
@@ -274,6 +318,19 @@ namespace FlatRedBall.TileEntities
                 var enumType = typesInThisAssembly.FirstOrDefault(item => item.FullName == enumTypeName);
 
                 valueToSet = Enum.Parse(enumType, (string)valueToSet);
+            }
+            else if (valueType != null && allDictionaries.ContainsKey(valueType))
+            {
+                var list = allDictionaries[valueType];
+
+                foreach (var dictionary in list)
+                {
+                    if (dictionary.Contains(valueToSet))
+                    {
+                        valueToSet = dictionary[valueToSet];
+                        break;
+                    }
+                }
             }
             return valueToSet;
         }
