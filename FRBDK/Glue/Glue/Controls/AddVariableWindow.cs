@@ -77,7 +77,7 @@ namespace FlatRedBall.Glue.Controls
                 else if (radTunnelVariable.Checked)
                     return this.AlternativeNameTextBox.Text;
                 else
-                    return this.NewVariableNameTextBox.Text;
+                    return createNewVariableControl1.VariableName;
             }
 		}
 
@@ -110,10 +110,8 @@ namespace FlatRedBall.Glue.Controls
                 }
                 else
                 {
-                    object value = this.NewTypeListBox.SelectedItem;
-                    return value as string;
+                    return createNewVariableControl1.SelectedType;
                 }
-                //return this.comboBox1.Text; 
             }
 		}
 
@@ -183,18 +181,17 @@ namespace FlatRedBall.Glue.Controls
             FillTypeConverters();
 
             FillNewVariableTypes(element);
-		}
+
+            // force set visibility
+            radCreateNewVariable_CheckedChanged(this, null);
+
+        }
 
         private void FillNewVariableTypes(IElement element)
         {
             List<string> newVariableTypes = ExposedVariableManager.GetAvailableNewVariableTypes(allowNone:false);
 
-            foreach (string s in newVariableTypes)
-            {
-                this.NewTypeListBox.Items.Add(s);
-            }
-
-            this.NewTypeListBox.SelectedIndex = 0;
+            createNewVariableControl1.FillAvailableTypes(newVariableTypes);
         }
 
         private List<string> GetNewVariableTypes()
@@ -288,10 +285,10 @@ namespace FlatRedBall.Glue.Controls
             if (this.DialogResult == System.Windows.Forms.DialogResult.OK &&
                 this.radCreateNewVariable.Checked && 
                 EditorLogic.CurrentEntitySave != null &&
-                ExposedVariableManager.IsMemberDefinedByPositionedObject(this.NewVariableNameTextBox.Text)
+                ExposedVariableManager.IsMemberDefinedByPositionedObject(this.createNewVariableControl1.VariableName)
                 )
             {
-                System.Windows.Forms.MessageBox.Show("The variable " + this.NewVariableNameTextBox.Text + " is " +
+                System.Windows.Forms.MessageBox.Show("The variable " + this.createNewVariableControl1.VariableName + " is " +
                     "already defined by the engine.  You can expose this variable or select a different name.");
                 e.Cancel = true;
             }
@@ -380,14 +377,15 @@ namespace FlatRedBall.Glue.Controls
 
         private void radCreateNewVariable_CheckedChanged(object sender, EventArgs e)
         {
+            bool newVariablePanelVisible = false;
             TunnelVariablePanel.Visible = false;
-            NewVariablePanel.Visible = false;
             ExistingVariablePanel.Visible = false;
 
             if (radCreateNewVariable.Checked)
             {
-                NewVariablePanel.Visible = true;
-                this.NewVariableNameTextBox.Focus();
+                newVariablePanelVisible = true;
+
+                createNewVariableControl1.FocusTextBox();
 
             }
             else if (radExistingVariable.Checked)
@@ -398,6 +396,8 @@ namespace FlatRedBall.Glue.Controls
             {
                 TunnelVariablePanel.Visible = true;
             }
+
+            NewVariablePanel.Visible = newVariablePanelVisible;
         }
 
         #endregion
@@ -441,12 +441,12 @@ namespace FlatRedBall.Glue.Controls
 
         private void NewTypeListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.NewVariableNameTextBox.Focus();
+            createNewVariableControl1.FocusTextBox();
         }
 
         private void NewTypeListBox_Click(object sender, EventArgs e)
         {
-            this.NewVariableNameTextBox.Focus();
+            createNewVariableControl1.FocusTextBox();
         }
     }
 }

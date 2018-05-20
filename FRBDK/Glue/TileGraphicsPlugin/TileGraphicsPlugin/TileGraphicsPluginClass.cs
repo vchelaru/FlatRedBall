@@ -115,6 +115,9 @@ namespace TileGraphicsPlugin
             //  - Collision from shapes on tileset tiles will now check the name of the shape - if it has no name then it's added to a TileShapeCollection
             //    with the name matching the layer. If the shape does have a name then it is added to a TileShapeCollection with the same name as the shape.
             //    This allows games to easily organize their collision with no code and no custom properties.
+            // 1.4.1
+            //  - ShapeCollections in LayeredTileMap are now cleared out, so if they're made visible in custom code
+            //    they don't have to be made invisible manually.
             get { return new Version(1, 4, 0, 0); }
         }
 

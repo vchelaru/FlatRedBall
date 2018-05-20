@@ -299,6 +299,9 @@
     <Compile Include="Controls\AddEntityWindow.xaml.cs">
       <DependentUpon>AddEntityWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\AddVariable\CreateNewVariableControl.xaml.cs">
+      <DependentUpon>CreateNewVariableControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Errors\GeneralResponse.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="IO\FilePath.cs" />
@@ -1876,6 +1879,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Controls\AddEntityWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\AddVariable\CreateNewVariableControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

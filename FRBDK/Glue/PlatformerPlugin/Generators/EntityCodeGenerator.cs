@@ -386,42 +386,47 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             }
             else
             {
-                float acceleration = maxSpeed / CurrentMovement.AccelerationTimeX;
-
-                float sign = System.Math.Sign(horizontalRatio);
-                float magnitude = System.Math.Abs(horizontalRatio);
-
-                if(sign == 0)
+                var desiredSpeed = horizontalRatio * maxSpeed;
+                
+                var isSpeedingUp = (desiredSpeed > 0 && XVelocity < desiredSpeed) ||
+                    (desiredSpeed < 0 && XVelocity > desiredSpeed);
+                
+                var absoluteValueVelocityDifference = System.Math.Abs(desiredSpeed - XVelocity);
+                
+                float acceleration = 0;
+                
+                if(isSpeedingUp)
                 {
-                    sign = -System.Math.Sign(XVelocity);
-                    magnitude = 1;
-                }
-
-                if (XVelocity == 0 || sign == System.Math.Sign(XVelocity))
-                {
-                    this.XAcceleration = sign * magnitude * maxSpeed / CurrentMovement.AccelerationTimeX;
+                    acceleration = maxSpeed / CurrentMovement.AccelerationTimeX;
                 }
                 else
                 {
-                    float accelerationValue = magnitude * maxSpeed / CurrentMovement.DecelerationTimeX;
-
-
-                    if (System.Math.Abs(XVelocity) < accelerationValue * FlatRedBall.TimeManager.SecondDifference)
-                    {
-                        this.XAcceleration = 0;
-                        this.XVelocity = 0;
-                    }
-                    else
-                    {
-
-                        // slowing down
-                        this.XAcceleration = sign * accelerationValue;
-                    }
-
+                    acceleration = maxSpeed / CurrentMovement.DecelerationTimeX;
                 }
+                
+                var perFrameVelocityChange = acceleration * TimeManager.SecondDifference;
+                
+                if(perFrameVelocityChange > absoluteValueVelocityDifference)
+                {
+                    // make sure we don't overshoot:
+                    acceleration = absoluteValueVelocityDifference * (1 / TimeManager.SecondDifference);
+                }
+                
+                if(desiredSpeed == 0)
+                {
+                    acceleration *= System.Math.Sign(XVelocity) * -1;
+                }
+                else
+                {
+                    acceleration *= System.Math.Sign(desiredSpeed);
+                    if(isSpeedingUp == false)
+                    {
+                        acceleration *= -1;
+                    }
+                }
+                
+                this.XAcceleration = acceleration;
 
-                XVelocity = System.Math.Min(XVelocity, maxSpeed);
-                XVelocity = System.Math.Max(XVelocity, -maxSpeed);
             }
         }
 

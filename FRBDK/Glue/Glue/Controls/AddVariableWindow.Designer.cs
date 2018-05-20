@@ -34,11 +34,11 @@
             this.AvailableVariablesComboBox = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.TunnelVariablePanel = new System.Windows.Forms.Panel();
+            this.label6 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.TypeConverterComboBox = new System.Windows.Forms.ComboBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.OverridingVariableTypeComboBox = new System.Windows.Forms.ComboBox();
             this.AlternativeNameTextBox = new System.Windows.Forms.TextBox();
             this.TunnelingVariableComboBox = new System.Windows.Forms.ComboBox();
@@ -49,21 +49,17 @@
             this.radCreateNewVariable = new System.Windows.Forms.RadioButton();
             this.radTunnelVariable = new System.Windows.Forms.RadioButton();
             this.radExistingVariable = new System.Windows.Forms.RadioButton();
-            this.NewVariablePanel = new System.Windows.Forms.Panel();
-            this.NewTypeListBox = new System.Windows.Forms.ListBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.NewVariableNameTextBox = new System.Windows.Forms.TextBox();
+            this.NewVariablePanel = new System.Windows.Forms.Integration.ElementHost();
+            this.createNewVariableControl1 = new FlatRedBall.Glue.Controls.AddVariable.CreateNewVariableControl();
             this.ExistingVariablePanel.SuspendLayout();
             this.TunnelVariablePanel.SuspendLayout();
-            this.NewVariablePanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // mCancelButton
             // 
             this.mCancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.mCancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.mCancelButton.Location = new System.Drawing.Point(302, 260);
+            this.mCancelButton.Location = new System.Drawing.Point(302, 292);
             this.mCancelButton.Name = "mCancelButton";
             this.mCancelButton.Size = new System.Drawing.Size(70, 23);
             this.mCancelButton.TabIndex = 4;
@@ -74,7 +70,7 @@
             // 
             this.mOkWindow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.mOkWindow.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.mOkWindow.Location = new System.Drawing.Point(226, 260);
+            this.mOkWindow.Location = new System.Drawing.Point(226, 292);
             this.mOkWindow.Name = "mOkWindow";
             this.mOkWindow.Size = new System.Drawing.Size(70, 23);
             this.mOkWindow.TabIndex = 3;
@@ -117,11 +113,11 @@
             this.TunnelVariablePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.TunnelVariablePanel.Controls.Add(this.label6);
             this.TunnelVariablePanel.Controls.Add(this.label10);
             this.TunnelVariablePanel.Controls.Add(this.label8);
             this.TunnelVariablePanel.Controls.Add(this.label7);
             this.TunnelVariablePanel.Controls.Add(this.TypeConverterComboBox);
-            this.TunnelVariablePanel.Controls.Add(this.label6);
             this.TunnelVariablePanel.Controls.Add(this.OverridingVariableTypeComboBox);
             this.TunnelVariablePanel.Controls.Add(this.AlternativeNameTextBox);
             this.TunnelVariablePanel.Controls.Add(this.TunnelingVariableComboBox);
@@ -130,9 +126,17 @@
             this.TunnelVariablePanel.Controls.Add(this.label4);
             this.TunnelVariablePanel.Location = new System.Drawing.Point(3, 89);
             this.TunnelVariablePanel.Name = "TunnelVariablePanel";
-            this.TunnelVariablePanel.Size = new System.Drawing.Size(372, 162);
+            this.TunnelVariablePanel.Size = new System.Drawing.Size(372, 194);
             this.TunnelVariablePanel.TabIndex = 2;
             this.TunnelVariablePanel.Visible = false;
+            // 
+            // label6
+            // 
+            this.label6.Location = new System.Drawing.Point(3, 84);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(91, 13);
+            this.label6.TabIndex = 4;
+            this.label6.Text = "Alternative Name:";
             // 
             // label10
             // 
@@ -169,14 +173,6 @@
             this.TypeConverterComboBox.Name = "TypeConverterComboBox";
             this.TypeConverterComboBox.Size = new System.Drawing.Size(261, 21);
             this.TypeConverterComboBox.TabIndex = 4;
-            // 
-            // label6
-            // 
-            this.label6.Location = new System.Drawing.Point(3, 84);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(91, 13);
-            this.label6.TabIndex = 4;
-            this.label6.Text = "Alternative Name:";
             // 
             // OverridingVariableTypeComboBox
             // 
@@ -290,61 +286,12 @@
             // 
             // NewVariablePanel
             // 
-            this.NewVariablePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.NewVariablePanel.Controls.Add(this.NewTypeListBox);
-            this.NewVariablePanel.Controls.Add(this.label2);
-            this.NewVariablePanel.Controls.Add(this.label1);
-            this.NewVariablePanel.Controls.Add(this.NewVariableNameTextBox);
-            this.NewVariablePanel.Location = new System.Drawing.Point(3, 89);
+            this.NewVariablePanel.Location = new System.Drawing.Point(5, 90);
             this.NewVariablePanel.Name = "NewVariablePanel";
-            this.NewVariablePanel.Size = new System.Drawing.Size(372, 162);
-            this.NewVariablePanel.TabIndex = 0;
-            this.NewVariablePanel.Visible = false;
-            // 
-            // NewTypeListBox
-            // 
-            this.NewTypeListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.NewTypeListBox.FormattingEnabled = true;
-            this.NewTypeListBox.Location = new System.Drawing.Point(42, 0);
-            this.NewTypeListBox.Name = "NewTypeListBox";
-            this.NewTypeListBox.Size = new System.Drawing.Size(325, 134);
-            this.NewTypeListBox.TabIndex = 20;
-            this.NewTypeListBox.Click += new System.EventHandler(this.NewTypeListBox_Click);
-            this.NewTypeListBox.SelectedIndexChanged += new System.EventHandler(this.NewTypeListBox_SelectedIndexChanged);
-            // 
-            // label2
-            // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(2, 141);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(38, 13);
-            this.label2.TabIndex = 19;
-            this.label2.Text = "Name:";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(2, 3);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(34, 13);
-            this.label1.TabIndex = 18;
-            this.label1.Text = "Type:";
-            // 
-            // NewVariableNameTextBox
-            // 
-            this.NewVariableNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.NewVariableNameTextBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
-            this.NewVariableNameTextBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.NewVariableNameTextBox.Location = new System.Drawing.Point(42, 138);
-            this.NewVariableNameTextBox.Name = "NewVariableNameTextBox";
-            this.NewVariableNameTextBox.Size = new System.Drawing.Size(325, 20);
-            this.NewVariableNameTextBox.TabIndex = 1;
+            this.NewVariablePanel.Size = new System.Drawing.Size(372, 197);
+            this.NewVariablePanel.TabIndex = 29;
+            this.NewVariablePanel.Text = "elementHost1";
+            this.NewVariablePanel.Child = this.createNewVariableControl1;
             // 
             // AddVariableWindow
             // 
@@ -352,7 +299,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.mCancelButton;
-            this.ClientSize = new System.Drawing.Size(384, 295);
+            this.ClientSize = new System.Drawing.Size(384, 327);
             this.Controls.Add(this.mCancelButton);
             this.Controls.Add(this.mOkWindow);
             this.Controls.Add(this.panel1);
@@ -360,8 +307,8 @@
             this.Controls.Add(this.radTunnelVariable);
             this.Controls.Add(this.radExistingVariable);
             this.Controls.Add(this.ExistingVariablePanel);
-            this.Controls.Add(this.NewVariablePanel);
             this.Controls.Add(this.TunnelVariablePanel);
+            this.Controls.Add(this.NewVariablePanel);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(400, 334);
@@ -375,8 +322,6 @@
             this.ExistingVariablePanel.PerformLayout();
             this.TunnelVariablePanel.ResumeLayout(false);
             this.TunnelVariablePanel.PerformLayout();
-            this.NewVariablePanel.ResumeLayout(false);
-            this.NewVariablePanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -393,10 +338,6 @@
         private System.Windows.Forms.RadioButton radCreateNewVariable;
         private System.Windows.Forms.RadioButton radTunnelVariable;
         private System.Windows.Forms.RadioButton radExistingVariable;
-        private System.Windows.Forms.Panel NewVariablePanel;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox NewVariableNameTextBox;
         private System.Windows.Forms.Panel TunnelVariablePanel;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label8;
@@ -409,8 +350,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox TunnelingObjectComboBox;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ListBox NewTypeListBox;
-
-
+        private System.Windows.Forms.Integration.ElementHost NewVariablePanel;
+        private AddVariable.CreateNewVariableControl createNewVariableControl1;
     }
 }

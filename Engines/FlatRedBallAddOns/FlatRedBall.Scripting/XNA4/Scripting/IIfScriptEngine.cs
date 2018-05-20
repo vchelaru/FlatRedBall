@@ -5,8 +5,6 @@
         void AndGroup();
         void OrGroup();
         void EndGroup();
+        void True();
     }
-
-
-
 }

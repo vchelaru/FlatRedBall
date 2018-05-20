@@ -7,12 +7,6 @@ using System.ComponentModel;
 using System.Xml.Serialization;
 using Microsoft.Xna.Framework.Graphics;
 
-#if XNA4
-
-#else
-using Color = Microsoft.Xna.Framework.Graphics.Color;
-#endif
-
 #if GLUE
 
 using FlatRedBall.Glue.FormHelpers.StringConverters;

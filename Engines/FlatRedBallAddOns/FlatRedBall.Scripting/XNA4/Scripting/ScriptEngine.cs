@@ -181,6 +181,12 @@ namespace FlatRedBall.Scripting
             if (CurrentDecision.Parent != null)
                 CurrentDecision = CurrentDecision.Parent;
         }
+
+        void IIfScriptEngine.True()
+        {
+            CreateGeneralDecision(() => true);
+        }
+
         public GeneralDecision CreateGeneralDecision(Func<bool> func)
         {
             return CreateGeneralDecision(func, null);
