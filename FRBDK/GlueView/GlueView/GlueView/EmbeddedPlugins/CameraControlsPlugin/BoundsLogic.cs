@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Math.Geometry;
+﻿using EditorObjects;
+using FlatRedBall.Math.Geometry;
 using GlueView.Facades;
 using Microsoft.Xna.Framework;
 using System;
@@ -13,17 +14,124 @@ namespace GlueView.EmbeddedPlugins.CameraControlsPlugin
     {
         AxisAlignedRectangle boundsRectangle;
 
+        Line originX;
+        Line originY;
+
+        LineGrid lineGrid;
+
+        bool showOrigin;
+        public bool ShowOrigin
+        {
+            get { return showOrigin; }
+            set
+            {
+                showOrigin = value;
+
+                RefreshOrigin();
+            }
+        }
+
+        bool showGrid;
+        public bool ShowGrid
+        {
+            get { return showGrid; }
+            set
+            {
+                showGrid = value;
+
+                RefreshGrid();
+            }
+        }
+
+        int cellSize;
+        public int CellSize
+        {
+            get { return cellSize; }
+            set
+            {
+                cellSize = value;
+                RefreshGrid();
+            }
+        }
+
         internal void HandleElementLoaded()
         {
-            if(GlueViewState.Self.CurrentGlueProject != null)
+            RefreshAll();
+        }
+
+        private void RefreshAll()
+        {
+            RefreshBounds();
+
+            RefreshOrigin();
+        }
+
+        private void RefreshOrigin()
+        {
+            if (showOrigin && originX == null)
             {
-                if(boundsRectangle == null)
+                originX = ShapeManager.AddLine();
+                originX.SetFromAbsoluteEndpoints(
+                    new Vector3(10000, 0, 0),
+                    new Vector3(-10000, 0, 0));
+
+                originY = ShapeManager.AddLine();
+                originY.SetFromAbsoluteEndpoints(
+                    new Vector3(0, 10000, 0),
+                    new Vector3(0, -10000, 0));
+            }
+
+            if(originX != null)
+            {
+                originX.Visible = ShowOrigin;
+                originY.Visible = ShowOrigin;
+            }
+        }
+
+        private void RefreshGrid()
+        {
+            if(ShowGrid && lineGrid == null)
+            {
+                lineGrid = new LineGrid();
+            }
+
+            if(lineGrid != null)
+            {
+                lineGrid.Visible = ShowGrid;
+            }
+
+            if(lineGrid?.Visible == true)
+            {
+                lineGrid.DistanceBetweenLines = cellSize;
+                lineGrid.NumberOfHorizontalLines = 41;
+                lineGrid.NumberOfVerticalLines = 41;
+            }
+        }
+
+        private void RefreshBounds()
+        {
+            if (GlueViewState.Self.CurrentGlueProject != null)
+            {
+                if (boundsRectangle == null)
                 {
                     boundsRectangle = ShapeManager.AddAxisAlignedRectangle();
                 }
 
-                boundsRectangle.Width = GlueViewState.Self.CurrentGlueProject.OrthogonalWidth;
-                boundsRectangle.Height = GlueViewState.Self.CurrentGlueProject.OrthogonalHeight;
+                var glueProject = GlueViewState.Self.CurrentGlueProject;
+
+                if (glueProject.DisplaySettings != null)
+                {
+                    if (glueProject.DisplaySettings.Is2D)
+                    {
+                        boundsRectangle.Width = glueProject.DisplaySettings.ResolutionWidth;
+                        boundsRectangle.Height = glueProject.DisplaySettings.ResolutionHeight;
+                    }
+                }
+                else
+                {
+                    boundsRectangle.Width = glueProject.OrthogonalWidth;
+                    boundsRectangle.Height = glueProject.OrthogonalHeight;
+                }
             }
         }
     }

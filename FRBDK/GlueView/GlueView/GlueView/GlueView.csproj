@@ -266,7 +266,11 @@
     <Compile Include="Editing\EditingPlugin.cs" />
     <Compile Include="EditorLogic.cs" />
     <Compile Include="EmbeddedPlugins\CameraControlsPlugin\BoundsLogic.cs" />
+    <Compile Include="EmbeddedPlugins\CameraControlsPlugin\Controls\GuidesControl.xaml.cs">
+      <DependentUpon>GuidesControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EmbeddedPlugins\CameraControlsPlugin\MainPlugin.cs" />
+    <Compile Include="EmbeddedPlugins\CameraControlsPlugin\ViewModels\GuidesViewModel.cs" />
     <Compile Include="EmbeddedPlugins\CursorDisplayPlugin\CursorDisplayControl.xaml.cs">
       <DependentUpon>CursorDisplayControl.xaml</DependentUpon>
     </Compile>
@@ -512,6 +516,10 @@
     <Folder Include="Reflection\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="EmbeddedPlugins\CameraControlsPlugin\Controls\GuidesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="EmbeddedPlugins\CursorDisplayPlugin\CursorDisplayControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

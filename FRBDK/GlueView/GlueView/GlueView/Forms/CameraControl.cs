@@ -37,10 +37,14 @@ namespace GlueView.Forms
             }
         }
 
-        public CameraControl()
+
+
+        public CameraControl(object guidesViewModel)
         {
             mSelf = this;
             InitializeComponent();
+
+            guidesControl1.DataContext = guidesViewModel;
 
             PopulateCameraConfigComboBox();
         }
