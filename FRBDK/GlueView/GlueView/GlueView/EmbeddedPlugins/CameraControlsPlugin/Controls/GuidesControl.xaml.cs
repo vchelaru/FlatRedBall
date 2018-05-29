@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FlatRedBall;
+using GlueView.Facades;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,32 @@ namespace GlueView.EmbeddedPlugins.CameraControlsPlugin.Controls
         public GuidesControl()
         {
             InitializeComponent();
+        }
+
+        private void ResetCameraButton_Click(object sender, RoutedEventArgs e)
+        {
+            // todo - apply settings from Glue
+            var glueProject = GlueViewState.Self.CurrentGlueProject;
+
+            if(glueProject.DisplaySettings != null)
+            {
+                var settings = glueProject.DisplaySettings;
+
+                if(settings.Is2D)
+                {
+                    Camera.Main.UsePixelCoordinates();
+
+                }
+                else
+                {
+                    Camera.Main.Orthogonal = false;
+                    Camera.Main.UsePixelCoordinates3D(0);
+                }
+            }
+            else
+            {
+                Camera.Main.UsePixelCoordinates();
+            }
         }
     }
 }

@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="GlueView.Plugin.ManagePlugins.PluginsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GlueView.Plugin.ManagePlugins"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <ListBox SelectedItem="{Binding SelectedPlugin}" ItemsSource="{Binding PluginListItems}"></ListBox>
+
+        <TextBlock Grid.Column="1" Text="{Binding CurrentPluginText}">
+            
+        </TextBlock>
+    </Grid>
+</UserControl>

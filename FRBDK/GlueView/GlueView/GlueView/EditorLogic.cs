@@ -95,8 +95,7 @@ namespace GlueView
         {
             if (obj != null)
             {
-                glueViewSettings.SetElementCameraSave(obj, SpriteManager.Camera);
-                glueViewSettings.Save(SettingsSaveFileName);
+                PluginManager.BeforeElementRemoved();
                 GlueViewState.Self.CurrentElement = null;
             }
         }
@@ -144,7 +143,8 @@ namespace GlueView
 
         internal static void HandleToolItemCollapsedOrExpanded()
         {
-            if(!ignoreCollapseChange)
+            // Can't save settings if no Glue file is open
+            if(!ignoreCollapseChange && GlueViewState.Self.CurrentGlueProject != null)
             {
                 var collapsedItems = CollapsibleFormHelper.Self.GetCollapsedItems();
 
@@ -162,10 +162,7 @@ namespace GlueView
                 TextManager.ShuffleInternalLists();
             }
 
-            EditorObjects.CameraMethods.MouseCameraControl(SpriteManager.Camera);
-            // This causes more problems that is worth
-            //EditorObjects.CameraMethods.KeyboardCameraControl(SpriteManager.Camera);
-
+            
             Cursor cursor = GuiManager.Cursor;
 
             if (cursor.PrimaryPush)
@@ -208,38 +205,6 @@ namespace GlueView
            
         }
         
-        private static bool DoesNamedObjectSaveListContain2DObjects(List<NamedObjectSave> namedObjectSaveList)
-        {
-            bool is2D = false;
-            foreach (NamedObjectSave nos in namedObjectSaveList)
-            {
-                if (nos.SourceType == SourceType.File)
-                {
-                    is2D |= IsFileNamedObject2D(nos);
-                }
-                else if (nos.SourceType == SourceType.Entity)
-                {
-                    is2D |= IsEntityNamedObject2D(nos);
-                }
-
-                is2D |= DoesNamedObjectSaveListContain2DObjects(nos.ContainedObjects);
-            }
-            return is2D;
-        }
-
-        private static bool IsEntityNamedObject2D(NamedObjectSave nos)
-        {
-            bool is2D = false;
-            EntitySave entitySave = ObjectFinder.Self.GetEntitySave(nos.SourceClassType);
-
-            if (entitySave != null)
-            {
-                is2D |= DoesNamedObjectSaveListContain2DObjects(entitySave.NamedObjects);
-            }
-
-            return is2D;
-        }
-
         private static bool IsFileNamedObject2D(NamedObjectSave nos)
         {
             bool is2D = false;

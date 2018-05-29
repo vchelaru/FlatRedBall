@@ -10,6 +10,8 @@ using GlueView.Facades;
 using GlueView.Forms;
 using GlueView.EmbeddedPlugins.CameraControlsPlugin.ViewModels;
 using System.ComponentModel;
+using FlatRedBall.Content.Scene;
+using FlatRedBall;
 
 namespace GlueView.EmbeddedPlugins.CameraControlsPlugin
 {
@@ -52,6 +54,41 @@ namespace GlueView.EmbeddedPlugins.CameraControlsPlugin
                 "Camera", -1, new CameraControl(guidesViewModel), this);
 
             this.ElementLoaded += HandleElementLoaded;
+
+            this.Update += HandleUpdate;
+            this.ElementRemoved += HandleElementRemoved;
+        }
+
+        private void HandleElementRemoved()
+        {
+            PersistGuidesProperties();
+
+            PersistCameraValues();
+
+            base.SavePersistentDataForElements();
+        }
+
+        private void PersistGuidesProperties()
+        {
+            PersistentDataForCurrentElement.CellSize = guidesViewModel.CellSize;
+            PersistentDataForCurrentElement.ShowOrigin = guidesViewModel.ShowOrigin;
+            PersistentDataForCurrentElement.ShowGrid = guidesViewModel.ShowGrid;
+
+        }
+
+        private void PersistCameraValues()
+        {
+            CameraSave cameraSave = CameraSave.FromCamera(Camera.Main, false);
+            PersistentDataForCurrentElement.CameraSave = cameraSave;
+
+        }
+
+        private void HandleUpdate(object sender, EventArgs e)
+        {
+            EditorObjects.CameraMethods.MouseCameraControl(FlatRedBall.Camera.Main);
+            // This causes more problems that is worth
+            //EditorObjects.CameraMethods.KeyboardCameraControl(SpriteManager.Camera);
+
         }
 
         private void HandleGuidesPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -77,6 +114,16 @@ namespace GlueView.EmbeddedPlugins.CameraControlsPlugin
 
         private void HandleElementLoaded(object sender, EventArgs e)
         {
+            if(DataHasMember(PersistentDataForCurrentElement, "CellSize"))
+            {
+                guidesViewModel.CellSize = PersistentDataForCurrentElement.CellSize;
+                guidesViewModel.ShowOrigin = PersistentDataForCurrentElement.ShowOrigin;
+                guidesViewModel.ShowGrid = PersistentDataForCurrentElement.ShowGrid;
+
+                CameraSave cameraSave = PersistentDataForCurrentElement.CameraSave;
+
+                cameraSave.SetCamera(Camera.Main);
+            }
             boundsLogic.HandleElementLoaded();
         }
     }

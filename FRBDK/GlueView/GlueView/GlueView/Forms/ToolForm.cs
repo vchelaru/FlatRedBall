@@ -30,6 +30,20 @@ namespace GlueView
 
         private void managePluginsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var control = new Plugin.ManagePlugins.PluginsControl();
+            GlueViewCommands.Self.CollapsibleFormCommands.AddCollapsableForm(
+                "Plugins", -1, control, null);
+
+            var viewModel = new Plugin.ManagePlugins.PluginsControlViewModel();
+
+            foreach(var container in PluginManager.AllPluginContainers)
+            {
+                viewModel.PluginListItems.Add(container);
+            }
+
+            control.DataContext = viewModel;
+
+            // todo - need to make a new WPF window for managing plugins.
             //PluginsWindow pluginsWindow = new PluginsWindow();
             //pluginsWindow.Show();
         }

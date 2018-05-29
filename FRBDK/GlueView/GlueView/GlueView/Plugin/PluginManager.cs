@@ -146,6 +146,12 @@ namespace GlueView.Plugin
             CallMethodOnPlugin(plugin => plugin.CallElementLoaded(), "CallElementLoaded");
         }
 
+        public static void BeforeElementRemoved()
+        {
+            CallMethodOnPlugin(plugin => plugin.CallBeforeElementRemoved(), "CallBeforeElementRemoved");
+
+        }
+
         public static void ReactToElementHighlight()
         {
             CallMethodOnPlugin(plugin => plugin.CallElementHiglight(), "CallElementHighlight");

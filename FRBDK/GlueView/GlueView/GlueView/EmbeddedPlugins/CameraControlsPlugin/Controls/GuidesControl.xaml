@@ -14,5 +14,11 @@
             <TextBlock Visibility="{Binding CellSizeVisibility}" VerticalAlignment="Center" Padding="14, 0,2,0">Cell Size:</TextBlock>
             <TextBox  Visibility="{Binding CellSizeVisibility}" VerticalAlignment="Center" Width="40" Text="{Binding Path=CellSize,  UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
+        <Button HorizontalAlignment="Left" VerticalAlignment="Top" Click="ResetCameraButton_Click">
+            <Button.ToolTip>
+                <TextBlock>Reset Camera</TextBlock>
+            </Button.ToolTip>
+            <Image Source="CameraIcon.png" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"></Image>
+        </Button>
     </StackPanel>
 </UserControl>

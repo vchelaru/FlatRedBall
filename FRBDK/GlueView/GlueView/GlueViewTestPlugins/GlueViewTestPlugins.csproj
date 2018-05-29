@@ -114,7 +114,9 @@
       <Name>InteractiveInterface</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(SolutionDir)"..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\EntityControl\ md "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\EntityControl\"

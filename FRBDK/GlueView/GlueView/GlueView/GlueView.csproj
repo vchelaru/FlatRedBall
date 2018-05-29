@@ -112,6 +112,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Glue\Glue\Libraries\MSBuild\Current\Microsoft.Build.Utilities.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553">
       <Private>False</Private>
     </Reference>
@@ -148,6 +149,9 @@
     <Reference Include="NCalc, Version=1.3.8.0, Culture=neutral, PublicKeyToken=973cde3f1cafed03, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\NCalc.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -304,6 +308,10 @@
     <Compile Include="Plugin\GlueViewPlugin.cs" />
     <Compile Include="Plugin\EmbeddedPlugin.cs" />
     <Compile Include="Plugin\InternalPlugins\CameraControlPlugin.cs" />
+    <Compile Include="Plugin\ManagePlugins\PluginsControl.xaml.cs">
+      <DependentUpon>PluginsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Plugin\ManagePlugins\PluginsControlViewModel.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
@@ -354,6 +362,7 @@
     <Compile Include="Wcf\WcfManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="EmbeddedPlugins\CameraControlsPlugin\Controls\CameraIcon.png" />
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
     <Content Include="Libraries\FlatRedBall.Content.dll" />
@@ -365,6 +374,7 @@
     <Content Include="Libraries\NCalc.dll" />
     <Content Include="Libraries\StaffDotNet.CollapsiblePanel.dll" />
     <None Include="App1.config" />
+    <None Include="packages.config" />
     <None Include="Resources\titleBackground.jpg" />
     <None Include="Resources\ExpandIcon.jpg" />
     <None Include="Resources\CollapseIcon.jpg" />
@@ -513,6 +523,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Extensions\" />
     <Folder Include="Reflection\" />
   </ItemGroup>
   <ItemGroup>
@@ -521,6 +532,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="EmbeddedPlugins\CursorDisplayPlugin\CursorDisplayControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Plugin\ManagePlugins\PluginsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

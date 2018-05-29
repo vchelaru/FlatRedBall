@@ -711,9 +711,10 @@ namespace FlatRedBall.Glue
 
                     CurrentElement = new ElementRuntime(elementToShow, null, null, OnBeforeVariableSet, OnAfterVariableSet);
 
+                    SpriteManager.AddPositionedObject(CurrentElement);
+
                     if (AfterElementLoaded != null)
                     {
-                        SpriteManager.AddPositionedObject(CurrentElement);
                         AfterElementLoaded(CurrentElement.AssociatedIElement);
                     }
                 }
@@ -807,10 +808,7 @@ namespace FlatRedBall.Glue
         {
             if (CurrentElement != null)
             {
-                if(ElementRemoved != null)
-                {
-                    ElementRemoved(CurrentElement.AssociatedIElement);
-                }
+                ElementRemoved?.Invoke(CurrentElement.AssociatedIElement);
                 CurrentElement.Destroy();
 
                 SpriteManager.RemoveAllParticleSprites();
