@@ -1,9 +1,9 @@
-﻿using BounceHouse.DataTypes;
+﻿using $PROJECT_NAMESPACE$.DataTypes;
 using FlatRedBall.TileGraphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BounceHouse.Performance;
+using $PROJECT_NAMESPACE$.Performance;
 using FlatRedBall.Graphics;
 using System.Reflection;
 using TMXGlueLib.DataTypes;
