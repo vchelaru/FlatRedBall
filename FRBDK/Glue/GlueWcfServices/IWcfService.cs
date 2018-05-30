@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace GlueWcfServices
 {
+    // Services for sending commands from GlueView to Glue
     [ServiceContract(Namespace = "http://www.flatredball.com/Glue/wcf")]
     public interface IWcfService
     {
@@ -18,5 +19,8 @@ namespace GlueWcfServices
 
         [OperationContract]
         void SelectElement(string elementName);
+
+        [OperationContract]
+        void PrintOutput(string output);
     }
 }

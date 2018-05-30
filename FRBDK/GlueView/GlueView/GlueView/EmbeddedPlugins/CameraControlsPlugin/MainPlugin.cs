@@ -93,7 +93,7 @@ namespace GlueView.EmbeddedPlugins.CameraControlsPlugin
 
         private void HandleGuidesPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            switch(e.PropertyName)
+            switch (e.PropertyName)
             {
                 case nameof(GuidesViewModel.ShowOrigin):
                     boundsLogic.ShowOrigin = guidesViewModel.ShowOrigin;
@@ -114,13 +114,25 @@ namespace GlueView.EmbeddedPlugins.CameraControlsPlugin
 
         private void HandleElementLoaded(object sender, EventArgs e)
         {
-            if(DataHasMember(PersistentDataForCurrentElement, "CellSize"))
+            if (DataHasMember(PersistentDataForCurrentElement, "CellSize"))
             {
-                guidesViewModel.CellSize = PersistentDataForCurrentElement.CellSize;
+                guidesViewModel.CellSize = (int)PersistentDataForCurrentElement.CellSize;
                 guidesViewModel.ShowOrigin = PersistentDataForCurrentElement.ShowOrigin;
                 guidesViewModel.ShowGrid = PersistentDataForCurrentElement.ShowGrid;
 
-                CameraSave cameraSave = PersistentDataForCurrentElement.CameraSave;
+                // Can't do a direct assignment because .CameraSave is deserialized as an expando object
+                CameraSave cameraSave = new CameraSave();// PersistentDataForCurrentElement.CameraSave;
+
+                cameraSave.AspectRatio = (float)PersistentDataForCurrentElement.CameraSave.AspectRatio;
+                cameraSave.FarClipPlane = (float)PersistentDataForCurrentElement.CameraSave.FarClipPlane;
+                cameraSave.NearClipPlane = (float)PersistentDataForCurrentElement.CameraSave.NearClipPlane;
+                cameraSave.Orthogonal = PersistentDataForCurrentElement.CameraSave.Orthogonal;
+                cameraSave.OrthogonalHeight = (float)PersistentDataForCurrentElement.CameraSave.OrthogonalHeight;
+                cameraSave.OrthogonalWidth = (float)PersistentDataForCurrentElement.CameraSave.OrthogonalWidth;
+                cameraSave.X = (float)PersistentDataForCurrentElement.CameraSave.X;
+                cameraSave.Y = (float)PersistentDataForCurrentElement.CameraSave.Y;
+                cameraSave.Z = (float)PersistentDataForCurrentElement.CameraSave.Z;
+
 
                 cameraSave.SetCamera(Camera.Main);
             }

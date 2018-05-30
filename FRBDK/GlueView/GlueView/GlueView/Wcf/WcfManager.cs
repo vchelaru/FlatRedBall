@@ -34,5 +34,10 @@ namespace GlueView.Wcf
             mWcfInstance.SelectElement(elementName);
         }
 
+        public void PrintOutput(string output)
+        {
+            mWcfInstance?.PrintOutput(output);
+        }
+
     }
 }

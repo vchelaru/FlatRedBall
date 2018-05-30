@@ -35,5 +35,10 @@ namespace Glue.Wcf
 
             }
         }
+
+        public void PrintOutput(string output)
+        {
+            GlueCommands.Self.PrintOutput(output);
+        }
     }
 }

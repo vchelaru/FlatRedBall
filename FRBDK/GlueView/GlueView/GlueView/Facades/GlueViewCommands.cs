@@ -47,6 +47,11 @@ namespace GlueView.Facades
 			private set;
 		}
 
+        public void PrintOutput(string output)
+        {
+            Wcf.WcfManager.Self.PrintOutput(output);
+        }
+
 
         public GlueViewCommands()
         {

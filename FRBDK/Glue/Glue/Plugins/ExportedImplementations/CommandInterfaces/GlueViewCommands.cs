@@ -17,5 +17,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             GlueViewPlugin.Self.SendScript(script);
         }
+
+        public void PrintOutput(string output)
+        {
+
+        }
     }
 }

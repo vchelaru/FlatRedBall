@@ -208,6 +208,9 @@ namespace GlueView.Plugin
                         catch (Exception e)
                         {
                             container.Fail(e, "Failed in " + methodName);
+
+                            string message = $"{container.Plugin.FriendlyName} failed in {methodName}\n{e.ToString()}";
+                            Facades.GlueViewCommands.Self.PrintOutput(message);
                         }
                     }
                 }
