@@ -100,7 +100,7 @@ namespace NewProjectCreator.LogicObjects
         {
             string projectContents = FileManager.FromFileText(projectLocation);
             int startIndex = projectContents.IndexOf("<ProjectGuid>{") + "<ProjectGuid>{".Length;
-            int endIndex = projectContents.IndexOf("</ProjectGuid>");
+            int endIndex = projectContents.IndexOf("}</ProjectGuid>");
             projectContents = projectContents.Substring(startIndex, endIndex - startIndex);
             return projectContents;
 
