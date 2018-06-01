@@ -165,6 +165,9 @@
   <ItemGroup>
     <Folder Include="Libraries\XnaPc\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugCopyScripts|x86'">
     <PostBuildEvent>echo "Copying AnimationEditorPlugin files"

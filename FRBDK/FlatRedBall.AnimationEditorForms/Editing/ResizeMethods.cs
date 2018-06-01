@@ -51,8 +51,8 @@ namespace FlatRedBall.AnimationEditorForms.Editing
                 int oldWidth = oldTexture.Width;
                 int oldHeight = oldTexture.Height;
 
-                string fileToSave = WireframeManager.Self.GetTextureFileNameForFrame(SelectedState.Self.SelectedFrame);
-                string unmodifiedFileToSave = fileToSave;
+                var fileToSave = WireframeManager.Self.GetTextureFileNameForFrame(SelectedState.Self.SelectedFrame);
+                var unmodifiedFileToSave = fileToSave;
 
                 // pad to power of two.
                 Texture2D resized = GetModifiedTexture2D(graphicsDevice);
@@ -67,13 +67,13 @@ namespace FlatRedBall.AnimationEditorForms.Editing
                 }
                 else// use renamed
                 {
-                    fileToSave = FileManager.RemoveExtension(fileToSave) + "Resize.png";
+                    fileToSave =  FileManager.RemoveExtension(fileToSave.FullPath) + "Resize.png";
                     reReference = true;
                 }
 
 
 
-                using (Stream stream = System.IO.File.OpenWrite(fileToSave))
+                using (Stream stream = System.IO.File.OpenWrite(fileToSave.FullPath))
                 {
                     resized.SaveAsPng(stream, resized.Width, resized.Height);
                     stream.Close();
@@ -82,7 +82,7 @@ namespace FlatRedBall.AnimationEditorForms.Editing
 
                 List<AnimationFrameSave> modifiedFrames = new List<AnimationFrameSave>();
 
-                AdjustAnimationToResize(ProjectManager.Self.AnimationChainListSave, oldWidth, oldHeight, resized.Width, resized.Height, unmodifiedFileToSave, modifiedFrames);
+                AdjustAnimationToResize(ProjectManager.Self.AnimationChainListSave, oldWidth, oldHeight, resized.Width, resized.Height, unmodifiedFileToSave.FullPath, modifiedFrames);
 
                 if (reReference)
                 {

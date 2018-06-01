@@ -17,13 +17,13 @@ namespace FlatRedBall.AnimationEditorForms
 
         TreeView mTreeView;
         TreeNode mGrabbedNode;
-        
+
 
         #endregion
 
 
         #region Properties
-        
+
         // See SelectedState
         //public AnimationChainSave SelectedAnimationChain
         //{
@@ -38,6 +38,12 @@ namespace FlatRedBall.AnimationEditorForms
         //        mTreeView.SelectedNode = treeNode;
         //    }
         //}
+
+        static string WireframeSettingsFileName
+        {
+            get { return FlatRedBall.IO.FileManager.UserApplicationDataForThisApplication + "Settings.Generated.json"; }
+        }
+
 
         #endregion
 
@@ -55,6 +61,19 @@ namespace FlatRedBall.AnimationEditorForms
         {
             mTreeView = treeView;
             InitializeRightClick();
+
+            LoadWireframeCameraLocations();
+        }
+
+        private void LoadWireframeCameraLocations()
+        {
+            if(System.IO.File.Exists(WireframeSettingsFileName))
+            {
+                var serialized = System.IO.File.ReadAllText(WireframeSettingsFileName);
+
+                WireframeManager.Self.CameraPositionsForTexture = 
+                    Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<FilePath, Microsoft.Xna.Framework.Vector3>>(serialized);
+            }
         }
 
         #endregion
@@ -201,6 +220,8 @@ namespace FlatRedBall.AnimationEditorForms
             AnimationChainSave lastChain = SelectedState.Self.Snapshot.AnimationChainSave;
             AnimationFrameSave lastFrame = SelectedState.Self.Snapshot.AnimationFrameSave;
 
+            SaveWireframeCameraPosition();
+
             // Refresh the wireframe before the property grid so the property 
             // grid can get the texture information.
             WireframeManager.Self.RefreshAll();
@@ -219,11 +240,14 @@ namespace FlatRedBall.AnimationEditorForms
                 PreviewManager.Self.ReactToAnimationFrameSelected();
             }
 
-            if(SelectedState.Self.SelectedFrame != null)
-            {
-                WireframeManager.Self.FocusSelectionIfOffScreen();
-            }
 
+        }
+
+        private static void SaveWireframeCameraPosition()
+        {
+            var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(WireframeManager.Self.CameraPositionsForTexture);
+
+            System.IO.File.WriteAllText(WireframeSettingsFileName, serialized);
         }
 
         public TreeNode GetTreeNodeFor(AnimationFrameSave afs)

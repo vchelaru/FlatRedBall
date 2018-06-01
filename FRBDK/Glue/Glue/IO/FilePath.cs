@@ -56,7 +56,14 @@ namespace FlatRedBall.Glue.IO
         {
             get
             {
-                return FileManager.RemoveDotDotSlash( FileManager.Standardize(original, null, makeAbsolute: true)).ToLowerInvariant();
+                if (string.IsNullOrEmpty(original))
+                {
+                    return FileManager.RemoveDotDotSlash(FileManager.Standardize("", null, makeAbsolute: true)).ToLowerInvariant();
+                }
+                else
+                {
+                    return FileManager.RemoveDotDotSlash(FileManager.Standardize(original, null, makeAbsolute: true)).ToLowerInvariant();
+                }
             }
         }
 
@@ -111,6 +118,13 @@ namespace FlatRedBall.Glue.IO
         public bool IsRootOf(FilePath otherFilePath)
         {
             return otherFilePath.Standardized.StartsWith(this.Standardized);
+        }
+
+        public FilePath RemoveExtension()
+        {
+            var fileString = FileManager.RemoveExtension(original);
+
+            return fileString;
         }
 
         public override string ToString()

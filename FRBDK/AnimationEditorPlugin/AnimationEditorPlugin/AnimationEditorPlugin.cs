@@ -89,7 +89,11 @@ namespace AnimationEditorPlugin
             // - Fixed a few null ref exceptions
             // 3.0.3
             // - Fixed crash when clicking on texture coordinate window
-            get { return new Version(3, 0, 3); }
+            // 3.1
+            // - Large reduction in complexity of camera positioning - now it's simply based on the selected texture
+            //   and previous position for that texture
+            // - Texture dropdown now reflects the selected AnimaitonFrame.
+            get { return new Version(3, 1, 0); }
         }
 
         public bool IsSelectedItemSprite

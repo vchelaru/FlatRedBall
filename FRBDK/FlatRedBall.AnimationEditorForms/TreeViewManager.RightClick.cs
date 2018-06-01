@@ -438,7 +438,7 @@ namespace FlatRedBall.AnimationEditorForms
         void ViewTextureInExplorer(object sender, EventArgs args)
         {
 
-            string fileName = WireframeManager.Self.GetTextureFileNameForFrame(SelectedState.Self.SelectedFrame);
+            var fileName = WireframeManager.Self.GetTextureFileNameForFrame(SelectedState.Self.SelectedFrame).FullPath;
 
             if (!string.IsNullOrEmpty(fileName))
             {

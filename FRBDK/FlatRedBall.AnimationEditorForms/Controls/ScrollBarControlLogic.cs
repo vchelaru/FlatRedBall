@@ -86,6 +86,12 @@ namespace FlatRedBall.AnimationEditorForms.Controls
 
         }
 
+        public void UpdateScrollBarsToCameraPosition()
+        {
+            mVerticalScrollBar.Value = (int)Managers.Renderer.Camera.Y;
+            mHorizontalScrollBar.Value = (int)Managers.Renderer.Camera.X;
+        }
+
         public void UpdateToImage(int width, int height)
         {
             mImageWidth = width;
@@ -100,15 +106,21 @@ namespace FlatRedBall.AnimationEditorForms.Controls
         {
             if (Managers != null && Managers.Renderer != null)
             {
-                int horizontalValue = (int)Managers.Renderer.Camera.X;
-                horizontalValue = System.Math.Max(horizontalValue, mHorizontalScrollBar.Minimum);
+                // This clamps the scroll bar, but we don't want to adjust the position of the camera when this is called
+                // because the user may manually move the camera beyond the bounds:
+                var x = Managers.Renderer.Camera.X;
+                var horizontalValue = System.Math.Max(x, mHorizontalScrollBar.Minimum);
                 horizontalValue = System.Math.Min(horizontalValue, mHorizontalScrollBar.Maximum);
-                mHorizontalScrollBar.Value = horizontalValue;
+                mHorizontalScrollBar.Value = (int)horizontalValue;
 
-                int verticalValue = (int)Managers.Renderer.Camera.Y;
-                verticalValue = System.Math.Max(verticalValue, mVerticalScrollBar.Minimum);
+                var y = Managers.Renderer.Camera.Y;
+                var verticalValue = System.Math.Max(y, mVerticalScrollBar.Minimum);
                 verticalValue = System.Math.Min(verticalValue, mVerticalScrollBar.Maximum);
-                mVerticalScrollBar.Value = verticalValue;
+                mVerticalScrollBar.Value = (int)verticalValue;
+
+                // now preserve the values:
+                Managers.Renderer.Camera.X = x;
+                Managers.Renderer.Camera.Y = y;
             }
 
 
