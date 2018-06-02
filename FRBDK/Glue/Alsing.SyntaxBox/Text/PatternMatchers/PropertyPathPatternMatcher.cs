@@ -54,7 +54,7 @@ namespace Alsing.Text.PatternMatchers
 
         private static bool IsWildcard(char c)
         {
-            return c == '*' || c == '¤';
+            return c == '*' || c == 'Â¤';
         }
 
         private static bool IsSeparator(char c)

@@ -1077,7 +1077,7 @@ namespace Alsing.Windows.Forms.SyntaxBox.Painter
                                 bbuff.FontTransparent = false;
                             }
 
-                            bbuff.DrawTabbedString("·", xpos, 0, taborig, Control.PixelTabSize);
+                            bbuff.DrawTabbedString("Â·", xpos, 0, taborig, Control.PixelTabSize);
                             wdh = bbuff.DrawTabbedString(w.Text, xpos, 0, taborig, Control.PixelTabSize).Width;
                         }
                         else if (w.Type == WordType.Tab)
@@ -1093,7 +1093,7 @@ namespace Alsing.Windows.Forms.SyntaxBox.Painter
                                 bbuff.FontTransparent = false;
                             }
 
-                            bbuff.DrawTabbedString("»", xpos, 0, taborig, Control.PixelTabSize);
+                            bbuff.DrawTabbedString("Â»", xpos, 0, taborig, Control.PixelTabSize);
                             wdh = bbuff.DrawTabbedString(w.Text, xpos, 0, taborig, Control.PixelTabSize).Width;
                         }
                         if (w.Pattern != null)
@@ -1127,7 +1127,7 @@ namespace Alsing.Windows.Forms.SyntaxBox.Painter
                     bbuff.Font = GFX.FontNormal;
                     bbuff.TextForeColor = Control._SyntaxBox.EOLMarkerColor;
                     bbuff.FontTransparent = true;
-                    bbuff.DrawTabbedString("¶", xpos, 0, taborig, Control.PixelTabSize);
+                    bbuff.DrawTabbedString("Â¶", xpos, 0, taborig, Control.PixelTabSize);
                 }
             }
         }
@@ -1209,13 +1209,13 @@ namespace Alsing.Windows.Forms.SyntaxBox.Painter
                         else if (w.Type == WordType.Space)
                         {
                             bbuff.Font = GFX.FontNormal;
-                            bbuff.DrawTabbedString("·", xpos, 0, taborig, Control.PixelTabSize);
+                            bbuff.DrawTabbedString("Â·", xpos, 0, taborig, Control.PixelTabSize);
                             wdh = bbuff.DrawTabbedString(w.Text, xpos, 0, taborig, Control.PixelTabSize).Width;
                         }
                         else if (w.Type == WordType.Tab)
                         {
                             bbuff.Font = GFX.FontNormal;
-                            bbuff.DrawTabbedString("»", xpos, 0, taborig, Control.PixelTabSize);
+                            bbuff.DrawTabbedString("Â»", xpos, 0, taborig, Control.PixelTabSize);
                             wdh = bbuff.DrawTabbedString(w.Text, xpos, 0, taborig, Control.PixelTabSize).Width;
                         }
                         if (w.Pattern != null)
@@ -1248,7 +1248,7 @@ namespace Alsing.Windows.Forms.SyntaxBox.Painter
                     bbuff.Font = GFX.FontNormal;
                     bbuff.TextForeColor = Control.SelectionForeColor;
                     bbuff.FontTransparent = true;
-                    bbuff.DrawTabbedString("¶", xpos, 0, taborig, Control.PixelTabSize);
+                    bbuff.DrawTabbedString("Â¶", xpos, 0, taborig, Control.PixelTabSize);
                 }
             }
         }
@@ -1500,7 +1500,7 @@ namespace Alsing.Windows.Forms.SyntaxBox.Painter
                 {
                     if ((RowIndex > Control.Selection.LogicalBounds.FirstRow) && (RowIndex < Control.Selection.LogicalBounds.LastRow))
                     {
-                        int width = MeasureRow(xtr, xtr.Text.Length).Width + MeasureString("¶").Width + 3;
+                        int width = MeasureRow(xtr, xtr.Text.Length).Width + MeasureString("Â¶").Width + 3;
                         RenderBox(Control.View.TextMargin, 0, Math.Max(width - Control.View.ClientAreaStart, 0), Control.View.RowHeight);
                     }
                     else if ((RowIndex == Control.Selection.LogicalBounds.FirstRow) && (RowIndex == Control.Selection.LogicalBounds.LastRow))
@@ -1517,7 +1517,7 @@ namespace Alsing.Windows.Forms.SyntaxBox.Painter
                     else if (RowIndex == Control.Selection.LogicalBounds.FirstRow)
                     {
                         int start = MeasureRow(xtr, Math.Min(xtr.Text.Length, Control.Selection.LogicalBounds.FirstColumn)).Width;
-                        int width = MeasureRow(xtr, xtr.Text.Length).Width + MeasureString("¶").Width + 3 - start;
+                        int width = MeasureRow(xtr, xtr.Text.Length).Width + MeasureString("Â¶").Width + 3 - start;
                         RenderBox(Control.View.TextMargin + start - Control.View.ClientAreaStart, 0, width, Control.View.RowHeight);
                     }
                 }
