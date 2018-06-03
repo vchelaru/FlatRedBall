@@ -250,6 +250,12 @@
     <Compile Include="RuntimeFileCopier\MainPlugin.cs" />
     <Compile Include="RuntimeFileWatcherPlugin\FileSystemWatcherCodeGenerator.cs" />
     <Compile Include="RuntimeFileWatcherPlugin\MainPlugin.cs" />
+    <Compile Include="StateDataPlugin\Controls\StateDataControl.xaml.cs">
+      <DependentUpon>StateDataControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StateDataPlugin\MainStateDataPlugin.cs" />
+    <Compile Include="StateDataPlugin\ViewModels\StateCategoryViewModel.cs" />
+    <Compile Include="StateDataPlugin\ViewModels\StateViewModel.cs" />
     <Compile Include="VariableDisplay\Controls\FileReferenceComboBox.cs" />
     <Compile Include="VariableDisplay\DataGridItem.cs" />
     <Compile Include="VariableDisplay\Data\FileInstanceMember.cs" />
@@ -349,6 +355,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="FilesPlugin\Controls\FileReferenceControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StateDataPlugin\Controls\StateDataControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

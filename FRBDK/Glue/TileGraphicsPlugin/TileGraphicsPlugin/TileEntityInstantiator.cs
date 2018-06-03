@@ -49,34 +49,111 @@ namespace FlatRedBall.TileEntities
             }
             foreach (var shapeCollection in layeredTileMap.ShapeCollections)
             {
-                var polygons = shapeCollection.Polygons;
-                for (int i = polygons.Count - 1; i > -1; i--)
+                CreateShapesForCircles(layeredTileMap, shapeCollection);
+
+                CreateShapesForRectangles(layeredTileMap, shapeCollection);
+
+                CreateShapesForPolygons(layeredTileMap, shapeCollection);
+            }
+        }
+
+        private static void CreateShapesForCircles(LayeredTileMap layeredTileMap, ShapeCollection shapeCollection)
+        {
+            var circles = shapeCollection.Circles;
+            for (int i = circles.Count - 1; i > -1; i--)
+            {
+                var circle = circles[i];
+                if (!string.IsNullOrEmpty(circle.Name) && layeredTileMap.ShapeProperties.ContainsKey(circle.Name))
                 {
-                    var polygon = polygons[i];
-                    if (!string.IsNullOrEmpty(polygon.Name) && layeredTileMap.ShapeProperties.ContainsKey(polygon.Name))
+                    var properties = layeredTileMap.ShapeProperties[circle.Name];
+                    var entityAddingProperty = properties.FirstOrDefault(item => item.Name == "EntityToCreate" || item.Name == "Type");
+
+                    var entityType = entityAddingProperty.Value as string;
+
+                    if (!string.IsNullOrEmpty(entityType))
                     {
-                        var properties = layeredTileMap.ShapeProperties[polygon.Name];
-                        var entityAddingProperty = properties.FirstOrDefault(item => item.Name == "EntityToCreate");
+                        IEntityFactory factory = GetFactory(entityType);
 
-                        var entityType = entityAddingProperty.Value as string;
-                        if (!string.IsNullOrEmpty(entityType))
+                        var entity = factory.CreateNew(null) as PositionedObject;
+
+                        entity.Name = circle.Name;
+                        ApplyPropertiesTo(entity, properties, circle.Position);
+                        shapeCollection.Circles.Remove(circle);
+
+                        if (entity is Math.Geometry.ICollidable)
                         {
-                            IEntityFactory factory = GetFactory(entityType);
-
-                            var entity = factory.CreateNew(null) as PositionedObject;
-
-                            entity.Name = polygon.Name;
-                            ApplyPropertiesTo(entity, properties, polygon.Position);
-                            shapeCollection.Polygons.Remove(polygon);
-
-                            if (entity is Math.Geometry.ICollidable)
-                            {
-                                var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
-                                entityCollision.Polygons.Add(polygon);
-                                polygon.AttachTo(entity, false);
-                            }
-
+                            var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
+                            entityCollision.Circles.Add(circle);
+                            circle.AttachTo(entity, false);
                         }
+                    }
+                }
+            }
+        }
+
+        private static void CreateShapesForRectangles(LayeredTileMap layeredTileMap, ShapeCollection shapeCollection)
+        {
+            var rectangles = shapeCollection.AxisAlignedRectangles;
+            for (int i = rectangles.Count - 1; i > -1; i--)
+            {
+                var rectangle = rectangles[i];
+                if (!string.IsNullOrEmpty(rectangle.Name) && layeredTileMap.ShapeProperties.ContainsKey(rectangle.Name))
+                {
+                    var properties = layeredTileMap.ShapeProperties[rectangle.Name];
+                    var entityAddingProperty = properties.FirstOrDefault(item => item.Name == "EntityToCreate" || item.Name == "Type");
+
+                    var entityType = entityAddingProperty.Value as string;
+                    if (!string.IsNullOrEmpty(entityType))
+                    {
+                        IEntityFactory factory = GetFactory(entityType);
+
+                        var entity = factory.CreateNew(null) as PositionedObject;
+
+                        entity.Name = rectangle.Name;
+                        ApplyPropertiesTo(entity, properties, rectangle.Position);
+                        shapeCollection.AxisAlignedRectangles.Remove(rectangle);
+
+                        if (entity is Math.Geometry.ICollidable)
+                        {
+                            var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
+                            entityCollision.AxisAlignedRectangles.Add(rectangle);
+                            rectangle.AttachTo(entity, false);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        private static void CreateShapesForPolygons(LayeredTileMap layeredTileMap, Math.Geometry.ShapeCollection shapeCollection)
+        {
+            var polygons = shapeCollection.Polygons;
+            for (int i = polygons.Count - 1; i > -1; i--)
+            {
+                var polygon = polygons[i];
+                if (!string.IsNullOrEmpty(polygon.Name) && layeredTileMap.ShapeProperties.ContainsKey(polygon.Name))
+                {
+                    var properties = layeredTileMap.ShapeProperties[polygon.Name];
+                    var entityAddingProperty = properties.FirstOrDefault(item => item.Name == "EntityToCreate" || item.Name == "Type");
+
+                    var entityType = entityAddingProperty.Value as string;
+                    if (!string.IsNullOrEmpty(entityType))
+                    {
+                        IEntityFactory factory = GetFactory(entityType);
+
+                        var entity = factory.CreateNew(null) as PositionedObject;
+
+                        entity.Name = polygon.Name;
+                        ApplyPropertiesTo(entity, properties, polygon.Position);
+                        shapeCollection.Polygons.Remove(polygon);
+
+                        if (entity is Math.Geometry.ICollidable)
+                        {
+                            var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
+                            entityCollision.Polygons.Add(polygon);
+                            polygon.AttachTo(entity, false);
+                        }
+
                     }
                 }
             }

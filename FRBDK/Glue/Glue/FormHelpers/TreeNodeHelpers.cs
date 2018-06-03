@@ -71,6 +71,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static bool IsRootNamedObjectNode(this TreeNode treeNodeInQuestion)
         {
+#if DEBUG
+            if (treeNodeInQuestion == null)
+            {
+                throw new ArgumentNullException(nameof(treeNodeInQuestion));
+            }
+#endif
             return treeNodeInQuestion.Text == "Objects" &&
                 treeNodeInQuestion.Parent != null &&
                 (treeNodeInQuestion.Parent.IsEntityNode() || treeNodeInQuestion.Parent.IsScreenNode());
@@ -78,16 +84,34 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static bool IsRootScreenNode(this TreeNode treeNodeInQuestion)
         {
+#if DEBUG
+            if (treeNodeInQuestion == null)
+            {
+                throw new ArgumentNullException(nameof(treeNodeInQuestion));
+            }
+#endif
             return treeNodeInQuestion.Text == "Screens" && treeNodeInQuestion.Parent == null;
         }
 
         public static bool IsRootEntityNode(this TreeNode treeNodeInQuestion)
         {
+#if DEBUG
+            if (treeNodeInQuestion == null)
+            {
+                throw new ArgumentNullException(nameof(treeNodeInQuestion));
+            }
+#endif
             return treeNodeInQuestion.Text == "Entities" && treeNodeInQuestion.Parent == null;
         }
 
         public static bool IsRootCustomVariablesNode(this TreeNode treeNodeInQuestion)
         {
+#if DEBUG
+            if (treeNodeInQuestion == null)
+            {
+                throw new ArgumentNullException(nameof(treeNodeInQuestion));
+            }
+#endif
             return treeNodeInQuestion.Parent != null &&
                 treeNodeInQuestion.Text == "Variables";
 
@@ -95,6 +119,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static bool IsRootEventsNode(this TreeNode treeNodeInQuestion)
         {
+#if DEBUG
+            if (treeNodeInQuestion == null)
+            {
+                throw new ArgumentNullException(nameof(treeNodeInQuestion));
+            }
+#endif
             return treeNodeInQuestion.Parent != null &&
                 (treeNodeInQuestion.Parent.IsEntityNode() || treeNodeInQuestion.Parent.IsScreenNode()) &&
                 treeNodeInQuestion.Text == "Events";
@@ -150,6 +180,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static bool IsRootObjectNode(this TreeNode treeNodeInQuestion)
         {
+#if DEBUG
+            if (treeNodeInQuestion == null)
+            {
+                throw new ArgumentNullException(nameof(treeNodeInQuestion));
+            }
+#endif
             return treeNodeInQuestion.Text == "Objects" && treeNodeInQuestion.Tag == null;
         }
 
@@ -160,6 +196,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static bool IsFolderForGlobalContentFiles(this TreeNode treeNodeInQuestion)
         {
+#if DEBUG
+            if (treeNodeInQuestion == null)
+            {
+                throw new ArgumentNullException(nameof(treeNodeInQuestion));
+            }
+#endif
             if (treeNodeInQuestion.Parent == null)
             {
                 return false;
@@ -184,6 +226,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static bool IsChildOfGlobalContent(this TreeNode treeNodeInQuestion)
         {
+#if DEBUG
+            if (treeNodeInQuestion == null)
+            {
+                throw new ArgumentNullException(nameof(treeNodeInQuestion));
+            }
+#endif
             if (treeNodeInQuestion.Parent == null)
             {
                 return false;
@@ -201,6 +249,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static bool IsChildOfRootEntityNode(this TreeNode treeNodeInQuestion)
         {
+#if DEBUG
+            if (treeNodeInQuestion == null)
+            {
+                throw new ArgumentNullException(nameof(treeNodeInQuestion));
+            }
+#endif
             if (treeNodeInQuestion.Parent == null)
             {
                 return false;
@@ -230,8 +284,16 @@ namespace FlatRedBall.Glue.FormHelpers
         /// <returns>Whether the tree node is a folder node</returns>
         public static bool IsDirectoryNode(this TreeNode treeNodeInQuestion)
         {
+#if DEBUG
+            if (treeNodeInQuestion == null)
+            {
+                throw new ArgumentNullException(nameof(treeNodeInQuestion));
+            }
+#endif
             if (treeNodeInQuestion.Parent == null)
+            {
                 return false;
+            }
 
             if (treeNodeInQuestion is EntityTreeNode)
                 return false;
@@ -259,6 +321,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static bool IsStateListNode(this TreeNode treeNodeInQuestion)
         {
+#if DEBUG
+            if (treeNodeInQuestion == null)
+            {
+                throw new ArgumentNullException(nameof(treeNodeInQuestion));
+            }
+#endif
             TreeNode parentTreeNode = treeNodeInQuestion.Parent;
             return treeNodeInQuestion.Text == "States" && parentTreeNode != null &&
                 (parentTreeNode.IsEntityNode() || parentTreeNode.IsScreenNode());
@@ -266,6 +334,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static bool IsStateNode(this TreeNode treeNodeInQuestion)
         {
+#if DEBUG
+            if (treeNodeInQuestion == null)
+            {
+                throw new ArgumentNullException(nameof(treeNodeInQuestion));
+            }
+#endif
             return treeNodeInQuestion.Tag is StateSave;
             // May 13, 2011: We can't just base it off of what the parent is because
             // now we have state categories.  Using the tag just seems cleaner anyway.
@@ -275,6 +349,12 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static bool IsStateCategoryNode(this TreeNode treeNodeInQuestion)
         {
+#if DEBUG
+            if(treeNodeInQuestion == null)
+            {
+                throw new ArgumentNullException(nameof(treeNodeInQuestion));
+            }
+#endif
             return treeNodeInQuestion.Tag is StateSaveCategory;
         }
 
