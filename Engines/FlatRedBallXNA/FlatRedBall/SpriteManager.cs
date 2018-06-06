@@ -712,7 +712,18 @@ namespace FlatRedBall
             return layer;
         }
 
-        static public void AddToLayer(Sprite spriteToAdd, Layer layerToAddTo)
+        /// <summary>
+        /// Adds the argument Sprite to the argument Layer. If the Sprite is not already
+        /// managed by the SpriteManager, the Sprite will also be added to the internal list
+        /// for management. This method can be called multiple times to add a single Sprite to
+        /// multiple Layers.
+        /// 
+        /// If the layerToAddTo argument is null then the Sprite is added as a regular un-layered Sprite.
+        /// </summary>
+        /// <param name="spriteToAdd">The Sprite to add.</param>
+        /// <param name="layerToAddTo">The Layer to add to. If null, the Sprite will be added as an un-layered Sprite.</param>
+        /// <exception cref="InvalidOperationException">Thrown if this is not called on the primary thread.</exception>
+        public static void AddToLayer(Sprite spriteToAdd, Layer layerToAddTo)
         {
 #if DEBUG
 

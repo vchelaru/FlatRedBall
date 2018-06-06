@@ -891,22 +891,6 @@ namespace FlatRedBall.Math
 
         #endregion
 
-        #region INameable Members
-
-        string FlatRedBall.Utilities.INameable.Name
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        #endregion
-
         #region IList Members
 
 

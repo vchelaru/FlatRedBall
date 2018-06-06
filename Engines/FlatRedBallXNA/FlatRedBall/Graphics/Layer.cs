@@ -693,6 +693,12 @@ namespace FlatRedBall.Graphics
             mSprites.AddOneWay(spriteToAdd);
         }
 
+        /// <summary>
+        /// Removes the argument Sprite from being drawn on this Layer. Note that this does not
+        /// remove the sprite from the SpriteManager. This method can be used to move a Sprite from
+        /// one layer to another.
+        /// </summary>
+        /// <param name="spriteToRemove">The Sprite to remove from this layer.</param>
         public void Remove(Sprite spriteToRemove)
         {
             if (spriteToRemove.ListsBelongingTo.Contains(mSprites))

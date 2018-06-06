@@ -357,11 +357,15 @@ namespace FlatRedBall
             get { return mChildren; }
         }
 
-        #region XML Docs
         /// <summary>
-        /// The List of IAttachableRemovables (containers) that this shares a two-way relationship with.
+        /// The List of lists that this belongs to. This member is how two-way relationships are established.
+        /// If an object is added to a list using a "one-way" add, then that list will not be in the 
+        /// object's ListsBelongingTo.
         /// </summary>
-        #endregion
+        /// <remarks>
+        /// PositionedObjects are typically added to managers, children, and Glue lists using two-way relationships, so this
+        /// member provides information about where this object is referenced.
+        /// </remarks>
         public List<IAttachableRemovable> ListsBelongingTo
         {
             get { return mListsBelongingTo; }
