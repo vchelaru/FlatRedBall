@@ -17,6 +17,8 @@ using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
 using FlatRedBall.Localization;
 using System.Linq;
+using FlatRedBall.TileGraphics;
+using TMXGlueLib.DataTypes;
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -34,8 +36,10 @@ namespace GlueTestProject.Screens
 
 		void CustomInitialize()
 		{
+            ReducedTileMapInfo.FastCreateFromTmx = true;
 
             InitializeLevel("Level1");
+
 
             foreach (var item in Level1Info)
             {
@@ -57,9 +61,36 @@ namespace GlueTestProject.Screens
             {
                 throw new Exception("Entities created from tiled object layers are not appearing in the screen's list with the right Z.");
             }
+            CurrentTileMap.ShapeCollections.Count.ShouldNotBe(0, "Because this TMX file contains shapes");
+
+            TestEntitiesCreatedFromShapes();
 
             TestTypeEntityCreation();
 		}
+
+        private void TestEntitiesCreatedFromShapes()
+        {
+            CollidableShapesFromTmxList.Count.ShouldNotBe(0, "because this TMX contains shapes which create entities");
+
+            var rectEntityToCreate = CollidableShapesFromTmxList.FirstOrDefault(item => item.Name == "RectEntityToCreate");
+            rectEntityToCreate.ShouldNotBe(null, "because entity creation from Rect with EntityToCreate should work");
+
+            var circleEntityToCreate = CollidableShapesFromTmxList.FirstOrDefault(item => item.Name == "CircleEntityToCreate");
+            circleEntityToCreate.ShouldNotBe(null, "because entity creation from Circle with EntityToCreate should work");
+
+
+            var polyEntityToCreate = CollidableShapesFromTmxList.FirstOrDefault(item => item.Name == "PolyEntityToCreate");
+            polyEntityToCreate.ShouldNotBe(null, "because entity creation from Polygon with EntityToCreate should work");
+
+
+            //var polyType = CollidableShapesFromTmxList.FirstOrDefault(item => item.Name == "PolyType");
+            //var circleType = CollidableShapesFromTmxList.FirstOrDefault(item => item.Name == "CircleType");
+            var rectType = CollidableShapesFromTmxList.FirstOrDefault(item => item.Name == "RectType");
+            // Vic says - we'll support these later
+            //rectType.ShouldNotBe(null, "because entity creation from Rect with Type should work");
+
+
+        }
 
         private void TestTypeEntityCreation()
         {

@@ -9,6 +9,14 @@ using FlatRedBall.Glue.Tasks;
 namespace FlatRedBall.Glue.Managers
 {
 
+    public enum TaskExecutionPreference
+    {
+        Fifo,
+        Asap,
+        //AddIfNotYetAdded,
+        AddOrMoveToEnd
+    }
+
     public class TaskManager : Singleton<TaskManager>
     {
 
@@ -212,6 +220,18 @@ namespace FlatRedBall.Glue.Managers
         /// <param name="isHighPriority">Whether to attempt to run the action immediately - useful for UI tasks</param>
         public void AddSync(Action action, string displayInfo, bool isHighPriority)
         {
+            TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo;
+
+            if(isHighPriority)
+            {
+                executionPreference = TaskExecutionPreference.Asap;
+            }
+
+            Add(action, displayInfo, executionPreference);
+        }
+
+        public void Add(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo)
+        {
             var glueTask = new GlueTask();
             glueTask.Action = action;
             glueTask.DisplayInfo = displayInfo;
@@ -220,15 +240,32 @@ namespace FlatRedBall.Glue.Managers
 
             lock (mSyncLockObject)
             {
-                if(isHighPriority)
+                if (executionPreference == TaskExecutionPreference.Asap)
                 {
-                    if(mSyncedActions.Count > 0)
+                    if (mSyncedActions.Count > 0)
                     {
                         // don't insert at 0, finish the current task, but insert at 1:
                         mSyncedActions.Insert(1, glueTask);
-                    }                    
+                    }
                     else
                     {
+                        mSyncedActions.Add(glueTask);
+                    }
+                }
+                else if(executionPreference == TaskExecutionPreference.AddOrMoveToEnd)
+                {
+                    var existingAction = mSyncedActions.FirstOrDefault(item =>
+                        item.DisplayInfo == displayInfo);
+
+                    if(existingAction != null)
+                    {
+                        // just move it to the end
+                        mSyncedActions.Remove(existingAction);
+                        mSyncedActions.Add(glueTask);
+                    }
+                    else
+                    {
+                        // doesn't exist, so add it normally:
                         mSyncedActions.Add(glueTask);
                     }
                 }
@@ -248,11 +285,15 @@ namespace FlatRedBall.Glue.Managers
         private void ProcessNextSync()
         {
             Action toProcess = null;
+
+            GlueTask glueTask = null;
+
             lock (mSyncLockObject)
             {
                 if (mSyncedActions.Count > 0)
                 {
-                    toProcess = mSyncedActions[0].Action;
+                    glueTask = mSyncedActions[0];
+                    toProcess = glueTask.Action;
                 }
             }
 
@@ -266,8 +307,8 @@ namespace FlatRedBall.Glue.Managers
 
                     lock (mSyncLockObject)
                     {
-
-                        if (mSyncedActions.Count > 0)
+                        // The task may have already been removed
+                        if (mSyncedActions.Count > 0 && glueTask == mSyncedActions[0])
                         {
                             mSyncedActions.RemoveAt(0);
                         }

@@ -521,10 +521,10 @@ namespace FlatRedBall.Glue.Parsing
             if (poolObjects)
             {
 
-                // only throw exception if pooled. This requires the user to pool the fatory.
+                // only throw exception if pooled. This requires the user to pool the factory.
                 // But do we want to have an explicit "IsInitialized" value? Maybe if this causes problems in the future...
                 codeBlock.If("string.IsNullOrEmpty(mContentManagerName)")
-                            .Line("throw new System.Exception(\"You must first initialize the factory to use it. You can either add PositionedObjectList of type " +
+                            .Line("throw new System.Exception(\"You must first initialize the factory for this type because it is pooled. You can either add PositionedObjectList of type " +
                                 className + " (the most common solution) or call Initialize in custom code\");")
                         .End();
                 codeBlock

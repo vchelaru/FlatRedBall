@@ -1,9 +1,13 @@
 ﻿using FlatRedBall.Glue.SaveClasses;
+using System;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
     public interface IGenerateCodeCommands
     {
+        void GenerateAllCodeTask();
+
+        [Obsolete("Use GenerateAllCodeTask")]
         void GenerateAllCode();
 
         void GenerateCurrentElementCode();

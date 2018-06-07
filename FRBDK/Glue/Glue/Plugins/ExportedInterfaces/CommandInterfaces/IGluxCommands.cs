@@ -21,6 +21,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void SaveGlux(bool sendPluginRefreshCommand = true);
 
         /// <summary>
+        /// Adds a task to save the project with TaskExecutionPreference.AddOrMoveToEnd
+        /// </summary>
+        void SaveGluxTask();
+
+        /// <summary>
         /// Adds a new file to the Glue project in global content. This method updates the in-memory GlueProjectSave,
         /// adds the file to the Visual Studio project, and refreshes the global content tree node.
         /// This method does not save the .glux.

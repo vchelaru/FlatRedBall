@@ -71,7 +71,7 @@ namespace OfficialPlugins.StateDataPlugin
                 this.AddTab();
             }
 
-            var viewModel = new StateCategoryViewModel();
+            var viewModel = new StateCategoryViewModel(currentStateSaveCategory, GlueState.Self.CurrentElement);
 
             foreach(var variable in GlueState.Self.CurrentElement.CustomVariables)
             {
@@ -79,7 +79,7 @@ namespace OfficialPlugins.StateDataPlugin
             }
 
             control.DataContext = viewModel;
-            
+            control.RefreshColumns();
         }
     }
 }

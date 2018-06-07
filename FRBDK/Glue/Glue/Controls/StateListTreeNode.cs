@@ -56,32 +56,7 @@ namespace FlatRedBall.Glue.Controls
 
             foreach (StateSaveCategory stateSaveCategory in stateCategoryList)
             {
-                TreeNode treeNode = GetTreeNodeFor(stateSaveCategory);
-
-                if (treeNode == null)
-                {
-                    treeNode = new TreeNode(stateSaveCategory.Name);
-                    treeNode.ForeColor = ElementViewWindow.StateCategoryColor;
-
-                    if (BaseElementTreeNode.UseIcons)
-                    {
-                        treeNode.ImageKey = "folder.png";
-                        treeNode.SelectedImageKey = "folder.png";
-                    }
-                    this.Nodes.Add(treeNode);
-                    
-                }
-
-                if (treeNode.Text != stateSaveCategory.Name)
-                {
-                    treeNode.Text = stateSaveCategory.Name;
-                }
-                if (treeNode.Tag != stateSaveCategory)
-                {
-                    treeNode.Tag = stateSaveCategory;
-                }
-
-                UpdateStateContainingNode(stateSaveCategory.States, treeNode);
+                UpdateToStateCategory(stateSaveCategory);
             }
 
             for (int i = Nodes.Count - 1; i > -1; i--)
@@ -96,6 +71,36 @@ namespace FlatRedBall.Glue.Controls
             #endregion
 
             Sort(this.Nodes);
+        }
+
+        public void UpdateToStateCategory(StateSaveCategory stateSaveCategory)
+        {
+            TreeNode treeNode = GetTreeNodeFor(stateSaveCategory);
+
+            if (treeNode == null)
+            {
+                treeNode = new TreeNode(stateSaveCategory.Name);
+                treeNode.ForeColor = ElementViewWindow.StateCategoryColor;
+
+                if (BaseElementTreeNode.UseIcons)
+                {
+                    treeNode.ImageKey = "folder.png";
+                    treeNode.SelectedImageKey = "folder.png";
+                }
+                this.Nodes.Add(treeNode);
+
+            }
+
+            if (treeNode.Text != stateSaveCategory.Name)
+            {
+                treeNode.Text = stateSaveCategory.Name;
+            }
+            if (treeNode.Tag != stateSaveCategory)
+            {
+                treeNode.Tag = stateSaveCategory;
+            }
+
+            UpdateStateContainingNode(stateSaveCategory.States, treeNode);
         }
 
         private void Sort(TreeNodeCollection treeNodeCollection)

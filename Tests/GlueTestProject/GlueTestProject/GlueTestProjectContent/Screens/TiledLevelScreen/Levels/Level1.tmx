@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="32" height="21" tilewidth="16" tileheight="16" backgroundcolor="#4688ba" nextobjectid="5">
+<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="32" height="21" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#4688ba" nextobjectid="12">
  <tileset firstgid="1" name="PlatformerTiles" tilewidth="16" tileheight="16" tilecount="512" columns="32">
   <image source="../Tilesets/PlatformerTiles.png" width="512" height="256"/>
   <tile id="0">
@@ -50,6 +50,30 @@
   <object id="2" gid="193" x="75" y="63" width="16" height="16"/>
   <object id="3" gid="193" x="112" y="92" width="16" height="16"/>
   <object id="4" gid="193" x="70" y="114" width="16" height="16"/>
+  <object id="5" name="RectEntityToCreate" x="110" y="-1" width="40" height="42">
+   <properties>
+    <property name="EntityToCreate" value="CollidableShapesFromTmx"/>
+   </properties>
+  </object>
+  <object id="7" name="RectType" type="EntityToCreate" x="179" y="2" width="40" height="42"/>
+  <object id="8" name="CircleEntityToCreate" x="135" y="50" width="37" height="37">
+   <properties>
+    <property name="EntityToCreate" value="CollidableShapesFromTmx"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="9" name="CircleType" type="CollidableShapesFromTmx" x="190" y="62" width="37" height="37">
+   <ellipse/>
+  </object>
+  <object id="10" name="PolyEntityToCreate" x="115" y="117">
+   <properties>
+    <property name="EntityToCreate" value="CollidableShapesFromTmx"/>
+   </properties>
+   <polygon points="0,0 -24,31 9,39 19,11"/>
+  </object>
+  <object id="11" name="PolyType" type="CollidableShapesFromTmx" x="223" y="114">
+   <polygon points="0,0 -24,31 9,39 19,11"/>
+  </object>
  </objectgroup>
  <layer name="ForegroundLayer" width="32" height="21">
   <data encoding="base64" compression="gzip">

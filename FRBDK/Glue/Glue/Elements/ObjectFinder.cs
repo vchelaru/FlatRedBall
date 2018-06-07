@@ -742,6 +742,23 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 
+        public IElement GetElementContaining(StateSaveCategory category)
+        {
+            if(GlueProject != null)
+            {
+                IEnumerable<IElement> screens = GlueProject.Screens;
+                IEnumerable<IElement> entities = GlueProject.Entities;
+                return screens.Concat(entities)
+                    .FirstOrDefault(item => 
+                        item.StateCategoryList.Contains(category));
+
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public List<IElement> GetAllElementsReferencingFile(string rfsName)
         {
             List<IElement> returnList = new List<IElement>();

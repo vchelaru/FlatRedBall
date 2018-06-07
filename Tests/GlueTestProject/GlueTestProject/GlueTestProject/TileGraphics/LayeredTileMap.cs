@@ -966,6 +966,11 @@ namespace FlatRedBall.TileGraphics
                 this.Collisions[i].RemoveFromManagers();
             }
 
+            for (int i = 0; i < this.ShapeCollections.Count; i++)
+            {
+                this.ShapeCollections[i].RemoveFromManagers();
+            }
+
             SpriteManager.RemovePositionedObject(this);
 
             mMapLists.MakeTwoWay();

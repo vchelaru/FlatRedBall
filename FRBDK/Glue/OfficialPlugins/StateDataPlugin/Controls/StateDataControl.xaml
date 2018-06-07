@@ -10,6 +10,15 @@
         <!--https://www.wpftutorial.net/DataGrid.html-->
         <DataGrid x:Name="DataGridInstance" 
                   ItemsSource="{Binding States}" 
-                  AutoGenerateColumns="False"></DataGrid>
+                  SelectedItem="{Binding SelectedState}"
+                  CanUserDeleteRows="False"
+                  AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}">
+                    
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+            
+        </DataGrid>
     </Grid>
 </UserControl>

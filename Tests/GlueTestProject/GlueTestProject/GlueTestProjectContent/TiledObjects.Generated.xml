@@ -5,6 +5,7 @@
   <objecttype name="BasePooledEntity" />
   <objecttype name="ChildFactoryEntity" />
   <objecttype name="ChildOfPositioningEntity" />
+  <objecttype name="CollidableShapesFromTmx" />
   <objecttype name="CreatedByTiled" />
   <objecttype name="CreatedByTiledType">
     <property name="SetByDefaultInt" type="int" />

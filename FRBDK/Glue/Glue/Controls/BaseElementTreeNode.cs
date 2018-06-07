@@ -100,6 +100,7 @@ namespace FlatRedBall.Glue.Controls
 
         public abstract void UpdateReferencedTreeNodes(bool performSave);
 
+        public abstract void RefreshStateCategoryUi(StateSaveCategory category);
 
         //public abstract void GenerateCode();
 
@@ -386,8 +387,7 @@ namespace FlatRedBall.Glue.Controls
                     Section.EndContextAndTime();
                     Section.GetAndStartContextAndTime("UpdateToStates");
 
-                    mStateListTreeNode.UpdateToStates(mSaveObject.States, mSaveObject.StateCategoryList);
-
+                    RefreshStatesUi();
 
                     Section.EndContextAndTime();
                     Section.GetAndStartContextAndTime("UpdateVariablesTreeNode");
@@ -420,7 +420,7 @@ namespace FlatRedBall.Glue.Controls
 
                     break;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     lastException = e;
                     System.Threading.Thread.Sleep(20);
@@ -435,6 +435,16 @@ namespace FlatRedBall.Glue.Controls
 
             ElementViewWindow.SuppressSelectionEvents = false;
 
+        }
+
+        private void RefreshStatesUi()
+        {
+            mStateListTreeNode.UpdateToStates(mSaveObject.States, mSaveObject.StateCategoryList);
+        }
+
+        public override void RefreshStateCategoryUi(StateSaveCategory category)
+        {
+            mStateListTreeNode.UpdateToStateCategory(category);
         }
 
         private void UpdateVariablesTreeNode()

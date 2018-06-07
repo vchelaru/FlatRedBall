@@ -82,6 +82,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             MainGlueWindow.Self.BeginInvoke(new EventHandler(delegate { SaveGluxSync(sendPluginRefreshCommand); }));
         }
 
+        public void SaveGluxTask()
+        {
+            TaskManager.Self.Add(() => SaveGlux(), "Saving .glux", TaskExecutionPreference.AddOrMoveToEnd);
+        }
+
         static void SaveGluxSync(bool sendMessageToRefresh)
         {
             if (ProjectManager.GlueProjectSave != null)
@@ -955,5 +960,5 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
     #endregion
 
-}
+    }
 }

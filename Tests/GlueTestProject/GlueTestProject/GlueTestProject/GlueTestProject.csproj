@@ -240,6 +240,10 @@
     <Compile Include="Entities\CollidableEntity.Generated.cs">
       <DependentUpon>CollidableEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\CollidableShapesFromTmx.cs" />
+    <Compile Include="Entities\CollidableShapesFromTmx.Generated.cs">
+      <DependentUpon>CollidableShapesFromTmx.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\CollisionEntity.cs" />
     <Compile Include="Entities\CollisionEntity.Generated.cs">
       <DependentUpon>CollisionEntity.cs</DependentUpon>
@@ -766,6 +770,7 @@
     <Compile Include="Factories\BasePooledEntityFactory.Generated.cs" />
     <Compile Include="Factories\ChildFactoryEntityFactory.Generated.cs" />
     <Compile Include="Factories\ChildOfPositioningEntityFactory.Generated.cs" />
+    <Compile Include="Factories\CollidableShapesFromTmxFactory.Generated.cs" />
     <Compile Include="Factories\CreatedByTiledFactory.Generated.cs" />
     <Compile Include="Factories\CreatedByTiledTypeFactory.Generated.cs" />
     <Compile Include="Factories\DerivedPooledFromNotPooledFactory.Generated.cs" />

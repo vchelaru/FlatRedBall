@@ -34,9 +34,7 @@ namespace GlueTestProject.Screens
             SpriteManager.Camera.X = 129;
             SpriteManager.Camera.Y = -216;
 
-#if !XNA3
             FlatRedBallServices.GraphicsOptions.TextureFilter = Microsoft.Xna.Framework.Graphics.TextureFilter.Point;
-#endif
 
 			SpriteEditorScene ses = SceneSave.FromFile("Content/Screens/TmxScreen/FinalFantasyScene.scnx".ToLowerInvariant());
 

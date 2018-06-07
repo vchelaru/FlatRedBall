@@ -32,12 +32,12 @@ namespace OfficialPlugins.StateDataPlugin.Controls
         public StateDataControl()
         {
             InitializeComponent();
-            {
-                var column = CreateColumnForType("string", false);
 
-                column.Header = "Name";
-                DataGridInstance.Columns.Add(column);
-            }
+
+            //var nameColumn = CreateColumnForType("string","Name", false) as DataGridTextColumn;
+            //nameColumn.Header = "Name";
+            
+            //DataGridInstance.Columns.Add(nameColumn);
 
         }
 
@@ -49,21 +49,21 @@ namespace OfficialPlugins.StateDataPlugin.Controls
                 DataGridInstance.Columns.RemoveAt(DataGridInstance.Columns.Count - 1);
             }
 
-            foreach(var viewModelColumn in ViewModel.Columns)
+            for(int i = 0; i < ViewModel.Columns.Count; i++)
             {
-                var column = CreateColumnForType("string", false);
+                var viewModelColumn = ViewModel.Columns[i];
+
+                var column = CreateColumnForType("string", $"Variables[{i}]", false);
 
                 column.Header = viewModelColumn;
                 DataGridInstance.Columns.Add(column);
             }
         }
 
-        public DataGridColumn CreateColumnForType(string typeName, bool isEnum)
+        public DataGridColumn CreateColumnForType(string typeName, string binding,  bool isEnum)
         {
             //var column = new DataGridTemplateColumn();
-
             //DataTemplate dataTemplate = new DataTemplate();
-
             //dataTemplate.DataType = typeof(string);
 
             ////set up the stack panel
@@ -71,14 +71,13 @@ namespace OfficialPlugins.StateDataPlugin.Controls
             //textBox.Name = "textBox";
 
             //dataTemplate.VisualTree = textBox;
-
             //column.CellTemplate = dataTemplate;
             //DataGridInstance.Columns.Add(column);
 
             //return column;
 
             var column = new DataGridTextColumn();
-            column.Binding = new Binding("Name");
+            column.Binding = new Binding(binding);
             return column;
         }
     }
