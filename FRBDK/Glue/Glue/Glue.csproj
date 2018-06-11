@@ -307,6 +307,7 @@
     </Compile>
     <Compile Include="Errors\GeneralResponse.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
+    <Compile Include="FormHelpers\StringConverters\TypeConverterWithNone.cs" />
     <Compile Include="IO\FilePath.cs" />
     <Compile Include="Managers\HotkeyManager.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSettingsControl.xaml.cs">

@@ -11,10 +11,36 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 {
     class StateViewModel : ViewModel
     {
+        IElement element;
+        StateSaveCategory category;
+
         public string Name
         {
             get { return Get<string>(); }
             set { Set(value); }
+        }
+
+        [DependsOn(nameof(Name))]
+        [DependsOn(nameof(BackingData))]
+        public bool IsNameInvalid
+        {
+            get
+            {
+                string whyItIsInvalid = null;
+
+                if(BackingData == null && string.IsNullOrEmpty(Name))
+                {
+                    return false; // allow blanks
+                }
+                else
+                {
+                    NameVerifier.IsStateNameValid(Name, element, category, 
+                        BackingData, out whyItIsInvalid);
+                }
+
+
+                return !string.IsNullOrEmpty(whyItIsInvalid);
+            }
         }
 
         public ObservableCollection<object> Variables
@@ -25,11 +51,15 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
         public StateSave BackingData
         {
-            get; set;
+            get { return Get<StateSave>(); }
+            set { Set(value); }
         }
 
-        public StateViewModel(StateSave state, IElement element)
+        public StateViewModel(StateSave state, StateSaveCategory category, IElement element)
         {
+            this.category = category;
+            this.element = element;
+
             BackingData = state;
 
             Variables = new ObservableCollection<object>();
@@ -46,6 +76,11 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 this.Variables.Add(instruction?.Value);
             }
 
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

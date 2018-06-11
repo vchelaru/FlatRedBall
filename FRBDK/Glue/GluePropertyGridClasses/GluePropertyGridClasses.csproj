@@ -203,6 +203,9 @@
     <Compile Include="..\Glue\FormHelpers\StringConverters\IObjectsInFileConverter.cs">
       <Link>StringConverters\IObjectsInFileConverter.cs</Link>
     </Compile>
+    <Compile Include="..\Glue\FormHelpers\StringConverters\TypeConverterWithNone.cs">
+      <Link>TypeConverters\TypeConverterWithNone.cs</Link>
+    </Compile>
     <Compile Include="..\Glue\IO\FilePath.cs">
       <Link>IO\FilePath.cs</Link>
     </Compile>

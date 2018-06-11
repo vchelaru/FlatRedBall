@@ -9,6 +9,8 @@ namespace FlatRedBall.Glue.SaveClasses
     {
         public List<StateSave> States = new List<StateSave>();
 
+        public List<string> ExcludedVariables { get; set; } = new List<string>();
+
         public string Name
         {
             get;

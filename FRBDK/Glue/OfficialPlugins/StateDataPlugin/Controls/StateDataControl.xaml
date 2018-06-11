@@ -5,20 +5,85 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.StateDataPlugin.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="200" d:DesignWidth="300">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Category Name</TextBlock>
+                    <TextBox Margin="5,0,0,0" Text="{Binding Name}" Width="100"></TextBox>
+                </StackPanel>
+                <Button Grid.Column="1" 
+                        Width="20" 
+                        Visibility="{Binding ExpandVariableManagementButtonVisibility}"
+                        Click="ExpandVariableManagementClick"
+                        >...</Button>
+            </Grid>
+            <Grid Height="100" Visibility="{Binding VariableManagementVisibility}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="25"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Rectangle VerticalAlignment="Top" Height="1" Grid.ColumnSpan="3" Fill="Black"></Rectangle>
+
+                <TextBlock Margin="0,1,0,0">Variables</TextBlock>
+                <ListBox Grid.Row="1" SelectedItem="{Binding SelectedIncludedVariable}" ItemsSource="{Binding IncludedVariables}"></ListBox>
+                <StackPanel Grid.Column="1" Grid.Row="1">
+                    <Button Click="ExcludeButtonClick">&gt;&gt;</Button>
+                    <Button Click="IncludeButtonClick">&lt;&lt;</Button>
+                </StackPanel>
+                <Grid Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock  Margin="0,1,0,0" Grid.Column="0" Grid.ColumnSpan="2">Excluded Variables</TextBlock>
+                    <Button Grid.Column="1" Width="20" Click="CollapseVariableManagementClick">X</Button>
+                </Grid>
+                <ListBox Grid.Row="1" SelectedItem="{Binding SelectedExcludedVariable}" ItemsSource="{Binding ExcludedVariables}" Grid.Column="2" Grid.ColumnSpan="2"></ListBox>
+            </Grid>
+        </StackPanel>
+
         <!--https://www.wpftutorial.net/DataGrid.html-->
-        <DataGrid x:Name="DataGridInstance" 
+        <DataGrid Grid.Row="1"
+            x:Name="DataGridInstance" 
                   ItemsSource="{Binding States}" 
                   SelectedItem="{Binding SelectedState}"
+                  SelectedIndex="{Binding SelectedIndex}"
                   CanUserDeleteRows="False"
-                  AutoGenerateColumns="False">
+                  AutoGenerateColumns="False" 
+                  SelectionUnit="CellOrRowHeader"
+                  KeyDown="DataGridInstance_KeyDown"
+                  PreviewKeyDown="DataGridInstance_PreviewKeyDown">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}">
-                    
+                <DataGridTextColumn Header="State" Binding="{Binding Name, UpdateSourceTrigger=LostFocus}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsNameInvalid}" Value="True">
+                                    <Setter Property="Background" Value="Red"/>
+
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
             </DataGrid.Columns>
-            
+
         </DataGrid>
     </Grid>
 </UserControl>

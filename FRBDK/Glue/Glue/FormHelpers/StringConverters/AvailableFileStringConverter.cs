@@ -6,10 +6,11 @@ using System.ComponentModel;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.IO;
+using FlatRedBall.Glue.FormHelpers.StringConverters;
 
 namespace FlatRedBall.Glue.GuiDisplay
 {
-    public class AvailableFileStringConverter : TypeConverter
+    public class AvailableFileStringConverter : TypeConverterWithNone
     {
         #region Fields
         public const string UseDefaultString = "<USE DEFAULT>";
@@ -56,6 +57,7 @@ namespace FlatRedBall.Glue.GuiDisplay
         public AvailableFileStringConverter(IElement element)
             : base()
         {
+            IncludeNoneOption = true;
             CurrentElement = element;
         }
 
@@ -78,14 +80,22 @@ namespace FlatRedBall.Glue.GuiDisplay
             bool isNamedObjectPropertyOverride = context != null && context.Instance is NamedObjectPropertyOverride;
 
 
-            // 
-            if (isNamedObjectPropertyOverride)
+            if(IncludeNoneOption)
             {
-                stringToReturn.Add(UseDefaultString);
+                // 
+                if (isNamedObjectPropertyOverride)
+                {
+                    stringToReturn.Add(UseDefaultString);
+                }
+                else
+                {
+                    stringToReturn.Add("<NONE>");
+                }
+
             }
             else
             {
-                stringToReturn.Add("<NONE>");
+                stringToReturn.Add("");
             }
 
             IElement currentElementSave = CurrentElement;

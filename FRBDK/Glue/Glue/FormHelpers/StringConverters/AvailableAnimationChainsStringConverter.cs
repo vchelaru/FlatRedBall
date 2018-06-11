@@ -105,11 +105,14 @@ namespace FlatRedBall.Glue.GuiDisplay
 
                 this.ReferencedFileSave = referencedFile;
 
-                mAvailableChains = new string[acls.AnimationChains.Count];
+                // +1, include empty entry
+                mAvailableChains = new string[acls.AnimationChains.Count + 1];
+
+                mAvailableChains[0] = "";
 
                 for (int i = 0; i < acls.AnimationChains.Count; i++)
                 {
-                    mAvailableChains[i] = acls.AnimationChains[i].Name;
+                    mAvailableChains[i + 1] = acls.AnimationChains[i].Name;
                 }
             }
         }
