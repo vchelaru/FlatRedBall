@@ -13,6 +13,7 @@ using FlatRedBall.Math.Splines;
 using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
 using FlatRedBall.Localization;
+using GlueTestProject.TestFramework;
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -77,9 +78,61 @@ namespace GlueTestProject.Screens
 
             this.CurrentTextSizeCategoryState = TextSizeCategory.InterpolationInstanceTextSmall;
             this.InterpolateToState(TextSizeCategory.InterpolationInstanceTextLarge, 1);
+
+            TestInterpolation();
 		}
 
-		void CustomActivity(bool firstTimeCalled)
+        private void TestInterpolation()
+        {
+            InterpolationStateEntity.InterpolateBetween(
+                BaseEnityWithCategorizedStates.Category1.Category1State, 
+                BaseEnityWithCategorizedStates.Category1.Category1State2,
+                0);
+
+            InterpolationStateEntity.CurrentCategory1State.ShouldBe(BaseEnityWithCategorizedStates.Category1.Category1State);
+            InterpolationStateEntity.Var1.ShouldBe(1);
+            InterpolationStateEntity.StringVariable.ShouldBe("stringValue");
+            InterpolationStateEntity.BoolVariable.ShouldBe(true);
+            InterpolationStateEntity.IntVariable.ShouldBe(33);
+            InterpolationStateEntity.DoubleVariable.ShouldBe(100.0);
+            InterpolationStateEntity.ByteVariable.ShouldBe((byte)54);
+            InterpolationStateEntity.LongVariable.ShouldBe(10000);
+            InterpolationStateEntity.CsvVariable.ShouldBe(GlobalContent.GlobalCsv[DataTypes.GlobalCsv.Name1]);
+
+            InterpolationStateEntity.InterpolateBetween(
+                BaseEnityWithCategorizedStates.Category1.Category1State,
+                BaseEnityWithCategorizedStates.Category1.Category1State2,
+                1);
+
+            InterpolationStateEntity.CurrentCategory1State.ShouldBe(BaseEnityWithCategorizedStates.Category1.Category1State2);
+            InterpolationStateEntity.Var1.ShouldBe(3);
+            InterpolationStateEntity.StringVariable.ShouldBe("string2");
+            InterpolationStateEntity.BoolVariable.ShouldBe(false);
+            InterpolationStateEntity.IntVariable.ShouldBe(43);
+            InterpolationStateEntity.DoubleVariable.ShouldBe(200.0);
+            InterpolationStateEntity.ByteVariable.ShouldBe((byte)34);
+            InterpolationStateEntity.LongVariable.ShouldBe(20000);
+            InterpolationStateEntity.CsvVariable.ShouldBe(GlobalContent.GlobalCsv[DataTypes.GlobalCsv.Name3]);
+
+            InterpolationStateEntity.InterpolateBetween(
+                BaseEnityWithCategorizedStates.Category1.Category1State,
+                BaseEnityWithCategorizedStates.Category1.Category1State2,
+                0.5f);
+
+
+            InterpolationStateEntity.CurrentCategory1State.ShouldBe(BaseEnityWithCategorizedStates.Category1.Category1State);
+            InterpolationStateEntity.Var1.ShouldBe(2);
+            InterpolationStateEntity.StringVariable.ShouldBe("stringValue");
+            InterpolationStateEntity.BoolVariable.ShouldBe(true);
+            InterpolationStateEntity.IntVariable.ShouldBe(38);
+            InterpolationStateEntity.DoubleVariable.ShouldBe(150);
+            InterpolationStateEntity.ByteVariable.ShouldBe((byte)44);
+            InterpolationStateEntity.LongVariable.ShouldBe(15000);
+            InterpolationStateEntity.CsvVariable.ShouldBe(GlobalContent.GlobalCsv[DataTypes.GlobalCsv.Name1]);
+
+        }
+
+        void CustomActivity(bool firstTimeCalled)
 		{
             // We do some things over time so we
             // need to wait a little bit.

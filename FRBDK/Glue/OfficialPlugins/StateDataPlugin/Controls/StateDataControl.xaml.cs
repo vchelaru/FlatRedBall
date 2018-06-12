@@ -113,7 +113,8 @@ namespace OfficialPlugins.StateDataPlugin.Controls
                 // I used checkbox but null vs false is not clear (indetermine state), and 
                 // I'm not sure users want that, or if they even can. Dropdown is clearer.
                 var comboBoxColumn = new DataGridComboBoxColumn();
-                comboBoxColumn.ItemsSource = new string[] { "", "true", "false" };
+                // capitalize true/false so they ToString properly
+                comboBoxColumn.ItemsSource = new object[] { "", true, false };
                 comboBoxColumn.SelectedItemBinding = new Binding($"Variables[{i}]")
                 {
                     UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged

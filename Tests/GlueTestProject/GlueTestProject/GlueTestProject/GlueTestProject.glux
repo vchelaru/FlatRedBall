@@ -3164,6 +3164,16 @@
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>Entity</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>Entities\BaseEnityWithCategorizedStates</SourceClassType>
+          <InstanceName>InterpolationStateEntity</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
       </NamedObjects>
     </ScreenSave>
     <ScreenSave>
@@ -3898,7 +3908,7 @@
                 <InstructionSave>
                   <Type>Boolean</Type>
                   <Member>BoolVariable</Member>
-                  <ValueAsBool>false</ValueAsBool>
+                  <ValueAsBool>true</ValueAsBool>
                 </InstructionSave>
                 <InstructionSave>
                   <Type>Int32</Type>
@@ -3908,7 +3918,7 @@
                 <InstructionSave>
                   <Type>Double</Type>
                   <Member>DoubleVariable</Member>
-                  <ValueAsDouble>22.23</ValueAsDouble>
+                  <ValueAsDouble>100</ValueAsDouble>
                 </InstructionSave>
                 <InstructionSave>
                   <Type>Byte</Type>
@@ -3918,7 +3928,7 @@
                 <InstructionSave>
                   <Type>Int64</Type>
                   <Member>LongVariable</Member>
-                  <ValueAsLong>3223232</ValueAsLong>
+                  <ValueAsLong>10000</ValueAsLong>
                 </InstructionSave>
                 <InstructionSave>
                   <Type>String</Type>
@@ -3943,27 +3953,27 @@
                 <InstructionSave>
                   <Type>Boolean</Type>
                   <Member>BoolVariable</Member>
-                  <ValueAsBool>true</ValueAsBool>
+                  <ValueAsBool>false</ValueAsBool>
                 </InstructionSave>
                 <InstructionSave>
                   <Type>Int32</Type>
                   <Member>IntVariable</Member>
-                  <ValueAsInt>32</ValueAsInt>
+                  <ValueAsInt>43</ValueAsInt>
                 </InstructionSave>
                 <InstructionSave>
                   <Type>Double</Type>
                   <Member>DoubleVariable</Member>
-                  <ValueAsDouble>32.621</ValueAsDouble>
+                  <ValueAsDouble>200</ValueAsDouble>
                 </InstructionSave>
                 <InstructionSave>
                   <Type>Byte</Type>
                   <Member>ByteVariable</Member>
-                  <ValueAsByte>33</ValueAsByte>
+                  <ValueAsByte>34</ValueAsByte>
                 </InstructionSave>
                 <InstructionSave>
                   <Type>Int64</Type>
                   <Member>LongVariable</Member>
-                  <ValueAsLong>32362</ValueAsLong>
+                  <ValueAsLong>20000</ValueAsLong>
                 </InstructionSave>
                 <InstructionSave>
                   <Type>String</Type>

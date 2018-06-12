@@ -538,8 +538,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                 switch (variable.Type)
                 {
                     case "int":
+                    case "long":
                         curBlock.Line(string.Format("{0} = FlatRedBall.Math.MathFunctions.RoundToInt({1}FirstValue* (1 - interpolationValue) + {1}SecondValue * interpolationValue);", variableToAssign, prepend));
 
+                        break;
+                    case "byte":
+                        curBlock.Line(string.Format("{0} = (byte)FlatRedBall.Math.MathFunctions.RoundToInt({1}FirstValue* (1 - interpolationValue) + {1}SecondValue * interpolationValue);", variableToAssign, prepend));
                         break;
                     case "float":
                     case "double":
