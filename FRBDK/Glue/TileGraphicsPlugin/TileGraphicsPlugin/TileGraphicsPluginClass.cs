@@ -122,7 +122,9 @@ namespace TileGraphicsPlugin
             //  - TileEntityInstantiator can now assign properties from CSVs if the CSV dictionary is registered
             // 1.5.1
             //  - Added creating ICollidables using EntityToCreate property on rectangles and circles
-            get { return new Version(1, 5, 1, 0); }
+            // 1.5.2
+            //  - Fixed missing using statement in TileEntityInstantiator
+            get { return new Version(1, 5, 2, 0); }
         }
 
 

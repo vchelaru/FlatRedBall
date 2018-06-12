@@ -878,6 +878,7 @@
               <Name>SetSceneFile2</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>SceneFileSettingCategory</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -2942,6 +2943,7 @@
               <Name>InterpolationInstanceTextLarge</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>TextSizeCategory</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -3888,6 +3890,41 @@
                   <Member>Var1</Member>
                   <ValueAsFloat>1</ValueAsFloat>
                 </InstructionSave>
+                <InstructionSave>
+                  <Type>String</Type>
+                  <Member>StringVariable</Member>
+                  <ValueAsString>stringValue</ValueAsString>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>Boolean</Type>
+                  <Member>BoolVariable</Member>
+                  <ValueAsBool>false</ValueAsBool>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>Int32</Type>
+                  <Member>IntVariable</Member>
+                  <ValueAsInt>33</ValueAsInt>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>Double</Type>
+                  <Member>DoubleVariable</Member>
+                  <ValueAsDouble>22.23</ValueAsDouble>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>Byte</Type>
+                  <Member>ByteVariable</Member>
+                  <ValueAsByte>54</ValueAsByte>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>Int64</Type>
+                  <Member>LongVariable</Member>
+                  <ValueAsLong>3223232</ValueAsLong>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>String</Type>
+                  <Member>CsvVariable</Member>
+                  <ValueAsString>Name1 in GlobalCsv.csv</ValueAsString>
+                </InstructionSave>
               </InstructionSaves>
               <Name>Category1State</Name>
             </StateSave>
@@ -3898,10 +3935,46 @@
                   <Member>Var1</Member>
                   <ValueAsFloat>3</ValueAsFloat>
                 </InstructionSave>
+                <InstructionSave>
+                  <Type>String</Type>
+                  <Member>StringVariable</Member>
+                  <ValueAsString>string2</ValueAsString>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>Boolean</Type>
+                  <Member>BoolVariable</Member>
+                  <ValueAsBool>true</ValueAsBool>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>Int32</Type>
+                  <Member>IntVariable</Member>
+                  <ValueAsInt>32</ValueAsInt>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>Double</Type>
+                  <Member>DoubleVariable</Member>
+                  <ValueAsDouble>32.621</ValueAsDouble>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>Byte</Type>
+                  <Member>ByteVariable</Member>
+                  <ValueAsByte>33</ValueAsByte>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>Int64</Type>
+                  <Member>LongVariable</Member>
+                  <ValueAsLong>32362</ValueAsLong>
+                </InstructionSave>
+                <InstructionSave>
+                  <Type>String</Type>
+                  <Member>CsvVariable</Member>
+                  <ValueAsString>Name3 in GlobalCsv.csv</ValueAsString>
+                </InstructionSave>
               </InstructionSaves>
               <Name>Category1State2</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>Category1</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -3928,6 +4001,7 @@
               <Name>Category2State2</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>Category2</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -3942,6 +4016,76 @@
           </Properties>
           <Name>Var1</Name>
           <Type>float</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>string</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>StringVariable</Name>
+          <Type>string</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>bool</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>BoolVariable</Name>
+          <Type>bool</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>int</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>IntVariable</Name>
+          <Type>int</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>double</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>DoubleVariable</Name>
+          <Type>double</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>byte</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>ByteVariable</Name>
+          <Type>byte</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>long</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>LongVariable</Name>
+          <Type>long</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>GlueTestProject.DataTypes.GlobalCsv</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>CsvVariable</Name>
+          <Type>GlueTestProject.DataTypes.GlobalCsv</Type>
         </CustomVariable>
       </CustomVariables>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
@@ -3970,6 +4114,7 @@
               <Name>CategorizedState1</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>Category1</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -3996,6 +4141,7 @@
               <Name>TunneledState2</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>CategoryThatSetsTunneledStateVariables</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -4467,6 +4613,7 @@
               <Name>StateInCategory</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>SomeCategory</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -6478,6 +6625,7 @@
               <Name>SomeCategoryInDerivedState</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>SomeCategoryInDerived</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -6515,6 +6663,7 @@
               <Name>ThatShares1</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>CategoryThatShares</Name>
           <SharesVariablesWithOtherCategories>true</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -6525,6 +6674,7 @@
               <Name>DoesntShare1</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>CategoryThatDoesntShare</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -7299,6 +7449,7 @@
               <Name>Categorized2</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>Category1</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -9104,6 +9255,7 @@
               <Name>Opaque</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>TextValues</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -13287,6 +13439,7 @@
               <Name>Bottom</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>TopOrBottom</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -13313,6 +13466,7 @@
               <Name>BlueState</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>ColorCategory</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -13339,6 +13493,7 @@
               <Name>CircleOff</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>CircleVisibility</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -13353,6 +13508,7 @@
               <Name>Interpolate2</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>InterpolationCategory</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -13367,6 +13523,7 @@
               <Name>Advanced2</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>AdvancedInterpolationCategory</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -13381,6 +13538,7 @@
               <Name>TypeState2</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>Type</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -13631,6 +13789,7 @@
               <Name>Circle3</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>CircleVisibility</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -13641,6 +13800,7 @@
               <Name>GreenState</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>ColorCategory</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -13651,6 +13811,7 @@
               <Name>Left</Name>
             </StateSave>
           </States>
+          <ExcludedVariables />
           <Name>TopOrBottom</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -13964,6 +14125,7 @@
       <StateCategoryList>
         <StateSaveCategory>
           <States />
+          <ExcludedVariables />
           <Name>StateCategory</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>
@@ -14094,6 +14256,7 @@
       <StateCategoryList>
         <StateSaveCategory>
           <States />
+          <ExcludedVariables />
           <Name>StateCategory</Name>
           <SharesVariablesWithOtherCategories>false</SharesVariablesWithOtherCategories>
         </StateSaveCategory>

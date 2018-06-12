@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -260,7 +261,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             switch(variable.Type)
             {
                 case "float":
-                    return System.Convert.ToSingle(whatToConvert.ToString());
+                    return System.Convert.ToSingle(whatToConvert.ToString(), CultureInfo.InvariantCulture);
                 case "int":
                     return System.Convert.ToInt32(whatToConvert.ToString());
                 case "bool":
@@ -268,7 +269,9 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 case "long":
                     return System.Convert.ToInt64(whatToConvert.ToString());
                 case "double":
-                    return System.Convert.ToDouble(whatToConvert.ToString());
+                    return System.Convert.ToDouble(whatToConvert.ToString(), CultureInfo.InvariantCulture);
+                case "byte":
+                    return System.Convert.ToByte(whatToConvert.ToString());
                 default:
                     return whatToConvert;
             }

@@ -8,6 +8,7 @@ using FlatRedBall.Graphics;
 using System.Reflection;
 using TMXGlueLib.DataTypes;
 using System.Collections;
+using FlatRedBall.Math.Geometry;
 
 namespace FlatRedBall.TileEntities
 {

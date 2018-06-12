@@ -706,8 +706,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                 if (!customVariable.GetIsVariableState())
                 {
 
-
-                    codeBlock.Line(StringHelper.Modifiers(Public: true, Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name) + variableAssignment + ";");
+                    var line =
+                        StringHelper.Modifiers(Public: true, Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name) + variableAssignment + ";";
+                    codeBlock.Line(line);
 
 
                 }

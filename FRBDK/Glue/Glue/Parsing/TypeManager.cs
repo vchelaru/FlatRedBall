@@ -738,6 +738,7 @@ namespace FlatRedBall.Glue.Parsing
                     return "false";
                 case "Single":
                 case "float":
+                case "Double":
                 case "double":
                     return "0";
                 case "Int16":
@@ -745,6 +746,8 @@ namespace FlatRedBall.Glue.Parsing
                 case "Int64":
                 case "int":
                 case "long":
+                case "byte":
+                case "Byte":
                     return "0";
                 default:
                     throw new ArgumentException("Could not find the value for type " + type);

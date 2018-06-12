@@ -30,6 +30,7 @@ namespace FlatRedBall.Content.Instructions
         [XmlElement("ValueAsBool", typeof(bool))]
         [XmlElement("ValueAsLong", typeof(long))]
         [XmlElement("ValueAsDouble", typeof(double))]
+        [XmlElement("ValueAsByte", typeof(byte))]
         [XmlElement("ValueAsObject", typeof(object))]
 #if FRB_XNA
         [XmlElement("ValueAsVector2", typeof(Vector2))]
@@ -84,6 +85,13 @@ namespace FlatRedBall.Content.Instructions
 
         [XmlIgnore]
         public int ValueAsInt
+        {
+            set { Value = value; }
+            get { return 0;}// throw new Exception("This is only so the Serializer functions works.  Use the Value field."); }
+        }
+
+        [XmlIgnore]
+        public byte ValueAsByte
         {
             set { Value = value; }
             get { return 0;}// throw new Exception("This is only so the Serializer functions works.  Use the Value field."); }
