@@ -16,6 +16,11 @@ namespace FlatRedBall.Glue.CodeGeneration
 {
     public partial class StateCodeGenerator : ElementComponentCodeGenerator
     {
+
+        #region Generating Fields / Inner Classes
+
+
+
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
 
@@ -28,7 +33,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 const string enumName = "VariableState";
 
-                currentBlock = AppendEnum(currentBlock, statesForThisCategory, enumName, element);
+                currentBlock = CreateClassForStateCategory(currentBlock, statesForThisCategory, enumName, element);
                 GenerateCurrentStateProperty(element, codeBlock, "VariableState", statesForThisCategory);
 
                 //Build State Categories
@@ -38,7 +43,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     var states = GetAllStatesForCategory(element, stateCategory);
 
-                    AppendEnum(currentBlock, states, stateCategory, element);
+                    CreateClassForStateCategory(currentBlock, states, stateCategory, element);
                     GenerateCurrentStateProperty(element, codeBlock, stateCategory, states);
                 }
             }
@@ -91,223 +96,71 @@ namespace FlatRedBall.Glue.CodeGeneration
             return new List<string>(names.Keys);
         }
 
-        public static List<StateSave> GetSharedVariableStates(SaveClasses.IElement element)
-        {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element argument cannot be null");
-            }
-
-            var statesForThisCategory = new List<StateSave>();
-
-            var currentElement = element;
-
-            //Get states for parent entities
-            if (!string.IsNullOrEmpty(currentElement.BaseElement))
-            {
-                IElement baseElement = ObjectFinder.Self.GetIElement(currentElement.BaseElement);
-                if (baseElement != null)
-                {
-                    statesForThisCategory.AddRange(GetSharedVariableStates(baseElement));
-                }
-            }
-
-            
-            for (int i = 0; i < element.States.Count; i++)
-            {
-                statesForThisCategory.Add(element.States[i]);
-            }
-
-            statesForThisCategory.AddRange(element.StateCategoryList.Where(category => category.SharesVariablesWithOtherCategories).SelectMany(category => category.States));
-            return statesForThisCategory;
-        }
-
-        private static ICodeBlock AppendEnum(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, string enumName, IElement element)
+        private static ICodeBlock CreateClassForStateCategory(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, string enumName, IElement element)
         {
             if (statesForThisCategory.Count != 0)
             {
                 string prefix = "public";
 
-                if (ShouldUseNewKeyword(element, enumName))
+                string postfix = null;
+                if (IsStateDefinedInBase(element, enumName))
                 {
-                    prefix += " new";
+                    postfix = $" : {element.BaseElement.Replace("\\", ".")}.{enumName}";
                 }
 
-                currentBlock = currentBlock
-                    .Enum(prefix, enumName)
-                        .Line("Uninitialized = 0, //This exists so that the first set call actually does something")
-                        .Line("Unknown = 1, //This exists so that if the entity is actually a child entity and has set a child state, you will get this");
+
+                currentBlock = currentBlock.Class(prefix, enumName, postfix);
+
+                foreach(var variable in element.CustomVariables)
+                {
+                    // todo - pass the category here and skip over excluded variables
+                    var isExcluded = false;
+                    if(!isExcluded)
+                    {
+                        string type = variable.Type;
+
+                        if (variable.GetIsFile())
+                        {
+                            type = "string";
+                        }
+                        else
+                        {
+                            type = CustomVariableCodeGenerator.GetMemberTypeFor(variable, element);
+                        }
+                        currentBlock.Line($"public {type} {variable.Name};");
+                    }
+                }
 
 
                 for (int i = 0; i < statesForThisCategory.Count; i++)
                 {
-                    string whatToAppend = "";
+                    var state = statesForThisCategory[i];
 
-                    if (i != statesForThisCategory.Count - 1)
+                    currentBlock.Line($"public static {enumName} {state.Name} = new {enumName}()");
+                    var variableBlock = currentBlock.Block();
+                    foreach(var instruction in state.InstructionSaves)
                     {
-                        whatToAppend += ", ";
-                    }
+                        if(instruction.Value != null)
+                        {
+                            var rightSide = GetRightSideAssignmentValueAsString(element, instruction);
+                            var matchingVariable = element.GetCustomVariableRecursively(instruction.Member);
+                            if(matchingVariable?.GetIsFile() == true)
+                            {
+                                // If it's a file we are only going to reference the file name here as to not preload the file
+                                rightSide = $"\"{rightSide}\"";
+                            }
 
-                    currentBlock.Line(statesForThisCategory[i].Name + " = " + (i + 2) + whatToAppend);
+                            variableBlock.Line($"{instruction.Member} = {rightSide},");
+                        }
+                    }
+                    variableBlock.End().Line(";");
+
+
                 }
                 currentBlock = currentBlock.End();
             }
             return currentBlock;
         }
-
-        private static bool ShouldUseNewKeyword(IElement element, string enumName)
-        {
-            bool toReturn = false;
-            if (string.IsNullOrEmpty(element.BaseElement))
-            {
-                toReturn = false;
-            }
-            else
-            {
-                IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
-
-                if (baseElement != null)
-                {
-                    toReturn = baseElement.DefinesCategoryEnumRecursive(enumName);
-                }
-            }
-            return toReturn;
-        }
-
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            //throw new NotImplementedException();
-            return codeBlock;
-        }
-
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            //throw new NotImplementedException();
-            return codeBlock;
-        }
-
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            //throw new NotImplementedException();
-            return codeBlock;
-        }
-
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            //throw new NotImplementedException();
-            return codeBlock;
-        }
-
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            if (element.HasStates)
-            {
-
-                List<StateSave> sharedVariableStates = GetSharedVariableStates(element);
-
-                if (sharedVariableStates.Count != 0)
-                {
-                    #region Create the static state that should be set prior to loading
-
-                    string propertyPrefix = "public static ";
-
-                    if (!string.IsNullOrEmpty(element.BaseElement))
-                    {
-                        IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
-                        if (baseElement != null && baseElement.DefinesCategoryEnumRecursive("VariableState"))
-                        {
-                            propertyPrefix += "new ";
-                        }
-                    }
-
-                    codeBlock
-                        .Line("static VariableState mLoadingState = VariableState.Uninitialized;")
-                        .Property(propertyPrefix + "VariableState", "LoadingState")
-                            .Get()
-                                .Line("return mLoadingState;")
-                            .End()
-                            .Set()
-                                .Line("mLoadingState = value;")
-                            .End()
-                        .End();
-
-                    #endregion
-                }
-
-
-
-
-                GenerateInterpolationAdditionalMethods(codeBlock, element, sharedVariableStates);
-
-                GeneratePreloadStateContent(codeBlock, element, sharedVariableStates);
-            }
-
-            return codeBlock;
-        }
-
-        private void GeneratePreloadStateContent(ICodeBlock codeBlock, IElement element, List<StateSave> sharedVariableStates)
-        {
-            // For now we'll only support Entities because they have a ContentManagerName variable.  Screen content can't be shared
-            // between Screens because of the hard-coded content manager name.  We'll have to revisit that if we need to share content
-            // between screens programatically.
-            if (element is EntitySave)
-            {
-                // This method is used to preload content for certain states.  States may use content that is
-                // LoadedOnlyWhenReferenced.  If so, that means that the content will be loaded on first access
-                // post-initialize.  This method will allow users to load this content on the async thread prior
-                // to Initialize finishing without having to worry about which content belongs in which state.
-
-                List<StateSave> list = sharedVariableStates;
-
-                codeBlock = GeneratePreloadStateContentForStateType(codeBlock, element, list, "VariableState");
-
-                foreach (StateSaveCategory category in element.StateCategoryList.Where((category) => category.SharesVariablesWithOtherCategories == false))
-                {
-                    codeBlock = GeneratePreloadStateContentForStateType(codeBlock, element, category.States, category.Name);
-                }
-            }
-        }
-
-        private static ICodeBlock GeneratePreloadStateContentForStateType(ICodeBlock codeBlock, IElement element, List<StateSave> list, string variableType)
-        {
-            if (list.Count != 0)
-            {
-
-                codeBlock = codeBlock.Function("public static void", "PreloadStateContent", variableType + " state, string contentManagerName");
-                codeBlock.Line("ContentManagerName = contentManagerName;");
-
-                codeBlock = codeBlock.Switch("state");
-
-                // Loop through states here and access properties that need the values
-                foreach (StateSave state in list)
-                {
-                    codeBlock = codeBlock.Case(variableType + "." + state.Name);
-                    foreach (InstructionSave instruction in state.InstructionSaves)
-                    {
-                        if (instruction.Value != null && instruction.Value is string)
-                        {
-                            // We insert a block so that object throwaway is not redefined in the switch scope.
-                            // We do this instead of making an object throwaway above the switch so that we don't
-                            // get warnings if is nothing to load
-                            codeBlock.Block().Line("object throwaway = " + GetRightSideAssignmentValueAsString(element, instruction) + ";");
-                        }
-                    }
-                    codeBlock = codeBlock.End();
-
-                }
-
-                codeBlock = codeBlock.End();
-
-                codeBlock = codeBlock.End();
-            }
-            return codeBlock;
-        }
-
-        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, IElement element)
-        {
-            return codeBlock;
-        }
-
 
         private static ICodeBlock GenerateCurrentStateProperty(IElement element, ICodeBlock codeBlock, string enumType, List<StateSave> states)
         {
@@ -332,16 +185,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             #region Header and Getter stuff - simple stuff with no logic
 
-            bool createField = GetIfShouldCreateCurrentStateField(element, enumType);
 
-            if (createField)
-            {
-                codeBlock
-                    .Line(string.Format("protected int mCurrent{0}State = 0;", variableNameModifier));
-            }
+            codeBlock
+                .Line($"private {enumType} mCurrent{variableNameModifier}State = null;");
 
             string publicWithOptionalNew = "public";
-            if (ShouldUseNewKeyword(element, enumType))
+            if (IsStateDefinedInBase(element, enumType))
             {
                 publicWithOptionalNew += " new";
             }
@@ -352,15 +201,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             var setBlock = codeBlock
                 .Property(publicWithOptionalNew + " " + qualifiedEnumType, "Current" + variableNameModifier + "State")
                     .Get()
-                    // This could could check if the value is a valid state int either by doing a IsDefined call which is probably slow (uses reflection) or
-                    // it could check the int value to make sure it's within the necessary range.
-                        //.If(string.Format("System.Enum.IsDefined(typeof({0}), mCurrent{1}State)", enumType, variableNameModifier))
-                        .If($"mCurrent{variableNameModifier}State >= 0 && mCurrent{variableNameModifier}State <= {maxIntValueInclusive}")
-                            .Line(string.Format("return ({0})mCurrent{1}State;", enumType, variableNameModifier))
-                        .End()
-                        .Else()
-                            .Line(string.Format("return {0}.Unknown;", enumType))
-                        .End()
+                        .Line(string.Format("return mCurrent{1}State;", enumType, variableNameModifier))
                     .End()
                     .Set();
 
@@ -377,25 +218,22 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (stillNeedsToAssignValue)
             {
-                setBlock.Line("mCurrent" + variableNameModifier + "State = (int)value;");
+                setBlock.Line("mCurrent" + variableNameModifier + "State = value;");
             }
 
             #endregion
 
-            var switchBlock = setBlock.Switch("Current" + variableNameModifier + "State");
-
-            switchBlock.Case(enumType + ".Uninitialized");
-            switchBlock.Case(enumType + ".Unknown");
-
+            bool isElse = false;
             foreach (StateSave stateSave in states)
             {
-                GenerateCurrentStateCodeForIndividualState(element, switchBlock, stateSave, enumType);
+                GenerateVariableAssignmentForState(element, setBlock, stateSave, enumType, isElse);
+                isElse = true;
             }
 
             if ((enumType == "VariableState" && DoesBaseHaveUncategorizedStates(element)) ||
                 (!string.IsNullOrEmpty(element.BaseElement) && GetAllStateCategoryNames(ObjectFinder.Self.GetIElement(element.BaseElement), true).Any(category => category == enumType)))
             {
-                switchBlock.Default()
+                setBlock.Else()
                     .Line("base.Current" + variableNameModifier + "State = base.Current" + variableNameModifier + "State;");
             }
 
@@ -407,38 +245,12 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        private static bool GetIfShouldCreateCurrentStateField(IElement element, string enumType)
+        private static bool IsStateDefinedInBase(IElement element, string enumName)
         {
-            var createField = false;
-            if (enumType == "VariableState" && !DoesBaseHaveUncategorizedStates(element))  //Uncategorized and not base
+            bool toReturn = false;
+            if (string.IsNullOrEmpty(element.BaseElement))
             {
-                createField = true;
-            }
-            else if (enumType != "VariableState")    //Check if this state category exists in a parent entity
-            {
-                if (element.BaseElement != null)
-                {
-                    var categories = GetAllStateCategoryNames(ObjectFinder.Self.GetIElement(element.BaseElement), true);
-
-                    if (!categories.Any(category => category == enumType))
-                    {
-                        createField = true;
-                    }
-                }
-                else
-                {
-                    createField = true;
-                }
-            }
-
-            return createField;
-        }
-
-        private static bool DoesBaseHaveUncategorizedStates(IElement element)
-        {
-            if (string.IsNullOrEmpty(element.BaseElement) || element.InheritsFromFrbType())
-            {
-                return false;
+                toReturn = false;
             }
             else
             {
@@ -446,32 +258,31 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if (baseElement != null)
                 {
-
-                    if (baseElement.States.Count != 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        foreach (StateSaveCategory category in baseElement.StateCategoryList)
-                        {
-                            if (category.SharesVariablesWithOtherCategories)
-                            {
-                                return true;
-                            }
-                        }
-                    }
-
+                    toReturn = baseElement.DefinesCategoryEnumRecursive(enumName);
                 }
-                return false;
-
             }
-
+            return toReturn;
         }
 
-        private static ICodeBlock GenerateCurrentStateCodeForIndividualState(IElement element, ICodeBlock codeBlock, StateSave stateSave, string enumType)
+        private static ICodeBlock GenerateVariableAssignmentForState(IElement element, ICodeBlock codeBlock, StateSave stateSave, string enumType, bool isElse)
         {
-            var curBlock = codeBlock.Case(enumType + "." + stateSave.Name);
+            string variableNameModifier = enumType;
+            if (enumType == "VariableState")
+            {
+                variableNameModifier = "";
+            }
+
+            ICodeBlock curBlock;
+
+            if(isElse)
+            {
+                curBlock = codeBlock.ElseIf($"Current{variableNameModifier}State == {enumType}.{stateSave.Name}");
+            }
+            else
+            {
+                curBlock = codeBlock.If($"Current{variableNameModifier}State == {enumType}.{stateSave.Name}");
+
+            }
             bool doesStateAssignAbsoluteValues = GetDoesStateAssignAbsoluteValues(stateSave, element);
 
             foreach (InstructionSave instruction in stateSave.InstructionSaves)
@@ -534,6 +345,222 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             return codeBlock;
         }
+
+        #endregion
+
+
+        public static List<StateSave> GetSharedVariableStates(SaveClasses.IElement element)
+        {
+            if (element == null)
+            {
+                throw new ArgumentNullException("element argument cannot be null");
+            }
+
+            var statesForThisCategory = new List<StateSave>();
+
+            var currentElement = element;
+
+            //Get states for parent entities
+            if (!string.IsNullOrEmpty(currentElement.BaseElement))
+            {
+                IElement baseElement = ObjectFinder.Self.GetIElement(currentElement.BaseElement);
+                if (baseElement != null)
+                {
+                    statesForThisCategory.AddRange(GetSharedVariableStates(baseElement));
+                }
+            }
+
+            
+            for (int i = 0; i < element.States.Count; i++)
+            {
+                statesForThisCategory.Add(element.States[i]);
+            }
+
+            statesForThisCategory.AddRange(element.StateCategoryList.Where(category => category.SharesVariablesWithOtherCategories).SelectMany(category => category.States));
+            return statesForThisCategory;
+        }
+
+
+
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.IElement element)
+        {
+            //throw new NotImplementedException();
+            return codeBlock;
+        }
+
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, SaveClasses.IElement element)
+        {
+            //throw new NotImplementedException();
+            return codeBlock;
+        }
+
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, SaveClasses.IElement element)
+        {
+            //throw new NotImplementedException();
+            return codeBlock;
+        }
+
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.IElement element)
+        {
+            //throw new NotImplementedException();
+            return codeBlock;
+        }
+
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.IElement element)
+        {
+            if (element.HasStates)
+            {
+
+                List<StateSave> sharedVariableStates = GetSharedVariableStates(element);
+
+                if (sharedVariableStates.Count != 0)
+                {
+                    #region Create the static state that should be set prior to loading
+
+                    string propertyPrefix = "public static ";
+
+                    if (!string.IsNullOrEmpty(element.BaseElement))
+                    {
+                        IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+                        if (baseElement != null && baseElement.DefinesCategoryEnumRecursive("VariableState"))
+                        {
+                            propertyPrefix += "new ";
+                        }
+                    }
+
+                    codeBlock
+                        .Line("static VariableState mLoadingState = null;")
+                        .Property(propertyPrefix + "VariableState", "LoadingState")
+                            .Get()
+                                .Line("return mLoadingState;")
+                            .End()
+                            .Set()
+                                .Line("mLoadingState = value;")
+                            .End()
+                        .End();
+
+                    #endregion
+                }
+
+
+
+
+                GenerateInterpolationAdditionalMethods(codeBlock, element, sharedVariableStates);
+
+                GeneratePreloadStateContent(codeBlock, element, sharedVariableStates);
+            }
+
+            return codeBlock;
+        }
+
+        private void GeneratePreloadStateContent(ICodeBlock codeBlock, IElement element, List<StateSave> sharedVariableStates)
+        {
+            // For now we'll only support Entities because they have a ContentManagerName variable.  Screen content can't be shared
+            // between Screens because of the hard-coded content manager name.  We'll have to revisit that if we need to share content
+            // between screens programatically.
+            if (element is EntitySave)
+            {
+                // This method is used to preload content for certain states.  States may use content that is
+                // LoadedOnlyWhenReferenced.  If so, that means that the content will be loaded on first access
+                // post-initialize.  This method will allow users to load this content on the async thread prior
+                // to Initialize finishing without having to worry about which content belongs in which state.
+
+                List<StateSave> list = sharedVariableStates;
+
+                codeBlock = GeneratePreloadStateContentForStateType(codeBlock, element, list, "VariableState");
+
+                foreach (StateSaveCategory category in element.StateCategoryList.Where((category) => category.SharesVariablesWithOtherCategories == false))
+                {
+                    codeBlock = GeneratePreloadStateContentForStateType(codeBlock, element, category.States, category.Name);
+                }
+            }
+        }
+
+        private static ICodeBlock GeneratePreloadStateContentForStateType(ICodeBlock codeBlock, IElement element, List<StateSave> list, string variableType)
+        {
+            if (list.Count != 0)
+            {
+
+                codeBlock = codeBlock.Function("public static void", "PreloadStateContent", variableType + " state, string contentManagerName");
+                codeBlock.Line("ContentManagerName = contentManagerName;");
+
+                //codeBlock = codeBlock.Switch("state");
+                bool isElse = false;
+                // Loop through states here and access properties that need the values
+                foreach (StateSave state in list)
+                {
+                    if(isElse)
+                    {
+                        codeBlock = codeBlock.ElseIf($"state == {variableType}.{state.Name}");
+
+                    }
+                    else
+                    {
+                        codeBlock = codeBlock.If($"state == {variableType}.{state.Name}");
+
+                    }
+
+                    isElse = true;
+                    foreach (InstructionSave instruction in state.InstructionSaves)
+                    {
+                        if (instruction.Value != null && instruction.Value is string)
+                        {
+                            // We insert a block so that object throwaway is not redefined in the switch scope.
+                            // We do this instead of making an object throwaway above the switch so that we don't
+                            // get warnings if is nothing to load
+                            codeBlock.Block().Line("object throwaway = " + GetRightSideAssignmentValueAsString(element, instruction) + ";");
+                        }
+                    }
+                    codeBlock = codeBlock.End();
+
+                }
+                
+
+                codeBlock = codeBlock.End();
+            }
+            return codeBlock;
+        }
+
+        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, IElement element)
+        {
+            return codeBlock;
+        }
+
+        private static bool DoesBaseHaveUncategorizedStates(IElement element)
+        {
+            if (string.IsNullOrEmpty(element.BaseElement) || element.InheritsFromFrbType())
+            {
+                return false;
+            }
+            else
+            {
+                IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+
+                if (baseElement != null)
+                {
+
+                    if (baseElement.States.Count != 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        foreach (StateSaveCategory category in baseElement.StateCategoryList)
+                        {
+                            if (category.SharesVariablesWithOtherCategories)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+
+                }
+                return false;
+
+            }
+
+        }
+
 
         private static string GetLeftSideOfEquals(IElement element, CustomVariable customVariable, InstructionSave instruction, bool switchToRelative)
         {

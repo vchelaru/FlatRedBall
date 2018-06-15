@@ -64,13 +64,6 @@ namespace GlueTestProject.Screens
                 throw new Exception("Setting child state in child entity isn't working.");
             }
 
-		    StateEntity parentEntity = ChildEntity;
-            if (parentEntity.CurrentState != StateEntity.VariableState.Unknown)
-            {
-                throw new Exception("Getting child state from parent entity isn't working.");
-            }
-
-
             if (this.OverridingVariableStateEntityInstance.VariableToGetChangedByState != 4)
             {
                 throw new Exception("States aren't properly overriding default values.");

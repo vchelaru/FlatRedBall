@@ -777,29 +777,6 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
 
 
-            // CSVs may happen to be named the same as base types - like "Resources",
-            // so we only want to use the TypeManager if we didn't first find a CSV.
-            if (!isTypeFromCsv)
-            {
-
-                Type type = null;
-
-                if (!string.IsNullOrEmpty(customVariableType))
-                {
-                    type = TypeManager.GetTypeFromString(customVariableType);
-                }
-
-                if (type != null)
-                {
-                    // If it's a common type we don't want to make things confusing
-                    // by using "System.Single", but we do want to fully-qualify things
-                    // like FlatRedBall types to make sure we don't get any kind of naming
-                    // conflicts
-                    // If a value is defined inside a class (like the Borders enum in SpriteFrame)
-                    // then its type will come out with a +.  We need to replace that with a dot.
-                    customVariableType = TypeManager.ConvertToCommonType(type.FullName).Replace("+", ".");
-                }
-            }
 
             if (customVariable.GetIsVariableState())
             {
@@ -821,6 +798,34 @@ namespace FlatRedBall.Glue.CodeGeneration
                 else
                 {
                     customVariableType = element.Name.Replace("\\", ".") + "." + customVariableType;
+                }
+            }
+            // CSVs may happen to be named the same as base types - like "Resources",
+            // so we only want to use the TypeManager if we didn't first find a CSV.
+            // Update June 12, 2018:
+            // Someone can name a category "Type", in which case the TypeManager would find something
+            // Therefore, we don't want to check that until we first give variable states a chance.
+            // This if statement used to be above the custom GetIsVariableState call, but moved it down
+            // to give variable states priority
+            if (!isTypeFromCsv)
+            {
+
+                Type type = null;
+
+                if (!string.IsNullOrEmpty(customVariableType))
+                {
+                    type = TypeManager.GetTypeFromString(customVariableType);
+                }
+
+                if (type != null)
+                {
+                    // If it's a common type we don't want to make things confusing
+                    // by using "System.Single", but we do want to fully-qualify things
+                    // like FlatRedBall types to make sure we don't get any kind of naming
+                    // conflicts
+                    // If a value is defined inside a class (like the Borders enum in SpriteFrame)
+                    // then its type will come out with a +.  We need to replace that with a dot.
+                    customVariableType = TypeManager.ConvertToCommonType(type.FullName).Replace("+", ".");
                 }
             }
 
@@ -1086,8 +1091,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     if (container == null)
                     {
-                        string prefix = FileManager.RemovePath(saveObject.Name);
-                        variableToAssign =  "GlobalContent." + rfs.GetInstanceName() + "[\"" + variableToAssign + "\"]";
+                        string prefix = "GlobalContent." + rfs.GetInstanceName();
+                        variableToAssign =  prefix + "[\"" + variableToAssign + "\"]";
                     
                     }
                     else

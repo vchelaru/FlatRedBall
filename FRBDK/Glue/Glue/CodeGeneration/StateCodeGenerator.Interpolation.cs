@@ -31,10 +31,25 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
         
-        private static ICodeBlock GenerateInterpolateForIndividualState(IElement element, ICodeBlock codeBlock, ICodeBlock otherBlock, StateSave stateSave, string enumType)
+        private static ICodeBlock GenerateInterpolateForIndividualState(IElement element, ICodeBlock codeBlock, ICodeBlock otherBlock, StateSave stateSave, string enumType, bool isElse)
         {
-            codeBlock = codeBlock.Case(enumType + "." + stateSave.Name);
-            otherBlock = otherBlock.Case(enumType + "." + stateSave.Name);
+
+            //.Switch("stateToInterpolateTo");
+
+            //otherBlock = otherBlock
+            //    .Function("public void", "StopStateInterpolation", enumType + " stateToStop");
+            //.Switch("stateToStop");
+
+            if (isElse)
+            {
+                codeBlock = codeBlock.ElseIf($"stateToInterpolateTo == {enumType}.{stateSave.Name}");
+                otherBlock = otherBlock.ElseIf($"stateToStop == {enumType}.{stateSave.Name}");
+            }
+            else
+            {
+                codeBlock = codeBlock.If($"stateToInterpolateTo == {enumType}.{stateSave.Name}");
+                otherBlock = otherBlock.If($"stateToStop == {enumType}.{stateSave.Name}");
+            }
             
             foreach (InstructionSave instruction in stateSave.InstructionSaves)
             {
@@ -338,13 +353,9 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 CreateStartingValueVariables(element, states, curBlock, interpolationCharacteristics);
 
-                curBlock = curBlock.Switch("firstState");
-                curBlock = SetInterpolateBetweenValuesForStates(element, enumType, states, curBlock, interpolationCharacteristics, FirstValue);
-                curBlock = curBlock.End();
+                curBlock = SetInterpolateBetweenValuesForStates(element, enumType, states, curBlock, interpolationCharacteristics, FirstValue, "firstState");
 
-                curBlock = curBlock.Switch("secondState");
-                curBlock = SetInterpolateBetweenValuesForStates(element, enumType, states, curBlock, interpolationCharacteristics, SecondValue);
-                curBlock = curBlock.End();
+                curBlock = SetInterpolateBetweenValuesForStates(element, enumType, states, curBlock, interpolationCharacteristics, SecondValue, "secondState");
 
 
                 curBlock = AssignValuesUsingStartingValues(element, curBlock, interpolationCharacteristics);
@@ -363,9 +374,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                     fieldToAssign = "mCurrent" + enumType + "State";
                 }
 
-                curBlock.Line(fieldToAssign + " = (int)firstState;");
+                curBlock.Line(fieldToAssign + " = firstState;");
                 curBlock = curBlock.End().Else();
-                curBlock.Line(fieldToAssign + " = (int)secondState;");
+                curBlock.Line(fieldToAssign + " = secondState;");
                 curBlock = curBlock.End();
             }
 
@@ -572,12 +583,22 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
-        private static ICodeBlock SetInterpolateBetweenValuesForStates(IElement element, string enumType, List<StateSave> states, ICodeBlock curBlock, Dictionary<InstructionSave, InterpolationCharacteristic> mInterpolationCharacteristics, string firstOrSecondValue)
+        private static ICodeBlock SetInterpolateBetweenValuesForStates(IElement element, string enumType, List<StateSave> states, 
+            ICodeBlock curBlock, Dictionary<InstructionSave, InterpolationCharacteristic> mInterpolationCharacteristics, string firstOrSecondValue, string localStateName)
         {
+            bool isElse = false;
             foreach (StateSave state in states)
             {
-                curBlock = curBlock.Case(enumType + "." + state.Name);
+                if(isElse)
+                {
+                    curBlock = curBlock.ElseIf($"{localStateName} == {enumType}.{state.Name}");
 
+                }
+                else
+                {
+                    curBlock = curBlock.If($"{localStateName} == {enumType}.{state.Name}");
+                }
+                isElse = true;
                 foreach (InstructionSave instructionSave in state.InstructionSaves)
                 {
 
@@ -650,21 +671,20 @@ namespace FlatRedBall.Glue.CodeGeneration
                 var elementNameWithoutPath = FileManager.RemovePath(element.Name);
 
                 curBlock = curBlock
-                    .Function("public FlatRedBall.Instructions.Instruction", "InterpolateToState", enumType + " stateToInterpolateTo, double secondsToTake")
-                        .Switch("stateToInterpolateTo");
+                    .Function("public FlatRedBall.Instructions.Instruction", "InterpolateToState", enumType + " stateToInterpolateTo, double secondsToTake");
+                        //.Switch("stateToInterpolateTo");
 
                 otherBlock = otherBlock
-                    .Function("public void", "StopStateInterpolation", enumType + " stateToStop")
-                        .Switch("stateToStop");
+                    .Function("public void", "StopStateInterpolation", enumType + " stateToStop");
+                //.Switch("stateToStop");
 
+                bool isElse = false;
                 foreach (StateSave stateSave in states)
                 {
-                    GenerateInterpolateForIndividualState(element, curBlock, otherBlock, stateSave, enumType);
+                    GenerateInterpolateForIndividualState(element, curBlock, otherBlock, stateSave, enumType, isElse);
+                    isElse = true;
                 }
-
-                curBlock = curBlock.End();
-                otherBlock = otherBlock.End();
-
+               
                 string instructionListAdd = "this.Instructions.Add";
 
                 if (element is ScreenSave)
