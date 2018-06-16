@@ -284,7 +284,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (isVisibleSetterOnList)
             {
-                setter.Line(customVariable.SourceObject + ".SetVisible(value);");
+                var forLoop = setter.For($"int i = 0; i < {customVariable.SourceObject}.Count; i++");
+                forLoop.Line($"{customVariable.SourceObject}[i].Visible = value;");
             }
             else if(customVariable.GetIsSourceFile(saveObject))
             {
@@ -1097,7 +1098,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
                     else
                     {
-                        string prefix = FileManager.RemovePath(saveObject.Name);
+                        // Don't remove the path, we want the prefix:
+                        //string prefix = FileManager.RemovePath(saveObject.Name);
+                        string prefix = saveObject.Name.Replace('\\', '.');
                         variableToAssign = prefix + "." + rfs.GetInstanceName() + "[\"" + variableToAssign + "\"]";
                     }
                 }

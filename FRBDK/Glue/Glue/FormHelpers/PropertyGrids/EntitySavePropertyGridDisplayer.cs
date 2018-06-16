@@ -40,7 +40,11 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                 // If it inherits from a FRB type, it is an IVisible, but we should still show this property
                 !instance.InheritsFromFrbType())
             {
-                IncludeMember("ImplementsIVisible", typeof(EntitySave), null, base.ReadOnlyAttribute());
+                // Since the base does, the derived does automatically so always show true:
+                Func<object> getMethod = () => true;
+                IncludeMember(nameof(EntitySave.ImplementsIVisible), typeof(bool), 
+                    memberChangeAction:null, getMember:getMethod, 
+                    converter:null, attributes: base.ReadOnlyAttribute());
             }
 
             if (!string.IsNullOrEmpty(instance.BaseEntity) && !instance.GetHasImplementsCollidableProperty())

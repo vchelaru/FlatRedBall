@@ -89,7 +89,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 codeBlock
                     .Function("public static void", "TransitionToScreen", "string screenName, System.Action<FlatRedBall.Screens.Screen> screenCreatedCallback = null")
-                        .Line("Screen currentScreen = ScreenManager.CurrentScreen;")
+                        .Line("FlatRedBall.Screens.Screen currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;")
                         .Line("currentScreen.IsActivityFinished = true;")
                         .Line("currentScreen.NextScreen = typeof(" + screenName + ").FullName;")
                         .Line("mNextScreenToLoad = screenName;")

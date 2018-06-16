@@ -22,12 +22,6 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 EntitySave asEntitySave = (EntitySave)SaveObject;
 
-                bool hasScreensInProject = ProjectManager.GlueProjectSave.Screens.Count != 0;
-                if (hasScreensInProject)
-                {
-                    usingStrings.Add(ProjectManager.ProjectNamespace + ".Screens");
-                }
-
                 // I don't think we need this anymore
                 //mUsingStrings.Add("Matrix = Microsoft.Xna.Framework.Matrix");
 
@@ -36,12 +30,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                 usingStrings.Add("FlatRedBall.Graphics");
                 // And since we want a Visible property, we'll have extension methods for Lists of this
                 usingStrings.Add("FlatRedBall.Math");
-
-
-                if (asEntitySave.CreatedByOtherEntities)
-                {
-                    usingStrings.Add(ProjectManager.ProjectNamespace + ".Performance");
-                }
 
                 if (asEntitySave.ImplementsIClickable || asEntitySave.ImplementsIWindow)
                 {
@@ -53,40 +41,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             //mUsingStrings.Add("FlatRedBall.Broadcasting");
 
 
-
-            #region Add the using PROJECT.Factories if necessary
-            if (ProjectManager.GlueProjectSave.Entities.Count != 0)
-            {
-                // add their usings
-                for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
-                {
-                    EntitySave entitySave = ProjectManager.GlueProjectSave.Entities[i];
-
-                    string entityNamespace = FileManager.MakeRelative(FileManager.GetDirectory(entitySave.Name)).Replace('/', '.');
-                    entityNamespace = ProjectManager.ProjectNamespace + "." + entityNamespace.Substring(0, entityNamespace.Length - 1);
-
-                    if (!usingStrings.Contains(entityNamespace))
-                    {
-                        usingStrings.Add(entityNamespace);
-                    }
-                }
-
-
-
-                for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
-                {
-                    if (ProjectManager.GlueProjectSave.Entities[i].CreatedByOtherEntities)
-                    {
-                        usingStrings.Add(ProjectManager.ProjectNamespace + ".Factories");
-                        break;
-                    }
-                }
-            }
-
-            #endregion
-
             usingStrings.Add("FlatRedBall");
-            usingStrings.Add("FlatRedBall.Screens");
 
             usingStrings.Add("System");
             usingStrings.Add("System.Collections.Generic");

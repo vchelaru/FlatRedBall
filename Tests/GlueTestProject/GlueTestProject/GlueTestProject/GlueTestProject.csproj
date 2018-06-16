@@ -474,6 +474,10 @@
     <Compile Include="Entities\InterpolationEntitySub.Generated.cs">
       <DependentUpon>InterpolationEntitySub.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\IVisibleDerivedEntity.cs" />
+    <Compile Include="Entities\IVisibleDerivedEntity.Generated.cs">
+      <DependentUpon>IVisibleDerivedEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\IVisibleEntity.cs" />
     <Compile Include="Entities\IVisibleEntity.Generated.cs">
       <DependentUpon>IVisibleEntity.cs</DependentUpon>
