@@ -2020,34 +2020,20 @@ namespace FlatRedBall.IO
             fs = GetStreamForFile(fileName, FileMode.OpenOrCreate);
 
 #endif
-#if !XBOX360 && !WINDOWS_PHONE && !SILVERLIGHT && !MONODROID
+#if !MONODROID
             string directory = FileManager.GetDirectory(fileName);
 
-#if WINDOWS_8
-            throw new NotImplementedException();
-#else
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(FileManager.GetDirectory(fileName)))
             {
                 Directory.CreateDirectory(FileManager.GetDirectory(fileName));
             }
-#endif
 
 #endif
-#if XBOX360
-            StorageContainer sc = null;
-#endif
+
 
             try
             {
-#if WINDOWS_PHONE || MONODROID
-
-#if SILVERLIGHT
-                SilverlightSerializer.Serialize(objectToSerialize, fs);
-#else
-                throw new NotImplementedException();
-#endif
-
-#elif WINDOWS_8 || UWP
+#if UWP
                 throw new NotImplementedException();
 #else
 
@@ -2059,14 +2045,6 @@ namespace FlatRedBall.IO
             finally
             {
                 if (fs != null) Close(fs);
-
-#if XBOX360
-                if (sc != null)
-                {
-                    sc.Dispose();
-                    sc = null;
-                }
-#endif
             }
 
         }
@@ -2133,104 +2111,10 @@ namespace FlatRedBall.IO
 
         private static void XmlSerializeAllOtherPlatforms(Type type, object objectToSerialize, string fileName)
         {
+            string serializedText;
+            FileManager.XmlSerialize(type, objectToSerialize, out serializedText);
 
-            Stream fs = null;
-            XmlWriter writer = null;
-
-#if MONODROID
-            IsolatedStorageFileStream isfs = null;
-
-#endif
-
-
-
-
-
-#if !MONODROID
-            string directory = FileManager.GetDirectory(fileName);
-
-#if WINDOWS_8
-            // We use the isolated storage triple underscore
-            // so no folders are necessary
-            //throw new NotImplementedException();
-#else
-
-
-            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-#endif
-
-#endif
-
-            try
-            {
-                XmlSerializer serializer = GetXmlSerializer(type);
-
-
-#if USE_ISOLATED_STORAGE && !IOS
-
-#if WINDOWS_8 || UWP
-                throw new NotImplementedException();
-#else
-
-                isfs = new IsolatedStorageFileStream(
-                   fileName, FileMode.Create, mIsolatedStorageFile);
-
-                XmlWriterSettings xms = new XmlWriterSettings();
-                xms.Encoding = System.Text.Encoding.UTF8;
-                xms.Indent = true;
-                writer = XmlWriter.Create(isfs, xms);
-#endif
-
-#else
-
-                
-
-                
-
-
-
-
-
-
-
-
-                // I used to call File.Open with the FileMode.Truncate
-                // but that caused the file to be modified twice and this
-                // was bad in Glue.  So now we delete instead of truncate
-                // to prevent file systems from reporting 2 changes when a file
-                // has really only changed once.
-                if (System.IO.File.Exists(fileName))
-                {
-                    System.IO.File.Delete(fileName);
-                }
-                 
-
-
-                fs = System.IO.File.Open(fileName, FileMode.OpenOrCreate);
-
-
-                XmlWriterSettings settings = new XmlWriterSettings();
-                settings.Indent = true;
-                writer = XmlWriter.Create(fs, settings);
-
-#endif
-
-                serializer.Serialize(writer, objectToSerialize);
-            }
-            finally
-            {
-                if (fs != null) Close(fs);
-
-#if  MONODROID
-                if (isfs != null)
-                {
-                    isfs.Close();
-                }
-#endif
-            }
+            FileManager.SaveText(serializedText, fileName);
         }
 
 
@@ -2247,32 +2131,24 @@ namespace FlatRedBall.IO
 
 		public static void XmlSerialize(Type type, object objectToSerialize, out string stringToSerializeTo)
 		{
-			MemoryStream memoryStream = new MemoryStream();
+            using (var memoryStream = new MemoryStream())
+            {
+                XmlSerializer serializer = GetXmlSerializer(type);
+                Encoding utf8EncodingWithNoByteOrderMark = new UTF8Encoding(encoderShouldEmitUTF8Identifier:false);
+                XmlTextWriter xtw = new XmlTextWriter(memoryStream, utf8EncodingWithNoByteOrderMark);
+                serializer.Serialize(xtw, objectToSerialize);
+                
 
-			XmlSerializer serializer = GetXmlSerializer(type);
-
-			serializer.Serialize(memoryStream, objectToSerialize);
-
-
-#if SILVERLIGHT || WINDOWS_PHONE || (XBOX360 && XNA4) || MONOGAME
-
-			byte[] asBytes = memoryStream.ToArray();
-
-			stringToSerializeTo = System.Text.Encoding.UTF8.GetString(asBytes, 0, asBytes.Length);
-#elif XBOX360
-            
-            throw new NotImplementedException("XmlSerialization to string is not supported yet");
-
-
-
-#else
-
-            stringToSerializeTo = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
-#endif
+    #if MONOGAME
+			    byte[] asBytes = memoryStream.ToArray();
+			    stringToSerializeTo = System.Text.Encoding.UTF8.GetString(asBytes, 0, asBytes.Length);
+    #else
+                stringToSerializeTo = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
+    #endif
+            }
 
 		}
 
-#if !FRB_MDX
 		//Implemented based on interface, not part of algorithm
 		public static string RemoveAllNamespaces(string xmlDocument)
 		{
@@ -2296,8 +2172,6 @@ namespace FlatRedBall.IO
 			}
 			return new XElement(xmlDocument.Name.LocalName, xmlDocument.Elements().Select(el => RemoveAllNamespaces(el)));
 		}
-#endif
-
 
 		#endregion
 
