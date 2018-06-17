@@ -56,15 +56,24 @@ namespace GumCoreShared.FlatRedBall.Embedded
             // todo - need to support multiple cameras and layers
             var camera = Camera.Main;
 
+
             int screenX = 0;
             int screenY = 0;
 
+            var worldPosition = FrbObject.Position;
+
             global::FlatRedBall.Math.MathFunctions.AbsoluteToWindow(
-                FrbObject.X, FrbObject.Y, FrbObject.Z,
+                worldPosition.X, worldPosition.Y, worldPosition.Z,
                 ref screenX, ref screenY, camera);
 
-            GumParent.X = screenX;
-            GumParent.Y = screenY;
+            var zoom = 1.0f;
+            if (camera.Orthogonal)
+            {
+                zoom = camera.DestinationRectangle.Height / camera.OrthogonalHeight;
+            }
+
+            GumParent.X = screenX / zoom;
+            GumParent.Y = screenY / zoom;
 
             if(frbObjectAsScalable != null)
             {
