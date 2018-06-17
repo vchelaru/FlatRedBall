@@ -66,7 +66,18 @@ namespace GlueTestProject.Screens
             TestEntitiesCreatedFromShapes();
 
             TestTypeEntityCreation();
+
+            TestSettingStatesFromVariables();
 		}
+
+        private void TestSettingStatesFromVariables()
+        {
+            var entity = CreatedByTiledTypeList
+                .FirstOrDefault(item => item.Name == "SetsTopOrBottom");
+
+            entity.ShouldNotBe(null);
+            entity.TopOrBottom.ShouldBe(Entities.StateEntity.TopOrBottom.Top);
+        }
 
         private void TestEntitiesCreatedFromShapes()
         {

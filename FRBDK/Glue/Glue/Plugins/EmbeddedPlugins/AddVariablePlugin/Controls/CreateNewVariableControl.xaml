@@ -18,8 +18,10 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock>Type:</TextBlock>
-        <ListBox x:Name="ListBox" Grid.Column="1"></ListBox>
+        <ListBox ItemsSource="{Binding AvailableVariableTypes}" x:Name="ListBox" Grid.Column="1"></ListBox>
 
+        <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IncludeStateCategories}"  
+                  VerticalContentAlignment="Center" HorizontalAlignment="Right">Include State Categories</CheckBox>
         <!--<CheckBox x:Name="IsNullableCheckBox" Grid.Row="1" Grid.Column="1" 
                   VerticalContentAlignment="Center">Is Nullable</CheckBox>-->
 

@@ -60,7 +60,7 @@ namespace FlatRedBall.Glue.GuiDisplay
         {
 
             listOfStates.Clear();
-            GetListOfStates(listOfStates, context.PropertyDescriptor.DisplayName);
+            GetListOfStates(listOfStates, context?.PropertyDescriptor.DisplayName);
 
 
 
@@ -135,7 +135,16 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
             else
             {
-                sourceElement = currentElement;
+                var name = customVariable.GetEntityNameDefiningThisTypeCategory();
+
+                if(!string.IsNullOrEmpty(name) && name != currentElement?.Name)
+                {
+                    sourceElement = ObjectFinder.Self.GetIElement(name);
+                }
+                else
+                {
+                    sourceElement = currentElement;
+                }
             }
 
 
@@ -143,7 +152,16 @@ namespace FlatRedBall.Glue.GuiDisplay
 
             if (customVariable != null)
             {
-                StateSaveCategory category = sourceElement.GetStateCategoryRecursively(customVariable.Type);
+                string categoryName = customVariable.Type;
+
+                // If the type name has a '.', then it's a fully qualified type. We already know the entity
+                // so let's unqualify it:
+                if(categoryName.Contains('.'))
+                {
+                    categoryName = categoryName.Substring(categoryName.LastIndexOf('.') + 1);
+                }
+
+                StateSaveCategory category = sourceElement.GetStateCategoryRecursively(categoryName);
 
                 if (category != null)
                 {

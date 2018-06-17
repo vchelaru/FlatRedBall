@@ -16,6 +16,7 @@ using FlatRedBall.Glue.TypeConversions;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddVariablePlugin.ViewModels;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -34,7 +35,8 @@ namespace FlatRedBall.Glue.Controls
     {
         #region Fields
 
-
+        CreateNewVariableViewModel createNewVariableViewModel;
+        IElement element;
 
         #endregion
 
@@ -165,6 +167,8 @@ namespace FlatRedBall.Glue.Controls
 		{
 			InitializeComponent();
 
+            this.element = element;
+
             TypeConverterHelper.InitializeClasses();
 
 			StartPosition = FormStartPosition.Manual;
@@ -180,18 +184,39 @@ namespace FlatRedBall.Glue.Controls
 
             FillTypeConverters();
 
-            FillNewVariableTypes(element);
 
             // force set visibility
             radCreateNewVariable_CheckedChanged(this, null);
 
+            createNewVariableViewModel = new CreateNewVariableViewModel();
+            createNewVariableControl1.DataContext = createNewVariableViewModel;
+            createNewVariableViewModel.PropertyChanged += HandleCreateNewVariablePropertyChanged;
+            FillNewVariableTypes();
         }
 
-        private void FillNewVariableTypes(IElement element)
+        private void HandleCreateNewVariablePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            List<string> newVariableTypes = ExposedVariableManager.GetAvailableNewVariableTypes(allowNone:false);
+            switch(e.PropertyName)
+            {
+                case nameof(CreateNewVariableViewModel.IncludeStateCategories):
+                    FillNewVariableTypes();
+                    break;
+            }
+        }
 
-            createNewVariableControl1.FillAvailableTypes(newVariableTypes);
+        private void FillNewVariableTypes()
+        {
+            List<string> newVariableTypes = ExposedVariableManager.GetAvailableNewVariableTypes(allowNone:false, 
+                includeStateCategories:createNewVariableViewModel.IncludeStateCategories);
+
+            createNewVariableViewModel.AvailableVariableTypes.Clear();
+
+            foreach (var type in newVariableTypes)
+            {
+                createNewVariableViewModel.AvailableVariableTypes.Add(type);
+            }
+
+            //createNewVariableControl1.FillAvailableTypes(newVariableTypes);
         }
 
         private List<string> GetNewVariableTypes()
@@ -412,31 +437,6 @@ namespace FlatRedBall.Glue.Controls
         private void NewVariableTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
-        }
-
-        private void NewVariableTypeComboBox_DropDown(object sender, EventArgs e)
-        {
-            ComboBox senderComboBox = (ComboBox)sender;
-            int width = senderComboBox.DropDownWidth;
-            System.Drawing.Graphics g = senderComboBox.CreateGraphics();
-            Font font = senderComboBox.Font;
-            int vertScrollBarWidth =
-                (senderComboBox.Items.Count > senderComboBox.MaxDropDownItems)
-                ? SystemInformation.VerticalScrollBarWidth : 0;
-            int newWidth;
-
-            foreach (string s in ((ComboBox)sender).Items)
-            {
-                newWidth = (int)g.MeasureString(s, font).Width
-                    + vertScrollBarWidth;
-
-                if (width < newWidth)
-                {
-                    width = newWidth;
-                }
-            }
-
-            senderComboBox.DropDownWidth = width;
         }
 
         private void NewTypeListBox_SelectedIndexChanged(object sender, EventArgs e)

@@ -14,6 +14,26 @@ namespace FlatRedBall.TileEntities
 {
     public static class TileEntityInstantiator
     {
+        /// <summary>
+        /// A dictionary that stores all available values for a given type.
+        /// </summary>
+        /// <remarks>
+        /// The structure of this class is a dictionary, where each entry in the dictionary is a list of dictionaries. This mgiht
+        /// seem confusing so let's look at an example.
+        /// This was originally created to cache values from CSVs. Let's say there's a type called PlatformerValues.
+        /// The class PlatformerValues would be the key in the dictionary.
+        /// Of course, platformer values can be defined in multiple entities (if multiple entities are platformers).
+        /// Each CSV in each entity becomes 1 dictionary, but since there can be multiple CSVs, there is a list. Therefore, the struture
+        /// might look like this:
+        /// * PlatformerValues
+        ///   * List from Entity 1
+        ///     * OnGround
+        ///     * InAir
+        ///   * List from Entity 2
+        ///     * OnGround
+        ///     * In Air
+        ///   // and so on...
+        /// </remarks>
         static Dictionary<string, List<IDictionary>> allDictionaries = new Dictionary<string, List<IDictionary>>();
 
         /// <summary>
@@ -409,6 +429,37 @@ namespace FlatRedBall.TileEntities
                         break;
                     }
                 }
+            }
+            // If this has a + in it, then that might mean it's a state. We should try to get the type, and if we find it, stuff
+            // it in allDictionaries to make future calls faster
+            else if (valueType != null && valueType.Contains("+"))
+            {
+                var stateType = typesInThisAssembly.FirstOrDefault(item => item.FullName == valueType);
+
+                if (stateType != null)
+                {
+                    Dictionary<string, object> allValues = new Dictionary<string, object>();
+
+                    var fields = stateType.GetFields(BindingFlags.Static | BindingFlags.Public);
+
+                    foreach (var field in fields)
+                    {
+                        allValues[field.Name] = field.GetValue(null);
+                    }
+
+                    // The list has all the dictioanries that contain values. But for states there is only one set of values, so 
+                    // we create a list
+                    List<IDictionary> list = new List<IDictionary>();
+                    list.Add(allValues);
+
+                    allDictionaries[valueType] = list;
+
+                    if (allValues.ContainsKey((string)valueToSet))
+                    {
+                        valueToSet = allValues[(string)valueToSet];
+                    }
+                }
+
             }
             return valueToSet;
         }

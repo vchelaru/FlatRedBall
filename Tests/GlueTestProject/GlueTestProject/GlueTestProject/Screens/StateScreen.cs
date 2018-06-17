@@ -73,7 +73,11 @@ namespace GlueTestProject.Screens
             this.InterpolateToState(TextSizeCategory.InterpolationInstanceTextLarge, 1);
 
             TestInterpolation();
-		}
+
+            EntityReferencingStateFromOtherInstance_Default.TopOrBottom.ShouldBe(StateEntity.TopOrBottom.Top);
+            EntityReferencingStateFromOtherInstance_ToBottom.TopOrBottom.ShouldBe(StateEntity.TopOrBottom.Bottom);
+
+        }
 
         private void TestInterpolation()
         {

@@ -302,7 +302,7 @@
     <Compile Include="Controls\AddEntityWindow.xaml.cs">
       <DependentUpon>AddEntityWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\AddVariable\CreateNewVariableControl.xaml.cs">
+    <Compile Include="Plugins\EmbeddedPlugins\AddVariablePlugin\Controls\CreateNewVariableControl.xaml.cs">
       <DependentUpon>CreateNewVariableControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Errors\GeneralResponse.cs" />
@@ -310,6 +310,7 @@
     <Compile Include="FormHelpers\StringConverters\TypeConverterWithNone.cs" />
     <Compile Include="IO\FilePath.cs" />
     <Compile Include="Managers\HotkeyManager.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\AddVariablePlugin\ViewModels\CreateNewVariableViewModel.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSettingsControl.xaml.cs">
       <DependentUpon>CameraSettingsControl.xaml</DependentUpon>
     </Compile>
@@ -1887,7 +1888,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\AddVariable\CreateNewVariableControl.xaml">
+    <Page Include="Plugins\EmbeddedPlugins\AddVariablePlugin\Controls\CreateNewVariableControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

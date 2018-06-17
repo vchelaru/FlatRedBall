@@ -724,10 +724,17 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static string FullyQualifyStateValue(IElement referencedElement, string enumValue, string variableType)
         {
-
-            string valueAsString =
-                ProjectManager.ProjectNamespace + "." + referencedElement.Name.Replace("\\", ".") + "." + variableType + "." + enumValue;
-            return valueAsString;
+            var isAlreadyQualifed = variableType.Contains('.');
+            if(isAlreadyQualifed)
+            {
+                return $"{variableType}.{enumValue}";
+            }
+            else
+            {
+                string valueAsString =
+                    ProjectManager.ProjectNamespace + "." + referencedElement.Name.Replace("\\", ".") + "." + variableType + "." + enumValue;
+                return valueAsString;
+            }
         }
 
         public static string FullyQualifiedDefaultStateValue(IElement referencedElement, string variableType)

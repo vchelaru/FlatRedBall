@@ -30,7 +30,9 @@ namespace FlatRedBall.Glue.SaveClasses
                 typeConverter = new AvailableStates(
                     FacadeContainer.Self.GlueState.CurrentNamedObjectSave,
                     FacadeContainer.Self.GlueState.CurrentElement,
-                    FacadeContainer.Self.GlueState.CurrentCustomVariable,
+                    // I think this expected that we'd always be viewing the current variable, but we're not in the state data
+                    //FacadeContainer.Self.GlueState.CurrentCustomVariable,
+                    customVariable,
                     FacadeContainer.Self.GlueState.CurrentStateSave
                 );
             }

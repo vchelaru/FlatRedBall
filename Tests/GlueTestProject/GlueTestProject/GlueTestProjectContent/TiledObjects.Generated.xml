@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <objecttypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <objecttype name="BaseFactoryEntity" />
   <objecttype name="BaseNotPooled" />
@@ -6,9 +6,12 @@
   <objecttype name="ChildFactoryEntity" />
   <objecttype name="ChildOfPositioningEntity" />
   <objecttype name="CollidableShapesFromTmx" />
-  <objecttype name="CreatedByTiled" />
+  <objecttype name="CreatedByTiled">
+    <property name="TopOrBottom" type="Entities.StateEntity.TopOrBottom" />
+  </objecttype>
   <objecttype name="CreatedByTiledType">
     <property name="SetByDefaultInt" type="int" />
+    <property name="TopOrBottom" type="Entities.StateEntity.TopOrBottom" />
   </objecttype>
   <objecttype name="DerivedPooledFromNotPooled" />
   <objecttype name="DerivedPooledFromPooled" />

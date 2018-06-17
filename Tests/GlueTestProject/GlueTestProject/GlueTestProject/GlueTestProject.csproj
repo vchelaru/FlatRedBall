@@ -392,6 +392,10 @@
     <Compile Include="Entities\EntityForTestPlugin.Generated.cs">
       <DependentUpon>EntityForTestPlugin.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\EntityReferencingStateFromOther.cs" />
+    <Compile Include="Entities\EntityReferencingStateFromOther.Generated.cs">
+      <DependentUpon>EntityReferencingStateFromOther.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\EventEntity.cs" />
     <Compile Include="Entities\EventEntity.Event.cs">
       <DependentUpon>EventEntity.cs</DependentUpon>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <GlueProjectSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <In2D>true</In2D>
   <RunFullscreen>false</RunFullscreen>
@@ -343,7 +343,7 @@
           </Properties>
           <Name>VariableUsingSharedClassCsv</Name>
           <Type>GlueTestProject.DataTypes.SharedClass1</Type>
-          <DefaultValue xsi:type="xsd:string"></DefaultValue>
+          <DefaultValue xsi:type="xsd:string" />
         </CustomVariable>
         <CustomVariable>
           <Properties>
@@ -3174,6 +3174,31 @@
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>Entity</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>Entities\EntityReferencingStateFromOther</SourceClassType>
+          <InstanceName>EntityReferencingStateFromOtherInstance_Default</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <CustomProperty>
+            <Type>System.Object</Type>
+            <Member>TopOrBottom</Member>
+            <ValueAsString>Bottom</ValueAsString>
+          </CustomProperty>
+          <SourceType>Entity</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>Entities\EntityReferencingStateFromOther</SourceClassType>
+          <InstanceName>EntityReferencingStateFromOtherInstance_ToBottom</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
       </NamedObjects>
     </ScreenSave>
     <ScreenSave>
@@ -4179,7 +4204,7 @@
           </Properties>
           <Name>FloatVariable</Name>
           <Type>float</Type>
-          <DefaultValue xsi:type="xsd:string"></DefaultValue>
+          <DefaultValue xsi:type="xsd:string" />
           <SetByDerived>true</SetByDerived>
         </CustomVariable>
         <CustomVariable>
@@ -5744,6 +5769,16 @@
           <Name>Z</Name>
           <Type>float</Type>
         </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>Entities.StateEntity.TopOrBottom</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>TopOrBottom</Name>
+          <Type>Entities.StateEntity.TopOrBottom</Type>
+        </CustomVariable>
       </CustomVariables>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\CreatedByTiled</Name>
@@ -5816,6 +5851,16 @@
           </Properties>
           <Name>SetByDefaultInt</Name>
           <Type>int</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>Entities.StateEntity.TopOrBottom</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>TopOrBottom</Name>
+          <Type>Entities.StateEntity.TopOrBottom</Type>
         </CustomVariable>
       </CustomVariables>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
@@ -6265,7 +6310,7 @@
           </Properties>
           <Name>FloatVariable</Name>
           <Type>float</Type>
-          <DefaultValue xsi:type="xsd:string"></DefaultValue>
+          <DefaultValue xsi:type="xsd:string" />
           <DefinedByBase>true</DefinedByBase>
         </CustomVariable>
         <CustomVariable>
@@ -7544,6 +7589,28 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
       </ReferencedFiles>
+      <Is2D>true</Is2D>
+    </EntitySave>
+    <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
+      <CustomVariables>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>Entities.StateEntity.TopOrBottom</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>TopOrBottom</Name>
+          <Type>Entities.StateEntity.TopOrBottom</Type>
+          <DefaultValue xsi:type="xsd:string">Top</DefaultValue>
+        </CustomVariable>
+      </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
+      <Name>Entities\EntityReferencingStateFromOther</Name>
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
@@ -14731,7 +14798,7 @@
           </Properties>
           <Name>VisibleBoolAsBool</Name>
           <Type>bool</Type>
-          <DefaultValue xsi:type="xsd:string"></DefaultValue>
+          <DefaultValue xsi:type="xsd:string" />
           <SourceObject>CircleObject</SourceObject>
           <SourceObjectProperty>Visible</SourceObjectProperty>
           <Summary>The point of this variable is to make sure Glue generates code properly when converting from a bool to a bool. Not sure how this happens, but someone managed to get this to happen in one of their projects and Glue generated code that wouldn't compile.</Summary>
@@ -14843,7 +14910,7 @@
           </Properties>
           <Name>CircleObjectName</Name>
           <Type>string</Type>
-          <DefaultValue xsi:type="xsd:string"></DefaultValue>
+          <DefaultValue xsi:type="xsd:string" />
           <SourceObject>CircleObject</SourceObject>
           <SourceObjectProperty>Name</SourceObjectProperty>
         </CustomVariable>

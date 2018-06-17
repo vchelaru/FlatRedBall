@@ -114,10 +114,47 @@ namespace FlatRedBall.Glue.SaveClasses
                             containingElement.GetStateCategory(customVariable.Type) != null;
                     }
                 }
-
             }
+
+            if(!returnValue && customVariable.Type.StartsWith("Entities."))
+            {
+                // It may still be a state, so let's see the entity:
+                var entityName = customVariable.GetEntityNameDefiningThisTypeCategory();
+
+                var entity = ObjectFinder.Self.GetEntitySave(entityName);
+
+                if(entity != null)
+                {
+                    var lastPeriod = customVariable.Type.LastIndexOf('.');
+                    var startIndex = lastPeriod + 1;
+                    var stateCategory = customVariable.Type.Substring(startIndex);
+                    var category = entity.GetStateCategory(stateCategory);
+
+                    if(category != null)
+                    {
+                        returnValue = true;
+                    }
+                }
+            }
+
             return returnValue;
 
+        }
+
+        public static string GetEntityNameDefiningThisTypeCategory(this CustomVariable customVariable)
+        {
+            if(customVariable.Type.StartsWith("Entities."))
+            {
+                var lastPeriod = customVariable.Type.LastIndexOf('.');
+                var entityNameWithPeriods = customVariable.Type.Substring(0, lastPeriod);
+                var entityName = entityNameWithPeriods.Replace('.', '\\');
+
+                return entityName;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public static void SetDefaultValueAccordingToType(this CustomVariable customVariable, string typeAsString)
@@ -379,6 +416,10 @@ namespace FlatRedBall.Glue.SaveClasses
         /// <returns>The defining variable.  If an error occurs in finding base types, null is returned.</returns>
         public static CustomVariable GetDefiningCustomVariable(this CustomVariable customVariable)
         {
+            if(customVariable == null)
+            {
+                throw new ArgumentNullException("customVariable");
+            }
             if (!customVariable.DefinedByBase)
             {
                 return customVariable;

@@ -124,7 +124,9 @@ namespace TileGraphicsPlugin
             //  - Added creating ICollidables using EntityToCreate property on rectangles and circles
             // 1.5.2
             //  - Fixed missing using statement in TileEntityInstantiator
-            get { return new Version(1, 5, 2, 0); }
+            // 1.6.0
+            //  - Added support for instantiating tile entities applying properties from states
+            get { return new Version(1, 6, 0, 0); }
         }
 
 

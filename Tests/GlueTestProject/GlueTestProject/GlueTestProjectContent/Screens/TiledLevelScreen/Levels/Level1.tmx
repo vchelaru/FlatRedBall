@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="32" height="21" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#4688ba" nextobjectid="12">
+<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="32" height="21" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#4688ba" nextobjectid="13">
  <tileset firstgid="1" name="PlatformerTiles" tilewidth="16" tileheight="16" tilecount="512" columns="32">
   <image source="../Tilesets/PlatformerTiles.png" width="512" height="256"/>
   <tile id="0">
@@ -73,6 +73,11 @@
   </object>
   <object id="11" name="PolyType" type="CollidableShapesFromTmx" x="223" y="114">
    <polygon points="0,0 -24,31 9,39 19,11"/>
+  </object>
+  <object id="12" name="SetsTopOrBottom" gid="193" x="55" y="144" width="16" height="16">
+   <properties>
+    <property name="TopOrBottom" value="Top"/>
+   </properties>
   </object>
  </objectgroup>
  <layer name="ForegroundLayer" width="32" height="21">

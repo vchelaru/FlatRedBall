@@ -20,7 +20,9 @@ namespace FlatRedBall.Glue.CodeGeneration
     {
         internal static bool IsTypeFromCsv(CustomVariable customVariable)
         {
-            return customVariable != null && customVariable.Type != null && customVariable.Type.Contains(".") &&
+            return customVariable != null && customVariable.Type != null && 
+                customVariable.GetIsVariableState() == false &&
+                customVariable.Type.Contains(".") &&
                 customVariable.GetRuntimeType() == null
                 ;
         }
@@ -715,7 +717,19 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 else
                 {
-                    if (IsVariableTunnelingToDisabledObject(customVariable, element))
+                    var definingEntityNameFromType = customVariable.GetEntityNameDefiningThisTypeCategory();
+
+                    var isStateDefinedInOtherEntity = !string.IsNullOrEmpty(definingEntityNameFromType) &&
+                        customVariable.GetEntityNameDefiningThisTypeCategory() != element.Name;
+
+                    if(isStateDefinedInOtherEntity)
+                    {
+                        codeBlock.Line(StringHelper.Modifiers(Public: true, Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name) + ";");
+
+                    }
+
+
+                    else if (IsVariableTunnelingToDisabledObject(customVariable, element))
                     {
                         // If it's a varaible
                         // that is exposing a
@@ -798,7 +812,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 else
                 {
-                    customVariableType = element.Name.Replace("\\", ".") + "." + customVariableType;
+                    var isQualified = customVariableType.Contains('.');
+                    if(isQualified == false)
+                    {
+                        customVariableType = element.Name.Replace("\\", ".") + "." + customVariableType;
+                    }
                 }
             }
             // CSVs may happen to be named the same as base types - like "Resources",

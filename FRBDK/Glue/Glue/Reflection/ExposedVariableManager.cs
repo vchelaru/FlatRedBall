@@ -1053,7 +1053,7 @@ namespace FlatRedBall.Glue.Reflection
             return toReturn;
         }
 
-        public static List<string> GetAvailableNewVariableTypes(bool allowNone = true)
+        public static List<string> GetAvailableNewVariableTypes(bool allowNone = true, bool includeStateCategories = false)
         {
             List<string> toReturn = new List<string>();
 
@@ -1095,6 +1095,13 @@ namespace FlatRedBall.Glue.Reflection
                 }
             }
 
+            // June 17, 2018
+            // Currently only
+            // Entity State Categories
+            // are included here. Not sure
+            // if screens are needed...if so
+            // add them later.
+
             foreach (IElement entity in ObjectFinder.Self.GlueProject.Entities)
             {
                 if (entity != null)
@@ -1105,6 +1112,15 @@ namespace FlatRedBall.Glue.Reflection
                         {
                             string type = rfs.GetTypeForCsvFile();
                             toReturn.Add(type);
+                        }
+                    }
+
+                    if(includeStateCategories)
+                    {
+                        foreach(var category in entity.StateCategoryList)
+                        {
+                            string name = $"{entity.Name.Replace("\\", ".")}.{category.Name}";
+                            toReturn.Add(name);
                         }
                     }
                 }
