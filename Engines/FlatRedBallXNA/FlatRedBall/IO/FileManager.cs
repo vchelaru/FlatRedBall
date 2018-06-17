@@ -2136,6 +2136,8 @@ namespace FlatRedBall.IO
                 XmlSerializer serializer = GetXmlSerializer(type);
                 Encoding utf8EncodingWithNoByteOrderMark = new UTF8Encoding(encoderShouldEmitUTF8Identifier:false);
                 XmlTextWriter xtw = new XmlTextWriter(memoryStream, utf8EncodingWithNoByteOrderMark);
+                xtw.Indentation = 2;
+                xtw.Formatting = Formatting.Indented;
                 serializer.Serialize(xtw, objectToSerialize);
                 
 
