@@ -37,6 +37,27 @@ namespace FlatRedBall.Input
         }
     }
 
+    public static class I1DInputExtensions
+    {
+        public static Multiple1DInputs Or(this I1DInput thisInput, I1DInput input)
+        {
+            Multiple1DInputs toReturn;
+            if (thisInput is MultiplePressableInputs)
+            {
+                toReturn = (Multiple1DInputs)thisInput;
+            }
+            else
+            {
+                toReturn = new Multiple1DInputs();
+                toReturn.Inputs.Add(thisInput);
+            }
+
+            toReturn.Inputs.Add(input);
+
+            return toReturn;
+        }
+    }
+
     public class Multiple1DInputs : I1DInput
     {
         public List<I1DInput> Inputs
