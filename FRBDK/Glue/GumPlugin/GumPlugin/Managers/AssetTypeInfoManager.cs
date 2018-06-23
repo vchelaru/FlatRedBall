@@ -342,8 +342,9 @@ namespace GumPlugin.Managers
 
                 foreach (var state in states)
                 {
+                    var variablesForState = state.Variables.Where(item => !string.IsNullOrEmpty(item.ExposedAsName) || string.IsNullOrEmpty(item.SourceObject)).ToArray();
 
-                    foreach (var variable in state.Variables.Where(item => !string.IsNullOrEmpty(item.ExposedAsName) || string.IsNullOrEmpty(item.SourceObject)))
+                    foreach (var variable in variablesForState)
                     {
                         string variableName = (variable.ExposedAsName ?? variable.Name).Replace(" ", "");
 

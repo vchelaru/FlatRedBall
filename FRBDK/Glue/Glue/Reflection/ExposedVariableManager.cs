@@ -497,6 +497,10 @@ namespace FlatRedBall.Glue.Reflection
                     {
                         return namedObject.ClassType;
                     }
+                    else if(ati != null && ati.VariableDefinitions.Any(item =>item.Name == variableName))
+                    {
+                        foundType = ati.VariableDefinitions.First(item => item.Name == variableName).Type;
+                    }
                     else if (ati != null && ati.CachedExtraVariables.Any(item => item.Member == variableName))
                     {
                         foundType = ati.CachedExtraVariables.First(item => item.Member == variableName).Type;
