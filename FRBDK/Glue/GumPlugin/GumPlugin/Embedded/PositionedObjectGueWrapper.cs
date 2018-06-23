@@ -46,12 +46,30 @@ namespace GumCoreShared.FlatRedBall.Embedded
             gumObject.Parent = GumParent;
         }
 
+        public override void ForceUpdateDependencies()
+        {
+            base.ForceUpdateDependencies();
+            UpdateGumObject();
+
+        }
+
+        public override void ForceUpdateDependenciesDeep()
+        {
+            base.ForceUpdateDependenciesDeep();
+            UpdateGumObject();
+        }
+
         public override void UpdateDependencies(double currentTime)
         {
             base.UpdateDependencies(currentTime);
+            UpdateGumObject();
+        }
+
+        private void UpdateGumObject()
+        {
 
             // This is going to get positioned according to the FRB object. I guess we'll force update dependencies, which is expensive...
-            FrbObject.UpdateDependencies(currentTime);
+            FrbObject.ForceUpdateDependencies();
 
             // todo - need to support multiple cameras and layers
             var camera = Camera.Main;
@@ -75,7 +93,9 @@ namespace GumCoreShared.FlatRedBall.Embedded
             GumParent.X = screenX / zoom;
             GumParent.Y = screenY / zoom;
 
-            if(frbObjectAsScalable != null)
+            GumParent.Rotation = Microsoft.Xna.Framework.MathHelper.ToDegrees(this.FrbObject.RotationZ);
+
+            if (frbObjectAsScalable != null)
             {
                 GumParent.Width = frbObjectAsScalable.ScaleX * 2;
                 GumParent.Height = frbObjectAsScalable.ScaleY * 2;

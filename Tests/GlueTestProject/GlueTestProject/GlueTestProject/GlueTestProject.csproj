@@ -442,6 +442,10 @@
     <Compile Include="Entities\GumComponentContainer.Generated.cs">
       <DependentUpon>GumComponentContainer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\GumRuntimeEntity.cs" />
+    <Compile Include="Entities\GumRuntimeEntity.Generated.cs">
+      <DependentUpon>GumRuntimeEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\HasPublicPropertyEntity.cs" />
     <Compile Include="Entities\HasPublicPropertyEntity.Generated.cs">
       <DependentUpon>HasPublicPropertyEntity.cs</DependentUpon>

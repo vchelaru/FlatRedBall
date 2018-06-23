@@ -20,6 +20,8 @@ using GlueTestProject.TestFramework;
 using Gum.Wireframe;
 using GlueTestProject.GumRuntimes;
 using System.Linq;
+using RenderingLibrary;
+using RenderingLibrary.Graphics;
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -74,6 +76,17 @@ namespace GlueTestProject.Screens
 
             // Move this to the right so it isn't at 0,0
             GumComponentContainer_ForAttachment.X = 100;
+
+            TestRotation();
+        }
+
+        private void TestRotation()
+        {
+            // any non-zero value
+            GumRuntimeEntityInstanceForRotation.RotationZ = 1;
+            GumRuntimeEntityInstanceForRotation.X = 200;
+            GumRuntimeEntityInstanceForRotation.Y = 200;
+
         }
 
         private void PerformDependsOnChildrenTest()
@@ -157,6 +170,13 @@ namespace GlueTestProject.Screens
             if(this.ActivityCallCount == 2)
             {
                 GumComponentContainer_ForAttachment.VerifyGumOnFrbAttachments();
+
+                var textInstance = this.GumRuntimeEntityInstanceForRotation.TextRuntimeInstance.RenderableComponent
+                    as IRenderableIpso;
+
+                var rotation = textInstance.GetAbsoluteRotation();
+                rotation.ShouldBeGreaterThan(0);
+
             }
 
 
