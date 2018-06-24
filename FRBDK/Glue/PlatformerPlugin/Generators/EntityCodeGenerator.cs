@@ -380,7 +380,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 }
             }
 
-            if (this.CurrentMovement.AccelerationTimeX <= 0)
+            if (this.CurrentMovement.AccelerationTimeX <= 0 || this.CurrentMovement.UsesAcceleration == false)
             {
                 this.XVelocity = horizontalRatio * maxSpeed;
             }

@@ -294,7 +294,6 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
 
         }
 
-
         internal PlatformerValues ToValues()
         {
             var toReturn = new PlatformerValues();
@@ -302,6 +301,7 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
 
             toReturn.Name = Name;
             toReturn.MaxSpeedX = MaxSpeedX;
+
             toReturn.AccelerationTimeX = AccelerationTimeX;
             toReturn.DecelerationTimeX = DecelerationTimeX;
             toReturn.Gravity = Gravity;
@@ -330,6 +330,11 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
 
 
             return toReturn;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }
