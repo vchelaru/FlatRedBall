@@ -69,7 +69,10 @@ namespace FlatRedBall.Glue.VSHelpers
         /// ProjectNamespace.Folder.FileName.cs</param>
         public void Add(string resourceName)
         {
-            mFilesToAdd.Add(resourceName);
+            lock(mFilesToAdd)
+            {
+                mFilesToAdd.Add(resourceName);
+            }
 
         }
         
@@ -77,7 +80,10 @@ namespace FlatRedBall.Glue.VSHelpers
         {
             List<string> filesInFolder = GetItemsInFolder(folderName, assembly);
 
-            mFilesToAdd.AddRange(filesInFolder);
+            lock (mFilesToAdd)
+            {
+                mFilesToAdd.AddRange(filesInFolder);
+            }
         }
 
         public List<string> GetItemsInFolder(string folderName, Assembly assembly)

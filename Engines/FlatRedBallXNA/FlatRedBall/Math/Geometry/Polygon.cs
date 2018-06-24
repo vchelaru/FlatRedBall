@@ -112,6 +112,11 @@ namespace FlatRedBall.Math.Geometry
         /// <summary>
         /// The Position-relative points of the Polygon.
         /// </summary>
+        /// <remarks>
+        /// This value can be assigned to completely replace the points in a polygon.
+        /// Changing this list updates the Vertices internally and immediately
+        /// makes the polygon available for rendering.
+        /// </remarks>
         #endregion
         public IList<Point> Points
         {
