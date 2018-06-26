@@ -21,27 +21,10 @@ namespace DialogTreePlugin.Generators
 
         internal void GenerateFor(string fileName, string contents)
         {
-            int numberOfTimesToTry = 4;
-            int numberOfFailures = 0;
-            bool succeeded = false;
-            while (numberOfFailures < numberOfTimesToTry)
+            GlueCommands.Self.TryMultipleTimes(() =>
             {
-                try
-                {
-                    FileManager.SaveText(contents, fileName);
-
-                    succeeded = true;
-                    break;
-                }
-                catch (Exception e)
-                {
-                    numberOfFailures++;
-                    if (numberOfFailures == numberOfTimesToTry)
-                    {
-                        PluginManager.ReceiveError(e.ToString());
-                    }
-                }
-            }
+                FileManager.SaveText(contents, fileName);
+            }, 5);
         }
     }
 }

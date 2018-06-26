@@ -11,6 +11,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.PlatformerPlugin.Controllers;
 using FlatRedBall.PlatformerPlugin.Views;
 using FlatRedBall.PlatformerPlugin.Generators;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.PlatformerPlugin
 {
@@ -41,7 +42,8 @@ namespace FlatRedBall.PlatformerPlugin
                 //       by moving enums to a separate file.
                 // 1.3.1 - Removed max/min velocity, so platformer characters can get shot off faster than max velocity and
                 //          they will eventually regain control.
-                return new Version(1, 3, 1);
+                // 1.3.2 - Enum is now automatically generated whenever project is loaded in case it's missing (old projects won't have this, maybe deleted by user).
+                return new Version(1, 3, 2);
             }
         }
 
@@ -51,6 +53,19 @@ namespace FlatRedBall.PlatformerPlugin
         {
             base.RegisterCodeGenerator(new EntityCodeGenerator());
             this.ReactToItemSelectHandler += HandleItemSelected;
+            this.ReactToLoadedGlux += HandleGluxLoaded;
+        }
+
+        private void HandleGluxLoaded()
+        {
+            var anyPlatformer = GlueState.Self.CurrentGlueProject.Entities.Any(item =>
+                (bool)item.Properties.GetValue("IsPlatformer") == true);
+
+            if(anyPlatformer)
+            {
+                // just in case it's not there:
+                new EnumFileGenerator().GenerateAndSaveEnumFile();
+            }
         }
 
         private void HandleItemSelected(TreeNode selectedTreeNode)
