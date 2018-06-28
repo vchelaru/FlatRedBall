@@ -163,6 +163,7 @@ namespace FlatRedBall.Glue.Elements
         public string AfterCustomActivityMethod;
 		public string DestroyMethod;
         public string RecycledDestroyMethod;
+        public string SetFromOtherCode;
 
         string mExtraVariablesPattern;
         public string ExtraVariablesPattern

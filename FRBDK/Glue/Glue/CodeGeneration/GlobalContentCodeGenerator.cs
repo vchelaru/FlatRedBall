@@ -417,9 +417,9 @@ namespace FlatRedBall.Glue.Parsing
                 // this function is called by passing an object (whatToReload). Localization
                 // databases don't create an object in GlobalContent, so there's nothing to reload.
                 // Therefore, the user will have to manually reload
-                item.IsDatabaseForLocalizing == false && 
+                item.IsDatabaseForLocalizing == false &&
                 item.LoadedAtRuntime &&
-                item.IsCsvOrTreatedAsCsv).ToList();
+                GetIfFileCanBeReloaded(item)).ToList();
 
             foreach (var rfs in toLoopThrough)
             {
@@ -430,6 +430,14 @@ namespace FlatRedBall.Glue.Parsing
                 }
 
             }
+        }
+
+        private static bool GetIfFileCanBeReloaded(ReferencedFileSave item)
+        {
+            var extension = FileManager.GetExtension(item.Name);
+            var assetTypeInfo = item.GetAssetTypeInfo();
+            return item.IsCsvOrTreatedAsCsv || 
+                assetTypeInfo?.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Graphics.Animation.AnimationChainList";
         }
 
         #endregion

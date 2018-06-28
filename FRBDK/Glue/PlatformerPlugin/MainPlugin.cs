@@ -58,8 +58,12 @@ namespace FlatRedBall.PlatformerPlugin
 
         private void HandleGluxLoaded()
         {
-            var anyPlatformer = GlueState.Self.CurrentGlueProject.Entities.Any(item =>
-                (bool)item.Properties.GetValue("IsPlatformer") == true);
+            var entities = GlueState.Self.CurrentGlueProject.Entities;
+            var anyPlatformer = entities.Any(item =>
+            {
+                var properties = item.Properties;
+                return properties.GetValue<bool>("IsPlatformer");
+            });
 
             if(anyPlatformer)
             {

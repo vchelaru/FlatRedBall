@@ -28,19 +28,6 @@ using Keys = Microsoft.DirectX.DirectInput.Key;
 
 namespace GlueTestProject.Entities
 {
-    public enum MovementType
-    {
-        Ground,
-        Air,
-        AfterDoubleJump
-    }
-
-    public enum HorizontalDirection
-    {
-        Left,
-        Right
-    }
-
 	public partial class PlatformerCharacterBase
     {
         #region Fields

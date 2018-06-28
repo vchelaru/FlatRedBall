@@ -359,6 +359,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>CsvFromTmx</Name>
     </None>
+    <None Include="GlobalContent\EmptyAnimationForReload.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EmptyAnimationForReload</Name>
+    </None>
     <None Include="GlobalContent\GlobalBmfcToFnt.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>GlobalBmfcToFnt</Name>

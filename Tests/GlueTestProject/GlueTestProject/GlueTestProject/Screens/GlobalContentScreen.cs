@@ -13,6 +13,8 @@ using FlatRedBall.Math.Splines;
 using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
 using FlatRedBall.Localization;
+using GlueTestProject.TestFramework;
+using FlatRedBall.Content.AnimationChain;
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -35,9 +37,25 @@ namespace GlueTestProject.Screens
             mMenuSongReference = MenuSong;
             mEmitterList = BackgroundEmitters;
             mEmitterListStartingCount = BackgroundEmitters.Count;
+
+            TestAchxReloading();
 		}
 
-		void CustomActivity(bool firstTimeCalled)
+        private void TestAchxReloading()
+        {
+            var animationChain = GlobalContent.EmptyAnimationForReload;
+            animationChain.Count.ShouldBe(0);
+
+            animationChain.Add(new AnimationChain());
+            animationChain.Count.ShouldBe(1);
+
+            GlobalContent.Reload(GlobalContent.EmptyAnimationForReload);
+
+            var reloaded = GlobalContent.EmptyAnimationForReload;
+            reloaded.Count.ShouldBe(0);
+        }
+
+        void CustomActivity(bool firstTimeCalled)
 		{
 
             if (!firstTimeCalled)

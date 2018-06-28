@@ -944,9 +944,22 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         // If it's not a CSV, then we only support loading if the load type is complete
                         // I don't know if I'll want to change this (or if I can) in the future.
+                        // Update 6/27/2018
+                        // We want to maintain the instance in case the object is referenced by something else, like an animation chain
                         if (loadType == LoadType.CompleteLoad)
                         {
                             GenerateInitializationForAssetTypeInfoRfs(referencedFile, codeBlock, container, fileName, ati, project);
+                        }
+                        else
+                        {
+                            var innerBlock = codeBlock.Block();
+
+                            innerBlock.Line("var cm = FlatRedBall.FlatRedBallServices.GetContentManagerByName(\"Global\");");
+                            innerBlock.Line($"cm.UnloadAsset({referencedFile.GetInstanceName()});");
+                            
+                            string code =
+                                $"{referencedFile.GetInstanceName()} = FlatRedBall.FlatRedBallServices.Load<{ati.QualifiedRuntimeTypeName.QualifiedType}>(\"{fileName}\");";
+                            innerBlock.Line(code);
                         }
                     }
                     else if(referencedFile.IsCsvOrTreatedAsCsv)
