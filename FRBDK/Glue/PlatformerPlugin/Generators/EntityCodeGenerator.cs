@@ -40,6 +40,8 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             codeBlock.Line("/// </summary>");
             codeBlock.Line("bool mIsOnGround = false;");
 
+            codeBlock.Line("private float lastNonZeroPlatformerHorizontalMaxSpeed = 0;");
+
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// Whether the character has hit its head on a solid");
             codeBlock.Line("/// collision this frame. This typically occurs when the");
@@ -285,6 +287,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
         private void UpdateCurrentMovement()
         {
+            if(mCurrentMovement ?.MaxSpeedX > 0)
+            {
+                lastNonZeroPlatformerHorizontalMaxSpeed = mCurrentMovement.MaxSpeedX;
+            }
+
             switch (mMovementType)
             {
                 case MovementType.Ground:
@@ -401,7 +408,15 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 }
                 else
                 {
-                    acceleration = maxSpeed / CurrentMovement.DecelerationTimeX;
+                    // if slowing down and max speed is 0, use the last max speed
+                    if(maxSpeed == 0)
+                    {
+                        acceleration = lastNonZeroPlatformerHorizontalMaxSpeed / CurrentMovement.DecelerationTimeX;
+                    }
+                    else
+                    {
+                        acceleration = maxSpeed / CurrentMovement.DecelerationTimeX;
+                    }
                 }
                 
                 var perFrameVelocityChange = acceleration * TimeManager.SecondDifference;
