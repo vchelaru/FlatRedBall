@@ -917,6 +917,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TmxWithLayersWithProperties</Name>
     </None>
+    <None Include="Screens\TmxScreen\TmxWithShapes.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxWithShapes</Name>
+    </None>
     <None Include="Screens\TmxScreen\TmxWithTileProperties.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TmxWithTileProperties</Name>

@@ -62,6 +62,12 @@ namespace GlueTestProject.Screens
 
             TestTileSizeOnMapWithObjects();
 
+            // Make the shapes visible, to make sure that they get removed when the screen is destroyed:
+            foreach(var shapeCollection in TmxWithShapes.ShapeCollections)
+            {
+                shapeCollection.Visible = true;
+                shapeCollection.AddToManagers();
+            }
 		}
 
         private void TestTileSizeOnMapWithObjects()

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextobjectid="5">
+ <tileset firstgid="1" name="sheet_9" tilewidth="16" tileheight="16" tilecount="136" columns="17">
+  <image source="sheet_9.png" width="272" height="128"/>
+ </tileset>
+ <layer name="Layer2" width="50" height="50">
+  <properties>
+   <property name="Property1 (float)" value="333"/>
+   <property name="Property2 (bool)" value="false"/>
+   <property name="Property3 (int)" value="22"/>
+  </properties>
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3Ptw0CARQE0ZMwghxTAaaCAyrAVICpAFMBpncmIEDoI53I/jFPmmDDLQpJVTWoSS1qBzuLHvVpQMNgZzGiMU1oGuwsSprRnBbBzmJJK1rTJthZbGlHezoEO4sjnehMl2BncaUb3ekR7F91XnXfqoPPT3X59u1XlSRJkiRJkiRJkiT9lyfY5AqSECcAAA==
+  </data>
+ </layer>
+ <objectgroup name="ShapeLayer1">
+  <object id="1" x="144" y="48"/>
+  <object id="2" x="128" y="240">
+   <ellipse/>
+  </object>
+  <object id="3" x="272" y="32">
+   <polygon points="0,0 -64,112 192,96"/>
+  </object>
+  <object id="4" x="368" y="288">
+   <polygon points="0,0 64,224 -176,-112"/>
+  </object>
+ </objectgroup>
+</map>
