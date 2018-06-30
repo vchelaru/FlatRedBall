@@ -395,8 +395,10 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             {
                 var desiredSpeed = horizontalRatio * maxSpeed;
                 
-                var isSpeedingUp = (desiredSpeed > 0 && XVelocity < desiredSpeed) ||
-                    (desiredSpeed < 0 && XVelocity > desiredSpeed);
+                var isSpeedingUp = 
+                    XVelocity == 0 && desiredSpeed != 0 ||
+                    ((desiredSpeed > 0 && XVelocity < desiredSpeed && XVelocity > 0) ||
+                    (desiredSpeed < 0 && XVelocity > desiredSpeed && XVelocity < 0));
                 
                 var absoluteValueVelocityDifference = System.Math.Abs(desiredSpeed - XVelocity);
                 
@@ -427,21 +429,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     acceleration = absoluteValueVelocityDifference * (1 / TimeManager.SecondDifference);
                 }
                 
-                if(desiredSpeed == 0)
-                {
-                    acceleration *= System.Math.Sign(XVelocity) * -1;
-                }
-                else
-                {
-                    acceleration *= System.Math.Sign(desiredSpeed);
-                    if(isSpeedingUp == false)
-                    {
-                        acceleration *= -1;
-                    }
-                }
+                acceleration *= System.Math.Sign(desiredSpeed - XVelocity);
                 
                 this.XAcceleration = acceleration;
-
             }
         }
 
