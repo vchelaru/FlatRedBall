@@ -42,7 +42,8 @@ namespace GlueTestProject.Screens
                 throw new Exception("Width values from Gum fles are not being assigned.  Expected width: " + 150 + " but got width " + TopButton.Width);
             }
 
-            this.TopButton.GetTextRuntime().GetBitmapFont().ShouldNotBe(null, "because Texts should having their BitmapFont assigned, but seem to not be");
+            var buttonBitmapFont = this.TopButton.GetTextRuntime().GetBitmapFont();
+            buttonBitmapFont.ShouldNotBe(null, "because Texts should have their BitmapFont assigned, but seem to not be");
 
             this.NineSliceInstance.InternalNineSlice.BottomLeftTexture.ShouldNotBe(this.NineSliceInstance.InternalNineSlice.CenterTexture,
                 "because NineSliceInstance should use the texture pattern");
@@ -78,6 +79,10 @@ namespace GlueTestProject.Screens
             GumComponentContainer_ForAttachment.X = 100;
 
             TestRotation();
+
+            TrailingSpacesTextInstance.GetAbsoluteWidth().ShouldBeGreaterThan(200,
+                "because trailing spaces should not be removed, and should widen text objects that are sized by their children.");
+
         }
 
         private void TestRotation()

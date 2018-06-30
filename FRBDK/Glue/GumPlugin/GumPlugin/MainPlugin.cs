@@ -202,7 +202,9 @@ namespace GumPlugin
             // - Moved all embedded Gum objects to a folder structure with a .gumx so it can be edited easily.
             // 1.1
             // - Added support for UserControl
-            get { return new Version(1, 1, 0, 0); }
+            // 1.1.1 
+            // - Text no longer trims its trailing spaces, allowing spaces to grow auto-sized Text objects
+            get { return new Version(1, 1, 1, 0); }
         }
 
         #endregion
