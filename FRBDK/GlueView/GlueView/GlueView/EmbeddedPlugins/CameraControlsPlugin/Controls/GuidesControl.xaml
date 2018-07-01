@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:WpfDataUi="clr-namespace:WpfDataUi;assembly=WpfDataUi" 
              xmlns:local="clr-namespace:GlueView.EmbeddedPlugins.CameraControlsPlugin.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="300">
-    <StackPanel>
+    <StackPanel Orientation="Vertical">
         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding ShowOrigin}">Show Origin</CheckBox>
 
         <StackPanel Orientation="Horizontal">
@@ -20,5 +21,6 @@
             </Button.ToolTip>
             <Image Source="CameraIcon.png" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"></Image>
         </Button>
+        <WpfDataUi:DataUiGrid Name="DataGrid"></WpfDataUi:DataUiGrid>
     </StackPanel>
 </UserControl>

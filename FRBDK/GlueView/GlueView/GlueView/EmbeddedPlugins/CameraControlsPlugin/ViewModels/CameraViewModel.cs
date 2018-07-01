@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace GlueView.EmbeddedPlugins.CameraControlsPlugin.ViewModels
 {
-    class GuidesViewModel : ViewModel
+    public class CameraViewModel : ViewModel
     {
         public bool ShowOrigin
         {
@@ -32,5 +32,10 @@ namespace GlueView.EmbeddedPlugins.CameraControlsPlugin.ViewModels
             set { Set(value); }
         }
 
+        public object PropertyGridDisplayObject
+        {
+            get { return Get<object>(); }
+            set { Set(value); }
+        }
     }
 }

@@ -13,8 +13,8 @@ using FlatRedBall.Glue.GuiDisplay;
 using GlueView.Facades;
 using FlatRedBall.Glue.SaveClasses;
 using GlueView.Plugin;
-using GlueView.Forms.PropertyGrids;
 using EditorObjects;
+using GlueView.EmbeddedPlugins.CameraControlsPlugin.ViewModels;
 
 namespace GlueView.Forms
 {
@@ -24,6 +24,7 @@ namespace GlueView.Forms
         #region Fields
 
         const string GlueCameraSettings = "Glue Camera Settings";
+        CameraViewModel guidesViewModel;
 
         static CameraControl mSelf;
 
@@ -39,8 +40,9 @@ namespace GlueView.Forms
 
 
 
-        public CameraControl(object guidesViewModel)
+        public CameraControl(CameraViewModel guidesViewModel)
         {
+            this.guidesViewModel = guidesViewModel;
             mSelf = this;
             InitializeComponent();
 
@@ -67,6 +69,11 @@ namespace GlueView.Forms
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             RefreshCamera();
+        }
+
+        public void UpdateDisplayedValues()
+        {
+            guidesControl1.UpdateDisplayedValues();
         }
 
         public void RefreshCamera()
@@ -102,7 +109,6 @@ namespace GlueView.Forms
 
 
             GuiManager.OverridingFieldOfView = MathFunctions.GetAspectRatioForSameSizeAtResolution(yResolution);
-            this.propertyGrid1.Refresh();
 
             PluginManager.ReactToResolutionChange();
         }
@@ -253,20 +259,11 @@ namespace GlueView.Forms
             SpriteManager.Camera.X = 0;
             SpriteManager.Camera.Y = 0;
             SpriteManager.Camera.Z = 40;
-
-            this.propertyGrid1.Refresh();
         }
 
         private void CameraControl_Load(object sender, EventArgs e)
         {
-            if(!DesignMode)
-            {
-                CameraDisplayer displayer = new CameraDisplayer();
-                displayer.Instance = SpriteManager.Camera;
-
-                displayer.PropertyGrid = this.propertyGrid1;
-
-            }
+            guidesViewModel.PropertyGridDisplayObject = SpriteManager.Camera;
         }
 
     }

@@ -21,7 +21,7 @@ namespace GlueView.MVVM
 
     }
 
-    class ViewModel : INotifyPropertyChanged
+    public class ViewModel : INotifyPropertyChanged
     {
         private Dictionary<string, object> propertyDictionary = new Dictionary<string, object>();
         Dictionary<string, List<string>> notifyRelationships = new Dictionary<string, List<string>>();

@@ -21,7 +21,11 @@ namespace GlueView.EmbeddedPlugins.CameraControlsPlugin
         #region Fields/Properties
 
         BoundsLogic boundsLogic;
-        GuidesViewModel guidesViewModel;
+        CameraViewModel guidesViewModel;
+        CameraControl cameraControl;
+
+        double lastCameraRefresh = 0;
+        double updateFrequency = 2;
 
         public override string FriendlyName
         {
@@ -45,13 +49,15 @@ namespace GlueView.EmbeddedPlugins.CameraControlsPlugin
         {
             boundsLogic = new CameraControlsPlugin.BoundsLogic();
 
-            guidesViewModel = new GuidesViewModel();
+            guidesViewModel = new CameraViewModel();
             guidesViewModel.PropertyChanged += HandleGuidesPropertyChanged;
 
             guidesViewModel.CellSize = 20;
 
+            cameraControl = new CameraControl(guidesViewModel);
+
             GlueViewCommands.Self.CollapsibleFormCommands.AddCollapsableForm(
-                "Camera", -1, new CameraControl(guidesViewModel), this);
+                "Camera", -1, cameraControl, this);
 
             this.ElementLoaded += HandleElementLoaded;
 
@@ -86,22 +92,27 @@ namespace GlueView.EmbeddedPlugins.CameraControlsPlugin
         private void HandleUpdate(object sender, EventArgs e)
         {
             EditorObjects.CameraMethods.MouseCameraControl(FlatRedBall.Camera.Main);
-            // This causes more problems that is worth
+            // This causes more problems than is worth
             //EditorObjects.CameraMethods.KeyboardCameraControl(SpriteManager.Camera);
 
+            if(TimeManager.SecondsSince(lastCameraRefresh) > updateFrequency)
+            {
+                lastCameraRefresh = TimeManager.CurrentTime;
+                cameraControl.UpdateDisplayedValues();
+            }
         }
 
         private void HandleGuidesPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
-                case nameof(GuidesViewModel.ShowOrigin):
+                case nameof(CameraViewModel.ShowOrigin):
                     boundsLogic.ShowOrigin = guidesViewModel.ShowOrigin;
                     break;
-                case nameof(GuidesViewModel.ShowGrid):
+                case nameof(CameraViewModel.ShowGrid):
                     boundsLogic.ShowGrid = guidesViewModel.ShowGrid;
                     break;
-                case nameof(GuidesViewModel.CellSize):
+                case nameof(CameraViewModel.CellSize):
                     boundsLogic.CellSize = guidesViewModel.CellSize;
                     break;
             }
