@@ -84,6 +84,10 @@ namespace FlatRedBall.Glue
         PositionedObjectList<ElementRuntime> mElementsInList;
         IElement mAssociatedIElement;
         NamedObjectSave mAssociatedNamedObjectSave;
+
+        /// <summary>
+        /// The object that the ElementRuntime wraps. This can be a primitive type like a Sprite or a Text object.
+        /// </summary>
         object mDirectObjectReference;
         String mCurrentStateName;
         
@@ -1874,6 +1878,11 @@ namespace FlatRedBall.Glue
 
 
                             PositionedObject asPositionedObject = elementRuntime.mDirectObjectReference as PositionedObject;
+
+                            if(asPositionedObject == null)
+                            {
+                                throw new Exception("The directObjectReference should be a PositionedObject, but it's not");
+                            }
 
                             if (asPositionedObject.Parent != null)
                             {

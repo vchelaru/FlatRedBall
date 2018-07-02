@@ -49,7 +49,9 @@ namespace FlatRedBall.Glue.RuntimeObjects
             PositionedObjectList<ElementRuntime> listToPopulate, ElementRuntime elementRuntime) where T : new()
         {
             int length = namedObjectSave.SourceName.Length;
-            int indexOfType = namedObjectSave.SourceName.IndexOf("(");
+            // need to use the last index of ( in case the name has a "(" in it)
+            //int indexOfType = namedObjectSave.SourceName.IndexOf("(");
+            int indexOfType = namedObjectSave.SourceName.LastIndexOf("(");
 
             string objectType = namedObjectSave.SourceName.Substring(indexOfType, length - (indexOfType));
             string sourceFile = namedObjectSave.SourceFile;
@@ -230,7 +232,9 @@ namespace FlatRedBall.Glue.RuntimeObjects
             bool shouldClone = rfs != null && (rfs.IsSharedStatic && !(container is ScreenSave)) && !pullsFromEntireNamedObject;
             object toReturn = null;
 
-            int indexOfType = objectToLoad.SourceName.IndexOf("(");
+            // This could have a ( in the name in a file like .scnx, so use the last (
+            //int indexOfType = objectToLoad.SourceName.IndexOf("(");
+            int indexOfType = objectToLoad.SourceName.LastIndexOf("(");
 
             string objectName = objectToLoad.SourceName.Substring(0, indexOfType - 1);
 
