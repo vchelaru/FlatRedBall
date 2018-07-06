@@ -533,36 +533,6 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>string</Type>
-      <Name>TrailingSpacesTextInstance.Text</Name>
-      <Value xsi:type="xsd:string">Trailing Spaces                            </Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>float</Type>
-      <Name>TrailingSpacesTextInstance.Width</Name>
-      <Value xsi:type="xsd:float">0</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>DimensionUnitType</Type>
-      <Name>TrailingSpacesTextInstance.Width Units</Name>
-      <Value xsi:type="xsd:int">4</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>float</Type>
-      <Name>TrailingSpacesTextInstance.X</Name>
-      <Value xsi:type="xsd:float">11</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>float</Type>
-      <Name>TrailingSpacesTextInstance.Y</Name>
-      <Value xsi:type="xsd:float">4</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
       <Type>float</Type>
       <Name>TopButton.Y</Name>
       <Value xsi:type="xsd:float">42</Value>
@@ -596,6 +566,36 @@
       <Type>float</Type>
       <Name>TopToBottomStackTest.Y</Name>
       <Value xsi:type="xsd:float">524</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>TrailingSpacesTextInstance.Text</Name>
+      <Value xsi:type="xsd:string">Trailing Spaces                            </Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TrailingSpacesTextInstance.Width</Name>
+      <Value xsi:type="xsd:float">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>DimensionUnitType</Type>
+      <Name>TrailingSpacesTextInstance.Width Units</Name>
+      <Value xsi:type="xsd:int">4</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TrailingSpacesTextInstance.X</Name>
+      <Value xsi:type="xsd:float">11</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TrailingSpacesTextInstance.Y</Name>
+      <Value xsi:type="xsd:float">4</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>

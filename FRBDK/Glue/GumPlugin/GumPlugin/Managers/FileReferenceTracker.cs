@@ -240,7 +240,9 @@ namespace GumPlugin.Managers
             foreach (var variable in state.Variables.Where(item => 
                 (item.GetRootName() == "Font" ||
                     item.GetRootName() == "FontSize" || 
-                    item.GetRootName() == "OutlineThickness" ) 
+                    item.GetRootName() == "OutlineThickness" ||
+                    item.GetRootName() == "UseFontSmoothing"
+                    ) 
                 && item.Value != null
                 ))
             {
@@ -257,21 +259,24 @@ namespace GumPlugin.Managers
                     var fontSizeVariableName = prefix + "FontSize";
                     var fontNameVariableName = prefix + "Font";
                     var fontOutlineVariableName = prefix + "OutlineThickness";
+                    var fontSmoothingVariableName = prefix + "UseFontSmoothing";
+
 
                     int fontSizeValue = rvf.GetValue<int>(fontSizeVariableName);
                     string fontNameValue = rvf.GetValue<string>(fontNameVariableName);
                     int outlineThickness = rvf.GetValue<int>(fontOutlineVariableName);
+                    bool useFontSmoothing = rvf.GetValue<bool>(fontSmoothingVariableName);
 
-                    TryAddFontFromSizeAndName(topLevelOrRecursive, listToFill, fontSizeValue, fontNameValue, outlineThickness);
+                    TryAddFontFromSizeAndName(topLevelOrRecursive, listToFill, fontSizeValue, fontNameValue, outlineThickness, useFontSmoothing);
                 }
             }
         }
 
-        private static void TryAddFontFromSizeAndName(TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, int fontSizeValue, string fontNameValue, int outlineThickness)
+        private static void TryAddFontFromSizeAndName(TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, int fontSizeValue, string fontNameValue, int outlineThickness, bool useFontSmoothing)
         {
             if (!string.IsNullOrEmpty(fontNameValue))
             {
-                string fontFileName = global::RenderingLibrary.Graphics.Fonts.BmfcSave.GetFontCacheFileNameFor(fontSizeValue, fontNameValue, outlineThickness);
+                string fontFileName = global::RenderingLibrary.Graphics.Fonts.BmfcSave.GetFontCacheFileNameFor(fontSizeValue, fontNameValue, outlineThickness, useFontSmoothing);
 
                 fontFileName = FileManager.RelativeDirectory + fontFileName;
 

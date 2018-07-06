@@ -77,6 +77,7 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("Height");
             mVariableNamesToSkipForProperties.Add("Visible");
             mVariableNamesToSkipForProperties.Add("OutlineThickness");
+            mVariableNamesToSkipForProperties.Add("UseFontSmoothing");
 
             mVariableNamesToSkipForProperties.Add("HasEvents");
             mVariableNamesToSkipForProperties.Add("ExposeChildrenEvents");
