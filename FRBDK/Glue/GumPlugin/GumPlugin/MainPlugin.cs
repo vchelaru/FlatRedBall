@@ -206,7 +206,11 @@ namespace GumPlugin
             // - Text no longer trims its trailing spaces, allowing spaces to grow auto-sized Text objects
             // 1.2 
             // - Added support for text objects with automatically generated fonts to specify if they use font smoothing.
-            get { return new Version(1, 2, 0, 0); }
+            // 1.2.1
+            // - If an object has text-based variables (like Font), but it is not a text object, the object will no longer
+            //   report a referenced file. This fixes a bug that can happen when an old Text object gets converted to a different
+            //   type like a component
+            get { return new Version(1, 2, 1, 0); }
         }
 
         #endregion

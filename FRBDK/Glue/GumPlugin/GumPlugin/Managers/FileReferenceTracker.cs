@@ -248,26 +248,45 @@ namespace GumPlugin.Managers
             {
                 string prefix = null;
 
+                // Just because this has a variable for Font or FontSize or whatever doesn't
+                // necessarily mean that this is a text object - it could have been an instance
+                // that at one time was a text object, but was later converted to a different type
+                // which no longer uses fonts. To handle this case we want to only consider this a referenced
+                // file if Coo
+                var isTextObject = true;
+
                 if (variable.Name.Contains('.'))
                 {
+                    var instanceName = FileManager.RemoveExtension(variable.Name);
+
                     prefix = FileManager.RemoveExtension(variable.Name) + ".";
+
+                    var instance = state.ParentContainer.GetInstance(instanceName);
+
+                    var basicElement = ObjectFinder.Self.GetRootStandardElementSave( instance.GetBaseElementSave());
+
+                    isTextObject = basicElement?.Name == "Text";
                 }
 
-                bool useCustomFont = rvf.GetValue<bool>(prefix + "UseCustomFont");
-                if (!useCustomFont)
+
+                if(isTextObject)
                 {
-                    var fontSizeVariableName = prefix + "FontSize";
-                    var fontNameVariableName = prefix + "Font";
-                    var fontOutlineVariableName = prefix + "OutlineThickness";
-                    var fontSmoothingVariableName = prefix + "UseFontSmoothing";
+                    bool useCustomFont = rvf.GetValue<bool>(prefix + "UseCustomFont");
+                    if (!useCustomFont)
+                    {
+                        var fontSizeVariableName = prefix + "FontSize";
+                        var fontNameVariableName = prefix + "Font";
+                        var fontOutlineVariableName = prefix + "OutlineThickness";
+                        var fontSmoothingVariableName = prefix + "UseFontSmoothing";
 
 
-                    int fontSizeValue = rvf.GetValue<int>(fontSizeVariableName);
-                    string fontNameValue = rvf.GetValue<string>(fontNameVariableName);
-                    int outlineThickness = rvf.GetValue<int>(fontOutlineVariableName);
-                    bool useFontSmoothing = rvf.GetValue<bool>(fontSmoothingVariableName);
+                        int fontSizeValue = rvf.GetValue<int>(fontSizeVariableName);
+                        string fontNameValue = rvf.GetValue<string>(fontNameVariableName);
+                        int outlineThickness = rvf.GetValue<int>(fontOutlineVariableName);
+                        bool useFontSmoothing = rvf.GetValue<bool>(fontSmoothingVariableName);
 
-                    TryAddFontFromSizeAndName(topLevelOrRecursive, listToFill, fontSizeValue, fontNameValue, outlineThickness, useFontSmoothing);
+                        TryAddFontFromSizeAndName(topLevelOrRecursive, listToFill, fontSizeValue, fontNameValue, outlineThickness, useFontSmoothing);
+                    }
                 }
             }
         }

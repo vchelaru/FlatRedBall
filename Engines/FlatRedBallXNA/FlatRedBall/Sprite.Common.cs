@@ -214,11 +214,19 @@ namespace FlatRedBall
 
                     if (!wasAnimationSet)
                     {
-                        string error = "There is no animation named " + value + ".\nAvailable animations are:";
+                        string error = "There is no animation named " + value;
 
-                        for (int i = 0; i < mAnimationChains.Count; i++)
+                        if(mAnimationChains.Count == 0)
                         {
-                            error += "\n" + mAnimationChains[i].Name;
+                            error += "\nThis sprite has no animations";
+                        }
+                        else
+                        {
+                            error += "\nAvailable animations are:";
+                            for (int i = 0; i < mAnimationChains.Count; i++)
+                            {
+                                error += "\n" + mAnimationChains[i].Name;
+                            }
                         }
                         throw new InvalidOperationException(error);
                     }

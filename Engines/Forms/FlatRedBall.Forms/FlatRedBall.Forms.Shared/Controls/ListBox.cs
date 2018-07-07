@@ -157,7 +157,9 @@ namespace FlatRedBall.Forms.Controls
 
                 if(listBoxFormsConstructor == null)
                 {
-                    throw new Exception($"Could not find a constructor for {ListBoxItemFormsType} which takes a single GraphicalUiElement argument");
+                    string message =
+                        $"Could not find a constructor for {ListBoxItemFormsType} which takes a single GraphicalUiElement argument. If you defined {ListBoxItemFormsType} without specifying a constructor, you need to add a constructor which takes a GraphicalUiElement and calls the base constructor.";
+                    throw new Exception(message);
                 }
 
                 item = listBoxFormsConstructor.Invoke(new object[] { visual }) as ListBoxItem;

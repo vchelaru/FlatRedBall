@@ -569,13 +569,21 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>UsedToInheritFromTextComponent</Name>
     </None>
-    <None Include="GumProject\FontCache\Font18Arial.fnt">
+    <None Include="gumproject\fontcache\font18arial.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>Font18Arial</Name>
+      <Name>font18arial</Name>
     </None>
-    <None Include="GumProject\FontCache\Font18Arial_0.png">
+    <None Include="gumproject\fontcache\Font18Arial_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Font18Arial_0</Name>
+    </None>
+    <None Include="gumproject\fontcache\font18arial_nosmooth.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>font18arial_nosmooth</Name>
+    </None>
+    <None Include="gumproject\fontcache\Font18Arial_noSmooth_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Font18Arial_noSmooth_0</Name>
     </None>
     <None Include="GumProject\FontCache\Font18Arial_o1.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -585,11 +593,19 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Font18Arial_o1_0</Name>
     </None>
-    <None Include="GumProject\FontCache\Font22Arial.fnt">
+    <None Include="gumproject\fontcache\font18arial_o1_nosmooth.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>Font22Arial</Name>
+      <Name>font18arial_o1_nosmooth</Name>
     </None>
-    <None Include="GumProject\FontCache\Font22Arial_0.png">
+    <None Include="gumproject\fontcache\Font18Arial_o1_noSmooth_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Font18Arial_o1_noSmooth_0</Name>
+    </None>
+    <None Include="gumproject\fontcache\font22arial.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>font22arial</Name>
+    </None>
+    <None Include="gumproject\fontcache\Font22Arial_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Font22Arial_0</Name>
     </None>
