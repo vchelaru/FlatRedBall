@@ -24,7 +24,8 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 var fullFile = GlueState.Self.CurrentGlueProjectDirectory + relativeDirectory;
 
-                System.IO.File.WriteAllText(fullFile, contents);
+                GlueCommands.Self.TryMultipleTimes(() =>
+                    System.IO.File.WriteAllText(fullFile, contents));
 
             }, "Adding platformer enum files to the project");
 

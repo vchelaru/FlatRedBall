@@ -46,7 +46,8 @@ namespace FlatRedBall.PlatformerPlugin
                 // 1.3.3 - Changing the movement values to a set of values with deceleration and 0 max speed
                 //         uses the last variable's max speed, so that the character doesn't keep sliding.
                 // 1.3.4 - Fixed bug where deceleration would sometimes not use the slowdown speed.
-                return new Version(1, 3, 4);
+                // 1.3.5 - Fixed possible crash when generating enums.
+                return new Version(1, 3, 5);
             }
         }
 
