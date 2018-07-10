@@ -8,6 +8,8 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
     {
         private string _value;
 
+        public string Value => _value;
+
         public CodeLine(string value)
         {
             _value = value;
@@ -97,6 +99,19 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
             pCodeBlock.BodyCodeLines.Add(returnValue);
 
             return pCodeBlock;
+        }
+
+        public static bool HasLine(this ICodeBlock pCodeBlock, string value)
+        {
+            foreach(var line in pCodeBlock.BodyCodeLines)
+            {
+                if(line is CodeLine && ((CodeLine)line).Value == value)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

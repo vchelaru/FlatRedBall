@@ -2422,35 +2422,67 @@ namespace FlatRedBallAddOns.Entities
         }
 
 
-        internal static void GenerateMethods(ICodeBlock codeBlock, IElement saveObject)
+        internal static void GenerateMethods(ICodeBlock codeBlock, IElement element)
         {
             var currentBlock = codeBlock;
 
 
-            CodeWriter.GeneratePostInitialize(codeBlock, saveObject);
+            CodeWriter.GeneratePostInitialize(codeBlock, element);
 
-            CodeWriter.GenerateAddToManagersBottomUp(currentBlock, saveObject, mReusableEntireFileRfses);
+            CodeWriter.GenerateAddToManagersBottomUp(currentBlock, element, mReusableEntireFileRfses);
 
-            CodeWriter.GenerateRemoveFromManagers(currentBlock, saveObject);
+            CodeWriter.GenerateRemoveFromManagers(currentBlock, element);
 
-            GenerateAssignCustomVariables(codeBlock, saveObject);
+            GenerateAssignCustomVariables(codeBlock, element);
 
-            CodeWriter.GenerateConvertToManuallyUpdated(currentBlock, saveObject, mReusableEntireFileRfses);
+            CodeWriter.GenerateConvertToManuallyUpdated(currentBlock, element, mReusableEntireFileRfses);
 
-            CodeWriter.GenerateLoadStaticContent(currentBlock, saveObject);
+            CodeWriter.GenerateLoadStaticContent(currentBlock, element);
 
-            currentBlock = CodeWriter.GenerateUnloadStaticContent(currentBlock, saveObject);
+            currentBlock = CodeWriter.GenerateUnloadStaticContent(currentBlock, element);
 
+            if(element is ScreenSave)
+            {
+                GeneratePauseThisScreen(currentBlock, element);
+
+                GenerateUnpauseThisScreen(currentBlock, element);
+            }
 
             foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators)
             {
-                currentBlock = codeGenerator.GenerateAdditionalMethods(currentBlock, saveObject);
+                currentBlock = codeGenerator.GenerateAdditionalMethods(currentBlock, element);
             }
 
             foreach (PluginManager pluginManager in PluginManager.GetInstances())
             {
-                CodeGeneratorPluginMethods.GenerateAdditionalMethodsPluginCode(pluginManager, codeBlock, saveObject);
+                CodeGeneratorPluginMethods.GenerateAdditionalMethodsPluginCode(pluginManager, codeBlock, element);
             }
+
+        }
+
+        private static void GeneratePauseThisScreen(ICodeBlock currentBlock, IElement element)
+        {
+            var methodBlock = currentBlock.Function("public override void", "PauseThisScreen", "");
+
+            foreach(var generator in CodeWriter.CodeGenerators)
+            {
+                generator.GeneratePauseThisScreen(methodBlock, element);
+            }
+
+            methodBlock.Line("base.PauseThisScreen();");
+        }
+
+        private static void GenerateUnpauseThisScreen(ICodeBlock currentBlock, IElement element)
+        {
+            var methodBlock = currentBlock.Function("public override void", "UnpauseThisScreen", "");
+
+            foreach (var generator in CodeWriter.CodeGenerators)
+            {
+                generator.GenerateUnpauseThisScreen(methodBlock, element);
+            }
+
+
+            methodBlock.Line("base.UnpauseThisScreen();");
 
         }
 

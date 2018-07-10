@@ -313,9 +313,16 @@ namespace FlatRedBall.Performance.Measurement
 
         private static string Compress(string body)
         {
+            // Vic July 9, 2018
+            // I think this was commented out because I never got it to work, but I just figured
+            // out the problem. I was writing to the GZipStream using the body's length instead of
+            // the # of bytes being written. I added the fix but kept the code commented out in case
+            // it's commented out for a reason...but I do think it will work now
+
             //MemoryStream memoryStream = new MemoryStream();
             //GZipStream zipStream = new GZipStream(memoryStream, CompressionMode.Compress);
-            //zipStream.Write(UTF8Encoding.UTF8.GetBytes(body), 0, body.Length);
+            // var bytesToWrite = UTF8Encoding.UTF8.GetBytes(body);
+            //zipStream.Write(bytesToWrite, 0, bytesToWrite.Length);
 
             //string compressed = Convert.ToBase64String(memoryStream.ToArray());
             //return compressed;

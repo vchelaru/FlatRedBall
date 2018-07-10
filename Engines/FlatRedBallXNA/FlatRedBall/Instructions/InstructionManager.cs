@@ -622,10 +622,11 @@ namespace FlatRedBall.Instructions
         /// Performs every-frame updates which include moving queued instructions to the main instruction list and
         /// executing instructions according to their TimeToExecute.
         /// </summary>
-        /// <param name="currentTime">The number of seconds since the start of application execution.</param>
-        public static void Update(double currentTime)
+        internal static void Update()
         {
             //Flush();
+
+            var currentTime = TimeManager.CurrentTime;
 
             Instructions.Instruction instruction;
 

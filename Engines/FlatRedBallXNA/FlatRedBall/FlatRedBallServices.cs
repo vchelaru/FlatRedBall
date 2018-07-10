@@ -1443,17 +1443,7 @@ namespace FlatRedBall
                 }
                 Debugging.Debugger.Update();
 
-#if FRB_MDX
-
-            if (!mIsInitialized)
-            {
-                return;
-            }
-
-            TimeManager.Update();
-#else
                 TimeManager.Update(gameTime);
-#endif
 
                 InputManager.Update();
                 // The InstructionManager should be updated BEFORE
@@ -1462,7 +1452,7 @@ namespace FlatRedBall
                 // which are needed in the individual objects' update methods.
                 // InstructionManager Update should happen *after* InputManager.Update 
                 // in case any instructions want to override input code.
-                InstructionManager.Update(TimeManager.CurrentTime);
+                InstructionManager.Update();
 
                 if (section != null)
                 {
@@ -1492,19 +1482,9 @@ namespace FlatRedBall
                     Section.GetAndStartContextAndTime("End of Update");
                 }
 
-#if !FRB_MDX
                 AudioManager.Update();
 
                 Renderer.Update();
-
-#endif
-
-#if !FRB_MDX && !MONOGAME && !XNA4
-                if (Renderer.UseRenderTargets)
-                {
-                    PostProcessingManager.Update();
-                }
-#endif
 
                 foreach (IManager manager in mManagers)
                 {
@@ -1513,27 +1493,12 @@ namespace FlatRedBall
 
                 DestroyContentManagersReadyToBeDestroyed();
 
-
-                // We used to do this earlier in the frame but I think it should
-                // be later because it can cause custom code to be executed.  So lets
-                // move it here:
-#if !XBOX360
                 if (!mIsCommandLine)
                 {
                     GuiManager.Control();
                 }
-#if SUPPORTS_FRB_DRAWN_GUI
-                GuiManager.Animate();
-#endif
 
 
-#endif
-
-
-                //TimeManager.TimeSection("InstructionManager Update");
-
-                // Getting rid of this
-                //BroadcastManager.Update();
                 if (section != null)
                 {
                     Section.EndContextAndTime();
@@ -1541,7 +1506,7 @@ namespace FlatRedBall
             }
         }
 
-#if XNA4 && !XBOX360 && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
         #region XML Docs
         /// <summary>
         /// The update method for command line games.  Does not render anything to the screen
@@ -1554,7 +1519,7 @@ namespace FlatRedBall
 
             TimeManager.Update(gameTime);
 
-            InstructionManager.Update(TimeManager.CurrentTime);
+            InstructionManager.Update();
 
             ShapeManager.Update();
 

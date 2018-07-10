@@ -94,6 +94,16 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
+        public virtual void GeneratePauseThisScreen(ICodeBlock codeBlock, IElement element)
+        {
+
+        }
+
+        public virtual void GenerateUnpauseThisScreen(ICodeBlock codeBlock, IElement element)
+        {
+
+        }
+
         public virtual bool HandlesVariable(CustomVariable variable, IElement element)
         {
             return false;
