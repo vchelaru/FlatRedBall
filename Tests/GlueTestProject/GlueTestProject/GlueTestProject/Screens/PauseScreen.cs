@@ -16,6 +16,8 @@ using FlatRedBall.Math.Splines;
 using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
 using FlatRedBall.Localization;
+using StateInterpolationPlugin;
+using GlueTestProject.TestFramework;
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -30,53 +32,8 @@ namespace GlueTestProject.Screens
 	{
 
 		void CustomInitialize()
-		{
-
-            // Let's make sure simply pausing and playing sounds works
-#if !IOS
-            // I could not get this to play.  I posted about it here:
-            // http://community.monogame.net/t/error-while-playing-soundeffect/1605
-            SoundEffectInstanceFile.Play();
-#endif
-
-
-#if !ANDROID && !IOS
-            if (SoundEffectInstanceFile.State != Microsoft.Xna.Framework.Audio.SoundState.Playing)
-            {
-                throw new Exception("Playing a sound doesn't put it in the Playing state");
-            }
-#endif
-            SoundEffectInstanceFile.Pause();
-
-			#if !ANDROID && !IOS
-            if (SoundEffectInstanceFile.State != Microsoft.Xna.Framework.Audio.SoundState.Paused)
-            {
-                throw new Exception("Pausing a sound doesn't put it in the Paused state");
-            }
-			#endif
-
-#if !IOS
-
-            SoundEffectInstanceFile.Play();
-#endif
-
-			#if !IOS && !ANDROID
-            // This fails on iOS MonoGame - not a FRB failure.
-            if (SoundEffectInstanceFile.State != Microsoft.Xna.Framework.Audio.SoundState.Playing)
-            {
-                throw new Exception("Playing a sound doesn't put it in the Playing state");
-            }
-#endif
-
-            // Turns out that on XNA 4 PC the 
-            // state doesn't immediately get set
-            // to stopped when calling stop.  We just
-            // have to deal with that I guess
-            //SoundEffectInstanceFile.Stop(true);
-            //if (SoundEffectInstanceFile.State != Microsoft.Xna.Framework.Audio.SoundState.Stopped)
-            //{
-            //    throw new Exception("Stopping a sound doesn't put it in the Stopped state");
-            //}
+        {
+            TestSoundEffectPlayAndPause();
 
 
 
@@ -99,7 +56,7 @@ namespace GlueTestProject.Screens
             // Actually, it could be stopped too, so let's allow that:
 
             // I had to increase the sleep time as sometimes the sound effect doesn't get enough time to stop
-            const int timeToSleep = 151;
+            const int timeToSleep = 152;
 #if WINDOWS_8
 
             new System.Threading.ManualResetEvent(false).WaitOne(timeToSleep);
@@ -111,7 +68,7 @@ namespace GlueTestProject.Screens
             {
                 throw new Exception("Pausing an entity doesn't pause its sounds. The sleep time may need to be increased if this is hit...");
             }
-			#endif
+#endif
 
             float interpolationTime = .5f;
 
@@ -138,7 +95,56 @@ namespace GlueTestProject.Screens
             {
                 throw new Exception("SpriteInstance XVelocity needs to be 0.");
             }
-		}
+        }
+
+        private static void TestSoundEffectPlayAndPause()
+        {
+            // Let's make sure simply pausing and playing sounds works
+#if !IOS
+            // I could not get this to play.  I posted about it here:
+            // http://community.monogame.net/t/error-while-playing-soundeffect/1605
+            SoundEffectInstanceFile.Play();
+#endif
+
+
+#if !ANDROID && !IOS
+            if (SoundEffectInstanceFile.State != Microsoft.Xna.Framework.Audio.SoundState.Playing)
+            {
+                throw new Exception("Playing a sound doesn't put it in the Playing state");
+            }
+#endif
+            SoundEffectInstanceFile.Pause();
+
+#if !ANDROID && !IOS
+            if (SoundEffectInstanceFile.State != Microsoft.Xna.Framework.Audio.SoundState.Paused)
+            {
+                throw new Exception("Pausing a sound doesn't put it in the Paused state");
+            }
+#endif
+
+#if !IOS
+
+            SoundEffectInstanceFile.Play();
+#endif
+
+#if !IOS && !ANDROID
+            // This fails on iOS MonoGame - not a FRB failure.
+            if (SoundEffectInstanceFile.State != Microsoft.Xna.Framework.Audio.SoundState.Playing)
+            {
+                throw new Exception("Playing a sound doesn't put it in the Playing state");
+            }
+#endif
+
+            // Turns out that on XNA 4 PC the 
+            // state doesn't immediately get set
+            // to stopped when calling stop.  We just
+            // have to deal with that I guess
+            //SoundEffectInstanceFile.Stop(true);
+            //if (SoundEffectInstanceFile.State != Microsoft.Xna.Framework.Audio.SoundState.Stopped)
+            //{
+            //    throw new Exception("Stopping a sound doesn't put it in the Stopped state");
+            //}
+        }
 
         bool mHasPerformedCheck = false;
 		void CustomActivity(bool firstTimeCalled)
@@ -184,12 +190,44 @@ namespace GlueTestProject.Screens
                     throw new Exception("Unpausing an entity doesn't unpause its sound");
                 }
 #endif
-                this.IsActivityFinished = true;
             }
 
+            TestPausingAndTweeners();
+
+            if(ActivityCallCount > 60)
+            {
+                this.IsActivityFinished = true;
+            }
 		}
 
-		void CustomDestroy()
+        float tweenerPositionAtFrame49;
+        private void TestPausingAndTweeners()
+        {
+
+            if (this.ActivityCallCount == 48)
+            {
+                TweenerObject.X.ShouldBe(0);
+                TweenerObject.Tween("X",
+                    to: 400,
+                    during: 1,
+                    interpolation: FlatRedBall.Glue.StateInterpolation.InterpolationType.Linear,
+                    easing: FlatRedBall.Glue.StateInterpolation.Easing.Out);
+            }
+
+            if(this.ActivityCallCount == 49)
+            {
+                TweenerObject.X.ShouldBeGreaterThan(0, "because one frame has passed since the tweener started, so this object should have moved to the right a little");
+                tweenerPositionAtFrame49 = TweenerObject.X;
+
+                this.PauseThisScreen();
+            }
+            if(this.ActivityCallCount == 50)
+            {
+                TweenerObject.X.ShouldBe(tweenerPositionAtFrame49, "because pausing should pause all tweeners belonging to paused objects too");
+            }
+        }
+
+        void CustomDestroy()
 		{
 
 

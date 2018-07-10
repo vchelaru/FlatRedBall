@@ -13,6 +13,7 @@ namespace StateInterpolationPlugin
     public partial class TweenerManager : IManager
     {
         List<Tweener> mTweeners;
+        List<Tweener> pausedTweeners = new List<Tweener>();
 
         static TweenerManager mSelf;
 
@@ -61,6 +62,18 @@ namespace StateInterpolationPlugin
                     mTweeners.RemoveAt(i);
                 }
             }
+        }
+
+        public void Pause()
+        {
+            pausedTweeners.AddRange(mTweeners);
+            mTweeners.Clear();
+        }
+
+        public void Unpause()
+        {
+            mTweeners.AddRange(pausedTweeners);
+            pausedTweeners.Clear();
         }
 
         public void Update()

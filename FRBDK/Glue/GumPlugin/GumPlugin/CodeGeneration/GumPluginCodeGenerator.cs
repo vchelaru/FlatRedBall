@@ -140,6 +140,29 @@ namespace GumPlugin.CodeGeneration
             return false;
         }
 
+        public override void GeneratePauseThisScreen(ICodeBlock codeBlock, IElement element)
+        {
+            if (element is FlatRedBall.Glue.SaveClasses.ScreenSave)
+            {
+                string line = "StateInterpolationPlugin.TweenerManager.Self.Pause();";
+                if (!codeBlock.HasLine(line))
+                {
+                    codeBlock.Line(line);
+                }
+            }
+        }
+
+        public override void GenerateUnpauseThisScreen(ICodeBlock codeBlock, IElement element)
+        {
+            if (element is FlatRedBall.Glue.SaveClasses.ScreenSave)
+            {
+                string line = "StateInterpolationPlugin.TweenerManager.Self.Unpause();";
+                if (!codeBlock.HasLine(line))
+                {
+                    codeBlock.Line(line);
+                }
+            }
+        }
 
         public static bool IsGue(FlatRedBall.Glue.SaveClasses.NamedObjectSave item)
         {
