@@ -36,7 +36,8 @@ namespace DialogTreePlugin
         // - There is a option to clear the trees.
         // - Preserving the story name in the string ids to help design find troublesome strings.
         //V3.1.0 Fixed a bug where we were keeping track of the same tag multiple times.
-        public override Version Version => new Version(3, 1, 0);
+        //V3.2.0 Fixed a bug where we were deleting LocalizationDB entries which were not added by the plugin.
+        public override Version Version => new Version(3, 2, 0);
 
         const string rawFileType = "json";
         const string convertedFileType = "glsn";
