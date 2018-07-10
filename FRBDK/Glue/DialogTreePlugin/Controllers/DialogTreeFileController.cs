@@ -37,7 +37,16 @@ namespace DialogTreePlugin.Controllers
 
         private void SetLocalizationDb(string filePath)
         {
-            LocalizationDb = CsvFileManager.CsvDeserializeToRuntime(filePath);
+            GlueCommands.Self.TryMultipleTimes(() =>
+            {
+                LocalizationDb = CsvFileManager.CsvDeserializeToRuntime(filePath);
+            }, 5);
+        }
+
+        private void ResetLocalizationDb()
+        {
+            var filePath = GlueCommands.Self.GetAbsoluteFileName(RelativeToGlobalContentLocalizationDbCsvFile, false);
+            SetLocalizationDb(filePath);
         }
 
         public void SerializeConvertedDialogTree(DialogTreeConverted.Rootobject convertedDialogTree, string fileName)
@@ -88,6 +97,10 @@ namespace DialogTreePlugin.Controllers
         {
             if (LocalizationDb != null)
             {
+                //Make sure we are getting the most recent version of the localizationDb.
+                //This prevents us from erasing entries not added by this plugin.
+                ResetLocalizationDb();
+
                 if(isGlsnChange)
                 {
                     var firstKey = localizationDbEntries[0][0];

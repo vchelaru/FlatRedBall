@@ -24,7 +24,7 @@ namespace DialogTreePlugin.Generators
             GlueCommands.Self.TryMultipleTimes(() =>
             {
                 FileManager.SaveText(contents, fileName);
-            }, 5);
+            }, 20);
         }
     }
 }
