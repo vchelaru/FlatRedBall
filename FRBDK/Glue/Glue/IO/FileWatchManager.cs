@@ -131,7 +131,7 @@ namespace FlatRedBall.Glue.IO
                     if(mChangedProjectFiles.CanFlush)
                     {
                         filesToFlush.AddRange(mChangedProjectFiles.AllFiles);
-                        mChangedProjectFiles.Clear();;
+                        mChangedProjectFiles.Clear();
                     }
 
                     bool anyFlushed = false;
@@ -141,15 +141,27 @@ namespace FlatRedBall.Glue.IO
                         anyFlushed = true;
 
                         var fileCopy = file;
-                        TaskManager.Self.AddSync(() =>
-                            {
-                                if(ReactToChangedFile(file))
-                                {
-                                    UnreferencedFilesManager.Self.IsRefreshRequested = true;
 
-                                }
-                            },
-                            "Reacting to changed file " + file);
+                        // The task internally will skip files if they are to be ignored, but projects can have
+                        // *so many* generated files, that putting a check here on generated can eliminate hundreds
+                        // of tasks from being created, improving startup performance
+                        IgnoreReason reason;
+                        bool isIgnored = IsFileIgnored(file, out reason);
+
+                        var skip = isIgnored && reason == IgnoreReason.GeneratedCodeFile;
+
+                        if(!skip)
+                        {
+                            TaskManager.Self.AddSync(() =>
+                                {
+                                    if(ReactToChangedFile(file))
+                                    {
+                                        UnreferencedFilesManager.Self.IsRefreshRequested = true;
+
+                                    }
+                                },
+                                "Reacting to changed file " + file);
+                        }
                     }
 
                     if (anyFlushed)

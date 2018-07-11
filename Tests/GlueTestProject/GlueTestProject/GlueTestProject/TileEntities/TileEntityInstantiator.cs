@@ -70,15 +70,15 @@ namespace FlatRedBall.TileEntities
             }
             foreach (var shapeCollection in layeredTileMap.ShapeCollections)
             {
-                CreateShapesForCircles(layeredTileMap, shapeCollection);
+                CreateEntitiesFromCircles(layeredTileMap, shapeCollection);
 
-                CreateShapesForRectangles(layeredTileMap, shapeCollection);
+                CreateEntitiesFromRectangles(layeredTileMap, shapeCollection);
 
-                CreateShapesForPolygons(layeredTileMap, shapeCollection);
+                CreateEntitiesFromPolygons(layeredTileMap, shapeCollection);
             }
         }
 
-        private static void CreateShapesForCircles(LayeredTileMap layeredTileMap, ShapeCollection shapeCollection)
+        private static void CreateEntitiesFromCircles(LayeredTileMap layeredTileMap, ShapeCollection shapeCollection)
         {
             var circles = shapeCollection.Circles;
             for (int i = circles.Count - 1; i > -1; i--)
@@ -112,7 +112,7 @@ namespace FlatRedBall.TileEntities
             }
         }
 
-        private static void CreateShapesForRectangles(LayeredTileMap layeredTileMap, ShapeCollection shapeCollection)
+        private static void CreateEntitiesFromRectangles(LayeredTileMap layeredTileMap, ShapeCollection shapeCollection)
         {
             var rectangles = shapeCollection.AxisAlignedRectangles;
             for (int i = rectangles.Count - 1; i > -1; i--)
@@ -146,7 +146,7 @@ namespace FlatRedBall.TileEntities
             }
         }
 
-        private static void CreateShapesForPolygons(LayeredTileMap layeredTileMap, Math.Geometry.ShapeCollection shapeCollection)
+        private static void CreateEntitiesFromPolygons(LayeredTileMap layeredTileMap, Math.Geometry.ShapeCollection shapeCollection)
         {
             var polygons = shapeCollection.Polygons;
             for (int i = polygons.Count - 1; i > -1; i--)

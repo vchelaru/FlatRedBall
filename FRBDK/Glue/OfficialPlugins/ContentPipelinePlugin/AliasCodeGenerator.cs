@@ -35,7 +35,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
             var glueCommands = Container.Get<IGlueCommands>();
             var glueState = Container.Get<IGlueState>();
 
-            TaskManager.Self.AddSync(() =>
+            TaskManager.Self.Add(() =>
             {
                 string codeFileContents = GetFileAliasLogicFileContents(isUsingContentPipeline);
 
@@ -47,11 +47,15 @@ namespace OfficialPlugins.ContentPipelinePlugin
                 glueCommands.TryMultipleTimes(() => System.IO.File.WriteAllText(absolutePath, codeFileContents), 5);
                 
      
-            }, "Generating FileAliases for content pipeline.");
+            }, 
+            "Generating FileAliases for content pipeline.",
+            TaskExecutionPreference.AddOrMoveToEnd
+            );
 
             // This may be the first time the user has set to use content pipeline, so re-gen global content
-            TaskManager.Self.AddSync(glueCommands.GenerateCodeCommands.GenerateGlobalContentCode,
-                "Generateing global content code");
+            TaskManager.Self.Add(glueCommands.GenerateCodeCommands.GenerateGlobalContentCode,
+                "Generateing global content code", 
+                TaskExecutionPreference.AddOrMoveToEnd);
         }
 
         private static string GetFileAliasLogicFileContents(bool isUsingContentPipeline)

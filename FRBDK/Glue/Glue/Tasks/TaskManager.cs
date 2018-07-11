@@ -29,6 +29,8 @@ namespace FlatRedBall.Glue.Managers
 
         List<GlueTask> mActiveAsyncTasks = new List<GlueTask>();
 
+        List<string> taskHistory = new List<string>();
+
         #endregion
 
         public event Action TaskAddedOrRemoved;
@@ -301,6 +303,10 @@ namespace FlatRedBall.Glue.Managers
             {
                 ThreadPool.QueueUserWorkItem(delegate
                 {
+                    // This can be uncommented to get information about the task history
+                    // to try to improve performance
+                    //this.taskHistory.Add(glueTask?.DisplayInfo);
+
                     toProcess();
 
                     bool shouldProcess = false;
