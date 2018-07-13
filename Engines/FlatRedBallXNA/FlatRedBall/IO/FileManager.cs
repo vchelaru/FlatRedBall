@@ -2134,17 +2134,22 @@ namespace FlatRedBall.IO
             using (var memoryStream = new MemoryStream())
             {
                 XmlSerializer serializer = GetXmlSerializer(type);
-                Encoding utf8EncodingWithNoByteOrderMark = new UTF8Encoding(encoderShouldEmitUTF8Identifier:false);
+#if UWP
+                serializer.Serialize(memoryStream, objectToSerialize);
+#else
+                Encoding utf8EncodingWithNoByteOrderMark = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
                 XmlTextWriter xtw = new XmlTextWriter(memoryStream, utf8EncodingWithNoByteOrderMark);
                 xtw.Indentation = 2;
                 xtw.Formatting = Formatting.Indented;
                 serializer.Serialize(xtw, objectToSerialize);
-                
 
-    #if MONOGAME
+#endif
+
+
+#if MONOGAME
 			    byte[] asBytes = memoryStream.ToArray();
 			    stringToSerializeTo = System.Text.Encoding.UTF8.GetString(asBytes, 0, asBytes.Length);
-    #else
+#else
                 stringToSerializeTo = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
     #endif
             }
