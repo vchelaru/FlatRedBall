@@ -211,7 +211,17 @@ namespace FlatRedBall.Forms.Controls
             }
             else
             {
+                // In this case the user may have dragged the thumb outside of its bounds. We are resetting
+                // the value back to the minimum, but the value may already be 0, so the if check will bypass
+                // the updating of the value...
+                var shouldForceUpdateThumb = Value == Minimum;
+                
                 Value = Minimum;
+
+                if(shouldForceUpdateThumb)
+                {
+                    UpdateThumbPositionAccordingToValue();
+                }
             }
         }
         

@@ -279,6 +279,12 @@ namespace GumPlugin.CodeGeneration
                     case BehaviorGenerator.ToggleBehaviorName:
                         controlName = "ToggleButton";
                         break;
+                    case BehaviorGenerator.TreeViewBehaviorName:
+                        controlName = "TreeView";
+                        break;
+                    case BehaviorGenerator.TreeViewItemBehaviorName:
+                        controlName = "TreeViewItem";
+                        break;
                     case BehaviorGenerator.UserControlBehaviorName:
                         controlName = "UserControl";
                         break;
@@ -818,13 +824,16 @@ namespace GumPlugin.CodeGeneration
                 constructor.Line("this.tryCreateFormsObject = tryCreateFormsObject;");
             }
 
-            if(state.GetVariableSave("HasEvents") != null)
+            // State can be null if the backing file for this element
+            // doesn't exist. We can tolerate it because the error window
+            // in Glue will report it as an error
+            if(state?.GetVariableSave("HasEvents") != null)
             {
                 bool hasEvents = state.GetValueOrDefault<bool>("HasEvents");
                 constructor.Line($"this.HasEvents = {hasEvents.ToString().ToLower()};");
             }
 
-            if (state.GetVariableSave("ExposeChildrenEvents") != null)
+            if (state?.GetVariableSave("ExposeChildrenEvents") != null)
             {
                 bool exposeChildrenEvents = state.GetValueOrDefault<bool>("ExposeChildrenEvents");
                 constructor.Line($"this.ExposeChildrenEvents = {exposeChildrenEvents.ToString().ToLower()};");

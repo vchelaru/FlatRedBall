@@ -85,6 +85,8 @@ namespace GumPlugin.Controls
                didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateSliderBehavior());
                didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateTextBoxBehavior());
                didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateToggleBehavior());
+               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateTreeViewBehavior());
+               didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateTreeViewItemBehavior());
                didAdd |= AddIfDoesntHave(BehaviorGenerator.CreateUserControlBehavior());
 
                if (didAdd)

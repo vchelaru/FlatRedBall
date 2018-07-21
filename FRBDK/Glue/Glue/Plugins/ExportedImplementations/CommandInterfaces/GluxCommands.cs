@@ -141,10 +141,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (!MainGlueWindow.Self.HasErrorOccurred)
                     {
-                        FileWatchManager.IgnoreNextChangeOnFile(ProjectManager.GlueProjectFileName);
+                        FileWatchManager.IgnoreNextChangeOnFile(GlueState.Self.GlueProjectFileName);
                         
                         Exception lastException;
-                        var succeeded = ProjectManager.GlueProjectSave.Save("GLUE", ProjectManager.GlueProjectFileName, out lastException);
+                        var succeeded = ProjectManager.GlueProjectSave.Save("GLUE", GlueState.Self.GlueProjectFileName, out lastException);
 
                         if (!succeeded)
                         {

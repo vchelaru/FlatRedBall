@@ -294,6 +294,12 @@ namespace GumPlugin.Managers
 
         private AssetTypeInfo GetAtiFor(ElementSave element)
         {
+            if(element == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+
             AssetTypeInfo newAti = FlatRedBall.IO.FileManager.CloneObject<AssetTypeInfo>(GraphicalUiElementAti);
             newAti.AddToManagersFunc = GraphicalUiElementAti.AddToManagersFunc;
 
@@ -328,9 +334,19 @@ namespace GumPlugin.Managers
             // on this line of code
             // with a NullReferenceException.
             // I'm going to wrap this in if-s to be sure it's safe.
-            if (element != null )
+            // 7/19/2018
+            // Turns out this can crash if the lement's DefaultState is null
+            // This happens if the backing file (like gutx) is not on disk. 
+            // Let's put a warning
+            if(element != null && element.DefaultState == null)
+            {
+                GlueCommands.Self.PrintError("Could not find default state for Gum element " + element.Name + ". This can happen if the file is missing on disk");
+            }
+
+            if (element != null & element.DefaultState != null)
             {
                 var states = new List<Gum.DataTypes.Variables.StateSave>();
+                
                 states.Add(element.DefaultState);
 
                 var parentElement = Gum.Managers.ObjectFinder.Self.GetElementSave(element.BaseType);

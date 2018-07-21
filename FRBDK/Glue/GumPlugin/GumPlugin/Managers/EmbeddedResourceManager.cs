@@ -26,10 +26,12 @@ namespace GumPlugin.Managers
             mContextDirectoryToSaveTo = directoryToSaveProjectTo;
 
             SaveGumFile("GumProject.gumx");
+            SaveGumFile("Standards/Circle.gutx");
             SaveGumFile("Standards/ColoredRectangle.gutx");
             SaveGumFile("Standards/Component.gutx");
             SaveGumFile("Standards/Container.gutx");
             SaveGumFile("Standards/NineSlice.gutx");
+            SaveGumFile("Standards/Rectangle.gutx");
             SaveGumFile("Standards/Sprite.gutx");
             SaveGumFile("Standards/Text.gutx");
 

@@ -4,7 +4,7 @@
   <State>
     <Name>Default</Name>
     <Variable>
-      <Type>string</Type>
+      <Type>State</Type>
       <Name>State</Name>
       <Value xsi:type="xsd:string">Default</Value>
       <SetsValue>true</SetsValue>

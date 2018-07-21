@@ -24,20 +24,23 @@ namespace FlatRedBall.Forms.Controls
             }
             set
             {
-                isChecked = value;
-                UpdateState();
+                if(isChecked != value)
+                {
+                    isChecked = value;
+                    UpdateState();
 
-                if(isChecked == true)
-                {
-                    Checked?.Invoke(this, null);
-                }
-                else if(isChecked == false)
-                {
-                    Unchecked?.Invoke(this, null);
-                }
-                else if(isChecked == null)
-                {
-                    Indeterminate?.Invoke(this, null);
+                    if(isChecked == true)
+                    {
+                        Checked?.Invoke(this, null);
+                    }
+                    else if(isChecked == false)
+                    {
+                        Unchecked?.Invoke(this, null);
+                    }
+                    else if(isChecked == null)
+                    {
+                        Indeterminate?.Invoke(this, null);
+                    }
                 }
             }
         }
@@ -72,6 +75,14 @@ namespace FlatRedBall.Forms.Controls
         public ToggleButton(GraphicalUiElement visual) : base(visual)
         {
             IsChecked = false;
+        }
+
+        protected override void ReactToVisualChanged()
+        {
+            base.ReactToVisualChanged();
+
+            // This forces the initial state to be correct, making sure the button is unchecked
+            UpdateState();
         }
 
         #endregion

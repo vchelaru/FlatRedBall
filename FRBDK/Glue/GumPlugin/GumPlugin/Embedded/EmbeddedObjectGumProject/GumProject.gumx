@@ -65,9 +65,25 @@
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
+    <Name>DefaultForms/TreeView</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>DefaultForms/TreeViewItem</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>DefaultForms/TreeViewToggleButton</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>DefaultForms/UserControl</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
+  <StandardElementReference>
+    <Name>Circle</Name>
+    <ElementType>Standard</ElementType>
+  </StandardElementReference>
   <StandardElementReference>
     <Name>ColoredRectangle</Name>
     <ElementType>Standard</ElementType>
@@ -85,19 +101,15 @@
     <ElementType>Standard</ElementType>
   </StandardElementReference>
   <StandardElementReference>
+    <Name>Rectangle</Name>
+    <ElementType>Standard</ElementType>
+  </StandardElementReference>
+  <StandardElementReference>
     <Name>Sprite</Name>
     <ElementType>Standard</ElementType>
   </StandardElementReference>
   <StandardElementReference>
     <Name>Text</Name>
-    <ElementType>Standard</ElementType>
-  </StandardElementReference>
-  <StandardElementReference>
-    <Name>Circle</Name>
-    <ElementType>Standard</ElementType>
-  </StandardElementReference>
-  <StandardElementReference>
-    <Name>Rectangle</Name>
     <ElementType>Standard</ElementType>
   </StandardElementReference>
   <BehaviorReference>
@@ -132,6 +144,12 @@
   </BehaviorReference>
   <BehaviorReference>
     <Name>ToggleBehavior</Name>
+  </BehaviorReference>
+  <BehaviorReference>
+    <Name>TreeViewBehavior</Name>
+  </BehaviorReference>
+  <BehaviorReference>
+    <Name>TreeViewItemBehavior</Name>
   </BehaviorReference>
   <BehaviorReference>
     <Name>UserControlBehavior</Name>

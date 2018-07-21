@@ -18,10 +18,32 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <IsFile>true</IsFile>
+      <Type>string</Type>
+      <Name>CustomFontFile</Name>
+      <Value xsi:type="xsd:string"></Value>
+      <Category>Font</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
+      <Name>ExposeChildrenEvents</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Behavior</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <IsFont>true</IsFont>
       <Type>string</Type>
       <Name>Font</Name>
       <Value xsi:type="xsd:string">Arial</Value>
+      <Category>Font</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>Font Scale</Name>
+      <Value xsi:type="xsd:float">1</Value>
       <Category>Font</Category>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -46,6 +68,13 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>bool</Type>
+      <Name>HasEvents</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Behavior</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>float</Type>
       <Name>Height</Name>
       <Value xsi:type="xsd:float">50</Value>
@@ -67,6 +96,13 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>int</Type>
+      <Name>OutlineThickness</Name>
+      <Value xsi:type="xsd:int">0</Value>
+      <Category>Font</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>string</Type>
       <Name>Parent</Name>
       <SetsValue>true</SetsValue>
@@ -79,7 +115,14 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>string</Type>
+      <Type>float</Type>
+      <Name>Rotation</Name>
+      <Value xsi:type="xsd:float">0</Value>
+      <Category>Flip and Rotation</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>State</Type>
       <Name>State</Name>
       <Value xsi:type="xsd:string">Default</Value>
       <SetsValue>true</SetsValue>
@@ -89,6 +132,20 @@
       <Name>Text</Name>
       <Value xsi:type="xsd:string">Hello</Value>
       <Category>Text</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
+      <Name>UseCustomFont</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Font</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
+      <Name>UseFontSmoothing</Name>
+      <Value xsi:type="xsd:boolean">true</Value>
+      <Category>Font</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>

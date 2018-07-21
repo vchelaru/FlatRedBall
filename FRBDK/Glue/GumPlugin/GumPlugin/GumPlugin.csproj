@@ -524,6 +524,15 @@
   <ItemGroup>
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\UserControl.gucx" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\TreeView.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\TreeViewItem.gucx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\TreeViewToggleButton.gucx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Embedded\EmptyProject\Standards\Circle.gutx" />
+    <EmbeddedResource Include="Embedded\EmptyProject\Standards\Rectangle.gutx" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo PostBuild

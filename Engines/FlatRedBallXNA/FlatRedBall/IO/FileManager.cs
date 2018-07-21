@@ -1509,6 +1509,19 @@ namespace FlatRedBall.IO
                 Directory.CreateDirectory(FileManager.GetDirectory(fileName));
             }
 
+            // Note: On Windows, WrietAllText causes 
+            // 2 file changes to be raised on windows.
+            // This makes Glue always reload the .glux
+            // on any file change which is slow, inconvenient,
+            // and can introduce bugs.
+            // Therefore, we have to delete the file first to prevent
+            // twi file changes:
+
+            if(System.IO.File.Exists(fileName))
+            {
+                System.IO.File.Delete(fileName);
+            }
+
             System.IO.File.WriteAllText(fileName, stringToSave);
             return;
 #endif

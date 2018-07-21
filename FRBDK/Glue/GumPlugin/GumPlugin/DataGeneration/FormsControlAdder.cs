@@ -30,6 +30,9 @@ namespace GumPlugin.DataGeneration
             "Slider",
             "TextBox",
             "ToggleButton",
+            "TreeView",
+            "TreeViewItem",
+            "TreeViewToggleButton",
             "UserControl"
         };
 

@@ -21,7 +21,7 @@ namespace FlatRedBall.Forms.Controls
         {
             get;
             private set;
-        }
+        } = new ObservableCollection<object>();
 
         List<ListBoxItem> listBoxItems = new List<ListBoxItem>();
 
@@ -103,19 +103,12 @@ namespace FlatRedBall.Forms.Controls
 
         public ListBox() : base()
         {
-            Items = new ObservableCollection<object>();
             Items.CollectionChanged += HandleCollectionChanged;
         }
 
         public ListBox(GraphicalUiElement visual) : base(visual) 
         {
-            Items = new ObservableCollection<object>();
             Items.CollectionChanged += HandleCollectionChanged;
-        }
-
-        protected override void ReactToVisualChanged()
-        {
-            base.ReactToVisualChanged();
         }
 
         private ListBoxItem CreateNewListItemVisual(object o)
@@ -135,7 +128,7 @@ namespace FlatRedBall.Forms.Controls
                 if(listBoxItemGumType == null && DefaultFormsComponents.ContainsKey(typeof(ListBoxItem)))
                 {
 
-                    listBoxItemGumType = DefaultFormsComponents[typeof(ListBoxItem)];// set associations
+                    listBoxItemGumType = DefaultFormsComponents[typeof(ListBoxItem)];
                 }
 #if DEBUG
                 if (listBoxItemGumType == null)

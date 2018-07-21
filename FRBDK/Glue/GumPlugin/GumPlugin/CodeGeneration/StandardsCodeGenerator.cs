@@ -153,15 +153,20 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateVariableProperties(StandardElementSave standardElementSave, ICodeBlock currentBlock, string containedGraphicalObjectName)
         {
-            // generate properties on the default state:
-            foreach (var variable in standardElementSave.DefaultState.Variables)
+            // This can be null if the backing file is missing. Don't report an error, the error window
+            // will do it through file tracking
+            if(standardElementSave.DefaultState != null)
             {
-                bool shouldGenerateVariable = GetIfShouldGenerateProperty(variable, standardElementSave);
-
-                if (shouldGenerateVariable)
+                // generate properties on the default state:
+                foreach (var variable in standardElementSave.DefaultState.Variables)
                 {
+                    bool shouldGenerateVariable = GetIfShouldGenerateProperty(variable, standardElementSave);
 
-                    GenerateVariable(currentBlock, containedGraphicalObjectName, variable, standardElementSave);
+                    if (shouldGenerateVariable)
+                    {
+
+                        GenerateVariable(currentBlock, containedGraphicalObjectName, variable, standardElementSave);
+                    }
                 }
             }
 

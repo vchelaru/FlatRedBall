@@ -132,6 +132,8 @@ namespace GumPlugin.CodeGeneration
                 case "Slider":
                 case "TextBox":
                 case "UserControl":
+                case "TreeViewItem":
+                case "TreeView":
                     return true;
                     // These require a Text object
                 case "Button": 
@@ -153,16 +155,18 @@ namespace GumPlugin.CodeGeneration
             switch (behavior.BehaviorName)
             {
                 case BehaviorGenerator.ButtonBehaviorName: controlType = "Button"; break;
-                case BehaviorGenerator.ToggleBehaviorName: controlType = "ToggleButton"; break;
-                case BehaviorGenerator.RadioButtonBehaviorName: controlType = "RadioButton"; break;
-                case BehaviorGenerator.TextBoxBehaviorName: controlType = "TextBox"; break;
-                case BehaviorGenerator.ScrollBarBehaviorName: controlType = "ScrollBar"; break;
-                case BehaviorGenerator.ScrollViewerBehaviorName: controlType = "ScrollViewer"; break;
+                case BehaviorGenerator.CheckBoxBehaviorName: controlType = "CheckBox"; break;
+                case BehaviorGenerator.ComboBoxBehaviorName: controlType = "ComboBox"; break;
                 case BehaviorGenerator.ListBoxItemBehaviorName: controlType = "ListBoxItem"; break;
                 case BehaviorGenerator.ListBoxBehaviorName: controlType = "ListBox"; break;
-                case BehaviorGenerator.ComboBoxBehaviorName: controlType = "ComboBox"; break;
+                case BehaviorGenerator.RadioButtonBehaviorName: controlType = "RadioButton"; break;
+                case BehaviorGenerator.ScrollBarBehaviorName: controlType = "ScrollBar"; break;
+                case BehaviorGenerator.ScrollViewerBehaviorName: controlType = "ScrollViewer"; break;
                 case BehaviorGenerator.SliderBehaviorName: controlType = "Slider"; break;
-                case BehaviorGenerator.CheckBoxBehaviorName: controlType = "CheckBox"; break;
+                case BehaviorGenerator.TextBoxBehaviorName: controlType = "TextBox"; break;
+                case BehaviorGenerator.ToggleBehaviorName: controlType = "ToggleButton"; break;
+                case BehaviorGenerator.TreeViewBehaviorName: controlType = "TreeView"; break;
+                case BehaviorGenerator.TreeViewItemBehaviorName: controlType = "TreeViewItem"; break;
                 case BehaviorGenerator.UserControlBehaviorName: controlType = "UserControl"; break;
             }
 

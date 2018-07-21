@@ -12,7 +12,7 @@ namespace GumPlugin.DataGeneration
     public static class BehaviorGenerator
     {
         public const string ButtonBehaviorName = "ButtonBehavior";
-        public const string ToggleBehaviorName = "ToggleBehavior";
+        public const string CheckBoxBehaviorName = "CheckBoxBehavior";
         public const string RadioButtonBehaviorName = "RadioButtonBehavior";
         public const string TextBoxBehaviorName = "TextBoxBehavior";
         public const string ScrollBarBehaviorName = "ScrollBarBehavior";
@@ -21,7 +21,9 @@ namespace GumPlugin.DataGeneration
         public const string ListBoxBehaviorName = "ListBoxBehavior";
         public const string ComboBoxBehaviorName = "ComboBoxBehavior";
         public const string SliderBehaviorName = "SliderBehavior";
-        public const string CheckBoxBehaviorName = "CheckBoxBehavior";
+        public const string ToggleBehaviorName = "ToggleBehavior";
+        public const string TreeViewBehaviorName = "TreeViewBehavior";
+        public const string TreeViewItemBehaviorName = "TreeViewItemBehavior";
         public const string UserControlBehaviorName = "UserControlBehavior";
         // if adding here, search for the const string usage and the "Get" function to see
         // where to add additional code.
@@ -222,6 +224,44 @@ namespace GumPlugin.DataGeneration
             category.States.Add(new StateSave { Name = "Enabled" });
             category.States.Add(new StateSave { Name = "Highlighted" });
             category.States.Add(new StateSave { Name = "Selected" });
+
+            return toReturn;
+        }
+
+        public static BehaviorSave CreateTreeViewItemBehavior()
+        {
+            BehaviorSave toReturn = new BehaviorSave();
+            toReturn.Name = TreeViewItemBehaviorName;
+
+            // no categories, the contained objects have categories
+
+            BehaviorInstanceSave innerPanelInstance = new BehaviorInstanceSave();
+            innerPanelInstance.Name = "InnerPanelInstance";
+            toReturn.RequiredInstances.Add(innerPanelInstance);
+
+            return toReturn;
+
+        }
+
+        public static BehaviorSave CreateTreeViewBehavior()
+        {
+            BehaviorSave toReturn = new BehaviorSave();
+            toReturn.Name = TreeViewBehaviorName;
+
+            // no categories needed yet
+
+            BehaviorInstanceSave verticalScrollBarInstance = new BehaviorInstanceSave();
+            verticalScrollBarInstance.Name = "VerticalScrollBarInstance";
+            verticalScrollBarInstance.Behaviors.Add(new BehaviorReference { Name = ScrollBarBehaviorName });
+            toReturn.RequiredInstances.Add(verticalScrollBarInstance);
+
+            BehaviorInstanceSave innerPanelInstance = new BehaviorInstanceSave();
+            innerPanelInstance.Name = "InnerPanelInstance";
+            toReturn.RequiredInstances.Add(innerPanelInstance);
+
+            BehaviorInstanceSave clipContainerInstance = new BehaviorInstanceSave();
+            clipContainerInstance.Name = "ClipContainerInstance";
+            toReturn.RequiredInstances.Add(clipContainerInstance);
 
             return toReturn;
         }

@@ -12,12 +12,12 @@ namespace FlatRedBall.Forms.Controls
 
         bool reactToInnerPanelPositionOrSizeChanged = true;
 
-        ScrollBar verticalScrollBar;
+        protected ScrollBar verticalScrollBar;
 
         GraphicalUiElement innerPanel;
         public GraphicalUiElement InnerPanel => innerPanel;
 
-        GraphicalUiElement clipContainer;
+        protected GraphicalUiElement clipContainer;
 
         #endregion
 
