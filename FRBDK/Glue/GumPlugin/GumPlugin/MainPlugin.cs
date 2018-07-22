@@ -210,7 +210,11 @@ namespace GumPlugin
             // - If an object has text-based variables (like Font), but it is not a text object, the object will no longer
             //   report a referenced file. This fixes a bug that can happen when an old Text object gets converted to a different
             //   type like a component
-            get { return new Version(1, 2, 1, 0); }
+            // 1.3.0
+            // - Introduced TreeView and TreeViewItem support
+            // - Improved layout performance in a few situations, especially list boxes and tree views in .Forms
+            // - Fixed a number of crashes which can occur when a standard file (like Circle) is missing            
+            get { return new Version(1, 3, 0, 0); }
         }
 
         #endregion
