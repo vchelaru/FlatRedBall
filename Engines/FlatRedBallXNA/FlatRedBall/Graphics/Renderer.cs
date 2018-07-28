@@ -1225,7 +1225,6 @@ namespace FlatRedBall.Graphics
             switch (value)
             {
                 case FlatRedBall.Graphics.ColorOperation.Texture:
-                case FlatRedBall.Graphics.ColorOperation.None:
                     mCurrentEffect.TextureEnabled = true;
                     mCurrentEffect.FogEnabled = false;
 
