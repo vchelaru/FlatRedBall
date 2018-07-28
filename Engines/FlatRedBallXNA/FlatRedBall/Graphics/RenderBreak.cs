@@ -139,7 +139,7 @@ namespace FlatRedBall.Graphics
 
                 mTexture = null;
 
-                ColorOperation = ColorOperation.None;
+                ColorOperation = ColorOperation.Texture;
 
                 BlendOperation = BlendOperation.Regular;
                 TextureAddressMode = TextureAddressMode.Clamp;
@@ -191,7 +191,7 @@ namespace FlatRedBall.Graphics
             else
             {
                 mTexture = null;
-                ColorOperation = ColorOperation.None;
+                ColorOperation = ColorOperation.Texture;
                 BlendOperation = BlendOperation.Regular;
                 TextureAddressMode = TextureAddressMode.Clamp;
             }

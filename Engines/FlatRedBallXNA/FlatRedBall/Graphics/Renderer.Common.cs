@@ -650,10 +650,9 @@ namespace FlatRedBall.Graphics
                 }
             }
 
-#if !SILVERLIGHT
             Renderer.Texture = null;
             Renderer.TextureOnDevice = null;
-#endif
+
             if (section != null)
             {
                 Section.EndContextAndTime();

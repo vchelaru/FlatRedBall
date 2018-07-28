@@ -249,10 +249,7 @@ namespace FlatRedBall.Content.ContentLoaders
                 }
 
                 Renderer.ForceSetBlendOperation();
-                if (Renderer.mLastColorOperationSet != ColorOperation.None)
-                {
-                    Renderer.ForceSetColorOperation(Renderer.mLastColorOperationSet);
-                }
+                Renderer.ForceSetColorOperation(Renderer.mLastColorOperationSet);
 
                 return result as Texture2D;
             }

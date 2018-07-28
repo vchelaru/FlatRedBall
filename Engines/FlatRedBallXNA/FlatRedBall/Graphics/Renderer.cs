@@ -375,7 +375,7 @@ namespace FlatRedBall.Graphics
         // and simply compare against that to prevent unnecessary StringEnum.GetStringValue
         // calls.
         #endregion
-        static internal ColorOperation mLastColorOperationSet = ColorOperation.None;
+        static internal ColorOperation mLastColorOperationSet = ColorOperation.Texture;
 
         #endregion
 
@@ -977,17 +977,14 @@ namespace FlatRedBall.Graphics
 
 
             #region Set camera values on the current effect
-#if MONOGAME && !DESKTOP_GL
             mCurrentEffect = mEffect;
+#if MONOGAME && !DESKTOP_GL
             if (mEffect.LightingEnabled)
             {
                 mEffect.LightingEnabled = false;
             }
-            camera.SetDeviceViewAndProjection(mEffect, false);
-#else
-            mCurrentEffect = mEffect;
-            camera.SetDeviceViewAndProjection(mCurrentEffect, false);
 #endif
+            camera.SetDeviceViewAndProjection(mCurrentEffect, false);
             #endregion
         }
 
@@ -1290,15 +1287,19 @@ namespace FlatRedBall.Graphics
                 case ColorOperation.ColorTextureAlpha: valueAsString = "ColorTextureAlpha"; break;
                 case ColorOperation.InverseTexture: valueAsString = "InverseTexture"; break;
                 case ColorOperation.Modulate: valueAsString = "Modulate"; break;
-                case ColorOperation.None: valueAsString = "Texture"; break; // None should just use Color
                 case ColorOperation.Subtract: valueAsString = "Subtract"; break;
                 case ColorOperation.Texture: valueAsString = "Texture"; break;
                 case ColorOperation.Modulate2X: valueAsString = "Modulate2X"; break;
                 case ColorOperation.Modulate4X: valueAsString = "Modulate4X"; break;
                 case ColorOperation.InterpolateColor: valueAsString = "InterpolateColor"; break;
-                default: valueAsString = StringEnum.GetStringValue(value); break;
+                default: throw new InvalidOperationException();
             }
 
+
+            if(mCurrentEffect == null)
+            {
+                mCurrentEffect = mEffect;
+            }
             EffectTechnique technique =
                 mCurrentEffect.Techniques[valueAsString];
 

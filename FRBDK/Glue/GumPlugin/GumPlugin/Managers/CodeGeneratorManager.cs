@@ -180,7 +180,8 @@ namespace GumPlugin.Managers
 
         public void GenerateDerivedGueRuntimes()
         {
-            if (AppState.Self.GumProjectSave == null)
+            if (AppState.Self.GumProjectSave == null &&
+                FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject != null)
             {
                 var rfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.GetAllReferencedFiles()
                     .FirstOrDefault(item => FlatRedBall.IO.FileManager.GetExtension(item.Name) == "gumx");

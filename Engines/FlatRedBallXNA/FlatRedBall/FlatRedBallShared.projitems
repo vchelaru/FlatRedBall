@@ -283,7 +283,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ITimed.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\SpriteSelectionOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringBuilderExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringEnum.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringFunctions.cs" />
   </ItemGroup>
 </Project>

@@ -17,27 +17,15 @@ namespace FlatRedBall.Graphics
 
     public enum ColorOperation
     {
-        [StringValue("None")]
-        None,
-        [StringValue("Add")]
-        Add,
-        [StringValue("Subtract")]
-        Subtract,
-        [StringValue("Modulate")]
-        Modulate,
-        [StringValue("Texture")]
         Texture,
-        [StringValue("InverseTexture")]
+        Add,
+        Subtract,
+        Modulate,
         InverseTexture,
-        [StringValue("Color")]
         Color,
-        [StringValue("ColorTextureAlpha")]
         ColorTextureAlpha,
-        [StringValue("Modulate2X")]
         Modulate2X,
-        [StringValue("Modulate4X")]
         Modulate4X,
-        [StringValue("InterpolateColor")]
         InterpolateColor
     }
 
@@ -285,7 +273,6 @@ namespace FlatRedBall.Graphics
                     return "Modulate";
                 //break;
                 case FlatRedBall.Graphics.ColorOperation.Texture:
-                case ColorOperation.None:
                     return "SelectArg1";
                 //break;
                 case ColorOperation.Color:
