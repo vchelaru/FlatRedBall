@@ -66,6 +66,7 @@ namespace FlatRedBall.Forms.Controls
             InitializeTreeViewLogic();
 
         }
+
         public TreeView(GraphicalUiElement visual) : base(visual)
         {
             InitializeTreeViewLogic();
@@ -107,6 +108,8 @@ namespace FlatRedBall.Forms.Controls
             {
                 activeChild.DeselectRecursively();
             }
+
+            SelectedItemChanged?.Invoke(this, null);
         }
 
         #endregion

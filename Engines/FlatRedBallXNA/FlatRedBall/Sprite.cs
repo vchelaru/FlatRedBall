@@ -57,12 +57,10 @@ namespace FlatRedBall
         BlendOperation mBlendOperation;
 
         // This used to only be on MonoDroid and WP7, but we need it on PC for premult alpha when using ColorOperation.Color
-//#if WINDOWS_PHONE || MONODROID
         float mRed;
         float mGreen;
         float mBlue;
         float mAlpha;
-//#endif
         #endregion
 
         #region ICursorSelectable
@@ -127,10 +125,8 @@ namespace FlatRedBall
                 mVertices[2].Color.W = value;
                 mVertices[3].Color.W = value;
 
-#if WINDOWS_PHONE || XNA4
                 mAlpha = value;
                 UpdateColorsAccordingToAlpha();
-#endif
             }
         }
 
@@ -156,7 +152,6 @@ namespace FlatRedBall
             }
         }
 
-#if XNA4
         private void UpdateColorsAccordingToAlpha()
         {
 
@@ -165,7 +160,7 @@ namespace FlatRedBall
             float blueValue = mBlue;
 
 
-#if WINDOWS
+#if WINDOWS || DESKTOP_GL
             if (ColorOperation == Graphics.ColorOperation.Color)
 
 #else
@@ -184,7 +179,7 @@ namespace FlatRedBall
                 
             else
             {
-#if WINDOWS
+#if WINDOWS || DESKTOP_GL
                 redValue = mRed;
                 greenValue = mGreen;
                 blueValue = mBlue;
@@ -227,18 +222,14 @@ namespace FlatRedBall
 
 
         }
-#endif
 
 
         public float Red
         {
             get
             {
-#if XNA4
                 return mRed;
-#else
-                return mVertices[0].Color.X;
-#endif
+
             }
             set
             {
@@ -247,17 +238,10 @@ namespace FlatRedBall
                 value =
                     System.Math.Max(-FlatRedBall.Graphics.GraphicalEnumerations.MaxColorComponentValue, value);
 
-#if XNA4
                 mRed = value;
 
                 UpdateColorsAccordingToAlpha();
 
-#else
-                mVertices[0].Color.X = value;
-                mVertices[1].Color.X = value;
-                mVertices[2].Color.X = value;
-                mVertices[3].Color.X = value;
-#endif
             }
         }
 
@@ -265,11 +249,7 @@ namespace FlatRedBall
         {
             get
             {
-#if XNA4
                 return mGreen;
-#else
-                return mVertices[0].Color.Y;
-#endif
             }
             set
             {
@@ -278,17 +258,9 @@ namespace FlatRedBall
                 value =
                     System.Math.Max(-FlatRedBall.Graphics.GraphicalEnumerations.MaxColorComponentValue, value);
 
-#if XNA4
                 mGreen = value;
 
                 UpdateColorsAccordingToAlpha();
-
-#else
-                mVertices[0].Color.Y = value;
-                mVertices[1].Color.Y = value;
-                mVertices[2].Color.Y = value;
-                mVertices[3].Color.Y = value;
-#endif
             }
         }
 
@@ -296,11 +268,7 @@ namespace FlatRedBall
         {
             get
             {
-#if XNA4
                 return mBlue;
-#else
-                return mVertices[0].Color.Z; 
-#endif
             }
             set
             {
@@ -309,16 +277,9 @@ namespace FlatRedBall
                 value =
                     System.Math.Max(-FlatRedBall.Graphics.GraphicalEnumerations.MaxColorComponentValue, value);
 
-#if XNA4
                 mBlue = value;
 
                 UpdateColorsAccordingToAlpha();
-#else
-                mVertices[0].Color.Z = value;
-                mVertices[1].Color.Z = value;
-                mVertices[2].Color.Z = value;
-                mVertices[3].Color.Z = value;
-#endif
             }
         }
 
@@ -363,8 +324,7 @@ namespace FlatRedBall
                 {
                     if(value == Graphics.ColorOperation.Add || value == Graphics.ColorOperation.Subtract ||
                         value == Graphics.ColorOperation.InterpolateColor || value == Graphics.ColorOperation.InverseTexture ||
-                        value == Graphics.ColorOperation.Modulate2X || value == Graphics.ColorOperation.Modulate4X ||
-                        value == Graphics.ColorOperation.Subtract)
+                        value == Graphics.ColorOperation.Modulate2X || value == Graphics.ColorOperation.Modulate4X)
                     {
                         throw new Exception("The color operation " + value + " is not available due to platform restrictions");
                     }
@@ -375,9 +335,8 @@ namespace FlatRedBall
 
 
                 mColorOperation = value;
-#if WINDOWS_8 || XNA4
+
                 UpdateColorsAccordingToAlpha();
-#endif
             }
         }
 
@@ -388,9 +347,7 @@ namespace FlatRedBall
             { 
                 mBlendOperation = value;
 
-#if WINDOWS_8 || XNA4
                 UpdateColorsAccordingToAlpha();
-#endif
             }
         }
 
@@ -411,7 +368,6 @@ namespace FlatRedBall
 				{
 					mTexture = value;
 
-#if XNA4
 					if (this.TextureAddressMode != Microsoft.Xna.Framework.Graphics.TextureAddressMode.Clamp &&
 					               FlatRedBallServices.GraphicsDevice.GraphicsProfile == GraphicsProfile.Reach && mTexture != null)
 					{
@@ -426,11 +382,8 @@ namespace FlatRedBall
 								" must be power of two if using non-Clamp texture address mode on Reach");
 						}
 					}
-#endif
 
-#if WINDOWS_PHONE || XNA4
 					UpdateColorsAccordingToAlpha ();
-#endif
 
 					UpdateScale ();            
 				}
@@ -744,6 +697,7 @@ namespace FlatRedBall
 
         #region Events
 
+        // Vic says - I tried removing this but it is used by particles so we'd need a new list for particles to be removed when out of screen.
         [Obsolete("Do not use this!  This will go away.  Use the Entity pattern instead")]
         public SpriteCustomBehavior CustomBehavior;
 
@@ -786,7 +740,7 @@ namespace FlatRedBall
             mVertices[3].TextureCoordinate.Y = 1;
             mVertices[3].Scale = new Vector2(-1, -1);
 
-#if WINDOWS_PHONE || MONODROID
+#if MONODROID
             mVertices[0].Color.X = 1;
             mVertices[1].Color.X = 1;
             mVertices[2].Color.X = 1;

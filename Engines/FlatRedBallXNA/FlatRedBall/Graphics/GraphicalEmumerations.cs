@@ -70,19 +70,6 @@ namespace FlatRedBall.Graphics
     }
 
 
-#if FRB_MDX
-
-    public enum BlendOperationSave
-    {
-        REGULAR,
-        ADD,
-        ALPHAADD,
-        MODULATE,
-        MODULATE2X
-    }
-
-#endif
-
     public enum CameraModelCullMode
     {
         Frustum,
@@ -210,44 +197,6 @@ namespace FlatRedBall.Graphics
         */
 
 
-#if FRB_MDX
-        public static BlendOperation TranslateBlendOperation(BlendOperationSave operation)
-        {
-            switch (operation)
-            {
-                case BlendOperationSave.ADD:
-                    return BlendOperation.Add;
-                case BlendOperationSave.ALPHAADD:
-                    return BlendOperation.Add;
-                case BlendOperationSave.MODULATE:
-                    return BlendOperation.Modulate;
-                case BlendOperationSave.MODULATE2X:
-                    return BlendOperation.Modulate2X;
-                case BlendOperationSave.REGULAR:
-                    return BlendOperation.Regular;
-                default:
-                    return BlendOperation.Regular;
-            }
-        }
-
-        
-        public static BlendOperationSave TranslateBlendOperation(BlendOperation operation)
-        {
-            switch (operation)
-            {
-                case BlendOperation.Add:
-                    return BlendOperationSave.ADD;
-                case BlendOperation.Modulate:
-                    return BlendOperationSave.MODULATE;
-                case BlendOperation.Modulate2X:
-                    return BlendOperationSave.MODULATE2X;
-                case BlendOperation.Regular:
-                    return BlendOperationSave.REGULAR;
-                default:
-                    return BlendOperationSave.REGULAR;
-            }
-        }
-#endif
         public static string BlendOperationToFlatRedBallMdxString(FlatRedBall.Graphics.BlendOperation op)
         {
             switch (op)
@@ -271,156 +220,6 @@ namespace FlatRedBall.Graphics
         #endregion
 
         #region ColorOperation Methods
-
-#if FRB_MDX
-
-        public static Microsoft.DirectX.Direct3D.TextureOperation TranslateColorOperation(ColorOperation op)
-        {
-            switch (op)
-            {
-                case ColorOperation.Add:
-                    return Microsoft.DirectX.Direct3D.TextureOperation.Add;
-                //break;
-
-                case ColorOperation.Modulate:
-                    return Microsoft.DirectX.Direct3D.TextureOperation.Modulate;
-                //break;
-                case ColorOperation.Color:
-                    return Microsoft.DirectX.Direct3D.TextureOperation.SelectArg1;
-                //break;
-                case ColorOperation.Texture:
-                    return Microsoft.DirectX.Direct3D.TextureOperation.SelectArg2;
-                //break;
-                case ColorOperation.Subtract:
-                    return Microsoft.DirectX.Direct3D.TextureOperation.Subtract;
-                //break;
-                case ColorOperation.Modulate2X:
-                    return Microsoft.DirectX.Direct3D.TextureOperation.Modulate2X;
-                //break;
-                case ColorOperation.Modulate4X:
-                    return Microsoft.DirectX.Direct3D.TextureOperation.Modulate4X;
-                //break;
-
-                default:
-                    throw new System.NotImplementedException(
-                        op + " is currently not supported in FlatRedBall MDX");
-                //break;
-            }
-        }
-
-        public static Microsoft.DirectX.Direct3D.TextureOperation TranslateColorOperation(string op)
-        {
-                switch (op)
-                {
-                    case "Add":
-                        return Microsoft.DirectX.Direct3D.TextureOperation.Add;
-                    //break;
-
-                    case "Modulate":
-                        return Microsoft.DirectX.Direct3D.TextureOperation.Modulate;
-                    //break;
-                    case "SelectArg1":
-                        return Microsoft.DirectX.Direct3D.TextureOperation.SelectArg1;
-                    //break;
-                    case "SelectArg2":
-                        return Microsoft.DirectX.Direct3D.TextureOperation.SelectArg2;
-                    //break;
-                    case "Subtract":
-                        return Microsoft.DirectX.Direct3D.TextureOperation.Subtract;
-                    //break;
-                    case "Modulate2X":
-                        return Microsoft.DirectX.Direct3D.TextureOperation.Modulate2X;
-                    //break;
-                    case "Modulate4X":
-                        return Microsoft.DirectX.Direct3D.TextureOperation.Modulate4X;
-                    //break;
-
-                    default:
-                        throw new System.NotImplementedException(
-                            op + " is currently not supported in FlatRedBall MDX");
-                    //break;
-                }
-        }
-
-        public static string TranslateColorOperation(Microsoft.DirectX.Direct3D.TextureOperation op)
-        {
-            switch (op)
-            {
-                case Microsoft.DirectX.Direct3D.TextureOperation.Add:
-                    return "Add";
-                //break;
-                case Microsoft.DirectX.Direct3D.TextureOperation.Modulate:
-                    return "Modulate";
-                //break;
-                case Microsoft.DirectX.Direct3D.TextureOperation.SelectArg1:
-                    return "SelectArg1";
-                //break;
-                case Microsoft.DirectX.Direct3D.TextureOperation.SelectArg2:
-                    return "SelectArg2";
-                //break;
-                case Microsoft.DirectX.Direct3D.TextureOperation.Subtract:
-                    return "Subtract";
-                //break;
-                case Microsoft.DirectX.Direct3D.TextureOperation.Modulate2X:
-                    return "Modulate2X";
-                case Microsoft.DirectX.Direct3D.TextureOperation.Modulate4X:
-                    return "Modulate4X";
-                default:
-                    throw new System.NotImplementedException(
-                        op + " is currently not supported in FlatRedBall MDX");
-                //break;
-            }
-        }
-
-        public static ColorOperation TranslateTextureOperationToColorOperation(Microsoft.DirectX.Direct3D.TextureOperation op)
-        {
-            switch (op)
-            {
-                case Microsoft.DirectX.Direct3D.TextureOperation.Add:
-                    return ColorOperation.Add;
-                //break;
-                case Microsoft.DirectX.Direct3D.TextureOperation.Modulate:
-                    return ColorOperation.Modulate;
-                //break;
-                case Microsoft.DirectX.Direct3D.TextureOperation.SelectArg1:
-                    return ColorOperation.Color;
-                //break;
-                case Microsoft.DirectX.Direct3D.TextureOperation.SelectArg2:
-                    return ColorOperation.Texture;
-                //break;
-                case Microsoft.DirectX.Direct3D.TextureOperation.Subtract:
-                    return ColorOperation.Subtract;
-                //break;
-                case Microsoft.DirectX.Direct3D.TextureOperation.Modulate2X:
-                    return ColorOperation.Modulate2X;
-                case Microsoft.DirectX.Direct3D.TextureOperation.Modulate4X:
-                    return ColorOperation.Modulate4X;
-                default:
-                    throw new System.NotImplementedException(
-                        op + " is currently not supported in FlatRedBall MDX");
-                //break;
-            }
-        }
-
-        public static bool IsTextureOperationSupportedInFrbXna(Microsoft.DirectX.Direct3D.TextureOperation op)
-        {
-            switch (op)
-            {
-                case Microsoft.DirectX.Direct3D.TextureOperation.Add:
-                case Microsoft.DirectX.Direct3D.TextureOperation.Modulate:
-                case Microsoft.DirectX.Direct3D.TextureOperation.SelectArg1:
-                case Microsoft.DirectX.Direct3D.TextureOperation.SelectArg2:
-                case Microsoft.DirectX.Direct3D.TextureOperation.Subtract:
-                case Microsoft.DirectX.Direct3D.TextureOperation.Modulate2X:
-                case Microsoft.DirectX.Direct3D.TextureOperation.Modulate4X:
-                    return true;
-                default:
-                    return false;
-                //break;
-            }
-
-        }
-#else
 
         public static ColorOperation TranslateColorOperation(string op)
         {
@@ -468,8 +267,6 @@ namespace FlatRedBall.Graphics
             }
         }
 
-
-#endif
 
         public static string ColorOperationToFlatRedBallMdxString(ColorOperation op)
         {

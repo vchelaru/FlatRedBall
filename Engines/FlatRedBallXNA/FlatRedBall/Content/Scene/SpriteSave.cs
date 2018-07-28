@@ -373,21 +373,6 @@ namespace FlatRedBall.Content.Scene
             BlendOperation =
                 GraphicalEnumerations.BlendOperationToFlatRedBallMdxString(spriteToCreateSaveFrom.BlendOperation);
 
-#if FRB_MDX
-            Fade = 255 - spriteToCreateSaveFrom.Alpha;
-            FadeRate = -spriteToCreateSaveFrom.AlphaRate;
-
-            TintRed = spriteToCreateSaveFrom.Red;
-            TintGreen = spriteToCreateSaveFrom.Green;
-            TintBlue = spriteToCreateSaveFrom.Blue;
-
-            TintRedRate = spriteToCreateSaveFrom.RedRate;
-            TintGreenRate = spriteToCreateSaveFrom.GreenRate;
-            TintBlueRate = spriteToCreateSaveFrom.BlueRate;
-            
-            ColorOperation =
-                GraphicalEnumerations.TranslateColorOperation(spriteToCreateSaveFrom.ColorOperation);
-#else
             Fade = (1 - spriteToCreateSaveFrom.Alpha) * 255.0f;
             FadeRate = -spriteToCreateSaveFrom.AlphaRate * 255.0f;
 
@@ -401,9 +386,6 @@ namespace FlatRedBall.Content.Scene
 
             ColorOperation =
                 GraphicalEnumerations.ColorOperationToFlatRedBallMdxString(spriteToCreateSaveFrom.ColorOperation);
-
-#endif
-
 
             if (spriteToCreateSaveFrom is Sprite)
             {

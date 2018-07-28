@@ -96,6 +96,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\BitmapCharacterInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\BitmapFont.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawableBatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\EffectCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\GenericEffect.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\GraphicalEmumerations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\GraphicsOptions.cs" />

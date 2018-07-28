@@ -75,12 +75,7 @@ namespace FlatRedBall.Forms.Controls
                 }
             }
         }
-        
-        public event EventHandler Collapsed;
-        public event EventHandler Expanded;
-        public event EventHandler Selected;
-        // todo : need to implement this
-        //public event EventHandler Unselected;
+
 
 
         public ObservableCollection<object> Items
@@ -120,6 +115,14 @@ namespace FlatRedBall.Forms.Controls
 
         public float SelectableHeight => this.mainListBoxItem?.ActualHeight ?? 0;
 
+        #endregion
+
+        #region Events
+        public event EventHandler Collapsed;
+        public event EventHandler Expanded;
+        public event EventHandler Selected;
+        // todo : need to implement this
+        //public event EventHandler Unselected;
         #endregion
 
         #region Initialize
@@ -217,11 +220,7 @@ namespace FlatRedBall.Forms.Controls
             bool wasAlreadyActive = this.mainListBoxItem?.IsSelected == true ||
                 activeChild != null;
 
-            if(!wasAlreadyActive)
-            {
-                Selected?.Invoke(this, null);
-            }
-
+            
             if(activeChild != null)
             {
                 activeChild.DeselectRecursively();
@@ -230,6 +229,9 @@ namespace FlatRedBall.Forms.Controls
             {
                 IsSelected = false;
             }
+
+            // do this after deselecting others so the right item is selected
+            Selected?.Invoke(this, null);
         }
 
 

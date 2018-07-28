@@ -159,7 +159,7 @@ namespace FlatRedBall.Graphics
             Red = 1;
             Green = 1;
             Blue = 1;
-#if MONOGAME
+#if MONOGAME && !DESKTOP_GL
 
             if (text.ColorOperation != Graphics.ColorOperation.Texture)
             {
@@ -268,7 +268,7 @@ namespace FlatRedBall.Graphics
                 text.ColorOperation != ColorOperation ||
                 text.BlendOperation != BlendOperation ||
                 TextureAddressMode != TextureAddressMode.Clamp
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME && !DESKTOP_GL
                 ||
                 text.Red != Red ||
                 text.Green != Green ||
@@ -300,7 +300,7 @@ namespace FlatRedBall.Graphics
                 if (TextureFilter != FlatRedBallServices.GraphicsOptions.TextureFilter)
                     FlatRedBallServices.GraphicsOptions.TextureFilter = TextureFilter;
 
-#if MONOGAME
+#if MONOGAME && !DESKTOP_GL
                 if (ColorOperation == Graphics.ColorOperation.ColorTextureAlpha)
                 {
                     Renderer.SetFogForColorOperation(Red, Green, Blue);

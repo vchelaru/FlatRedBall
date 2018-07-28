@@ -101,17 +101,11 @@ namespace FlatRedBall.Graphics
         }
 
 
-        #region XML Docs
         /// <summary>
         /// The color operation to perform using the color component values and 
         /// Texture (if available).
         /// </summary>
-        #endregion
-#if FRB_MDX
-        Microsoft.DirectX.Direct3D.TextureOperation ColorOperation
-#else
         ColorOperation ColorOperation
-#endif
         {
             get;
             set;

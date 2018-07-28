@@ -1381,11 +1381,7 @@ namespace FlatRedBall
                 if (!s.AbsoluteVisible || 
                     // If using InterpolateColor, then alpha is used for interpolation of colors and
                     // not transparency
-#if FRB_MDX
-                    s.Alpha < .0001f)
-#else
                     (s.ColorOperation != ColorOperation.InterpolateColor && s.Alpha < .0001f ))
-#endif
                 {
                     s.mInCameraView = false;
                     continue;

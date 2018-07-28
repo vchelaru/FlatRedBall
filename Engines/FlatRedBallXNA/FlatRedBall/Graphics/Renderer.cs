@@ -13,7 +13,7 @@ using FlatRedBall.Graphics;
 using FlatRedBall.Utilities;
 
 
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME && !DESKTOP_GL
 using Effect = FlatRedBall.Graphics.GenericEffect;
 #else
 using Effect = Microsoft.Xna.Framework.Graphics.Effect;
@@ -24,7 +24,7 @@ using Microsoft.Xna.Framework.Content;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Performance.Measurement;
 
-#if WINDOWS_8 || UWP
+#if UWP
 using Windows.System.Threading;
 #else
 
@@ -339,7 +339,7 @@ namespace FlatRedBall.Graphics
 
         #region Effects
 
-#if !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME || DESKTOP_GL
         static BasicEffect mBasicEffect;
         static Effect mEffect;
         static Effect mCurrentEffect;
@@ -352,11 +352,7 @@ namespace FlatRedBall.Graphics
         static GenericEffect mCurrentEffect = new GenericEffect( GenericEffect.DefaultShaderType.Determine );
 #endif
 
-#if !WINDOWS_PHONE && !MONOGAME
-
-#if !XNA4
-        static internal EffectPool mEffectPool = new EffectPool();
-#endif
+#if !MONOGAME || DESKTOP_GL
 
         static EffectCache mModelEffectParameterCache;
 
@@ -443,7 +439,7 @@ namespace FlatRedBall.Graphics
         private static void ForceSetTexture(Texture2D value)
         {
             mTexture = value;
-#if WINDOWS_PHONE || MONOGAME || IOS
+#if MONOGAME && !DESKTOP_GL
             mCurrentEffect.TextureEnabled = value != null;
             mCurrentEffect.Texture = mTexture;
 #else
@@ -527,7 +523,7 @@ namespace FlatRedBall.Graphics
 
         static public void SetCurrentEffect(Effect value, Camera camera)
         {
-#if !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME || DESKTOP_GL
 
             mCurrentEffect = value; 
             //internal get { return mCurrentEffect; }
@@ -700,7 +696,7 @@ namespace FlatRedBall.Graphics
         {
             mTextureAddressMode = value;
 
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME && !DESKTOP_GL
             mCurrentEffect.SetTextureAddressModeNoCall(mTextureAddressMode);
 #endif
 
@@ -800,7 +796,7 @@ namespace FlatRedBall.Graphics
 
             mGraphics = graphics;
 
-#if MONOGAME || WINDOWS_PHONE
+#if MONOGAME && !DESKTOP_GL
             mAlphaTestEffect = new GenericEffect(GenericEffect.DefaultShaderType.AlphaTest);
 #endif
 
@@ -828,21 +824,6 @@ namespace FlatRedBall.Graphics
             #endregion
 
 
-#if !WINDOWS_PHONE && !MONOGAME
-            // Create render mode technique names dictionary
-            EffectTechniqueNames = new Dictionary<int, String>();
-            EffectTechniqueNames.Add((int)RenderMode.Default, "RenderDefault");
-            EffectTechniqueNames.Add((int)RenderMode.Color, "RenderColor");
-            if (RenderModeFormats.ContainsKey((int)RenderMode.Depth))
-            {
-                EffectTechniqueNames.Add((int)RenderMode.Depth, "RenderDepth");
-            }
-            if (RenderModeFormats.ContainsKey((int)RenderMode.Normals))
-            {
-                EffectTechniqueNames.Add((int)RenderMode.Normals, "RenderNormals");
-                EffectTechniqueNames.Add((int)RenderMode.Position, "RenderPosition");
-            }
-#endif
             //// Create render target pairs
             //for (int i = 0; i < RenderModeFormats.Keys.Count; i++)
             //{
@@ -861,64 +842,21 @@ namespace FlatRedBall.Graphics
 
             // Basic effect
 
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME && !DESKTOP_GL
             mGenericEffect = new GenericEffect( GenericEffect.DefaultShaderType.Basic );
             mGenericEffect.Alpha = 1.0f;
             mGenericEffect.AmbientLightColor = new Vector3(1f, 1f, 1f);
             mGenericEffect.World = Matrix.Identity;
-#elif XNA4
+#else
             mBasicEffect = new BasicEffect(mGraphics.GraphicsDevice);
             mBasicEffect.Alpha = 1.0f;
             mBasicEffect.AmbientLightColor = new Vector3(1f, 1f, 1f);
             mBasicEffect.World = Matrix.Identity;
-#else
-            mBasicEffect = new BasicEffect(mGraphics.GraphicsDevice, null);
-            mBasicEffect.Alpha = 1.0f;
-            mBasicEffect.AmbientLightColor = new Vector3(1f, 1f, 1f);
-            mBasicEffect.World = Matrix.Identity;
-            mBasicEffect.CommitChanges();
 #endif
 
-#if XNA4 || MONOGAME
-            // TODO:  Add the resources or the test sphere and cube xnb files so that they can be used.
 
-#else
-            // Shapes
-            //mSphereShape =
-            //    FlatRedBallServices.mResourceContentManager.Load<Microsoft.Xna.Framework.Graphics.Model>("test_sphere");
-            //mCubeShape =
-            //    FlatRedBallServices.mResourceContentManager.Load<Microsoft.Xna.Framework.Graphics.Model>("test_cube");
-#endif
-
-#if XNA4 || MONOGAME
             mWireframeEffect = new BasicEffect(FlatRedBallServices.GraphicsDevice);
-#elif WINDOWS_PHONE
-            mWireframeEffect = new 
-#else
-            mWireframeEffect = new BasicEffect(FlatRedBallServices.GraphicsDevice, null);
-#endif
 
-#if XNA4 || MONOGAME
-            // TODO:  Since these aren't loaded yet I'm not messing with the effect yet
-#else
-            //// Replace all shape effects
-            //foreach (ModelMesh mesh in mSphereShape.Meshes)
-            //{
-            //    foreach (ModelMeshPart part in mesh.MeshParts)
-            //    {
-            //        part.Effect = mWireframeEffect;
-            //    }
-            //}
-
-            //foreach (ModelMesh mesh in mCubeShape.Meshes)
-            //{
-            //    foreach (ModelMeshPart part in mesh.MeshParts)
-            //    {
-            //        part.Effect = mWireframeEffect;
-            //    }
-            //}
-
-#endif
 
             BlendOperation = FlatRedBall.Graphics.BlendOperation.Regular;
 
@@ -943,35 +881,6 @@ namespace FlatRedBall.Graphics
         private static void PrepareForDrawScene(Camera camera, RenderMode renderMode)
         {
             mCurrentRenderMode = renderMode;
-
-
-            #region Set the effect parameters for this camera
-             
-#if XNA4 || MONOGAME
-            // TODO:  Need to investigate shared effect parameters.  Do they exist on Windows Phone?
-            // throw new NotImplementedException();
-#else
-            SetSharedEffectParameters(camera);
-            SetSharedEffectParameters(camera, ModelManager.mBasicModelEffect, ModelManager.mBasicModelEffectCache);
-            foreach (ContentManager contentManager in FlatRedBallServices.mContentManagers.Values)
-            {
-                if (contentManager is FlatRedBall.Content.ContentManager)
-                {
-
-                    Effect firstEffect = ((FlatRedBall.Content.ContentManager)contentManager).mFirstEffect;
-
-                    if (firstEffect != null && ((FlatRedBall.Content.ContentManager)contentManager).mFirstEffectCache != null)
-                    {
-                        SetSharedEffectParameters(camera, firstEffect, ((FlatRedBall.Content.ContentManager)contentManager).mFirstEffectCache);
-                    }
-                }
-
-            }
-#endif
-
-            #endregion
-
-
 
             // Set the viewport for the current camera
             Viewport viewport = camera.GetViewport();
@@ -1068,7 +977,7 @@ namespace FlatRedBall.Graphics
 
 
             #region Set camera values on the current effect
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME && !DESKTOP_GL
             mCurrentEffect = mEffect;
             if (mEffect.LightingEnabled)
             {
@@ -1084,7 +993,7 @@ namespace FlatRedBall.Graphics
 
         #endregion
 
-#if !MONOGAME
+#if !MONOGAME || DESKTOP_GL
         public static Texture2D GetTextureFromEffect(Effect effect)
         {
 
@@ -1296,7 +1205,7 @@ namespace FlatRedBall.Graphics
             }
         }
 
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME && !DESKTOP_GL
 
         internal static void SetFogForColorOperation(float red, float green, float blue)
         {
@@ -1315,7 +1224,7 @@ namespace FlatRedBall.Graphics
 
 
 
-#if MONOGAME
+#if MONOGAME && !DESKTOP_GL
             switch (value)
             {
                 case FlatRedBall.Graphics.ColorOperation.Texture:
@@ -1410,16 +1319,8 @@ namespace FlatRedBall.Graphics
         }
 
 
-#if XNA4 || MONOGAME
-
         public static BlendState AddBlendState = new BlendState()
         {
-
-#if WINDOWS_PHONE
-            ColorSourceBlend = Blend.SourceAlpha,
-            ColorDestinationBlend = Blend.One,
-            ColorBlendFunction = BlendFunction.Max,
-#endif
 
             AlphaSourceBlend = Blend.SourceAlpha,
             AlphaDestinationBlend = Blend.One,
@@ -1428,19 +1329,12 @@ namespace FlatRedBall.Graphics
 
         public static BlendState RegularBlendState = new BlendState()
         {
-#if WINDOWS_PHONE
-            ColorSourceBlend = Blend.SourceAlpha,
-            ColorDestinationBlend = Blend.InverseSourceAlpha,
-            ColorBlendFunction = BlendFunction.ReverseSubtract,
-
-#endif
             AlphaSourceBlend = Blend.SourceAlpha,
             AlphaDestinationBlend = Blend.InverseSourceAlpha,
             AlphaBlendFunction = BlendFunction.ReverseSubtract,
 
         };
 
-#endif
 
 
         internal static void ForceSetBlendOperation()
@@ -1509,26 +1403,13 @@ namespace FlatRedBall.Graphics
                 new VertexPositionTexture(new Vector3(1, 1, 1), new Vector2(1, 0)) };
             mQuadIndices = new short[] { 0, 1, 2, 2, 3, 0 };
 
-#if XNA4 || MONOGAME
             mQuadVertexDeclaration = VertexPositionTexture.VertexDeclaration;
-#else
-            mQuadVertexDeclaration = new VertexDeclaration(FlatRedBallServices.GraphicsDevice, VertexPositionTexture.VertexElements);
-#endif
             mQuadVertices[0].Position = new Vector3(topRight.X, bottomLeft.Y, 1);
             mQuadVertices[1].Position = new Vector3(bottomLeft.X, bottomLeft.Y, 1);
             mQuadVertices[2].Position = new Vector3(bottomLeft.X, topRight.Y, 1);
             mQuadVertices[3].Position = new Vector3(topRight.X, topRight.Y, 1);
 
-#if XNA4 || MONOGAME
             throw new NotImplementedException();
-#else
-            FlatRedBallServices.GraphicsDevice.VertexDeclaration = mQuadVertexDeclaration;
-
-            FlatRedBallServices.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture>(
-                PrimitiveType.TriangleList, mQuadVertices,
-                0, 4, mQuadIndices, 0, 2);
-
-#endif
 
         }
 
@@ -1570,7 +1451,7 @@ namespace FlatRedBall.Graphics
 
             // Set device settings for drawing zbuffered sprites
             mVisibleSprites.Clear();
-#if XNA4 || MONOGAME
+
             // vertex decleration not needed
 
             Renderer.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
@@ -1581,18 +1462,6 @@ namespace FlatRedBall.Graphics
 
 
 			}
-#else
-
-			mGraphics.GraphicsDevice.VertexDeclaration = mPositionColorTexture;
-            mGraphics.GraphicsDevice.RenderState.DepthBufferEnable = true;
-            mGraphics.GraphicsDevice.RenderState.DepthBufferWriteEnable = true;
-            mGraphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
-
-            // Pixels that have an alpha value less than this won't be drawn, therefore they won't impact
-            // the depth buffer.  This is set to 1 so that fully-transparent pixels won't cover up pixels behind them
-            // when using depth-buffered Sprites.
-            mGraphics.GraphicsDevice.RenderState.ReferenceAlpha = 1;
-#endif
 
             // Currently ZBuffered Sprites are all drawn - performance improvement
             // possible here by culling.
@@ -1654,7 +1523,7 @@ namespace FlatRedBall.Graphics
             if (layer == null)
             {
                 // reset the camera as it may have been set differently by layers
-#if  MONOGAME
+#if  MONOGAME && !DESKTOP_GL
                 camera.SetDeviceViewAndProjection( mEffect, false);
                 camera.SetDeviceViewAndProjection( mGenericEffect, false );
 #else
@@ -1666,7 +1535,7 @@ namespace FlatRedBall.Graphics
             else
             {
 
-#if  MONOGAME
+#if  MONOGAME && !DESKTOP_GL
                 camera.SetDeviceViewAndProjection( mEffect, layer.RelativeToCamera);
                 camera.SetDeviceViewAndProjection( mGenericEffect, layer.RelativeToCamera );
 #else
@@ -2251,7 +2120,7 @@ namespace FlatRedBall.Graphics
             {
                 Renderer.GraphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
             }
-#if MONOGAME
+#if MONOGAME && !DESKTOP_GL
             mCurrentEffect.LightingEnabled = false;
 #endif
 
@@ -2293,15 +2162,10 @@ namespace FlatRedBall.Graphics
         {
             // Prepare device settings
 
-#if XNA4 || MONOGAME
             // TODO:  Turn off cull mode:
             TextureAddressMode mode = TextureAddressMode;
             if( spritesToDraw.Count > 0 )
                 TextureAddressMode = spritesToDraw[0].TextureAddressMode;
-#else
-            mGraphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
-            mGraphics.GraphicsDevice.VertexDeclaration = mPositionColorTexture;
-#endif
             #region Old Code
 
             //int numberOfVertexBuffers = 1 + (numToDraw / 1000);
@@ -2340,9 +2204,9 @@ namespace FlatRedBall.Graphics
                 numberOfVisibleSprites * 2, PrimitiveType.TriangleList, 6000);
             //DrawVBList(camera, mVertexBufferList, mRenderBreaks,
             //    numberOfVisibleSprites * 2, PrimitiveType.TriangleList, VertexPositionColorTexture.SizeInBytes);
-#if XNA4 || MONOGAME
+
             TextureAddressMode = mode;
-#endif
+
             return numberOfVisibleSprites;
         }
 
@@ -2353,24 +2217,14 @@ namespace FlatRedBall.Graphics
 
             if (TextManager.UseNativeTextRendering)
             {
-#if XNA4
+
                 TextManager.DrawTexts(texts, startIndex, numToDraw, camera);
-#endif
+
             }
             else
             {
                     #region Bitmap Font Rendering
 
-
-
-
-
-
-#if XNA4 || MONOGAME
-                    // no need to do vertex declerations in XNA 4
-#else
-            mGraphics.GraphicsDevice.VertexDeclaration = mPositionColorTexture;
-#endif
                     int totalVertices = 0;
 
                     for (int i = startIndex; i < startIndex + numToDraw; i++)
@@ -2449,9 +2303,7 @@ namespace FlatRedBall.Graphics
             int numberOfPrimitives, PrimitiveType primitiveType,
             //int vertexSizeInBytes, 
             int verticesPerVertexBuffer) where T : struct
-#if XNA4 || MONOGAME
             , IVertexType
-#endif
         {
             int throwAway = 0;
             DrawVertexList(camera, vertexList, renderBreaks, numberOfPrimitives, primitiveType, verticesPerVertexBuffer, 0, ref throwAway);
@@ -2464,9 +2316,7 @@ namespace FlatRedBall.Graphics
             int numberOfPrimitives, PrimitiveType primitiveType,
             //int vertexSizeInBytes, 
             int verticesPerVertexBuffer, int vbIndex, ref int renderBreakIndex) where T : struct
-#if XNA4 || MONOGAME
             , IVertexType
-#endif
         {
 
             bool startedOnNonZeroVBIndex = vbIndex != 0;
@@ -2485,11 +2335,6 @@ namespace FlatRedBall.Graphics
             switch (primitiveType)
             {
 
-#if !XNA4 && !MONOGAME
-                case PrimitiveType.PointList:
-                    verticesPerPrimitive = 1;
-                    break;
-#endif
                 case PrimitiveType.TriangleList:
                     verticesPerPrimitive = 3;
                     break;
@@ -2514,7 +2359,7 @@ namespace FlatRedBall.Graphics
             int numPasses = 0;
 
             int numberOfPrimitivesPerVertexBuffer = verticesPerVertexBuffer / verticesPerPrimitive;
-#if !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME || DESKTOP_GL
             Microsoft.Xna.Framework.Graphics.Effect effectToUse = mCurrentEffect;
 #else
             GenericEffect effectToUse = mCurrentEffect;
@@ -2523,7 +2368,7 @@ namespace FlatRedBall.Graphics
             if (primitiveType == PrimitiveType.LineStrip)
             {
 
-#if !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME || DESKTOP_GL
                 mBasicEffect.LightingEnabled = false;
                 mBasicEffect.VertexColorEnabled = true;
                 effectToUse = mBasicEffect;
@@ -2566,31 +2411,7 @@ namespace FlatRedBall.Graphics
                 {
                     drawToOnThisVB = renderBreaks[renderBreakIndex].ItemNumber - (numberOfPrimitivesPerVertexBuffer * VBOn);
                     //drawToOnThisVB = renderBreaks[renderBreakIndex].ItemNumber;
-#if WINDOWS_PHONE || MONOGAME
-
-                    //effectToUse = new BasicEffect(GraphicsDevice);
-
-                    //((BasicEffect)effectToUse).TextureEnabled = false;
-                    //((BasicEffect)effectToUse).LightingEnabled = false;
-                    //((BasicEffect)effectToUse).VertexColorEnabled = false;
-                    //((BasicEffect)effectToUse).FogEnabled = false;
-
-                    //VertexPositionColorTexture[] array = new VertexPositionColorTexture[6];
-
-                    //foreach (EffectPass pass in effectToUse.CurrentTechnique.Passes)
-                    //{
-                    //    pass.Apply();
-
-                    //    mGraphics.GraphicsDevice.DrawUserPrimitives<VertexPositionColorTexture>(
-                    //        PrimitiveType.TriangleList,
-                    //        array,
-                    //        0,
-                    //        2);
-                    //}
-
-                    //effectToUse.Dispose();
-
-
+#if MONOGAME && !DESKTOP_GL
                     EffectTechnique currentTechnique = effectToUse.GetCurrentTechnique(true);
                     foreach (EffectPass pass in currentTechnique.Passes)
                     {
@@ -2611,7 +2432,7 @@ namespace FlatRedBall.Graphics
 
                         }
                     }
-#elif XNA4 && !WINDOWS_PHONE && !MONODROID
+#elif XNA4 
                     EffectTechnique currentTechnique = effectToUse.CurrentTechnique;
                     foreach (EffectPass pass in currentTechnique.Passes)
                     {
@@ -2630,29 +2451,6 @@ namespace FlatRedBall.Graphics
                     }
 
 
-#else
-                    effectToUse.Begin();
-
-                    for (int i = 0; i < effectToUse.CurrentTechnique.Passes.Count; i++)
-                    {
-                        EffectPass pass = effectToUse.CurrentTechnique.Passes[i];
-                        pass.Begin();
-
-                        if (drawToOnThisVB != drawnOnThisVB)
-                            mGraphics.GraphicsDevice.DrawUserPrimitives<T>(
-                                primitiveType,
-                                vertexList[VBOn],
-                                verticesPerPrimitive * drawnOnThisVB,
-                                drawToOnThisVB - drawnOnThisVB - extraVertices);
-                        //mGraphics.GraphicsDevice.DrawPrimitives(
-                        //    primitiveType,
-                        //    verticesPerPrimitive * drawnOnThisVB,
-                        //    drawToOnThisVB - drawnOnThisVB - extraVertices);
-
-                        pass.End();
-                    }
-
-                    effectToUse.End();
 #endif
 
                     renderBreaks[renderBreakIndex - 1].Cleanup();
@@ -2662,7 +2460,7 @@ namespace FlatRedBall.Graphics
                 }
                 else
                 {
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME && !DESKTOP_GL
                     EffectTechnique currentTechnique = effectToUse.GetCurrentTechnique(true);
                     foreach (EffectPass pass in currentTechnique.Passes)
                     {
@@ -2677,7 +2475,7 @@ namespace FlatRedBall.Graphics
                                 drawToOnThisVB - drawnOnThisVB - extraVertices);
                         }
                     }
-#elif XNA4 && !WINDOWS_PHONE && !MONODROID
+#elif XNA4
                     EffectTechnique currentTechnique = effectToUse.CurrentTechnique;
                     foreach (EffectPass pass in currentTechnique.Passes)
                     {
@@ -2692,32 +2490,6 @@ namespace FlatRedBall.Graphics
                                 drawToOnThisVB - drawnOnThisVB - extraVertices);
                         }
                     }
-#else
-                    effectToUse.Begin();
-
-                    for (int i = 0; i < effectToUse.CurrentTechnique.Passes.Count; i++)
-                    {
-                        EffectPass pass = effectToUse.CurrentTechnique.Passes[i];
-                        pass.Begin();
-
-                        // The 3rd argument (drawToOnThisVB - drawnOnThisVB) is the number of triangles, not vertices.
-                        if (drawToOnThisVB - extraVertices != drawnOnThisVB)
-                        {
-                            mGraphics.GraphicsDevice.DrawUserPrimitives<T>(
-                                primitiveType,
-                                vertexList[VBOn],
-                                verticesPerPrimitive * drawnOnThisVB,
-                                drawToOnThisVB - drawnOnThisVB - extraVertices);
-                        }
-                        //mGraphics.GraphicsDevice.DrawPrimitives(
-                        //    primitiveType,
-                        //    verticesPerPrimitive * drawnOnThisVB,
-                        //    drawToOnThisVB - drawnOnThisVB - extraVertices);
-
-                        pass.End();
-                    }
-
-                    effectToUse.End();
 #endif
                     renderBreaks[renderBreakIndex - 1].Cleanup();
                 }
@@ -3286,23 +3058,15 @@ namespace FlatRedBall.Graphics
                 }
                 #endregion
             }
-
-            // This is slow on the 360.  I have no idea why, and I'm actually suspicious of the time reports. --Vic
-#if XNA4 || MONOGAME
+            
             GraphicsDevice.SetVertexBuffer(null);
-#else
-            GraphicsDevice.Vertices[0].SetSource(null, 0, 0);
-#endif
 
 
-#if XBOX360
-            vertexBufferList[vertexBufferNum].SetData<VertexPositionColorTexture>(mVertexArray, 0, vertNum);
-#else
+
 #if MONODROID
             vertexBufferList[vertexBufferNum].SetData<VertexPositionColorTexture>(mVertexArray);
 #else
             vertexBufferList[vertexBufferNum].SetData<VertexPositionColorTexture>(mVertexArray, 0, vertNum, SetDataOptions.Discard);
-#endif
 #endif
 
             return vertNum / 3 + vertexBufferNum * 2000;
@@ -3483,133 +3247,12 @@ namespace FlatRedBall.Graphics
 
         public static void SetSharedEffectParameters(Camera camera)
         {
-#if !XNA4 && !MONOGAME
-            SetSharedEffectParameters(camera, mModelEffect, mModelEffectParameterCache);
-#endif
+
         }
-
-#if !XNA4 && !MONOGAME
-
-        public static void SetSharedEffectParameters(Camera camera, Effect effect, EffectCache effectCache)
-        {
-            // Set all shared variables
-            List<EffectParameter> paramList;
-
-        #region View
-            paramList = effectCache[EffectCache.EffectParameterNamesEnum.View];
-            if (paramList != null)
-            {
-                foreach (EffectParameter param in paramList)
-                {
-                    param.SetValue(camera.View);
-                }
-            }
-        #endregion
-        #region Projection
-            paramList = effectCache[EffectCache.EffectParameterNamesEnum.Projection];
-            if (paramList != null)
-            {
-                foreach (EffectParameter param in paramList)
-                {
-                    param.SetValue(camera.Projection);
-                }
-            }
-        #endregion
-        #region ViewProj
-            paramList = effectCache[EffectCache.EffectParameterNamesEnum.ViewProj];
-            if (paramList != null)
-            {
-                foreach (EffectParameter param in paramList)
-                {
-                    param.SetValue(camera.ViewProjection);
-                }
-            }
-        #endregion
-
-        #region PixelSize
-            paramList = effectCache[EffectCache.EffectParameterNamesEnum.PixelSize];
-            if (paramList != null)
-            {
-                foreach (EffectParameter param in paramList)
-                {
-                    param.SetValue(new Vector2(
-                        1f / (float)FlatRedBallServices.ClientWidth,
-                        1f / (float)FlatRedBallServices.ClientHeight));
-                }
-            }
-        #endregion
-        #region ViewportSize
-            paramList = effectCache[EffectCache.EffectParameterNamesEnum.ViewportSize];
-            if (paramList != null)
-            {
-                foreach (EffectParameter param in paramList)
-                {
-                    param.SetValue(new Vector2(
-                        (float)camera.DestinationRectangle.Width, (float)camera.DestinationRectangle.Height));
-                }
-            }
-        #endregion
-        #region InvViewProj
-            paramList = effectCache[EffectCache.EffectParameterNamesEnum.InvViewProj];
-            if (paramList != null)
-            {
-                Matrix invViewProj;
-                Matrix viewProj = camera.ViewProjection;
-                Matrix.Invert(ref viewProj, out invViewProj);
-                
-                foreach (EffectParameter param in paramList)
-                {
-                    param.SetValue(invViewProj);
-                }
-            }
-        #endregion
-        #region NearClipPlane
-            paramList = effectCache[EffectCache.EffectParameterNamesEnum.NearClipPlane];
-            if (paramList != null)
-            {
-                foreach (EffectParameter param in paramList)
-                {
-                    param.SetValue(camera.NearClipPlane);
-                }
-            }
-        #endregion
-        #region FarClipPlane
-            paramList = effectCache[EffectCache.EffectParameterNamesEnum.FarClipPlane];
-            if (paramList != null)
-            {
-                foreach (EffectParameter param in paramList)
-                {
-                    param.SetValue(camera.FarClipPlane);
-                }
-            }
-        #endregion
-        #region CameraPosition
-            paramList = effectCache[EffectCache.EffectParameterNamesEnum.CameraPosition];
-            if (paramList != null)
-            {
-                foreach (EffectParameter param in paramList)
-                {
-                    param.SetValue(camera.Position);
-                }
-            }
-        #endregion
-
-        #region Shadows
-            if (camera.MyShadow != null) camera.MyShadow.SetupEffectValues(effectCache);
-        #endregion
-
-
-            // Commit Changes
-            effect.CommitChanges();
-
-            //SetSharedEffectParameters(camera, mModelEffect);
-        }
-
-#endif
 
         public static void SetSharedEffectParameters(Camera camera, Effect effect)
         {
-#if !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME || DESKTOP_GL
             // Set effect variables
             if (effect.Parameters["PixelSize"] != null)
                 effect.Parameters["PixelSize"].SetValue(new Vector2(

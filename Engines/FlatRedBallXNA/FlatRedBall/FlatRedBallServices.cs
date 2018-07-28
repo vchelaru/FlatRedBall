@@ -903,10 +903,20 @@ namespace FlatRedBall
 
 
             Renderer.Effect = mResourceContentManager.Load<Effect>("FlatRedBallShader");
+#elif DESKTOP_GL
+
+            // We'll make a content manager that is never disposed. At this
+            // point the FRB engine is not initialized so we can't use the global
+            // content manager. That should be okay as global content is never unloaded
+            // and this shader i snever exposed for any good reason in diagnostics (like
+            // render breaks. I don't know if we'll ever need to do something different but
+            // this is simple code that works well enough for now.
+            var preInitGlobalContent = new ContentManager(mServices);
+            Renderer.Effect = preInitGlobalContent.Load<Effect>("Content/shader");
 #endif
         }
 
-            #region Graphics Device Reset Events
+        #region Graphics Device Reset Events
 
         static void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
         {
@@ -957,7 +967,7 @@ namespace FlatRedBall
         }
 
             #endregion
-
+            
             #endregion
 
         #region Public Methods
