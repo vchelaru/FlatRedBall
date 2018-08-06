@@ -54,7 +54,16 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // FlatRedBallServices.InitializeFlatRedBall
 
                     int index = CodeParser.GetIndexAfterFlatRedBallInitialize(contents);
-                    contents = contents.Insert(index, lineToReplaceWith + Environment.NewLine);
+
+                    if(index == -1)
+                    {
+                        GlueCommands.Self.PrintError("Could not find code in Game1.cs to add camera setup");
+                    }
+                    else
+                    {
+                        contents = contents.Insert(index, lineToReplaceWith + Environment.NewLine);
+                    }
+
                 }
 
                 GlueCommands.Self.TryMultipleTimes(() =>
@@ -329,7 +338,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                     .Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(Data.ResolutionWidth, Data.ResolutionHeight);")
                     .End()
                     .Else()
-                    .Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution({widthVariable}, {heightVariable});");
+                    .Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution({widthVariable}, {heightVariable});")
+                    .Line($"var newWindowSize = new Windows.Foundation.Size({widthVariable}, {heightVariable});")
+                    .Line($"Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TryResizeView(newWindowSize); ")
+                    ;
 
                 // closes the #if platform section
                 methodContents.Line("#endif");

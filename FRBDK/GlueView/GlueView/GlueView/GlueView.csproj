@@ -285,6 +285,7 @@
     <Compile Include="EmbeddedPlugins\LocalizationPlugin\MainPlugin.cs" />
     <Compile Include="Facades\CursorState.cs" />
     <Compile Include="Facades\ElementCommands.cs" />
+    <Compile Include="Facades\FileCommands.cs" />
     <Compile Include="Facades\GlueProjectSaveCommands.cs" />
     <Compile Include="Facades\GlueViewCommands.cs" />
     <Compile Include="Facades\GlueViewState.cs" />

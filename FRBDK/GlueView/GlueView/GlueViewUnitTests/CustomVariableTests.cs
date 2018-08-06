@@ -48,9 +48,10 @@ namespace GlueViewUnitTests
             customVariable.Name = "CurrentCategory2State";
             entitySave.CustomVariables.Add(customVariable);
 
-            
 
-            ElementRuntime elementRuntime = new ElementRuntime(entitySave, null, null, null, null);
+
+            ElementRuntime elementRuntime = new ElementRuntime();
+            elementRuntime.Initialize(entitySave, null, null, null, null);
 
             StateSave foundStateSave = 
                 elementRuntime.GetStateSaveFromCustomVariableValue(customVariable, customVariable.DefaultValue);

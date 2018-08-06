@@ -138,6 +138,9 @@ namespace GlueView.EmbeddedPlugins.CameraControlsPlugin.Controls
             {
                 Camera.Main.UsePixelCoordinates();
             }
+
+            Camera.Main.X = 0;
+            Camera.Main.Y = 0;
         }
     }
 }

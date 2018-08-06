@@ -19,6 +19,7 @@ using FlatRedBall.Glue.GuiDisplay.Facades;
 using GluePropertyGridClasses.Interfaces;
 using Microsoft.Build.BuildEngine;
 using Microsoft.Build.Evaluation;
+using FlatRedBall.Instructions;
 
 namespace FlatRedBall.Glue
 {
@@ -593,6 +594,14 @@ namespace FlatRedBall.Glue
                         ElementToHighlight = null;
                     }
                 }
+                else if(CurrentElement != null)
+                {
+                    InstructionManager.AddSafe(() =>
+                    {
+                        CurrentElement.Destroy();
+                        CurrentElement = null;
+                    });
+                }
 
             }
         }
@@ -641,16 +650,6 @@ namespace FlatRedBall.Glue
 			LoadNextElementActivity();
 			RefreshHighlightActivity();
 		}
-
-        private static bool HasElementChanged()
-        {
-
-            return 
-                mNextElement != null &&
-                
-                (CurrentElement == null && !string.IsNullOrEmpty(mNextElement)) ||
-                (CurrentElement != null && mNextElement != CurrentElement.Name);
-        }
 
         private static void CurrentElementActivity()
         {
@@ -709,7 +708,8 @@ namespace FlatRedBall.Glue
                     }
 
 
-                    CurrentElement = new ElementRuntime(elementToShow, null, null, OnBeforeVariableSet, OnAfterVariableSet);
+                    CurrentElement = new ElementRuntime();
+                    CurrentElement.Initialize(elementToShow, null, null, OnBeforeVariableSet, OnAfterVariableSet);
 
                     SpriteManager.AddPositionedObject(CurrentElement);
 
@@ -801,6 +801,14 @@ namespace FlatRedBall.Glue
                 {
                     mGlobalContentFilesRuntime.Destroy(relativeToProject);
                 }
+            }
+
+
+            if(CurrentElement != null)
+            {
+                // Make this happen on the main thread
+                FlatRedBall.Instructions.InstructionManager.Add(
+                    new DelegateInstruction( () => CurrentElement.RefreshFile(fileName)));
             }
         }
 

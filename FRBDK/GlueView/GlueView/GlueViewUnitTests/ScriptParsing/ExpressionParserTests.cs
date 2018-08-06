@@ -184,11 +184,12 @@ namespace GlueViewUnitTests.ScriptParsing
 
             #endregion
 
-            mElementRuntime = new ElementRuntime(entitySave, null, null, null, null)
+            mElementRuntime = new ElementRuntime()
                                   {
                                       X = (float) xVariable.DefaultValue, 
                                       Y = (float) yVariable.DefaultValue
                                   };
+            mElementRuntime.Initialize(entitySave, null, null, null, null);
 
 
             #region Create the uncategorized states
@@ -291,7 +292,8 @@ namespace GlueViewUnitTests.ScriptParsing
 
             containerEntity.NamedObjects.Add(first);
 
-            mParentElementRuntime = new ElementRuntime(
+            mParentElementRuntime = new ElementRuntime();
+            mParentElementRuntime.Initialize(
                 containerEntity, null, null, null, null);
         }
 

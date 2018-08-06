@@ -52,6 +52,7 @@ namespace Glue
     public partial class MainGlueWindow : Form
     {
         public bool HasErrorOccurred = false;
+        private System.Windows.Forms.Timer FileWatchTimer;
 
         private static MainGlueWindow mSelf;
 
@@ -76,6 +77,17 @@ namespace Glue
 
             InitializeComponent();
 
+            this.FileWatchTimer = new System.Windows.Forms.Timer(this.components);
+
+            this.FileWatchTimer.Enabled = true;
+            // the frequency of file change flushes. Reducing this time
+            // makes Glue more responsive, but increases the chance of 
+            // Glue performing a check mid update like on a git pull.
+            // Note that the ChangeInformation also keeps a timer since the last
+            // file was added, and will wait mMinimumTimeAfterChangeToReact until 
+            // flushing.
+            this.FileWatchTimer.Interval = 400;
+            this.FileWatchTimer.Tick += new System.EventHandler(this.FileWatchTimer_Tick);
 
         }
 

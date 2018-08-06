@@ -30,22 +30,29 @@ namespace GlueView.Facades
             }
         }
 
-        public ScriptingCommands ScriptingCommands
-        {
-            get;
-            set;
-        }
         public ElementCommands ElementCommands
         {
             get;
             private set;
         }
 
-		public GlueProjectSaveCommands GlueProjectSaveCommands
+        public FileCommands FileCommands
+        {
+            get; private set;
+        }
+
+
+        public GlueProjectSaveCommands GlueProjectSaveCommands
 		{
 			get;
 			private set;
 		}
+
+        public ScriptingCommands ScriptingCommands
+        {
+            get;
+            set;
+        }
 
         public void PrintOutput(string output)
         {
@@ -56,6 +63,7 @@ namespace GlueView.Facades
         public GlueViewCommands()
         {
             ElementCommands = new ElementCommands();
+            FileCommands = new FileCommands();
 			GlueProjectSaveCommands = new GlueProjectSaveCommands();
             ScriptingCommands = new ScriptingCommands();
         }

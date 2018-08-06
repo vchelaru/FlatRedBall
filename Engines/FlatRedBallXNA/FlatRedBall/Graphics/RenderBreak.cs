@@ -297,7 +297,7 @@ namespace FlatRedBall.Graphics
                 Renderer.BlendOperation = BlendOperation;
                 Renderer.TextureAddressMode = TextureAddressMode;
                 _originalTextureFilter = FlatRedBallServices.GraphicsOptions.TextureFilter;
-                if (TextureFilter != FlatRedBallServices.GraphicsOptions.TextureFilter)
+                //if (TextureFilter != FlatRedBallServices.GraphicsOptions.TextureFilter)
                     FlatRedBallServices.GraphicsOptions.TextureFilter = TextureFilter;
 
 #if MONOGAME && !DESKTOP_GL

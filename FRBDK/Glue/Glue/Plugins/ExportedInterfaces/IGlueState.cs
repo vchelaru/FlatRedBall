@@ -247,9 +247,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
             this.ProjectNamespace = glueState.ProjectNamespace;
 
-            this.ProjectSpecificSettingsFolder = glueState.ProjectSpecificSettingsFolder;
+            if(glueState.CurrentGlueProject != null)
+            {
+                this.ProjectSpecificSettingsFolder = glueState.ProjectSpecificSettingsFolder;
 
-            this.CurrentGlueProjectDirectory = glueState.CurrentGlueProjectDirectory;
+                this.CurrentGlueProjectDirectory = glueState.CurrentGlueProjectDirectory;
+            }
         }
 
         public IElement GetElement(string name)

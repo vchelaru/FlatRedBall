@@ -125,12 +125,13 @@ namespace FlatRedBall.Glue
             {
                 if (returnObject is IScalable)
                 {
-                    newElementRuntime = new ScalableElementRuntime(null, layerToPutOn, namedObjectSave, CreationOptions.OnBeforeVariableSet, CreationOptions.OnAfterVariableSet);
+                    newElementRuntime = new ScalableElementRuntime();
                 }
                 else
                 {
-                    newElementRuntime = new ElementRuntime(null, layerToPutOn, namedObjectSave, CreationOptions.OnBeforeVariableSet, CreationOptions.OnAfterVariableSet);
+                    newElementRuntime = new ElementRuntime();
                 }
+                newElementRuntime.Initialize(null, layerToPutOn, namedObjectSave, CreationOptions.OnBeforeVariableSet, CreationOptions.OnAfterVariableSet);
                 newElementRuntime.mDirectObjectReference = returnObject;
 
                 if (returnObject is Camera && !namedObjectSave.IsNewCamera)

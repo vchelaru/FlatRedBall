@@ -12,7 +12,7 @@ namespace FlatRedBall.Glue.IO
 
     class ChangeInformation
     {
-        static TimeSpan mMinimumTimeAfterChangeToReact = new TimeSpan(0, 0, 1);
+        static TimeSpan mMinimumTimeAfterChangeToReact = new TimeSpan(0, 0, 0, 0, 500);
 
         List<string> mChangedFiles = new List<string>();
 

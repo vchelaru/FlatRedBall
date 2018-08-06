@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -28,8 +29,11 @@ namespace FlatRedBallUwpTemplate
         {
             this.InitializeComponent();
 
-			// Create the game.
-			var launchArguments = string.Empty;
+            // Set this to something small so the user can resize it
+            ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(50, 50));
+
+            // Create the game.
+            var launchArguments = string.Empty;
             _game = MonoGame.Framework.XamlGame<Game1>.Create(launchArguments, Window.Current.CoreWindow, swapChainPanel);
         }
     }

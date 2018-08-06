@@ -100,7 +100,6 @@
             this.reportABugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.glueVaultToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exportScreensAndEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FileWatchTimer = new System.Windows.Forms.Timer(this.components);
             this.ElementViewWindowToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.NavigateForwardButton = new System.Windows.Forms.Button();
             this.NavigateBackButton = new System.Windows.Forms.Button();
@@ -701,12 +700,7 @@
             // 
             this.exportScreensAndEntitiesToolStripMenuItem.Name = "exportScreensAndEntitiesToolStripMenuItem";
             this.exportScreensAndEntitiesToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
-            // 
-            // FileWatchTimer
-            // 
-            this.FileWatchTimer.Enabled = true;
-            this.FileWatchTimer.Interval = 1000;
-            this.FileWatchTimer.Tick += new System.EventHandler(this.FileWatchTimer_Tick);
+
             // 
             // NavigateForwardButton
             // 
@@ -1127,7 +1121,6 @@
         private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem;
-        private System.Windows.Forms.Timer FileWatchTimer;
         internal System.Windows.Forms.TreeView ElementTreeView;
         private System.Windows.Forms.ToolStripMenuItem newProjectToolStripMenuItem;
         public System.Windows.Forms.RichTextBox CodePreviewTextBox;

@@ -16,7 +16,54 @@ namespace GlueView.Plugin.InternalPlugins
         {
             this.ElementLoaded += new EventHandler(HandleElementLoaded);
 
+            FlatRedBall.Camera.Main.SetSplitScreenViewport(null);// we're gonna handle this manually
 
+            FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += HandleSizeOrOrientationChanged;
+        }
+
+        private void HandleSizeOrOrientationChanged(object sender, EventArgs e)
+        {
+
+            FlatRedBall.Camera.Main.DestinationRectangle = new Microsoft.Xna.Framework.Rectangle(0, 0,
+                FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth,
+                FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight);
+
+            var displaySettings = GlueViewState.Self.CurrentGlueProject?.DisplaySettings;
+
+            if(displaySettings != null && displaySettings.Is2D)
+            {
+                if(displaySettings.FixedAspectRatio)
+                {
+                    var displaySettingsAspectRatio = (float)
+                        (displaySettings.AspectRatioWidth / displaySettings.AspectRatioHeight);
+
+                    var canvasAspectRatio = (float)FlatRedBall.Camera.Main.DestinationRectangle.Width /
+                        FlatRedBall.Camera.Main.DestinationRectangle.Height;
+
+                    if (canvasAspectRatio > displaySettingsAspectRatio)
+                    {
+                        FlatRedBall.Camera.Main.OrthogonalHeight =
+                            displaySettings.ResolutionHeight;
+
+                        FlatRedBall.Camera.Main.FixAspectRatioYConstant();
+                    }
+                    else
+                    {
+                        FlatRedBall.Camera.Main.OrthogonalWidth =
+                            displaySettings.ResolutionWidth;
+
+                        FlatRedBall.Camera.Main.FixAspectRatioXConstant();
+                    }
+                }
+                else
+                {
+                    FlatRedBall.Camera.Main.OrthogonalHeight =
+                        displaySettings.ResolutionHeight;
+
+                    FlatRedBall.Camera.Main.FixAspectRatioYConstant();
+                }
+            }
+            
         }
 
         void HandleElementLoaded(object sender, EventArgs e)

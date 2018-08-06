@@ -212,7 +212,8 @@ namespace FlatRedBall.Glue.RuntimeObjects
 
             if (newOrExisting == null)
             {
-                newOrExisting = new ElementRuntime(null, layerToPutOn, namedObjectSave, parent.CreationOptions.OnBeforeVariableSet, parent.CreationOptions.OnAfterVariableSet);
+                newOrExisting = new ElementRuntime();
+                newOrExisting.Initialize(null, layerToPutOn, namedObjectSave, parent.CreationOptions.OnBeforeVariableSet, parent.CreationOptions.OnAfterVariableSet);
                 newOrExisting.Name = namedObjectSave.InstanceName;
                 listToPopulate.Add(newOrExisting);
             }
@@ -222,7 +223,8 @@ namespace FlatRedBall.Glue.RuntimeObjects
 
 
 
-        private static object CreateRuntimeObjectForNamedObject(NamedObjectSave objectToLoad, IElement container, ElementRuntime elementRuntime, string objectType,
+        private static object CreateRuntimeObjectForNamedObject(NamedObjectSave objectToLoad, 
+            IElement container, ElementRuntime elementRuntime, string objectType,
             object objectJustLoaded,
             ElementRuntime newElementRuntime, 
             object toAddTo,
@@ -258,7 +260,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                             scene = scene.Clone();
                             elementRuntime.EntireScenes.Add(objectToLoad.SourceFile, scene);
 
-                            newElementRuntime.ReferencedFileRuntimeList.LoadedScenes.Add(scene);
+                            newElementRuntime.ReferencedFileRuntimeList.Add(scene);
 
                             scene.AddToManagers(layerToAddTo);
 

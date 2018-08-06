@@ -66,7 +66,8 @@ namespace GlueViewUnitTests
             mDerivedEntitySave.GetCustomVariable("CurrentState").DefaultValue = "Uncategorized";
 
 
-            mDerivedElementRuntime = new ElementRuntime(mDerivedEntitySave, null, null, null, null);
+            mDerivedElementRuntime = new ElementRuntime();
+            mDerivedElementRuntime.Initialize(mDerivedEntitySave, null, null, null, null);
 
 
         }
@@ -145,7 +146,8 @@ namespace GlueViewUnitTests
             category.States.Add(secondStateSave);
 
             mEntitySave.StateCategoryList.Add(category);
-            mElementRuntime = new ElementRuntime(mEntitySave, null, null, null, null);
+            mElementRuntime = new ElementRuntime();
+            mElementRuntime.Initialize(mEntitySave, null, null, null, null);
             mElementRuntime.AfterVariableApply += AfterVariableSet;
 
 
@@ -166,7 +168,8 @@ namespace GlueViewUnitTests
             nos.UpdateCustomProperties();
             nos.SetPropertyValue("CurrentStateSaveCategoryState", "SecondState");
 
-            mContainedElementRuntime = new ElementRuntime(containerEntitySave, null, null, null, null);
+            mContainedElementRuntime = new ElementRuntime();
+            mContainedElementRuntime.Initialize(containerEntitySave, null, null, null, null);
 
             // This thing is attached - we need to check its relativeX
             //if (mContainedElementRuntime.ContainedElements[0].X != -10.0f)
@@ -201,7 +204,8 @@ namespace GlueViewUnitTests
             };
 
             entitySave.CustomVariables.Add(xVariable);
-            mElementRuntime = new ElementRuntime(entitySave, null, null, null, null);
+            mElementRuntime = new ElementRuntime();
+            mElementRuntime.Initialize(entitySave, null, null, null, null);
 
 
             mElementRuntime.AfterVariableApply += AfterVariableSet;
@@ -235,7 +239,8 @@ namespace GlueViewUnitTests
         [Test]
         public void TestScreenSave()
         {
-            ElementRuntime er = new ElementRuntime(mScreenSave, null, null, null, null);
+            ElementRuntime er = new ElementRuntime();
+            er.Initialize(mScreenSave, null, null, null, null);
 
             float objectX = er.ContainedElements[0].X;
 

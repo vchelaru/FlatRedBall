@@ -166,6 +166,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RuntimeObjects\ElementRuntime.NamedObject.cs" />
     <Compile Include="RuntimeObjects\ElementRuntimeHighlight.cs" />
+    <Compile Include="RuntimeObjects\File\IRuntimeFileManager.cs" />
+    <Compile Include="RuntimeObjects\File\SceneRuntimeFileManager.cs" />
     <Compile Include="RuntimeObjects\Highlight.cs" />
     <Compile Include="RuntimeObjects\NamedObjectManager.cs" />
     <Compile Include="RuntimeObjects\ReferencedFileRuntimeList.cs" />

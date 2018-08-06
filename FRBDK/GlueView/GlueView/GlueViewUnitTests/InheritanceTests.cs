@@ -50,7 +50,8 @@ namespace GlueViewUnitTests
             mDerivedEntity.UpdateFromBaseType();
             ObjectFinder.Self.GlueProject.Entities.Add(mDerivedEntity);
 
-            mDerivedElementRuntime = new ElementRuntime(mDerivedEntity, null, null, null, null);
+            mDerivedElementRuntime = new ElementRuntime();
+            mDerivedElementRuntime.Initialize(mDerivedEntity, null, null, null, null);
         }
 
         [Test]

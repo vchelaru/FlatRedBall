@@ -41,7 +41,7 @@ namespace FlatRedBall.Graphics
         // SizeOrOrientationChanged worked fine on all platforms (I think) except for PC.
         // SizeOrOrinetationChanged didn't get raised when clicking the maximize/minimize button.
         // To address this, custom code in FlatRedBallServices will be raising SizeOrOrientationChanged
-        // on PC, and all other platforms will use the regular implementation.
+        // on PC, and all other platforms continue to use the regular implementation.
         public event EventHandler SizeOrOrientationChanged;
 
         #region Fields

@@ -67,12 +67,5 @@ namespace FlatRedBall.Glue.RuntimeObjects
             }
         }
 
-        public ScalableElementRuntime(IElement elementSave, Layer layerProvidedByContainer,
-            NamedObjectSave namedObjectSave, EventHandler<VariableSetArgs> onBeforeVariableSet,
-            EventHandler<VariableSetArgs> onAfterVariableSet)
-            : base(elementSave, layerProvidedByContainer, namedObjectSave, onBeforeVariableSet, onAfterVariableSet)
-        {
-
-        }
     }
 }

@@ -89,6 +89,8 @@
                 else
                 {
                     FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution((int)(Data.ResolutionWidth * Data.Scale/ 100.0f), (int)(Data.ResolutionHeight * Data.Scale/ 100.0f));
+                    var newWindowSize = new Windows.Foundation.Size((int)(Data.ResolutionWidth * Data.Scale/ 100.0f), (int)(Data.ResolutionHeight * Data.Scale/ 100.0f));
+                    Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TryResizeView(newWindowSize); 
                 }
                 #endif
             }

@@ -38,9 +38,11 @@ namespace GlueViewUnitTests
 
         private void CreateElementRuntime()
         {
-            mElementRuntime = new ElementRuntime(mEntitySave, null, null, null, null);
+            mElementRuntime = new ElementRuntime();
+            mElementRuntime.Initialize(mEntitySave, null, null, null, null);
 
-            mContainerElementRuntime = new ElementRuntime(mContainer, null, null, null, null);
+            mContainerElementRuntime = new ElementRuntime();
+            mContainerElementRuntime.Initialize(mContainer, null, null, null, null);
         }
 
         private void CreateEntitySaves()

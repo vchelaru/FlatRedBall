@@ -28,22 +28,19 @@ namespace OfficialPlugins.GlueView
 
             var currentNode = EditorLogicSnapshot.CurrentElementTreeNode;
 
-            if (currentNode != null)
+            const bool showError = false;
+            if (immediate)
             {
-                const bool showError = false;
-                if (immediate)
-                {
-                    ShowElementThreadProc(showError);
-                }
-                else
-                {
-                    ThreadPool.QueueUserWorkItem(ShowElementThreadProc, showError);
+                ShowElementThreadProc(showError);
+            }
+            else
+            {
+                ThreadPool.QueueUserWorkItem(ShowElementThreadProc, showError);
 
-                }
+            }
 
                 // No more state setting:
                 // SetState("", immediate);
-            }
 
             // We used to set
             // state when the user
@@ -150,10 +147,7 @@ namespace OfficialPlugins.GlueView
             {
                 var element = EditorLogicSnapshot.CurrentElement;
 
-                if(element != null)
-                {
-                    OutInterface.ShowElement(element.Name);
-                }
+                OutInterface.ShowElement(element?.Name);
             }
             catch (Exception e)
             {

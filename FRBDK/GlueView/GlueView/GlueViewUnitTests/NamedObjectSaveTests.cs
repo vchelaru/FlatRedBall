@@ -45,7 +45,8 @@ namespace GlueViewUnitTests
 
             mEntitySave.CustomVariables.Add(customVariable);
 
-            ElementRuntime elementRuntime = new ElementRuntime(mEntitySave, null, null, null, null);
+            ElementRuntime elementRuntime = new ElementRuntime();
+            elementRuntime.Initialize(mEntitySave, null, null, null, null);
 
             Sprite sprite = elementRuntime.ContainedElements[0].DirectObjectReference as Sprite;
             sprite.ForceUpdateDependencies();
@@ -90,7 +91,8 @@ namespace GlueViewUnitTests
             nos.SourceClassType = "Scene";
             entitySave.NamedObjects.Add(nos);
 
-            ElementRuntime elementRuntime = new ElementRuntime(entitySave, null, null, null, null);
+            ElementRuntime elementRuntime = new ElementRuntime();
+            elementRuntime.Initialize(entitySave, null, null, null, null);
 
             if (elementRuntime.ContainedElements.Count == 0)
             {

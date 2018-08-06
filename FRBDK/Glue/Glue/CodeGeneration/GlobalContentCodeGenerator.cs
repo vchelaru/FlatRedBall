@@ -57,7 +57,6 @@ namespace FlatRedBall.Glue.Parsing
                 failedSaving = true;
             }
 
-
             if (failedSaving)
             {
                 Plugins.ExportedImplementations.GlueCommands.Self.PrintError("Could not save the file\n\n" + absoluteFileName);
@@ -76,7 +75,9 @@ namespace FlatRedBall.Glue.Parsing
             }
             catch (CodeParseException exception)
             {
-                GlueGui.ShowMessageBox("Could not add GlobalContent.Initialize to your Game class because of an error:\n\n" + exception.Message);
+                GlueCommands.Self.PrintError(
+                    "Could not add GlobalContent.Initialize to your Game class because of an error:\n\n" + 
+                    exception.Message);
             }
         }
 

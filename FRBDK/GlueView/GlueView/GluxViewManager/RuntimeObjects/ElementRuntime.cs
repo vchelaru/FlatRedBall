@@ -53,11 +53,17 @@ namespace FlatRedBall.Glue
 
     #endregion
 
+    #region VariableSettingOptions enum
+
     public enum VariableSettingOptions
     {
         LiteralSet,
         TreatAbsoluteAsRelativeIfAttached
     }
+
+    #endregion
+
+    #region CreationOptions enum
 
     public class CreationOptions
     {
@@ -66,6 +72,8 @@ namespace FlatRedBall.Glue
         public Layer LayerProvidedByContainer { get; set; }
 
     }
+
+    #endregion
 
 
     public partial class ElementRuntime : PositionedObject, IVisible, IClickable
@@ -328,14 +336,12 @@ namespace FlatRedBall.Glue
 
         #region Methods
 
-        //public ElementRuntime(IElement elementSave, Layer layerToPutOn, NamedObjectSave namedObjectSave) : this(elementSave, layerToPutOn, namedObjectSave, null, null)
-        //{
+        public ElementRuntime()
+        {
+        }
 
-
-
-        //}
-
-        public ElementRuntime(IElement elementSave, Layer layerProvidedByContainer, NamedObjectSave namedObjectSave, EventHandler<VariableSetArgs> onBeforeVariableSet, EventHandler<VariableSetArgs> onAfterVariableSet)
+        public void Initialize (IElement elementSave, Layer layerProvidedByContainer, NamedObjectSave namedObjectSave, 
+            EventHandler<VariableSetArgs> onBeforeVariableSet, EventHandler<VariableSetArgs> onAfterVariableSet)
         {
             CreationOptions = new CreationOptions();
             CreationOptions.OnBeforeVariableSet = onBeforeVariableSet;
@@ -428,7 +434,6 @@ namespace FlatRedBall.Glue
             }
         }
 
-
         public object LoadReferencedFileSave(ReferencedFileSave r)
         {
             return mReferencedFileRuntimeList.LoadReferencedFileSave(r, mAssociatedIElement);
@@ -437,6 +442,12 @@ namespace FlatRedBall.Glue
         public object LoadReferencedFileSave(ReferencedFileSave r, bool isBeingAccessed, IElement container)
         {
             return mReferencedFileRuntimeList.LoadReferencedFileSave(r, isBeingAccessed, container);
+        }
+
+
+        public void RefreshFile(string fileName)
+        {
+            mReferencedFileRuntimeList.RefreshFiles(fileName);
         }
 
         #endregion
@@ -543,7 +554,8 @@ namespace FlatRedBall.Glue
         {
             IElement entityElement = ObjectFinder.Self.GetEntitySave(n.SourceClassType);
 
-            ElementRuntime newElement = new ElementRuntime(entityElement, layerToPutOn, n, CreationOptions.OnBeforeVariableSet, CreationOptions.OnAfterVariableSet);
+            ElementRuntime newElement = new ElementRuntime();
+            newElement.Initialize(entityElement, layerToPutOn, n, CreationOptions.OnBeforeVariableSet, CreationOptions.OnAfterVariableSet);
 
             newElement.Name = n.InstanceName;
 
@@ -1833,7 +1845,7 @@ namespace FlatRedBall.Glue
                 Scene scene = null;
                 string fileNameToFind =
                     FileManager.Standardize(ContentDirectory + elementRuntime.mAssociatedNamedObjectSave.SourceFile);
-                foreach (Scene loadedScene in mReferencedFileRuntimeList.LoadedScenes)
+                foreach (Scene loadedScene in mReferencedFileRuntimeList.AddedScenes)
                 {
                     if (loadedScene.Name == fileNameToFind)
                     {

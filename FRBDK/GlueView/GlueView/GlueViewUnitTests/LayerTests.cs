@@ -54,7 +54,8 @@ namespace GlueViewUnitTests
             SpriteManager.Camera.OrthogonalHeight = 640;
 
 
-            ElementRuntime elementRuntime = new ElementRuntime(entitySave,
+            ElementRuntime elementRuntime = new ElementRuntime();
+            elementRuntime.Initialize(entitySave,
                 null,
                 null,
                 null,
@@ -104,7 +105,8 @@ namespace GlueViewUnitTests
             SpriteManager.Camera.OrthogonalHeight = 640;
 
 
-            ElementRuntime elementRuntime = new ElementRuntime(entitySave,
+            ElementRuntime elementRuntime = new ElementRuntime();
+            elementRuntime.Initialize(entitySave,
                 null,
                 null,
                 null,

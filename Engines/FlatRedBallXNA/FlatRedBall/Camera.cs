@@ -323,13 +323,6 @@ namespace FlatRedBall
 
         }
 
-        //public float RenderingShiftAmount
-        //{
-        //    get;
-        //    set;
-        //}
-        #region Methods
-
         #region Constructor
 
         public Camera () : this(null)
@@ -1270,86 +1263,60 @@ namespace FlatRedBall
         }
 
         #region XML Docs
-        /// <summary>
         /// Sets the viewport for this camera to a standard split-screen viewport
         /// </summary>
-        /// <param name="viewport">The viewport to use for this camera</param>
-        #endregion
-        public void SetSplitScreenViewport(SplitScreenViewport viewport)
+        /// <param name="viewport">The viewport to use for this camera. If null, the camera will not automatically 
+        /// adjust itself.</param>
+        public void SetSplitScreenViewport(SplitScreenViewport? viewport)
         {
-            mUsesSplitScreenViewport = true;
+            if(viewport == null)
+            {
+                mUsesSplitScreenViewport = false;
+
+            }
+            else
+            {
+                mUsesSplitScreenViewport = true;
             
-            splitScreenViewport = viewport;
+                splitScreenViewport = viewport.Value;
 
+                // Set the left
+                mLeftDestination = //FlatRedBallServices.GraphicsDevice.Viewport.X + ((
+                    ((
+                    viewport != SplitScreenViewport.RightHalf &&
+                    viewport != SplitScreenViewport.TopRight &&
+                    viewport != SplitScreenViewport.BottomRight) ?
+                    0 : FlatRedBallServices.ClientWidth / 2);
 
-            // Set the left
-            mLeftDestination = //FlatRedBallServices.GraphicsDevice.Viewport.X + ((
-                ((
-                viewport != SplitScreenViewport.RightHalf &&
-                viewport != SplitScreenViewport.TopRight &&
-                viewport != SplitScreenViewport.BottomRight) ?
-                0 : FlatRedBallServices.ClientWidth / 2);
+                // Set the top
+                mTopDestination = //FlatRedBallServices.GraphicsDevice.Viewport.Y + ((
+                    ((
+                    viewport != SplitScreenViewport.BottomHalf &&
+                    viewport != SplitScreenViewport.BottomLeft &&
+                    viewport != SplitScreenViewport.BottomRight) ?
+                    0 : FlatRedBallServices.ClientHeight / 2);
 
-            // Set the top
-            mTopDestination = //FlatRedBallServices.GraphicsDevice.Viewport.Y + ((
-                ((
-                viewport != SplitScreenViewport.BottomHalf &&
-                viewport != SplitScreenViewport.BottomLeft &&
-                viewport != SplitScreenViewport.BottomRight) ?
-                0 : FlatRedBallServices.ClientHeight / 2);
+                // Set the right (left + width)
+                mRightDestination = mLeftDestination + ((
+                    viewport != SplitScreenViewport.FullScreen &&
+                    viewport != SplitScreenViewport.BottomHalf &&
+                    viewport != SplitScreenViewport.TopHalf) ?
+                    FlatRedBallServices.ClientWidth / 2 :
+                    FlatRedBallServices.ClientWidth);
 
-            // Set the right (left + width)
-            mRightDestination = mLeftDestination + ((
-                viewport != SplitScreenViewport.FullScreen &&
-                viewport != SplitScreenViewport.BottomHalf &&
-                viewport != SplitScreenViewport.TopHalf) ?
-                FlatRedBallServices.ClientWidth / 2 :
-                FlatRedBallServices.ClientWidth);
+                // Set the bottom (top + height)
+                mBottomDestination = mTopDestination + ((
+                    viewport != SplitScreenViewport.FullScreen &&
+                    viewport != SplitScreenViewport.LeftHalf &&
+                    viewport != SplitScreenViewport.RightHalf) ?
+                    FlatRedBallServices.ClientHeight / 2 :
+                    FlatRedBallServices.ClientHeight);
 
-            // Set the bottom (top + height)
-            mBottomDestination = mTopDestination + ((
-                viewport != SplitScreenViewport.FullScreen &&
-                viewport != SplitScreenViewport.LeftHalf &&
-                viewport != SplitScreenViewport.RightHalf) ?
-                FlatRedBallServices.ClientHeight / 2 :
-                FlatRedBallServices.ClientHeight);
-
-            // Update the destination rectangle
-            UpdateDestinationRectangle();             
-
-        }
-#if SUPPORTS_POST_PROCESSING
-        public Texture2D GetShadowMapDepthTexture()
-        {
-            if (null != MyShadow)
-            {
-                ShadowMap shadowMap = MyShadow as ShadowMap;
-                if (null != shadowMap)
-                {
-                    return shadowMap.ShadowDepthTexture;
-                }
-            }
-            return null;
-        }
-
-
-        public bool HasRenderTexture(RenderMode renderMode)
-        {
-            return RenderTargetTextures.ContainsKey((int)renderMode);
-        }
-
-        public Texture2D GetRenderTexture(RenderMode renderMode)
-        {
-            if (!RenderTargetTextures.ContainsKey((int)renderMode))
-            {
-                Debug.Assert(false, "The specified render mode, " + renderMode.ToString() +
-                    " does not exist in this camera - did you forget to add it to the Camera's render order list?  See http://www.flatredball.com/frb/docs/index.php?title=FlatRedBall.Camera#Rendering_Modes");
-                return null;
+                // Update the destination rectangle
+                UpdateDestinationRectangle();             
             }
 
-            return RenderTargetTextures[(int)renderMode].Texture;
         }
-#endif
         #endregion
 
         #region Internal Methods

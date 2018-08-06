@@ -302,8 +302,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
             return null;
-
-
         }
 
         public GeneralResponse GetLastParseResponse(FilePath file)
