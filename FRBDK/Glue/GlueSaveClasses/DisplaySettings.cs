@@ -11,6 +11,13 @@ namespace FlatRedBall.Glue.SaveClasses
         StretchVisibleArea,
         IncreaseVisibleArea
     }
+
+    public enum WidthOrHeight
+    {
+        Width,
+        Height
+    }
+
     public class DisplaySettings
     {
         public bool Is2D { get; set; }
@@ -33,5 +40,6 @@ namespace FlatRedBall.Glue.SaveClasses
         public int Scale { get; set; }
 
         public ResizeBehavior ResizeBehavior { get; set; }
+        public WidthOrHeight DominantInternalCoordinates { get; set; } = WidthOrHeight.Height;
     }
 }

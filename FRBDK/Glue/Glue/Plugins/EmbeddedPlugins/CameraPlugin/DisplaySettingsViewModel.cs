@@ -107,11 +107,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             set { base.ChangeAndNotify(ref scale, value); }
         }
 
-        ResizeBehavior resizeBehavior;
         public ResizeBehavior ResizeBehavior
         {
-            get { return resizeBehavior; }
-            set { base.ChangeAndNotify(ref resizeBehavior, value); }
+            get { return Get<ResizeBehavior>(); }
+            set { Set(value); }
         }
 
         [DependsOn(nameof(ResizeBehavior))]
@@ -134,6 +133,27 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             }
         }
 
+        public WidthOrHeight DominantInternalCoordinates
+        {
+            get { return Get<WidthOrHeight>(); }
+            set { Set(value); }
+        }
+
+        [DependsOn(nameof(DominantInternalCoordinates))]
+        public bool UseHeightInternalCoordinates
+        {
+            get { return DominantInternalCoordinates == WidthOrHeight.Height; }
+            set { if (value) DominantInternalCoordinates = WidthOrHeight.Height; }
+        }
+
+        [DependsOn(nameof(DominantInternalCoordinates))]
+        public bool UseWidthInternalCoordinates
+        {
+            get { return DominantInternalCoordinates == WidthOrHeight.Width; }
+            set { if (value) DominantInternalCoordinates = WidthOrHeight.Width; }
+        }
+
+
         [DependsOn(nameof(FixedAspectRatio))]
         public Visibility AspectRatioValuesVisibility
         {
@@ -147,6 +167,51 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                 {
                     return Visibility.Collapsed;
                 }
+            }
+        }
+
+        [DependsOn(nameof(FixedAspectRatio))]
+        [DependsOn(nameof(AspectRatioWidth))]
+        [DependsOn(nameof(AspectRatioHeight))]
+        [DependsOn(nameof(ResolutionWidth))]
+        [DependsOn(nameof(ResolutionHeight))]
+        public Visibility ShowAspectRatioMismatch
+        {
+            get
+            {
+                Visibility visibility = Visibility.Collapsed;
+                
+                if(FixedAspectRatio )
+                {
+                    var desiredAspectRatio = AspectRatioWidth / AspectRatioHeight;
+
+                    var resolutionAspectRatio = (decimal)ResolutionWidth / (decimal)ResolutionHeight;
+
+                    if(desiredAspectRatio != resolutionAspectRatio)
+                    {
+                        visibility = Visibility.Visible;
+                    }
+                }
+
+                return visibility;
+            }
+        }
+
+        [DependsOn(nameof(ResolutionHeight))]
+        public string KeepResolutionHeightConstantMessage
+        {
+            get
+            {
+                return $"Keep game coordinates height at {ResolutionHeight}";
+            }
+        }
+
+        [DependsOn(nameof(ResolutionWidth))]
+        public string KeepResolutionWidthConstantMessage
+        {
+            get
+            {
+                return $"Keep game coordinates width at {ResolutionWidth}";
             }
         }
 
@@ -197,6 +262,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             this.Scale = displaySettings.Scale;
 
             this.ResizeBehavior = displaySettings.ResizeBehavior;
+
+            this.DominantInternalCoordinates = displaySettings.DominantInternalCoordinates;
         }
 
         public DisplaySettings ToDisplaySettings()
@@ -228,6 +295,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             toReturn.Scale = this.Scale;
 
             toReturn.ResizeBehavior = this.ResizeBehavior;
+
+            toReturn.DominantInternalCoordinates = this.DominantInternalCoordinates;
 
             return toReturn;
         }

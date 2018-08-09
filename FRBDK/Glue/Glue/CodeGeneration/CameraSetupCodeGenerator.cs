@@ -123,6 +123,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             GenerateResizeBehaviorEnum(namespaceContents);
 
+            GenerateWidthOrHeightEnum(namespaceContents);
+
             var classContents = namespaceContents.Class("internal static", "CameraSetup");
 
             classContents.Line("static Microsoft.Xna.Framework.GraphicsDeviceManager graphicsDeviceManager;");
@@ -149,6 +151,13 @@ namespace FlatRedBall.Glue.CodeGeneration
             enumBlock.Line("IncreaseVisibleArea");
         }
 
+        public static void GenerateWidthOrHeightEnum(CodeBlockNamespace namespaceContents)
+        {
+            var enumBlock = namespaceContents.Enum("public", "WidthOrHeight");
+            enumBlock.Line("Width,");
+            enumBlock.Line("Height");
+        }
+
         private static void GenerateStaticCameraSetupData(ICodeBlock classContents)
         {
             classContents.Line("public static CameraSetupData Data = new CameraSetupData");
@@ -169,6 +178,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             block.Line($"IsFullScreen = {displaySettings.RunInFullScreen.ToString().ToLowerInvariant()},");
             block.Line($"AllowWidowResizing = {displaySettings.AllowWindowResizing.ToString().ToLowerInvariant()},");
             block.Line($"ResizeBehavior = ResizeBehavior.{displaySettings.ResizeBehavior},");
+            block.Line($"DominantInternalCoordinates = WidthOrHeight.{displaySettings.DominantInternalCoordinates},");
             classContents.Line(";");
         }
 
@@ -184,8 +194,9 @@ namespace FlatRedBall.Glue.CodeGeneration
             classBlock.AutoProperty("public bool", "AllowWidowResizing");
             classBlock.AutoProperty("public bool", "IsFullScreen");
             classBlock.AutoProperty("public ResizeBehavior", "ResizeBehavior");
+            classBlock.AutoProperty("public WidthOrHeight", "DominantInternalCoordinates");
 
-            
+
 
             // set up here
 
@@ -193,7 +204,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static void GenerateSetAspectRatio(ICodeBlock classContents)
         {
-            var functionBlock = classContents.Function("private static void", "SetAspectRatioTo", "decimal aspectRatio");
+            var functionBlock = classContents.Function("private static void", "SetAspectRatioTo", 
+                "decimal aspectRatio, WidthOrHeight dominantInternalCoordinates, int desiredWidth, int desiredHeight");
             {
                 functionBlock.Line("var resolutionAspectRatio = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth / (decimal)FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight;");
                 functionBlock.Line("int destinationRectangleWidth;");
@@ -217,7 +229,17 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
 
                 functionBlock.Line("FlatRedBall.Camera.Main.DestinationRectangle = new Microsoft.Xna.Framework.Rectangle(x, y, destinationRectangleWidth, destinationRectangleHeight);");
-                functionBlock.Line("FlatRedBall.Camera.Main.FixAspectRatioYConstant();");
+
+                ifBlock = functionBlock.If("dominantInternalCoordinates == WidthOrHeight.Height");
+                {
+                    ifBlock.Line("FlatRedBall.Camera.Main.OrthogonalHeight = desiredHeight;");
+                    ifBlock.Line("FlatRedBall.Camera.Main.FixAspectRatioYConstant();");
+                }
+                elseBlock = ifBlock.End().Else();
+                {
+                    elseBlock.Line("FlatRedBall.Camera.Main.OrthogonalWidth = desiredWidth;");
+                    elseBlock.Line("FlatRedBall.Camera.Main.FixAspectRatioXConstant();");
+                }
             }
         }
 
@@ -227,7 +249,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 functionBlock
                     .If("Data.AspectRatio != null")
-                    .Line($"SetAspectRatioTo(Data.AspectRatio.Value);");
+                    .Line($"SetAspectRatioTo(Data.AspectRatio.Value, Data.DominantInternalCoordinates, Data.ResolutionWidth, Data.ResolutionHeight);");
 
                 functionBlock.If("Data.Is2D && Data.ResizeBehavior == ResizeBehavior.IncreaseVisibleArea")
                     .Line("FlatRedBall.Camera.Main.OrthogonalHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / (Data.Scale/ 100.0f);")
@@ -366,7 +388,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     ifStatement = resetMethod.If("Data.AspectRatio != null")
                         .Line(
-                            $"SetAspectRatioTo(Data.AspectRatio.Value);");
+                            $"SetAspectRatioTo(Data.AspectRatio.Value, Data.DominantInternalCoordinates, Data.ResolutionWidth, Data.ResolutionHeight);");
                 }
             }
         }

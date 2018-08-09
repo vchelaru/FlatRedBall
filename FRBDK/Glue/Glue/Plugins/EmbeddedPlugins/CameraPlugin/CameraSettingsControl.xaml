@@ -28,6 +28,16 @@
                             <TextBlock Margin="3,0,3,0"><Run Text=":"/></TextBlock>
                             <TextBox Height="18" Width="40" Text="{Binding AspectRatioHeight}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"/>
                         </StackPanel>
+                            
+                        <!--This only shows if the user's aspect ratio doesn't match the entered resolution aspect ratio-->
+                        <GroupBox Margin="20,0,0,0" Background="LightYellow" Visibility="{Binding ShowAspectRatioMismatch}">
+                            <StackPanel>
+                                <TextBlock TextWrapping="Wrap">The aspect ratio does not match the calculated resolution aspect ratio</TextBlock>
+                                <RadioButton IsChecked="{Binding UseWidthInternalCoordinates}" VerticalContentAlignment="Center" Content="{Binding KeepResolutionWidthConstantMessage}"></RadioButton>
+                                <RadioButton IsChecked="{Binding UseHeightInternalCoordinates}" VerticalContentAlignment="Center" Content="{Binding KeepResolutionHeightConstantMessage}"></RadioButton>
+                            </StackPanel>
+                        </GroupBox>
+                            
                     </StackPanel>
                 </GroupBox>
 
