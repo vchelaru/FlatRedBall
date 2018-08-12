@@ -113,15 +113,16 @@ namespace GumPlugin.CodeGeneration
             // Here we add controls that don't have explicit visual definitions (yet)
             var userControlFulfillment = associationFulfillments.FirstOrDefault(item => item.ControlType == "UserControl");
 
-            if(userControlFulfillment != null)
-            {
-                associationFulfillments.Add(new AssociationFulfillment
-                {
-                    Element = userControlFulfillment.Element,
-                    IsCompletelyFulfilled = true,
-                    ControlType = "StackPanel"
-                });
-            }
+            // StackPanel doesn't have any visuals, it's invisible so it will just be a regular GraphicalUiElement.
+            //if(userControlFulfillment != null)
+            //{
+            //    associationFulfillments.Add(new AssociationFulfillment
+            //    {
+            //        Element = userControlFulfillment.Element,
+            //        IsCompletelyFulfilled = true,
+            //        ControlType = "StackPanel"
+            //    });
+            //}
 
             foreach(var fulfillment in associationFulfillments)
             {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RenderingLibrary.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -22,9 +23,21 @@ namespace FlatRedBall.Forms.Controls
         protected override void ReactToVisualChanged()
         {
             base.ReactToVisualChanged();
-
+            Visual.ExposeChildrenEvents = true;
+            
             UpdateToOrientation();
         }
+
+        public StackPanel() : 
+            base(new global::Gum.Wireframe.GraphicalUiElement(new InvisibleRenderable(), null))
+        {
+            Width = 200;
+            Height = 200;
+            IsVisible = true;
+
+        }
+
+
 
         private void UpdateToOrientation()
         {
@@ -33,12 +46,12 @@ namespace FlatRedBall.Forms.Controls
                 if(Orientation == Orientation.Horizontal)
                 {
                     Visual.ChildrenLayout = 
-                        global::Gum.Managers.ChildrenLayout.TopToBottomStack;
+                        global::Gum.Managers.ChildrenLayout.LeftToRightStack;
                 }
                 else
                 {
                     Visual.ChildrenLayout =
-                        global::Gum.Managers.ChildrenLayout.LeftToRightStack;
+                        global::Gum.Managers.ChildrenLayout.TopToBottomStack;
                 }
             }
         }
