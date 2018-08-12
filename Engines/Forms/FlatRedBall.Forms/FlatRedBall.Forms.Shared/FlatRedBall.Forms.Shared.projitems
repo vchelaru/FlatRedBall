@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ScrollViewer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SelectionChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Slider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\StackPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\TextBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ToggleButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\TreeView.cs" />

@@ -524,7 +524,7 @@ namespace FlatRedBall.Glue.Reflection
             {
                 return foundType;
             }
-            else
+            else if(typeOfNamedObject != null)
             {
                 Type type = GetTypeForMemberInType(typeOfNamedObject, variableName);
                 if(type == null)
@@ -556,6 +556,13 @@ namespace FlatRedBall.Glue.Reflection
                 }
 
                 return toReturn;
+            }
+            else
+            {
+#if GLUE
+                GlueCommands.Self.PrintError($"Could not identify the variable type for {variableName} in {namedObject}");
+#endif
+                return null;
             }
         }
 

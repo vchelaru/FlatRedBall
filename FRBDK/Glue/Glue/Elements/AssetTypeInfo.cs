@@ -178,6 +178,10 @@ namespace FlatRedBall.Glue.Elements
                 UpdateExtraVariableCache();
             }
         }
+        /// <summary>
+        /// The list of variables available on this type. This should replace ExtraVariablesPattern and 
+        /// and Type-based (reflection) variable lists.
+        /// </summary>
         public List<VariableDefinition> VariableDefinitions = new List<VariableDefinition>();
 
         public string PostInitializeCode;

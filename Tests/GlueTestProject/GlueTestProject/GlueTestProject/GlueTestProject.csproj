@@ -827,6 +827,7 @@
     <Compile Include="GumRuntimes\ColoredRectangleRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\ComponentContainingSpriteRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\componentfolder\InFolder1Runtime.Generated.cs" />
+    <Compile Include="GumRuntimes\ComponentFolder\SameNameComponentRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\ComponentWithCustomInitializeRuntime.cs" />
     <Compile Include="GumRuntimes\ComponentWithCustomInitializeRuntime.Generated.cs">
       <DependentUpon>ComponentWithCustomInitializeRuntime.cs</DependentUpon>
@@ -860,6 +861,7 @@
     </Compile>
     <Compile Include="GumRuntimes\ParentStateComponentRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\RectangleRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\SameNameComponentRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\SpriteInheritingComponntRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\SpriteRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\StackingComponentRuntime.Generated.cs" />

@@ -28,5 +28,8 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 // 1.0.5: Adds ability to create controls with default Gum components
 // 1.1: Adds TreeView and TreeViewItem
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
+// 1.2:
+//   - Adds StackPanel
+//   - Adds AddChild method
+[assembly: AssemblyVersion("1.2.0.0")]
+[assembly: AssemblyFileVersion("1.2.0.0")]

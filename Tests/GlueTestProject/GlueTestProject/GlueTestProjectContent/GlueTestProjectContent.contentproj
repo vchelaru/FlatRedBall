@@ -461,6 +461,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>InFolder1</Name>
     </None>
+    <None Include="gumproject\components\componentfolder\samenamecomponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>samenamecomponent</Name>
+    </None>
     <None Include="GumProject\Components\ComponentWithCustomInitialize.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ComponentWithCustomInitialize</Name>
@@ -532,6 +536,10 @@
     <None Include="GumProject\Components\ParentStateComponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ParentStateComponent</Name>
+    </None>
+    <None Include="gumproject\components\samenamecomponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>samenamecomponent</Name>
     </None>
     <None Include="GumProject\Components\SpriteInheritingComponnt.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -67,6 +67,31 @@ namespace GumPlugin.CodeGeneration
 
         }
         
+        public string GetFullRuntimeNamespaceFor(ElementSave elementSave)
+        {
+
+            string subNamespace = null;
+
+            if ((elementSave is Gum.DataTypes.ScreenSave || elementSave is Gum.DataTypes.ComponentSave) && elementSave.Name.Contains('/'))
+            {
+                subNamespace = elementSave.Name.Substring(0, elementSave.Name.LastIndexOf('/')).Replace('/', '.');
+            }
+            else // if(elementSave is StandardElementSave)
+            {
+                // can't be in a subfolder
+                subNamespace = null;
+            }
+
+            if (!string.IsNullOrEmpty(subNamespace))
+            {
+                subNamespace = '.' + subNamespace;
+            }
+
+            var fullNamespace = GueRuntimeNamespace + subNamespace;
+
+            return fullNamespace;
+        }
+
         public string GenerateCodeFor(ElementSave elementSave)
         {
             if(elementSave == null)
@@ -79,7 +104,9 @@ namespace GumPlugin.CodeGeneration
             // It's much easier to add the LINQ usings here instead of using the qualified method names in code gen below
             topBlock.Line("using System.Linq;");
 
-            ICodeBlock currentBlock = topBlock.Namespace(GueRuntimeNamespace);
+            var fullNamespace = GetFullRuntimeNamespaceFor(elementSave);
+
+            ICodeBlock currentBlock = topBlock.Namespace(fullNamespace);
 
             bool generated = false;
 
@@ -130,7 +157,8 @@ namespace GumPlugin.CodeGeneration
 
         public static string GetQualifiedRuntimeTypeFor(ElementSave elementSave)
         {
-            return GueRuntimeNamespace + "." + GetUnqualifiedRuntimeTypeFor(elementSave);
+            return GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementSave) + 
+                "." + GetUnqualifiedRuntimeTypeFor(elementSave);
         }
 
         public static string GetUnqualifiedRuntimeTypeFor(ElementSave elementSave)
@@ -619,8 +647,7 @@ namespace GumPlugin.CodeGeneration
                 }
 
 
-                variableValue = GueRuntimeNamespace + "." + 
-                    FlatRedBall.IO.FileManager.RemovePath(categoryContainer.Name) + "Runtime" + 
+                variableValue = GetQualifiedRuntimeTypeFor(categoryContainer) + 
                     "." + categoryName + "." + variableSave.Value;
             }
 

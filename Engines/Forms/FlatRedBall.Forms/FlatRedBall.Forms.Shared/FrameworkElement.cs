@@ -155,6 +155,19 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        public void AddChild(FrameworkElement child)
+        {
+            if(child.Visual == null)
+            {
+                throw new InvalidOperationException("The child must have a Visual before being added to the parent");
+            }
+            if(this.Visual == null)
+            {
+                throw new InvalidOperationException("This must have its Visual set before having children added");
+            }
+
+            child.Visual.Parent = this.Visual;
+        }
 
         protected bool GetIfIsOnThisOrChildVisual(Gui.Cursor cursor)
         {
@@ -164,7 +177,6 @@ namespace FlatRedBall.Forms.Controls
 
             return isOnThisOrChild;
         }
-
 
         protected virtual void ReactToVisualChanged()
         {

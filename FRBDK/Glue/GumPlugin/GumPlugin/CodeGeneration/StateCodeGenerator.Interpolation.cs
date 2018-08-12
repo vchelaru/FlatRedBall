@@ -455,7 +455,7 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateInterpolateTo(ElementSave elementSave, ICodeBlock codeBlock, IEnumerable<StateSave> states, string enumName)
         {
-            string qualifiedEnum = GueDerivingClassCodeGenerator.GueRuntimeNamespace + "." +
+            string qualifiedEnum = GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementSave) + "." +
                 FlatRedBall.IO.FileManager.RemovePath( elementSave.Name) + "Runtime." + enumName;
 
             // Make this thing return the Tweener so the uer can customize it

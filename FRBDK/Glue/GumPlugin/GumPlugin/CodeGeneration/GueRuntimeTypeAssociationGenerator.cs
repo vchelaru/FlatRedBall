@@ -54,11 +54,16 @@ namespace GumPlugin.CodeGeneration
             public ElementSave Element { get; set; }
             public bool IsCompletelyFulfilled { get; set; }
             public string ControlType { get; set; }
+
+            public override string ToString()
+            {
+                return $"{ControlType} by {Element}";
+            }
         }
 
         private void AddFormsAssociations(ICodeBlock currentBlock)
         {
-            List<AssociationFulfillment> assocationFulfillments = new List<AssociationFulfillment>();
+            List<AssociationFulfillment> associationFulfillments = new List<AssociationFulfillment>();
 
             var loadedElements = AppState.Self.AllLoadedElements.ToList();
 
@@ -76,7 +81,7 @@ namespace GumPlugin.CodeGeneration
 
                         if (controlType != null)
                         {
-                            matchingFulfillment = assocationFulfillments.FirstOrDefault(item => item.ControlType == controlType);
+                            matchingFulfillment = associationFulfillments.FirstOrDefault(item => item.ControlType == controlType);
                         }
 
                         if(matchingFulfillment == null || matchingFulfillment.IsCompletelyFulfilled == false)
@@ -90,7 +95,7 @@ namespace GumPlugin.CodeGeneration
                                 newFulfillment.IsCompletelyFulfilled = isCompleteFulfillment;
                                 newFulfillment.ControlType = controlType;
 
-                                assocationFulfillments.Add(newFulfillment);
+                                associationFulfillments.Add(newFulfillment);
                             }
                             else if(isCompleteFulfillment)
                             {
@@ -105,13 +110,24 @@ namespace GumPlugin.CodeGeneration
                 
             }
 
-            foreach(var fulfillment in assocationFulfillments)
+            // Here we add controls that don't have explicit visual definitions (yet)
+            var userControlFulfillment = associationFulfillments.FirstOrDefault(item => item.ControlType == "UserControl");
+
+            if(userControlFulfillment != null)
+            {
+                associationFulfillments.Add(new AssociationFulfillment
+                {
+                    Element = userControlFulfillment.Element,
+                    IsCompletelyFulfilled = true,
+                    ControlType = "StackPanel"
+                });
+            }
+
+            foreach(var fulfillment in associationFulfillments)
             {
                 var qualifiedControlType = "FlatRedBall.Forms.Controls." + fulfillment.ControlType;
 
-                string unqualifiedName = FlatRedBall.IO.FileManager.RemovePath(fulfillment.Element.Name);
-                var gumRuntimeType =
-                    GueDerivingClassCodeGenerator.GueRuntimeNamespace + "." + unqualifiedName + "Runtime";
+                var gumRuntimeType = GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(fulfillment.Element);
 
                 var line =
                     $"FlatRedBall.Forms.Controls.FrameworkElement.DefaultFormsComponents[typeof({qualifiedControlType})] = typeof({gumRuntimeType});";
@@ -180,16 +196,13 @@ namespace GumPlugin.CodeGeneration
 
         private static void AddRegisterCode(ICodeBlock codeBlock, Gum.DataTypes.ElementSave element)
         {
-            // don't remove the path:
-            string unqualifiedName = FlatRedBall.IO.FileManager.RemovePath(  element.Name );
             string elementNameString = element.Name.Replace("\\", "\\\\") ;
 
             codeBlock.Line(
                 "GumRuntime.ElementSaveExtensions.RegisterGueInstantiationType(\"" +
                 elementNameString +
                 "\", typeof(" +
-                GueDerivingClassCodeGenerator.GueRuntimeNamespace + "." +
-                unqualifiedName + "Runtime" +
+                GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(element) +
                 "));");
         }
     }

@@ -41,6 +41,10 @@
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
+    <Name>ComponentFolder/SameNameComponent</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>componentfolder\InFolder1</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
@@ -114,6 +118,10 @@
   </ComponentReference>
   <ComponentReference>
     <Name>ParentStateComponent</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>SameNameComponent</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
