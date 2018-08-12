@@ -465,6 +465,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>samenamecomponent</Name>
     </None>
+    <None Include="gumproject\components\componentfolder\statecomponentcontainedfoldered.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>statecomponentcontainedfoldered</Name>
+    </None>
     <None Include="GumProject\Components\ComponentWithCustomInitialize.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ComponentWithCustomInitialize</Name>
@@ -556,6 +560,10 @@
     <None Include="GumProject\Components\StateComponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>StateComponent</Name>
+    </None>
+    <None Include="gumproject\components\statecomponentcontained.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>statecomponentcontained</Name>
     </None>
     <None Include="GumProject\Components\Switch.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

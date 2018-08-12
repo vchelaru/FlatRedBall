@@ -828,6 +828,7 @@
     <Compile Include="GumRuntimes\ComponentContainingSpriteRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\componentfolder\InFolder1Runtime.Generated.cs" />
     <Compile Include="GumRuntimes\ComponentFolder\SameNameComponentRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\ComponentFolder\StateComponentContainedFolderedRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\ComponentWithCustomInitializeRuntime.cs" />
     <Compile Include="GumRuntimes\ComponentWithCustomInitializeRuntime.Generated.cs">
       <DependentUpon>ComponentWithCustomInitializeRuntime.cs</DependentUpon>
@@ -865,6 +866,7 @@
     <Compile Include="GumRuntimes\SpriteInheritingComponntRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\SpriteRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\StackingComponentRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\StateComponentContainedRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\StateComponentRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\SwitchRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\TestComponentRuntime.Generated.cs" />

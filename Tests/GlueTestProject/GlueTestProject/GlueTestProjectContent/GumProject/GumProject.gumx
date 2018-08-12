@@ -45,6 +45,10 @@
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
+    <Name>ComponentFolder/StateComponentContainedFoldered</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>componentfolder\InFolder1</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
@@ -134,6 +138,10 @@
   </ComponentReference>
   <ComponentReference>
     <Name>StateComponent</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>StateComponentContained</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>

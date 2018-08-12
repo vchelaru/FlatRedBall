@@ -49,7 +49,7 @@
     <Variable>
       <Type>float</Type>
       <Name>Height</Name>
-      <Value xsi:type="xsd:float">150</Value>
+      <Value xsi:type="xsd:float">299</Value>
       <Category>Dimensions</Category>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -71,6 +71,78 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>Category1State</Type>
+      <Name>StateComponentContainedFolderedInstance.Category1State</Name>
+      <Value xsi:type="xsd:string">Categorized1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StateComponentContainedFolderedInstance.Height</Name>
+      <Value xsi:type="xsd:float">50</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>State</Type>
+      <Name>StateComponentContainedFolderedInstance.State</Name>
+      <Value xsi:type="xsd:string">State1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StateComponentContainedFolderedInstance.Width</Name>
+      <Value xsi:type="xsd:float">83</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StateComponentContainedFolderedInstance.X</Name>
+      <Value xsi:type="xsd:float">209</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StateComponentContainedFolderedInstance.Y</Name>
+      <Value xsi:type="xsd:float">35</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>Category1State</Type>
+      <Name>StateComponentContainedInstance.Category1State</Name>
+      <Value xsi:type="xsd:string">Categorized1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StateComponentContainedInstance.Height</Name>
+      <Value xsi:type="xsd:float">48</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>State</Type>
+      <Name>StateComponentContainedInstance.State</Name>
+      <Value xsi:type="xsd:string">State1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StateComponentContainedInstance.Width</Name>
+      <Value xsi:type="xsd:float">64</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StateComponentContainedInstance.X</Name>
+      <Value xsi:type="xsd:float">28</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StateComponentContainedInstance.Y</Name>
+      <Value xsi:type="xsd:float">20</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>bool</Type>
       <Name>Visible</Name>
       <Value xsi:type="xsd:boolean">true</Value>
@@ -79,7 +151,7 @@
     <Variable>
       <Type>float</Type>
       <Name>Width</Name>
-      <Value xsi:type="xsd:float">150</Value>
+      <Value xsi:type="xsd:float">398</Value>
       <Category>Dimensions</Category>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -139,14 +211,110 @@
   </State>
   <State>
     <Name>NonDefaultState</Name>
+    <Variable>
+      <Type>Category1State</Type>
+      <Name>StateComponentContainedFolderedInstance.Category1State</Name>
+      <Value xsi:type="xsd:string">Categorized2</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>State</Type>
+      <Name>StateComponentContainedFolderedInstance.State</Name>
+      <Value xsi:type="xsd:string">State2</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>Category1State</Type>
+      <Name>StateComponentContainedInstance.Category1State</Name>
+      <Value xsi:type="xsd:string">Categorized2</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>State</Type>
+      <Name>StateComponentContainedInstance.State</Name>
+      <Value xsi:type="xsd:string">State2</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
   </State>
   <Category>
     <Name>Category1</Name>
     <State>
       <Name>Categorized1</Name>
+      <Variable>
+        <Type>Category1State</Type>
+        <Name>StateComponentContainedFolderedInstance.Category1State</Name>
+        <Value xsi:type="xsd:string">Categorized1</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>State</Type>
+        <Name>StateComponentContainedFolderedInstance.State</Name>
+        <Value xsi:type="xsd:string">State1</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>float</Type>
+        <Name>StateComponentContainedFolderedInstance.X</Name>
+        <Value xsi:type="xsd:float">168</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>float</Type>
+        <Name>StateComponentContainedFolderedInstance.Y</Name>
+        <Value xsi:type="xsd:float">30</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>Category1State</Type>
+        <Name>StateComponentContainedInstance.Category1State</Name>
+        <Value xsi:type="xsd:string">Categorized1</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>State</Type>
+        <Name>StateComponentContainedInstance.State</Name>
+        <Value xsi:type="xsd:string">State1</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
     </State>
     <State>
       <Name>Categorized2</Name>
+      <Variable>
+        <Type>Category1State</Type>
+        <Name>StateComponentContainedFolderedInstance.Category1State</Name>
+        <Value xsi:type="xsd:string">Categorized2</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>State</Type>
+        <Name>StateComponentContainedFolderedInstance.State</Name>
+        <Value xsi:type="xsd:string">State2</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>Category1State</Type>
+        <Name>StateComponentContainedInstance.Category1State</Name>
+        <Value xsi:type="xsd:string">Categorized2</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>State</Type>
+        <Name>StateComponentContainedInstance.State</Name>
+        <Value xsi:type="xsd:string">State2</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>float</Type>
+        <Name>StateComponentContainedFolderedInstance.X</Name>
+        <Value xsi:type="xsd:float">209</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>float</Type>
+        <Name>StateComponentContainedFolderedInstance.Y</Name>
+        <Value xsi:type="xsd:float">35</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
     </State>
   </Category>
   <Category>
@@ -158,5 +326,13 @@
       <Name>CategorizedB</Name>
     </State>
   </Category>
+  <Instance>
+    <Name>StateComponentContainedInstance</Name>
+    <BaseType>StateComponentContained</BaseType>
+  </Instance>
+  <Instance>
+    <Name>StateComponentContainedFolderedInstance</Name>
+    <BaseType>ComponentFolder/StateComponentContainedFoldered</BaseType>
+  </Instance>
   <Behaviors />
 </ComponentSave>
