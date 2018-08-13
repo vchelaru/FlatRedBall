@@ -14,6 +14,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
     public class MainPlugin : EmbeddedPlugin
     {
         SyncedProjectsControl control;
+        ToolbarControl toolbarControl;
 
         public override void StartUp()
         {
@@ -24,8 +25,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
         private void AddToolbarUi()
         {
-            var control = new ToolbarControl();
-            base.AddToToolBar(control, "Standard");
+            toolbarControl = new ToolbarControl();
+            base.AddToToolBar(toolbarControl, "Standard");
+        }
+
+        private void RemoveToolbarUi()
+        {
+            if(toolbarControl != null)
+            {
+                base.RemoveFromToolbar(toolbarControl, "Standard");
+            }
         }
 
         private void AddControl()

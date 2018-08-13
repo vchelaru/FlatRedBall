@@ -39,6 +39,7 @@ namespace GumPlugin
         ToolStripMenuItem addGumProjectMenuItem;
 
         GlobalContentCodeGenerator globalContentCodeGenerator;
+        GumToolbar gumToolbar;
 
         bool raiseViewModelEvents = true;
 
@@ -214,7 +215,11 @@ namespace GumPlugin
             // - Introduced TreeView and TreeViewItem support
             // - Improved layout performance in a few situations, especially list boxes and tree views in .Forms
             // - Fixed a number of crashes which can occur when a standard file (like Circle) is missing            
-            get { return new Version(1, 3, 0, 0); }
+            // 1.4.0
+            // - Introduced support for subfolders and matching namespaces for components
+            // 1.4.1
+            // - The Gum toolbar disappears if the Gum plugin is shut down
+            get { return new Version(1, 4, 1, 0); }
         }
 
         #endregion
@@ -246,7 +251,7 @@ namespace GumPlugin
 
         private void CreateToolbar()
         {
-            var gumToolbar = new GumToolbar();
+            gumToolbar = new GumToolbar();
             gumToolbar.GumButtonClicked += HandleToolbarButtonClick;
             base.AddToToolBar(gumToolbar, "Standard");
         }
@@ -603,6 +608,10 @@ namespace GumPlugin
 
             FlatRedBall.Glue.Parsing.CodeWriter.GlobalContentCodeGenerators.Remove(globalContentCodeGenerator);
 
+            if(gumToolbar != null)
+            {
+                base.RemoveFromToolbar(gumToolbar, "Standard");
+            }
 
             return true;
         }

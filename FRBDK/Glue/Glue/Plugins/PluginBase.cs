@@ -24,7 +24,7 @@ namespace FlatRedBall.Glue.Plugins
 {
     public abstract class PluginBase : IPlugin
     {
-        Dictionary<ToolStripMenuItem, ToolStripMenuItem> mItemsAndParents = new Dictionary<ToolStripMenuItem, ToolStripMenuItem>();
+        Dictionary<ToolStripMenuItem, ToolStripMenuItem> toolStripItemsAndParents = new Dictionary<ToolStripMenuItem, ToolStripMenuItem>();
 
         List<ElementComponentCodeGenerator> CodeGenerators
         {
@@ -192,7 +192,7 @@ namespace FlatRedBall.Glue.Plugins
         {
             ToolStripMenuItem menuItem = new ToolStripMenuItem(whatToAdd, null, eventHandler);
             ToolStripMenuItem itemToAddTo = GetItem(container);
-            mItemsAndParents.Add(menuItem, itemToAddTo);
+            toolStripItemsAndParents.Add(menuItem, itemToAddTo);
 
 
             if (preferredIndex == -1)
@@ -259,7 +259,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public void RemoveAllMenuItems()
         {
-            foreach (var kvp in mItemsAndParents)
+            foreach (var kvp in toolStripItemsAndParents)
             {
                 // need to invoke this on the main thread:
 
