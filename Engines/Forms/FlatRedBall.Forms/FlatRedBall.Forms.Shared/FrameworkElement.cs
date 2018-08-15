@@ -3,6 +3,7 @@ using FlatRedBall.Gui;
 using Gum.Wireframe;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace FlatRedBall.Forms.Controls
@@ -126,8 +127,12 @@ namespace FlatRedBall.Forms.Controls
             }
             else
             {
+#if UWP
+                var baseType = type.GetTypeInfo().BaseType;
+#else
                 var baseType = type.BaseType;
-                if(baseType == typeof(object))
+#endif
+                if (baseType == typeof(object))
                 {
                     throw new Exception($"Could not find default Gum Component for {type}. You can solve this by adding a Gum type for {type} to {nameof(DefaultFormsComponents)}, or constructing the Gum object itself.");
                 }
@@ -138,7 +143,7 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        #endregion
+#endregion
 
         public FrameworkElement() 
         {

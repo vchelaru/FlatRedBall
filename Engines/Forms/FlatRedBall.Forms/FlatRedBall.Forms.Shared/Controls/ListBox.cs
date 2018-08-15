@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -164,9 +165,9 @@ namespace FlatRedBall.Forms.Controls
             return item;
         }
 
-        #endregion
+#endregion
 
-        #region Event Handler methods
+#region Event Handler methods
 
         private void HandleCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -241,7 +242,7 @@ namespace FlatRedBall.Forms.Controls
 
         }
 
-        #endregion
+#endregion
 
     }
 }
