@@ -29,7 +29,6 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.projitems*{0ee8a96c-a754-453d-9e65-19a24e9a5e76}*SharedItemsImports = 13
 		..\..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.projitems*{4712a432-8128-4814-9e0e-16ac91557789}*SharedItemsImports = 4
-		..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{4712a432-8128-4814-9e0e-16ac91557789}*SharedItemsImports = 4
 		..\..\..\..\Gum\GumCoreShared.projitems*{4712a432-8128-4814-9e0e-16ac91557789}*SharedItemsImports = 4
 		FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{6f3bf0b0-952a-423b-bc7a-88088c6633b9}*SharedItemsImports = 4
 		FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{728151f0-03e0-4253-94fe-46b9c77edea6}*SharedItemsImports = 13
