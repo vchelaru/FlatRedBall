@@ -37,22 +37,38 @@ namespace FlatRedBall.Glue.MVVM
             return toReturn;
         }
 
-        protected void Set<T>(T propertyValue, [CallerMemberName]string propertyName = null)
+        protected bool Set<T>(T propertyValue, [CallerMemberName]string propertyName = null)
         {
+            var didSet = false;
+
             if (propertyDictionary.ContainsKey(propertyName))
             {
                 var storage = (T)propertyDictionary[propertyName];
                 if (EqualityComparer<T>.Default.Equals(storage, propertyValue) == false)
                 {
+                    didSet = true;
                     propertyDictionary[propertyName] = propertyValue;
-                    NotifyPropertyChanged(propertyName);
                 }
             }
             else
             {
                 propertyDictionary.Add(propertyName, propertyValue);
+
+                // Even though the user is setting a new value, we want to make sure it's
+                // not the same:
+                var defaultValue = default(T);
+                var isSettingDefault =
+                    EqualityComparer<T>.Default.Equals(defaultValue, propertyValue);
+
+                didSet = isSettingDefault == false;
+            }
+
+            if (didSet)
+            {
                 NotifyPropertyChanged(propertyName);
             }
+
+            return didSet;
         }
 
 

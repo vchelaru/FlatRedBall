@@ -52,17 +52,32 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
+        public string FullPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(original))
+                {
+                    return FileManager.RemoveDotDotSlash(StandardizeInternal(""));
+                }
+                else
+                {
+                    return FileManager.RemoveDotDotSlash(StandardizeInternal(original));
+                }
+            }
+        }
+
         public string Standardized
         {
             get
             {
                 if (string.IsNullOrEmpty(original))
                 {
-                    return FileManager.RemoveDotDotSlash(FileManager.Standardize("", null, makeAbsolute: true)).ToLowerInvariant();
+                    return FileManager.RemoveDotDotSlash(StandardizeInternal("")).ToLowerInvariant();
                 }
                 else
                 {
-                    return FileManager.RemoveDotDotSlash(FileManager.Standardize(original, null, makeAbsolute: true)).ToLowerInvariant();
+                    return FileManager.RemoveDotDotSlash(StandardizeInternal(original)).ToLowerInvariant();
                 }
             }
         }
@@ -130,6 +145,65 @@ namespace FlatRedBall.Glue.IO
         public override string ToString()
         {
             return Standardized;
+        }
+
+        static void ReplaceSlashes(ref string stringToReplace)
+        {
+            bool isNetwork = false;
+            if (stringToReplace.StartsWith("\\\\"))
+            {
+                stringToReplace = stringToReplace.Substring(2);
+                isNetwork = true;
+            }
+
+            stringToReplace = stringToReplace.Replace("\\", "/");
+
+            if (isNetwork)
+            {
+                stringToReplace = "\\\\" + stringToReplace;
+            }
+        }
+
+        private string StandardizeInternal(string fileNameToFix)
+        {
+            if (fileNameToFix == null)
+                return null;
+
+            bool isNetwork = fileNameToFix.StartsWith("\\\\");
+
+            ReplaceSlashes(ref fileNameToFix);
+
+            if (!isNetwork)
+            {
+                // Not sure what this is all about, but everything should be standardized:
+                //#if SILVERLIGHT
+                //                if (IsRelative(fileNameToFix) && mRelativeDirectory.Length > 1)
+                //                    fileNameToFix = mRelativeDirectory + fileNameToFix;
+
+                //#else
+
+                if (FileManager.IsRelative(fileNameToFix))
+                {
+                    fileNameToFix = (FileManager.RelativeDirectory + fileNameToFix);
+                    ReplaceSlashes(ref fileNameToFix);
+                }
+
+                //#endif
+            }
+
+#if !XBOX360
+            fileNameToFix = FileManager.RemoveDotDotSlash(fileNameToFix);
+
+            if (fileNameToFix.StartsWith(".."))
+            {
+                throw new InvalidOperationException("Tried to remove all ../ but ended up with this: " + fileNameToFix);
+            }
+
+#endif
+            // It's possible that there will be double forward slashes.
+            fileNameToFix = fileNameToFix.Replace("//", "/");
+
+            return fileNameToFix;
         }
     }
 }

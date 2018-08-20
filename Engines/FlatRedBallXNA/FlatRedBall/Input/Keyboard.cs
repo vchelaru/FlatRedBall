@@ -325,7 +325,11 @@ namespace FlatRedBall.Input
             return !InputManager.CurrentFrameInputSuspended && keyboardStateProcessor.IsKeyDown(key);
         }
 
-
+        /// <summary>
+        /// Returns true if the argument key was not down last frame, but is down this frame.
+        /// </summary>
+        /// <param name="key">The key to check</param>
+        /// <returns>Whether the key was just pushed.</returns>
         public bool KeyPushed(Keys key)
         {
             if (mKeysIgnoredForThisFrame[(int)key] || InputManager.mIgnorePushesThisFrame)

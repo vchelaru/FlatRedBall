@@ -227,6 +227,10 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        /// <summary>
+        /// Returns the effective type of the instance, depending on whether it's a 
+        /// file, entity, or FRB type.
+        /// </summary>
         [XmlIgnore]
         [CategoryAttribute("\t\tInstance")]
         public string InstanceType

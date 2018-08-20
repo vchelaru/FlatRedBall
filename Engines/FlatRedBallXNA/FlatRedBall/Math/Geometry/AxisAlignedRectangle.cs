@@ -243,15 +243,6 @@ namespace FlatRedBall.Math.Geometry
 
         public RepositionDirections RepositionDirections { get; set; }
 
-#if SILVERLIGHT
-
-        public Color FillColor
-        {
-            get;
-            set;
-        }
-#endif
-
         public Vector2 LastMoveCollisionReposition
         {
             get { return mLastMoveCollisionReposition; }
