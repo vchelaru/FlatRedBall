@@ -23,6 +23,15 @@ namespace GumPlugin.RuntimeObjects
 
         private void HandleWindowResize(object sender, EventArgs e)
         {
+            // early out:
+
+            if (GlueViewState.Self?.CurrentGlueProject == null)
+            {
+                return;
+            }
+
+            // end early out
+
             var newHeight = FlatRedBallServices.GraphicsOptions.ResolutionHeight;
             var newWidth = FlatRedBallServices.GraphicsOptions.ResolutionWidth;
 

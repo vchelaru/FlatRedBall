@@ -37,3 +37,4 @@ FRBDK/FRBDKUpdater/.vs/
 FRBDK/Glue/GameScriptingPlugin/.vs/
 FRBDK/AnimationEditorPlugin/.vs/
 *.mainplugin.settings.json
+Templates/FlatRedBallUwpTemplate/.vs/

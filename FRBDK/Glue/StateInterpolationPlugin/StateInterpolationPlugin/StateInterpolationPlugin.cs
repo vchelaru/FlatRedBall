@@ -57,6 +57,31 @@ namespace OfficialPlugins.StateInterpolation
         {
             // We need this to happen when the glux is loaded
             //UpdateCodeInProjectPresence();
+
+            CreateCodeItemAdder();
+
+            CreateMenuItems();
+
+            this.AdjustDisplayedEntity += HandleAdjustDisplayedEntity;
+            this.AdjustDisplayedScreen += HandleAdjustDisplayedScreen;
+            this.ReactToLoadedGlux += HandleGluxLoad;
+            mCodeGenerator = new StateInterpolationCodeGenerator();
+            CodeWriter.CodeGenerators.Add(mCodeGenerator);
+
+        }
+
+        private void CreateMenuItems()
+        {
+            this.AddMenuItemTo("Add State Interpolation Classes", HandleAddStateInterpolationClasses, "Plugins");
+        }
+
+        private void HandleAddStateInterpolationClasses(object sender, EventArgs e)
+        {
+            UpdateCodeInProjectPresence();
+        }
+
+        private void CreateCodeItemAdder()
+        {
             mItemAdder = new CodeBuildItemAdder();
             mItemAdder.IsVerbose = true;
 
@@ -79,15 +104,6 @@ namespace OfficialPlugins.StateInterpolation
             mItemAdder.AddFileBehavior = AddFileBehavior.IfOutOfDate;
 
             mItemAdder.OutputFolderInProject = "StateInterpolation";
-
-            
-
-            this.AdjustDisplayedEntity += HandleAdjustDisplayedEntity;
-            this.AdjustDisplayedScreen += HandleAdjustDisplayedScreen;
-            this.ReactToLoadedGlux += HandleGluxLoad;
-            mCodeGenerator = new StateInterpolationCodeGenerator();
-            CodeWriter.CodeGenerators.Add(mCodeGenerator);
-
         }
 
         void HandleGluxLoad()
