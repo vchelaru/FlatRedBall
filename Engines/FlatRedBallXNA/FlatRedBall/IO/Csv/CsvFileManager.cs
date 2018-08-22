@@ -99,10 +99,9 @@ namespace FlatRedBall.IO.Csv
             string extension = FileManager.GetExtension(fileName).ToLower();
             if (extension == "csv" || extension == "txt")
             {
-#if SILVERLIGHT || XBOX360 || WINDOWS_PHONE || MONOGAME
+#if MONOGAME
                 
                 Stream stream = FileManager.GetStreamForFile(fileName);
-
 #else
                 // Creating a filestream then using that enables us to open files that are open by other apps.
                 FileStream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
@@ -110,14 +109,6 @@ namespace FlatRedBall.IO.Csv
                 runtimeCsvRepresentation = CsvDeserializeToRuntime<T>(stream);
                 FileManager.Close(stream);
                 stream.Dispose();
-
-
-#if XBOX360
-                if (FileManager.IsFileNameInUserFolder(fileName))
-                {
-                    FileManager.DisposeLastStorageContainer();
-                }
-#endif
             }
 #if FRB_XNA
             else
@@ -164,13 +155,8 @@ namespace FlatRedBall.IO.Csv
                 {
                     while (csv.ReadNextRecord())
                     {
-
-
                         newRecord = new string[numberOfHeaders];
-                        if (recordIndex == 123)
-                        {
-                            int m = 3;
-                        }
+
                         bool anyNonEmpty = false;
                         for (columnIndex = 0; columnIndex < numberOfHeaders; columnIndex++)
                         {

@@ -34,9 +34,7 @@ using System.Globalization;
 using System.IO;
 
 
-#if SILVERLIGHT
-using FlatRedBall.Utilities.Extensions;
-#elif !WINDOWS_PHONE && !XBOX360 && !MONODROID && !MONOGAME
+#if !MONODROID && !MONOGAME
 using System.Data.Common;
 #endif
 
@@ -48,12 +46,34 @@ namespace FlatRedBall.IO.Csv
 	public partial class CsvReader
 		: IEnumerable<string[]>, IDisposable
 	{
-		#region Constants
+        /// <summary>
+        /// Defines the data reader validations.
+        /// </summary>
+        [Flags]
+        private enum DataReaderValidations
+        {
+            /// <summary>
+            /// No validation.
+            /// </summary>
+            None = 0,
 
-		/// <summary>
-		/// Defines the default buffer size.
-		/// </summary>
-		public const int DefaultBufferSize = 0x1000;
+            /// <summary>
+            /// Validate that the data reader is initialized.
+            /// </summary>
+            IsInitialized = 1,
+
+            /// <summary>
+            /// Validate that the data reader is not closed.
+            /// </summary>
+            IsNotClosed = 2
+        }
+
+        #region Constants
+
+        /// <summary>
+        /// Defines the default buffer size.
+        /// </summary>
+        public const int DefaultBufferSize = 0x1000;
 
 		/// <summary>
 		/// Defines the default delimiter character separating each field.

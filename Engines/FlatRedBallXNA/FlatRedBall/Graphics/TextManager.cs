@@ -116,13 +116,7 @@ namespace FlatRedBall.Graphics
 
         }
 
-#if FRB_MDX
-        public static void Initialize()
-
-#else
-
         public static void Initialize(GraphicsDevice graphicsDevice)
-#endif
         {
 
 #if XNA4 && !UNIT_TESTS
@@ -136,21 +130,6 @@ namespace FlatRedBall.Graphics
 
 
 #if FRB_MDX
-
-            if (System.IO.Directory.Exists(System.IO.Directory.GetCurrentDirectory() + "/Assets/Textures/"))
-            {
-                mDefaultFont = new BitmapFont(
-                    System.IO.Directory.GetCurrentDirectory() + "/Assets/Textures/defaultText.tga",
-                    System.IO.Directory.GetCurrentDirectory() + "/Assets/Textures/defaultText.fnt", 
-                    GuiManager.InternalGuiContentManagerName);
-            }
-            else
-            {
-                mDefaultFont = new BitmapFont(
-                    System.Windows.Forms.Application.StartupPath + "/" + "Assets/Textures/defaultText.tga",
-                    System.Windows.Forms.Application.StartupPath + "/" + "Assets/Textures/defaultText.fnt",
-                    GuiManager.InternalGuiContentManagerName);
-            }
 #elif (SILVERLIGHT || XNA4) && !UNIT_TESTS
             SpriteBatch = new SpriteBatch(graphicsDevice);
 #endif
@@ -163,13 +142,12 @@ namespace FlatRedBall.Graphics
 
         public static Text AddText(string displayText)
         {
-#if !SILVERLIGHT && !WINDOWS_PHONE
+#if DEBUG
             if (DefaultFont == null)
             {
                 throw new System.InvalidOperationException("Cannot create Text object because the TextManager's DefaultFont has not been set.");
             }
 #endif
-
             return AddText(displayText, DefaultFont);
         }
 
@@ -203,11 +181,6 @@ namespace FlatRedBall.Graphics
 
             text.SetPixelPerfectScale(SpriteManager.Camera);
 
-
-#if SILVERLIGHT
-            text.RenderOnTexture = true;
-#endif
-
             return text;
         }
 
@@ -217,12 +190,11 @@ namespace FlatRedBall.Graphics
                 return AddText(displayText, DefaultFont);
             else
             {
-#if !SILVERLIGHT
                 if (DefaultFont == null)
                 {
                     throw new System.InvalidOperationException("Cannot create Text object because the TextManager's DefaultFont has not been set.");
                 }
-#endif
+
                 Text text = new Text(DefaultFont);
                 text.DisplayText = displayText;
                 if (layer.CameraBelongingTo != null)
@@ -365,7 +337,7 @@ namespace FlatRedBall.Graphics
                 if (text.ListsBelongingTo.Contains(mAutomaticallyUpdatedTexts) == false)
                 {
                     // The Text is not updated.  That means
-                    // it was instantiated outside of the Text.  Add it here as an
+                    // it was instantiated outside of the TextManager.  Add it here as an
                     // automatically updated Text
                     mAutomaticallyUpdatedTexts.Add(text);
                 }
@@ -373,6 +345,39 @@ namespace FlatRedBall.Graphics
 
 
 
+        }
+
+        /// <summary>
+        /// Adds a text object to the TextManager to be drawn, but which will not have
+        /// its every-frame activity called.
+        /// </summary>
+        /// <param name="text">The text to add.</param>
+        /// <param name="layerToAddTo">The optional layer to add to. If null, the Text will be unlayered.</param>
+        /// <remarks>Texts added with AddManuallyUpdated will not be visible unless they have
+        /// their UpdateDependencies or ForceUpdateDependencies called after all properties have been assigned.
+        /// </remarks>
+        public static void AddManuallyUpdated(Text text, Layer layerToAddTo = null)
+        {
+            if (layerToAddTo == null)
+            {
+#if DEBUG
+                if (mDrawnTexts.Contains(text))
+                {
+                    throw new InvalidOperationException("This text has already been added to the TextManager");
+                }
+#endif
+                mDrawnTexts.Add(text);
+            }
+            else
+            {
+#if DEBUG
+                if (layerToAddTo.mTexts.Contains(text))
+                {
+                    throw new InvalidOperationException("This text has already been added to the layer " + layerToAddTo.Name);
+                }
+#endif
+                layerToAddTo.mTexts.Add(text);
+            }
         }
 
         public static void ConvertToManuallyUpdated(Text text)

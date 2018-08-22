@@ -188,7 +188,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)IO\BmpLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\Csv\CsvFileManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\Csv\CsvReader.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IO\Csv\CsvReader.DataReaderValidations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\Csv\CsvReader.RecordEnumerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\Csv\Events\ParseErrorEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\Csv\MemberTypeIndexPair.cs" />
