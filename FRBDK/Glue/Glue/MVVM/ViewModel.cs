@@ -39,6 +39,18 @@ namespace FlatRedBall.Glue.MVVM
 
         protected bool Set<T>(T propertyValue, [CallerMemberName]string propertyName = null)
         {
+            bool didSet = SetWithoutNotifying(propertyValue, propertyName);
+
+            if (didSet)
+            {
+                NotifyPropertyChanged(propertyName);
+            }
+
+            return didSet;
+        }
+
+        protected bool SetWithoutNotifying<T>(T propertyValue, [CallerMemberName]string propertyName = null)
+        {
             var didSet = false;
 
             if (propertyDictionary.ContainsKey(propertyName))
@@ -63,14 +75,8 @@ namespace FlatRedBall.Glue.MVVM
                 didSet = isSettingDefault == false;
             }
 
-            if (didSet)
-            {
-                NotifyPropertyChanged(propertyName);
-            }
-
             return didSet;
         }
-
 
         public ViewModel()
         {

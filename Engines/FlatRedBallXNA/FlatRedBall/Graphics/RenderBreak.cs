@@ -1,10 +1,13 @@
+//#if DESKTOP_GL || WINDOWS
+#if WINDOWS
+#define USE_CUSTOM_SHADER
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Utilities;
 #if FRB_MDX
-using TextureAddressMode = Microsoft.DirectX.Direct3D.TextureAddress;
-using Microsoft.DirectX.Direct3D;
 #else
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
@@ -159,7 +162,7 @@ namespace FlatRedBall.Graphics
             Red = 1;
             Green = 1;
             Blue = 1;
-#if MONOGAME && !DESKTOP_GL
+#if !USE_CUSTOM_SHADER
 
             if (text.ColorOperation != Graphics.ColorOperation.Texture)
             {
@@ -268,7 +271,7 @@ namespace FlatRedBall.Graphics
                 text.ColorOperation != ColorOperation ||
                 text.BlendOperation != BlendOperation ||
                 TextureAddressMode != TextureAddressMode.Clamp
-#if MONOGAME && !DESKTOP_GL
+#if !USE_CUSTOM_SHADER
                 ||
                 text.Red != Red ||
                 text.Green != Green ||
@@ -300,7 +303,7 @@ namespace FlatRedBall.Graphics
                 //if (TextureFilter != FlatRedBallServices.GraphicsOptions.TextureFilter)
                     FlatRedBallServices.GraphicsOptions.TextureFilter = TextureFilter;
 
-#if MONOGAME && !DESKTOP_GL
+#if !USE_CUSTOM_SHADER
                 if (ColorOperation == Graphics.ColorOperation.ColorTextureAlpha)
                 {
                     Renderer.SetFogForColorOperation(Red, Green, Blue);

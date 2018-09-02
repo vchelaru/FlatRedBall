@@ -34,6 +34,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 );
         }
 
+        public void GenerateCurrentElementCodeTask()
+        {
+            var element = GlueState.CurrentElement;
+            TaskManager.Self.Add(()  =>
+            {
+
+                if (element != null)
+                {
+                    CodeWriter.GenerateCode(element);
+                }
+            }, "Generating element");
+        }
+
         public void GenerateCurrentElementCode()
         {
             var element = GlueState.CurrentElement;

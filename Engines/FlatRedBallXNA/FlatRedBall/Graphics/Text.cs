@@ -1098,7 +1098,7 @@ namespace FlatRedBall.Graphics
             UpdateInternalRenderingVariables();
         }
 
-        private void UpdateInternalRenderingVariables()
+        public void UpdateInternalRenderingVariables()
         {
             // for thread safety
             string text = mAdjustedText;
@@ -1190,7 +1190,6 @@ namespace FlatRedBall.Graphics
                 // thought of.
                 if (this.AbsoluteVisible)
                 {
-#if MONOGAME
                     mVertexArray = FillVertexArray(
                         mVertexArray,
                         this,
@@ -1211,37 +1210,7 @@ namespace FlatRedBall.Graphics
                         CameraToAdjustPixelPerfectTo,
                         mInternalTextureSwitches,
                         MaxCharacters);
-#else
-                    float red = mRed;
-                    float green = mGreen;
-                    float blue = mBlue;
-                    float alpha = mAlpha;
 
-                    mVertexArray = FillVertexArray(
-                        mVertexArray,
-                        // use mAdjustedText because
-                        // it contains newlines inserted
-                        // through automatic wrapping behavior.
-                        this.mAdjustedText,
-                        ref mVertexCount,
-                        mSpacing,
-                        mScale,
-                        mFont,
-                        ref Position,
-                        mHorizontalAlignment,
-                        mVerticalAlignment,
-                        red,
-                        green,
-                        blue,
-                        alpha,
-                        mNewLineDistance,
-                        ref mRotationMatrix,
-                        mAdjustPositionForPixelPerfectDrawing,
-                        CameraToAdjustPixelPerfectTo,
-                        LayerToAdjustPixelPerfectTo,
-                        mInternalTextureSwitches,
-                        MaxCharacters);
-#endif
                 }
             }
         }
@@ -1262,7 +1231,6 @@ namespace FlatRedBall.Graphics
 
 
 
-#if MONOGAME
         internal static VertexPositionColorTexture[] FillVertexArray(VertexPositionColorTexture[] vertexArray,
             Text textInstance, ref int vertexCount, float mSpacing, float mScale, BitmapFont mFont, ref Vector3 Position,
             HorizontalAlignment mHorizontalAlignment, VerticalAlignment mVerticalAlignment,
@@ -1270,15 +1238,6 @@ namespace FlatRedBall.Graphics
             bool adjustPositionForPixelPerfectDrawing, Camera camera, List<Point> internalTextureSwitches, int maxCharacterCount)
         {
             string text = textInstance.mAdjustedText;
-
-#else
-        internal static VertexPositionColorTexture[] FillVertexArray(VertexPositionColorTexture[] vertexArray,
-            string text, ref int vertexCount, float mSpacing, float mScale, BitmapFont mFont, ref Vector3 Position,
-            HorizontalAlignment mHorizontalAlignment, VerticalAlignment mVerticalAlignment,
-            float mRed, float mGreen, float mBlue, float mAlpha, float mNewLineDistance, ref Matrix mRotationMatrix,
-            bool adjustPositionForPixelPerfectDrawing, Camera camera, Layer layer, List<Point> internalTextureSwitches, int maxCharacterCount)
-        {
-#endif
                 //        public TransformedColoredTextured[] GetVertArray(string text, 
                 //          TextFormat format, Matrix rotationMatrix, BitmapFont bitmapFont)
                 internalTextureSwitches.Clear();

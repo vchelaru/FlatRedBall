@@ -670,12 +670,14 @@ namespace FlatRedBall.Glue.FormHelpers
             string resultName = addEventWindow.ResultName;
             IElement currentElement = EditorLogic.CurrentElement;
 
-            #region Show message boxes if there is an error with the variable
-            bool isInvalid = IsVariableInvalid(null, resultName, currentElement);
+            string failureMessage;
+            bool isInvalid = IsVariableInvalid(null, resultName, currentElement, out failureMessage);
 
-            #endregion
-
-            if (!isInvalid)
+            if(isInvalid)
+            {
+                MessageBox.Show(failureMessage);
+            }
+            else if (!isInvalid)
             {
                 EventResponseSave eventResponseSave = new EventResponseSave();
                 eventResponseSave.EventName = resultName;
@@ -2263,10 +2265,25 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             string resultName = addVariableWindow.ResultName;
             IElement currentElement = EditorLogic.CurrentElement;
+            string failureMessage;
 
-            bool didFailureOccur = IsVariableInvalid(addVariableWindow, resultName, currentElement);
+            bool didFailureOccur = IsVariableInvalid(addVariableWindow, resultName, currentElement, out failureMessage);
 
-            if (!didFailureOccur)
+
+            if(!didFailureOccur)
+            {
+                if(!string.IsNullOrEmpty(addVariableWindow.TunnelingObject) && string.IsNullOrEmpty(addVariableWindow.TunnelingVariable))
+                {
+                    didFailureOccur = true;
+                    failureMessage = $"You must select a variable on {addVariableWindow.TunnelingObject}";
+                }
+            }
+
+            if(didFailureOccur)
+            {
+                MessageBox.Show(failureMessage);
+            }
+            else
             {
 
                 // See if there is already a variable in the base with this name
@@ -2323,35 +2340,36 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        private static bool IsVariableInvalid(AddVariableWindow addVariableWindow, string resultName, IElement currentElement)
+        private static bool IsVariableInvalid(AddVariableWindow addVariableWindow, string resultName, IElement currentElement, out string failureMessage)
         {
             bool didFailureOccur = false;
 
             string whyItIsntValid = "";
 
             didFailureOccur = NameVerifier.IsCustomVariableNameValid(resultName, null, currentElement, ref whyItIsntValid) == false;
-
+            failureMessage = null;
             if (didFailureOccur)
             {
-                System.Windows.Forms.MessageBox.Show(whyItIsntValid);
+                failureMessage = whyItIsntValid;
 
             }
             else if (addVariableWindow != null && NameVerifier.DoesTunneledVariableAlreadyExist(addVariableWindow.TunnelingObject, addVariableWindow.TunnelingVariable, currentElement))
             {
                 didFailureOccur = true;
-                MessageBox.Show("There is already a variable that is modifying " + addVariableWindow.TunnelingVariable + " on " + addVariableWindow.TunnelingObject);
+                failureMessage = "There is already a variable that is modifying " + addVariableWindow.TunnelingVariable + " on " + addVariableWindow.TunnelingObject;
             }
             else if (addVariableWindow != null && IsUserTryingToCreateNewWithExposableName(addVariableWindow.ResultName, addVariableWindow.DesiredVariableType == CustomVariableType.Exposed))
             {
                 didFailureOccur = true;
-                MessageBox.Show("The variable\n\n" + resultName + "\n\nis an expoable variable.  Please use a different variable name or select the variable through the Expose tab");
+                failureMessage = "The variable\n\n" + resultName + "\n\nis an expoable variable.  Please use a different variable name or select the variable through the Expose tab";
             }
 
             else if (ExposedVariableManager.IsReservedPositionedPositionedObjectMember(resultName) && currentElement is EntitySave)
             {
                 didFailureOccur = true;
-                MessageBox.Show("The variable\n\n" + resultName + "\n\nis reserved by FlatRedBall.");
+                failureMessage = "The variable\n\n" + resultName + "\n\nis reserved by FlatRedBall.";
             }
+
             return didFailureOccur;
         }
 

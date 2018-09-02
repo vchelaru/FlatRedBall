@@ -311,7 +311,6 @@ namespace FlatRedBall
         /// The value that was last used when calling UpdateDependencies.
         /// </summary>
         #endregion
-        // Why is this public?
         protected double mLastDependencyUpdate;
 
         #region XML Docs
@@ -2080,14 +2079,8 @@ namespace FlatRedBall
 
                 if (secondsPassedLastFrame != 0)
                 {
-#if FRB_MDX
-                    RealVelocity = Vector3.Scale((Position - LastPosition), 1/secondsPassedLastFrame);
-                    RealAcceleration = Vector3.Scale((RealVelocity - LastVelocity) , 1 / secondsPassedLastFrame);
-#else
                     RealVelocity = (Position - LastPosition) / secondsPassedLastFrame;
                     RealAcceleration = (RealVelocity - LastVelocity) / secondsPassedLastFrame;
-
-#endif
                 }
                 LastPosition = Position;
             }

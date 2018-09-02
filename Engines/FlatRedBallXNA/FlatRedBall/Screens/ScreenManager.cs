@@ -308,6 +308,10 @@ namespace FlatRedBall.Screens
 
         }
 
+        internal static void UpdateDependencies()
+        {
+            mCurrentScreen?.UpdateDependencies(TimeManager.CurrentTime);
+        }
 
         #endregion
 

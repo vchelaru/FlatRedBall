@@ -630,6 +630,11 @@ namespace FlatRedBall.Screens
 
         }
 
+        public virtual void UpdateDependencies(double currentTime)
+        {
+
+        }
+
         #endregion
 
         #endregion

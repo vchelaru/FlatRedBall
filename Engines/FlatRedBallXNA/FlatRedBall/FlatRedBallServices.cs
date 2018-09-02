@@ -11,12 +11,6 @@ using FlatRedBall.Instructions;
 
 using FlatRedBall.IO;
 
-#if !WINDOWS_8
-using FlatRedBall.Content.AI.Pathfinding;
-using FlatRedBall.Content.Math.Geometry;
-using FlatRedBall.Content.Saves;
-#endif
-
 using FlatRedBall.AI.Pathfinding;
 using FlatRedBall.Math.Geometry;
 
@@ -38,8 +32,7 @@ using FlatRedBall.Content.Polygon;
 using FlatRedBall.IO.Csv;
 
 using Microsoft.Xna.Framework;
-#if FRB_MDX
-#else
+
 
 using Microsoft.Xna.Framework.Graphics;
 
@@ -63,23 +56,14 @@ using FlatRedBall.Audio;
 using System.Text.RegularExpressions;
 using FlatRedBall.Content.Instructions;
 
-
-#endif
 using FlatRedBall.Graphics.Texture;
 using FlatRedBall.Math.Splines;
 using FlatRedBall.Content.Math.Splines;
 using FlatRedBall.Performance.Measurement;
 using FlatRedBall.Managers;
 
-#if FRB_MDX
-
-#elif XNA4 || MONOGAME
 using Color = Microsoft.Xna.Framework.Color;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
-#else
-    using Color = Microsoft.Xna.Framework.Graphics.Color;
-    using Rectangle = Microsoft.Xna.Framework.Rectangle;
-#endif
 
 namespace FlatRedBall
 {
@@ -900,10 +884,10 @@ namespace FlatRedBall
             mResourceContentManager = new Microsoft.Xna.Framework.Content.ResourceContentManager(
                 mServices, FlatRedBall.Resources_Xna_4.x86.Resources.ResourceManager);
 
-
-
             Renderer.Effect = mResourceContentManager.Load<Effect>("FlatRedBallShader");
-#elif DESKTOP_GL
+#endif
+
+#if DESKTOP_GL
 
             // We'll make a content manager that is never disposed. At this
             // point the FRB engine is not initialized so we can't use the global
@@ -911,8 +895,12 @@ namespace FlatRedBall
             // and this shader i snever exposed for any good reason in diagnostics (like
             // render breaks. I don't know if we'll ever need to do something different but
             // this is simple code that works well enough for now.
-            var preInitGlobalContent = new ContentManager(mServices);
-            Renderer.Effect = preInitGlobalContent.Load<Effect>("Content/shader");
+            // Update August 25, 2018
+            // MonoGame 3.7 (pre-release) has at least one bug related to shaders
+            // which impact rendering. That is, point filtering isn't working.
+            // So I'm going to revert monogame back to the old way for now
+            //var preInitGlobalContent = new ContentManager(mServices);
+            //Renderer.Effect = preInitGlobalContent.Load<Effect>("Content/shader");
 #endif
         }
 
@@ -1673,8 +1661,6 @@ namespace FlatRedBall
             TimeManager.TimeSection("ShapeManager.UpdateDependencies();");
 #endif
 
-#if !FRB_MDX
-
             AudioManager.UpdateDependencies();
 
 #if PROFILE
@@ -1686,14 +1672,12 @@ namespace FlatRedBall
 #if PROFILE
             TimeManager.TimeSection("Renderer.UpdateDependencies()");
 #endif
+            Screens.ScreenManager.UpdateDependencies();
 
             foreach (IManager manager in mManagers)
             {
                 manager.UpdateDependencies();
             }
-#endif
-
-
         }
 
         private static void DestroyLoadingScreenSpriteBatches()

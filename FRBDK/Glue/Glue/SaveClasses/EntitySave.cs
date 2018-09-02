@@ -379,6 +379,20 @@ namespace FlatRedBall.Glue.SaveClasses
             return UseGlobalContent == true;
         }
 
+        [Category("Performance")]
+        [XmlIgnore]
+        public bool IsManuallyUpdated
+        {
+            get
+            {
+                return Properties.GetValue<bool>(nameof(IsManuallyUpdated));
+            }
+            set
+            {
+                Properties.SetValue(nameof(IsManuallyUpdated), value);
+            }
+        }
+
         //public bool ShouldBePooled = true;
 
 
@@ -403,11 +417,11 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             get
             {
-                return Properties.GetValue<bool>("IsScrollableEntityList");
+                return Properties.GetValue<bool>(nameof(IsScrollableEntityList));
             }
             set
             {
-                Properties.SetValue("IsScrollableEntityList", value);
+                Properties.SetValue(nameof(IsScrollableEntityList), value);
             }
         }
 

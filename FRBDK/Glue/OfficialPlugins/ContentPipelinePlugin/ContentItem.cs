@@ -111,7 +111,7 @@ namespace OfficialPlugins.MonoGameContent
         public string GenerateCommandLine()
         {
             var stringBuilder = new StringBuilder();
-            stringBuilder.Append($"/outputDir:{OutputDirectory} /intermediateDir:{IntermediateDirectory} /platform:{Platform} /importer:{Importer} /processor:{Processor} ");
+            stringBuilder.Append($"/outputDir:\"{OutputDirectory}\" /intermediateDir:\"{IntermediateDirectory}\" /platform:{Platform} /importer:{Importer} /processor:{Processor} ");
             foreach(var parameter in ProcessorParameters)
             {
                 stringBuilder.Append($"/processorParam:{parameter} ");
@@ -126,7 +126,7 @@ namespace OfficialPlugins.MonoGameContent
                 buildArgument = buildArgument.ToLowerInvariant();
             }
 
-            stringBuilder.Append($"/build:{buildArgument} /incremental");
+            stringBuilder.Append($"/build:\"{buildArgument}\" /incremental");
 
             return stringBuilder.ToString();
         }

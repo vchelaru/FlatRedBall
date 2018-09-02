@@ -1,3 +1,8 @@
+//#if DESKTOP_GL || WINDOWS
+#if WINDOWS
+#define USE_CUSTOM_SHADER
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -13,7 +18,7 @@ using FlatRedBall.Graphics;
 using FlatRedBall.Utilities;
 
 
-#if MONOGAME && !DESKTOP_GL
+#if !USE_CUSTOM_SHADER
 using Effect = FlatRedBall.Graphics.GenericEffect;
 #else
 using Effect = Microsoft.Xna.Framework.Graphics.Effect;
@@ -100,7 +105,7 @@ namespace FlatRedBall.Graphics
                     #region Set the color
 
 
-#if WINDOWS_8 || IOS
+#if IOS
 						
 						// If the Sprite's Texture is null, it will behave as if it's got its ColorOperation set to Color instead of Texture
 					if (spriteAtIndex.ColorOperation == FlatRedBall.Graphics.ColorOperation.Texture && spriteAtIndex.Texture != null)
@@ -339,11 +344,11 @@ namespace FlatRedBall.Graphics
 
         #region Effects
 
-#if !MONOGAME || DESKTOP_GL
+#if USE_CUSTOM_SHADER
         static BasicEffect mBasicEffect;
         static Effect mEffect;
         static Effect mCurrentEffect;
-        
+
 #else
         
         static GenericEffect mGenericEffect;
@@ -352,7 +357,7 @@ namespace FlatRedBall.Graphics
         static GenericEffect mCurrentEffect = new GenericEffect( GenericEffect.DefaultShaderType.Determine );
 #endif
 
-#if !MONOGAME || DESKTOP_GL
+#if USE_CUSTOM_SHADER
 
         static EffectCache mModelEffectParameterCache;
 
@@ -399,10 +404,7 @@ namespace FlatRedBall.Graphics
         static VertexDeclaration mQuadVertexDeclaration;
 
         // Shape models / effects
-#if !XNA4
-        //static Microsoft.Xna.Framework.Graphics.Model mSphereShape;
-        //static Microsoft.Xna.Framework.Graphics.Model mCubeShape;
-#endif
+
         static BasicEffect mWireframeEffect;
 
         #endregion
@@ -439,7 +441,7 @@ namespace FlatRedBall.Graphics
         private static void ForceSetTexture(Texture2D value)
         {
             mTexture = value;
-#if MONOGAME && !DESKTOP_GL
+#if !USE_CUSTOM_SHADER
             mCurrentEffect.TextureEnabled = value != null;
             mCurrentEffect.Texture = mTexture;
 #else
@@ -466,12 +468,7 @@ namespace FlatRedBall.Graphics
                 if( value != mVertexBuffer && value != null )
                 {
                     mVertexBuffer = value;
-#if XNA4
-
                     GraphicsDevice.SetVertexBuffer( mVertexBuffer );
-#else
-                    throw new NotImplementedException();
-#endif
                 }
                 else
                 {
@@ -523,8 +520,7 @@ namespace FlatRedBall.Graphics
 
         static public void SetCurrentEffect(Effect value, Camera camera)
         {
-#if !MONOGAME || DESKTOP_GL
-
+#if USE_CUSTOM_SHADER
             mCurrentEffect = value; 
             //internal get { return mCurrentEffect; }
 #else
@@ -696,7 +692,7 @@ namespace FlatRedBall.Graphics
         {
             mTextureAddressMode = value;
 
-#if MONOGAME && !DESKTOP_GL
+#if !USE_CUSTOM_SHADER
             mCurrentEffect.SetTextureAddressModeNoCall(mTextureAddressMode);
 #endif
 
@@ -796,7 +792,7 @@ namespace FlatRedBall.Graphics
 
             mGraphics = graphics;
 
-#if MONOGAME && !DESKTOP_GL
+#if !USE_CUSTOM_SHADER
             mAlphaTestEffect = new GenericEffect(GenericEffect.DefaultShaderType.AlphaTest);
 #endif
 
@@ -842,7 +838,7 @@ namespace FlatRedBall.Graphics
 
             // Basic effect
 
-#if MONOGAME && !DESKTOP_GL
+#if !USE_CUSTOM_SHADER
             mGenericEffect = new GenericEffect( GenericEffect.DefaultShaderType.Basic );
             mGenericEffect.Alpha = 1.0f;
             mGenericEffect.AmbientLightColor = new Vector3(1f, 1f, 1f);
@@ -924,14 +920,6 @@ namespace FlatRedBall.Graphics
                         mGraphics.GraphicsDevice.Clear(ClearOptions.Target,
                             camera.BackgroundColor, 1, 0);
                     }
-#if SUPPORTS_POST_PROCESSING
-                    
-                    if (camera.ClearsTargetDefaultRenderMode)
-                    {
-                        mGraphics.GraphicsDevice.Clear(ClearOptions.Target,
-                            camera.BackgroundColor, 1, 0);
-                    }
-#endif
                 }
             }
             else if (renderMode == RenderMode.Depth)
@@ -978,7 +966,7 @@ namespace FlatRedBall.Graphics
 
             #region Set camera values on the current effect
             mCurrentEffect = mEffect;
-#if MONOGAME && !DESKTOP_GL
+#if !USE_CUSTOM_SHADER
             if (mEffect.LightingEnabled)
             {
                 mEffect.LightingEnabled = false;
@@ -990,7 +978,7 @@ namespace FlatRedBall.Graphics
 
         #endregion
 
-#if !MONOGAME || DESKTOP_GL
+#if USE_CUSTOM_SHADER
         public static Texture2D GetTextureFromEffect(Effect effect)
         {
 
@@ -1202,7 +1190,7 @@ namespace FlatRedBall.Graphics
             }
         }
 
-#if MONOGAME && !DESKTOP_GL
+#if !USE_CUSTOM_SHADER
 
         internal static void SetFogForColorOperation(float red, float green, float blue)
         {
@@ -1221,7 +1209,7 @@ namespace FlatRedBall.Graphics
 
 
 
-#if MONOGAME && !DESKTOP_GL
+#if !USE_CUSTOM_SHADER
             switch (value)
             {
                 case FlatRedBall.Graphics.ColorOperation.Texture:
@@ -1523,7 +1511,7 @@ namespace FlatRedBall.Graphics
             if (layer == null)
             {
                 // reset the camera as it may have been set differently by layers
-#if  MONOGAME && !DESKTOP_GL
+#if  !USE_CUSTOM_SHADER
                 camera.SetDeviceViewAndProjection( mEffect, false);
                 camera.SetDeviceViewAndProjection( mGenericEffect, false );
 #else
@@ -1535,7 +1523,7 @@ namespace FlatRedBall.Graphics
             else
             {
 
-#if  MONOGAME && !DESKTOP_GL
+#if  !USE_CUSTOM_SHADER
                 camera.SetDeviceViewAndProjection( mEffect, layer.RelativeToCamera);
                 camera.SetDeviceViewAndProjection( mGenericEffect, layer.RelativeToCamera );
 #else
@@ -2120,12 +2108,12 @@ namespace FlatRedBall.Graphics
             {
                 Renderer.GraphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
             }
-#if MONOGAME && !DESKTOP_GL
+#if !USE_CUSTOM_SHADER
             mCurrentEffect.LightingEnabled = false;
 #endif
 
 
-       }
+        }
 
         private static void PrepareSprites(
             List<VertexPositionColorTexture[]> spriteVertices,
@@ -2359,7 +2347,7 @@ namespace FlatRedBall.Graphics
             int numPasses = 0;
 
             int numberOfPrimitivesPerVertexBuffer = verticesPerVertexBuffer / verticesPerPrimitive;
-#if !MONOGAME || DESKTOP_GL
+#if USE_CUSTOM_SHADER
             Microsoft.Xna.Framework.Graphics.Effect effectToUse = mCurrentEffect;
 #else
             GenericEffect effectToUse = mCurrentEffect;
@@ -2368,7 +2356,7 @@ namespace FlatRedBall.Graphics
             if (primitiveType == PrimitiveType.LineStrip)
             {
 
-#if !MONOGAME || DESKTOP_GL
+#if USE_CUSTOM_SHADER
                 mBasicEffect.LightingEnabled = false;
                 mBasicEffect.VertexColorEnabled = true;
                 effectToUse = mBasicEffect;
@@ -2411,7 +2399,7 @@ namespace FlatRedBall.Graphics
                 {
                     drawToOnThisVB = renderBreaks[renderBreakIndex].ItemNumber - (numberOfPrimitivesPerVertexBuffer * VBOn);
                     //drawToOnThisVB = renderBreaks[renderBreakIndex].ItemNumber;
-#if MONOGAME && !DESKTOP_GL
+#if !USE_CUSTOM_SHADER
                     EffectTechnique currentTechnique = effectToUse.GetCurrentTechnique(true);
                     foreach (EffectPass pass in currentTechnique.Passes)
                     {
@@ -2460,7 +2448,7 @@ namespace FlatRedBall.Graphics
                 }
                 else
                 {
-#if MONOGAME && !DESKTOP_GL
+#if !USE_CUSTOM_SHADER
                     EffectTechnique currentTechnique = effectToUse.GetCurrentTechnique(true);
                     foreach (EffectPass pass in currentTechnique.Passes)
                     {
@@ -3252,7 +3240,7 @@ namespace FlatRedBall.Graphics
 
         public static void SetSharedEffectParameters(Camera camera, Effect effect)
         {
-#if !MONOGAME || DESKTOP_GL
+#if USE_CUSTOM_SHADER
             // Set effect variables
             if (effect.Parameters["PixelSize"] != null)
                 effect.Parameters["PixelSize"].SetValue(new Vector2(

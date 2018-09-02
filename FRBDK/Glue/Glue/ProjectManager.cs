@@ -835,7 +835,8 @@ namespace FlatRedBall.Glue
                 //Sync all synced projects
                 if (shouldSync || mHaveNewProjectsBeenSyncedSinceSave)
                 {
-                    foreach (var syncedProject in mSyncedProjects)
+                    var syncedProjects = mSyncedProjects.ToArray();
+                    foreach (var syncedProject in syncedProjects)
                     {
                         ProjectSyncer.SyncProjects(mProjectBase, syncedProject, false);
                     }

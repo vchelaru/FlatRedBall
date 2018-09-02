@@ -583,6 +583,20 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
+        [CategoryAttribute("Activity"), DefaultValue(false)]
+        [XmlIgnore]
+        public bool IsManuallyUpdated
+        {
+            get
+            {
+                return Properties.GetValue<bool>(nameof(IsManuallyUpdated));
+            }
+            set
+            {
+                Properties.SetValue(nameof(IsManuallyUpdated), value);
+            }
+        }
+
         [Browsable(false)]
         public List<NamedObjectSave> ContainedObjects
         {

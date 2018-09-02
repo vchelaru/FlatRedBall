@@ -1319,7 +1319,7 @@ namespace FlatRedBall
             }
         }
 
-        public static void AddManualSprite(Sprite spriteToAdd)
+        public static void AddManualSprite(Sprite spriteToAdd, Layer layer = null)
         {
 #if DEBUG
 
@@ -1334,7 +1334,14 @@ namespace FlatRedBall
             if (spriteToAdd.mVerticesForDrawing == null)
                 spriteToAdd.mVerticesForDrawing = new VertexPositionColorTexture[4];
 
-            mOrderedByDistanceFromCameraSprites.Add(spriteToAdd);
+            if(layer == null)
+            {
+                mOrderedByDistanceFromCameraSprites.Add(spriteToAdd);
+            }
+            else
+            {
+                layer.Add(spriteToAdd);
+            }
 
             ManualUpdate(spriteToAdd);
         }
