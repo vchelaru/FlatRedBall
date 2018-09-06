@@ -31,6 +31,8 @@ namespace EntityPerformancePlugin.Converters
 
                 instanceViewModel.PropertyManagementMode = instanceModel.PropertyManagementMode;
 
+                instanceViewModel.IsContainer = instanceModel.IsContainer;
+
                 instanceViewModel.SelectedProperties.AddRange(instanceModel.SelectedProperties);
 
                 viewModel.Instances.Add(instanceViewModel);

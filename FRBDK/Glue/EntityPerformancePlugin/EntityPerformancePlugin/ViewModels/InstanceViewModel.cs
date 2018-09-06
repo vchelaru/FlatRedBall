@@ -29,6 +29,12 @@ namespace EntityPerformancePlugin.ViewModels
 
         public PropertyManagementMode PropertyManagementMode { get; set; }
 
+        public bool IsContainer
+        {
+            get { return Get<bool>(); }
+            set { Set(value); }
+        }
+
         public override string ToString()
         {
             return $"{Name} {PropertyManagementMode} with {SelectedProperties.Count} properties";

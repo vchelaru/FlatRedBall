@@ -16,6 +16,12 @@ namespace EntityPerformancePlugin.Models
             get; set;
         } = PropertyManagementMode.FullyManaged;
 
+        [JsonIgnore]
+        public bool IsContainer
+        {
+            get; set;
+        }
+
         public List<string> SelectedProperties
         {
             get; set;

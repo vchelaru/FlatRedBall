@@ -26,6 +26,12 @@ namespace EntityPerformancePlugin.ViewModels
 
         #region Selection-specific properties
 
+        public bool SelectedIsContainer
+        {
+            get { return Get<bool>(); }
+            set { Set(value); }
+        }
+
         public PropertyManagementMode SelectedPropertyManagementMode
         {
             get { return Get<PropertyManagementMode>(); }
@@ -43,6 +49,7 @@ namespace EntityPerformancePlugin.ViewModels
         [DependsOn(nameof(IsRootSelected))]
         [DependsOn(nameof(SelectedInstance))]
         [DependsOn(nameof(SelectedItemProperties))]
+        [DependsOn(nameof(SelectedIsContainer))]
         public string RightSideMessage
         {
             get
@@ -57,6 +64,10 @@ namespace EntityPerformancePlugin.ViewModels
                 }
                 else// if(SelectedInstance != null)
                 {
+                    if(SelectedIsContainer)
+                    {
+                        return "The selected instance is container. Select the main entity to edit properties";
+                    }
                     if (SelectedItemProperties.Any())
                     {
                         return null;

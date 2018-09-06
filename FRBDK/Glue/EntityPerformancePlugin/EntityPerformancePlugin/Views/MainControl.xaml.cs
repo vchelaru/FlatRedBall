@@ -55,18 +55,11 @@ namespace EntityPerformancePlugin.Views
 
                 var viewModel = ViewModel;
 
-                // deselect first, otherwise the view model will act as if an instance is selected and the root is selected:
+                viewModel.SelectedInstance = selectedInstance;
+                
                 if(selectedInstance != null)
                 {
-                    // IsRootSelected is handled by binding
-                    //viewModel.IsRootSelected = false;
-                    viewModel.SelectedInstance = selectedInstance;
-                }
-                else
-                {
-
-                    viewModel.SelectedInstance = selectedInstance;
-                    //viewModel.IsRootSelected = selectedInstance == null && e.NewValue != null;
+                    viewModel.SelectedIsContainer = selectedInstance.IsContainer;
                 }
 
             }

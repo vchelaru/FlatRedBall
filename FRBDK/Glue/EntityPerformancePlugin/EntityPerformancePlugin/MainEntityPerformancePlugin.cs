@@ -430,6 +430,8 @@ namespace EntityPerformancePlugin
             {
                 instanceValues.PropertyManagementMode = Enums.PropertyManagementMode.FullyManaged;
             }
+
+            instanceValues.IsContainer = instance.IsContainer;
         }
 
         private static void AddInstanceManagementValuesFor(EntityManagementValues values, NamedObjectSave instance)
