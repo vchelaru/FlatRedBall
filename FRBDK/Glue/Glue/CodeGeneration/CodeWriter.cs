@@ -1095,11 +1095,12 @@ namespace FlatRedBallAddOns.Entities
             bool isEntity = saveObject is EntitySave;
             if (isEntity)
             {
+                var entitySave = saveObject as EntitySave;
+
                 PerformancePluginCodeGenerator.GenerateStart("Add this to managers");
 
                 if (saveObject.InheritsFromFrbType())
                 {
-                    int m = 3;
                     AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(saveObject.BaseObject);
 
                     if (ati != null)
@@ -1114,8 +1115,15 @@ namespace FlatRedBallAddOns.Entities
                             addMethodIndex = 1;
                         }
 
+                        if(entitySave.IsManuallyUpdated && !string.IsNullOrEmpty(ati.AddManuallyUpdatedMethod))
+                        {
+                            var line = ati.AddManuallyUpdatedMethod
+                            .Replace("{THIS}", "this")
+                            .Replace("{LAYER}", "layerToAddTo") + ';';
 
-                        if(ati.AddToManagersFunc != null)
+                            currentBlock.Line(line);
+                        }
+                        else if(ati.AddToManagersFunc != null)
                         {
                             currentBlock.Line(ati.AddToManagersFunc(saveObject, null, null, "layerToAddTo"));
                         }
@@ -1132,7 +1140,14 @@ namespace FlatRedBallAddOns.Entities
                 }
                 else if (!saveObject.InheritsFromElement())
                 {
-                    currentBlock.Line("FlatRedBall.SpriteManager.AddPositionedObject(this);");
+                    if(entitySave.IsManuallyUpdated)
+                    {
+                        currentBlock.Line("// This entity skips adding itself to FRB Managers because it has its IsManuallyUpdated property set to true");
+                    }
+                    else
+                    {
+                        currentBlock.Line("FlatRedBall.SpriteManager.AddPositionedObject(this);");
+                    }
                 }
 
 
@@ -2448,6 +2463,8 @@ namespace FlatRedBallAddOns.Entities
                 GenerateUnpauseThisScreen(currentBlock, element);
             }
 
+            GenerateUpdateDependencies(currentBlock, element);
+
             foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators)
             {
                 currentBlock = codeGenerator.GenerateAdditionalMethods(currentBlock, element);
@@ -2485,6 +2502,33 @@ namespace FlatRedBallAddOns.Entities
             methodBlock.Line("base.UnpauseThisScreen();");
 
         }
+
+        private static void GenerateUpdateDependencies(ICodeBlock currentBlock, IElement element)
+        {
+            // screens will need this too:
+            
+
+            var innerBlock = new CodeBlockBase(null);
+
+            foreach(var generator in CodeWriter.CodeGenerators)
+            {
+                generator.GenerateUpdateDependencies(innerBlock, element);
+            }
+
+            if(innerBlock.BodyCodeLines.Any())
+            {
+                var methodBlock = currentBlock.Function("public override void", "UpdateDependencies", "double currentTime");
+
+                methodBlock.InsertBlock(innerBlock);
+
+                methodBlock.Line("CustomUpdateDependencies(currentTime);");
+
+                currentBlock.Line("partial void CustomUpdateDependencies(double currentTime);");
+
+            }
+        }
+
+        
 
         private static void GenerateRemoveFromManagers(ICodeBlock currentBlock, IElement saveObject)
         {

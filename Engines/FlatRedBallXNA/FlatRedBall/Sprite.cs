@@ -50,20 +50,23 @@ namespace FlatRedBall
     {
         #region Fields
 
+        public bool IsBillboarded;
+
         #region Color/Fade
         float mAlphaRate;
         float mRedRate;
         float mGreenRate;
         float mBlueRate;
 
-        ColorOperation mColorOperation;
-        BlendOperation mBlendOperation;
+        internal ColorOperation mColorOperation;
+        internal BlendOperation mBlendOperation;
 
         // This used to only be on MonoDroid and WP7, but we need it on PC for premult alpha when using ColorOperation.Color
-        float mRed;
-        float mGreen;
-        float mBlue;
-        float mAlpha;
+        // internal to skip the property and speed things up a little
+        internal float mRed;
+        internal float mGreen;
+        internal float mBlue;
+        internal float mAlpha;
         #endregion
 
         #region ICursorSelectable
@@ -75,7 +78,6 @@ namespace FlatRedBall
         internal float mPixelSize;
         bool mFlipHorizontal;
         bool mFlipVertical;
-        TextureFilter? mTextureFilter = null;
         #endregion
 
 
@@ -86,7 +88,6 @@ namespace FlatRedBall
         internal VertexPositionColorTexture[] mVerticesForDrawing;
         internal Vector3 mOldPosition; // used when sorting along forward vector to hold old position
         internal SpriteVertex[] mVertices;
-        TextureAddressMode mTextureAddressMode;
 
         internal bool mOrdered = true;
         #endregion
@@ -656,16 +657,9 @@ namespace FlatRedBall
             }
         }
 
-        public TextureAddressMode TextureAddressMode
-        {
-            get { return mTextureAddressMode; }
-            set { mTextureAddressMode = value; }
-        }
+        public TextureAddressMode TextureAddressMode;
 
-        public TextureFilter? TextureFilter {
-            get { return mTextureFilter; }
-            set { mTextureFilter = value; }
-        }
+        public TextureFilter? TextureFilter;
 
         #endregion
 
@@ -772,7 +766,7 @@ namespace FlatRedBall
             mCurrentChainIndex = -1;
             mAnimationSpeed = 1;
 
-            mTextureAddressMode = TextureAddressMode.Clamp;
+            TextureAddressMode = TextureAddressMode.Clamp;
 
             mCursorSelectable = true;
         
@@ -794,7 +788,7 @@ namespace FlatRedBall
                 Remove(this);
         }
 
-        internal void UpdateVertices(Camera camera)
+        internal void UpdateVertices()
         {
             // Vic says: I tried to optimize this on
             // March 6, 2011 for the windows phone - I
@@ -816,9 +810,9 @@ namespace FlatRedBall
             mVertices[2].Position.Z = 0;
             mVertices[3].Position.Z = 0;
 
-            if (this.ListsBelongingTo.Contains(camera.mSpritesToBillBoard))
+            if (IsBillboarded)
             {
-                Matrix modifiedMatrix =  mRotationMatrix * SpriteManager.Camera.RotationMatrix;
+                Matrix modifiedMatrix =  mRotationMatrix * Camera.Main.RotationMatrix;
 
                 MathFunctions.TransformVector(ref mVertices[0].Position, ref modifiedMatrix);
                 MathFunctions.TransformVector(ref mVertices[1].Position, ref modifiedMatrix);

@@ -23,7 +23,7 @@ namespace FlatRedBall.Math.Collision
         EventOnlyCollision,
         MoveCollision,
         BounceCollision
-            //,PlatformerCollision
+        //,PlatformerCollision
     }
 
     #endregion
@@ -46,8 +46,8 @@ namespace FlatRedBall.Math.Collision
         public abstract object FirstAsObject { get; }
         public abstract object SecondAsObject { get; }
 
-        protected float? firstPartitioningSize;
-        protected float? secondPartitioningSize;
+        protected internal float? firstPartitioningSize;
+        protected internal float? secondPartitioningSize;
 
         /// <summary>
         /// Whether the CollisionManager autoamtically calls DoCollisions on this relationship every frame.
@@ -138,15 +138,15 @@ namespace FlatRedBall.Math.Collision
         {
             this.DeepCollisionsThisFrame++;
 
-            if(CollisionType == CollisionType.EventOnlyCollision)
+            if (CollisionType == CollisionType.EventOnlyCollision)
             {
                 return CollideAgainstConsiderSubCollisionEventOnly(first, second);
             }
-            else if(CollisionType == CollisionType.MoveCollision)
+            else if (CollisionType == CollisionType.MoveCollision)
             {
                 return CollideAgainstConsiderSubCollisionMove(first, second);
             }
-            else if(CollisionType == CollisionType.BounceCollision)
+            else if (CollisionType == CollisionType.BounceCollision)
             {
                 return CollideAgainstConsiderSubCollisionBounce(first, second);
             }
@@ -535,7 +535,7 @@ namespace FlatRedBall.Math.Collision
 
     #region Single vs Single
 
-    public class PositionedObjectVsPositionedObjectRelationship<FirstCollidableT, SecondCollidableT> : 
+    public class PositionedObjectVsPositionedObjectRelationship<FirstCollidableT, SecondCollidableT> :
         CollisionRelationship<FirstCollidableT, SecondCollidableT>
         where FirstCollidableT : PositionedObject, ICollidable where SecondCollidableT : PositionedObject, ICollidable
     {
@@ -555,7 +555,7 @@ namespace FlatRedBall.Math.Collision
         public override bool DoCollisions()
         {
             var didCollisionOccur = false;
-            if(skippedFrames < FrameSkip)
+            if (skippedFrames < FrameSkip)
             {
                 skippedFrames++;
             }
@@ -563,7 +563,7 @@ namespace FlatRedBall.Math.Collision
             {
                 skippedFrames = 0;
                 // collision limit doesn't do anything here, since it's only 1 vs 1
-                if(CollideConsideringSubCollisions(first, second))
+                if (CollideConsideringSubCollisions(first, second))
                 {
                     CollisionOccurred?.Invoke(first, second);
                     didCollisionOccur = true;
@@ -601,19 +601,19 @@ namespace FlatRedBall.Math.Collision
             this.singleObject = singleObject;
             this.list = list;
         }
-        
+
         private void GetCollisionStartAndInt(out int startInclusive, out int endExclusive)
         {
             PartitionedValuesBase firstPartition = null;
             PartitionedValuesBase secondPartition = null;
 
-            foreach(var partition in Partitions)
+            foreach (var partition in Partitions)
             {
-                if(partition.PartitionedObject == singleObject)
+                if (partition.PartitionedObject == singleObject)
                 {
                     firstPartition = partition;
                 }
-                else if(partition.PartitionedObject == list)
+                else if (partition.PartitionedObject == list)
                 {
                     secondPartition = partition;
                 }
@@ -631,10 +631,10 @@ namespace FlatRedBall.Math.Collision
             if (firstPartition?.axis == Axis.X && firstPartition?.axis == Axis.X)
             {
                 // -1 to make it exclusive
-                endExclusive = list.GetFirstAfter(singleObject.X - firstSize / 2 - secondSize/2, Axis.X, 0, list.Count) - 1;
+                endExclusive = list.GetFirstAfter(singleObject.X - firstSize / 2 - secondSize / 2, Axis.X, 0, list.Count) - 1;
                 startInclusive = list.GetFirstAfter(singleObject.X + firstSize / 2 + secondSize / 2, Axis.X, 0, list.Count);
 
-                if(startInclusive > 0 && startInclusive == list.Count)
+                if (startInclusive > 0 && startInclusive == list.Count)
                 {
                     startInclusive--;
                 }
@@ -713,7 +713,7 @@ namespace FlatRedBall.Math.Collision
                     var distanceVector = singleObject.Position - atI.Position;
                     var distanceSquared = distanceVector.X * distanceVector.X + distanceVector.Y * distanceVector.Y;
 
-                    if(distanceSquared < closestDistanceSquared)
+                    if (distanceSquared < closestDistanceSquared)
                     {
                         closestDistanceSquared = distanceSquared;
                         closestFirst = singleObject;
@@ -723,7 +723,7 @@ namespace FlatRedBall.Math.Collision
                 }
             }
 
-            if(closestFirst != null)
+            if (closestFirst != null)
             {
                 CollisionOccurred?.Invoke(closestFirst, closestSecond);
             }
@@ -780,7 +780,7 @@ namespace FlatRedBall.Math.Collision
             float firstSize = 0;
             float secondSize = 0;
 
-            if(firstPartition != null && secondPartition != null)
+            if (firstPartition != null && secondPartition != null)
             {
                 firstSize = this.firstPartitioningSize ?? firstPartition.MaxWidthOrHeight;
                 secondSize = this.secondPartitioningSize ?? secondPartition.MaxWidthOrHeight;
@@ -853,8 +853,43 @@ namespace FlatRedBall.Math.Collision
         CollisionRelationship<FirstCollidableT, SecondCollidableT>
         where FirstCollidableT : PositionedObject, ICollidable where SecondCollidableT : PositionedObject, ICollidable
     {
+        public class CollisionParameters
+        {
+            public FirstCollidableT ItemInFirstList;
+            public int FirstIndex;
+            public PartitionedValuesBase FirstPartition;
+            public PartitionedValuesBase SecondPartition;
+
+            public Axis? PartitioningAxis = null;
+            public float FirstHalfSize;
+            public float SecondHalfSize;
+
+            public void CalculateValuesForCollision(CollisionRelationship relationship)
+            {
+                if (FirstPartition?.axis == Axis.X && SecondPartition?.axis == Axis.X)
+                {
+                    PartitioningAxis = Axis.X;
+                }
+                else if (FirstPartition?.axis == Axis.Y && SecondPartition?.axis == Axis.Y)
+                {
+                    PartitioningAxis = Axis.Y;
+                }
+                else
+                {
+                    PartitioningAxis = null;
+                }
+
+                FirstHalfSize = (relationship.firstPartitioningSize ?? FirstPartition?.MaxWidthOrHeight ?? 0) / 2.0f;
+                SecondHalfSize = (relationship.secondPartitioningSize ?? SecondPartition?.MaxWidthOrHeight ?? 0) / 2.0f;
+
+            }
+        }
+        // instantiate one at class scope to prevent tons of allocations if done in a activity
+        CollisionParameters parameters = new CollisionParameters();
+
         PositionedObjectList<FirstCollidableT> firstList;
         PositionedObjectList<SecondCollidableT> secondList;
+        private int i;
 
         public override object FirstAsObject => firstList;
         public override object SecondAsObject => secondList;
@@ -885,32 +920,125 @@ namespace FlatRedBall.Math.Collision
             else
             {
                 skippedFrames = 0;
+
+                /////////////////early out here so we don't have to do 0-checks later
+                if (firstList.Count == 0 || secondList.Count == 0)
+                {
+                    return false;
+                }
+
                 if (CollisionLimit == CollisionLimit.Closest)
                 {
                     DoClosestCollision();
                 }
                 else
                 {
-                    for (int i = firstList.Count - 1; i > -1; i--)
+                    int startInclusive;
+                    int endExclusive;
+                    GetPartitions(out parameters.FirstPartition, out parameters.SecondPartition);
+                    parameters.CalculateValuesForCollision(this);
+
+                    float? maxDistanceOnSecondaryAxis = null;
+                    if (parameters.PartitioningAxis != null)
                     {
-                        var first = firstList[i];
+                        maxDistanceOnSecondaryAxis = parameters.FirstHalfSize + parameters.SecondHalfSize;
+                        // 1.41421... is the sqrt 2, for diagonal
+                        //maxDistanceSquared = ((parameters.FirstHalfSize + parameters.SecondHalfSize) * 1.422f);
+                        //maxDistanceSquared *= maxDistanceSquared;
+                    }
 
-                        int startInclusive;
-                        int endExclusive;
-
-                        GetSecondListCollisionStartAndInt(first, i, out startInclusive, out endExclusive);
-
-                        for (int j = startInclusive; j > endExclusive; j--)
+                    // lots of copy/pasted code here, unrolled for maximum performance
+                    int j = 0;
+                    if (parameters.PartitioningAxis == Axis.X)
+                    {
+                        for (int i = firstList.Count - 1; i > -1; i--)
                         {
-                            var second = secondList[j];
+                            var first = firstList[i];
+                            parameters.ItemInFirstList = first;
+                            parameters.FirstIndex = i;
 
-                            if (CollideConsideringSubCollisions(first, second))
+                            GetSecondListCollisionStartAndInt(parameters, out startInclusive, out endExclusive);
+
+                            for (j = startInclusive; j > endExclusive; j--)
                             {
-                                CollisionOccurred?.Invoke(first, second);
-                                collisionOccurred = true;
-                                if (CollisionLimit == CollisionLimit.First)
+                                var second = secondList[j];
+
+                                var distanceY =
+                                    first.Position.Y - second.Position.Y;
+
+                                if (distanceY < -maxDistanceOnSecondaryAxis || distanceY > maxDistanceOnSecondaryAxis)
                                 {
-                                    break;
+                                    continue;
+                                }
+
+                                if (CollideConsideringSubCollisions(first, second))
+                                {
+                                    CollisionOccurred?.Invoke(first, second);
+                                    collisionOccurred = true;
+                                    if (CollisionLimit == CollisionLimit.First)
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if (parameters.PartitioningAxis == Axis.Y)
+                    {
+                        for (int i = firstList.Count - 1; i > -1; i--)
+                        {
+                            var first = firstList[i];
+                            parameters.ItemInFirstList = first;
+                            parameters.FirstIndex = i;
+
+                            GetSecondListCollisionStartAndInt(parameters, out startInclusive, out endExclusive);
+
+                            for (j = startInclusive; j > endExclusive; j--)
+                            {
+                                var second = secondList[j];
+
+                                var distanceX =
+                                    first.Position.X - second.Position.X;
+
+                                if (distanceX < -maxDistanceOnSecondaryAxis || distanceX > maxDistanceOnSecondaryAxis)
+                                {
+                                    continue;
+                                }
+
+                                if (CollideConsideringSubCollisions(first, second))
+                                {
+                                    CollisionOccurred?.Invoke(first, second);
+                                    collisionOccurred = true;
+                                    if (CollisionLimit == CollisionLimit.First)
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = firstList.Count - 1; i > -1; i--)
+                        {
+                            var first = firstList[i];
+                            parameters.ItemInFirstList = first;
+                            parameters.FirstIndex = i;
+
+                            GetSecondListCollisionStartAndInt(parameters, out startInclusive, out endExclusive);
+
+                            for (j = startInclusive; j > endExclusive; j--)
+                            {
+                                var second = secondList[j];
+
+                                if (CollideConsideringSubCollisions(first, second))
+                                {
+                                    CollisionOccurred?.Invoke(first, second);
+                                    collisionOccurred = true;
+                                    if (CollisionLimit == CollisionLimit.First)
+                                    {
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -920,55 +1048,29 @@ namespace FlatRedBall.Math.Collision
             return collisionOccurred;
         }
 
-        private void GetSecondListCollisionStartAndInt(FirstCollidableT first, int firstIndex, out int startInclusive, out int endExclusive)
+        private void GetSecondListCollisionStartAndInt(CollisionParameters parameters, out int startInclusive, out int endExclusive)
         {
-            // Early Out
-            if(secondList.Count == 0)
-            {
-                startInclusive = 0;
-                endExclusive = 0;
-                return;
-            }
-
-            PartitionedValuesBase firstPartition = null;
-            PartitionedValuesBase secondPartition = null;
-
-            foreach (var partition in Partitions)
-            {
-                if (partition.PartitionedObject == firstList)
-                {
-                    firstPartition = partition;
-                }
-                else if (partition.PartitionedObject == secondList)
-                {
-                    secondPartition = partition;
-                }
-            }
-
-            float firstSize = 0;
-            float secondSize = 0;
-
             // By default the last possible bound is set by the second list...
             int lastExclusiveBound = secondList.Count;
             // .. but if the two lists are the same, then we don't want to go past the current item
             // since we collide back-to-front
-            if(this.firstList == (object)this.secondList)
+            if (this.firstList == (object)this.secondList)
             {
-                lastExclusiveBound = firstIndex;
+                lastExclusiveBound = parameters.FirstIndex;
             }
 
-
-            if (firstPartition != null && secondPartition != null)
-            {
-                firstSize = this.firstPartitioningSize ?? firstPartition.MaxWidthOrHeight;
-                secondSize = this.secondPartitioningSize ?? secondPartition.MaxWidthOrHeight;
-            }
-
-            if (firstPartition?.axis == Axis.X && secondPartition?.axis == Axis.X)
+            if (parameters.PartitioningAxis == Axis.X)
             {
                 // -1 to make it exclusive
-                endExclusive = secondList.GetFirstAfter(first.X - firstSize / 2 - secondSize / 2, Axis.X, 0, lastExclusiveBound) - 1;
-                startInclusive = secondList.GetFirstAfter(first.X + firstSize / 2 + secondSize / 2, Axis.X, 0, lastExclusiveBound);
+                endExclusive = secondList.GetFirstAfter(parameters.ItemInFirstList.Position.X - parameters.FirstHalfSize - parameters.SecondHalfSize, Axis.X, 0, lastExclusiveBound) - 1;
+                if (parameters.FirstPartition.PartitionedObject == parameters.SecondPartition.PartitionedObject)
+                {
+                    startInclusive = parameters.FirstIndex - 1;
+                }
+                else
+                {
+                    startInclusive = secondList.GetFirstAfter(parameters.ItemInFirstList.Position.X + parameters.FirstHalfSize + parameters.SecondHalfSize, Axis.X, 0, lastExclusiveBound);
+                }
 
                 if (startInclusive > 0 && startInclusive == secondList.Count)
                 {
@@ -976,11 +1078,19 @@ namespace FlatRedBall.Math.Collision
                 }
 
             }
-            else if (firstPartition?.axis == Axis.Y && secondPartition?.axis == Axis.Y)
+            else if (parameters.PartitioningAxis == Axis.Y)
             {
                 // -1 to make it exclusive
-                endExclusive = secondList.GetFirstAfter(first.Y - firstSize / 2 - secondSize / 2, Axis.Y, 0, lastExclusiveBound) - 1;
-                startInclusive = secondList.GetFirstAfter(first.Y + firstSize / 2 + secondSize / 2, Axis.Y, 0, lastExclusiveBound);
+                endExclusive = secondList.GetFirstAfter(parameters.ItemInFirstList.Position.Y - parameters.FirstHalfSize - parameters.SecondHalfSize, Axis.Y, 0, lastExclusiveBound) - 1;
+
+                if (parameters.FirstPartition.PartitionedObject == parameters.SecondPartition.PartitionedObject)
+                {
+                    startInclusive = parameters.FirstIndex - 1;
+                }
+                else
+                {
+                    startInclusive = secondList.GetFirstAfter(parameters.ItemInFirstList.Position.Y + parameters.FirstHalfSize + parameters.SecondHalfSize, Axis.Y, 0, lastExclusiveBound);
+                }
                 if (startInclusive > 0 && startInclusive == secondList.Count)
                 {
                     startInclusive--;
@@ -995,17 +1105,21 @@ namespace FlatRedBall.Math.Collision
 
         private void DoClosestCollision()
         {
+            int startInclusive, endExclusive;
+            GetPartitions(out parameters.FirstPartition, out parameters.SecondPartition);
+            parameters.CalculateValuesForCollision(this);
 
             for (int i = firstList.Count - 1; i > -1; i--)
             {
+                var first = firstList[i];
+
                 FirstCollidableT closestFirst = null;
                 SecondCollidableT closestSecond = null;
                 var closestDistanceSquared = float.PositiveInfinity;
 
-                var first = firstList[i];
-                int startInclusive;
-                int endExclusive;
-                GetSecondListCollisionStartAndInt(first, i, out startInclusive, out endExclusive);
+                parameters.ItemInFirstList = first;
+
+                GetSecondListCollisionStartAndInt(parameters, out startInclusive, out endExclusive);
 
 
                 for (int j = startInclusive; j > endExclusive; j--)
@@ -1017,7 +1131,7 @@ namespace FlatRedBall.Math.Collision
                         var distanceVector = first.Position - second.Position;
                         var distanceSquared = distanceVector.X * distanceVector.X + distanceVector.Y * distanceVector.Y;
 
-                        if(distanceSquared < closestDistanceSquared)
+                        if (distanceSquared < closestDistanceSquared)
                         {
                             closestDistanceSquared = distanceSquared;
                             closestFirst = first;
@@ -1026,9 +1140,29 @@ namespace FlatRedBall.Math.Collision
                     }
                 }
 
-                if(closestFirst != null)
+                if (closestFirst != null)
                 {
                     CollisionOccurred?.Invoke(closestFirst, closestSecond);
+                }
+            }
+        }
+
+        private void GetPartitions(out PartitionedValuesBase firstPartition, out PartitionedValuesBase secondPartition)
+        {
+            firstPartition = null;
+            secondPartition = null;
+            foreach (var partition in Partitions)
+            {
+                if (partition.PartitionedObject == firstList)
+                {
+                    firstPartition = partition;
+                }
+                // Don't else if this, because it could be a list against itself, so
+                // it should be both the first and second partition
+                //else if (partition.PartitionedObject == secondList)
+                if (partition.PartitionedObject == secondList)
+                {
+                    secondPartition = partition;
                 }
             }
         }

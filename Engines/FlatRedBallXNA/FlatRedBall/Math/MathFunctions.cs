@@ -1300,12 +1300,8 @@ namespace FlatRedBall.Math
         public static void TransformVector(ref Vector3 vectorToTransform, ref Matrix matrixToTransformBy)
         {
             // We use this in threaded apps so we have to have a local var :(
-#if FRB_MDX
-            Vector3 temp = Vector3.Empty;
-#else
-            Vector3 temp = Vector3.Zero;
+            Vector3 temp = vectorToTransform;
 
-#endif
             temp.X =
                 matrixToTransformBy.M11 * vectorToTransform.X +
                 matrixToTransformBy.M21 * vectorToTransform.Y +

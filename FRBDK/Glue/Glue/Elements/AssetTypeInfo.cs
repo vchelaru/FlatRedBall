@@ -28,6 +28,7 @@ namespace FlatRedBall.Glue.Elements
     }
     #endregion
 
+    #region MemberTypeComparer Class
 
     public class MemberTypeComparer : IEqualityComparer<MemberWithType>
     {
@@ -46,6 +47,8 @@ namespace FlatRedBall.Glue.Elements
             return obj.Member.GetHashCode();
         }
     }
+
+    #endregion
 
     public class MemberWithType
     {
@@ -159,6 +162,11 @@ namespace FlatRedBall.Glue.Elements
         /// </summary>
 		public List<string> LayeredAddToManagersMethod = new List<string>();
         public string MakeManuallyUpdatedMethod;
+
+        /// <summary>
+        /// The method used to directly add the engine to be manually updated, rather than being converted
+        /// </summary>
+        public string AddManuallyUpdatedMethod;
         public string ActivityMethod;
         public string AfterCustomActivityMethod;
 		public string DestroyMethod;
@@ -342,6 +350,5 @@ namespace FlatRedBall.Glue.Elements
 		}
 
 		#endregion
-
 	}
 }

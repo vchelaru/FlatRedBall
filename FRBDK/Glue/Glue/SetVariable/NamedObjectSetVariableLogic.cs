@@ -738,7 +738,7 @@ namespace FlatRedBall.Glue.SetVariable
                 {
                     INamedObjectContainer baseNamedObjectContainer = ObjectFinder.Self.GetNamedObjectContainer(baseObject);
 
-                    NamedObjectSave baseNamedObject = baseNamedObjectContainer.GetNamedObjectRecursively(namedObjectSave.InstanceName);
+                    NamedObjectSave baseNamedObject = baseNamedObjectContainer?.GetNamedObjectRecursively(namedObjectSave.InstanceName);
 
                     if (baseNamedObject != null)
                     {

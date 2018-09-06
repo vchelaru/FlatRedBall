@@ -1829,7 +1829,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                 AddIfConditionalSymbolIfNecesssary(codeBlock, namedObject);
 
                 bool isInsideVisibleProperty = considerRemoveIfInvisible == false;
-                string objectName = namedObject.FieldName;
                 AssetTypeInfo ati = namedObject.GetAssetTypeInfo();
 
                 if ((considerRemoveIfInvisible && namedObject.RemoveFromManagersWhenInvisible && IsInvisible(namedObject, element)))
@@ -1837,7 +1836,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     if (namedObject.SourceType == SourceType.Entity)
                     {
                         // since we want to have all contained elements in namedObject also call AssignCustomVariables, we'll pass 'true'
-                        codeBlock.Line(objectName + ".AssignCustomVariables(true);");
+                        codeBlock.Line(namedObject.FieldName + ".AssignCustomVariables(true);");
                     }
                     // else, we don't do anything here, but we do want the outer if statement to evaluate to true to prevent the addition from occurring below.
                 }
@@ -1880,7 +1879,15 @@ namespace FlatRedBall.Glue.CodeGeneration
                             bool isLayered = BaseElementTreeNode.IsOnOwnLayer(element)
                                 || !string.IsNullOrEmpty(namedObject.LayerOn);
 
-                            if(ati.AddToManagersFunc != null)
+                            if(namedObject.IsManuallyUpdated && !string.IsNullOrEmpty(ati.AddManuallyUpdatedMethod))
+                            {
+                                var line = ati.AddManuallyUpdatedMethod
+                                    .Replace("{THIS}", namedObject.FieldName)
+                                    .Replace("{LAYER}", layerName) + ';';
+
+                                codeBlock.Line(line);
+                            }
+                            else if(ati.AddToManagersFunc != null)
                             {
                                 string line = null;
                                 if(isLayered)
@@ -1908,7 +1915,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                                 Regex rgx = new Regex(pattern);
                                 layerAddToManagersMethod = rgx.Replace(layerAddToManagersMethod, layerName);
 
-                                codeBlock.Line(layerAddToManagersMethod.Replace("this", objectName) + ";");
+                                codeBlock.Line(layerAddToManagersMethod.Replace("this", namedObject.FieldName) + ";");
 
 
                             }
@@ -1920,7 +1927,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                                 {
                                     string addLine = DecideOnLineToAdd(namedObject, ati, false);
 
-                                    codeBlock.Line(addLine.Replace("this", objectName) + ";");
+                                    codeBlock.Line(addLine.Replace("this", namedObject.FieldName) + ";");
 
                                     if (namedObject.IsLayer && element is EntitySave)
                                     {
@@ -1937,14 +1944,14 @@ namespace FlatRedBall.Glue.CodeGeneration
                                         }
 
                                         //If the EntitySave contains a Layer, the Layer should be inserted after whatever Layer the Entity is on.
-                                        codeBlock.Line("FlatRedBall.SpriteManager.MoveLayerAboveLayer(" + objectName + ", " + layerToAddAbove + ");");
+                                        codeBlock.Line("FlatRedBall.SpriteManager.MoveLayerAboveLayer(" + namedObject.FieldName + ", " + layerToAddAbove + ");");
                                     }
                                 }
                             }
 
-                            AddLayerSpecificAddToManagersCode(namedObject, codeBlock, objectName);
+                            AddLayerSpecificAddToManagersCode(namedObject, codeBlock);
 
-                            AddTextSpecificAddToManagersCode(namedObject, codeBlock, objectName, layerName);
+                            AddTextSpecificAddToManagersCode(namedObject, codeBlock, layerName);
                         }
                         #endregion
                         #region No ATI - is it an Entity?
@@ -1952,11 +1959,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                         {
                             if (isInsideVisibleProperty)
                             {
-                                codeBlock.Line(objectName + ".ReAddToManagers(" + layerName + ");");
+                                codeBlock.Line(namedObject.FieldName + ".ReAddToManagers(" + layerName + ");");
                             }
                             else
                             {
-                                codeBlock.Line(objectName + ".AddToManagers(" + layerName + ");");
+                                codeBlock.Line(namedObject.FieldName + ".AddToManagers(" + layerName + ");");
                             }
                         }
                         #endregion
@@ -2014,7 +2021,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                             //layerAddToManagersMethod = layerAddToManagersMethod.Replace("mLayer", layerName);
 
 
-                            codeBlock.Line(layerAddToManagersMethod.Replace("this", objectName) + ";");
+                            codeBlock.Line(layerAddToManagersMethod.Replace("this", namedObject.FieldName) + ";");
                         }
                     }
                     #endregion
@@ -2120,8 +2127,10 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void AddLayerSpecificAddToManagersCode(NamedObjectSave namedObject, ICodeBlock codeBlock, string objectName)
+        private static void AddLayerSpecificAddToManagersCode(NamedObjectSave namedObject, ICodeBlock codeBlock)
         {
+            string objectName = namedObject.FieldName;
+
             if (namedObject.IsLayer &&
                 namedObject.IndependentOfCamera)
             {
@@ -2215,8 +2224,9 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void AddTextSpecificAddToManagersCode(NamedObjectSave namedObject, ICodeBlock codeBlock, string objectName, string layerName)
+        private static void AddTextSpecificAddToManagersCode(NamedObjectSave namedObject, ICodeBlock codeBlock, string layerName)
         {
+            string objectName = namedObject.FieldName;
             // April 1, 2012
             // Text that is added
             // through TextManager.AddText("Hello")

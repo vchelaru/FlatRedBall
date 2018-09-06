@@ -97,9 +97,7 @@ namespace FlatRedBall.Graphics
                 #region the Sprite doesn't have stored vertices (default) so we have to create them now
                 if (spriteAtIndex.mAutomaticallyUpdated)
                 {
-                    // Eventually we'll want to use the actual camera being rendered so 
-                    // we can get billboarding to work properly on split screen view.
-                    spriteAtIndex.UpdateVertices(SpriteManager.Camera);
+                    spriteAtIndex.UpdateVertices();
 
 
                     #region Set the color
@@ -170,29 +168,6 @@ namespace FlatRedBall.Graphics
                         ((uint)(255 * spriteAtIndex.mVertices[2].Color.X)) +
                         (((uint)(255 * spriteAtIndex.mVertices[2].Color.Y)) << 8) +
                         (((uint)(255 * spriteAtIndex.mVertices[2].Color.Z)) << 16) +
-                        (((uint)(255 * spriteAtIndex.mVertices[2].Color.W)) << 24);
-
-#else
-
-                    arrayAtIndex[vertNum + 0].Color.PackedValue =
-                        ((uint)(255 * spriteAtIndex.mVertices[3].Color.Z)) +
-                        (((uint)(255 * spriteAtIndex.mVertices[3].Color.Y)) << 8) +
-                        (((uint)(255 * spriteAtIndex.mVertices[3].Color.X)) << 16) +
-                        (((uint)(255 * spriteAtIndex.mVertices[3].Color.W)) << 24);
-                    arrayAtIndex[vertNum + 1].Color.PackedValue =
-                        ((uint)(255 * spriteAtIndex.mVertices[0].Color.Z)) +
-                        (((uint)(255 * spriteAtIndex.mVertices[0].Color.Y)) << 8) +
-                        (((uint)(255 * spriteAtIndex.mVertices[0].Color.X)) << 16) +
-                        (((uint)(255 * spriteAtIndex.mVertices[0].Color.W)) << 24);
-                    arrayAtIndex[vertNum + 2].Color.PackedValue =
-                        ((uint)(255 * spriteAtIndex.mVertices[1].Color.Z)) +
-                        (((uint)(255 * spriteAtIndex.mVertices[1].Color.Y)) << 8) +
-                        (((uint)(255 * spriteAtIndex.mVertices[1].Color.X)) << 16) +
-                        (((uint)(255 * spriteAtIndex.mVertices[1].Color.W)) << 24);
-                    arrayAtIndex[vertNum + 5].Color.PackedValue =
-                        ((uint)(255 * spriteAtIndex.mVertices[2].Color.Z)) +
-                        (((uint)(255 * spriteAtIndex.mVertices[2].Color.Y)) << 8) +
-                        (((uint)(255 * spriteAtIndex.mVertices[2].Color.X)) << 16) +
                         (((uint)(255 * spriteAtIndex.mVertices[2].Color.W)) << 24);
 #endif
                     #endregion

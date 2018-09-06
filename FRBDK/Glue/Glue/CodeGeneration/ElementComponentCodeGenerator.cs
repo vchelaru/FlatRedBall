@@ -104,6 +104,22 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
+        /// <summary>
+        /// Adds code to the contents of the entity's UpdateDependencies call. If no code generators
+        /// add code to the UpdateDependencies block then Glue will not generate an UpdateDependencies call.
+        /// </summary>
+        /// <remarks>
+        /// UpdateDependences has historically been implemented in custom code on Glue entities. This is slowly
+        /// changing with the introduction of the entity performance plugin which can generate code to
+        /// update attachments. But we don't want to break all projects that have custom code UpdateDependencies
+        /// </remarks>
+        /// <param name="codeBlock">The code block for the UpdateDependencies method</param>
+        /// <param name="element">The element that is currently being generated.</param>
+        public virtual void GenerateUpdateDependencies(ICodeBlock codeBlock, IElement element)
+        {
+
+        }
+
         public virtual bool HandlesVariable(CustomVariable variable, IElement element)
         {
             return false;

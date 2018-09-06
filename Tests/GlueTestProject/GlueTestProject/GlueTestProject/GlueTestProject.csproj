@@ -430,6 +430,10 @@
     <Compile Include="Entities\FlatRedBallTypeEntity.Generated.cs">
       <DependentUpon>FlatRedBallTypeEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\GeneratedPartialUpdateEntity.cs" />
+    <Compile Include="Entities\GeneratedPartialUpdateEntity.Generated.cs">
+      <DependentUpon>GeneratedPartialUpdateEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\GlobalContentEntity.cs" />
     <Compile Include="Entities\GlobalContentEntity.Generated.cs">
       <DependentUpon>GlobalContentEntity.cs</DependentUpon>
@@ -547,6 +551,30 @@
     <Compile Include="Entities\ManuallyUpdatedEntity.cs" />
     <Compile Include="Entities\ManuallyUpdatedEntity.Generated.cs">
       <DependentUpon>ManuallyUpdatedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ManuallyUpdateAllInCode.cs" />
+    <Compile Include="Entities\ManuallyUpdateAllInCode.Generated.cs">
+      <DependentUpon>ManuallyUpdateAllInCode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ManuallyUpdatedInheritFromSprite.cs" />
+    <Compile Include="Entities\ManuallyUpdatedInheritFromSprite.Generated.cs">
+      <DependentUpon>ManuallyUpdatedInheritFromSprite.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ManuallyUpdatedInheritFromSpriteNoAttach.cs" />
+    <Compile Include="Entities\ManuallyUpdatedInheritFromSpriteNoAttach.Generated.cs">
+      <DependentUpon>ManuallyUpdatedInheritFromSpriteNoAttach.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ManuallyUpdatedInheritFromText.cs" />
+    <Compile Include="Entities\ManuallyUpdatedInheritFromText.Generated.cs">
+      <DependentUpon>ManuallyUpdatedInheritFromText.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ManuallyUpdatedIsSprite.cs" />
+    <Compile Include="Entities\ManuallyUpdatedIsSprite.Generated.cs">
+      <DependentUpon>ManuallyUpdatedIsSprite.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ManuallyUpdatedSpriteIsContainer.cs" />
+    <Compile Include="Entities\ManuallyUpdatedSpriteIsContainer.Generated.cs">
+      <DependentUpon>ManuallyUpdatedSpriteIsContainer.cs</DependentUpon>
     </Compile>
     <Compile Include="Entities\MoveToLayerDerivedEntity.cs" />
     <Compile Include="Entities\MoveToLayerDerivedEntity.Generated.cs">
@@ -1025,6 +1053,10 @@
     <Compile Include="Screens\LocalizationScreen.cs" />
     <Compile Include="Screens\LocalizationScreen.Generated.cs">
       <DependentUpon>LocalizationScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\ManuallyUpdatedScreen.cs" />
+    <Compile Include="Screens\ManuallyUpdatedScreen.Generated.cs">
+      <DependentUpon>ManuallyUpdatedScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\NodeNetworkScreen.cs" />
     <Compile Include="Screens\NodeNetworkScreen.Generated.cs">

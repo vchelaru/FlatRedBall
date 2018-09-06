@@ -251,12 +251,13 @@ namespace FlatRedBall.Graphics
             // Therefore, we'll inject a render break here on PC and eat the performance penalty to 
             // get identical behavior across platforms.
             bool isColorChangingOnColorTextureAlpha =
-                (sprite.Red != Red ||
-                sprite.Green != Green ||
-                sprite.Blue != Blue) && sprite.ColorOperation == ColorOperation.ColorTextureAlpha;
+                sprite.mColorOperation == ColorOperation.ColorTextureAlpha &&
+                (sprite.mRed != Red ||
+                sprite.mGreen != Green ||
+                sprite.mBlue != Blue);
 
-            return sprite.Texture != Texture ||
-                sprite.ColorOperation != ColorOperation ||
+            return sprite.mTexture != Texture ||
+                sprite.mColorOperation != ColorOperation ||
                 sprite.BlendOperation != BlendOperation ||
                 sprite.TextureAddressMode != TextureAddressMode ||
                 (sprite.TextureFilter != null &&

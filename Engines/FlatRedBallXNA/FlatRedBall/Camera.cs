@@ -114,7 +114,7 @@ namespace FlatRedBall
 
 
 
-        internal SpriteList mSpritesToBillBoard = new SpriteList();
+        //internal SpriteList mSpritesToBillBoard = new SpriteList();
 
         string mContentManager;
 
@@ -474,27 +474,10 @@ namespace FlatRedBall
             }
 
 #endif
-            this.mSpritesToBillBoard.Add(sprite);
+            //this.mSpritesToBillBoard.Add(sprite);
+            sprite.IsBillboarded = true;
         }
 
-
-        /// <summary>
-        /// Supplied Sprites are billboarded using the camera's RotationMatrix.
-        /// Only the main Camera can billboard sprites.
-        /// </summary>
-        public void AddSpriteToBillboard(IEnumerable<Sprite> sprites)
-        {
-            // This only works on the main camera. Multi-camera games must implement their
-            // own solutions:
-#if DEBUG
-            if (this != Camera.Main)
-            {
-                throw new InvalidOperationException("Sprites can only be billboarded on the main camera");
-            }
-
-#endif
-            this.mSpritesToBillBoard.AddRange(sprites);
-        }
 
         #region XML Docs
         /// <summary>

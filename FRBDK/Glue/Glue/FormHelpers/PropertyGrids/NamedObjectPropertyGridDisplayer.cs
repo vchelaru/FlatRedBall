@@ -329,15 +329,18 @@ namespace FlatRedBall.Glue.GuiDisplay
             bool shouldShowIsZBuffered = false;
             bool shouldIncludeSetByContainer = true;
             bool shouldShowGenerateTimedEmit = false;
+            bool shouldIncludeIsManuallyUpdated = false;
 
 
-            ExcludeMember("InstructionSaves");
-            ExcludeMember("Properties");
-            ExcludeMember("FileCreatedBy");
-            ExcludeMember("FulfillsRequirement");
-            ExcludeMember("IsNodeHidden");
+            ExcludeMember(nameof(NamedObjectSave.InstructionSaves));
+            ExcludeMember(nameof(NamedObjectSave.Properties));
+            ExcludeMember(nameof(NamedObjectSave.FileCreatedBy));
+            ExcludeMember(nameof(NamedObjectSave.FulfillsRequirement));
+            ExcludeMember(nameof(NamedObjectSave.IsNodeHidden));
 
             var assetTypeInfo = instance.GetAssetTypeInfo();
+
+            shouldIncludeIsManuallyUpdated = !string.IsNullOrEmpty(assetTypeInfo?.AddManuallyUpdatedMethod);
 
             if (DisplayMode == DisplayModes.VariablesOnly)
             {
@@ -348,7 +351,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
                 if (DisplayMode != DisplayModes.Debug)
                 {
-                    ExcludeMember("InstantiatedByBase");
+                    ExcludeMember(nameof(NamedObjectSave.InstantiatedByBase));
                 }
 
                 var containerType = instance.GetContainerType();
@@ -383,13 +386,13 @@ namespace FlatRedBall.Glue.GuiDisplay
 
                 if (!shouldShowAttachToContainer)
                 {
-                    this.ExcludeMember("AttachToContainer");
+                    this.ExcludeMember(nameof(NamedObjectSave.AttachToContainer));
                 }
 
 
                 if (!shouldShowAttachToCamera)
                 {
-                    ExcludeMember("AttachToCamera");
+                    ExcludeMember(nameof(NamedObjectSave.AttachToCamera));
                 }
 
                 if (instance.SourceType == SaveClasses.SourceType.FlatRedBallType && instance.SourceClassType == "Layer")
@@ -406,22 +409,22 @@ namespace FlatRedBall.Glue.GuiDisplay
 
                 if (instance.SetByDerived)
                 {
-                    ExcludeMember("AttachToContainer");
+                    ExcludeMember(nameof(NamedObjectSave.AttachToContainer));
                 }
                 if (instance.InstantiatedByBase)
                 {
-                    ExcludeMember("SourceType");
+                    ExcludeMember(nameof(NamedObjectSave.SourceType));
                     shouldIncludeSourceClassType = false;
                     shouldIncludeSourceClassGenericType = false;
 
-                    ExcludeMember("InstanceName");
-                    ExcludeMember("CallActivity");
-                    ExcludeMember("IgnoresPausing");
-                    ExcludeMember("HasPublicProperty");
-                    ExcludeMember("ExposedInDerived");
+                    ExcludeMember(nameof(NamedObjectSave.InstanceName));
+                    ExcludeMember(nameof(NamedObjectSave.CallActivity));
+                    ExcludeMember(nameof(NamedObjectSave.IgnoresPausing));
+                    ExcludeMember(nameof(NamedObjectSave.HasPublicProperty));
+                    ExcludeMember(nameof(NamedObjectSave.ExposedInDerived));
 
-                    ExcludeMember("SetByDerived");
-                    ExcludeMember("SetByContainer");
+                    ExcludeMember(nameof(NamedObjectSave.SetByDerived));
+                    ExcludeMember(nameof(NamedObjectSave.SetByContainer));
                 }
 
                 bool shouldIncludeAddToManagers = !instance.InstantiatedByBase && !instance.IsList;
@@ -442,7 +445,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
                 if (instance.SourceType != SaveClasses.SourceType.FlatRedBallType || instance.SourceClassType != "Camera")
                 {
-                    ExcludeMember("IsNewCamera");
+                    ExcludeMember(nameof(NamedObjectSave.IsNewCamera));
                 }
 
                 #endregion
@@ -451,7 +454,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
                 if (instance.SourceType != SaveClasses.SourceType.FlatRedBallType || instance.SourceClassType != "Text")
                 {
-                    ExcludeMember("IsPixelPerfect");
+                    ExcludeMember(nameof(NamedObjectSave.IsPixelPerfect));
                 }
 
                 #endregion
@@ -502,20 +505,20 @@ namespace FlatRedBall.Glue.GuiDisplay
 
                 if (shouldIncludeSourceClassType)
                 {
-                    IncludeMember("SourceClassType", typeof(NamedObjectSave), new AvailableClassTypeConverter(instance));
+                    IncludeMember(nameof(NamedObjectSave.SourceClassType), typeof(NamedObjectSave), new AvailableClassTypeConverter(instance));
                 }
                 else
                 {
-                    ExcludeMember("SourceClassType");
+                    ExcludeMember(nameof(NamedObjectSave.SourceClassType));
                 }
 
                 if (shouldIncludeSourceFile)
                 {
-                    IncludeMember("SourceFile", typeof(NamedObjectSave), new AvailableFileStringConverter(CurrentElement));
+                    IncludeMember(nameof(NamedObjectSave.SourceFile), typeof(NamedObjectSave), new AvailableFileStringConverter(CurrentElement));
                 }
                 else
                 {
-                    ExcludeMember("SourceFile");
+                    ExcludeMember(nameof(NamedObjectSave.SourceFile));
                 }
 
                 if(shouldShowGenerateTimedEmit)
@@ -529,60 +532,58 @@ namespace FlatRedBall.Glue.GuiDisplay
 
                 if (shouldIncludeSourceName)
                 {
-                    IncludeMember("SourceName", typeof(NamedObjectSave), new AvailableNameablesStringConverter(instance));
+                    IncludeMember(nameof(NamedObjectSave.SourceName), typeof(NamedObjectSave), new AvailableNameablesStringConverter(instance));
                 }
                 else
                 {
-                    ExcludeMember("SourceName");
+                    ExcludeMember(nameof(NamedObjectSave.SourceName));
                 }
 
                 if (shouldIncludeSourceClassGenericType)
                 {
-                    IncludeMember("SourceClassGenericType", typeof(NamedObjectSave), new AvailableClassGenericTypeConverter());
+                    IncludeMember(nameof(NamedObjectSave.SourceClassGenericType), typeof(NamedObjectSave), new AvailableClassGenericTypeConverter());
                 }
                 else
                 {
-                    ExcludeMember("SourceClassGenericType");
+                    ExcludeMember(nameof(NamedObjectSave.SourceClassGenericType));
                 }
 
                 if (shouldShowCurrentState)
                 {
-                    IncludeMember("CurrentState", typeof(NamedObjectSave),
+                    IncludeMember(nameof(NamedObjectSave.CurrentState), typeof(NamedObjectSave),
                         new AvailableStates(CurrentNamedObject, CurrentElement, CurrentCustomVariable, CurrentStateSave));
                 }
                 else
                 {
-                    ExcludeMember("CurrentState");
+                    ExcludeMember(nameof(NamedObjectSave.CurrentState));
                 }
 
                 if (!shouldIncludeIncludeInIClickable)
                 {
-                    ExcludeMember("IncludeInIClickable");
+                    ExcludeMember(nameof(NamedObjectSave.IncludeInIClickable));
                 }
                 if (!shouldIncludeIncludeInIVisible)
                 {
-                    ExcludeMember("IncludeInIVisible");
+                    ExcludeMember(nameof(NamedObjectSave.IncludeInIVisible));
                 }
                 if(!shouldIncludeIncludeInICollidable)
                 {
-                    ExcludeMember("IncludeInICollidable");
+                    ExcludeMember(nameof(NamedObjectSave.IncludeInICollidable));
                 }
 
                 if (!shouldShowIsZBuffered)
                 {
-                    ExcludeMember("IsZBuffered");
+                    ExcludeMember(nameof(NamedObjectSave.IsZBuffered));
                 }
                 if (!shouldIncludeSetByContainer)
                 {
-                    ExcludeMember("SetByContainer");
+                    ExcludeMember(nameof(NamedObjectSave.SetByContainer));
                 }
-                //else if (this.SourceType == SourceType.SetByParentContainer)
-                //{
-                //    ExcludeMember("SourceFile");
-                //    ExcludeMember("SourceName");
-                //    ExcludeMember("SourceClassGenericType");
-                //    ExcludeMember("AddToManagers");
-                //}
+
+                if(shouldIncludeIsManuallyUpdated == false)
+                {
+                    ExcludeMember(nameof(NamedObjectSave.IsManuallyUpdated));
+                }
             }
         }
 
@@ -592,48 +593,47 @@ namespace FlatRedBall.Glue.GuiDisplay
 
             if (shouldIncludeLayerOn)
             {
-                IncludeMember("LayerOn", typeof(NamedObjectSave), new AvailableLayersTypeConverter(CurrentElement), CategoryAttribute("Layer"));
+                IncludeMember(nameof(NamedObjectSave.LayerOn), typeof(NamedObjectSave), new AvailableLayersTypeConverter(CurrentElement), 
+                    CategoryAttribute("Layer"));
             }
             else
             {
-                ExcludeMember("LayerOn");
+                ExcludeMember(nameof(NamedObjectSave.LayerOn));
             }
 
 
             if (instance.IsLayer)
             {
-                
-
-                IncludeMember("IndependentOfCamera", containingType: typeof(NamedObjectSave), attributes: CategoryAttribute("Layer"));
+                IncludeMember(nameof(NamedObjectSave.IndependentOfCamera), containingType: typeof(NamedObjectSave), attributes: CategoryAttribute("Layer"));
                 if (instance.IndependentOfCamera)
                 {
 
-                    IncludeMember(memberToInclude: "Is2D", containingType: typeof(NamedObjectSave), attributes: CategoryAttribute("Layer"));
+                    IncludeMember(memberToInclude: nameof(NamedObjectSave.Is2D), containingType: typeof(NamedObjectSave), attributes: CategoryAttribute("Layer"));
                     if (!instance.Is2D)
                     {
-                        ExcludeMember("DestinationRectangle");
-                        ExcludeMember("LayerCoordinateType");
+                        ExcludeMember(nameof(NamedObjectSave.DestinationRectangle));
+                        ExcludeMember(nameof(NamedObjectSave.LayerCoordinateType));
 
                     }
                     else
                     {
-                        IncludeMember("DestinationRectangle", containingType: typeof(NamedObjectSave), attributes: CategoryAttribute("Layer"));
-                        IncludeMember("LayerCoordinateUnit", containingType: typeof(NamedObjectSave), attributes: CategoryAttribute("Layer"));
-                        IncludeMember("LayerCoordinateType", containingType: typeof(NamedObjectSave), attributes: CategoryAttribute("Layer"));
+                        IncludeMember(nameof(NamedObjectSave.DestinationRectangle), containingType: typeof(NamedObjectSave), attributes: CategoryAttribute("Layer"));
+                        IncludeMember(nameof(NamedObjectSave.LayerCoordinateUnit), containingType: typeof(NamedObjectSave), attributes: CategoryAttribute("Layer"));
+                        IncludeMember(nameof(NamedObjectSave.LayerCoordinateType), containingType: typeof(NamedObjectSave), attributes: CategoryAttribute("Layer"));
                     }
                 }
                 else
                 {
-                    ExcludeMember("Is2D");
+                    ExcludeMember(nameof(NamedObjectSave.Is2D));
                 }
             }
             else
             {
-                ExcludeMember("IndependentOfCamera");
-                ExcludeMember("Is2D");
-                ExcludeMember("DestinationRectangle");
-                ExcludeMember("LayerCoordinateType");
-                ExcludeMember("LayerCoordinateUnit");
+                ExcludeMember(nameof(NamedObjectSave.IndependentOfCamera));
+                ExcludeMember(nameof(NamedObjectSave.Is2D));
+                ExcludeMember(nameof(NamedObjectSave.DestinationRectangle));
+                ExcludeMember(nameof(NamedObjectSave.LayerCoordinateType));
+                ExcludeMember(nameof(NamedObjectSave.LayerCoordinateUnit));
             }
         }
 

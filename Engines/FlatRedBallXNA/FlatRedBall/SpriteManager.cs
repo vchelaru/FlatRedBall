@@ -2107,16 +2107,13 @@ namespace FlatRedBall
                 spriteToUpdate.mVerticesForDrawing = new VertexPositionColorTexture[4];
             }
 
-            spriteToUpdate.UpdateVertices(SpriteManager.Camera);
+            spriteToUpdate.UpdateVertices();
 
             spriteToUpdate.mVerticesForDrawing[0].Position = spriteToUpdate.mVertices[0].Position;
             spriteToUpdate.mVerticesForDrawing[1].Position = spriteToUpdate.mVertices[1].Position;
             spriteToUpdate.mVerticesForDrawing[2].Position = spriteToUpdate.mVertices[2].Position;
             spriteToUpdate.mVerticesForDrawing[3].Position = spriteToUpdate.mVertices[3].Position;
 
-
-
-#if XNA4
 
     #if MONOGAME
             if (spriteToUpdate.Texture != null && spriteToUpdate.ColorOperation == ColorOperation.Texture)
@@ -2176,34 +2173,6 @@ namespace FlatRedBall
                     (((uint)(255 * spriteToUpdate.mVertices[3].Color.Z)) << 16) +
                     (((uint)(255 * spriteToUpdate.mVertices[3].Color.W)) << 24);
             }
-#else
-            spriteToUpdate.mVerticesForDrawing[0].Color.PackedValue =
-                ((uint)(255 * spriteToUpdate.mVertices[0].Color.Z)) +
-                (((uint)(255 * spriteToUpdate.mVertices[0].Color.Y)) << 8) +
-                (((uint)(255 * spriteToUpdate.mVertices[0].Color.X)) << 16) +
-                (((uint)(255 * spriteToUpdate.mVertices[0].Color.W)) << 24);
-
-            spriteToUpdate.mVerticesForDrawing[1].Position = spriteToUpdate.mVertices[1].Position;
-            spriteToUpdate.mVerticesForDrawing[1].Color.PackedValue =
-                ((uint)(255 * spriteToUpdate.mVertices[1].Color.Z)) +
-                (((uint)(255 * spriteToUpdate.mVertices[1].Color.Y)) << 8) +
-                (((uint)(255 * spriteToUpdate.mVertices[1].Color.X)) << 16) +
-                (((uint)(255 * spriteToUpdate.mVertices[1].Color.W)) << 24);
-
-            spriteToUpdate.mVerticesForDrawing[2].Position = spriteToUpdate.mVertices[2].Position;
-            spriteToUpdate.mVerticesForDrawing[2].Color.PackedValue =
-                ((uint)(255 * spriteToUpdate.mVertices[2].Color.Z)) +
-                (((uint)(255 * spriteToUpdate.mVertices[2].Color.Y)) << 8) +
-                (((uint)(255 * spriteToUpdate.mVertices[2].Color.X)) << 16) +
-                (((uint)(255 * spriteToUpdate.mVertices[2].Color.W)) << 24);
-
-            spriteToUpdate.mVerticesForDrawing[3].Position = spriteToUpdate.mVertices[3].Position;
-            spriteToUpdate.mVerticesForDrawing[3].Color.PackedValue =
-                ((uint)(255 * spriteToUpdate.mVertices[3].Color.Z)) +
-                (((uint)(255 * spriteToUpdate.mVertices[3].Color.Y)) << 8) +
-                (((uint)(255 * spriteToUpdate.mVertices[3].Color.X)) << 16) +
-                (((uint)(255 * spriteToUpdate.mVertices[3].Color.W)) << 24);
-#endif
 
             if (!spriteToUpdate.FlipHorizontal && !spriteToUpdate.FlipVertical)
             {

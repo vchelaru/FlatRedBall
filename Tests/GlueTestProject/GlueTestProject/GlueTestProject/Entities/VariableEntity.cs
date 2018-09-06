@@ -12,6 +12,7 @@ using FlatRedBall.Math.Splines;
 using BitmapFont = FlatRedBall.Graphics.BitmapFont;
 using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
+using GlueTestProject.TestFramework;
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -50,6 +51,10 @@ namespace GlueTestProject.Entities
             {
                 throw new Exception("Instance variables are not properly overriding base variables");
             }
+
+            this.Score1.ShouldBe(66);
+            this.Score1 = 1234;
+            TextWithIntDisplayText.DisplayText.ShouldBe("1234");
 		}
 
 		private void CustomActivity()

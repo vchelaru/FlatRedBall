@@ -26,7 +26,7 @@ namespace GlueTestProject.Screens
 {
 	public partial class FileScreen
 	{
-
+        bool hasHadAnyParticles = false;
 		void CustomInitialize()
 		{
             if (!ShapeManager.VisibleCircles.Contains(FileScreen.ShapeCollectionFile.Circles[0]))
@@ -82,11 +82,15 @@ namespace GlueTestProject.Screens
 
 		void CustomActivity(bool firstTimeCalled)
 		{
+            if(SpriteManager.ParticleCount > 0)
+            {
+                hasHadAnyParticles = true;
+            }
             if(this.ActivityCallCount >= 40)
             {
                 if (SpriteManager.ParticleCount == 0)
                 {
-                    throw new Exception("The emitter file should be emitting, but it is not");
+                    throw new Exception($"The emitter file should be emitting, but it is not. Has had any particles: {hasHadAnyParticles}");
                 }
 
                 IsActivityFinished = true;

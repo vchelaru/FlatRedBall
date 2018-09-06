@@ -172,7 +172,7 @@ namespace GlueTestProject.Screens
             int numberOfFramesToWait = 5;
 
             // give it a few frames...
-            if(this.ActivityCallCount == 2)
+            if(this.ActivityCallCount == 4)
             {
                 GumComponentContainer_ForAttachment.VerifyGumOnFrbAttachments();
 
