@@ -38,3 +38,6 @@ FRBDK/Glue/GameScriptingPlugin/.vs/
 FRBDK/AnimationEditorPlugin/.vs/
 *.mainplugin.settings.json
 Templates/FlatRedBallUwpTemplate/.vs/
+FRBDK/GlueView2Test/packages/
+FRBDK/GlueView2Test/.vs/
+FRBDK/GlueView2/packages/

@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2047
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlueView2", "GlueView2\GlueView2.csproj", "{864CF0A3-0500-4FFE-975B-95E086DDB688}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{864CF0A3-0500-4FFE-975B-95E086DDB688}.Debug|x86.ActiveCfg = Debug|x86
+		{864CF0A3-0500-4FFE-975B-95E086DDB688}.Debug|x86.Build.0 = Debug|x86
+		{864CF0A3-0500-4FFE-975B-95E086DDB688}.Release|x86.ActiveCfg = Release|x86
+		{864CF0A3-0500-4FFE-975B-95E086DDB688}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DC92039F-E199-4982-AF0C-0F1B07896A30}
+	EndGlobalSection
+EndGlobal

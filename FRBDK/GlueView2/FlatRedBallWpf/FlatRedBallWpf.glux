@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GlueProjectSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <In2D>true</In2D>
+  <RunFullscreen>false</RunFullscreen>
+  <SetResolution>false</SetResolution>
+  <ResolutionWidth>800</ResolutionWidth>
+  <ResolutionHeight>600</ResolutionHeight>
+  <SetOrthogonalResolution>false</SetOrthogonalResolution>
+  <OrthogonalWidth>800</OrthogonalWidth>
+  <OrthogonalHeight>600</OrthogonalHeight>
+  <Screens>
+    <ScreenSave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
+      <Name>Screens\MainScreen</Name>
+    </ScreenSave>
+  </Screens>
+  <Entities />
+  <GlobalFiles />
+  <GlobalContentSettingsSave>
+    <LoadAsynchronously>false</LoadAsynchronously>
+    <RecordLockContention>false</RecordLockContention>
+  </GlobalContentSettingsSave>
+  <SyncedProjects />
+  <StartUpScreen>Screens\MainScreen</StartUpScreen>
+  <ResolutionPresets />
+  <PerformanceSettingsSave>
+    <ThrowExceptionOnPostInitializeContentLoad>false</ThrowExceptionOnPostInitializeContentLoad>
+    <RecordInitializeSegments>false</RecordInitializeSegments>
+  </PerformanceSettingsSave>
+  <IgnoredDirectories />
+  <CustomClasses>
+    <CustomClassSave>
+      <CsvFilesUsingThis />
+      <RequiredProperties>
+        <InstructionSave>
+          <Type>bool</Type>
+          <Member>HasCollision</Member>
+        </InstructionSave>
+        <InstructionSave>
+          <Type>string</Type>
+          <Member>EntityToCreate</Member>
+        </InstructionSave>
+        <InstructionSave>
+          <Type>string</Type>
+          <Member>Name</Member>
+        </InstructionSave>
+        <InstructionSave>
+          <Type>System.Collections.Generic.List&lt;FlatRedBall.Content.AnimationChain.AnimationFrameSaveBase&gt;</Type>
+          <Member>EmbeddedAnimation</Member>
+        </InstructionSave>
+      </RequiredProperties>
+      <Name>TileMapInfo</Name>
+      <GenerateCode>true</GenerateCode>
+    </CustomClassSave>
+  </CustomClasses>
+  <TranslatedFiles />
+  <ApplyToFixedResolutionPlatforms>true</ApplyToFixedResolutionPlatforms>
+  <ExternallyBuiltFileDirectory>../../</ExternallyBuiltFileDirectory>
+  <PluginData>
+    <RequiredPlugins />
+  </PluginData>
+  <DisplaySettings>
+    <Is2D>true</Is2D>
+    <GenerateDisplayCode>true</GenerateDisplayCode>
+    <ResolutionWidth>800</ResolutionWidth>
+    <ResolutionHeight>600</ResolutionHeight>
+    <FixedAspectRatio>false</FixedAspectRatio>
+    <AspectRatioWidth>16</AspectRatioWidth>
+    <AspectRatioHeight>9</AspectRatioHeight>
+    <SupportLandscape>true</SupportLandscape>
+    <SupportPortrait>false</SupportPortrait>
+    <RunInFullScreen>false</RunInFullScreen>
+    <AllowWindowResizing>false</AllowWindowResizing>
+    <Scale>100</Scale>
+    <ResizeBehavior>StretchVisibleArea</ResizeBehavior>
+    <DominantInternalCoordinates>Height</DominantInternalCoordinates>
+  </DisplaySettings>
+</GlueProjectSave>
