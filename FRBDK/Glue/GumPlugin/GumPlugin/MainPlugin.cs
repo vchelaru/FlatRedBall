@@ -219,7 +219,9 @@ namespace GumPlugin
             // - Introduced support for subfolders and matching namespaces for components
             // 1.4.1
             // - The Gum toolbar disappears if the Gum plugin is shut down
-            get { return new Version(1, 4, 1, 0); }
+            // 1.4.2
+            // - Added FloatRectangle as an embedded file for legacy projects
+            get { return new Version(1, 4, 2, 0); }
         }
 
         #endregion

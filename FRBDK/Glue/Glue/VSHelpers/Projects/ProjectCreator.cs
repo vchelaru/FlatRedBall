@@ -3,6 +3,7 @@ using System.Linq;
 using FlatRedBall.IO;
 using Microsoft.Build.Evaluation;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using System.Collections.Generic;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -160,6 +161,19 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             return toReturn;
         }
 
+        class PreprocessorAndFunc
+        {
+            public string Preprocessor;
+            public Func<ProjectBase> Func;
+
+            public PreprocessorAndFunc(string preprocessor, Func<ProjectBase> func)
+            {
+                Preprocessor = preprocessor;
+                Func = func;
+            }
+        }
+
+
         private static ProjectBase TryGetProjectTypeFromDefineConstants(Project coreVisualStudioProject, out string message)
         {
             string preProcessorConstants = GetPreProcessorConstantsFromProject(coreVisualStudioProject);
@@ -171,37 +185,40 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             ProjectBase toReturn = null;
 
-            if (preProcessorConstants.Contains("ANDROID"))
-            {
-                toReturn = new AndroidProject(coreVisualStudioProject);
-            }
-            else if(preProcessorConstants.Contains("IOS"))
-            {
-                toReturn = new IosMonogameProject(coreVisualStudioProject);
-            }
-            else if(preProcessorConstants.Contains("UWP"))
-            {
-                toReturn = new UwpProject(coreVisualStudioProject);
-            }
-            else if(preProcessorConstants.Contains("DESKTOP_GL"))
-            {
-                toReturn = new DesktopGlProject(coreVisualStudioProject);
-            }
-            
+            List<PreprocessorAndFunc> loadCalls = new List<PreprocessorAndFunc>();
 
+            loadCalls.Add(new PreprocessorAndFunc("ANDROID", () => new AndroidProject(coreVisualStudioProject)));
+            loadCalls.Add(new PreprocessorAndFunc("IOS", () => new IosMonogameProject(coreVisualStudioProject)));
+            loadCalls.Add(new PreprocessorAndFunc("UWP", () => new UwpProject(coreVisualStudioProject)));
+            loadCalls.Add(new PreprocessorAndFunc("DESKTOP_GL", () => new DesktopGlProject(coreVisualStudioProject)));
             // Do XNA_4 last, since every 
             // other project type has this 
             // preprocessor type, so every project
             // type would return true here
-            else if (preProcessorConstants.Contains("XNA4"))
+            loadCalls.Add(new PreprocessorAndFunc("XNA4", () => new Xna4Project(coreVisualStudioProject)));
+
+
+            foreach (var call in loadCalls)
             {
-                toReturn = new Xna4Project(coreVisualStudioProject);
+                if(preProcessorConstants.Contains(call.Preprocessor))
+                {
+                    toReturn = call.Func();
+                }
             }
+
+    
 
             message = null;
             if(toReturn == null)
             {
-                message = $"Could not determine project type from preprocessor directives. The preprocessor directive string is \"{preProcessorConstants}\"";
+                message = $"Could not determine project type from preprocessor directives." +
+                    $"\nThe project beign loaded has the folowing preprocessor directives\"{preProcessorConstants}\"" +
+                    $"\nThe following are preprocessor directives to determine project type:";
+
+                foreach(var preprocessor in loadCalls)
+                {
+                    message += "\n" + preprocessor.Preprocessor;
+                }
             }
 
             return toReturn;

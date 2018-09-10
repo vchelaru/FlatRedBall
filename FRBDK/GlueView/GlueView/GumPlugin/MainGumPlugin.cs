@@ -25,7 +25,8 @@ namespace GumPlugin
         {
             get
             {
-                return new Version(1, 0);
+                // 1.0.1 - Trying to fix null ref exception
+                return new Version(1, 0, 1);
             }
         }
 

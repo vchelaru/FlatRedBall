@@ -25,15 +25,18 @@ namespace GumPlugin.RuntimeObjects
         {
             // early out:
 
-            if (GlueViewState.Self?.CurrentGlueProject == null)
+            if (GlueViewState.Self?.CurrentGlueProject == null ||
+                RenderingLibrary.SystemManagers.Default == null)
             {
                 return;
             }
 
             // end early out
 
-            var newHeight = FlatRedBallServices.GraphicsOptions.ResolutionHeight;
-            var newWidth = FlatRedBallServices.GraphicsOptions.ResolutionWidth;
+            var graphicsOptions = FlatRedBallServices.GraphicsOptions;
+
+            var newHeight = graphicsOptions.ResolutionHeight;
+            var newWidth = graphicsOptions.ResolutionWidth;
 
             GraphicalUiElement.CanvasHeight = newHeight;
             GraphicalUiElement.CanvasWidth = newWidth;

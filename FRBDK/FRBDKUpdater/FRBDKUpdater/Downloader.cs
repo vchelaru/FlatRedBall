@@ -111,8 +111,11 @@ namespace FRBDKUpdater
 
                 // 4 failures @ 400 ms each was not enough
                 // for brake neck
-                int maxFailures = 5;
-                int msToSleepOn0Length = 800;
+                // Update Sept 9, 2018
+                // Still got users reporting
+                // a problem at 5 failures @ 800
+                int maxFailures = 6;
+                int msToSleepOn0Length = 1200;
                 int numberOfFailures = 0;
 
                 HttpWebResponse response = null;
@@ -134,15 +137,20 @@ namespace FRBDKUpdater
                     }
                 }
 
-                if (fileSize <= 0)
+                // If file size is <= 0, it may stil be a valid response
+                // so base it on OK code...
+                if(response.StatusCode != HttpStatusCode.OK)
                 {
                     mHasErrorOccured = true;
                     if (ErrorOccured != null)
                     {
                         ErrorOccured(this, new DownloaderErrorEventArgs(
-                            $"File size for .zip was not greater than 0. Attempted to download the file {maxFailures} times."));
+                                    $"File size for .zip was not greater than 0. Attempted to download the file {maxFailures} times."));
                     }
                 }
+                //if (fileSize <= 0)
+                //{
+                //}
 
                 if (!mHasErrorOccured)
                 {
@@ -165,8 +173,16 @@ namespace FRBDKUpdater
                             FileStream fileStream;
                             GetSaveInformation(out saveFile, out fileStream);
 
-                            var byteBuffer = new byte[fileSize];
+                            byte[] byteBuffer = null;
 
+                            if (fileSize > 0)
+                            {
+                                byteBuffer = new byte[fileSize];
+                            }
+                            else
+                            {
+                                byteBuffer = new byte[1 << 16];
+                            }
                             if (webStream != null)
                             {
                                 Logger.Log("Downloading now...");

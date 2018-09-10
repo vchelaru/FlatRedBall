@@ -46,7 +46,6 @@
     <Compile Include="Instructions\Reflection\PropertyValuePair.cs" />
     <Compile Include="IO\Csv\CsvFileManager.cs" />
     <Compile Include="IO\Csv\CsvReader.cs" />
-    <Compile Include="IO\Csv\CsvReader.DataReaderValidations.cs" />
     <Compile Include="IO\Csv\CsvReader.RecordEnumerator.cs" />
     <Compile Include="IO\Csv\Events\ParseErrorEventArgs.cs" />
     <Compile Include="IO\Csv\MemberTypeIndexPair.cs" />

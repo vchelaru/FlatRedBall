@@ -100,6 +100,9 @@
     <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\Behaviors\BehaviorInstanceSave.cs">
       <Link>Embedded\LibraryFiles\GumDataTypes\BehaviorInstanceSave.cs</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Math\FloatRectangle.cs">
+      <Link>Embedded\LibraryFiles\RenderingLibrary\FloatRectangle.cs</Link>
+    </EmbeddedResource>
     <Compile Include="CodeGeneration\BehaviorCodeGenerator.cs" />
     <Compile Include="CodeGeneration\EventCodeGenerator.cs" />
     <Compile Include="CodeGeneration\GlobalContentCodeGenerator.cs" />

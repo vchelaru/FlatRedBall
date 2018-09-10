@@ -101,8 +101,8 @@ namespace FlatRedBall.Glue.IO
             var result = ProjectCreator.CreateProject(projectFileName);
             ProjectManager.ProjectBase = result.Project;
 
-            bool shouldLoad = false;
-            if (result.ShouldTryToLoadProject)
+            bool shouldLoad = result.Project != null;
+            if (shouldLoad && result.ShouldTryToLoadProject)
             {
                 shouldLoad = DetermineIfShouldLoad(projectFileName);
             }
