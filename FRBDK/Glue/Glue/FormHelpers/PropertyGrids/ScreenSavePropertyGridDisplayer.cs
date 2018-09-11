@@ -32,10 +32,10 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             UpdateIncludedAndExcludedBase(instance);
 
             // instance may not be set yet, so we have to use the argument value
-            IncludeMember("BaseScreen", typeof(ScreenSave), new AvailableScreenTypeConverter((ScreenSave)instance));
-            IncludeMember("NextScreen", typeof(ScreenSave), new AvailableScreenTypeConverter((ScreenSave)instance));
+            IncludeMember(nameof(ScreenSave.BaseScreen), typeof(ScreenSave), new AvailableScreenTypeConverter((ScreenSave)instance));
+            IncludeMember(nameof(ScreenSave.NextScreen), typeof(ScreenSave), new AvailableScreenTypeConverter((ScreenSave)instance));
 
-            IncludeMember("Name", typeof(string), SetClassName, GetClassName, null, this.CategoryAttribute("\tScreen"));
+            IncludeMember(nameof(ScreenSave.Name), typeof(string), SetClassName, GetClassName, null, this.CategoryAttribute("\tScreen"));
 
         }
 

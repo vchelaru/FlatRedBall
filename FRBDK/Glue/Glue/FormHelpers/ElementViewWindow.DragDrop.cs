@@ -445,6 +445,40 @@ namespace FlatRedBall.Glue.FormHelpers
                 viewModel.SourceFile = (treeNodeMoving.Tag as ReferencedFileSave).Name;
                 GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
             }
+            else if(targetNode.IsNamedObjectNode() && 
+                targetNode.GetContainingElementTreeNode() == treeNodeMoving.GetContainingElementTreeNode())
+            {
+                // Dropping the file on an object. If the object's type matches the named object's
+                // entire file, ask the user if they want to make the object come from the file...
+                var rfsAti = referencedFileSave.GetAssetTypeInfo();
+                var namedObject = ((NamedObjectSave)targetNode.Tag);
+                var namedObjectAti = namedObject.GetAssetTypeInfo();
+
+                var shouldAskAboutChangingObjectToBeFromFile =
+                    rfsAti == namedObjectAti && rfsAti != null;
+
+                DialogResult dialogResult = DialogResult.No;
+
+                if (shouldAskAboutChangingObjectToBeFromFile)
+                {
+                    dialogResult = MessageBox.Show(
+                        $"Would you like to set the object {namedObject.InstanceName} to be created from the file {referencedFileSave.Name}?",
+                        $"Set {namedObject.InstanceName} to be from file?",
+                        MessageBoxButtons.YesNo);
+                }
+
+                if(dialogResult == DialogResult.Yes)
+                {
+                    namedObject.SourceType = SourceType.File;
+                    namedObject.SourceFile = referencedFileSave.Name;
+                    namedObject.SourceName = $"Entire File ({rfsAti.RuntimeTypeName})";
+
+                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                }
+
+
+            }
             else if (!targetNode.IsFilesContainerNode() &&
                 !targetNode.IsFolderInFilesContainerNode() &&
                 !targetNode.IsFolderForGlobalContentFiles())

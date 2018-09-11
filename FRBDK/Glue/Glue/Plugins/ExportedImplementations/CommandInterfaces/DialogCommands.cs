@@ -38,7 +38,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 var option = nfw.GetOptionFor(resultAssetTypeInfo);
 
-                rfs = GlueProjectSaveExtensionMethods.AddReferencedFileSave(element, directory, name, resultAssetTypeInfo,
+                rfs = GlueProjectSaveExtensionMethods.AddReferencedFileSave(
+                    element, directory, name, resultAssetTypeInfo,
                     option, out errorMessage);
 
 

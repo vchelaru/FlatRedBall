@@ -360,7 +360,7 @@ namespace FlatRedBall.Glue.IO
 
             if (newElement is ScreenSave)
             {
-                ProjectManager.AddScreen((ScreenSave)newElement, true);
+                GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen((ScreenSave)newElement, suppressAlreadyExistingFileMessage: true);
             }
             else
             {

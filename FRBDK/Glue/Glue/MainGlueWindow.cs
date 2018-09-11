@@ -823,10 +823,9 @@ namespace Glue
                     string newFile = newScreenSave.Name + "Copy.cs";
                     string newGeneratedFile = newScreenSave.Name + "Copy.Generated.cs";
 
-                    // Not sure why we are adding here - the ProjectManager.AddScreen takes care of it.
-                    //ProjectManager.GlueProjectSave.Screens.Add(newScreenSave);
+                    // Not sure why we are adding here - AddScreen takes care of it.
 
-                    ProjectManager.AddScreen(newScreenSave);
+                    GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(newScreenSave);
 
                     GlueState.Self.Find.ScreenTreeNode(newScreenSave).UpdateReferencedTreeNodes();
                 }

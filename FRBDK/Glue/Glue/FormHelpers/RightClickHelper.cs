@@ -87,6 +87,7 @@ namespace FlatRedBall.Glue.FormHelpers
         static ToolStripMenuItem mCreateZipPackage;
         static ToolStripMenuItem mExportElement;
         static ToolStripMenuItem mImportElement;
+        static ToolStripMenuItem createDerivedScreen;
 
         static ToolStripMenuItem mAddEventMenuItem;
 
@@ -135,6 +136,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     menu.Items.Add(mMakeRequiredAtStartup);
                     mExportElement.Text = "Export Screen";
                     menu.Items.Add(mExportElement);
+                    menu.Items.Add(createDerivedScreen);
 
                     AddRemoveFromProjectItems(form, menu);
 
@@ -565,6 +567,9 @@ namespace FlatRedBall.Glue.FormHelpers
             mExportElement = new ToolStripMenuItem("Export Screen");
             mExportElement.Click += new EventHandler(ExportElementClick);
 
+            createDerivedScreen = new ToolStripMenuItem("Create Derived (Level) Screen");
+            createDerivedScreen.Click += HandleCreateDerivedScreenClicked;
+
             mImportElement = new ToolStripMenuItem("Import Screen");
             mImportElement.Click += new EventHandler(ImportElementClick);
 
@@ -587,6 +592,28 @@ namespace FlatRedBall.Glue.FormHelpers
             reGenerateCodeToolStripMenuItem.Click += HandleReGenerateCodeClick; ;
 
         }
+
+        private static void HandleCreateDerivedScreenClicked(object sender, EventArgs e)
+        {
+            var popup = new TextInputWindow();
+            popup.Message = "Enter new screen (level) name";
+            var dialogResult = popup.ShowDialog();
+
+            if(dialogResult == DialogResult.OK)
+            {
+                var newScreenName = popup.Result;
+
+                var screen = new ScreenSave();
+                screen.Name = @"Screens\" + newScreenName;
+                screen.BaseScreen = GlueState.Self.CurrentScreenSave.Name;
+
+                GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(screen);
+
+                GlueState.Self.CurrentScreenSave = screen;
+                screen.UpdateFromBaseType();
+            }
+        }
+
 
         private static void HandleReGenerateCodeClick(object sender, EventArgs e)
         {
@@ -2889,7 +2916,8 @@ namespace FlatRedBall.Glue.FormHelpers
                         }
                         else
                         {
-                            var screen = ProjectManager.AddScreen(tiw.Result);
+                            var screen = 
+                                GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(tiw.Result);
 
                             GlueState.Self.CurrentElement = screen;
                         }

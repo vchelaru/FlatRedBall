@@ -203,6 +203,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 if(preProcessorConstants.Contains(call.Preprocessor))
                 {
                     toReturn = call.Func();
+                    break;
                 }
             }
 

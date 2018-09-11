@@ -17,6 +17,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Utilities;
 using FlatRedBall.Glue.Projects;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Controls;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -38,8 +39,98 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public SaveClasses.ScreenSave AddScreen(string screenName)
         {
-            return ProjectManager.AddScreen(screenName);
+            ScreenSave screenSave = new ScreenSave();
+            screenSave.Name = @"Screens\" + screenName;
+
+            AddScreen(screenSave, suppressAlreadyExistingFileMessage:false);
+
+            return screenSave;
         }
+
+        public void AddScreen(ScreenSave screenSave, bool suppressAlreadyExistingFileMessage = false)
+        {
+            var glueProject = GlueState.Self.CurrentGlueProject;
+
+            string screenName = FileManager.RemovePath(screenSave.Name);
+
+            string fileName = screenSave.Name + ".cs";
+
+            screenSave.Tags.Add("GLUE");
+            screenSave.Source = "GLUE";
+
+            glueProject.Screens.Add(screenSave);
+            glueProject.Screens.SortByName();
+
+            #region Create the Screen code (not the generated version)
+
+
+            var item = ProjectManager.ProjectBase.AddCodeBuildItem(fileName);
+
+
+            string projectNamespace = ProjectManager.ProjectNamespace;
+
+            StringBuilder stringBuilder = new StringBuilder(CodeWriter.ScreenTemplateCode);
+
+            CodeWriter.SetClassNameAndNamespace(
+                projectNamespace + ".Screens",
+                screenName,
+                stringBuilder);
+
+            string modifiedTemplate = stringBuilder.ToString();
+
+            string fullNonGeneratedFileName = FileManager.RelativeDirectory + fileName;
+
+            if (FileManager.FileExists(fullNonGeneratedFileName))
+            {
+                if (!suppressAlreadyExistingFileMessage)
+                {
+                    MessageBox.Show("There is already a file named\n\n" + fullNonGeneratedFileName + "\n\nThis file will be used instead of creating a new one just in case you have code that you want to keep there.");
+                }
+            }
+            else
+            {
+
+                FileManager.SaveText(
+                    modifiedTemplate,
+                    fullNonGeneratedFileName
+                    );
+            }
+
+
+            #endregion
+
+            #region Create <ScreenName>.Generated.cs
+
+            string generatedFileName = @"Screens\" + screenName + ".Generated.cs";
+            ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(generatedFileName, true);
+
+
+            #endregion
+
+            // We used to set the 
+            // StartUpScreen whenever
+            // the user made a new Screen.
+            // The reason is we assumed that
+            // the user wanted to work on this
+            // Screen, so we set it as the startup
+            // so they could run the game right away.
+            // Now we only want to do it if there are no
+            // other Screens.  Otherwise they can just use
+            // GlueView.
+            ScreenTreeNode screenTreeNode = ElementViewWindow.AddScreen(screenSave);
+            if (glueProject.Screens.Count == 1)
+            {
+                ElementViewWindow.StartUpScreen = screenTreeNode;
+            }
+
+            PluginManager.ReactToNewScreenCreated(screenSave);
+
+
+            ProjectManager.SaveProjects();
+
+            GluxCommands.Self.SaveGlux();
+        }
+
 
         public SaveClasses.EntitySave AddEntity(string entityName)
         {
