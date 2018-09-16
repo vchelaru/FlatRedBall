@@ -133,15 +133,22 @@ namespace FlatRedBall.Screens
 
             if (mCurrentScreen.ActivityCallCount == 2 && mWasFixedTimeStep.HasValue)
             {
-#if !FRB_MDX
                 FlatRedBallServices.Game.IsFixedTimeStep = mWasFixedTimeStep.Value;
                 TimeManager.TimeFactor = mLastTimeFactor.Value;
-#endif
             }
 
             if (mCurrentScreen.IsActivityFinished)
             {
                 string type = mCurrentScreen.NextScreen;
+
+                var isFullyQualified = type.Contains(".");
+                if(!isFullyQualified)
+                {
+                    // try to prepend the current type to make the next screen fully qualified:
+                    var prepend = mCurrentScreen.GetType().Namespace;
+                    type = prepend + "." + type;
+                }
+
                 Screen asyncLoadedScreen = mCurrentScreen.mNextScreenToLoadAsync;
 
 

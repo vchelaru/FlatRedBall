@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace TileGraphicsPlugin
 
         public void UpdateAtiCsvPresence()
         {
-            string projectFolder = FileManager.GetDirectory(FlatRedBall.Glue.ProjectManager.GlueProjectFileName);
+            string projectFolder = FileManager.GetDirectory(GlueState.Self.GlueProjectFileName);
             string settingsFolder = projectFolder + "GlueSettings/";
             if (!Directory.Exists(settingsFolder))
             {
@@ -138,6 +139,8 @@ namespace TileGraphicsPlugin
             toReturn.CanIgnorePausing = false;
             toReturn.CanBeObject = true;
             toReturn.HasVisibleProperty = true;
+            toReturn.FindByNameSyntax = $"Collisions.First(item => item.Name == \"OBJECTNAME\");";
+            toReturn.VariableDefinitions.Add(new VariableDefinition() { Name = "Visible", DefaultValue = "false", Type = "bool" });
 
             return toReturn;
         }

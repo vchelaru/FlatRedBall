@@ -446,6 +446,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
             }
             else if(targetNode.IsNamedObjectNode() && 
+                // dropping on an object in the same element
                 targetNode.GetContainingElementTreeNode() == treeNodeMoving.GetContainingElementTreeNode())
             {
                 // Dropping the file on an object. If the object's type matches the named object's
@@ -457,24 +458,29 @@ namespace FlatRedBall.Glue.FormHelpers
                 var shouldAskAboutChangingObjectToBeFromFile =
                     rfsAti == namedObjectAti && rfsAti != null;
 
-                DialogResult dialogResult = DialogResult.No;
 
                 if (shouldAskAboutChangingObjectToBeFromFile)
                 {
-                    dialogResult = MessageBox.Show(
+                    var dialogResult = MessageBox.Show(
                         $"Would you like to set the object {namedObject.InstanceName} to be created from the file {referencedFileSave.Name}?",
                         $"Set {namedObject.InstanceName} to be from file?",
                         MessageBoxButtons.YesNo);
+
+                    if(dialogResult == DialogResult.Yes)
+                    {
+                        namedObject.SourceType = SourceType.File;
+                        namedObject.SourceFile = referencedFileSave.Name;
+                        namedObject.SourceName = $"Entire File ({rfsAti.RuntimeTypeName})";
+
+                        GlueCommands.Self.GluxCommands.SaveGluxTask();
+                        GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                    }
                 }
-
-                if(dialogResult == DialogResult.Yes)
+                else
                 {
-                    namedObject.SourceType = SourceType.File;
-                    namedObject.SourceFile = referencedFileSave.Name;
-                    namedObject.SourceName = $"Entire File ({rfsAti.RuntimeTypeName})";
-
-                    GlueCommands.Self.GluxCommands.SaveGluxTask();
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                    MessageBox.Show(
+                        $"The object {namedObject.InstanceName} cannot be entirely set from {referencedFileSave.Name}." + 
+                        $"To set this object from an object contained within the file, select the object and change its source values.");
                 }
 
 

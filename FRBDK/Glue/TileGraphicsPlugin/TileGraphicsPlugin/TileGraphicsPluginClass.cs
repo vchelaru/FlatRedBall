@@ -28,7 +28,7 @@ using TileGraphicsPlugin.CodeGeneration;
 using TileGraphicsPlugin.Views;
 using TileGraphicsPlugin.ViewModels;
 using TmxEditor.Events;
-
+using FlatRedBall.Glue.IO;
 
 namespace TileGraphicsPlugin
 {
@@ -126,7 +126,9 @@ namespace TileGraphicsPlugin
             //  - Fixed missing using statement in TileEntityInstantiator
             // 1.6.0
             //  - Added support for instantiating tile entities applying properties from states
-            get { return new Version(1, 6, 0, 0); }
+            // 1.6.2
+            //  - Fixed bug where TileNemsWith wouldn't check lower-case "name" property
+            get { return new Version(1, 6, 0, 1); }
         }
 
 
@@ -230,7 +232,7 @@ namespace TileGraphicsPlugin
                 tiledObjectTypeCreator.RefreshFile();
             };
 
-
+            this.TryAddContainedObjects += HandleTryAddContainedObjects;
 
             this.AdjustDisplayedReferencedFile += HandleAdjustDisplayedReferencedFile;
 
@@ -290,6 +292,24 @@ namespace TileGraphicsPlugin
                     tiledObjectTypeCreator.RefreshFile();
                 }
             };
+        }
+
+        private bool HandleTryAddContainedObjects(string absoluteFile, List<string> availableObjects)
+        {
+            var isTmx = new FilePath(absoluteFile).Extension == "tmx";
+
+            if(isTmx)
+            {
+                TiledMapSave save = TiledMapSave.FromFile(absoluteFile);
+
+                // loop through each layer, adding it:
+                foreach(var layer in save.MapLayers)
+                {
+                    availableObjects.Add($"{layer.Name} (FlatRedBall.TileCollisions.TileShapeCollection)");
+                }
+            }
+
+            return isTmx;
         }
 
         private void HandleGluxLoadEarly()

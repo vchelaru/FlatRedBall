@@ -21,6 +21,7 @@ namespace FlatRedBall.Glue.Elements
         public string Type { get; set; }
         public string DefaultValue { get; set; }
         public string Category { get; set; }
+
         /// <summary>
         /// If true, Glue will not do the standard variable assignment. This should be true
         /// for plugins that want to fully handle their own code generation for certain variables

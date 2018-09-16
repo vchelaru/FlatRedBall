@@ -564,7 +564,12 @@ namespace FlatRedBall.Glue.SetVariable
                 }
                 else
                 {
-                    if (namedObjectInBase.InstanceType != namedObjectSave.InstanceType)
+                    // We'll rely on the instance type, which is the "old" informal way...
+                    var doDiffer = namedObjectInBase.InstanceType != namedObjectSave.InstanceType &&
+                        // and the new AssetTypeInfo which will resolve issues like unqualified vs qualified types
+                        namedObjectInBase.GetAssetTypeInfo() != null &&
+                        namedObjectInBase.GetAssetTypeInfo() != namedObjectSave.GetAssetTypeInfo();
+                    if (doDiffer)
                     {
                         if (string.IsNullOrEmpty(namedObjectInBase.InstanceType))
                         {

@@ -131,7 +131,7 @@ namespace FlatRedBall.Glue
             get { return mGameClass; }
         }
 
-        [Obsolete("use GlueState.GlueProjectFileName")]
+        [Obsolete("use GlueState.Self.GlueProjectFileName")]
         public static string GlueProjectFileName
         {
             get

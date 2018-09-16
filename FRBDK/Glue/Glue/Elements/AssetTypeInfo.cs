@@ -174,6 +174,7 @@ namespace FlatRedBall.Glue.Elements
         public string SetFromOtherCode;
 
         string mExtraVariablesPattern;
+        [Obsolete("Use VariableDefinitions instead, as they provide more control and a cleaner syntax")]
         public string ExtraVariablesPattern
         {
             get

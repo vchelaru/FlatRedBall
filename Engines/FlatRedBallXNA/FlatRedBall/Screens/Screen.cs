@@ -186,7 +186,8 @@ namespace FlatRedBall.Screens
 
         #region XML Docs
         /// <summary>
-        /// The fully qualified path of the Screen-inheriting class that this screen is 
+        /// The name of the Screen-inheriting to load next. This can be fully qualified "Namespace.Screens.ScreenName" or 
+        /// just the screen name. If just a screen name is specified then current screen's namespace will be prepended.
         /// to link to.
         /// </summary>
         /// <remarks>

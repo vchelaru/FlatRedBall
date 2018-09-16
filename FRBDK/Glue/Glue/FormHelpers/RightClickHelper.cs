@@ -1887,7 +1887,14 @@ namespace FlatRedBall.Glue.FormHelpers
                 // added after everything else.
                 locationToShow = "\"" + locationToShow + "\"";
 
-                Process.Start("explorer.exe", "/select," + locationToShow);
+                if(isFile)
+                {
+                    Process.Start("explorer.exe", "/select," + locationToShow);
+                }
+                else
+                {
+                    Process.Start("explorer.exe", "/root," + locationToShow);
+                }
             }
 
 

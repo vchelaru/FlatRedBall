@@ -317,6 +317,8 @@ namespace FlatRedBallAddOns.Entities
 
             // Not sure if we still need this, as we've been slowly ripping out using statements from generated code.
             rootBlock.Line("using Color = Microsoft.Xna.Framework.Color;");
+            // Need this for FindByNameSyntax which may use linq
+            rootBlock.Line("using System.Linq;");
 
             UsingsCodeGenerator.GenerateUsingStatements(rootBlock, element);
 
