@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using FlatRedBall.Glue.GlueView;
 
 namespace FlatRedBall.Glue
 {
     [Description("SelectionInterface")]
-    public class SelectionInterface: MarshalByRefObject
+    public class SelectionInterface: MarshalByRefObject, ISelectionInterface
     {
         List<string> messages = new List<string>();
 

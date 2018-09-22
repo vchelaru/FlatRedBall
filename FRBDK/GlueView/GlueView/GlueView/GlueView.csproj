@@ -485,7 +485,7 @@
       <Name>InteractiveInterface</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemotingHelper\RemotingHelper.csproj">
-      <Project>{95630012-D69D-4410-ADC9-A08CDA88F10C}</Project>
+      <Project>{95630012-d69d-4410-adc9-a08cda88f10c}</Project>
       <Name>RemotingHelper</Name>
     </ProjectReference>
     <ProjectReference Include="..\SelectionInterface\SelectionInterface.csproj">

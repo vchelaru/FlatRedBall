@@ -2,7 +2,7 @@
 
 namespace RemotingHelper
 {
-    public class RemotingManager<TOutgoing> where TOutgoing : MarshalByRefObject
+    public class RemotingManager<TOutgoing> 
     {
         protected TOutgoing OutInterface;
         protected bool ConnectionFailed;
@@ -33,9 +33,8 @@ namespace RemotingHelper
 
             try
             {
-                OutInterface =
-                (TOutgoing)Activator.GetObject(typeof(TOutgoing),
-                "http://localhost:" + _port + "/" + RemotingServer.GetName(typeof(TOutgoing)) + ".rem");
+                var url = "http://localhost:" + _port + "/" + RemotingServer.GetName(typeof(TOutgoing)) + ".rem";
+                OutInterface = (TOutgoing)Activator.GetObject(typeof(TOutgoing), url);
 
             }
             catch (Exception e)

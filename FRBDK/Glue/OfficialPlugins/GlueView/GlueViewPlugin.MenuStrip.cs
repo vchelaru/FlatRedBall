@@ -31,8 +31,13 @@ namespace OfficialPlugins.GlueView
 
         void ConnectItemClick(object sender, EventArgs e)
         {
+            var glueProjectFileName = GlueState.Self.GlueProjectFileName;
+
             _selectionInterface.AttemptConnection();
-            _selectionInterface.SetGlueProjectFile(ProjectManager.GlueProjectFileName, true);
+            _selectionInterface.SetGlueProjectFile(glueProjectFileName, true);
+
+            gview2SelectionInterface.AttemptConnection();
+            gview2SelectionInterface.SetGlueProjectFile(glueProjectFileName);
         }
         
     }

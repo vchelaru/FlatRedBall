@@ -9,6 +9,8 @@ namespace OfficialPlugins.GlueView
         public void ReactToGluxLoad(FlatRedBall.Glue.SaveClasses.GlueProjectSave newGlux, string fileName)
         {
             _selectionInterface.SetGlueProjectFile(fileName, false);
+            gview2SelectionInterface.DoTest();
+            //gview2SelectionInterface.SetGlueProjectFile(fileName, false);
         }
 
         public void ReactToGluxSave()

@@ -130,6 +130,11 @@ namespace FlatRedBall.Instructions
             }
         }
 
+        /// <summary>
+        /// Creates a new DelegateInstruction using the argument Action, and adds it to be executed
+        /// on the next frame on the primary thread.
+        /// </summary>
+        /// <param name="action">The action to execute.</param>
         public static void AddSafe(Action action)
         {
             lock (syncLock)

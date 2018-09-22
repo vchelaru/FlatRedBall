@@ -96,7 +96,7 @@ namespace GlueView
             try
             {
                 RemotingServer.SetupPort(8686);
-                RemotingServer.SetupInterface<SelectionInterface>();
+                RemotingServer.SetupInterface<FlatRedBall.Glue.SelectionInterface>();
                 RemotingServer.SetupInterface<RegisterInterface>();
             }
             catch(Exception e)

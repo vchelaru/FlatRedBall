@@ -296,7 +296,7 @@ namespace GumPlugin.Managers
         {
             if(element == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(element));
             }
 
 

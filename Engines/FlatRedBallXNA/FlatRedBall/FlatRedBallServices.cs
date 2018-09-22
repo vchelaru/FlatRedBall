@@ -585,28 +585,18 @@ namespace FlatRedBall
             mClientWidth = mGraphicsOptions.ResolutionWidth;
             mClientHeight = mGraphicsOptions.ResolutionHeight;
 
-#if !WINDOWS_8
             mGraphics.PreferredBackBufferWidth = mClientWidth;
             mGraphics.PreferredBackBufferHeight = mClientHeight;
-#endif
             mGraphics.PreferMultiSampling = mGraphicsOptions.UseMultiSampling;
 
             if (mGraphicsOptions.IsFullScreen != mGraphics.IsFullScreen)
                 mGraphics.ToggleFullScreen();
 
-#if !WINDOWS_8
             mGraphics.ApplyChanges();
-#endif
 
             mGraphics.PreparingDeviceSettings += new EventHandler<PreparingDeviceSettingsEventArgs>(graphics_PreparingDeviceSettings);
 
             mGraphics.DeviceReset += new EventHandler<EventArgs>(graphics_DeviceReset);
-
-            // Monogame Windows 8 doesn't currently ( and maybe never will) support resets, so we need to 
-            // handle the resolution changing:
-#if WINDOWS_8
-            FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += HandleSizeOrOrientationChanged;
-#endif
 
             mServices = game.Services;
             mGame = game;

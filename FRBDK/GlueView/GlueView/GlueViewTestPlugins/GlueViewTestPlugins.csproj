@@ -109,10 +109,6 @@
       <Project>{6CFA6ADB-1FFD-4DD7-AEF8-090A2B86A620}</Project>
       <Name>GluxViewManager</Name>
     </ProjectReference>
-    <ProjectReference Include="..\InteractiveInterface\InteractiveInterface.csproj">
-      <Project>{82FE0346-E86B-46DE-BA29-93626D89C621}</Project>
-      <Name>InteractiveInterface</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

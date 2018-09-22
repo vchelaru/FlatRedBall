@@ -128,7 +128,7 @@ namespace TileGraphicsPlugin
             //  - Added support for instantiating tile entities applying properties from states
             // 1.6.2
             //  - Fixed bug where TileNemsWith wouldn't check lower-case "name" property
-            get { return new Version(1, 6, 0, 1); }
+            get { return new Version(1, 6, 2, 0); }
         }
 
 

@@ -10,6 +10,7 @@ namespace OfficialPlugins.GlueView
         public void ReactToItemSelect(TreeNode selectedTreeNode)
         {
             _selectionInterface.UpdateSelectedNode(false);
+            gview2SelectionInterface.UpdateSelectedNode();
         }
     }
 }

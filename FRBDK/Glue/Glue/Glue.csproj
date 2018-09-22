@@ -189,6 +189,7 @@
     </Reference>
     <Reference Include="System.Design" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -302,6 +303,10 @@
     <Compile Include="Controls\AddEntityWindow.xaml.cs">
       <DependentUpon>AddEntityWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GlueView\GlueView2RemotingSelectionInterfaceManager.cs" />
+    <Compile Include="GlueView\ISelectionInterface.cs" />
+    <Compile Include="GlueView\SelectionInterface2.cs" />
+    <Compile Include="GlueView\SelectionInterfaceClient.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\AddVariablePlugin\Controls\CreateNewVariableControl.xaml.cs">
       <DependentUpon>CreateNewVariableControl.xaml</DependentUpon>
     </Compile>
@@ -1848,7 +1853,7 @@
       <Name>RemotingHelper</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GlueView\GlueView\SelectionInterface\SelectionInterface.csproj">
-      <Project>{B85CC176-2137-4A85-91BA-CE9D703BBA00}</Project>
+      <Project>{b85cc176-2137-4a85-91ba-ce9d703bba00}</Project>
       <Name>SelectionInterface</Name>
     </ProjectReference>
     <ProjectReference Include="..\Alsing.SyntaxBox\Alsing.SyntaxBox.NET.csproj">

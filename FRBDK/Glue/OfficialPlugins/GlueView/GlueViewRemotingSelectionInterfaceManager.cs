@@ -2,11 +2,14 @@
 using System.Threading;
 using FlatRedBall.Glue;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.GlueView;
 using FlatRedBall.Glue.Plugins;
 
 namespace OfficialPlugins.GlueView
 {
-    public class GlueViewRemotingSelectionInterfaceManager : RemotingHelper.RemotingManager<SelectionInterface>
+    // Sept 19 2018 - I cannot figure out how to get an interface to work here. 
+    //public class GlueViewRemotingSelectionInterfaceManager : RemotingHelper.RemotingManager<FlatRedBall.Glue.GlueView.ISelectionInterface>
+    public class GlueViewRemotingSelectionInterfaceManager : RemotingHelper.RemotingManager<FlatRedBall.Glue.SelectionInterface>
     {
         public GlueViewRemotingSelectionInterfaceManager()
             : base(8686)
@@ -185,7 +188,8 @@ namespace OfficialPlugins.GlueView
         {
             try
             {
-                OutInterface.LoadGluxFile(ProjectManager.GlueProjectFileName);
+                var projectFileName = ProjectManager.GlueProjectFileName;
+                OutInterface.LoadGluxFile(projectFileName);
             }
             catch (Exception e)
             {
