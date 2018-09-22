@@ -321,11 +321,6 @@ namespace GumPlugin.Managers
             newAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\") as " +
                 newAti.QualifiedRuntimeTypeName.QualifiedType;
 
-            if (newAti.ExtraVariablesPattern.EndsWith(";") == false)
-            {
-                newAti.ExtraVariablesPattern += ";";
-            }
-
             newAti.ExtraVariablesPattern = "";
 
             // 9/24/2014
