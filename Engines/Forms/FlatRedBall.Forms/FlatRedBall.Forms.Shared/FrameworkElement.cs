@@ -58,7 +58,14 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        /// <summary>
+        /// The X position of the left side of the element in pixels.
+        /// </summary>
         public float ActualX => Visual.GetLeft();
+
+        /// <summary>
+        /// The Y position of the top of the element in pixels (positive Y is down).
+        /// </summary>
         public float ActualY => Visual.GetTop();
 
         public float X
@@ -108,6 +115,13 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        /// <summary>
+        /// Contains the default association between Forms Controls and Gum Runtime Types. The key in the dictionary is the type of Forms control.
+        /// </summary>
+        /// <example>
+        /// FrameworkElement.DefaultFormsComponents[typeof(FlatRedBall.Forms.Controls.Button)] = 
+        ///     typeof(ProjectName.GumRuntimes.LargeMenuButtonRuntime);
+        /// </example>
         public static Dictionary<Type, Type> DefaultFormsComponents { get; private set; } = new Dictionary<Type, Type>();
 
         protected static GraphicalUiElement GetGraphicalUiElementFor(FrameworkElement element)

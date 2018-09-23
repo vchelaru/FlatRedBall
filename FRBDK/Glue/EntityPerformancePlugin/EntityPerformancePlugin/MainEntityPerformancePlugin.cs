@@ -63,7 +63,7 @@ namespace EntityPerformancePlugin
 
         private void AssignEvents()
         {
-            this.ReactToLoadedGlux += HandleLoadGlux;
+            this.ReactToLoadedGluxEarly += HandleLoadGlux;
             this.ReactToUnloadedGlux += HandleGluxUnload;
             this.ReactToItemSelectHandler += HandleGlueItemSelected;
             this.ReactToChangedPropertyHandler += HandleGluePropertyChanged;
@@ -181,6 +181,35 @@ namespace EntityPerformancePlugin
                 var text = System.IO.File.ReadAllText(performanceFilePath.FullPath);
 
                 model = JsonConvert.DeserializeObject<ProjectManagementValues>(text);
+
+                foreach(var element in GlueState.Self.CurrentGlueProject.Entities)
+                {
+                    var managementValues =
+                        model?.EntityManagementValueList?.FirstOrDefault(item => item.Name == element.Name);
+
+                    if(managementValues != null)
+                    {
+                        if(element.IsManuallyUpdated)
+                        {
+                            managementValues.PropertyManagementMode = Enums.PropertyManagementMode.SelectManagedProperties;
+                        }
+                        else
+                        {
+                            managementValues.PropertyManagementMode = Enums.PropertyManagementMode.FullyManaged;
+                        }
+
+                        foreach(var instance in element.AllNamedObjects)
+                        {
+                            var instanceModel = managementValues.InstanceManagementValuesList
+                                .FirstOrDefault(item => item.Name == instance.InstanceName);
+
+                            if(instanceModel != null)
+                            {
+                                UpdateInstanceValuesToInstance(instanceModel, instance);
+                            }
+                        }
+                    }
+                }
             }
 
             if (model == null)

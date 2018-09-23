@@ -60,15 +60,15 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
 
         private void TryGenerateStringConsts(ReferencedFileSave referencedFileSave)
         {
-            var glueCommands = Container.Get<IGlueCommands>();
-            var glueState = Container.Get<IGlueState>();
 
-            var contents = GetStringsGeneratedCodeFileContents(referencedFileSave);
-
-            string fileName = $"DataTypes/Strings.Generated.cs";
 
             TaskManager.Self.AddSync(() =>
             {
+                var glueCommands = Container.Get<IGlueCommands>();
+                var glueState = Container.Get<IGlueState>();
+
+                var contents = GetStringsGeneratedCodeFileContents(referencedFileSave);
+                string fileName = $"DataTypes/Strings.Generated.cs";
                 glueCommands.ProjectCommands.CreateAndAddCodeFile(fileName);
 
                 try
@@ -98,15 +98,23 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
                 codeBlock = codeBlock.Class("Strings");
 
                 string fileName = glueCommands.GetAbsoluteFileName(referencedFileSave);
-                var runtime = CsvFileManager.CsvDeserializeToRuntime(fileName);
+
+                var doesFileExist =
+                    System.IO.File.Exists(fileName);
 
 
-                foreach(var row in runtime.Records)
+                if (System.IO.File.Exists(fileName))
                 {
-                    TryAddMemberForRow(codeBlock, row);
-                }
+                    var runtime = CsvFileManager.CsvDeserializeToRuntime(fileName);
 
-                toReturn = document.ToString();
+
+                    foreach(var row in runtime.Records)
+                    {
+                        TryAddMemberForRow(codeBlock, row);
+                    }
+
+                    toReturn = document.ToString();
+                }
             }
 
             return toReturn;
