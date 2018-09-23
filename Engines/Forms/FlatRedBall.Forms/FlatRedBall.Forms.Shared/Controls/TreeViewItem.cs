@@ -58,7 +58,7 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        public bool isExpanded;
+        bool isExpanded;
         /// <summary>
         /// Whether the TreeViewItem is displaying its expanded content (sub items)
         /// </summary>
