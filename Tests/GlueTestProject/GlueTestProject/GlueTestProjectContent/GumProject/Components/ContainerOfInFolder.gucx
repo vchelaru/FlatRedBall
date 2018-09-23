@@ -101,8 +101,9 @@
     <Variable>
       <Type>float</Type>
       <Name>X</Name>
+      <Value xsi:type="xsd:float">5</Value>
       <Category>Position</Category>
-      <SetsValue>false</SetsValue>
+      <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>

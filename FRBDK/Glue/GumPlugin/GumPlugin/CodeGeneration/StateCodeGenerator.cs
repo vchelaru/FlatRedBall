@@ -28,8 +28,6 @@ namespace GumPlugin.CodeGeneration
 
         static StateCodeGenerator()
         {
-
-
             VariableNamesToReplaceForStates.Add("Texture Address", "TextureAddress");
             VariableNamesToReplaceForStates.Add("Texture Height Scale", "TextureHeightScale");
             VariableNamesToReplaceForStates.Add("Texture Width Scale", "TextureWidthScale");
@@ -315,7 +313,8 @@ namespace GumPlugin.CodeGeneration
                 propertyName = "Current" + category.Name + "State";
                 propertyType = category.Name;
 
-                currentBlock.Line(propertyType + " m" + propertyName + ";");
+                // Make these nullable because categorized states may not be set at all
+                currentBlock.Line($"{propertyType}? m{propertyName};");
             }
             currentBlock.Line("#endregion");
         }
@@ -330,7 +329,7 @@ namespace GumPlugin.CodeGeneration
 
 
 
-            GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave);
+            GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable:false);
 
             foreach (var category in elementSave.Categories)
             {
@@ -342,7 +341,7 @@ namespace GumPlugin.CodeGeneration
 
 
 
-                GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave);
+                GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable:true);
             }
 
             //GenerateBehaviorStateProperties(currentBlock, elementSave);
@@ -392,16 +391,28 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
-        private void GeneratePropertyForCurrentState(ICodeBlock currentBlock, string propertyType, string propertyName, List<Gum.DataTypes.Variables.StateSave> states, ElementSave container)
+        private void GeneratePropertyForCurrentState(ICodeBlock currentBlock, string propertyType, string propertyName, 
+            List<Gum.DataTypes.Variables.StateSave> states, ElementSave container, bool isNullable)
         {
-
-
-            var property = currentBlock.Property("public " + propertyType, propertyName);
+            string propertyPrefix;
+            if(isNullable)
+            {
+                propertyPrefix = $"public {propertyType}?";
+            }
+            else
+            {
+                propertyPrefix = $"public {propertyType}";
+            }
+            var property = currentBlock.Property(propertyPrefix, propertyName);
 
             property.Get().Line("return m" + propertyName + ";");
 
             var setter = property.Set();
             {
+                if(isNullable)
+                {
+                    setter = setter.If("value != null");
+                }
                 setter.Line("m" + propertyName + " = value;");
 
                 var switchBlock = setter.Switch("m" + propertyName);

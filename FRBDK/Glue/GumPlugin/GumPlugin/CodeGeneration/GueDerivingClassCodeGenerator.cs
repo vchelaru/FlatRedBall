@@ -539,8 +539,8 @@ namespace GumPlugin.CodeGeneration
                     var foundCategory = elementSave.Categories.FirstOrDefault(item => item.Name == typeWithoutState);
                     if (foundCategory != null)
                     {
-
-                        variableType = FlatRedBall.IO.FileManager.RemovePath(elementSave.Name) + "Runtime." + foundCategory.Name ;
+                        // categorized state enums are nullable
+                        variableType = $"{FlatRedBall.IO.FileManager.RemovePath(elementSave.Name)}Runtime.{foundCategory.Name}?" ;
                     }
                 }
                 else if(variableSave.IsState(elementSave))
@@ -548,8 +548,8 @@ namespace GumPlugin.CodeGeneration
                     var foundCategory = elementSave.Categories.FirstOrDefault(item => item.Name == variableSave.Type);
                     if (foundCategory != null)
                     {
-
-                        variableType = FlatRedBall.IO.FileManager.RemovePath(elementSave.Name) + "Runtime." + foundCategory.Name;
+                        // categorized state enums are nullable
+                        variableType = $"{FlatRedBall.IO.FileManager.RemovePath(elementSave.Name)}Runtime.{foundCategory.Name}?";
                     }
                 }
             }

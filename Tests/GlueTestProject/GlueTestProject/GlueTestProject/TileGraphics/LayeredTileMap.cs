@@ -198,13 +198,15 @@ namespace FlatRedBall.TileGraphics
         {
             foreach (var item in TileProperties.Values)
             {
-                if (item.Any(item2 => item2.Name == propertyName))
+                var hasPropertyName = item.Any(item2 => item2.Name == propertyName);
+                if (hasPropertyName)
                 {
-                    var hasName = item.Any(item2 => item2.Name == "Name");
+                    var namedValuesWithNameMatchingName =
+                        item.Where(item2 => item2.Name.ToLowerInvariant() == "name").ToArray();
 
-                    if (hasName)
+                    if (namedValuesWithNameMatchingName.Any())
                     {
-                        yield return item.First(item2 => item2.Name == "Name").Value as string;
+                        yield return namedValuesWithNameMatchingName[0].Value as string;
                     }
                 }
             }
