@@ -83,6 +83,20 @@ namespace GlueTestProject.Screens
             TrailingSpacesTextInstance.GetAbsoluteWidth().ShouldBeGreaterThan(200,
                 "because trailing spaces should not be removed, and should widen text objects that are sized by their children.");
 
+            TestWrappingChangingContainerHeight();
+        }
+
+        private void TestWrappingChangingContainerHeight()
+        {
+            ToResizeInCode.ShouldNotBe(null);
+
+            ToResizeInCode.Width.ShouldBeGreaterThan(400, "because it is set to be a wider object in Gum");
+
+            var oldHeight = ToResizeInCode.GetAbsoluteHeight() ;
+
+            ToResizeInCode.Width = 40;
+
+            ToResizeInCode.GetAbsoluteHeight().ShouldBeGreaterThan(oldHeight, "because resizing the width should make the contained Text word wrap, and this height is based on the contained object");
         }
 
         private void TestRotation()
