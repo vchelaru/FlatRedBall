@@ -612,7 +612,11 @@ namespace FlatRedBall.Graphics
         #region Internal Properties
         
 
-        static internal ColorOperation ColorOperation
+        /// <summary>
+        /// Sets the color operation on the graphics device if the set value differs from the current value.
+        /// This is public so that IDrawableBatches can set the color ops.
+        /// </summary>
+        public static ColorOperation ColorOperation
         {
             get
             {

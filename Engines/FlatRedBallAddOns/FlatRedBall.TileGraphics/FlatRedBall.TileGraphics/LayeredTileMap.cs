@@ -380,6 +380,7 @@ namespace FlatRedBall.TileGraphics
                         }
 
                         matchingLayer.Visible = mapLayer.visible == 1;
+                        matchingLayer.Alpha = mapLayer.Opacity;
                     }
                 }
             }
@@ -465,6 +466,7 @@ namespace FlatRedBall.TileGraphics
                 };
 
                 var mdb = new MapDrawableBatch(1, texture);
+                mdb.Alpha = imageLayer.Opacity;
                 mdb.AttachTo(toReturn, false);
                 mdb.Paste(newSprite);
                 mdb.Visible = imageLayer.Visible;
