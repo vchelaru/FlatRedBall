@@ -1,0 +1,75 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2047
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBall.Forms.iOS", "FlatRedBall.Forms.iOS\FlatRedBall.Forms.iOS.csproj", "{E71F3053-056C-4381-9638-048ED73BDFF6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{F649B263-C76E-439E-AD3D-1A685871193B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GumCore", "GumCore", "{E1BBE5EB-0A1E-498E-B459-DAA8EE2E7033}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StateInterpolation", "StateInterpolation", "{7366F107-C79F-4117-A83E-88046B92FDBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBalliOS", "..\..\FlatRedBallXNA\FlatRedBall\FlatRedBalliOS.csproj", "{1E89BEA4-2188-47DB-A277-845F83C9D6BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GumCoreiOS", "..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCoreiOS.csproj", "{51747503-9044-4D4D-9EEE-33D6378D71B9}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GumCoreShared", "..\..\..\..\Gum\GumCoreShared.shproj", "{F919C045-EAC7-4806-9A1F-CE421F923E97}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GumCoreShared.FlatRedBall", "..\..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.shproj", "{0EE8A96C-A754-453D-9E65-19A24E9A5E76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateInterpolation.iOS", "StateInterpolation\StateInterpolation.iOS.csproj", "{5C0F32FC-D7F4-4B3E-AA7E-5A5B426357A7}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "StateInterpolationShared", "..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.shproj", "{D00D287D-385B-42FB-BF5F-04401E7D37D0}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.projitems*{0ee8a96c-a754-453d-9e65-19a24e9a5e76}*SharedItemsImports = 13
+		..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{1e89bea4-2188-47db-a277-845f83c9d6bb}*SharedItemsImports = 4
+		..\..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.projitems*{51747503-9044-4d4d-9eee-33d6378d71b9}*SharedItemsImports = 4
+		..\..\..\..\Gum\GumCoreShared.projitems*{51747503-9044-4d4d-9eee-33d6378d71b9}*SharedItemsImports = 4
+		..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{5c0f32fc-d7f4-4b3e-aa7e-5a5b426357a7}*SharedItemsImports = 4
+		..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{d00d287d-385b-42fb-bf5f-04401e7d37d0}*SharedItemsImports = 13
+		FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{e71f3053-056c-4381-9638-048ed73bdff6}*SharedItemsImports = 4
+		..\..\..\..\Gum\GumCoreShared.projitems*{f919c045-eac7-4806-9a1f-ce421f923e97}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E71F3053-056C-4381-9638-048ED73BDFF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E71F3053-056C-4381-9638-048ED73BDFF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E71F3053-056C-4381-9638-048ED73BDFF6}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{E71F3053-056C-4381-9638-048ED73BDFF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E71F3053-056C-4381-9638-048ED73BDFF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E71F3053-056C-4381-9638-048ED73BDFF6}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51747503-9044-4D4D-9EEE-33D6378D71B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51747503-9044-4D4D-9EEE-33D6378D71B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51747503-9044-4D4D-9EEE-33D6378D71B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51747503-9044-4D4D-9EEE-33D6378D71B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C0F32FC-D7F4-4B3E-AA7E-5A5B426357A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C0F32FC-D7F4-4B3E-AA7E-5A5B426357A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C0F32FC-D7F4-4B3E-AA7E-5A5B426357A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C0F32FC-D7F4-4B3E-AA7E-5A5B426357A7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1E89BEA4-2188-47DB-A277-845F83C9D6BB} = {F649B263-C76E-439E-AD3D-1A685871193B}
+		{51747503-9044-4D4D-9EEE-33D6378D71B9} = {E1BBE5EB-0A1E-498E-B459-DAA8EE2E7033}
+		{F919C045-EAC7-4806-9A1F-CE421F923E97} = {E1BBE5EB-0A1E-498E-B459-DAA8EE2E7033}
+		{0EE8A96C-A754-453D-9E65-19A24E9A5E76} = {E1BBE5EB-0A1E-498E-B459-DAA8EE2E7033}
+		{5C0F32FC-D7F4-4B3E-AA7E-5A5B426357A7} = {7366F107-C79F-4117-A83E-88046B92FDBE}
+		{D00D287D-385B-42FB-BF5F-04401E7D37D0} = {7366F107-C79F-4117-A83E-88046B92FDBE}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F29E3999-836A-4A12-A760-2BD6418FE592}
+	EndGlobalSection
+EndGlobal

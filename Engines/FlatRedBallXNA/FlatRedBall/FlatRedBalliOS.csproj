@@ -50,7 +50,6 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Input\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>

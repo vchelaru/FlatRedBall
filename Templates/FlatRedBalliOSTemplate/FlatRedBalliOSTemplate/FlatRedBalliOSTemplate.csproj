@@ -87,13 +87,22 @@
     <MtouchArch>ARMv7, ARM64</MtouchArch>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FlatRedBall.Forms.iOS">
+      <HintPath>Libraries\iOS\Debug\FlatRedBall.Forms.iOS.dll</HintPath>
+    </Reference>
     <Reference Include="FlatRedBalliOS">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\iOS\Debug\FlatRedBalliOS.dll</HintPath>
     </Reference>
+    <Reference Include="GumCoreiOS">
+      <HintPath>Libraries\iOS\Debug\GumCoreiOS.dll</HintPath>
+    </Reference>
     <Reference Include="MonoGame.Framework">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\iOS\Debug\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="StateInterpolation.iOS">
+      <HintPath>Libraries\iOS\Debug\StateInterpolation.iOS.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
