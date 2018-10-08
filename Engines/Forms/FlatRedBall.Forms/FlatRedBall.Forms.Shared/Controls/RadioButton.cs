@@ -226,9 +226,13 @@ namespace FlatRedBall.Forms.Controls
                     {
                         Visual.SetProperty("RadioButtonCategoryState", "PushedOn");
                     }
-                    else
+                    else if (cursor.LastInputDevice != InputDevice.TouchScreen)
                     {
                         Visual.SetProperty("RadioButtonCategoryState", "HighlightedOn");
+                    }
+                    else
+                    {
+                        Visual.SetProperty("RadioButtonCategoryState", "EnabledOn");
                     }
                 }
                 else
@@ -251,6 +255,10 @@ namespace FlatRedBall.Forms.Controls
                     if (cursor.WindowPushed == Visual && cursor.PrimaryDown)
                     {
                         Visual.SetProperty("RadioButtonCategoryState", "PushedOff");
+                    }
+                    else if (cursor.LastInputDevice != InputDevice.TouchScreen)
+                    {
+                        Visual.SetProperty("RadioButtonCategoryState", "EnabledOff");
                     }
                     else
                     {
@@ -287,7 +295,6 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
-
         #region Utilities
 
 #if DEBUG
@@ -302,6 +309,5 @@ namespace FlatRedBall.Forms.Controls
 #endif
 
         #endregion
-
     }
 }

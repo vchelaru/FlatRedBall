@@ -98,9 +98,13 @@ namespace FlatRedBall.Forms.Controls
                     {
                         Visual.SetProperty("CheckBoxCategoryState", "PushedOn");
                     }
-                    else
+                    else if (cursor.LastInputDevice != InputDevice.TouchScreen)
                     {
                         Visual.SetProperty("CheckBoxCategoryState", "HighlightedOn");
+                    }
+                    else
+                    {
+                        Visual.SetProperty("CheckBoxCategoryState", "EnabledOn");
                     }
                 }
                 else
@@ -124,9 +128,13 @@ namespace FlatRedBall.Forms.Controls
                     {
                         Visual.SetProperty("CheckBoxCategoryState", "PushedOff");
                     }
-                    else
+                    else if (cursor.LastInputDevice != InputDevice.TouchScreen)
                     {
                         Visual.SetProperty("CheckBoxCategoryState", "HighlightedOff");
+                    }
+                    else
+                    {
+                        Visual.SetProperty("CheckBoxCategoryState", "EnabledOff");
                     }
                 }
                 else
@@ -142,8 +150,6 @@ namespace FlatRedBall.Forms.Controls
         }
 
         #endregion
-
-
 
         #region Utilities
 

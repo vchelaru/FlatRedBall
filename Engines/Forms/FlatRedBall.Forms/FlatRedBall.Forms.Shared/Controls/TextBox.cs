@@ -315,10 +315,11 @@ namespace FlatRedBall.Forms.Controls
 
         #region UpdateTo Methods
 
-
         private void UpdateState()
         {
-            if(IsEnabled == false)
+            var cursor = GuiManager.Cursor;
+
+            if (IsEnabled == false)
             {
                 Visual.SetProperty("TextBoxCategoryState", "Disabled");
             }
@@ -326,7 +327,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 Visual.SetProperty("TextBoxCategoryState", "Selected");
             }
-            else if(Visual.HasCursorOver(GuiManager.Cursor))
+            else if(cursor.LastInputDevice != InputDevice.TouchScreen && Visual.HasCursorOver(cursor))
             {
                 Visual.SetProperty("TextBoxCategoryState", "Highlighted");
             }
@@ -335,7 +336,6 @@ namespace FlatRedBall.Forms.Controls
                 Visual.SetProperty("TextBoxCategoryState", "Enabled");
             }
         }
-
 
         private void UpdateToCaretIndex()
         {
@@ -357,11 +357,17 @@ namespace FlatRedBall.Forms.Controls
             {
                 GuiManager.AddNextClickAction(HandleClickOff);
 
+#if ANDROID
+                FlatRedBall.Input.InputManager.Keyboard.ShowKeyboard();
+#endif
 
             }
             else if(!hasFocus && Input.InputManager.InputReceiver == this)
             {
                 Input.InputManager.InputReceiver = null;
+#if ANDROID
+                FlatRedBall.Input.InputManager.Keyboard.HideKeyboard();
+#endif
             }
         }
 
@@ -394,9 +400,6 @@ namespace FlatRedBall.Forms.Controls
                 this.caretComponent.X += shiftAmount;
             }
         }
-
-
-
 
         #endregion
 

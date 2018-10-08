@@ -140,6 +140,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\ButtonMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\ICursorSelectable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\IEventKeyboard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\IInputReceiverKeyboard.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\IMouseOver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Keyboard.cs" />

@@ -511,6 +511,16 @@ namespace Gum.Wireframe
         {
             bool toReturn = false;
 
+            // October 7, 2018
+            // If this is a touch screen, then the only way the cursor is over any
+            // UI element is if the cursor is being pressed.
+            // Even though the finger is technically not over any UI element when 
+            // the user lifts it, we still want to consider UI logic so that the click action
+            // can apply and events can be raised
+            var shouldConsider = cursor.LastInputDevice != InputDevice.TouchScreen ||
+                cursor.PrimaryDown ||
+                cursor.PrimaryClick;
+
             if (((IWindow)this).AbsoluteVisible)
             {
                 int screenX = cursor.ScreenX;

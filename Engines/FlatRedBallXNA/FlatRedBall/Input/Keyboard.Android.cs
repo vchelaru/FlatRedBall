@@ -20,6 +20,9 @@ namespace FlatRedBall.Input
 		bool hasAddedEvent = false;
 
 		List<AndroidKeyboardAction> androidActionsToProcess = new List<AndroidKeyboardAction>();
+        string stringToProcess;
+        string processedString;
+
 		List<AndroidKeyboardAction> lastFrameActions = new List<AndroidKeyboardAction>();
 		List<AndroidKeyboardAction> downKeys = new List<AndroidKeyboardAction>();
 
@@ -27,40 +30,46 @@ namespace FlatRedBall.Input
 
 		public void ShowKeyboard() 
 		{
-			var view = FlatRedBallServices.Game.Window;
+            var view = FlatRedBallServices.Game.Services.GetService<View>();
+            var context = view.Context;
 
-            throw new NotImplementedException("MonoGame 3.3 broke this, need to figure out how to get the Context");
+            view.RequestFocus();
+            InputMethodManager inputMethodManager = context.GetSystemService(Context.InputMethodService) as InputMethodManager;
+            inputMethodManager.ShowSoftInput(view, ShowFlags.Forced);
+            inputMethodManager.ToggleSoftInput(ShowFlags.Forced, HideSoftInputFlags.ImplicitOnly);
 
-            //var context = FlatRedBallServices.Game.Window.Context;
-            //view.RequestFocus();
-            //InputMethodManager inputMethodManager = context.GetSystemService(Context.InputMethodService) as InputMethodManager;
-            //inputMethodManager.ShowSoftInput(view, ShowFlags.Forced);
-            //inputMethodManager.ToggleSoftInput(ShowFlags.Forced, HideSoftInputFlags.ImplicitOnly);
-
-            //if (!hasAddedEvent)
-            //{
-            //    view.KeyPress += HandleAndroidKeyPress;
-            //}
+            if (!hasAddedEvent)
+            {
+                view.KeyPress += HandleAndroidKeyPress;
+                hasAddedEvent = true;
+            }
 		}
 
 		public void HideKeyboard()
 		{
-            throw new NotImplementedException("MonoGame 3.3 broke this, need to figure out how to get the Context");
-
-            //var context = FlatRedBallServices.Game.Window.Context;
-
-            //InputMethodManager inputMethodManager = context.GetSystemService(Context.InputMethodService) as InputMethodManager;
-            //inputMethodManager.HideSoftInputFromWindow(FlatRedBallServices.Game.Window.WindowToken, HideSoftInputFlags.None);
-		}
+            var view = FlatRedBallServices.Game.Services.GetService<View>();
+            var context = view.Context;
+            InputMethodManager inputMethodManager = context.GetSystemService(Context.InputMethodService) as InputMethodManager;
+            inputMethodManager.HideSoftInputFromWindow(
+                view.WindowToken, HideSoftInputFlags.None);
+        }
 
 		void HandleAndroidKeyPress (object sender, View.KeyEventArgs e) 
 		{
+            if (e.Event.Action == KeyEventActions.Multiple)
+            {
+                lock (androidActionListLock)
+                {
+                    stringToProcess += e.Event.Characters;
+                }
+            }
 			if (e.Event.Action == KeyEventActions.Down ||
 			   e.Event.Action == KeyEventActions.Up)
 			{
 				var newAction = new AndroidKeyboardAction ();
 
 				newAction.Action = e.Event.Action;
+                var stringTyped = e.Event.Characters;
 
 				newAction.AndroidKeycode = e.KeyCode;
 
@@ -68,6 +77,13 @@ namespace FlatRedBall.Input
 			
 				lock (androidActionListLock)
 				{
+                    var unicodeChar = e.Event.UnicodeChar;
+
+                    if(unicodeChar > 0 && e.Event.Action == KeyEventActions.Down)
+                    {
+                        stringToProcess += (char)unicodeChar;
+                    }
+
 					androidActionsToProcess.Add (newAction);
 				}
 			}
@@ -168,8 +184,10 @@ namespace FlatRedBall.Input
 				return Keys.OemComma;
 
 			case Keycode.Del:
-				return Keys.Delete;
-			case Keycode.Enter:
+                //return Keys.Delete;
+                // acts as a backspace
+                return Keys.Back;
+            case Keycode.Enter:
 				return Keys.Enter;
 			case Keycode.Home:
 				return Keys.Home;
@@ -233,15 +251,25 @@ namespace FlatRedBall.Input
 					}
 					else if (itemAtI.Action == KeyEventActions.Up)
 					{
-						if (downKeys.Contains (itemAtI))
-						{
-							downKeys.Remove (itemAtI);
-						}
+                        // remove the key:
+                        for(int j = downKeys.Count-1; j > -1; j--)
+                        {
+                            if(downKeys[j].AndroidKeycode == itemAtI.AndroidKeycode)
+                            {
+                                downKeys.RemoveAt(j);
+                            }
+                        }
 					}
 				}
 
+                processedString = stringToProcess;
+                stringToProcess = null;
+
+
 				lastFrameActions.Clear ();
 				lastFrameActions.AddRange (androidActionsToProcess);
+
+                androidActionsToProcess.Clear();
 			}
 		}
 
@@ -282,23 +310,23 @@ namespace FlatRedBall.Input
 			}
 		}
 
-		bool KeyReleasedAndroid(Keys key)
-		{
-			lock (androidActionsToProcess)
-			{
-				int count = lastFrameActions.Count;
+        bool KeyReleasedAndroid(Keys key)
+        {
+            lock (androidActionsToProcess)
+            {
+                int count = lastFrameActions.Count;
 
-				for (int i = 0; i < count; i++)
-				{
-					var itemAtI = lastFrameActions [i];
-					if (itemAtI.Key == key && itemAtI.Action == KeyEventActions.Up)
-					{
-						return true;
-					}
-				}
-				return false;
-			}
-		}
+                for (int i = 0; i < count; i++)
+                {
+                    var itemAtI = lastFrameActions[i];
+                    if (itemAtI.Key == key && itemAtI.Action == KeyEventActions.Up)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
 
-	}
+    }
 }

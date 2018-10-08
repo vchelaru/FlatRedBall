@@ -91,9 +91,17 @@ namespace FlatRedBall.Forms.Controls
                 {
                     Visual.SetProperty("ButtonCategoryState", "Pushed");
                 }
-                else
+                // Even if the cursor is reported as being over the button, if the
+                // cursor got its input from a touch screen then the cursor really isn't
+                // over anything. Therefore, we only show the highlighted state if the cursor
+                // is a physical on-screen cursor
+                else if(cursor.LastInputDevice != InputDevice.TouchScreen)
                 {
                     Visual.SetProperty("ButtonCategoryState", "Highlighted");
+                }
+                else
+                {
+                    Visual.SetProperty("ButtonCategoryState", "Enabled");
                 }
             }
             else

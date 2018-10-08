@@ -16,7 +16,7 @@ namespace FlatRedBall.Gui
             // uses both the touch screen and the cursor and we want to obey both - so
             // we'll first check the touch screen if it's down, otherwise use the mouse.
 
-			bool shouldReadValues = (InputDevice & Gui.InputDevice.TouchScreen) == InputDevice.TouchScreen && 
+			bool shouldReadValues = (SupportedInputDevices & Gui.InputDevice.TouchScreen) == InputDevice.TouchScreen && 
                 InputManager.TouchScreen.ScreenDown;
 
 			// Update February 9, 2014
@@ -30,6 +30,7 @@ namespace FlatRedBall.Gui
 
 			if (shouldReadValues)
             {
+                LastInputDevice = InputDevice.TouchScreen;
                 mScreenX = InputManager.TouchScreen.AverageTouchPoint.X;
                 mScreenY = InputManager.TouchScreen.AverageTouchPoint.Y;
 
@@ -47,13 +48,8 @@ namespace FlatRedBall.Gui
         }
 
 
-#if !XBOX360
         private void GetPushDownClickFromTouchScreen()
         {
-#if FRB_MDX
-            // do nothing - touch screen not supported
-#else
-
             PrimaryClick |= InputManager.TouchScreen.ScreenReleased && ignoreNextFrameInput == false;
             PrimaryPush |= InputManager.TouchScreen.ScreenPushed;
 
@@ -75,8 +71,6 @@ namespace FlatRedBall.Gui
             SecondaryPush |= InputManager.TouchScreen.CurrentNumberOfTouches > 1 && InputManager.TouchScreen.LastFrameNumberOfTouches < 2;
             SecondaryClick |= InputManager.TouchScreen.CurrentNumberOfTouches < 2 && InputManager.TouchScreen.LastFrameNumberOfTouches > 1 &&
                 ignoreNextFrameInput == false;
-#endif
         }
-#endif
     }
 }

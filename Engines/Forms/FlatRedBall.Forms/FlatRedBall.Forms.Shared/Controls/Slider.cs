@@ -171,6 +171,8 @@ namespace FlatRedBall.Forms.Controls
             return newValue;
         }
 
+        #region UpdateTo Methods
+
         private void UpdateThumbPositionAccordingToValue()
         {
             var ratioOver = (Value - Minimum) / (Maximum - Minimum);
@@ -212,5 +214,7 @@ namespace FlatRedBall.Forms.Controls
                 Value = Minimum;
             }
         }
+
+        #endregion
     }
 }

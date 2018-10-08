@@ -1,8 +1,6 @@
 #define SUPPORTS_XBOX_GAMEPADS
 #define SUPPORTS_TOUCH_SCREEN
 
-
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +8,6 @@ using System.Text;
 using FlatRedBall.Gui;
 
 using Microsoft.Xna.Framework.Input;
-
-
 
 namespace FlatRedBall.Input
 {
@@ -29,8 +25,6 @@ namespace FlatRedBall.Input
         // determines whether to ignore pushes next frame.
         internal static bool mIgnorePushesNextFrame = false;
         internal static bool mIgnorePushesThisFrame = false;
-
-        static bool mCurrentFrameKeyboardInputSuspended;
 
         static bool mCurrentFrameInputSuspended;
 
@@ -77,19 +71,14 @@ namespace FlatRedBall.Input
             set { mCurrentFrameInputSuspended = value; }
         }
 
-        public static bool CurrentFrameKeyboardInputSuspended
-        {
-            get
-            {
-                return mCurrentFrameKeyboardInputSuspended;
-            }
-            set { mCurrentFrameKeyboardInputSuspended = value; }
-        }
-
         public static Keyboard Keyboard
         {
             get { return mKeyboard; }
             set { mKeyboard = value; }
+        }
+        public static IInputReceiverKeyboard InputReceiverKeyboard
+        {
+            get; set;
         }
 
         [Obsolete("Use the InputReceiver property instead")]
@@ -167,9 +156,9 @@ namespace FlatRedBall.Input
         public static void Initialize(IntPtr windowHandle)
         {
             mKeyboard = new Keyboard();
-#if !XBOX360
+            InputReceiverKeyboard = mKeyboard;
+
             mMouse = new Mouse(windowHandle);
-#endif
 
 #if SUPPORTS_TOUCH_SCREEN
             InitializeTouchScreen();
@@ -196,7 +185,7 @@ namespace FlatRedBall.Input
 
             mKeyboard.Update();
 
-
+            UpdateInputReceiver();
 
 #if SUPPORTS_TOUCH_SCREEN
             mTouchScreen.Update();
@@ -206,6 +195,38 @@ namespace FlatRedBall.Input
 #if SUPPORTS_XBOX_GAMEPADS
             PerformXbox360GamePadUpdate();
 #endif
+        }
+
+        private static void UpdateInputReceiver()
+        {
+            // Need to call the ReceiveInput method after testing out typed keys
+            if (InputReceiver != null)
+            {
+                InputReceiver.OnFocusUpdate();
+                InputReceiver.ReceiveInput();
+
+                if (Keyboard.AutomaticallyPushEventsToInputReceiver)
+                {
+                    var shift = InputReceiverKeyboard.IsShiftDown;
+                    var ctrl = InputReceiverKeyboard.IsCtrlDown;
+                    var alt = InputReceiverKeyboard.IsAltDown;
+
+                    foreach (var key in InputReceiverKeyboard.KeysTyped)
+                    {
+                        InputManager.InputReceiver.HandleKeyDown(key, shift, alt, ctrl);
+                    }
+
+                    var stringTyped = InputReceiverKeyboard.GetStringTyped();
+
+                    if(stringTyped != null)
+                    {
+                        for (int i = 0; i < stringTyped.Length; i++)
+                        {
+                            InputReceiver.HandleCharEntered(stringTyped[i]);
+                        }
+                    }
+                }
+            }
         }
     }
 }

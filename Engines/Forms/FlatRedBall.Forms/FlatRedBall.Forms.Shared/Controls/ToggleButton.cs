@@ -106,9 +106,13 @@ namespace FlatRedBall.Forms.Controls
                 {
                     SetPropertyConsideringOn("Pushed");
                 }
-                else
+                else if (cursor.LastInputDevice != InputDevice.TouchScreen)
                 {
                     SetPropertyConsideringOn("Highlighted");
+                }
+                else
+                {
+                    SetPropertyConsideringOn("Enabled");
                 }
             }
             else

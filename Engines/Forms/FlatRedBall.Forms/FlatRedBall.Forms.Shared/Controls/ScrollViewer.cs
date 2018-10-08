@@ -135,8 +135,6 @@ namespace FlatRedBall.Forms.Controls
 
             verticalScrollBar.SmallChange = 10;
             verticalScrollBar.LargeChange = verticalScrollBar.ViewportSize;
-
-
         }
 
         #endregion

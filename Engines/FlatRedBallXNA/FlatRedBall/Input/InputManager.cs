@@ -39,9 +39,6 @@ namespace FlatRedBall.Input
         {
             get
             {
-#if WINDOWS_8
-                return 0;
-#else
                 int count = 0;
 
                 for (int i = 0; i < Xbox360GamePads.Length; i++)
@@ -53,7 +50,6 @@ namespace FlatRedBall.Input
                 }
 
                 return count;
-#endif
             }
         }
 

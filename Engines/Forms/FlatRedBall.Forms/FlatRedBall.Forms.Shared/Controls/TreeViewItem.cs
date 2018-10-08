@@ -307,6 +307,7 @@ namespace FlatRedBall.Forms.Controls
         #endregion
 
         #region Update To
+
         private void UpdateInnerPanelCollapsedState()
         {
             if (isExpanded && innerPanel.Parent == null)
@@ -321,7 +322,6 @@ namespace FlatRedBall.Forms.Controls
                 Collapsed?.Invoke(this, null);
             }
         }
-
 
         private void UpdateToggleButtonState()
         {

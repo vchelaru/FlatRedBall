@@ -407,10 +407,16 @@ namespace FlatRedBall.Gui
         }
 
 
-        public InputDevice InputDevice
+        public InputDevice SupportedInputDevices
         {
             get;
             set;
+        }
+
+        public InputDevice LastInputDevice
+        {
+            get;
+            private set;
         }
 
         bool active = true;
@@ -810,9 +816,9 @@ namespace FlatRedBall.Gui
         public Cursor(Camera cameraToUse)
         {
 #if MONODROID || IOS
-            InputDevice = Gui.InputDevice.TouchScreen;
+            SupportedInputDevices = Gui.InputDevice.TouchScreen;
 #else
-            InputDevice = Gui.InputDevice.Mouse;
+            SupportedInputDevices = Gui.InputDevice.Mouse;
 #endif
 
             // This was 6 but I think we
@@ -2723,7 +2729,7 @@ namespace FlatRedBall.Gui
 
 #endif
 
-                    if (!handled && (InputDevice & Gui.InputDevice.Mouse) == Gui.InputDevice.Mouse)
+                    if (!handled && (SupportedInputDevices & Gui.InputDevice.Mouse) == Gui.InputDevice.Mouse)
                     {
                         // If we are using both mouse and touch screen we only
                         // want the mouse to set its values if the user has actually
@@ -2742,7 +2748,7 @@ namespace FlatRedBall.Gui
                         // on what it was last frame.
                         bool hasMoved = InputManager.Mouse.XChange != 0 || InputManager.Mouse.YChange != 0;
 
-                        if (hasMoved || ((InputDevice & Gui.InputDevice.TouchScreen) == Gui.InputDevice.TouchScreen) == false)
+                        if (hasMoved || ((SupportedInputDevices & Gui.InputDevice.TouchScreen) == Gui.InputDevice.TouchScreen) == false)
                         {
                             mScreenX = InputManager.Mouse.X;
                             mScreenY = InputManager.Mouse.Y;
@@ -2879,13 +2885,13 @@ namespace FlatRedBall.Gui
 
                 #region Handle all of the "Primary" variables
 
-                if ((InputDevice & Gui.InputDevice.TouchScreen) == Gui.InputDevice.TouchScreen)
+                if ((SupportedInputDevices & Gui.InputDevice.TouchScreen) == Gui.InputDevice.TouchScreen)
                 {
 #if SUPPORTS_TOUCH_SCREEN
                     GetPushDownClickFromTouchScreen();
 #endif
                 }
-                if ((InputDevice & Gui.InputDevice.Mouse) == Gui.InputDevice.Mouse )
+                if ((SupportedInputDevices & Gui.InputDevice.Mouse) == Gui.InputDevice.Mouse )
                 {
                     GetPushDownClickFromMouse();
                 }
@@ -2898,7 +2904,7 @@ namespace FlatRedBall.Gui
                     // We want to check an actual ==
                     // and not a .HasFlag because if there
                     // is a moue involved we want to use that position
-                    if (InputDevice == Gui.InputDevice.TouchScreen)
+                    if (SupportedInputDevices == Gui.InputDevice.TouchScreen)
                     {
                         mLastScreenX = mScreenX;
                         mLastScreenY = mScreenY;

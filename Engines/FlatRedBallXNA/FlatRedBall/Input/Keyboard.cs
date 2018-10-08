@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace FlatRedBall.Input
 {
-    public partial class Keyboard : IEquatable<Keyboard>
+    public partial class Keyboard : IInputReceiverKeyboard
     {
         #region Enums
 
@@ -42,8 +42,49 @@ namespace FlatRedBall.Input
 
         public bool AutomaticallyPushEventsToInputReceiver { get; set; } = true;
 
-        #endregion
+        public bool IsShiftDown
+        {
+            get
+            {
+                return KeyDown(Keys.LeftShift) || KeyDown(Keys.LeftShift);
+            }
+        }
+        public bool IsCtrlDown
+        {
+            get
+            {
+                return KeyDown(Keys.LeftControl) || KeyDown(Keys.RightControl);
+            }
+        }
+        public bool IsAltDown
+        {
+            get
+            {
+                return KeyDown(Keys.LeftAlt) || KeyDown(Keys.RightAlt);
+            }
+        }
 
+        List<Keys> keysTypedInternal = new List<Keys>();
+        public IReadOnlyCollection<Microsoft.Xna.Framework.Input.Keys> KeysTyped
+        {
+            get
+            {
+                keysTypedInternal.Clear();
+
+                for (int i = 0; i < NumberOfKeys; i++)
+                {
+                    var key = (Keys)i;
+                    if (KeyTyped(key))
+                    {
+                        keysTypedInternal.Add(key);
+                    }
+                }
+                return keysTypedInternal;
+            }
+        }
+
+
+        #endregion
 
         #region Methods
 
@@ -233,6 +274,10 @@ namespace FlatRedBall.Input
             if (InputManager.CurrentFrameInputSuspended)
                 return "";
 
+#if ANDROID
+            return processedString;
+#else
+
             string returnString = "";
 
             bool isCtrlPressed =
@@ -285,6 +330,7 @@ namespace FlatRedBall.Input
             #endregion
 
             return returnString;
+#endif
         }
 
 
@@ -388,11 +434,19 @@ namespace FlatRedBall.Input
                 return false;
             }
 
+#if ANDROID
+            if (KeyPushedAndroid(key))
+            {
+                return true;
+            }
+#endif
+
             return !InputManager.CurrentFrameInputSuspended && mKeysTyped[(int)key];
         }
 
 
-		public KeyReference GetKey(Keys key)
+
+        public KeyReference GetKey(Keys key)
 		{
 			var toReturn = new KeyReference ();
 
@@ -473,36 +527,6 @@ namespace FlatRedBall.Input
                         mLastTypedFromPush[i] = false;
                         mLastTimeKeyTyped[i] = TimeManager.CurrentTime;
                         mKeysTyped[i] = true;
-                    }
-                }
-            }
-
-            // Need to call the ReceiveInput method after testing out typed keys
-            if (InputManager.InputReceiver != null)
-            {
-                InputManager.InputReceiver.OnFocusUpdate();
-                InputManager.InputReceiver.ReceiveInput();
-
-                //				((IInputReceiver)receivingInput).ReceiveInput(this);
-                InputManager.CurrentFrameKeyboardInputSuspended = true;
-
-                if(AutomaticallyPushEventsToInputReceiver)
-                {
-                    var shift = KeyDown(Keys.LeftShift) || KeyDown(Keys.LeftShift);
-                    var ctrl = KeyDown(Keys.LeftControl) || KeyDown(Keys.RightControl);
-                    var alt = KeyDown(Keys.LeftAlt) || KeyDown(Keys.RightAlt);
-                    for (int i = 0; i < mKeysTyped.Length; i++)
-                    {
-                        if (mKeysTyped[i])
-                        {
-                            InputManager.InputReceiver.HandleKeyDown((Keys)i, shift, alt, ctrl);
-                        }
-                    }
-
-                    var stringTyped = GetStringTyped();
-                    for(int i = 0; i < stringTyped.Length; i++)
-                    {
-                        InputManager.InputReceiver.HandleCharEntered(stringTyped[i]);
                     }
                 }
             }
@@ -655,19 +679,7 @@ namespace FlatRedBall.Input
                         case Keys.D8: return "*";
                         case Keys.D9: return "(";
                         case Keys.D0: return ")";
-#if FRB_MDX
-                        case Keys.Grave:         return "~";
-                        case Keys.SemiColon:     return ":";
-                        case Keys.Apostrophe:        return "\"";
-                        case Keys.Slash:      return "?";
-                        case Keys.Equals:          return "+";
-                        case Keys.BackSlash:          return "|";
-                        case Keys.Period:        return ">";
-                        case Keys.LeftBracket:  return "{";
-                        case Keys.RightBracket: return "}";
-                        case Keys.Minus:         return "_";
-                        case Keys.Comma:         return "<";
-#else
+
                         case Keys.OemTilde: return "~";
                         case Keys.OemSemicolon: return ":";
                         case Keys.OemQuotes: return "\"";
@@ -680,7 +692,6 @@ namespace FlatRedBall.Input
                         case Keys.OemMinus: return "_";
                         case Keys.OemComma: return "<";
                         case Keys.Space: return " ";
-#endif
                         default: return "";
                     }
                 }
@@ -699,16 +710,6 @@ namespace FlatRedBall.Input
         }
 
         #endregion
-
-        #endregion
-
-
-        #region IEquatable<Keyboard> Members
-
-        bool IEquatable<Keyboard>.Equals(Keyboard other)
-        {
-            return this == other;
-        }
 
         #endregion
     }

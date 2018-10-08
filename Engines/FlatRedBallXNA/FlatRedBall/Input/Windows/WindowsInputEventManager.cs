@@ -81,6 +81,8 @@ namespace FlatRedBall.Input.Windows
 
     public class WindowsInputEventManager
     {
+        bool isInitialized;
+
         #region Events
         /// <summary>
         /// Event raised when a character has been entered.
@@ -99,9 +101,10 @@ namespace FlatRedBall.Input.Windows
 
         #endregion
 
+        #region Native Windows Stuff
+
         delegate IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
-        bool isInitialized;
         IntPtr prevWndProc;
         WndProc hookProcDelegate;
         IntPtr hIMC;
@@ -155,7 +158,49 @@ namespace FlatRedBall.Input.Windows
         [DllImport("user32.dll")]
         static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
         #endregion
-        
+
+        IntPtr HookProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
+        {
+            IntPtr returnCode = CallWindowProc(prevWndProc, hWnd, msg, wParam, lParam);
+
+            switch (msg)
+            {
+                case WM_GETDLGCODE:
+                    returnCode = (IntPtr)(returnCode.ToInt32() | DLGC_WANTALLKEYS);
+                    break;
+
+                case WM_KEYDOWN:
+                    if (KeyDown != null)
+                        KeyDown((Keys)wParam);
+                    break;
+
+                case WM_KEYUP:
+                    if (KeyUp != null)
+                        KeyUp((Keys)wParam);
+                    break;
+
+                case WM_CHAR:
+                    if (CharEntered != null)
+                        CharEntered((char)wParam);
+                    break;
+
+                case WM_IME_SETCONTEXT:
+                    if (wParam.ToInt32() == 1)
+                        ImmAssociateContext(hWnd, hIMC);
+                    break;
+
+                case WM_INPUTLANGCHANGE:
+                    ImmAssociateContext(hWnd, hIMC);
+                    returnCode = (IntPtr)1;
+                    break;
+                    
+            }
+
+            return returnCode;
+        }
+
+        #endregion
+
         public bool IsShiftDown
         {
             get
@@ -199,46 +244,5 @@ namespace FlatRedBall.Input.Windows
                 isInitialized = true;
             }
         }
-
-        IntPtr HookProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
-        {
-            IntPtr returnCode = CallWindowProc(prevWndProc, hWnd, msg, wParam, lParam);
-
-            switch (msg)
-            {
-                case WM_GETDLGCODE:
-                    returnCode = (IntPtr)(returnCode.ToInt32() | DLGC_WANTALLKEYS);
-                    break;
-
-                case WM_KEYDOWN:
-                    if (KeyDown != null)
-                        KeyDown((Keys)wParam);
-                    break;
-
-                case WM_KEYUP:
-                    if (KeyUp != null)
-                        KeyUp((Keys)wParam);
-                    break;
-
-                case WM_CHAR:
-                    if (CharEntered != null)
-                        CharEntered((char)wParam);
-                    break;
-
-                case WM_IME_SETCONTEXT:
-                    if (wParam.ToInt32() == 1)
-                        ImmAssociateContext(hWnd, hIMC);
-                    break;
-
-                case WM_INPUTLANGCHANGE:
-                    ImmAssociateContext(hWnd, hIMC);
-                    returnCode = (IntPtr)1;
-                    break;
-                    
-            }
-
-            return returnCode;
-        }
-        
     }
 }

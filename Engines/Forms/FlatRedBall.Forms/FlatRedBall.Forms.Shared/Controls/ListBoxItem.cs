@@ -102,7 +102,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 Visual.SetProperty("ListBoxItemCategoryState", "Selected");
             }
-            else if (GetIfIsOnThisOrChildVisual(cursor))
+            else if (cursor.LastInputDevice != InputDevice.TouchScreen && GetIfIsOnThisOrChildVisual(cursor))
             {
                 Visual.SetProperty("ListBoxItemCategoryState", "Highlighted");
             }

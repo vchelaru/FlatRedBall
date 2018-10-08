@@ -245,9 +245,13 @@ namespace FlatRedBall.Forms.Controls
                 {
                     Visual.SetProperty("ComboBoxCategoryState", "Pushed");
                 }
-                else
+                else if (cursor.LastInputDevice != InputDevice.TouchScreen)
                 {
                     Visual.SetProperty("ComboBoxCategoryState", "Highlighted");
+                }
+                else
+                {
+                    Visual.SetProperty("ComboBoxCategoryState", "Enabled");
                 }
             }
             else
@@ -258,7 +262,5 @@ namespace FlatRedBall.Forms.Controls
 
 
         #endregion
-
-
     }
 }
