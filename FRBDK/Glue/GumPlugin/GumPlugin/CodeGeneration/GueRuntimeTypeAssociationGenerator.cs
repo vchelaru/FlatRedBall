@@ -75,7 +75,10 @@ namespace GumPlugin.CodeGeneration
                 {
                     foreach(var behavior in elementAsComponent.Behaviors)
                     {
-                        string controlType = GetControlTypeFromBehavior(behavior);
+                        var formsControlInfo = FormsControlInfo.AllControls
+                            .First(item => item.BehaviorName == behavior.BehaviorName);
+
+                        string controlType = formsControlInfo.BehaviorName;
 
                         AssociationFulfillment matchingFulfillment = null;
 
@@ -84,6 +87,12 @@ namespace GumPlugin.CodeGeneration
                             matchingFulfillment = associationFulfillments.FirstOrDefault(item => item.ControlType == controlType);
                         }
 
+                        // Here we try to get the "most fulfilled" version of an object to set it as the default.
+                        // For example, Button text is optional, and two Gum objects may have the Button behavior.
+                        // If one of them has text properties then we should favor that over the one that doens't.
+                        // Of coruse, the user can still change the defaults at runtime or manually create the visual
+                        // for a form if they don't want the default, but this will hopefully give the "best fit"
+                        // default.
                         if(matchingFulfillment == null || matchingFulfillment.IsCompletelyFulfilled == false)
                         {
                             bool isCompleteFulfillment = GetIfIsCompleteFulfillment(element, controlType);
@@ -144,6 +153,7 @@ namespace GumPlugin.CodeGeneration
                 // some controls are automatically completely fulfilled:
                 case "ComboBox":
                 case "ListBox":
+                case "PasswordBox":
                 case "ScrollBar":
                 case "ScrollViewer":
                 case "Slider":
@@ -165,31 +175,7 @@ namespace GumPlugin.CodeGeneration
             }
 
         }
-
-        private static string GetControlTypeFromBehavior(Gum.DataTypes.Behaviors.ElementBehaviorReference behavior)
-        {
-            string controlType = null;
-            switch (behavior.BehaviorName)
-            {
-                case BehaviorGenerator.ButtonBehaviorName: controlType = "Button"; break;
-                case BehaviorGenerator.CheckBoxBehaviorName: controlType = "CheckBox"; break;
-                case BehaviorGenerator.ComboBoxBehaviorName: controlType = "ComboBox"; break;
-                case BehaviorGenerator.ListBoxItemBehaviorName: controlType = "ListBoxItem"; break;
-                case BehaviorGenerator.ListBoxBehaviorName: controlType = "ListBox"; break;
-                case BehaviorGenerator.RadioButtonBehaviorName: controlType = "RadioButton"; break;
-                case BehaviorGenerator.ScrollBarBehaviorName: controlType = "ScrollBar"; break;
-                case BehaviorGenerator.ScrollViewerBehaviorName: controlType = "ScrollViewer"; break;
-                case BehaviorGenerator.SliderBehaviorName: controlType = "Slider"; break;
-                case BehaviorGenerator.TextBoxBehaviorName: controlType = "TextBox"; break;
-                case BehaviorGenerator.ToggleBehaviorName: controlType = "ToggleButton"; break;
-                case BehaviorGenerator.TreeViewBehaviorName: controlType = "TreeView"; break;
-                case BehaviorGenerator.TreeViewItemBehaviorName: controlType = "TreeViewItem"; break;
-                case BehaviorGenerator.UserControlBehaviorName: controlType = "UserControl"; break;
-            }
-
-            return controlType;
-        }
-
+        
         private void GenerateAssociation(string controlType, string gumRuntimeType)
         {
 

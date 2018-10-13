@@ -221,7 +221,9 @@ namespace GumPlugin
             // - The Gum toolbar disappears if the Gum plugin is shut down
             // 1.4.2
             // - Added FloatRectangle as an embedded file for legacy projects
-            get { return new Version(1, 4, 2, 0); }
+            // 1.5.0
+            // - Added new PasswordBox control
+            get { return new Version(1, 5, 0, 0); }
         }
 
         #endregion

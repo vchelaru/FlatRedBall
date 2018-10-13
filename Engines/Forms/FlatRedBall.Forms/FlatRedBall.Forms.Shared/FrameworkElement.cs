@@ -116,8 +116,18 @@ namespace FlatRedBall.Forms.Controls
         }
 
         /// <summary>
-        /// Contains the default association between Forms Controls and Gum Runtime Types. The key in the dictionary is the type of Forms control.
+        /// Contains the default association between Forms Controls and Gum Runtime Types. 
+        /// This dictionary enabled forms controls (like TextBox) to automatically create their own visuals.
+        /// The key in the dictionary is the type of Forms control.
         /// </summary>
+        /// <remarks>
+        /// This dictionary simplifies working with FlatRedBall.Forms in code. It allows one piece of code (which may be generated
+        /// by Glue) to associate the Forms controls with a Gum runtime type. Once this association is made, controls can be created without
+        /// specifying a gum runtime. For example:
+        /// var button = new Button();
+        /// button.Visual.AddToManagers();
+        /// button.Click += HandleButtonClick;
+        /// </remarks>
         /// <example>
         /// FrameworkElement.DefaultFormsComponents[typeof(FlatRedBall.Forms.Controls.Button)] = 
         ///     typeof(ProjectName.GumRuntimes.LargeMenuButtonRuntime);

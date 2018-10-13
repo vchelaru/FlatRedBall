@@ -11,18 +11,6 @@ namespace GumPlugin.CodeGeneration
 {
     class BehaviorCodeGenerator
     {
-        public static string GetInterfacesFromBehaviors(BehaviorSave behavior)
-        {
-            if(behavior.Name == BehaviorGenerator.ToggleBehaviorName)
-            {
-                return "FlatRedBall.Gui.Controls.IToggle";
-            }
-            else
-            {
-                return null;
-            }
-        }
-
         internal string GenerateInterfaceCodeFor(BehaviorSave behavior)
         {
             CodeBlockBase fileLevel = new CodeBlockBase(null);

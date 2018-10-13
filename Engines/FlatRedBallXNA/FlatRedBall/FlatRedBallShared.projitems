@@ -119,7 +119,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\TextManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\BehaviorBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\ButtonBehavior.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\TextBoxBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\ToggleBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Controls\IButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Controls\IControl.cs" />

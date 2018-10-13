@@ -15,27 +15,6 @@ namespace GumPlugin.DataGeneration
 {
     public static class FormsControlAdder
     {
-        static List<string> ComponentFiles = new List<string>
-        {
-            "Button",
-            "CheckBox",
-            "ColoredFrame",
-            "ComboBox",
-            "ListBox",
-            "ListBoxItem",
-            "RadioButton",
-            "ScrollBar",
-            "ScrollBarThumb",
-            "ScrollViewer",
-            "Slider",
-            "TextBox",
-            "ToggleButton",
-            "TreeView",
-            "TreeViewItem",
-            "TreeViewToggleButton",
-            "UserControl"
-        };
-
         static List<string> ContentItems = new List<string>
         {
             "UISpriteSheet.png"
@@ -50,8 +29,12 @@ namespace GumPlugin.DataGeneration
                 GumProjectManager.Self.GetGumProjectFileName());
             var componentDestination = gumDirectory + @"Components\DefaultForms\";
 
+            var componentFiles = FormsControlInfo.AllControls.Select(item => item.ComponentFile)
+                .Where(item => !string.IsNullOrEmpty(item))
+                .ToArray();
+            
 
-            foreach (var file in ComponentFiles)
+            foreach (var file in componentFiles)
             {
                 // example:
                 // "GumPlugin.Embedded.EmbeddedObjectGumProject.Components.DefaultFormsButton.gucx"
@@ -74,7 +57,7 @@ namespace GumPlugin.DataGeneration
             {
                 var wasAnythingAdded = false;
 
-                foreach(var component in ComponentFiles)
+                foreach(var component in componentFiles)
                 {
                     var absoluteFile = new FilePath(componentDestination + component + ".gucx");
 

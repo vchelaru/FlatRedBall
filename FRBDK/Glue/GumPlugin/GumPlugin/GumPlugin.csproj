@@ -536,6 +536,9 @@
     <EmbeddedResource Include="Embedded\EmptyProject\Standards\Circle.gutx" />
     <EmbeddedResource Include="Embedded\EmptyProject\Standards\Rectangle.gutx" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\PasswordBox.gucx" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo PostBuild

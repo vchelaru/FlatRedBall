@@ -9,105 +9,303 @@ using System.Threading.Tasks;
 
 namespace GumPlugin.DataGeneration
 {
+    public class FormsControlInfo
+    {
+        public string BehaviorName;
+        public string InterfaceName;
+        public string ControlName;
+        public string ComponentFile;
+
+        public string GumStateCategoryName;
+
+        public string[] States;
+
+
+        public static FormsControlInfo Button = new FormsControlInfo
+        {
+            BehaviorName = "ButtonBehavior",
+            ComponentFile = "Button",
+            ControlName = "Button",
+            GumStateCategoryName = "ButtonCategory",
+            States = new[]
+            {
+                "Enabled",
+                "Disabled",
+                "Highlighted",
+                "Pushed"
+            },
+            
+        };
+        public static FormsControlInfo CheckBox = new FormsControlInfo
+        {
+            BehaviorName = "CheckBoxBehavior",
+            ComponentFile = "CheckBox",
+            ControlName = "CheckBox",
+            GumStateCategoryName = "CheckBoxCategory",
+            States = new[]
+            {
+                "EnabledOn",
+                "EnabledOff",
+                "DisabledOn",
+                "DisabledOff",
+
+                "HighlightedOn",
+                "HighlightedOff",
+                "PushedOn",
+                "PushedOff",
+
+            }
+        };
+
+        public static FormsControlInfo ColoredFrame = new FormsControlInfo
+        {
+            BehaviorName = null,
+            ComponentFile = "ColoredFrame",
+            ControlName = null,
+            GumStateCategoryName = null,
+
+        };
+
+        public static FormsControlInfo ComboBox = new FormsControlInfo
+        {
+            BehaviorName = "ComboBoxBehavior",
+            ComponentFile = "ComboBox",
+            ControlName = "ComboBox",
+            GumStateCategoryName = "ComboBoxCategory",
+            States = new []
+            {
+                "Enabled",
+                "Disabled",
+                "Highlighted",
+                "Pushed"
+            }
+        };
+
+        public static FormsControlInfo ListBox = new FormsControlInfo
+        {
+            BehaviorName = "ListBoxBehavior",
+            ComponentFile = "ListBox",
+            ControlName = "ListBox",
+            // no category (yet?)
+            GumStateCategoryName = null,
+        };
+
+        public static FormsControlInfo ListBoxItem = new FormsControlInfo
+        {
+            BehaviorName = "ListBoxItemBehavior",
+            ComponentFile = "ListBoxItem",
+            ControlName = "ListBoxItem",
+            GumStateCategoryName = "ListBoxItemCategory",
+            States = new []
+            {
+                "Enabled",
+                "Highlighted",
+                "Selected",
+            }
+        };
+
+        public static FormsControlInfo PasswordBox = new FormsControlInfo
+        {
+            BehaviorName = "PasswordBoxBehavior",
+            ComponentFile = "PasswordBox",
+            ControlName = "PasswordBox",
+            GumStateCategoryName = "PasswordBoxCategory",
+
+            States = new[]
+            {
+                "Enabled",
+                "Disabled",
+                "Highlighted",
+                "Selected"
+            }
+        };
+
+        public static FormsControlInfo RadioButton = new FormsControlInfo
+        {
+            BehaviorName = "RadioButtonBehavior",
+            ControlName = "RadioButton",
+            ComponentFile = "RadioButton",
+            GumStateCategoryName = "RadioButtonCategory",
+            States = new []
+            {
+                "EnabledOn",
+                "EnabledOff",
+                "DisabledOn",
+                "DisabledOff",   
+
+                "HighlightedOn",
+                "HighlightedOff",
+                "PushedOn",
+                "PushedOff"
+            }
+        };
+
+
+        public static FormsControlInfo ScrollBar = new FormsControlInfo
+        {
+            BehaviorName = "ScrollBarBehavior",
+            ComponentFile = "ScrollBar",
+            ControlName = "ScrollBar",
+            GumStateCategoryName = "ScrollBarCategory",
+        };
+
+        public static FormsControlInfo ScrollBarThumb = new FormsControlInfo
+        {
+            // only a gum component, no backing control:
+            ComponentFile = "ScrollBarThumb"
+        };
+
+        public static FormsControlInfo ScrollViewer = new FormsControlInfo
+        {
+            BehaviorName = "ScrollViewerBehavior",
+            ComponentFile = "ScrollViewer",
+            ControlName = "ScrollViewer",
+            // no categories needed (yet?)
+            GumStateCategoryName = null,
+        };
+
+        public static FormsControlInfo Slider = new FormsControlInfo
+        {
+            BehaviorName = "SliderBehavior",
+            ComponentFile = "Slider",
+            ControlName = "Slider",
+            GumStateCategoryName = "SliderCategory",
+        };
+
+        public static FormsControlInfo TextBox = new FormsControlInfo
+        {
+            BehaviorName = "TextBoxBehavior",
+            ComponentFile = "TextBox",
+            ControlName = "TextBox",
+            GumStateCategoryName = "TextBoxCategory",
+
+            States = new []
+            {
+                "Enabled",
+                "Disabled",
+                "Highlighted",
+                "Selected"
+            }
+        };
+
+        public static FormsControlInfo ToggleButton = new FormsControlInfo
+        {
+            BehaviorName = "ToggleBehavior",
+            InterfaceName = "FlatRedBall.Gui.Controls.IToggle",
+            ComponentFile = "ToggleButton",
+            ControlName = "ToggleButton",
+            GumStateCategoryName = "ToggleCategory",
+            States = new []
+            {
+                "EnabledOn",
+                "EnabledOff",
+                "DisabledOn",
+                "DisabledOff",
+
+                "HighlightedOn",
+                "HighlightedOff",
+                "PushedOn",
+                "PushedOff",
+            }
+        };
+        public static FormsControlInfo TreeView = new FormsControlInfo
+        {
+            BehaviorName = "TreeViewBehavior",
+            ControlName = "TreeView",
+            ComponentFile = "TreeView",
+            // no categories
+            GumStateCategoryName = null,
+
+        };
+
+        public static FormsControlInfo TreeViewItem = new FormsControlInfo
+        {
+            BehaviorName = "TreeViewItemBehavior",
+            ComponentFile = "TreeViewItem",
+            ControlName = "TreeViewItem",
+            // no categories, contained objects have categories
+            GumStateCategoryName = null,
+        };
+
+        public static FormsControlInfo TreeViewToggleButton = new FormsControlInfo
+        {
+            ComponentFile = "TreeViewToggleButton"
+        };
+
+
+        public static FormsControlInfo UserControl = new FormsControlInfo
+        {
+            BehaviorName = "UserControlBehavior",
+            ComponentFile = "UserControl",
+            ControlName = "UserControl",
+            GumStateCategoryName = null,
+        };
+
+
+        public static FormsControlInfo[] AllControls = new FormsControlInfo[]
+        {
+            Button,
+            CheckBox,
+            ColoredFrame,
+            ComboBox,
+            ListBox,
+            ListBoxItem,
+            PasswordBox,
+            RadioButton,
+            ScrollBar,
+            ScrollBarThumb,
+            ScrollViewer,
+            Slider,
+            TextBox,
+            ToggleButton,
+            TreeView,
+            TreeViewItem,
+            TreeViewToggleButton,
+            UserControl
+        };
+        // Also look in the GueRuntimeTypeAssociationGenerator
+    }
+
     public static class BehaviorGenerator
     {
-        public const string ButtonBehaviorName = "ButtonBehavior";
-        public const string CheckBoxBehaviorName = "CheckBoxBehavior";
-        public const string RadioButtonBehaviorName = "RadioButtonBehavior";
-        public const string TextBoxBehaviorName = "TextBoxBehavior";
-        public const string ScrollBarBehaviorName = "ScrollBarBehavior";
-        public const string ScrollViewerBehaviorName = "ScrollViewerBehavior";
-        public const string ListBoxItemBehaviorName = "ListBoxItemBehavior";
-        public const string ListBoxBehaviorName = "ListBoxBehavior";
-        public const string ComboBoxBehaviorName = "ComboBoxBehavior";
-        public const string SliderBehaviorName = "SliderBehavior";
-        public const string ToggleBehaviorName = "ToggleBehavior";
-        public const string TreeViewBehaviorName = "TreeViewBehavior";
-        public const string TreeViewItemBehaviorName = "TreeViewItemBehavior";
-        public const string UserControlBehaviorName = "UserControlBehavior";
-        // if adding here, search for the const string usage and the "Get" function to see
-        // where to add additional code.
-        // Also look in the GueRuntimeTypeAssociationGenerator
+
+        private static BehaviorSave CreateBehaviorSaveFrom(FormsControlInfo controlInfo)
+        {
+            BehaviorSave toReturn = new BehaviorSave();
+            toReturn.Name = controlInfo.BehaviorName;
+
+            if (!string.IsNullOrEmpty(controlInfo.GumStateCategoryName))
+            {
+                var category = new StateSaveCategory();
+                toReturn.Categories.Add(category);
+                category.Name = controlInfo.GumStateCategoryName;
+
+                if (controlInfo.States != null)
+                {
+                    foreach (var stateName in controlInfo.States)
+                    {
+                        category.States.Add(new StateSave { Name = stateName });
+                    }
+                }
+            }
+
+            return toReturn;
+        }
 
 
         public static BehaviorSave CreateButtonBehavior()
         {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = ButtonBehaviorName;
-
-            var category = new StateSaveCategory();
-            toReturn.Categories.Add(category);
-            category.Name = "ButtonCategory";
-
-            category.States.Add(new StateSave { Name = "Enabled" });
-            category.States.Add(new StateSave { Name = "Disabled" });
-            category.States.Add(new StateSave { Name = "Highlighted" });
-            category.States.Add(new StateSave { Name = "Pushed" });
-
-            return toReturn;
+            return CreateBehaviorSaveFrom(FormsControlInfo.Button);
         }
 
-        public static BehaviorSave CreateToggleBehavior()
+        public static BehaviorSave CreatePasswordBoxBehavior()
         {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = ToggleBehaviorName;
-
-            var category = new StateSaveCategory();
-            toReturn.Categories.Add(category);
-            category.Name = "ToggleCategory";
-
-            category.States.Add(new StateSave { Name = "EnabledOn" });
-            category.States.Add(new StateSave { Name = "EnabledOff" });
-            category.States.Add(new StateSave { Name = "DisabledOn" });
-            category.States.Add(new StateSave { Name = "DisabledOff" });
-
-
-            category.States.Add(new StateSave { Name = "HighlightedOn" });
-            category.States.Add(new StateSave { Name = "HighlightedOff" });
-            category.States.Add(new StateSave { Name = "PushedOn" });
-            category.States.Add(new StateSave { Name = "PushedOff" });
-
-            return toReturn;
-
+            return CreateBehaviorSaveFrom(FormsControlInfo.PasswordBox);
         }
 
         public static BehaviorSave CreateRadioButtonBehavior()
         {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = RadioButtonBehaviorName;
-
-            var category = new StateSaveCategory();
-            toReturn.Categories.Add(category);
-            category.Name = "RadioButtonCategory";
-
-            category.States.Add(new StateSave { Name = "EnabledOn" });
-            category.States.Add(new StateSave { Name = "EnabledOff" });
-            category.States.Add(new StateSave { Name = "DisabledOn" });
-            category.States.Add(new StateSave { Name = "DisabledOff" });
-
-
-            category.States.Add(new StateSave { Name = "HighlightedOn" });
-            category.States.Add(new StateSave { Name = "HighlightedOff" });
-            category.States.Add(new StateSave { Name = "PushedOn" });
-            category.States.Add(new StateSave { Name = "PushedOff" });
-
-            return toReturn;
-
-        }
-
-        public static BehaviorSave CreateTextBoxBehavior()
-        {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = TextBoxBehaviorName;
-
-            var category = new StateSaveCategory();
-            toReturn.Categories.Add(category);
-            category.Name = "TextBoxCategory";
-
-            category.States.Add(new StateSave { Name = "Enabled" });
-            category.States.Add(new StateSave { Name = "Disabled" });
-            category.States.Add(new StateSave { Name = "Highlighted" });
-            category.States.Add(new StateSave { Name = "Selected" });
+            var toReturn = CreateBehaviorSaveFrom(FormsControlInfo.RadioButton);
 
             // add the required instances:
             BehaviorInstanceSave textInstance = new BehaviorInstanceSave();
@@ -124,43 +322,60 @@ namespace GumPlugin.DataGeneration
 
         public static BehaviorSave CreateScrollBarBehavior()
         {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = ScrollBarBehaviorName;
-
-            var category = new StateSaveCategory();
-            toReturn.Categories.Add(category);
-            category.Name = "ScrollBarCategory";
+            var formsControl = FormsControlInfo.ScrollBar;
+            BehaviorSave toReturn = CreateBehaviorSaveFrom(formsControl);
 
             BehaviorInstanceSave upButtonInstance = new BehaviorInstanceSave();
             upButtonInstance.Name = "UpButtonInstance";
-            upButtonInstance.Behaviors.Add(new BehaviorReference { Name = ButtonBehaviorName });
+            upButtonInstance.Behaviors.Add(new BehaviorReference { Name = FormsControlInfo.Button.BehaviorName });
             toReturn.RequiredInstances.Add(upButtonInstance);
 
             BehaviorInstanceSave downButtonInstance = new BehaviorInstanceSave();
             downButtonInstance.Name = "DownButtonInstance";
-            downButtonInstance.Behaviors.Add(new BehaviorReference { Name = ButtonBehaviorName });
+            downButtonInstance.Behaviors.Add(new BehaviorReference { Name = FormsControlInfo.Button.BehaviorName });
             toReturn.RequiredInstances.Add(downButtonInstance);
 
             BehaviorInstanceSave thumbInstance = new BehaviorInstanceSave();
             thumbInstance.Name = "ThumbInstance";
-            thumbInstance.Behaviors.Add(new BehaviorReference { Name = ButtonBehaviorName });
+            thumbInstance.Behaviors.Add(new BehaviorReference { Name = FormsControlInfo.Button.BehaviorName });
             toReturn.RequiredInstances.Add(thumbInstance);
 
             return toReturn;
         }
 
+
+        public static BehaviorSave CreateTextBoxBehavior()
+        {
+            var formsControl = FormsControlInfo.TextBox;
+
+            BehaviorSave toReturn = CreateBehaviorSaveFrom(formsControl);
+
+            // add the required instances:
+            BehaviorInstanceSave textInstance = new BehaviorInstanceSave();
+            textInstance.Name = "TextInstance";
+            textInstance.BaseType = "Text";
+            toReturn.RequiredInstances.Add(textInstance);
+
+            BehaviorInstanceSave caretInstance = new BehaviorInstanceSave();
+            caretInstance.Name = "CaretInstance";
+            toReturn.RequiredInstances.Add(caretInstance);
+
+            return toReturn;
+        }
+
+        public static BehaviorSave CreateToggleBehavior()
+        {
+            return CreateBehaviorSaveFrom(FormsControlInfo.ToggleButton);
+        }
+
         public static BehaviorSave CreateSliderBehavior()
         {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = SliderBehaviorName;
-
-            var category = new StateSaveCategory();
-            toReturn.Categories.Add(category);
-            category.Name = "SliderCategory";
+            var formsControl = FormsControlInfo.Slider;
+            BehaviorSave toReturn = CreateBehaviorSaveFrom(formsControl);
 
             BehaviorInstanceSave thumbInstance = new BehaviorInstanceSave();
             thumbInstance.Name = "ThumbInstance";
-            thumbInstance.Behaviors.Add(new BehaviorReference { Name = ButtonBehaviorName });
+            thumbInstance.Behaviors.Add(new BehaviorReference { Name = FormsControlInfo.Button.BehaviorName });
             toReturn.RequiredInstances.Add(thumbInstance);
 
             return toReturn;
@@ -168,14 +383,12 @@ namespace GumPlugin.DataGeneration
 
         public static BehaviorSave CreateScrollViewerBehavior()
         {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = ScrollViewerBehaviorName;
-
-            // no categories needed yet
+            var formsControl = FormsControlInfo.ScrollViewer;
+            BehaviorSave toReturn = CreateBehaviorSaveFrom(formsControl);
 
             BehaviorInstanceSave verticalScrollBarInstance = new BehaviorInstanceSave();
             verticalScrollBarInstance.Name = "VerticalScrollBarInstance";
-            verticalScrollBarInstance.Behaviors.Add(new BehaviorReference { Name = ScrollBarBehaviorName });
+            verticalScrollBarInstance.Behaviors.Add(new BehaviorReference { Name = FormsControlInfo.ScrollBar.BehaviorName });
             toReturn.RequiredInstances.Add(verticalScrollBarInstance);
 
             BehaviorInstanceSave innerPanelInstance = new BehaviorInstanceSave();
@@ -191,14 +404,12 @@ namespace GumPlugin.DataGeneration
 
         public static BehaviorSave CreateListBoxBehavior()
         {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = ListBoxBehaviorName;
-
-            // no categories needed yet
+            var formsControl = FormsControlInfo.ListBox;
+            BehaviorSave toReturn = CreateBehaviorSaveFrom(formsControl);
 
             BehaviorInstanceSave verticalScrollBarInstance = new BehaviorInstanceSave();
             verticalScrollBarInstance.Name = "VerticalScrollBarInstance";
-            verticalScrollBarInstance.Behaviors.Add(new BehaviorReference { Name = ScrollBarBehaviorName });
+            verticalScrollBarInstance.Behaviors.Add(new BehaviorReference { Name = FormsControlInfo.ScrollBar.BehaviorName });
             toReturn.RequiredInstances.Add(verticalScrollBarInstance);
 
             BehaviorInstanceSave innerPanelInstance = new BehaviorInstanceSave();
@@ -214,26 +425,14 @@ namespace GumPlugin.DataGeneration
         
         public static BehaviorSave CreateListBoxItemBehavior()
         {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = ListBoxItemBehaviorName;
-
-            var category = new StateSaveCategory();
-            toReturn.Categories.Add(category);
-            category.Name = "ListBoxItemCategory";
-
-            category.States.Add(new StateSave { Name = "Enabled" });
-            category.States.Add(new StateSave { Name = "Highlighted" });
-            category.States.Add(new StateSave { Name = "Selected" });
-
+            BehaviorSave toReturn = CreateBehaviorSaveFrom(FormsControlInfo.ListBoxItem);
             return toReturn;
         }
 
         public static BehaviorSave CreateTreeViewItemBehavior()
         {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = TreeViewItemBehaviorName;
-
-            // no categories, the contained objects have categories
+            var formsControl = FormsControlInfo.TreeViewItem;
+            BehaviorSave toReturn = CreateBehaviorSaveFrom(formsControl);
 
             BehaviorInstanceSave innerPanelInstance = new BehaviorInstanceSave();
             innerPanelInstance.Name = "InnerPanelInstance";
@@ -245,14 +444,12 @@ namespace GumPlugin.DataGeneration
 
         public static BehaviorSave CreateTreeViewBehavior()
         {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = TreeViewBehaviorName;
-
-            // no categories needed yet
+            var formsControl = FormsControlInfo.TreeView;
+            BehaviorSave toReturn = CreateBehaviorSaveFrom(formsControl);
 
             BehaviorInstanceSave verticalScrollBarInstance = new BehaviorInstanceSave();
             verticalScrollBarInstance.Name = "VerticalScrollBarInstance";
-            verticalScrollBarInstance.Behaviors.Add(new BehaviorReference { Name = ScrollBarBehaviorName });
+            verticalScrollBarInstance.Behaviors.Add(new BehaviorReference { Name = FormsControlInfo.ScrollBar.BehaviorName });
             toReturn.RequiredInstances.Add(verticalScrollBarInstance);
 
             BehaviorInstanceSave innerPanelInstance = new BehaviorInstanceSave();
@@ -268,29 +465,17 @@ namespace GumPlugin.DataGeneration
 
         public static BehaviorSave CreateUserControlBehavior()
         {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = UserControlBehaviorName;
-
-            return toReturn;
+            return CreateBehaviorSaveFrom(FormsControlInfo.UserControl);
         }
 
         public static BehaviorSave CreateComboBoxBehavior()
         {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = ComboBoxBehaviorName;
-
-            var category = new StateSaveCategory();
-            toReturn.Categories.Add(category);
-            category.Name = "ComboBoxCategory";
-
-            category.States.Add(new StateSave { Name = "Enabled" });
-            category.States.Add(new StateSave { Name = "Disabled" });
-            category.States.Add(new StateSave { Name = "Highlighted" });
-            category.States.Add(new StateSave { Name = "Pushed" });
+            var formsControl = FormsControlInfo.ComboBox;
+            BehaviorSave toReturn = CreateBehaviorSaveFrom(formsControl);
 
             BehaviorInstanceSave listBoxInstance = new BehaviorInstanceSave();
             listBoxInstance.Name = "ListBoxInstance";
-            listBoxInstance.Behaviors.Add(new BehaviorReference { Name = ListBoxBehaviorName });
+            listBoxInstance.Behaviors.Add(new BehaviorReference { Name = FormsControlInfo.ListBox.BehaviorName });
 
             toReturn.RequiredInstances.Add(listBoxInstance);
 
@@ -304,26 +489,7 @@ namespace GumPlugin.DataGeneration
 
         public static BehaviorSave CreateCheckBoxBehavior()
         {
-            BehaviorSave toReturn = new BehaviorSave();
-            toReturn.Name = CheckBoxBehaviorName;
-
-            var category = new StateSaveCategory();
-            toReturn.Categories.Add(category);
-            category.Name = "CheckBoxCategory";
-
-            category.States.Add(new StateSave { Name = "EnabledOn" });
-            category.States.Add(new StateSave { Name = "EnabledOff" });
-            category.States.Add(new StateSave { Name = "DisabledOn" });
-            category.States.Add(new StateSave { Name = "DisabledOff" });
-
-
-            category.States.Add(new StateSave { Name = "HighlightedOn" });
-            category.States.Add(new StateSave { Name = "HighlightedOff" });
-            category.States.Add(new StateSave { Name = "PushedOn" });
-            category.States.Add(new StateSave { Name = "PushedOff" });
-
-            return toReturn;
-
+            return CreateBehaviorSaveFrom(FormsControlInfo.CheckBox);
         }
 
     }

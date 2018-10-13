@@ -82,6 +82,14 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
+        public string StandardizedCaseSensitive
+        {
+            get
+            {
+                return FileManager.RemoveDotDotSlash(FileManager.Standardize(Original, preserveCase: true, makeAbsolute: true));
+            }
+        }
+
         #endregion
 
         /// <summary>
@@ -115,7 +123,7 @@ namespace FlatRedBall.Glue.IO
 
         public FilePath GetDirectoryContainingThis()
         {
-            return FlatRedBall.IO.FileManager.GetDirectory(this.Standardized);
+            return FlatRedBall.IO.FileManager.GetDirectory(this.StandardizedCaseSensitive);
         }
 
         public override int GetHashCode()

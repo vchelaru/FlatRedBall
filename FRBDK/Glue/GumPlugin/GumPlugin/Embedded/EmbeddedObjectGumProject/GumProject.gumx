@@ -37,6 +37,10 @@
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
+    <Name>DefaultForms/PasswordBox</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>DefaultForms/RadioButton</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
@@ -126,6 +130,9 @@
   </BehaviorReference>
   <BehaviorReference>
     <Name>ListBoxItemBehavior</Name>
+  </BehaviorReference>
+  <BehaviorReference>
+    <Name>PasswordBoxBehavior</Name>
   </BehaviorReference>
   <BehaviorReference>
     <Name>RadioButtonBehavior</Name>

@@ -272,53 +272,13 @@ namespace GumPlugin.CodeGeneration
             string controlName = null;
             foreach(var behavior in behaviors)
             {
-                switch(behavior.BehaviorName)
+                var control = FormsControlInfo.AllControls
+                    .FirstOrDefault(item => item.BehaviorName == behavior.BehaviorName);
+
+                // this may not have a control name if it's only a component used in other controls
+                if(control?.ControlName != null)
                 {
-                    case BehaviorGenerator.ButtonBehaviorName:
-                        controlName = "Button";
-                        break;
-                    case BehaviorGenerator.CheckBoxBehaviorName:
-                        controlName = "CheckBox";
-                        break;
-                    case BehaviorGenerator.ComboBoxBehaviorName:
-                        controlName = "ComboBox";
-                        break;
-                    case BehaviorGenerator.ListBoxItemBehaviorName:
-                        controlName = "ListBoxItem";
-                        break;
-                    case BehaviorGenerator.ListBoxBehaviorName:
-                        controlName = "ListBox";
-                        break;
-                    case BehaviorGenerator.RadioButtonBehaviorName:
-                        controlName = "RadioButton";
-                        break;
-                    case BehaviorGenerator.ScrollBarBehaviorName:
-                        controlName = "ScrollBar";
-                        break;
-                    case BehaviorGenerator.ScrollViewerBehaviorName:
-                        controlName = "ScrollViewer";
-                        break;
-                    case BehaviorGenerator.SliderBehaviorName:
-                        controlName = "Slider";
-                        break;
-                    case BehaviorGenerator.TextBoxBehaviorName:
-                        controlName = "TextBox";
-                        break;
-                    case BehaviorGenerator.ToggleBehaviorName:
-                        controlName = "ToggleButton";
-                        break;
-                    case BehaviorGenerator.TreeViewBehaviorName:
-                        controlName = "TreeView";
-                        break;
-                    case BehaviorGenerator.TreeViewItemBehaviorName:
-                        controlName = "TreeViewItem";
-                        break;
-                    case BehaviorGenerator.UserControlBehaviorName:
-                        controlName = "UserControl";
-                        break;
-                }
-                if(controlName != null)
-                {
+                    controlName = control.ControlName;
                     break;
                 }
             }
@@ -802,12 +762,12 @@ namespace GumPlugin.CodeGeneration
         {
             var behaviors = (elementSave as ComponentSave)?.Behaviors;
 
-            if(behaviors?.Any(item =>item.BehaviorName == BehaviorGenerator.ButtonBehaviorName) == true)
+            if(behaviors?.Any(item =>item.BehaviorName == FormsControlInfo.Button.BehaviorName) == true)
             {
                 currentBlock.Line("(new FlatRedBall.Gui.Behaviors.ButtonBehavior()).ApplyTo(this);");
             }
 
-            if(behaviors?.Any(item =>item.BehaviorName == BehaviorGenerator.ToggleBehaviorName) == true)
+            if(behaviors?.Any(item =>item.BehaviorName == FormsControlInfo.ToggleButton.BehaviorName) == true)
             {
                 currentBlock.Line("(new FlatRedBall.Gui.Behaviors.ToggleBehavior()).ApplyTo(this);");
             }
