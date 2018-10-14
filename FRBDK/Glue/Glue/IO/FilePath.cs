@@ -86,7 +86,8 @@ namespace FlatRedBall.Glue.IO
         {
             get
             {
-                return FileManager.RemoveDotDotSlash(FileManager.Standardize(Original, preserveCase: true, makeAbsolute: true));
+                original = original ?? "";
+                return FileManager.RemoveDotDotSlash(StandardizeInternal(original)).ToLowerInvariant();
             }
         }
 
