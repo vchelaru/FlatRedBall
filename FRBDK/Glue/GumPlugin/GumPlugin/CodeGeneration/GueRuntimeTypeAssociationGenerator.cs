@@ -78,7 +78,7 @@ namespace GumPlugin.CodeGeneration
                         var formsControlInfo = FormsControlInfo.AllControls
                             .First(item => item.BehaviorName == behavior.BehaviorName);
 
-                        string controlType = formsControlInfo.BehaviorName;
+                        string controlType = formsControlInfo.ControlName;
 
                         AssociationFulfillment matchingFulfillment = null;
 

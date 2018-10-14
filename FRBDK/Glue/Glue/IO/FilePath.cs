@@ -10,7 +10,7 @@ namespace FlatRedBall.Glue.IO
     {
         #region Fields
 
-        string original;
+        public string Original { get; private set; }
 
         #endregion
 
@@ -40,7 +40,7 @@ namespace FlatRedBall.Glue.IO
         {
             get
             {
-                return FileManager.GetExtension(original);
+                return FileManager.GetExtension(Original);
             }
         }
 
@@ -56,13 +56,13 @@ namespace FlatRedBall.Glue.IO
         {
             get
             {
-                if (string.IsNullOrEmpty(original))
+                if (string.IsNullOrEmpty(Original))
                 {
                     return FileManager.RemoveDotDotSlash(StandardizeInternal(""));
                 }
                 else
                 {
-                    return FileManager.RemoveDotDotSlash(StandardizeInternal(original));
+                    return FileManager.RemoveDotDotSlash(StandardizeInternal(Original));
                 }
             }
         }
@@ -71,13 +71,13 @@ namespace FlatRedBall.Glue.IO
         {
             get
             {
-                if (string.IsNullOrEmpty(original))
+                if (string.IsNullOrEmpty(Original))
                 {
                     return FileManager.RemoveDotDotSlash(StandardizeInternal("")).ToLowerInvariant();
                 }
                 else
                 {
-                    return FileManager.RemoveDotDotSlash(StandardizeInternal(original)).ToLowerInvariant();
+                    return FileManager.RemoveDotDotSlash(StandardizeInternal(Original)).ToLowerInvariant();
                 }
             }
         }
@@ -86,7 +86,7 @@ namespace FlatRedBall.Glue.IO
         {
             get
             {
-                return FileManager.RemoveDotDotSlash(FileManager.Standardize(Original, preserveCase: true, makeAbsolute: true));
+                return FileManager.RemoveDotDotSlash(StandardizeInternal(Original));
             }
         }
 
@@ -98,7 +98,7 @@ namespace FlatRedBall.Glue.IO
         /// <param name="path"></param>
         public FilePath(string path)
         {
-            original = path;
+            Original = path;
         }
 
         public override bool Equals(object obj)
@@ -145,7 +145,7 @@ namespace FlatRedBall.Glue.IO
 
         public FilePath RemoveExtension()
         {
-            var fileString = FileManager.RemoveExtension(original);
+            var fileString = FileManager.RemoveExtension(Original);
 
             return fileString;
         }
