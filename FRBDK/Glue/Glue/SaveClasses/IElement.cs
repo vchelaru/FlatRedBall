@@ -121,6 +121,28 @@ namespace FlatRedBall.Glue.SaveClasses
 			return null;
 		}
 
+        public static string GetStrippedName(this IElement element)
+        {
+            var lastSlash = element.Name.LastIndexOf('\\');
+
+            // +1 to exclude the slash
+            return element.Name.Substring(lastSlash + 1);
+        }
+
+        public static string GetNameWithoutTypePrefix(this IElement element)
+        {
+            var fullName = element.Name;
+
+            if(element is ScreenSave)
+            {
+                return fullName.Substring("Screens\\".Length);
+            }
+            else if(element is EntitySave)
+            {
+                return fullName.Substring("Entities\\".Length);
+            }
+            throw new Exception();
+        }
         
     }
 

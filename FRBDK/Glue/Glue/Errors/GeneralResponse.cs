@@ -9,8 +9,15 @@ namespace FlatRedBall.Glue.Errors
     public class GeneralResponse
     {
         public static GeneralResponse SuccessfulResponse => new GeneralResponse { Succeeded = true };
+        public static GeneralResponse FailedResponse => new GeneralResponse { Succeeded = false };
 
         public bool Succeeded { get; set; }
         public string Message { get; set; }
+
+        public void Fail(string failureMessage)
+        {
+            Succeeded = false;
+            Message = failureMessage;
+        }
     }
 }

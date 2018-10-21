@@ -20,6 +20,7 @@ using System.IO;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.ViewModels;
+using FlatRedBall.Glue.Errors;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -405,8 +406,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
         private static void MoveReferencedFile(TreeNode treeNodeMoving, TreeNode targetNode)
         {
-            while (targetNode != null && targetNode.IsReferencedFile
-                ())
+            var response = GeneralResponse.SuccessfulResponse;
+
+            while (targetNode != null && targetNode.IsReferencedFile())
             {
                 targetNode = targetNode.Parent;
             }
@@ -419,143 +421,192 @@ namespace FlatRedBall.Glue.FormHelpers
 
             ReferencedFileSave referencedFileSave = treeNodeMoving.Tag as ReferencedFileSave;
 
-            if (targetNode.IsGlobalContentContainerNode())
-            {
-                if (targetNode.GetContainingElementTreeNode() == null)
-                {
-                    string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
-                    MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
-                }
-                else
-                {
-                    DragAddFileToGlobalContent(treeNodeMoving, referencedFileSave);
-                    // This means the user wants to add the file
-                    // to global content.
-                }
-            }
-            else if (targetNode.IsFolderForGlobalContentFiles())
-            {
-                string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
-                MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
-            }
-            else if(targetNode.IsRootNamedObjectNode())
-            {
-                AddObjectViewModel viewModel = new AddObjectViewModel();
-                viewModel.SourceType = SourceType.File;
-                viewModel.SourceFile = (treeNodeMoving.Tag as ReferencedFileSave).Name;
-                GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
-            }
-            else if(targetNode.IsNamedObjectNode() && 
-                // dropping on an object in the same element
-                targetNode.GetContainingElementTreeNode() == treeNodeMoving.GetContainingElementTreeNode())
-            {
-                // Dropping the file on an object. If the object's type matches the named object's
-                // entire file, ask the user if they want to make the object come from the file...
-                var rfsAti = referencedFileSave.GetAssetTypeInfo();
-                var namedObject = ((NamedObjectSave)targetNode.Tag);
-                var namedObjectAti = namedObject.GetAssetTypeInfo();
-
-                var shouldAskAboutChangingObjectToBeFromFile =
-                    rfsAti == namedObjectAti && rfsAti != null;
-
-
-                if (shouldAskAboutChangingObjectToBeFromFile)
-                {
-                    var dialogResult = MessageBox.Show(
-                        $"Would you like to set the object {namedObject.InstanceName} to be created from the file {referencedFileSave.Name}?",
-                        $"Set {namedObject.InstanceName} to be from file?",
-                        MessageBoxButtons.YesNo);
-
-                    if(dialogResult == DialogResult.Yes)
-                    {
-                        namedObject.SourceType = SourceType.File;
-                        namedObject.SourceFile = referencedFileSave.Name;
-                        namedObject.SourceName = $"Entire File ({rfsAti.RuntimeTypeName})";
-
-                        GlueCommands.Self.GluxCommands.SaveGluxTask();
-                        GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
-                    }
-                }
-                else
-                {
-                    MessageBox.Show(
-                        $"The object {namedObject.InstanceName} cannot be entirely set from {referencedFileSave.Name}." + 
-                        $"To set this object from an object contained within the file, select the object and change its source values.");
-                }
-
-
-            }
-            else if (!targetNode.IsFilesContainerNode() &&
+            if (!targetNode.IsFilesContainerNode() &&
                 !targetNode.IsFolderInFilesContainerNode() &&
-                !targetNode.IsFolderForGlobalContentFiles())
+                !targetNode.IsFolderForGlobalContentFiles() &&
+                !targetNode.IsNamedObjectNode())
             {
-                MessageBox.Show(@"Can't drop this file here");
-                return;
+                response.Fail(@"Can't drop this file here");
             }
             else if (!string.IsNullOrEmpty(referencedFileSave.SourceFile) ||
                 referencedFileSave.SourceFileCache.Count != 0)
             {
-                MessageBox.Show("Can't move the file\n\n" + referencedFileSave.Name + "\n\nbecause it has source-referencing files.  These sources will be broken " +
+                response.Fail("Can't move the file\n\n" + referencedFileSave.Name + "\n\nbecause it has source-referencing files.  These sources will be broken " +
                     "if the file is moved.  You will need to manually move the file, modify the source references, remove this file, then add the newly-created file.");
-                return;
             }
-            //if (targetNode.IsFolderInFilesContainerNode() || targetNode.IsFilesContainerNode())
-            else
+
+            if(response.Succeeded)
             {
-                // See if we're moving the RFS from one Element to another
-                IElement container = ObjectFinder.Self.GetElementContaining(referencedFileSave);
-                TreeNode elementTreeNodeDroppingIn = targetNode.GetContainingElementTreeNode();
-                IElement elementDroppingIn = null;
-                if (elementTreeNodeDroppingIn != null)
+
+                if (targetNode.IsGlobalContentContainerNode())
                 {
-                    // User didn't drop on an entity, but instead on a node within the entity.
-                    // Let's check if it's a subfolder. If so, we need to tell the user that we
-                    // can't add the file in a subfolder.
-
-                    if (targetNode.IsFolderInFilesContainerNode())
+                    if (targetNode.GetContainingElementTreeNode() == null)
                     {
-                        MessageBox.Show("Shared files cannot be added to subfolders, so it will be added directly to \"Files\"");
+                        string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
+                        MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
                     }
-
-                    elementDroppingIn = elementTreeNodeDroppingIn.Tag as IElement;
-                }
-
-                if (container != elementDroppingIn)
-                {
-                    ElementViewWindow.SelectedNode = targetNode;
-
-                    string absoluteFileName = ProjectManager.MakeAbsolute(referencedFileSave.Name, true);
-                    string creationReport;
-                    string errorMessage;
-
-                    var newlyCreatedFile = ElementCommands.Self.CreateReferencedFileSaveForExistingFile(elementDroppingIn, null, absoluteFileName,
-                                                                    PromptHandleEnum.Prompt, 
-                                                                    referencedFileSave.GetAssetTypeInfo(),
-                                                                    out creationReport,
-                                                                    out errorMessage);
-
-                    ElementViewWindow.UpdateChangedElements();
-
-                    
-                    
-
-                    if (!String.IsNullOrEmpty(errorMessage))
+                    else
                     {
-                        MessageBox.Show(errorMessage);
-                    }
-                    else if(newlyCreatedFile != null)
-                    {
-                        GlueCommands.Self.TreeNodeCommands.SelectTreeNode(newlyCreatedFile);
-
+                        DragAddFileToGlobalContent(treeNodeMoving, referencedFileSave);
+                        // This means the user wants to add the file
+                        // to global content.
                     }
                 }
-                else
+                else if (targetNode.IsFolderForGlobalContentFiles())
                 {
-                    // Not moving into or out of an element
                     string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
                     MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
                 }
+                else if(targetNode.IsRootNamedObjectNode())
+                {
+                    AddObjectViewModel viewModel = new AddObjectViewModel();
+                    viewModel.SourceType = SourceType.File;
+                    viewModel.SourceFile = (treeNodeMoving.Tag as ReferencedFileSave).Name;
+                    GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
+                }
+                else if(targetNode.IsNamedObjectNode() && 
+                    // dropping on an object in the same element
+                    targetNode.GetContainingElementTreeNode() == treeNodeMoving.GetContainingElementTreeNode())
+                {
+                    response = HandleDroppingFileOnObjectInSameElement(targetNode, referencedFileSave);
+
+                }
+
+                //if (targetNode.IsFolderInFilesContainerNode() || targetNode.IsFilesContainerNode())
+                else
+                {
+                    // See if we're moving the RFS from one Element to another
+                    IElement container = ObjectFinder.Self.GetElementContaining(referencedFileSave);
+                    TreeNode elementTreeNodeDroppingIn = targetNode.GetContainingElementTreeNode();
+                    IElement elementDroppingIn = null;
+                    if (elementTreeNodeDroppingIn != null)
+                    {
+                        // User didn't drop on an entity, but instead on a node within the entity.
+                        // Let's check if it's a subfolder. If so, we need to tell the user that we
+                        // can't add the file in a subfolder.
+
+                        if (targetNode.IsFolderInFilesContainerNode())
+                        {
+                            response.Message = "Shared files cannot be added to subfolders, so it will be added directly to \"Files\"";
+                        }
+
+                        elementDroppingIn = elementTreeNodeDroppingIn.Tag as IElement;
+                    }
+
+                    if (container != elementDroppingIn)
+                    {
+                        // Make sure the target element is not named the same as the file itself.
+                        // For example, dropping a file called Level1.tmx in a screen called Level1. 
+                        // This will not compile so we shouldn't allow it.
+
+                        var areNamedTheSame = elementDroppingIn.GetStrippedName() == referencedFileSave.GetInstanceName();    
+
+                        if(areNamedTheSame)
+                        {
+                            response.Fail($"The file {referencedFileSave.GetInstanceName()} has the same name as the target screen. it will not be added since this is not allowed.");
+                        }
+
+                        if(response.Succeeded)
+                        {
+
+                            ElementViewWindow.SelectedNode = targetNode;
+
+                            string absoluteFileName = ProjectManager.MakeAbsolute(referencedFileSave.Name, true);
+                            string creationReport;
+                            string errorMessage;
+
+                            var newlyCreatedFile = ElementCommands.Self.CreateReferencedFileSaveForExistingFile(elementDroppingIn, null, absoluteFileName,
+                                                                            PromptHandleEnum.Prompt, 
+                                                                            referencedFileSave.GetAssetTypeInfo(),
+                                                                            out creationReport,
+                                                                            out errorMessage);
+
+                            ElementViewWindow.UpdateChangedElements();
+
+                            if (!String.IsNullOrEmpty(errorMessage))
+                            {
+                                MessageBox.Show(errorMessage);
+                            }
+                            else if(newlyCreatedFile != null)
+                            {
+                                GlueCommands.Self.TreeNodeCommands.SelectTreeNode(newlyCreatedFile);
+
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Not moving into or out of an element
+                        string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativePath(), true);
+                        MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
+                    }
+                }
             }
+
+            if(!string.IsNullOrEmpty(response.Message))
+            {
+                MessageBox.Show(response.Message);
+            }
+        }
+
+        private static GeneralResponse HandleDroppingFileOnObjectInSameElement(TreeNode targetNode, ReferencedFileSave referencedFileSave)
+        {
+            // Dropping the file on an object. If the object's type matches the named object's
+            // entire file, ask the user if they want to make the object come from the file...
+            var rfsAti = referencedFileSave.GetAssetTypeInfo();
+            var namedObject = ((NamedObjectSave)targetNode.Tag);
+            var namedObjectAti = namedObject.GetAssetTypeInfo();
+
+            var response = GeneralResponse.SuccessfulResponse;
+
+            var shouldAskAboutChangingObjectToBeFromFile =
+                rfsAti == namedObjectAti && rfsAti != null;
+
+
+            if (shouldAskAboutChangingObjectToBeFromFile)
+            {
+                var dialogResult = MessageBox.Show(
+                    $"Would you like to set the object {namedObject.InstanceName} to be created from the file {referencedFileSave.Name}?",
+                    $"Set {namedObject.InstanceName} to be from file?",
+                    MessageBoxButtons.YesNo);
+
+                if (dialogResult == DialogResult.Yes)
+                {
+                    namedObject.SourceType = SourceType.File;
+                    namedObject.SourceFile = referencedFileSave.Name;
+                    namedObject.SourceName = $"Entire File ({rfsAti.RuntimeTypeName})";
+
+                    // This might be the case if the base is SetbyDerived. 
+                    if(namedObject.Instantiate == false)
+                    {
+                        // If an entire object is dropped on this, it's likely that the user wants to create (aka instantiate)
+                        // the object using the entire file. The user may not realize that the object is set to not initialize,
+                        // so let's ask them and offer to set Initialize to true
+                        string message = $"The object {namedObject.InstanceName} has its 'Instantiate' variable set to 'false'. " +
+                            $"This needs to be set to 'true' for the object to be created from the file. Set it to true?";
+
+                        var setToTrueResponse = MessageBox.Show(message,
+                            "Set Instantiate to true?",
+                            MessageBoxButtons.YesNo);
+
+                        if(setToTrueResponse == DialogResult.Yes)
+                        {
+                            namedObject.Instantiate = true;
+                        }
+                    }
+
+                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                }
+            }
+            else
+            {
+                response.Fail(
+                    $"The object {namedObject.InstanceName} cannot be entirely set from {referencedFileSave.Name}." +
+                    $"To set this object from an object contained within the file, select the object and change its source values.");
+            }
+
+            return response;
         }
 
         private static void MoveReferencedFileToDirectory(ReferencedFileSave referencedFileSave, string targetDirectory)
