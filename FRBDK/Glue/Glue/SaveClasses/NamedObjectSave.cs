@@ -348,7 +348,7 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             get;
             set;
-        }
+        } = true;
 
         [CategoryAttribute("Creation"), DefaultValue(true)]
         public bool AddToManagers

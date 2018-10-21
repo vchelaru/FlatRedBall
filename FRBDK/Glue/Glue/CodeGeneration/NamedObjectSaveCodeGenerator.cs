@@ -268,6 +268,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (codeGenerationType == CodeGenerationType.Nothing)
             {
+                codeBlock.Line($"// Not instantiating for {namedObject} because properties on the object prevent it");
                 return;
             }
 
