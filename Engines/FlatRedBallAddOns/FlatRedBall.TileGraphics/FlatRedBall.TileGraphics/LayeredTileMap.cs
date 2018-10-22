@@ -412,13 +412,14 @@ namespace FlatRedBall.TileGraphics
                         int propertyCountFromTileset = 0;
 
                         var objectProperties = objectInstance.properties;
-                        List<property> tilesetProperties = null;
                         if (objectInstance.gid != null)
                         {
-                            tileset = tms.GetTilesetForGid(objectInstance.gid.Value);
-                            if (tileset.TileDictionary.ContainsKey(objectInstance.gid.Value - tileset.Firstgid))
+                            var gidNoFlip = objectInstance.GidNoFlip;
+
+                            tileset = tms.GetTilesetForGid(gidNoFlip.Value);
+                            if (tileset.TileDictionary.ContainsKey(gidNoFlip.Value - tileset.Firstgid))
                             {
-                                tilesetProperties = tileset.TileDictionary[objectInstance.gid.Value - tileset.Firstgid].properties;
+                                tilesetProperties = tileset.TileDictionary[gidNoFlip.Value - tileset.Firstgid].properties;
                                 propertyCountFromTileset = tilesetProperties.Count;
                             }
                         }

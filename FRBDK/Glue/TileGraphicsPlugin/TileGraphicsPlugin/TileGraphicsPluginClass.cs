@@ -131,7 +131,9 @@ namespace TileGraphicsPlugin
             // 1.7.0
             //  - Added support for layer Alpha
             //  - Added support for layer Red, Green, and Blue
-            get { return new Version(1, 7, 0, 0); }
+            // 1.7.1
+            //  - Fixed flipped tiles not creating entities
+            get { return new Version(1, 7, 1, 0); }
         }
 
 
