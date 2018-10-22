@@ -365,7 +365,7 @@ namespace FlatRedBallAddOns.Entities
                     string fileContents;
                     string nameWithoutPath = FileManager.RemovePath(element.Name);
 
-                    fileContents = FileManager.FromFileText(FileManager.RelativeDirectory + element.Name + ".Generated.cs");
+                    fileContents = contentsToSave;
 
                     #endregion
 

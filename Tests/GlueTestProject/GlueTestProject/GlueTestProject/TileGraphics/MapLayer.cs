@@ -138,7 +138,7 @@ namespace TMXGlueLib
         public float Opacity
         {
             get; set;
-        }
+        } = 1.0f;
 
         [XmlIgnore]
         public bool IsVisible

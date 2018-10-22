@@ -118,6 +118,13 @@ namespace FlatRedBall.Scripting
                 ((IDoScriptEngine)this).End();
                 _inDo = false;
             }
+            else
+            {
+                // We didn't have any Dos set to this decision, but the decision
+                // could have had If's. If so, we want to clear them out so that they
+                // don't stick around and "or" with the next decisions unexpectedly
+                CurrentDecision = new DecisionOrList();
+            }
         }
 
         public virtual void Initialize()
@@ -255,7 +262,7 @@ namespace FlatRedBall.Scripting
             generalAction.Name = name;
            
             
-#if DEBUG && WINDOWS
+#if DEBUG && (WINDOWS || PC)
             if (string.IsNullOrEmpty(name))
             {
                 StackTrace stackTrace = new StackTrace();

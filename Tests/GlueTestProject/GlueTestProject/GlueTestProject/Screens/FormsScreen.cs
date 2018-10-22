@@ -12,6 +12,8 @@ using FlatRedBall.Graphics.Particle;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Localization;
 using GlueTestProject.Forms.Controls;
+using FlatRedBall.Forms.Controls;
+using GlueTestProject.TestFramework;
 
 namespace GlueTestProject.Screens
 {
@@ -24,9 +26,27 @@ namespace GlueTestProject.Screens
             control = new CustomUserControl();
             control.Visual.AddToManagers();
 
+
+            TestRadioButtonSelected();
+
 		}
 
-		void CustomActivity(bool firstTimeCalled)
+        private void TestRadioButtonSelected()
+        {
+            var radioButton1 = new RadioButton();
+            radioButton1.Visual.AddToManagers();
+
+            var radioButton2 = new RadioButton();
+            radioButton2.Visual.AddToManagers();
+
+            radioButton1.IsChecked = true;
+            radioButton2.IsChecked.ShouldBe(false);
+
+            radioButton2.IsChecked = true;
+            radioButton1.IsChecked.ShouldBe(false, "because checking the 2nd should uncheck the first");
+        }
+
+        void CustomActivity(bool firstTimeCalled)
 		{
             IsActivityFinished = true;
 

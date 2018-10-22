@@ -84,7 +84,7 @@ namespace FlatRedBall.Scripting
 
         public override string ToString()
         {
-#if DEBUG && WINDOWS
+#if DEBUG && (WINDOWS || PC)
 
             string decisionString = null;
 
@@ -124,7 +124,7 @@ namespace FlatRedBall.Scripting
 
 
 
-#if DEBUG && WINDOWS
+#if DEBUG && (WINDOWS || PC)
         private static string GetStringForScriptDecision(IScriptDecision decisionToUse)
         {
             string decisionString = "";

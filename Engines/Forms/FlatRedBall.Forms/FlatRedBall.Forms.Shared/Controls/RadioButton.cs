@@ -309,5 +309,14 @@ namespace FlatRedBall.Forms.Controls
 #endif
 
         #endregion
+
+        protected override void OnChecked()
+        {
+            base.OnChecked();
+
+            // This will set IsChecked to true, but it's already set to true so that
+            // won't repeat indefinitely.
+            SetThisAsOnlyCheckedInGroup();
+        }
     }
 }

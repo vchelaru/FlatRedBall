@@ -31,5 +31,8 @@ using System.Runtime.InteropServices;
 // 1.2:
 //   - Adds StackPanel
 //   - Adds AddChild method
-[assembly: AssemblyVersion("1.2.0.0")]
-[assembly: AssemblyFileVersion("1.2.0.0")]
+// 1.2.1:
+//   - Fixed bug where setting IsChecked on a RadioButton would not uncheck others in the
+//     same group.
+[assembly: AssemblyVersion("1.2.1.0")]
+[assembly: AssemblyFileVersion("1.2.1.0")]

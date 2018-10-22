@@ -14,6 +14,12 @@ using FlatRedBall.Debugging;
 using FlatRedBall.Math;
 using TMXGlueLib.DataTypes;
 
+#if TILEMAPS_ALPHA_AND_COLOR
+using VertexType = Microsoft.Xna.Framework.Graphics.VertexPositionTexture;
+#else
+using VertexType = Microsoft.Xna.Framework.Graphics.VertexPositionTexture;
+#endif
+
 namespace FlatRedBall.TileGraphics
 {
     public enum SortAxis
@@ -45,7 +51,8 @@ namespace FlatRedBall.TileGraphics
         ///
         /// 0   1
         /// </remarks>
-        protected VertexPositionTexture[] mVertices;
+        protected VertexType[] mVertices;
+
         protected Texture2D mTexture;
         #region XML Docs
         /// <summary>
@@ -58,6 +65,10 @@ namespace FlatRedBall.TileGraphics
 
         private int mCurrentNumberOfTiles = 0;
 
+        public float Red = 1;
+        public float Green = 1;
+        public float Blue = 1;
+        public float Alpha = 1;
 
         private SortAxis mSortAxis;
 
@@ -953,8 +964,15 @@ namespace FlatRedBall.TileGraphics
         {
             // Set graphics states
             FlatRedBallServices.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
-            FlatRedBall.Graphics.Renderer.BlendOperation = BlendOperation.Regular;
 
+            var oldBlendOp = FlatRedBall.Graphics.Renderer.BlendOperation;
+
+#if TILEMAPS_ALPHA_AND_COLOR
+            FlatRedBall.Graphics.Renderer.BlendOperation = BlendOperation.Regular;
+            FlatRedBall.Graphics.Renderer.ColorOperation = ColorOperation.Modulate;
+#else
+            FlatRedBall.Graphics.Renderer.BlendOperation = BlendOperation.Regular;
+#endif
             Effect effectTouse = null;
 
             if (ZBuffered)
@@ -973,6 +991,13 @@ namespace FlatRedBall.TileGraphics
 
                 mBasicEffect.World = Matrix.CreateScale(RenderingScale) * base.TransformationMatrix;
                 mBasicEffect.Texture = mTexture;
+
+                mBasicEffect.DiffuseColor = new Vector3(Red, Green, Blue);
+                mBasicEffect.Alpha = Alpha;
+
+#if TILEMAPS_ALPHA_AND_COLOR
+                mBasicEffect.VertexColorEnabled = true;
+#endif
                 effectTouse = mBasicEffect;
             }
 
@@ -987,7 +1012,7 @@ namespace FlatRedBall.TileGraphics
             Renderer.TextureAddressMode = TextureAddressMode.Clamp;
 
 
-
+            FlatRedBall.Graphics.Renderer.BlendOperation = oldBlendOp;
 
             return effectTouse;
         }
@@ -1247,7 +1272,7 @@ namespace FlatRedBall.TileGraphics
             var oldVerts = mVertices;
             var oldIndexes = mIndices;
 
-            mVertices = new VertexPositionTexture[totalNumberOfVerts];
+            mVertices = new VertexType[totalNumberOfVerts];
             mIndices = new int[totalNumberOfIndexes];
 
             oldVerts.CopyTo(mVertices, 0);

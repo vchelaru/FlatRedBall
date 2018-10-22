@@ -31,6 +31,7 @@ namespace FlatRedBall.Forms.Controls
 
                     if(isChecked == true)
                     {
+                        OnChecked();
                         Checked?.Invoke(this, null);
                     }
                     else if(isChecked == false)
@@ -136,6 +137,11 @@ namespace FlatRedBall.Forms.Controls
         }
 
         #endregion
+
+        protected virtual void OnChecked()
+        {
+
+        }
 
         protected override void OnClick()
         {

@@ -52,6 +52,14 @@ namespace GameScriptingPlugin
             get { return "Game Scripting Plugin"; }
         }
 
+        // 1.3 
+        // - Fixed bug where creating If then calling EndActiveIf wouldn't clear out the if's, and they'd "or" with
+        //   the next if
+        // - Added check for PC precompile directive so scripting engine could be used on Linux and Mac
+        public override Version Version
+        {
+            get { return new Version(1, 3); }
+        }
         #endregion
 
         public override bool ShutDown(PluginShutDownReason reason)
@@ -98,10 +106,6 @@ namespace GameScriptingPlugin
 
 
 
-        public override Version Version
-        {
-            get { return new Version(1, 2); }
-        }
 
 
         void HandleAddGameScript(object sender, EventArgs args)
