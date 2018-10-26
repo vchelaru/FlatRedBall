@@ -235,6 +235,25 @@ namespace GumPlugin.CodeGeneration
                         // important information accidentally.  But because of that we have to make sure that the variable we're working with is
                         // valid for the type of object we're dealing with.  
                         var defaultState = baseElement.DefaultState;
+
+                        // October 26, 2018
+                        // Bernardo reported
+                        // a crash caused by the
+                        // RecursiveVariableFinder
+                        // being given a state without
+                        // a ParentContainer. This is a
+                        // sign that the element hasn't
+                        // been initialized yet. Elements
+                        // should be initialized, but if they're
+                        // not, we could just catch it here and initialize
+                        // it on the spot. Not sure if I like this solution
+                        // or not. It allows code to behave a little unpredictably,
+                        // but at the same time, we could simply solve the problem by
+                        // initializing here, so I'm going to do that:
+                        if(defaultState.ParentContainer == null)
+                        {
+                            baseElement.Initialize(null);
+                        }
                         
                         RecursiveVariableFinder rvf = new RecursiveVariableFinder(defaultState);
 
