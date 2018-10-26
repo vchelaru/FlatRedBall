@@ -12,13 +12,12 @@ namespace FlatRedBall.Forms.Controls
     {
         #region Fields/Properties
 
-
+#if !UWP
         SecureString securePassword = new SecureString();
         public SecureString SecurePassword
         {
             get { return securePassword; }
-        } 
-
+        }
         public string Password
         {
             get
@@ -29,9 +28,9 @@ namespace FlatRedBall.Forms.Controls
             set
             {
                 SecurePassword.Clear();
-                if(value != null)
+                if (value != null)
                 {
-                    foreach(var character in value)
+                    foreach (var character in value)
                     {
                         SecurePassword.AppendChar(character);
                     }
@@ -56,6 +55,28 @@ namespace FlatRedBall.Forms.Controls
                 System.Runtime.InteropServices.Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
             }
         }
+#else
+        string password;
+        public string Password
+        {
+            get
+            {
+                return password;
+            }
+            set
+            {
+                if(password != value)
+                {
+                    password = value;
+
+                    UpdateDisplayedCharacters();
+
+                    PasswordChanged?.Invoke(this, null);
+                }
+            }
+        }
+#endif
+
 
         // Update Gum's default to include this first:
         //public char PasswordChar { get; set; } = '●';
@@ -67,7 +88,11 @@ namespace FlatRedBall.Forms.Controls
         {
             get
             {
+#if UWP
+                return new string(PasswordChar, Password?.Length ?? 0);
+#else
                 return new string(PasswordChar, SecurePassword.Length);
+#endif
             }
         }
 
@@ -112,7 +137,16 @@ namespace FlatRedBall.Forms.Controls
                 }
                 else
                 {
+#if UWP
+                    if(password == null)
+                    {
+                        password = "";
+                    }
+                    password = this.password.Insert(CaretIndex, character.ToString());
+#else
                     this.SecurePassword.InsertAt(CaretIndex, character);
+
+#endif
                     caretIndex++;
 
                     UpdateToCaretIndex();
@@ -130,9 +164,13 @@ namespace FlatRedBall.Forms.Controls
             {
                 if (isCtrlDown)
                 {
-                    for(int i = caretIndex-1; i > -1; i--)
+                    for (int i = caretIndex - 1; i > -1; i--)
                     {
+#if UWP
+                        password = password.Remove(i);
+#else
                         SecurePassword.RemoveAt(i);
+#endif
                     }
 
                     caretIndex = 0;
@@ -144,7 +182,11 @@ namespace FlatRedBall.Forms.Controls
                     // caret is at the end of the word, modifying the word will shift the caret to the left, 
                     // and that could cause it to shift over two times.
                     caretIndex--;
+#if UWP
+                    password = password.Remove(whereToRemoveFrom);
+#else
                     SecurePassword.RemoveAt(whereToRemoveFrom);
+#endif
                 }
                 UpdateDisplayedCharacters();
                 PasswordChanged?.Invoke(this, null);
@@ -153,6 +195,15 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void HandleDelete()
         {
+#if UWP
+            if (caretIndex < (password?.Length ?? 0))
+            {
+                password = password.Remove(caretIndex);
+
+                UpdateDisplayedCharacters();
+                PasswordChanged?.Invoke(this, null);
+            }
+#else
             if (caretIndex < (SecurePassword?.Length ?? 0))
             {
                 SecurePassword.RemoveAt(caretIndex);
@@ -160,11 +211,16 @@ namespace FlatRedBall.Forms.Controls
                 UpdateDisplayedCharacters();
                 PasswordChanged?.Invoke(this, null);
             }
+#endif
         }
 
         public void Clear()
         {
+#if UWP
+            password = null;
+#else
             SecurePassword.Clear();
+#endif
             UpdateDisplayedCharacters();
             PasswordChanged?.Invoke(this, null);
         }
@@ -172,8 +228,12 @@ namespace FlatRedBall.Forms.Controls
 
         private void UpdateDisplayedCharacters()
         {
+#if UWP
+            var newText = new string(PasswordChar, password?.Length ?? 0);
+#else
             var newText = new string(PasswordChar, SecurePassword.Length);
-            if(this.coreTextObject.RawText != newText)
+#endif
+            if (this.coreTextObject.RawText != newText)
             {
                 textComponent.SetProperty("Text", newText);
 
