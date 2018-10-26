@@ -44,6 +44,9 @@ namespace GlueTestProject.Screens
 
             radioButton2.IsChecked = true;
             radioButton1.IsChecked.ShouldBe(false, "because checking the 2nd should uncheck the first");
+
+            radioButton1.Visual.RemoveFromManagers();
+            radioButton2.Visual.RemoveFromManagers();
         }
 
         void CustomActivity(bool firstTimeCalled)

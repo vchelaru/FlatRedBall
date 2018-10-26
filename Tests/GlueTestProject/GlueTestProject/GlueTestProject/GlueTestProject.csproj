@@ -192,6 +192,10 @@
     <Compile Include="Entities\BaseFactoryEntity.Generated.cs">
       <DependentUpon>BaseFactoryEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\BaseFolderedEntity\BaseFolderedEntity.cs" />
+    <Compile Include="Entities\BaseFolderedEntity\BaseFolderedEntity.Generated.cs">
+      <DependentUpon>BaseFolderedEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\BaseNotPooled.cs" />
     <Compile Include="Entities\BaseNotPooled.Generated.cs">
       <DependentUpon>BaseNotPooled.cs</DependentUpon>
@@ -315,6 +319,10 @@
     <Compile Include="Entities\DerivedEventEntity.cs" />
     <Compile Include="Entities\DerivedEventEntity.Generated.cs">
       <DependentUpon>DerivedEventEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\DerivedFolderedEntity\DerivedFolderedEntity.cs" />
+    <Compile Include="Entities\DerivedFolderedEntity\DerivedFolderedEntity.Generated.cs">
+      <DependentUpon>DerivedFolderedEntity.cs</DependentUpon>
     </Compile>
     <Compile Include="Entities\DerivedFromBaseWithCategorizedStates.cs" />
     <Compile Include="Entities\DerivedFromBaseWithCategorizedStates.Generated.cs">

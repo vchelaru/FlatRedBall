@@ -791,6 +791,15 @@ namespace TMXGlueLib
         [XmlIgnore]
         public uint? gid { get; set; }
 
+        [XmlIgnore]
+        public uint? GidNoFlip
+        {
+            get
+            {
+                return 0x0fffffff & gid;
+            }
+        }
+
         private IDictionary<string, string> propertyDictionaryField = null;
 
         [XmlIgnore]

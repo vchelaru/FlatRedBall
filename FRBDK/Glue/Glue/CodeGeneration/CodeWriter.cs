@@ -346,50 +346,11 @@ namespace FlatRedBallAddOns.Entities
             {
                 codeGenerator.GenerateAdditionalClasses(namespaceBlock, element);
             }
-           
             
             string generatedCodeFileName = element.Name + ".Generated.cs";
             var contentsToSave = rootBlock.ToString();
+
             CodeWriter.SaveFileContents(contentsToSave, FileManager.RelativeDirectory + generatedCodeFileName, true);
-
-
-            #region Extra stuff if it's a ScreenSave
-
-            if (element is ScreenSave)
-            {
-                bool inherits = !string.IsNullOrEmpty(element.BaseElement) && element.BaseElement != "<NONE>";
-                if (inherits)
-                {
-                    #region Set the inheritance to the proper class
-
-                    string fileContents;
-                    string nameWithoutPath = FileManager.RemovePath(element.Name);
-
-                    fileContents = contentsToSave;
-
-                    #endregion
-
-                    #region Replace the ContentManagerName
-
-                    contentManagerName =
-                        (element as ScreenSave).ContentManagerForCodeGeneration;
-
-                    if (fileContents.Contains("base(" + contentManagerName + ")"))
-                    {
-                        // use the lower-case contentManagerName since that's the argument that's given to
-                        // the base class' constructor.
-                        fileContents = fileContents.Replace("base(" + contentManagerName + ")",
-                            "base()");
-                    }
-
-                    #endregion
-                    
-
-                    CodeWriter.SaveFileContents(fileContents, FileManager.RelativeDirectory + element.Name + ".Generated.cs", true);
-                }
-            }
-
-            #endregion
 
             #region Extra stuff if it's an EntitySave
 
@@ -404,13 +365,13 @@ namespace FlatRedBallAddOns.Entities
                 #region Ok, the code is generated, but we may still need to give it a base class
 
 
-                bool inherits;
+                bool inheritsFromEntity = element.InheritsFromEntity();
 
                 
 
                 EntitySave rootEntitySave;
-                List<string> inheritanceList = InheritanceCodeWriter.Self.GetInheritanceList(element, entitySave, out inherits, out rootEntitySave);
-                InheritanceCodeWriter.Self.RemoveCallsForInheritance(entitySave, inherits, rootEntitySave, ref fileContents, ref shouldSave);
+                List<string> inheritanceList = InheritanceCodeWriter.Self.GetInheritanceList(element, entitySave, out rootEntitySave);
+                InheritanceCodeWriter.Self.RemoveCallsForInheritance(entitySave, inheritsFromEntity, rootEntitySave, ref fileContents, ref shouldSave);
 
                 #endregion
 
@@ -478,7 +439,12 @@ namespace FlatRedBallAddOns.Entities
 
                 var constructor = codeBlock.Constructor("public", elementName, "string contentManagerName, bool addToManagers", "base()");
                 constructor.Line("ContentManagerName = contentManagerName;");
-                constructor.Line("InitializeEntity(addToManagers);");
+
+                // The base will handle this
+                if (element.InheritsFromEntity() == false)
+                {
+                    constructor.Line("InitializeEntity(addToManagers);");
+                }
             }
             else // screen save
             {
@@ -503,11 +469,12 @@ namespace FlatRedBallAddOns.Entities
 
             if (element is EntitySave)
             {
-                bool inherits;
+                bool inheritsFromEntity = element.InheritsFromEntity();
                 var entitySave = element as EntitySave;
 
                 EntitySave rootEntitySave;
-                List<string> inheritanceList = InheritanceCodeWriter.Self.GetInheritanceList(element, entitySave, out inherits, out rootEntitySave);
+                List<string> inheritanceList = 
+                    InheritanceCodeWriter.Self.GetInheritanceList(element, entitySave, out rootEntitySave);
 
                 foreach (string inheritance in inheritanceList)
                 {
@@ -2653,12 +2620,16 @@ namespace FlatRedBallAddOns.Entities
             }
         }
 
-        public static void EliminateCall(string call, ref string contents)
+        public static bool EliminateCall(string call, ref string contents)
         {
+            var removed = false;
             if (contents.Contains(call))
             {
+                removed = true;
                 contents = contents.Replace(call, "");
             }
+
+            return removed;
         }
 
         internal static bool IsVariableHandledByCustomCodeGenerator(CustomVariable customVariable, IElement element)

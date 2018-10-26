@@ -412,6 +412,7 @@ namespace FlatRedBall.TileGraphics
                         int propertyCountFromTileset = 0;
 
                         var objectProperties = objectInstance.properties;
+                        List<property> tilesetProperties = null;
                         if (objectInstance.gid != null)
                         {
                             var gidNoFlip = objectInstance.GidNoFlip;

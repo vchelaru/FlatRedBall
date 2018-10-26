@@ -17,10 +17,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
 
-        public List<string> GetInheritanceList(IElement element, EntitySave entitySave, out bool inheritsFromEntity, out EntitySave rootEntitySave)
+        public List<string> GetInheritanceList(IElement element, EntitySave entitySave, out EntitySave rootEntitySave)
         {
 
-            inheritsFromEntity = !string.IsNullOrEmpty(element.BaseElement) && element.BaseElement != "<NONE>" && !element.InheritsFromFrbType();
+            var inheritsFromEntity = !string.IsNullOrEmpty(element.BaseElement) && 
+                element.BaseElement != "<NONE>" && !element.InheritsFromFrbType();
+
             rootEntitySave = null;
 
             if (inheritsFromEntity)
@@ -79,15 +81,6 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (inheritsFromEntity)
             {
-                CodeWriter.EliminateCall("FlatRedBall.SpriteManager.AddPositionedObject(this);", ref fileContents);
-                CodeWriter.EliminateCall("\tInitializeEntity(addToManagers);", ref fileContents);
-                CodeWriter.EliminateCall(" InitializeEntity(addToManagers);", ref fileContents);
-
-                //EliminateCall("\tContentManagerName = contentManagerName;", ref fileContents);
-                //EliminateCall(" ContentManagerName = contentManagerName;", ref fileContents);
-
-
-
                 #region Set the call to base(ContentManagerName)
 
                 if (fileContents.Contains("base()"))
@@ -98,39 +91,6 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 }
 
-                #endregion
-
-                #region Fake a form of inheitance for the static ContentManager
-
-                const string stringToReplace = @"        public static string ContentManagerName
-        {
-            get;
-            set;
-        }";
-
-
-                try
-                {
-                    // If the base Entity is in a different folder than the derived
-                    // and if the base is named the same as its containing folder name
-                    // then we need to have the full path.  Since it's generated code anyway
-                    // let's always use the full anem.
-                    //string rootName = FileManager.RemovePath(rootEntitySave.Name);
-                    string rootName = FileManager.RemovePath(rootEntitySave.Name.Replace("\\", "."));
-
-                    string toReplaceWith = string.Format(@"        public static new string ContentManagerName
-        {{
-            get{{ return {0}.ContentManagerName;}}
-            set{{ {0}.ContentManagerName = value;}}
-        }}", rootName);
-
-
-                    fileContents = fileContents.Replace(stringToReplace, toReplaceWith);
-                }
-                catch
-                {
-                    int m = 3;
-                }
                 #endregion
 
                 shouldSave = true;
