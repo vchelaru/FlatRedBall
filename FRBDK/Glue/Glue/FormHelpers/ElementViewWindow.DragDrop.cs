@@ -424,7 +424,8 @@ namespace FlatRedBall.Glue.FormHelpers
             if (!targetNode.IsFilesContainerNode() &&
                 !targetNode.IsFolderInFilesContainerNode() &&
                 !targetNode.IsFolderForGlobalContentFiles() &&
-                !targetNode.IsNamedObjectNode())
+                !targetNode.IsNamedObjectNode() && 
+                !targetNode.IsRootNamedObjectNode())
             {
                 response.Fail(@"Can't drop this file here");
             }
