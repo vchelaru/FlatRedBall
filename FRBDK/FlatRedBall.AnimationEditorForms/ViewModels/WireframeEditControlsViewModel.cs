@@ -36,6 +36,26 @@ namespace FlatRedBall.AnimationEditorForms.ViewModels
             }
         }
 
+        public bool IsSnapToGridChecked
+        {
+            get { return Get<bool>(); }
+            set { Set(value); }
+        }
+
+        [DependsOn(nameof(IsSnapToGridChecked))]
+        public bool IsGridSizeBoxEnabled
+        {
+            get
+            {
+                return IsSnapToGridChecked;
+            }
+        }
+        public int GridSize
+        {
+            get { return Get<int>(); }
+            set { Set(value); }
+        }
+
         public ObservableCollection<FilePath> AvailableTextures
         {
             get; private set;
@@ -43,6 +63,8 @@ namespace FlatRedBall.AnimationEditorForms.ViewModels
 
         public WireframeEditControlsViewModel()
         {
+            GridSize = 16;
+
         }
 
     }

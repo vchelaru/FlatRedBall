@@ -63,7 +63,7 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 
     public static class CodeLineExtensionMethods
     {
-        public static ICodeBlock Line(this ICodeBlock pCodeBlock, string value)
+        public static ICodeBlock Line(this ICodeBlock pCodeBlock, string value = null)
         {
             var returnValue = new CodeLine(value);
 

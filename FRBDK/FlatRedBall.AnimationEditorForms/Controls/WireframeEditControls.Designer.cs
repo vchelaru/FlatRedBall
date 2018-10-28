@@ -29,8 +29,6 @@
         private void InitializeComponent()
         {
             this.ComboBox = new System.Windows.Forms.ComboBox();
-            this.SnapToGridCheckBox = new System.Windows.Forms.CheckBox();
-            this.GridSizeTextBox = new System.Windows.Forms.TextBox();
             this.ShowFullAlphaCheckBox = new System.Windows.Forms.CheckBox();
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.wireframeEditControlsWpf1 = new FlatRedBall.AnimationEditorForms.Controls.WireframeEditControlsWpf();
@@ -44,26 +42,6 @@
             this.ComboBox.Size = new System.Drawing.Size(72, 21);
             this.ComboBox.TabIndex = 0;
             this.ComboBox.SelectedIndexChanged += new System.EventHandler(this.ComboBox_SelectedIndexChanged);
-            // 
-            // SnapToGridCheckBox
-            // 
-            this.SnapToGridCheckBox.AutoSize = true;
-            this.SnapToGridCheckBox.Location = new System.Drawing.Point(419, 4);
-            this.SnapToGridCheckBox.Name = "SnapToGridCheckBox";
-            this.SnapToGridCheckBox.Size = new System.Drawing.Size(85, 17);
-            this.SnapToGridCheckBox.TabIndex = 2;
-            this.SnapToGridCheckBox.Text = "Snap to Grid";
-            this.SnapToGridCheckBox.UseVisualStyleBackColor = true;
-            this.SnapToGridCheckBox.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            // 
-            // GridSizeTextBox
-            // 
-            this.GridSizeTextBox.Enabled = false;
-            this.GridSizeTextBox.Location = new System.Drawing.Point(502, 2);
-            this.GridSizeTextBox.Name = "GridSizeTextBox";
-            this.GridSizeTextBox.Size = new System.Drawing.Size(43, 20);
-            this.GridSizeTextBox.TabIndex = 3;
-            this.GridSizeTextBox.Text = "16";
             // 
             // ShowFullAlphaCheckBox
             // 
@@ -81,7 +59,7 @@
             this.elementHost1.ForeColor = System.Drawing.SystemColors.Control;
             this.elementHost1.Location = new System.Drawing.Point(79, 0);
             this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(334, 23);
+            this.elementHost1.Size = new System.Drawing.Size(480, 23);
             this.elementHost1.TabIndex = 5;
             this.elementHost1.Text = "elementHost1";
             this.elementHost1.Child = this.wireframeEditControlsWpf1;
@@ -92,8 +70,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.elementHost1);
             this.Controls.Add(this.ShowFullAlphaCheckBox);
-            this.Controls.Add(this.GridSizeTextBox);
-            this.Controls.Add(this.SnapToGridCheckBox);
             this.Controls.Add(this.ComboBox);
             this.Name = "WireframeEditControls";
             this.Size = new System.Drawing.Size(710, 23);
@@ -105,8 +81,6 @@
         #endregion
 
         private System.Windows.Forms.ComboBox ComboBox;
-        private System.Windows.Forms.CheckBox SnapToGridCheckBox;
-        private System.Windows.Forms.TextBox GridSizeTextBox;
         private System.Windows.Forms.CheckBox ShowFullAlphaCheckBox;
         private System.Windows.Forms.Integration.ElementHost elementHost1;
         private WireframeEditControlsWpf wireframeEditControlsWpf1;

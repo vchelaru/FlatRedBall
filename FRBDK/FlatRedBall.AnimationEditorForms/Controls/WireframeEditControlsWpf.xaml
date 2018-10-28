@@ -5,12 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FlatRedBall.AnimationEditorForms.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="40" Width="300" Background="#FFEBEBEB">
+             d:DesignHeight="40" Width="500" Background="#FFEBEBEB">
     <StackPanel Orientation="Horizontal">
         <CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IsMagicWandSelected}">
             <Image Source="/FlatRedBall.AnimationEditorForms;component/Content/MagicWand.png"></Image>
         </CheckBox>
         <ComboBox Margin="30,0,0,0" SelectedItem="{Binding SelectedTextureFilePath}" 
+                  VerticalAlignment="Center"
                   Width="250" ItemsSource="{Binding AvailableTextures}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
@@ -22,5 +23,13 @@
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
+        <CheckBox IsChecked="{Binding IsSnapToGridChecked}" VerticalAlignment="Center"
+                  VerticalContentAlignment="Center">
+            Snap to Grid
+        </CheckBox>
+        <TextBox Width="60" Margin="5,0,0,0" 
+                 VerticalAlignment="Center"
+                 Text="{Binding GridSize}"
+                 IsEnabled="{Binding IsGridSizeBoxEnabled}"></TextBox>
     </StackPanel>
 </UserControl>

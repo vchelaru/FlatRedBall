@@ -46,9 +46,9 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region PooledByFactory
 
-            else if (changedMember == "PooledByFactory")
+            else if (changedMember == nameof(entitySave.PooledByFactory) && (bool)oldValue != entitySave.PooledByFactory)
             {
-                if ((bool)oldValue == false && entitySave.PooledByFactory)
+                if (entitySave.PooledByFactory)
                 {
                     // We should ask the user
                     // if Glue should set the reset
@@ -60,32 +60,21 @@ namespace FlatRedBall.Glue.SetVariable
                     if (result == DialogResult.Yes)
                     {
                         FactoryManager.Self.SetResetVariablesForEntitySave(entitySave);
+                    }
+                }
+                else // user set it to false
+                {
+                    var hasResetVariables = entitySave.AllNamedObjects.Any(item => item.VariablesToReset?.Any() == true);
+                    if(hasResetVariables)
+                    {
+                        string message = "Would you like to remove reset variables for all contained objects? Select 'Yes' if you added reset variables earlier for pooling";
 
-                        // See if there are any base entities that have objects which are not exposed.
-                        // If so, those aren't going to get reset variables, so we need to warn the user
-                        // about that.
-                        // Actually it seems like glue does actually reset base entity variables, so...
-                        // we don't need this
+                        var dialogResult = MessageBox.Show(message, "Remove reset variables?", MessageBoxButtons.YesNo);
 
-                        //var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(entitySave);
-
-                        //string inheritanceErrorMessage = "";
-
-                        //foreach (var element in baseElements)
-                        //{
-                        //    foreach (var nos in element.AllNamedObjects.Where(item => item.ExposedInDerived == false))
-                        //    {
-                        //        if (string.IsNullOrEmpty(inheritanceErrorMessage))
-                        //        {
-                        //            inheritanceErrorMessage = "The following Objects have their SetByDerived set to false, so they cannot be properly reset:";
-                        //        }
-
-                        //        inheritanceErrorMessage += "\n" + nos.ToString();
-                        //    }
-                        //}
-
-
-
+                        if(dialogResult == DialogResult.Yes)
+                        {
+                            FactoryManager.Self.RemoveResetVariablesForEntitySave(entitySave);
+                        }
                     }
                 }
 

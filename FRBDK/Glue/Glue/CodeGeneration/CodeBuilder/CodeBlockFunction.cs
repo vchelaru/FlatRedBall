@@ -13,7 +13,7 @@
 
     public static class CodeBlockFunctionExtensions
     {
-        public static ICodeBlock Function(this ICodeBlock codeBlock, string pre, string name, string parameters)
+        public static ICodeBlock Function(this ICodeBlock codeBlock, string pre, string name, string parameters = null)
         {
             return Function(codeBlock, pre, name, parameters, null);
         }

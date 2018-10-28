@@ -216,7 +216,24 @@ namespace FlatRedBall.Glue.Factories
             {
                 CodeWriter.GenerateCode(element);
             }
-            // Not sure we don't save the project here...
+
+            GluxCommands.Self.SaveGlux();
+        }
+
+        internal void RemoveResetVariablesForEntitySave(EntitySave entitySave)
+        {
+            foreach(var namedObject in entitySave.AllNamedObjects)
+            {
+                namedObject.VariablesToReset.Clear();
+            }
+
+            CodeWriter.GenerateCode(entitySave);
+
+            foreach (var element in entitySave.GetAllBaseEntities())
+            {
+                CodeWriter.GenerateCode(element);
+            }
+
             GluxCommands.Self.SaveGlux();
         }
 

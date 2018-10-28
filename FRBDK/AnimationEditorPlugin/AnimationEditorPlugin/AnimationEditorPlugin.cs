@@ -93,7 +93,9 @@ namespace AnimationEditorPlugin
             // - Large reduction in complexity of camera positioning - now it's simply based on the selected texture
             //   and previous position for that texture
             // - Texture dropdown now reflects the selected AnimaitonFrame.
-            get { return new Version(3, 1, 0); }
+            // 3.1.1
+            // - Fixed snapping size not applying until checkbox is checked/unchecked.
+            get { return new Version(3, 1, 1); }
         }
 
         public bool IsSelectedItemSprite

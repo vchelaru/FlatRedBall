@@ -32,14 +32,20 @@
             this.TreeViewAndEverythingElse = new System.Windows.Forms.SplitContainer();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.AnimationsTab = new System.Windows.Forms.TabPage();
+            this.AnimationTreeView = new FlatRedBall.AnimationEditorForms.Controls.CustomNodeColorTreeView();
             this.TreeViewRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
+            this.animationsListToolBar1 = new FlatRedBall.AnimationEditorForms.Controls.AnimationsListToolBar();
             this.TexturesPage = new System.Windows.Forms.TabPage();
             this.TexturesTreeView = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.SelectedItemPropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.tileMapInfoWindow1 = new FlatRedBall.AnimationEditorForms.Controls.TileMapInfoWindow();
             this.UnitTypeComboBox = new System.Windows.Forms.ComboBox();
             this.PreviewSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.WireframeTopUiControl = new FlatRedBall.AnimationEditorForms.Controls.WireframeEditControls();
             this.PreviewGraphicsControl = new XnaAndWinforms.GraphicsDeviceControl();
+            this.previewControls1 = new FlatRedBall.AnimationEditorForms.Controls.PreviewControls();
             this.MenuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,12 +57,6 @@
             this.frameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.CursorStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
-            this.animationsListToolBar1 = new FlatRedBall.AnimationEditorForms.Controls.AnimationsListToolBar();
-            this.AnimationTreeView = new FlatRedBall.AnimationEditorForms.Controls.CustomNodeColorTreeView();
-            this.tileMapInfoWindow1 = new FlatRedBall.AnimationEditorForms.Controls.TileMapInfoWindow();
-            this.zoomControl1 = new FlatRedBall.AnimationEditorForms.Controls.WireframeEditControls();
-            this.previewControls1 = new FlatRedBall.AnimationEditorForms.Controls.PreviewControls();
             ((System.ComponentModel.ISupportInitialize)(this.TreeViewAndEverythingElse)).BeginInit();
             this.TreeViewAndEverythingElse.Panel1.SuspendLayout();
             this.TreeViewAndEverythingElse.Panel2.SuspendLayout();
@@ -119,10 +119,41 @@
             this.AnimationsTab.Text = "Animations";
             this.AnimationsTab.UseVisualStyleBackColor = true;
             // 
+            // AnimationTreeView
+            // 
+            this.AnimationTreeView.AllowDrop = true;
+            this.AnimationTreeView.ContextMenuStrip = this.TreeViewRightClickMenu;
+            this.AnimationTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.AnimationTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
+            this.AnimationTreeView.HideSelection = false;
+            this.AnimationTreeView.Location = new System.Drawing.Point(3, 33);
+            this.AnimationTreeView.Name = "AnimationTreeView";
+            this.AnimationTreeView.Size = new System.Drawing.Size(147, 322);
+            this.AnimationTreeView.TabIndex = 0;
+            this.AnimationTreeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.AnimationTreeView_ItemDrag);
+            this.AnimationTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.AnimationTreeView_AfterSelect);
+            this.AnimationTreeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.AnimationTreeView_DragDrop);
+            this.AnimationTreeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.AnimationTreeView_DragEnter);
+            this.AnimationTreeView.DragOver += new System.Windows.Forms.DragEventHandler(this.AnimationTreeView_DragOver);
+            this.AnimationTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AnimationTreeView_KeyDown);
+            this.AnimationTreeView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.AnimationTreeView_KeyPress);
+            this.AnimationTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.AnimationTreeView_MouseClick);
+            this.AnimationTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.AnimationTreeView_MouseDown);
+            // 
             // TreeViewRightClickMenu
             // 
             this.TreeViewRightClickMenu.Name = "TreeViewRightClickMenu";
             this.TreeViewRightClickMenu.Size = new System.Drawing.Size(61, 4);
+            // 
+            // elementHost1
+            // 
+            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.elementHost1.Location = new System.Drawing.Point(3, 3);
+            this.elementHost1.Name = "elementHost1";
+            this.elementHost1.Size = new System.Drawing.Size(147, 30);
+            this.elementHost1.TabIndex = 1;
+            this.elementHost1.Text = "elementHost1";
+            this.elementHost1.Child = this.animationsListToolBar1;
             // 
             // TexturesPage
             // 
@@ -177,6 +208,15 @@
             this.SelectedItemPropertyGrid.TabIndex = 0;
             this.SelectedItemPropertyGrid.ToolbarVisible = false;
             // 
+            // tileMapInfoWindow1
+            // 
+            this.tileMapInfoWindow1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.tileMapInfoWindow1.Location = new System.Drawing.Point(0, 273);
+            this.tileMapInfoWindow1.Name = "tileMapInfoWindow1";
+            this.tileMapInfoWindow1.Size = new System.Drawing.Size(147, 111);
+            this.tileMapInfoWindow1.TabIndex = 2;
+            this.tileMapInfoWindow1.TileMapInformation = null;
+            // 
             // UnitTypeComboBox
             // 
             this.UnitTypeComboBox.Dock = System.Windows.Forms.DockStyle.Top;
@@ -199,7 +239,7 @@
             // 
             // PreviewSplitContainer.Panel1
             // 
-            this.PreviewSplitContainer.Panel1.Controls.Add(this.zoomControl1);
+            this.PreviewSplitContainer.Panel1.Controls.Add(this.WireframeTopUiControl);
             this.PreviewSplitContainer.Panel1.Click += new System.EventHandler(this.PreviewSplitContainer_Panel1_Click);
             // 
             // PreviewSplitContainer.Panel2
@@ -210,6 +250,18 @@
             this.PreviewSplitContainer.SplitterDistance = 269;
             this.PreviewSplitContainer.TabIndex = 1;
             // 
+            // WireframeTopUiControl
+            // 
+            this.WireframeTopUiControl.DataContext = null;
+            this.WireframeTopUiControl.Dock = System.Windows.Forms.DockStyle.Top;
+            this.WireframeTopUiControl.Location = new System.Drawing.Point(0, 0);
+            this.WireframeTopUiControl.Name = "WireframeTopUiControl";
+            this.WireframeTopUiControl.PercentageValue = 100;
+            this.WireframeTopUiControl.ShowFullAlpha = false;
+            this.WireframeTopUiControl.Size = new System.Drawing.Size(443, 23);
+            this.WireframeTopUiControl.TabIndex = 1;
+            this.WireframeTopUiControl.ZoomChanged += new System.EventHandler(this.zoomControl1_ZoomChanged);
+            // 
             // PreviewGraphicsControl
             // 
             this.PreviewGraphicsControl.DesiredFramesPerSecond = 30F;
@@ -219,6 +271,19 @@
             this.PreviewGraphicsControl.Size = new System.Drawing.Size(443, 89);
             this.PreviewGraphicsControl.TabIndex = 0;
             this.PreviewGraphicsControl.Text = "graphicsDeviceControl1";
+            // 
+            // previewControls1
+            // 
+            this.previewControls1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.previewControls1.IsOnionSkinVisible = false;
+            this.previewControls1.Location = new System.Drawing.Point(0, 0);
+            this.previewControls1.Name = "previewControls1";
+            this.previewControls1.OffsetMultiplier = 1F;
+            this.previewControls1.PercentageValue = 100;
+            this.previewControls1.Size = new System.Drawing.Size(443, 22);
+            this.previewControls1.SpriteAlignment = FlatRedBall.AnimationEditorForms.Data.SpriteAlignment.Center;
+            this.previewControls1.TabIndex = 1;
+            this.previewControls1.ZoomChanged += new System.EventHandler(this.previewControls1_ZoomChanged);
             // 
             // MenuStrip
             // 
@@ -308,73 +373,6 @@
             this.CursorStatusLabel.Size = new System.Drawing.Size(76, 17);
             this.CursorStatusLabel.Text = "Cursor: (X, Y)";
             // 
-            // elementHost1
-            // 
-            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.elementHost1.Location = new System.Drawing.Point(3, 3);
-            this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(147, 30);
-            this.elementHost1.TabIndex = 1;
-            this.elementHost1.Text = "elementHost1";
-            this.elementHost1.Child = this.animationsListToolBar1;
-            // 
-            // AnimationTreeView
-            // 
-            this.AnimationTreeView.AllowDrop = true;
-            this.AnimationTreeView.ContextMenuStrip = this.TreeViewRightClickMenu;
-            this.AnimationTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.AnimationTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
-            this.AnimationTreeView.HideSelection = false;
-            this.AnimationTreeView.Location = new System.Drawing.Point(3, 33);
-            this.AnimationTreeView.Name = "AnimationTreeView";
-            this.AnimationTreeView.Size = new System.Drawing.Size(147, 322);
-            this.AnimationTreeView.TabIndex = 0;
-            this.AnimationTreeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.AnimationTreeView_ItemDrag);
-            this.AnimationTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.AnimationTreeView_AfterSelect);
-            this.AnimationTreeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.AnimationTreeView_DragDrop);
-            this.AnimationTreeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.AnimationTreeView_DragEnter);
-            this.AnimationTreeView.DragOver += new System.Windows.Forms.DragEventHandler(this.AnimationTreeView_DragOver);
-            this.AnimationTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AnimationTreeView_KeyDown);
-            this.AnimationTreeView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.AnimationTreeView_KeyPress);
-            this.AnimationTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.AnimationTreeView_MouseClick);
-            this.AnimationTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.AnimationTreeView_MouseDown);
-            // 
-            // tileMapInfoWindow1
-            // 
-            this.tileMapInfoWindow1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tileMapInfoWindow1.Location = new System.Drawing.Point(0, 273);
-            this.tileMapInfoWindow1.Name = "tileMapInfoWindow1";
-            this.tileMapInfoWindow1.Size = new System.Drawing.Size(147, 111);
-            this.tileMapInfoWindow1.TabIndex = 2;
-            this.tileMapInfoWindow1.TileMapInformation = null;
-            // 
-            // zoomControl1
-            // 
-            this.zoomControl1.DataContext = null;
-            this.zoomControl1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.zoomControl1.GridSize = 16;
-            this.zoomControl1.Location = new System.Drawing.Point(0, 0);
-            this.zoomControl1.Name = "zoomControl1";
-            this.zoomControl1.PercentageValue = 100;
-            this.zoomControl1.ShowFullAlpha = false;
-            this.zoomControl1.Size = new System.Drawing.Size(443, 23);
-            this.zoomControl1.SnapToGrid = false;
-            this.zoomControl1.TabIndex = 1;
-            this.zoomControl1.ZoomChanged += new System.EventHandler(this.zoomControl1_ZoomChanged);
-            // 
-            // previewControls1
-            // 
-            this.previewControls1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.previewControls1.IsOnionSkinVisible = false;
-            this.previewControls1.Location = new System.Drawing.Point(0, 0);
-            this.previewControls1.Name = "previewControls1";
-            this.previewControls1.OffsetMultiplier = 1F;
-            this.previewControls1.PercentageValue = 100;
-            this.previewControls1.Size = new System.Drawing.Size(443, 22);
-            this.previewControls1.SpriteAlignment = FlatRedBall.AnimationEditorForms.Data.SpriteAlignment.Center;
-            this.previewControls1.TabIndex = 1;
-            this.previewControls1.ZoomChanged += new System.EventHandler(this.previewControls1_ZoomChanged);
-            // 
             // MainControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -417,7 +415,7 @@
         private Controls.TileMapInfoWindow tileMapInfoWindow1;
         private System.Windows.Forms.ContextMenuStrip TreeViewRightClickMenu;
         private System.Windows.Forms.SplitContainer PreviewSplitContainer;
-        private Controls.WireframeEditControls zoomControl1;
+        private Controls.WireframeEditControls WireframeTopUiControl;
         private XnaAndWinforms.GraphicsDeviceControl PreviewGraphicsControl;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resizeTextureToolStripMenuItem;

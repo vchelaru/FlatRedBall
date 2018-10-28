@@ -16,6 +16,13 @@ using FlatRedBall.Glue.IO;
 
 namespace GumPlugin.Managers
 {
+    public struct GenerationResult
+    {
+        public bool DidSaveGenerated;
+        public bool DidSaveCustom;
+    }
+
+
     public enum CodeGenerationSavingBehavior
     {
         AlwaysSave,
@@ -104,9 +111,9 @@ namespace GumPlugin.Managers
             // #1 is good if the element being generated is not being included in other elements (like Screens)
             // #2 is good if the element being generated is included in LOTS of other elements (like core elements)
 
-            bool wasGenerated = GenerateCodeFor(changedElement, CodeGenerationSavingBehavior.SaveIfGeneratedDiffers);
+            var generationResult = GenerateCodeFor(changedElement, CodeGenerationSavingBehavior.SaveIfGeneratedDiffers);
 
-            if (wasGenerated)
+            if (generationResult.DidSaveGenerated)
             {
                 var whatContainsThisElement = ObjectFinder.Self.GetElementsReferencing(changedElement);
 
@@ -209,23 +216,29 @@ namespace GumPlugin.Managers
 
                 var elements = AppState.Self.AllLoadedElements.ToList();
 
-                // This can greatly improve 
+                // This can greatly improve speed, just don't put async calls in here or it won't block 
                 Parallel.ForEach(elements, (element) =>
-                //foreach (var element in elements)
                 {
-                    bool wasSaved = false;
+                    GenerationResult generationResult = new GenerationResult();
                     try
                     {
-                        wasSaved = GenerateCodeFor(element);
+                        generationResult = GenerateCodeFor(element);
                     }
                     catch(Exception e)
                     {
                         GlueCommands.Self.PrintError(e.ToString());
                     }
 
-                    if (wasSaved)
+                    if (generationResult.DidSaveGenerated)
                     {
                         string location = directoryToSave + element.Name + "Runtime.Generated.cs";
+                        wasAnythingAdded |=
+                            FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
+                            FlatRedBall.Glue.ProjectManager.ProjectBase, location);
+                    }
+                    if (generationResult.DidSaveCustom)
+                    {
+                        string location = directoryToSave + element.Name + "Runtime.cs";
                         wasAnythingAdded |=
                             FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
                             FlatRedBall.Glue.ProjectManager.ProjectBase, location);
@@ -241,52 +254,74 @@ namespace GumPlugin.Managers
         }
 
         /// <summary>
-        /// Generates and saves the code for the passed Gum ElementSave, but does not add the resulting .cs file to the VisualStudio project.
+        /// Generates and saves the code for the passed Gum ElementSave (both generated and custom code template), 
+        /// but does not add the resulting .cs files to the VisualStudio project.
         /// </summary>
         /// <param name="element">The element to generate.</param>
-        /// <returns></returns>
-        public bool GenerateCodeFor(Gum.DataTypes.ElementSave element, CodeGenerationSavingBehavior savingBehavior = CodeGenerationSavingBehavior.AlwaysSave)
+        /// <returns>Information about what was generated and saved.</returns>
+        public GenerationResult GenerateCodeFor(Gum.DataTypes.ElementSave element, 
+            CodeGenerationSavingBehavior savingBehavior = CodeGenerationSavingBehavior.AlwaysSave)
         {
-            if(element == null)
+
+            GenerationResult resultToReturn = new GenerationResult();
+
+            if (element == null)
             {
                 throw new ArgumentNullException(nameof(element));
             }
-
-            bool wasSaved = false;
 
             string directoryToSave = GumRuntimesFolder;
 
             string generatedCode = mGueDerivingClassCodeGenerator.GenerateCodeFor(element);
 
-            bool shouldSave;
+            string generatedSaveLocation = directoryToSave + element.Name + "Runtime.Generated.cs";
+            string customCodeSaveLocation = directoryToSave + element.Name + "Runtime.cs";
 
-            string saveLocation = directoryToSave + element.Name + "Runtime.Generated.cs";
-
-            if(savingBehavior == CodeGenerationSavingBehavior.AlwaysSave)
+            if (savingBehavior == CodeGenerationSavingBehavior.AlwaysSave)
             {
-                shouldSave = true;
+                resultToReturn.DidSaveGenerated = true;
             }
             else // if(savingBehavior == CodeGenerationSavingBehavior.SaveIfGeneratedDiffers)
             {
                 // We only want to save this file if what we've just generated is different than what is already on disk:
-                if(!System.IO.File.Exists(saveLocation))
+                if(!System.IO.File.Exists(generatedSaveLocation))
                 {
-                    shouldSave = true;
+                    resultToReturn.DidSaveGenerated = true;
                 }
                 else
                 {
-                    var existingText = File.ReadAllText(saveLocation);
+                    var existingText = File.ReadAllText(generatedSaveLocation);
 
-                    shouldSave = existingText != generatedCode;
+                    resultToReturn.DidSaveGenerated = existingText != generatedCode;
                 }
             }
-
-            if (!string.IsNullOrEmpty(generatedCode) && shouldSave)
+            // If it doesn't exist, overwrite it. If it does exist, don't overwrite it - we might lose
+            // custom code.
+            if (!System.IO.File.Exists(customCodeSaveLocation) && 
+                // Standard elements don't have CustomInit  
+                (element is StandardElementSave) == false)
             {
-                wasSaved = TrySaveMultipleTimes(saveLocation, generatedCode);
+                resultToReturn.DidSaveCustom = true;
             }
 
-            return wasSaved;
+            if(string.IsNullOrEmpty(generatedCode))
+            {
+                resultToReturn.DidSaveCustom = false;
+                resultToReturn.DidSaveGenerated = false;
+            }
+
+            if (resultToReturn.DidSaveGenerated)
+            {
+                TrySaveMultipleTimes(generatedSaveLocation, generatedCode);
+            }
+
+            if(resultToReturn.DidSaveCustom)
+            {
+                var customCode = mGueDerivingClassCodeGenerator.GetCustomCodeTemplateCode(element);
+                TrySaveMultipleTimes(customCodeSaveLocation, customCode);
+            }
+
+            return resultToReturn;
         }
 
         public bool GenerateAndSaveRuntimeAssociations()

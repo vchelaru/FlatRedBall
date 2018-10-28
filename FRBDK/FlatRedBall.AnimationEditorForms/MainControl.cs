@@ -118,7 +118,7 @@ namespace FlatRedBall.AnimationEditorForms
             this.imageRegionSelectionControl1.Text = "imageRegionSelectionControl1";
             this.imageRegionSelectionControl1.BringToFront();
 
-            this.zoomControl1.PropertyChanged += HandleEditorControlsPropertyChanged;
+            this.WireframeTopUiControl.PropertyChanged += HandleEditorControlsPropertyChanged;
 
             SelectedState.Self.Initialize(this.AnimationTreeView);
             if (this.DesignMode == false)
@@ -150,21 +150,39 @@ namespace FlatRedBall.AnimationEditorForms
 
             // move this out :
             WireframeEditControlsViewModel = new WireframeEditControlsViewModel();
-            this.zoomControl1.DataContext = WireframeEditControlsViewModel;
+            WireframeEditControlsViewModel.PropertyChanged += HandleViewModelPropertyChanged;
+
+            this.WireframeTopUiControl.DataContext = WireframeEditControlsViewModel;
         }
 
-        private void HandleEditorControlsPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (zoomControl1.SnapToGrid)
+            switch(e.PropertyName)
             {
-                imageRegionSelectionControl1.SnappingGridSize = zoomControl1.GridSize;
+                case nameof(WireframeEditControlsViewModel.IsSnapToGridChecked):
+                case nameof(WireframeEditControlsViewModel.GridSize):
+                    RefreshSnappingValues();
+
+
+                    break;
+            }
+        }
+
+        private void RefreshSnappingValues()
+        {
+            if (WireframeEditControlsViewModel.IsSnapToGridChecked)
+            {
+                imageRegionSelectionControl1.SnappingGridSize = WireframeEditControlsViewModel.GridSize;
             }
             else
             {
                 imageRegionSelectionControl1.SnappingGridSize = null;
             }
+        }
 
-            imageRegionSelectionControl1.ShowFullAlpha = zoomControl1.ShowFullAlpha;
+        private void HandleEditorControlsPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            imageRegionSelectionControl1.ShowFullAlpha = WireframeTopUiControl.ShowFullAlpha;
         }
 
         private void ScrollBarHandleTextureChange()
@@ -244,7 +262,7 @@ namespace FlatRedBall.AnimationEditorForms
         {
             try
             {
-                WireframeManager.Self.Initialize(imageRegionSelectionControl1, imageRegionSelectionControl1.SystemManagers, zoomControl1, WireframeEditControlsViewModel);
+                WireframeManager.Self.Initialize(imageRegionSelectionControl1, imageRegionSelectionControl1.SystemManagers, WireframeTopUiControl, WireframeEditControlsViewModel);
                 WireframeManager.Self.AnimationChainChange += RaiseAnimationChainChanges;
 
                 mScrollBarControlLogic.Managers = imageRegionSelectionControl1.SystemManagers;
@@ -351,7 +369,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void zoomControl1_ZoomChanged(object sender, EventArgs e)
         {
-            int zoomValue = zoomControl1.PercentageValue;
+            int zoomValue = WireframeTopUiControl.PercentageValue;
 
             WireframeManager.Self.ZoomValue = zoomValue;
         }
