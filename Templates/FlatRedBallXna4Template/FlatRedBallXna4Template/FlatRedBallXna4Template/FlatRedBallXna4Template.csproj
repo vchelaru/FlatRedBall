@@ -122,6 +122,9 @@
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
     <Content Include="Libraries\Xna4Pc\Debug\FlatRedBall.Content.dll" />
+    <Content Include="Libraries\Xna4Pc\Debug\FlatRedBall.Forms.dll" />
+    <Content Include="Libraries\Xna4Pc\Debug\GumCoreXnaPc.dll" />
+    <Content Include="Libraries\Xna4Pc\Debug\StateInterpolation.dll" />
     <None Include="app.config" />
     <None Include="redball.BMP">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
