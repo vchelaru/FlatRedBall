@@ -1896,9 +1896,6 @@ namespace FlatRedBall.Glue.FormHelpers
                     Process.Start("explorer.exe", "/root," + locationToShow);
                 }
             }
-
-
-
         }
 
         static void ViewContentFolderInExplorer(object sender, EventArgs e)

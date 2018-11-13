@@ -1024,7 +1024,7 @@ namespace FlatRedBall.Glue.SaveClasses
             return returnValue;
         }
 
-        public void SetVariableValue(string variableName, object value)
+        public CustomVariableInNamedObject SetVariableValue(string variableName, object value)
         {
             var instructionToSet = GetCustomVariable(variableName);
 
@@ -1036,6 +1036,8 @@ namespace FlatRedBall.Glue.SaveClasses
             }
 
             instructionToSet.Value = value;
+
+            return instructionToSet;
         }
 
         public void SetAttachToCameraRecursively(bool value)

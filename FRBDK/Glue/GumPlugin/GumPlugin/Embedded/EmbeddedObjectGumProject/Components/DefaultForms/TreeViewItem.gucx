@@ -97,14 +97,17 @@
   <Instance>
     <Name>ToggleButtonInstance</Name>
     <BaseType>DefaultForms/TreeViewToggleButton</BaseType>
+    <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Instance>
     <Name>ListBoxItemInstance</Name>
     <BaseType>DefaultForms/ListBoxItem</BaseType>
+    <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Instance>
     <Name>InnerPanelInstance</Name>
     <BaseType>Container</BaseType>
+    <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors>
     <ElementBehaviorReference>

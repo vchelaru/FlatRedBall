@@ -35,14 +35,28 @@ namespace GumPlugin.Managers
         }
         public static bool CanTrackDependenciesOn(string fileName)
         {
+
             string extension = FileManager.GetExtension(fileName);
-            return extension == GumProjectSave.ComponentExtension ||
+            var isOfGumExtension = 
+                extension == GumProjectSave.ComponentExtension ||
                 extension == "gumx" ||
                 extension == GumProjectSave.ScreenExtension ||
                 extension == GumProjectSave.StandardExtension ||
                 // We want to refresh code when this gets changed, so we have to return true for .ganx files:
                 extension == "ganx"
                 ;
+
+            bool shouldTrackDependencies = false;
+
+            if (isOfGumExtension && Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
+            {
+                var gumProjectDirectory =
+                    FileManager.GetDirectory(Gum.Managers.ObjectFinder.Self.GumProjectSave.FullFileName);
+
+                shouldTrackDependencies = FileManager.IsRelativeTo(fileName, gumProjectDirectory);
+            }
+
+            return shouldTrackDependencies;
         }
 
         public void HandleGetFilesNeededOnDiskBy(GumProjectSave gumProjectSave, TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill)

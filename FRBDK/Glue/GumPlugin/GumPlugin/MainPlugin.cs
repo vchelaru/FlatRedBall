@@ -223,7 +223,10 @@ namespace GumPlugin
             // - Added FloatRectangle as an embedded file for legacy projects
             // 1.5.0
             // - Added new PasswordBox control
-            get { return new Version(1, 5, 0, 0); }
+            // 1.5.1
+            // - Plugin only reloads project if the file that changed is the main Gum project. This is needed
+            //   for the new level editor that can make a secondary gum project.
+            get { return new Version(1, 5, 1, 0); }
         }
 
         #endregion
@@ -480,14 +483,25 @@ namespace GumPlugin
         {
             string extension = FileManager.GetExtension(fileName);
 
-            if(Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
+            bool shouldHandleFileChange = false;
+
+            if (Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
             {
+                var gumProjectDirectory =
+                    FileManager.GetDirectory(Gum.Managers.ObjectFinder.Self.GumProjectSave.FullFileName);
 
+                shouldHandleFileChange = FileManager.IsRelativeTo(fileName, gumProjectDirectory);
+            }
 
-                if (extension == GumProjectSave.ComponentExtension ||
+            if(shouldHandleFileChange)
+            { 
+                var isGumTypeExtension = extension == GumProjectSave.ComponentExtension ||
                     extension == GumProjectSave.ScreenExtension ||
                     extension == GumProjectSave.StandardExtension ||
-                    extension == GumProjectSave.ProjectExtension)
+                    extension == GumProjectSave.ProjectExtension;
+
+
+                if (isGumTypeExtension)
                 {
                     // November 1, 2015
                     // Why do we reload the

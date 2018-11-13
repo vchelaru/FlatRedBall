@@ -135,7 +135,7 @@ namespace FlatRedBall.Glue.IO
 
         public bool Exists()
         {
-            return System.IO.File.Exists(this.Standardized);
+            return System.IO.File.Exists(this.StandardizedCaseSensitive);
         }
 
         public bool IsRootOf(FilePath otherFilePath)
@@ -152,7 +152,7 @@ namespace FlatRedBall.Glue.IO
 
         public override string ToString()
         {
-            return Standardized;
+            return StandardizedCaseSensitive;
         }
 
         static void ReplaceSlashes(ref string stringToReplace)
