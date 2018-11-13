@@ -226,7 +226,9 @@ namespace GumPlugin
             // 1.5.1
             // - Plugin only reloads project if the file that changed is the main Gum project. This is needed
             //   for the new level editor that can make a secondary gum project.
-            get { return new Version(1, 5, 1, 0); }
+            // 1.5.2
+            // - Fixed code generation including ContainedType property on Container object.
+            get { return new Version(1, 5, 2, 0); }
         }
 
         #endregion

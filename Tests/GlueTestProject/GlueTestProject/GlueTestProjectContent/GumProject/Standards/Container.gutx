@@ -7,12 +7,20 @@
       <Type>ChildrenLayout</Type>
       <Name>Children Layout</Name>
       <Value xsi:type="xsd:int">0</Value>
+      <Category>Children</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>bool</Type>
       <Name>Clips Children</Name>
       <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Children</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>Contained Type</Name>
+      <Category>Children</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -38,7 +46,7 @@
     <Variable>
       <Type>float</Type>
       <Name>Height</Name>
-      <Value xsi:type="xsd:float">150</Value>
+      <Value xsi:type="xsd:float">140</Value>
       <Category>Dimensions</Category>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -55,6 +63,13 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>float</Type>
+      <Name>Rotation</Name>
+      <Value xsi:type="xsd:float">0</Value>
+      <Category>Flip and Rotation</Category>
+      <SetsValue>false</SetsValue>
+    </Variable>
+    <Variable>
       <Type>bool</Type>
       <Name>Visible</Name>
       <Value xsi:type="xsd:boolean">true</Value>
@@ -63,7 +78,7 @@
     <Variable>
       <Type>float</Type>
       <Name>Width</Name>
-      <Value xsi:type="xsd:float">150</Value>
+      <Value xsi:type="xsd:float">140</Value>
       <Category>Dimensions</Category>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -78,6 +93,7 @@
       <Type>bool</Type>
       <Name>Wraps Children</Name>
       <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Children</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>

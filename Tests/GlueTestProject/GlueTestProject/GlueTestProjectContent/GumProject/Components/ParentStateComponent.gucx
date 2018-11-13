@@ -154,6 +154,7 @@
   <Instance>
     <Name>ChildStateComponentInstance</Name>
     <BaseType>ChildStateComponent</BaseType>
+    <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors />
 </ComponentSave>

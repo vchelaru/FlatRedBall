@@ -19,5 +19,6 @@
   <Instance>
     <Name>ToBeLayered</Name>
     <BaseType>ColoredRectangle</BaseType>
+    <DefinedByBase>false</DefinedByBase>
   </Instance>
 </ScreenSave>
