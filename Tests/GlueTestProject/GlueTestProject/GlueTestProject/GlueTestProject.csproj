@@ -707,6 +707,10 @@
     <Compile Include="Entities\SetByContainerEntity.Generated.cs">
       <DependentUpon>SetByContainerEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\ShapeCollectionEntity.cs" />
+    <Compile Include="Entities\ShapeCollectionEntity.Generated.cs">
+      <DependentUpon>ShapeCollectionEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\ShapeEntity.cs" />
     <Compile Include="Entities\ShapeEntity.Generated.cs">
       <DependentUpon>ShapeEntity.cs</DependentUpon>

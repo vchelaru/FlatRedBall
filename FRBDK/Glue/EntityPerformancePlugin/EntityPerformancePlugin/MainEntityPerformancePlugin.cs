@@ -75,6 +75,7 @@ namespace EntityPerformancePlugin
         {
             var currentEntity = GlueState.Self.CurrentEntitySave;
             var instance = GlueState.Self.CurrentNamedObjectSave;
+            var currentElement = GlueState.Self.CurrentElement;
 
             if (currentEntity != null && changedMember == nameof(EntitySave.Name) && instance == null)
             {
@@ -102,7 +103,7 @@ namespace EntityPerformancePlugin
             {
                 string oldName = (string)oldValue;
 
-                var foundModel = model.EntityManagementValueList.FirstOrDefault(item => item.Name == currentEntity.Name);
+                var foundModel = model.EntityManagementValueList.FirstOrDefault(item => item.Name == currentElement.Name);
 
                 var foundInstance = foundModel?.InstanceManagementValuesList.FirstOrDefault(item => item.Name == oldName);
 

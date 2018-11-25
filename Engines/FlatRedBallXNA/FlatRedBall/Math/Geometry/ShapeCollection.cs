@@ -235,6 +235,21 @@ namespace FlatRedBall.Math.Geometry
             mCapsule2Ds.AddRange(shapeCollection.mCapsule2Ds);
         }
 
+        public void Add(Circle circle)
+        {
+            mCircles.Add(circle);
+        }
+
+        public void Add(AxisAlignedRectangle rectangle)
+        {
+            mAxisAlignedRectangles.Add(rectangle);
+        }
+
+        public void Add(Polygon polygon)
+        {
+            mPolygons.Add(polygon);
+        }
+
         public void AddToManagers()
         {
 

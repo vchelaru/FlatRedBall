@@ -73,6 +73,8 @@ namespace GlueTestProject.Screens
             Test_L_RepositonDirection();
 
             CreateCollisionRelationships();
+
+            TestEntityVsShapeCollection();
         }
 
         private void CreateCollisionRelationships()
@@ -90,8 +92,28 @@ namespace GlueTestProject.Screens
 
             var emptyVsSameEmptyRelationship = CollisionManager.Self.CreateRelationship(EmptyList1, EmptyList1);
 
+
         }
 
+
+        private void TestEntityVsShapeCollection()
+        {
+            var entityVsShapeCollection = CollisionManager.Self.CreateRelationship(CollidableList, ShapeCollectionInstance);
+
+            List<Entities.CollidableEntity> collidedEntities = new List<Entities.CollidableEntity>();
+
+            entityVsShapeCollection.CollisionOccurred += (entity, shapeCollection) =>
+            {
+                collidedEntities.Add(entity);
+            };
+
+            entityVsShapeCollection.DoCollisions();
+
+            collidedEntities.Contains(At0).ShouldBe(true);
+            collidedEntities.Contains(At100).ShouldBe(true);
+            collidedEntities.Contains(At200).ShouldBe(true);
+            collidedEntities.Contains(At400).ShouldBe(false);
+        }
         private void Test_L_RepositonDirection()
         {
             ShapeCollection rectangles = new ShapeCollection();

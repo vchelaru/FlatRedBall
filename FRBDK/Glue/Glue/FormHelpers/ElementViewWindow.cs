@@ -920,62 +920,6 @@ namespace FlatRedBall.Glue.FormHelpers
             mEntityNode.Nodes.SortByTextConsideringDirectories();
         }
 
-        private static void AskAndAddAllContainedRfsToGlobalContent(IElement element)
-        {
-
-
-            string message = "Add all contained files in " + element.ToString() + " to Global Content Files?  Files will still be referenced by " + element.ToString();
-
-            DialogResult dialogResult = MessageBox.Show(message, "Add to Global Content?", MessageBoxButtons.YesNo);
-
-            if (dialogResult == DialogResult.Yes)
-            {
-
-                if (!element.UseGlobalContent)
-                {
-                    string screenOrEntity = "Screen";
-
-                    if (element is EntitySave)
-                    {
-                        screenOrEntity = "Entity";
-                    }
-
-                    DialogResult result = MessageBox.Show("The " + screenOrEntity + " " + element.ToString() +
-                        "does not UseGlobalContent.  Would you like " +
-                        " to set UseGlobalContent to true?", "Set UseGlobalContent to true?", MessageBoxButtons.YesNo);
-
-                    if (result == DialogResult.Yes)
-                    {
-                        element.UseGlobalContent = true;
-                    }
-                }
-
-                foreach (ReferencedFileSave rfs in element.ReferencedFiles)
-                {
-                    bool alreadyExists = false;
-                    foreach (ReferencedFileSave existingRfs in ObjectFinder.Self.GlueProject.GlobalFiles)
-                    {
-                        if (existingRfs.Name.ToLower() == rfs.Name.ToLower())
-                        {
-                            alreadyExists = true;
-                            break;
-                        }
-                    }
-
-                    if (!alreadyExists)
-                    {
-                        bool useFullPathAsName = true;
-                        ElementCommands.Self.AddReferencedFileToGlobalContent(rfs.Name, useFullPathAsName);
-                    }
-                }
-
-
-                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
-
-                ProjectManager.SaveProjects();
-                GluxCommands.Self.SaveGlux();
-            }
-        }
 
         public static void ElementDoubleClicked()
         {

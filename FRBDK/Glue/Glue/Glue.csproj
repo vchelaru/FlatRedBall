@@ -307,6 +307,8 @@
     <Compile Include="GlueView\ISelectionInterface.cs" />
     <Compile Include="GlueView\SelectionInterface2.cs" />
     <Compile Include="GlueView\SelectionInterfaceClient.cs" />
+    <Compile Include="Managers\DragDropManager.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\AddToShapeCollectionPlugin\MainAddToShapeCollectionPlugin.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\AddVariablePlugin\Controls\CreateNewVariableControl.xaml.cs">
       <DependentUpon>CreateNewVariableControl.xaml</DependentUpon>
     </Compile>

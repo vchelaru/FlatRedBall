@@ -1472,7 +1472,9 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static void WriteAddToManagersBottomUpForNamedObjectList(List<NamedObjectSave> namedObjectList, ICodeBlock codeBlock, IElement element, List<string[]> reusableEntireFileRfses)
         {
-            foreach(var nos in namedObjectList.Where(nos=>nos.SourceType != SourceType.FlatRedBallType || nos.SourceClassType != "Layer"))
+            foreach(var nos in namedObjectList.Where(nos=>
+                    nos.SourceType != SourceType.FlatRedBallType || 
+                    nos.SourceClassType != "Layer"))
             {
                 ReferencedFileSave filePullingFrom = null;
 
@@ -1808,7 +1810,24 @@ namespace FlatRedBall.Glue.CodeGeneration
             return false;
         }
 
+        static bool IsAddedToManagerByContainer(IElement saveObject, NamedObjectSave namedObject)
+        {
+            var toReturn = false;
+            if(namedObject.SourceType == SourceType.FlatRedBallType)
+            {
+                var container = saveObject.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(namedObject));
 
+                if (container != null && container.AddToManagers &&
+                    container.IsDisabled == false)
+                {
+                    // If this is a shape collection, then it's already handled:
+                    toReturn = container.SourceType == SourceType.FlatRedBallType &&
+                        (container.SourceClassType == "ShapeCollection" ||
+                            container.SourceClassType == "FlatRedBall.Math.Geometry.ShapeCollection");
+                }
+            }
+            return toReturn;
+        }
 
         public static void WriteAddToManagersForNamedObject(IElement element, NamedObjectSave namedObject, 
             ICodeBlock codeBlock, bool isInVariableSetterProperty = false, bool considerRemoveIfInvisible = true)
@@ -1856,7 +1875,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // because they should have their LoadedOnlyWhenReferenced property
                     // set to true.
                     bool isAddedToManagerByFile = !isInVariableSetterProperty && IsAddedToManagerByFile(element, namedObject);
-                    bool addedRegularly = namedObject.AddToManagers && !namedObject.InstantiatedByBase && !isAddedToManagerByFile;
+                    bool isAddedToManagerByContainer = IsAddedToManagerByContainer(element, namedObject);
+
+                    bool addedRegularly = namedObject.AddToManagers && 
+                        !namedObject.InstantiatedByBase && !isAddedToManagerByFile && !isAddedToManagerByContainer;
                     if (addedRegularly)
                     {
                         string layerName = "null";

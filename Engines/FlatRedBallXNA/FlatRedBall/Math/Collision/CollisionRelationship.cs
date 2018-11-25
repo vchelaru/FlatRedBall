@@ -156,6 +156,7 @@ namespace FlatRedBall.Math.Collision
             }
         }
 
+
         private bool CollideAgainstConsiderSubCollisionEventOnly(FirstCollidableT first, SecondCollidableT second)
         {
             if (firstSubCollisionCircle != null)
@@ -279,6 +280,7 @@ namespace FlatRedBall.Math.Collision
                 }
             }
         }
+
 
         private bool CollideAgainstConsiderSubCollisionMove(FirstCollidableT first, SecondCollidableT second)
         {
@@ -404,6 +406,7 @@ namespace FlatRedBall.Math.Collision
             }
         }
 
+
         private bool CollideAgainstConsiderSubCollisionBounce(FirstCollidableT first, SecondCollidableT second)
         {
             if (firstSubCollisionCircle != null)
@@ -527,8 +530,6 @@ namespace FlatRedBall.Math.Collision
                 }
             }
         }
-
-
     }
 
     #endregion
@@ -1166,6 +1167,163 @@ namespace FlatRedBall.Math.Collision
                 }
             }
         }
+    }
+
+    #endregion
+
+    #region List vs ShapeCollection
+
+    public class ListVsShapeCollectionRelationship<FirstCollidableT> : CollisionRelationship
+        where FirstCollidableT : PositionedObject, ICollidable
+    {
+        PositionedObjectList<FirstCollidableT> list;
+        ShapeCollection shapeCollection;
+
+        protected Func<FirstCollidableT, Circle> firstSubCollisionCircle;
+        protected Func<FirstCollidableT, AxisAlignedRectangle> firstSubCollisionRectangle;
+        protected Func<FirstCollidableT, Polygon> firstSubCollisionPolygon;
+        protected Func<FirstCollidableT, ICollidable> firstSubCollisionCollidable;
+        
+        public Action<FirstCollidableT, ShapeCollection> CollisionOccurred;
+
+        public void SetFirstSubCollision(Func<FirstCollidableT, Circle> subCollisionFunc) { firstSubCollisionCircle = subCollisionFunc; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, AxisAlignedRectangle> subCollisionFunc) { firstSubCollisionRectangle = subCollisionFunc; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, Polygon> subCollisionFunc) { firstSubCollisionPolygon = subCollisionFunc; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, ICollidable> subCollisionFunc) { firstSubCollisionCollidable = subCollisionFunc; }
+
+
+        public override object FirstAsObject => list;
+        public override object SecondAsObject => shapeCollection;
+
+        public void SetPartitioningSize(PositionedObjectList<FirstCollidableT> partitionedObject, float widthOrHeight)
+        {
+            firstPartitioningSize = widthOrHeight;
+        }
+
+        public ListVsShapeCollectionRelationship(PositionedObjectList<FirstCollidableT> list, ShapeCollection shapeCollection)
+        {
+            this.list = list;
+            this.shapeCollection = shapeCollection;
+        }
+
+        public override bool DoCollisions()
+        {
+            bool didCollisionOccur = false;
+            if (skippedFrames < FrameSkip)
+            {
+                skippedFrames++;
+            }
+            else
+            {
+                skippedFrames = 0;
+                int startInclusive = list.Count-1;
+                int endExclusive = -1;
+
+                for (int i = startInclusive; i > endExclusive; i--)
+                {
+                    var atI = list[i];
+                    if (CollideConsideringSubCollisions(atI, shapeCollection))
+                    {
+                        CollisionOccurred?.Invoke(atI, shapeCollection);
+                        didCollisionOccur = true;
+                        // Collision Limit doesn't do anything here
+                    }
+                }
+            }
+            return didCollisionOccur;
+        }
+
+        protected bool CollideConsideringSubCollisions(FirstCollidableT first, ShapeCollection second)
+        {
+            this.DeepCollisionsThisFrame++;
+
+            if (CollisionType == CollisionType.EventOnlyCollision)
+            {
+                return CollideAgainstConsiderSubCollisionEventOnly(first, second);
+            }
+            else if (CollisionType == CollisionType.MoveCollision)
+            {
+                return CollideAgainstConsiderSubCollisionMove(first, second);
+            }
+            else if (CollisionType == CollisionType.BounceCollision)
+            {
+                return CollideAgainstConsiderSubCollisionBounce(first, second);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+        private bool CollideAgainstConsiderSubCollisionEventOnly(FirstCollidableT first, ShapeCollection second)
+        {
+            if (firstSubCollisionCircle != null)
+            {
+                return second.CollideAgainst(firstSubCollisionCircle(first));
+            }
+            else if (firstSubCollisionRectangle != null)
+            {
+                return second.CollideAgainst(firstSubCollisionRectangle(first));
+            }
+            else if (firstSubCollisionPolygon != null)
+            {
+                return second.CollideAgainst(firstSubCollisionPolygon(first));
+            }
+            else if (firstSubCollisionCollidable != null)
+            {
+                return firstSubCollisionCollidable(first).CollideAgainst(second);
+            }
+            else
+            {
+                return first.CollideAgainst(second);
+            }
+        }
+        private bool CollideAgainstConsiderSubCollisionMove(FirstCollidableT first, ShapeCollection second)
+        {
+            if (firstSubCollisionCircle != null)
+            {
+                return second.CollideAgainstMove(firstSubCollisionCircle(first), moveSecondMass, moveFirstMass);
+            }
+            else if (firstSubCollisionRectangle != null)
+            {
+                return second.CollideAgainstMove(firstSubCollisionRectangle(first), moveSecondMass, moveFirstMass);
+            }
+            else if (firstSubCollisionPolygon != null)
+            {
+                return second.CollideAgainstMove(firstSubCollisionPolygon(first), moveSecondMass, moveFirstMass);
+            }
+            else if (firstSubCollisionCollidable != null)
+            {
+                return firstSubCollisionCollidable(first).CollideAgainstMove(second, moveFirstMass, moveSecondMass);
+            }
+            else
+            {
+                return first.CollideAgainstMove(second, moveFirstMass, moveSecondMass);
+            }
+        }
+        private bool CollideAgainstConsiderSubCollisionBounce(FirstCollidableT first, ShapeCollection second)
+        {
+            if (firstSubCollisionCircle != null)
+            {
+                return second.CollideAgainstBounce(firstSubCollisionCircle(first), moveSecondMass, moveFirstMass, bounceElasticity);
+            }
+            else if (firstSubCollisionRectangle != null)
+            {
+                return second.CollideAgainstBounce(firstSubCollisionRectangle(first), moveSecondMass, moveFirstMass, bounceElasticity);
+            }
+            else if (firstSubCollisionPolygon != null)
+            {
+                return second.CollideAgainstBounce(firstSubCollisionPolygon(first), moveSecondMass, moveFirstMass, bounceElasticity);
+            }
+            else if (firstSubCollisionCollidable != null)
+            {
+                return firstSubCollisionCollidable(first).CollideAgainstBounce(second, moveFirstMass, moveSecondMass, bounceElasticity);
+            }
+            else
+            {
+                return first.CollideAgainstBounce(second, moveFirstMass, moveSecondMass, bounceElasticity);
+            }
+        }
+
     }
 
     #endregion

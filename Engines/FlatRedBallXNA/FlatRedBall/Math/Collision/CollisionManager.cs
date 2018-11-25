@@ -30,7 +30,7 @@ namespace FlatRedBall.Math.Collision
             get
             {
                 int toReturn = 0;
-                foreach(var relationship in Relationships)
+                foreach (var relationship in Relationships)
                 {
                     toReturn += relationship.DeepCollisionsThisFrame;
                 }
@@ -104,6 +104,16 @@ namespace FlatRedBall.Math.Collision
             return relationship;
         }
 
+
+        // List vs. ShapeCollection
+        public ListVsShapeCollectionRelationship<FirstCollidableT> CreateRelationship<FirstCollidableT>(PositionedObjectList<FirstCollidableT> first, ShapeCollection shapeCollection)
+            where FirstCollidableT : PositionedObject, ICollidable
+        {
+            var relationship = new ListVsShapeCollectionRelationship<FirstCollidableT>(first, shapeCollection);
+            relationship.Partitions = Partitions;
+            this.Relationships.Add(relationship);
+            return relationship;
+        }
 
         #endregion
 

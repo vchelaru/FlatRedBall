@@ -641,7 +641,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static void OnAddEntityListClick(object sender, EventArgs e)
         {
-            ElementViewWindow.CreateNewNamedObjectInElement(
+            DragDropManager.Self.CreateNewNamedObjectInElement(
                 GlueState.Self.CurrentElement,
                 (EntitySave)ElementViewWindow.TreeNodeDraggedOff.Tag,
                 true);
@@ -1724,8 +1724,14 @@ namespace FlatRedBall.Glue.FormHelpers
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
 
                 var nos = gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
-                var instructions = new CustomVariableInNamedObject();
-                instructions.Member = "Points";
+                CustomVariableInNamedObject instructions = null;
+                instructions = nos.GetCustomVariable("Points");
+                if(instructions == null)
+                {
+                    instructions = new CustomVariableInNamedObject();
+                    instructions.Member = "Points";
+                    nos.InstructionSaves.Add(instructions);
+                }
                 var points = new List<Vector2>();
                 points.Add(new Vector2(-16, 16));
                 points.Add(new Vector2( 16, 16));
@@ -1734,7 +1740,6 @@ namespace FlatRedBall.Glue.FormHelpers
                 points.Add(new Vector2(-16, 16));
                 instructions.Value = points;
 
-                nos.InstructionSaves.Add(instructions);
 
                 needsRefreshAndSave = true;
                 

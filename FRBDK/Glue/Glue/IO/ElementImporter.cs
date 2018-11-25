@@ -15,6 +15,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Ionic.Zip;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -186,7 +187,7 @@ namespace FlatRedBall.Glue.IO
             if (moveToSelectedFolderTreeNode && EditorLogic.CurrentTreeNode != null && EditorLogic.CurrentTreeNode.IsFolderForEntities())
             {
                 EntityTreeNode entityTreeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
-                ElementViewWindow.MoveEntityOn(entityTreeNode, EditorLogic.CurrentTreeNode);
+                DragDropManager.Self.MoveEntityOn(entityTreeNode, EditorLogic.CurrentTreeNode);
                 GluxCommands.Self.SaveGlux();
             }
 

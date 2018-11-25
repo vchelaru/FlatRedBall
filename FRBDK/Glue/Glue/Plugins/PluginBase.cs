@@ -93,7 +93,13 @@ namespace FlatRedBall.Glue.Plugins
         public ReactToNamedObjectChangedValueDelegate ReactToNamedObjectChangedValueHandler { get; protected set; }
         public ReactToNewFileDelegate ReactToNewFileHandler { get; protected set; }
         public ReactToNewObjectDelegate ReactToNewObjectHandler { get; protected set; }
+
+        /// <summary>
+        /// Delegate raised when right-clicking on the property grid.
+        /// </summary>
         public ReactToRightClickDelegate ReactToRightClickHandler { get; protected set; }
+
+
         public ReactToTreeViewRightClickDelegate ReactToTreeViewRightClickHandler { get; protected set; }
         public ReactToStateNameChangeDelegate ReactToStateNameChangeHandler { get; protected set; }
         public ReactToStateRemovedDelegate ReactToStateRemovedHandler { get; protected set; }

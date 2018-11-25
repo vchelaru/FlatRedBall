@@ -77,6 +77,7 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForStates.Add("HasEvents");
             mVariableNamesToSkipForStates.Add("ExposeChildrenEvents");
             //mVariableNamesToSkipForStates.Add("SourceFile");
+            mVariableNamesToSkipForStates.Add("Contained Type");
 
             // Eventually we'll support this but first Gum needs to support 
             // setting categorized states on instances
@@ -85,7 +86,7 @@ namespace GumPlugin.CodeGeneration
             //mVariableNamesToSkipForStates.Add("State");
 
 
-            
+
         }
 
         #endregion

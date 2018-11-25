@@ -255,6 +255,145 @@
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>ShapeCollection</SourceClassType>
+          <InstanceName>ShapeCollectionInstance</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <ContainedObjects>
+            <NamedObjectSave>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>Radius</Member>
+                <ValueAsFloat>16</ValueAsFloat>
+              </CustomProperty>
+              <SourceType>FlatRedBallType</SourceType>
+              <SourceFile />
+              <SourceName />
+              <SourceClassType>Circle</SourceClassType>
+              <InstanceName>CircleInstance</InstanceName>
+              <HasPublicProperty>true</HasPublicProperty>
+              <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
+              <IndependentOfCamera>true</IndependentOfCamera>
+            </NamedObjectSave>
+            <NamedObjectSave>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>X</Member>
+                <ValueAsFloat>100</ValueAsFloat>
+              </CustomProperty>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>Width</Member>
+                <ValueAsFloat>32</ValueAsFloat>
+              </CustomProperty>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>Height</Member>
+                <ValueAsFloat>32</ValueAsFloat>
+              </CustomProperty>
+              <SourceType>FlatRedBallType</SourceType>
+              <SourceFile />
+              <SourceName />
+              <SourceClassType>AxisAlignedRectangle</SourceClassType>
+              <InstanceName>AxisAlignedRectangleInstance</InstanceName>
+              <HasPublicProperty>true</HasPublicProperty>
+              <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
+              <IndependentOfCamera>true</IndependentOfCamera>
+            </NamedObjectSave>
+            <NamedObjectSave>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>X</Member>
+                <ValueAsFloat>200</ValueAsFloat>
+              </CustomProperty>
+              <CustomProperty>
+                <Member>Points</Member>
+                <ValueAsListOfVector2 />
+              </CustomProperty>
+              <SourceType>FlatRedBallType</SourceType>
+              <SourceFile />
+              <SourceName />
+              <SourceClassType>Polygon</SourceClassType>
+              <InstanceName>PolygonInstance</InstanceName>
+              <HasPublicProperty>true</HasPublicProperty>
+              <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
+              <IndependentOfCamera>true</IndependentOfCamera>
+            </NamedObjectSave>
+          </ContainedObjects>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>PositionedObjectList&lt;T&gt;</SourceClassType>
+          <SourceClassGenericType>Entities\CollidableEntity</SourceClassGenericType>
+          <InstanceName>CollidableList</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <ContainedObjects>
+            <NamedObjectSave>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>X</Member>
+                <ValueAsFloat>0</ValueAsFloat>
+              </CustomProperty>
+              <SourceType>Entity</SourceType>
+              <SourceClassType>Entities\CollidableEntity</SourceClassType>
+              <InstanceName>At0</InstanceName>
+              <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
+              <IndependentOfCamera>true</IndependentOfCamera>
+            </NamedObjectSave>
+            <NamedObjectSave>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>X</Member>
+                <ValueAsFloat>100</ValueAsFloat>
+              </CustomProperty>
+              <SourceType>Entity</SourceType>
+              <SourceClassType>Entities\CollidableEntity</SourceClassType>
+              <InstanceName>At100</InstanceName>
+              <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
+              <IndependentOfCamera>true</IndependentOfCamera>
+            </NamedObjectSave>
+            <NamedObjectSave>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>X</Member>
+                <ValueAsFloat>200</ValueAsFloat>
+              </CustomProperty>
+              <SourceType>Entity</SourceType>
+              <SourceClassType>Entities\CollidableEntity</SourceClassType>
+              <InstanceName>At200</InstanceName>
+              <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
+              <IndependentOfCamera>true</IndependentOfCamera>
+            </NamedObjectSave>
+            <NamedObjectSave>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>X</Member>
+                <ValueAsFloat>400</ValueAsFloat>
+              </CustomProperty>
+              <SourceType>Entity</SourceType>
+              <SourceClassType>Entities\CollidableEntity</SourceClassType>
+              <InstanceName>At400</InstanceName>
+              <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
+              <IndependentOfCamera>true</IndependentOfCamera>
+            </NamedObjectSave>
+          </ContainedObjects>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
       </NamedObjects>
     </ScreenSave>
     <ScreenSave>
@@ -13405,6 +13544,98 @@
           <SetByContainer>true</SetByContainer>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+      </NamedObjects>
+      <Is2D>true</Is2D>
+    </EntitySave>
+    <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
+      <CustomVariables>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>X</Name>
+          <Type>float</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>Y</Name>
+          <Type>float</Type>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>float</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <Name>Z</Name>
+          <Type>float</Type>
+        </CustomVariable>
+      </CustomVariables>
+      <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
+      <Name>Entities\ShapeCollectionEntity</Name>
+      <NamedObjects>
+        <NamedObjectSave>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>ShapeCollection</SourceClassType>
+          <InstanceName>ShapeCollectionInstance</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <ContainedObjects>
+            <NamedObjectSave>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>Radius</Member>
+                <ValueAsFloat>16</ValueAsFloat>
+              </CustomProperty>
+              <SourceType>FlatRedBallType</SourceType>
+              <SourceFile />
+              <SourceName />
+              <SourceClassType>Circle</SourceClassType>
+              <InstanceName>CircleInstance</InstanceName>
+              <HasPublicProperty>true</HasPublicProperty>
+              <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
+              <IndependentOfCamera>true</IndependentOfCamera>
+            </NamedObjectSave>
+            <NamedObjectSave>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>Width</Member>
+                <ValueAsFloat>32</ValueAsFloat>
+              </CustomProperty>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>Height</Member>
+                <ValueAsFloat>32</ValueAsFloat>
+              </CustomProperty>
+              <SourceType>FlatRedBallType</SourceType>
+              <SourceFile />
+              <SourceName />
+              <SourceClassType>AxisAlignedRectangle</SourceClassType>
+              <InstanceName>AxisAlignedRectangleInstance</InstanceName>
+              <HasPublicProperty>true</HasPublicProperty>
+              <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
+              <IndependentOfCamera>true</IndependentOfCamera>
+            </NamedObjectSave>
+          </ContainedObjects>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>

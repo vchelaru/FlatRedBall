@@ -825,6 +825,18 @@ namespace FlatRedBall.Glue.SaveClasses
             return false;
         }
 
+        public static bool CanBeInShapeCollection(this NamedObjectSave instance)
+        {
+            var isOfCorrectType = instance.SourceType == SourceType.FlatRedBallType &&
+                (
+                    instance.SourceClassType == "Circle" ||
+                    instance.SourceClassType == "AxisAlignedRectangle" ||
+                    instance.SourceClassType == "Polygon"
+                );
+
+            return isOfCorrectType;
+        }
+
         public static NamedObjectSave GetDefiningNamedObjectSave(this NamedObjectSave instance, IElement container)
         {
             if (instance.DefinedByBase == false)

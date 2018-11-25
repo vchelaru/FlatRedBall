@@ -26,7 +26,16 @@ namespace OfficialPlugins.PointEditingPlugin
         {
             this.ReactToItemSelectHandler += HandleItemSelected;
 
+            this.ReactToChangedPropertyHandler += HandlePropertyChanged;
+        }
 
+        private void HandlePropertyChanged(string changedMember, object oldValue)
+        {
+            var namedObjectSave = GlueState.Self.CurrentNamedObjectSave;
+            if(changedMember == "Points" && namedObjectSave != null)
+            {
+                RefreshToNamedObject(namedObjectSave);
+            }
         }
 
         private void HandleItemSelected(TreeNode selectedTreeNode)
@@ -38,13 +47,16 @@ namespace OfficialPlugins.PointEditingPlugin
                 namedObjectSave = selectedTreeNode.Tag as NamedObjectSave;
             }
 
+            RefreshToNamedObject(namedObjectSave);
+        }
 
-
+        private void RefreshToNamedObject(NamedObjectSave namedObjectSave)
+        {
             bool shouldShow = namedObjectSave != null;
 
             if (shouldShow)
             {
-                shouldShow = 
+                shouldShow =
                     namedObjectSave.SourceClassType == "Polygon" ||
                     namedObjectSave.SourceClassType == "FlatRedBall.Math.Geometry.Polygon";
             }
