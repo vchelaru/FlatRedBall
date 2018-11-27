@@ -196,6 +196,10 @@
     <Name>Text</Name>
     <ElementType>Standard</ElementType>
   </StandardElementReference>
+  <StandardElementReference>
+    <Name>Polygon</Name>
+    <ElementType>Standard</ElementType>
+  </StandardElementReference>
   <BehaviorReference>
     <Name>ButtonBehavior</Name>
   </BehaviorReference>

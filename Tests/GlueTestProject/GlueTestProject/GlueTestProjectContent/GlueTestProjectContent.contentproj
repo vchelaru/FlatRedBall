@@ -665,6 +665,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>NineSlice</Name>
     </None>
+    <None Include="gumproject\standards\polygon.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>polygon</Name>
+    </None>
     <None Include="GumProject\Standards\Rectangle.gutx">
       <Name>Rectangle</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

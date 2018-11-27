@@ -976,6 +976,7 @@
     <Compile Include="GumRuntimes\ParentStateComponentRuntime.Generated.cs">
       <DependentUpon>ParentStateComponentRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\PolygonRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\RectangleRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\SameNameComponentRuntime.cs" />
     <Compile Include="GumRuntimes\SameNameComponentRuntime.Generated.cs">
