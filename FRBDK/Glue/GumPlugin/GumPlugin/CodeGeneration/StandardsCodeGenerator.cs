@@ -328,17 +328,23 @@ namespace GumPlugin.CodeGeneration
                 return true;
             }
 
-            if (elementSave.Name == "Circle" || elementSave.Name == "Rectangle")
+            if (elementSave.Name == "Circle" || 
+                elementSave.Name == "Rectangle" ||
+                elementSave.Name == "Polygon")
             {
-                string containedObject;
+                string containedObject = null;
 
                 if (elementSave.Name == "Circle")
                 {
                     containedObject = "ContainedCircle";
                 }
-                else
+                else if(elementSave.Name == "Rectangle")
                 {
                     containedObject = "ContainedRectangle";
+                }
+                else if(elementSave.Name == "Polygon")
+                {
+                    containedObject = "ContainedPolygon";
                 }
 
                 string colorComponent = null;
@@ -408,7 +414,8 @@ namespace GumPlugin.CodeGeneration
             }
             // handle colors:
 
-            if (elementSave.Name == "Circle" || elementSave.Name == "Rectangle")
+            if (elementSave.Name == "Circle" || elementSave.Name == "Rectangle"  ||
+                elementSave.Name == "Polygon")
             {
                 string containedObject;
                 
@@ -416,9 +423,13 @@ namespace GumPlugin.CodeGeneration
                 {
                     containedObject = "ContainedCircle";
                 }
-                else
+                else if(elementSave.Name == "Rectangle")
                 {
                     containedObject = "ContainedRectangle";
+                }
+                else
+                {
+                    containedObject = "ContainedPolygon";
                 }
                 if(variable.Name == "Alpha")
                 {
