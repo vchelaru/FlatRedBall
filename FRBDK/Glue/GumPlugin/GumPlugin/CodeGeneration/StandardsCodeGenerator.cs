@@ -52,6 +52,7 @@ namespace GumPlugin.CodeGeneration
             mStandardElementToQualifiedTypes.Add("Text", "RenderingLibrary.Graphics.Text");
             mStandardElementToQualifiedTypes.Add("Circle", "RenderingLibrary.Math.Geometry.LineCircle");
             mStandardElementToQualifiedTypes.Add("Rectangle", "RenderingLibrary.Math.Geometry.LineRectangle");
+            mStandardElementToQualifiedTypes.Add("Polygon", "RenderingLibrary.Math.Geometry.LinePolygon");
 
 
             // What we will never support (as is)
@@ -198,7 +199,11 @@ namespace GumPlugin.CodeGeneration
 
         private string CreateContainedObjectMembers(ICodeBlock currentBlock, ElementSave standardElementSave)
         {
-
+            if(mStandardElementToQualifiedTypes.ContainsKey(standardElementSave.Name) == false)
+            {
+                throw new InvalidOperationException($"The {nameof(mStandardElementToQualifiedTypes)} " +
+                    $"does not contain the key {standardElementSave.Name}");
+            }
             string qualifiedBaseType = mStandardElementToQualifiedTypes[standardElementSave.Name];
             string unqualifiedBaseType = standardElementSave.Name;
 

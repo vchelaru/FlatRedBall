@@ -228,7 +228,9 @@ namespace GumPlugin
             //   for the new level editor that can make a secondary gum project.
             // 1.5.2
             // - Fixed code generation including ContainedType property on Container object.
-            get { return new Version(1, 5, 2, 0); }
+            // 1.6.0
+            // - Added support for Polygon
+            get { return new Version(1, 6, 0, 0); }
         }
 
         #endregion

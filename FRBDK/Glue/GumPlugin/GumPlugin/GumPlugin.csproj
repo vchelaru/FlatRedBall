@@ -103,6 +103,9 @@
     <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Math\FloatRectangle.cs">
       <Link>Embedded\LibraryFiles\RenderingLibrary\FloatRectangle.cs</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Math\Geometry\LinePolygon.cs">
+      <Link>Embedded\LibraryFiles\RenderingLibrary\LinePolygon.cs</Link>
+    </EmbeddedResource>
     <Compile Include="CodeGeneration\BehaviorCodeGenerator.cs" />
     <Compile Include="CodeGeneration\EventCodeGenerator.cs" />
     <Compile Include="CodeGeneration\GlobalContentCodeGenerator.cs" />
