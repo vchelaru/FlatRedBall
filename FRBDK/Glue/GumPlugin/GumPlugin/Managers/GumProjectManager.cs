@@ -116,6 +116,7 @@ namespace GumPlugin.Managers
                 if(added)
                 {
                     GlueState.Self.CurrentReferencedFileSave = rfs;
+                    ReloadProject();
                 }
             }
 

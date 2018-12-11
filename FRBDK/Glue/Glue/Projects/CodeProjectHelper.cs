@@ -83,6 +83,10 @@ namespace FlatRedBall.Glue.Projects
         /// or if the file has already been added to the project.</returns>
         public bool AddFileToCodeProjectIfNotAlreadyAdded(ProjectBase project, string fileToAddAbsolute)
         {
+            if(project == null)
+            {
+                throw new ArgumentNullException(nameof(project));
+            }
             bool wasAdded = false;
             // If the file is absolute, shouldn't we make it relative?  Why are we sending "false" as the argument?
             //if (!project.IsFilePartOfProject(fileToAddAbsolute, BuildItemMembershipType.Any, false))
