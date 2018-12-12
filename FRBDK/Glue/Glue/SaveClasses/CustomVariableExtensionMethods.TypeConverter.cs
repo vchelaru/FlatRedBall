@@ -99,7 +99,13 @@ namespace FlatRedBall.Glue.SaveClasses
                     // have a System.Type, so it only knows its runtime
                     // type;
                     AvailableFileStringConverter converter = new AvailableFileStringConverter(containingElement);
-                    converter.UnqualifiedRuntimeTypeName = customVariable.Type;
+
+                    var typeName = customVariable.Type;
+                    if(typeName?.Contains('.') == true)
+                    {
+                        typeName = typeName.Substring(typeName.LastIndexOf('.') + 1);
+                    }
+                    converter.UnqualifiedRuntimeTypeName = typeName;
                     converter.ShowNewFileOption = false;
                     converter.RemovePathAndExtension = true;
                     typeConverter = converter;

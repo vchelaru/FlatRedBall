@@ -495,7 +495,15 @@ namespace FlatRedBall.Glue.Reflection
 
                     if (variableName == "SourceFile")
                     {
-                        return namedObject.ClassType;
+                        // This may not be qualified, so let's try to get the asset type info:
+                        if(ati != null)
+                        {
+                            return ati.QualifiedRuntimeTypeName.QualifiedType;
+                        }
+                        else
+                        {
+                            return namedObject.ClassType;
+                        }
                     }
                     else if(ati != null && ati.VariableDefinitions.Any(item =>item.Name == variableName))
                     {

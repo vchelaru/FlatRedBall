@@ -945,6 +945,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TilbTest</Name>
     </None>
+    <None Include="Screens\TmxScreen\TmxForObjectSourceFile.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxForObjectSourceFile</Name>
+    </None>
     <None Include="Screens\TmxScreen\TmxWithEmptyLayers.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TmxWithEmptyLayers</Name>
