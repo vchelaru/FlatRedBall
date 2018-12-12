@@ -9,6 +9,7 @@ using FlatRedBall.Utilities;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System.Globalization;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -144,6 +145,23 @@ namespace FlatRedBall.Glue.CodeGeneration
             return fileCode.ToString();
         }
 
+        static List<string> excludedProperties = new List<string>
+        {
+            nameof(DisplaySettingsViewModel.ShowAspectRatioMismatch),
+            nameof(DisplaySettingsViewModel.KeepResolutionHeightConstantMessage),
+            nameof(DisplaySettingsViewModel.KeepResolutionWidthConstantMessage),
+            nameof(DisplaySettingsViewModel.OnResizeUiVisibility),
+            nameof(DisplaySettingsViewModel.AspectRatioValuesVisibility),
+        };
+        public static bool ShouldGenerateCodeWhenPropertyChanged(string propertyName)
+        {
+            if(excludedProperties.Contains(propertyName))
+            {
+                return false;
+            }
+            return true;
+        }
+
         private static void GenerateResizeBehaviorEnum(CodeBlockNamespace namespaceContents)
         {
             var enumBlock = namespaceContents.Enum("public", "ResizeBehavior");
@@ -172,7 +190,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if(displaySettings.FixedAspectRatio)
             {
-                block.Line($"AspectRatio = {(displaySettings.AspectRatioWidth / displaySettings.AspectRatioHeight).ToString().ToLowerInvariant()}m,");
+                decimal aspectRatioValue = 1;
+
+                if(displaySettings.AspectRatioHeight != 0)
+                {
+                    aspectRatioValue = displaySettings.AspectRatioWidth / displaySettings.AspectRatioHeight;
+                }
+                block.Line($"AspectRatio = {aspectRatioValue.ToString().ToLowerInvariant()}m,");
             }
 
             block.Line($"IsFullScreen = {displaySettings.RunInFullScreen.ToString().ToLowerInvariant()},");

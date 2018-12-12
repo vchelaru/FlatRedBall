@@ -181,11 +181,21 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             {
                 Visibility visibility = Visibility.Collapsed;
                 
-                if(FixedAspectRatio )
+                if(FixedAspectRatio  )
                 {
-                    var desiredAspectRatio = AspectRatioWidth / AspectRatioHeight;
+                    decimal desiredAspectRatio = 1;
 
-                    var resolutionAspectRatio = (decimal)ResolutionWidth / (decimal)ResolutionHeight;
+                    if (AspectRatioHeight != 0)
+                    {
+                        desiredAspectRatio = AspectRatioWidth / AspectRatioHeight;
+                    }
+
+                    decimal resolutionAspectRatio = 1;
+
+                    if (ResolutionHeight != 0)
+                    {
+                        resolutionAspectRatio = (decimal)ResolutionWidth / (decimal)ResolutionHeight;
+                    }
 
                     if(desiredAspectRatio != resolutionAspectRatio)
                     {

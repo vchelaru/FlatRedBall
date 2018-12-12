@@ -30,10 +30,28 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
             viewModel.PropertyChanged += HandleDisplaySettingsChanged;
 
+            this.ReactToLoadedGlux += HandleLoadedGlux;
+
             base.AddMenuItemTo(
                 "Camera Settings", HandleCameraSettings, "Settings");
 
             base.AddToToolBar(new CameraToolbar(), "Standard");
+        }
+
+        private void HandleLoadedGlux()
+        {
+            // When the project loads, immediately set the ATI so 
+            // that Glue behaves properly
+            if(GlueState.Self.CurrentGlueProject?.DisplaySettings != null)
+            {
+                respondToViewModelChanges = false;
+                {
+                    viewModel.SetFrom(GlueState.Self.CurrentGlueProject.DisplaySettings);
+                }
+                respondToViewModelChanges = true;
+
+                CameraAtiUpdateLogic.UpdateAtiTo(viewModel);
+            }
         }
 
         private void HandleDisplaySettingsChanged(object sender, PropertyChangedEventArgs e)
@@ -48,9 +66,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
                     GlueCommands.Self.GluxCommands.SaveGlux();
 
-                    CameraSetupCodeGenerator.UpdateOrAddCameraSetup();
+                    if(CameraSetupCodeGenerator.ShouldGenerateCodeWhenPropertyChanged(e.PropertyName))
+                    {
+                        CameraSetupCodeGenerator.UpdateOrAddCameraSetup();
+                    }
 
                     CameraSetupCodeGenerator.CallSetupCamera(ProjectManager.GameClassFileName, true);
+
+                    CameraAtiUpdateLogic.UpdateAtiTo(viewModel);
                 }
             }
         }

@@ -132,7 +132,8 @@ namespace FlatRedBall.Glue.IO
                 {
                     ProjectManager.GlueProjectSave = new GlueProjectSave();
 
-                    // temporary - eventually this will just be done in the .glux itself
+                    // temporary - eventually this will just be done in the .glux itself, or by the plugin 
+                    // but for now we do it here because we only want to do it on new projects
                     Plugins.EmbeddedPlugins.CameraPlugin.CameraMainPlugin.CreateGlueProjectSettingsFor(ProjectManager.GlueProjectSave);
 
 
