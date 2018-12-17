@@ -1626,156 +1626,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         internal static void AddEntityToolStripClick()
         {
-            // search:  addentity, add entity
-            if (ProjectManager.GlueProjectSave == null)
-            {
-                System.Windows.Forms.MessageBox.Show("You need to create or load a project first.");
-            }
-            else
-            {
-                if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
-                {
-                    AddEntityWindow window = new Controls.AddEntityWindow();
-                    var result = window.ShowDialog();
-
-                    if(result == true)
-                    {
-                        string entityName = window.EnteredText;
-
-                        string whyIsntValid;
-
-                        if (!NameVerifier.IsEntityNameValid(entityName, null, out whyIsntValid))
-                        {
-                            MessageBox.Show(whyIsntValid);
-                        }
-                        else
-                        {
-                            string directory = "";
-
-                            if (EditorLogic.CurrentTreeNode.IsDirectoryNode())
-                            {
-                                directory = EditorLogic.CurrentTreeNode.GetRelativePath();
-                                directory = directory.Replace('/', '\\');
-                            }
-                            CreateEntityAndObjects(window, entityName, directory);
-
-                        }
-                    }
-                }
-            }
-        }
-
-        private static void CreateEntityAndObjects(AddEntityWindow window, string entityName, string directory)
-        {
-            var gluxCommands = GlueCommands.Self.GluxCommands;
-
-            var newElement = gluxCommands.EntityCommands.AddEntity(
-                directory + entityName, is2D: true);
-
-            GlueState.Self.CurrentElement = newElement;
-
-            if (window.SpriteChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "SpriteInstance";
-                addObjectViewModel.SourceClassType = "Sprite";
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            if (window.TextChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "TextInstance";
-                addObjectViewModel.SourceClassType = "Text";
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            if (window.CircleChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "CircleInstance";
-                addObjectViewModel.SourceClassType = "Circle";
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            if (window.AxisAlignedRectangleChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
-                addObjectViewModel.SourceClassType = "AxisAlignedRectangle";
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            bool needsRefreshAndSave = false;
-
-            if (window.PolygonChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "PolygonInstance";
-                addObjectViewModel.SourceClassType = "Polygon";
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-
-                var nos = gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
-                CustomVariableInNamedObject instructions = null;
-                instructions = nos.GetCustomVariable("Points");
-                if(instructions == null)
-                {
-                    instructions = new CustomVariableInNamedObject();
-                    instructions.Member = "Points";
-                    nos.InstructionSaves.Add(instructions);
-                }
-                var points = new List<Vector2>();
-                points.Add(new Vector2(-16, 16));
-                points.Add(new Vector2( 16, 16));
-                points.Add(new Vector2( 16,-16));
-                points.Add(new Vector2(-16,-16));
-                points.Add(new Vector2(-16, 16));
-                instructions.Value = points;
-
-
-                needsRefreshAndSave = true;
-                
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            if(window.IVisibleChecked)
-            {
-                newElement.ImplementsIVisible = true;
-                needsRefreshAndSave = true;
-            }
-
-            if(window.IClickableChecked)
-            {
-                newElement.ImplementsIClickable = true;
-                needsRefreshAndSave = true;
-            }
-
-            if(window.IWindowChecked)
-            {
-                newElement.ImplementsIWindow = true;
-                needsRefreshAndSave = true;
-            }
-
-            if(window.ICollidableChecked)
-            {
-                newElement.ImplementsICollidable = true;
-                needsRefreshAndSave = true;
-            }
-
-            if(needsRefreshAndSave)
-            {
-                MainGlueWindow.Self.PropertyGrid.Refresh();
-                ElementViewWindow.GenerateSelectedElementCode();
-                GluxCommands.Self.SaveGlux();
-            }
+            GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog();
         }
 
         internal static void IgnoreDirectoryClick()
@@ -2526,7 +2377,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     string runtimeTypeName = ati.RuntimeTypeName;
 
-                    NamedObjectSave nos = NamedObjectSaveExtensionMethodsGlue.AddNewNamedObjectToSelectedElement("Entire" + runtimeTypeName, MembershipInfo.ContainedInThis, false);
+                    NamedObjectSave nos = NamedObjectSaveExtensionMethodsGlue.AddNewNamedObjectTo(
+                        "Entire" + runtimeTypeName, MembershipInfo.ContainedInThis,
+                        GlueState.Self.CurrentElement, GlueState.Self.CurrentNamedObjectSave, false);
+
                     IElement element = GlueState.Self.CurrentElement;
 
                     while (element.AllNamedObjects.Any(item => item != nos && item.InstanceName == nos.InstanceName))

@@ -20,11 +20,30 @@ namespace FlatRedBall.Glue.CodeGeneration
     {
         internal static bool IsTypeFromCsv(CustomVariable customVariable)
         {
-            return customVariable != null && customVariable.Type != null && 
+            if(customVariable != null && customVariable.Type != null &&
                 customVariable.GetIsVariableState() == false &&
                 customVariable.Type.Contains(".") &&
-                customVariable.GetRuntimeType() == null
-                ;
+                customVariable.GetRuntimeType() == null)
+            {
+                var isCsv = true;
+                // If it's from CSV, there will be no asset type info for the CSV:
+                if(customVariable.IsTunneling)
+                {
+                    var containingElement = ObjectFinder.Self.GetElementContaining(customVariable);
+                    var nos = containingElement?.GetNamedObject(customVariable.SourceObject);
+
+                    if(nos != null)
+                    {
+                        if(nos.SourceType != SourceType.Entity)
+                        {
+                            isCsv = false;
+                        }
+                    }                    
+                }
+
+                return isCsv;
+            }
+            return false;
         }
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)

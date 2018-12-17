@@ -50,7 +50,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         public EntitySave CurrentEntitySave
         {
             get { return EditorLogic.CurrentEntitySave; }
+            set { EditorLogic.CurrentElement = value; }
         }
+
 
         public ScreenSave CurrentScreenSave
         {
@@ -112,6 +114,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 else
                 {
                     return null;
+                }
+            }
+            set
+            {
+                if(value == null)
+                {
+                    CurrentTreeNode = null;
+                }
+                else
+                {
+                    CurrentTreeNode = GlueState.Self.Find.NamedObjectTreeNode(value);
                 }
             }
         }

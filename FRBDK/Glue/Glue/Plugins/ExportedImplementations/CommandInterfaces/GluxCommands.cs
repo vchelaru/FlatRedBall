@@ -452,9 +452,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public NamedObjectSave AddNewNamedObjectToSelectedElement(AddObjectViewModel addObjectViewModel)
         {
+            return AddNewNamedObjectTo(addObjectViewModel, GlueState.Self.CurrentElement, GlueState.Self.CurrentNamedObjectSave);
+        }
+
+        public NamedObjectSave AddNewNamedObjectTo(AddObjectViewModel addObjectViewModel, IElement element, NamedObjectSave namedObject)
+        {
+
             MembershipInfo membershipInfo = NamedObjectSaveExtensionMethodsGlue.GetMemberMembershipInfo(addObjectViewModel.ObjectName);
 
-            var newNos = NamedObjectSaveExtensionMethodsGlue.AddNewNamedObjectToSelectedElement(addObjectViewModel.ObjectName, membershipInfo, false);
+            var newNos = NamedObjectSaveExtensionMethodsGlue.AddNewNamedObjectTo(addObjectViewModel.ObjectName,
+                membershipInfo, element, namedObject, false);
 
             if (addObjectViewModel.SourceClassType != NoType && !string.IsNullOrEmpty(addObjectViewModel.SourceClassType))
             {
@@ -464,7 +471,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 newNos.SourceName = addObjectViewModel.SourceNameInFile;
                 newNos.UpdateCustomProperties();
 
-                EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
+                GlueCommands.Self.RefreshCommands.RefreshUi(element);
             }
             else if (!string.IsNullOrEmpty(addObjectViewModel.SourceFile))
             {
@@ -473,7 +480,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 newNos.SourceName = addObjectViewModel.SourceNameInFile;
                 newNos.UpdateCustomProperties();
 
-                EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
+                GlueCommands.Self.RefreshCommands.RefreshUi(element);
             }
 
             newNos.SourceClassGenericType = addObjectViewModel.SourceClassGenericType;
@@ -485,9 +492,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 newNos.HasPublicProperty = true;
             }
 
-            var currentEntity = GlueState.Self.CurrentElement as EntitySave;
+            var entity = element as EntitySave;
 
-            if (currentEntity != null && currentEntity.CreatedByOtherEntities && currentEntity.PooledByFactory)
+            if (entity != null && entity.CreatedByOtherEntities && entity.PooledByFactory)
             {
                 bool wasAnythingAdded =
                     FlatRedBall.Glue.Factories.FactoryManager.AddResetVariablesFor(newNos);
@@ -501,7 +508,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             PluginManager.ReactToNewObject(newNos);
             MainGlueWindow.Self.PropertyGrid.Refresh();
             PropertyGridHelper.UpdateNamedObjectDisplay();
-            ElementViewWindow.GenerateSelectedElementCode();
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
 
             // it may already be selected, so force select it
             MainGlueWindow.Self.ElementTreeView.SelectedNode = null;

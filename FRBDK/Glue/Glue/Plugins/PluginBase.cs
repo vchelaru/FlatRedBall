@@ -71,6 +71,7 @@ namespace FlatRedBall.Glue.Plugins
         public InitializeMenuDelegate InitializeMenuHandler { get; protected set; }
 
         public Action<ScreenSave> ReactToNewScreenCreated { get; protected set; }
+        public Action<EntitySave, AddEntityWindow> ReactToNewEntityCreated { get; protected set; }
 
         public OnErrorOutputDelegate OnErrorOutputHandler { get; protected set; }
         public OnOutputDelegate OnOutputHandler { get; protected set; }
@@ -113,6 +114,8 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action ReactToLoadedGluxEarly { get; protected set; }
         public Action ReactToLoadedGlux { get; protected set; }
+
+        public Action<AddEntityWindow> ModifyAddEntityWindow { get; protected set; }
 
         /// <summary>
         /// Raised whenever a project is unloaded. Glue will still report the project as loaded, so that plugins can

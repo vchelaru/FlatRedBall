@@ -1,0 +1,113 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.ViewModels;
+using FlatRedBall.IO;
+using TileGraphicsPlugin.ViewModels;
+using TileGraphicsPlugin.Views;
+
+namespace TileGraphicsPlugin.Logic
+{
+    class NewEntityCreatedReactionLogic
+    {
+        internal static void ReactToNewEntityCreated(EntitySave newEntity, AddEntityWindow window)
+        {
+            var control = window.UserControlChildren.First(item => item is AdditionalEntitiesControls);
+            var viewModel = control.DataContext as AdditionalEntitiesViewModel;
+
+            if (viewModel.InstantiateInTileMap)
+            {
+                // make it have a factory
+                newEntity.CreatedByOtherEntities = true;
+
+                GlueCommands.Self.PrintOutput($"Tiled Plugin marked entity {newEntity} as CreatedByOtherEntities=true");
+
+                if (viewModel.IncludeListsInScreens)
+                {
+                    // loop through all screens that have a TMX object and add them.
+                    // be smart - if the base screen does, don't do it in the derived
+                    var allScreens = GlueState.Self.CurrentGlueProject.Screens;
+
+                    foreach(var screen in allScreens)
+                    {
+                        var needsList = GetIfScreenNeedsList(screen);
+
+                        if(needsList)
+                        {
+                            AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+
+                            addObjectViewModel.ObjectName = $"{newEntity.GetStrippedName()}List";
+                            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                            addObjectViewModel.SourceClassType = "PositionedObjectList<T>";
+                            addObjectViewModel.SourceClassGenericType = newEntity.Name;
+
+                            GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(
+                                addObjectViewModel, screen, namedObject:null);
+
+                            GlueCommands.Self.PrintOutput(
+                                $"Tiled Plugin added {addObjectViewModel.ObjectName} to {screen}");
+
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
+                        }
+                    }
+                }
+
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(newEntity);
+                GlueCommands.Self.ProjectCommands.SaveProjects();
+                GlueState.Self.CurrentEntitySave = newEntity;
+            }
+        }
+
+        private static bool GetIfScreenNeedsList(ScreenSave screen)
+        {
+            var hasTmx = GetIfScreenHasTmxDirectly(screen);
+
+            var doBaseScreensHaveTmx = GetIfBaseScreensHaveTmx(screen);
+
+            return hasTmx == true && !doBaseScreensHaveTmx;
+        }
+
+        private static bool GetIfBaseScreensHaveTmx(ScreenSave screen)
+        {
+            var baseScreen = ObjectFinder.Self.GetScreenSave(screen.BaseScreen);
+
+            if(baseScreen == null)
+            {
+                return false;
+            }
+            else
+            {
+                if(GetIfScreenHasTmxDirectly(baseScreen))
+                {
+                    return true;
+                }
+                else
+                {
+                    return GetIfBaseScreensHaveTmx(baseScreen);
+                }
+
+            }
+            throw new NotImplementedException();
+        }
+
+        private static bool GetIfScreenHasTmxDirectly(ScreenSave screen)
+        {
+            var hasTmxFile = screen.ReferencedFiles.Any(item => FileManager.GetExtension(item.Name) == "tmx");
+            var hasTmx = hasTmxFile;
+
+
+            if(!hasTmx)
+            {
+
+                hasTmx = screen.AllNamedObjects.Any(item => item.GetAssetTypeInfo()?.FriendlyName == "LayeredTileMap (.tmx)");
+            }
+            return hasTmx;
+        }
+    }
+}

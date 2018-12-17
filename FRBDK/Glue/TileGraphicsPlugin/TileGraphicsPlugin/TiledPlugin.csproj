@@ -125,11 +125,17 @@
     <EmbeddedResource Include="EmbeddedCodeFiles\CollidableListVsTileShapeCollectionRelationship.cs" />
     <EmbeddedResource Include="EmbeddedCodeFiles\CollidableVsTileShapeCollectionRelationship.cs" />
     <EmbeddedResource Include="EmbeddedCodeFiles\CollisionManagerTileShapeCollectionExtensions.cs" />
+    <Compile Include="Logic\ModifyAddEntityWindowLogic.cs" />
+    <Compile Include="Logic\NewEntityCreatedReactionLogic.cs" />
     <Compile Include="Managers\BuildToolSaver.cs" />
     <EmbeddedResource Include="TileNodeNetworkCreator.cs" />
     <Compile Include="Managers\TiledObjectTypeCreator.cs" />
+    <Compile Include="ViewModels\AdditionalEntitiesViewModel.cs" />
     <Compile Include="ViewModels\AddNewLevelViewModel.cs" />
     <Compile Include="ViewModels\CommandLineViewModel.cs" />
+    <Compile Include="Views\AdditionalEntitiesControls.xaml.cs">
+      <DependentUpon>AdditionalEntitiesControls.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\AddNewLevelView.xaml.cs">
       <DependentUpon>AddNewLevelView.xaml</DependentUpon>
     </Compile>
@@ -139,7 +145,7 @@
     <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\DataTypes\ReducedTileMapInfo.cs">
       <Link>ReducedTileMapInfo.cs</Link>
     </EmbeddedResource>
-    <Compile Include="AssetTypeInfoAdder.cs" />
+    <Compile Include="Logic\AssetTypeInfoAdder.cs" />
     <EmbeddedResource Include="TileEntityInstantiator.cs" />
     <Compile Include="CodeGeneration\LevelCodeGenerator.cs" />
     <Compile Include="Controllers\AddLevelController.cs" />
@@ -234,6 +240,10 @@
     <EmbeddedResource Include="Content\Levels\TopDown8Bit.tmx" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\AdditionalEntitiesControls.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\AddNewLevelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -961,22 +961,26 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToNewScreenCreated(ScreenSave screen)
         {
-            foreach (PluginManager pluginManager in mInstances)
+            CallMethodOnPlugin((plugin) =>
             {
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToNewScreenCreated != null);
-                foreach (var plugin in plugins)
+                if (plugin.ReactToNewScreenCreated != null)
                 {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                        {
-                            plugin1.ReactToNewScreenCreated(screen);
-                        }, container, "Failed in ReactToNewScreenCreated");
-                    }
+                    plugin.ReactToNewScreenCreated(screen);
                 }
-            }
+            },
+            nameof(ReactToNewScreenCreated));
+        }
+
+        internal static void ReactToNewEntityCreated(EntitySave entitySave, AddEntityWindow window)
+        {
+            CallMethodOnPlugin((plugin) =>
+            {
+                if(plugin.ReactToNewEntityCreated != null)
+                {
+                    plugin.ReactToNewEntityCreated(entitySave, window);
+                }
+            },
+            nameof(ReactToNewEntityCreated));
         }
 
         internal static bool OpenSolution(string solutionName)
@@ -1864,6 +1868,18 @@ namespace FlatRedBall.Glue.Plugins
                     }
                 },
                 "AdjustDisplayedScreen");
+        }
+
+        internal static void ModifyAddEntityWindow(AddEntityWindow addEntityWindow)
+        {
+            CallMethodOnPlugin((plugin) =>
+            {
+                if(plugin.ModifyAddEntityWindow != null)
+                {
+                    plugin.ModifyAddEntityWindow(addEntityWindow);
+                }
+            },
+            nameof(ModifyAddEntityWindow));
         }
 
         internal static void AdjustDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer entitySaveDisplayer)

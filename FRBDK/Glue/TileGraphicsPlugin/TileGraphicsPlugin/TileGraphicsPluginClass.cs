@@ -29,6 +29,7 @@ using TileGraphicsPlugin.Views;
 using TileGraphicsPlugin.ViewModels;
 using TmxEditor.Events;
 using FlatRedBall.Glue.IO;
+using TileGraphicsPlugin.Logic;
 
 namespace TileGraphicsPlugin
 {
@@ -133,6 +134,9 @@ namespace TileGraphicsPlugin
             //  - Added support for layer Red, Green, and Blue
             // 1.7.1
             //  - Fixed flipped tiles not creating entities
+            // 1.8.1
+            //  - The new entity window now has checkboxes for supporting creating the entity through Tiled and for 
+            //    adding the entity to all screens containing tmx files directly.
             get { return new Version(1, 7, 1, 0); }
         }
 
@@ -169,10 +173,10 @@ namespace TileGraphicsPlugin
             get { return mSelf; }
         }
 
-       
+
         #endregion
-        
-        #region Methods
+
+        #region Constructor/Startup
 
         public TileGraphicsPluginClass()
         {
@@ -192,34 +196,33 @@ namespace TileGraphicsPlugin
             AddCodeGenerators();
         }
 
-        private void AddCodeGenerators()
+        private void InitializeTab()
         {
-            CodeWriter.CodeGenerators.Add(new LevelCodeGenerator());
-
-        }
-
-        public override bool ShutDown(FlatRedBall.Glue.Plugins.Interfaces.PluginShutDownReason reason)
-        {
-            // Do anything your plugin needs to do to shut down
-            // or don't shut down and return false
-            return true;
-        }
-
-        private static void SaveTemplateTmx()
-        {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            string whatToSave = "TileGraphicsPlugin.Content.Levels.TiledMap.tmx";
-            //C:\Users\Victor\AppData\Roaming\Glue\FilesForAddNewFile\
-
-            string destination = FileManager.UserApplicationData +
-                @"Glue\FilesForAddNewFile\TiledMap.tmx";
             try
             {
-                FileManager.SaveEmbeddedResource(assembly, whatToSave, destination);
+                mControl = new TmxEditor.TmxEditorControl();
             }
-            catch (Exception e)
+            catch(System.NotSupportedException exc)
             {
-                PluginManager.ReceiveError("Error trying to save tmx: " + e.ToString());
+                GlueCommands.PrintError("Could not find a graphics device that supports XNA hi-def. Attempting to load Tiled plugin without the control tab");
+            }
+
+            if(mControl != null)
+            {
+                mControl.AnyTileMapChange += HandleUserChangeTmx;
+                mControl.LoadEntities += OnLoadEntities;
+                var commandLineArgumentsView = new TileGraphicsPlugin.Views.CommandLineArgumentsView();
+                mCommandLineViewModel = new CommandLineViewModel();
+
+                mCommandLineViewModel.CommandLineChanged += HandleCommandLinePropertyChanged;
+
+                commandLineArgumentsView.DataContext = mCommandLineViewModel;
+                mControl.AddTab("Command Line", commandLineArgumentsView);
+
+
+                mTilesetXnaRightClickController = new TilesetXnaRightClickController();
+                mTilesetXnaRightClickController.Initialize(mControl.TilesetXnaContextMenu);
+                mControl.TilesetDisplayRightClick += (o, s) => mTilesetXnaRightClickController.RefreshMenuItems();
             }
         }
 
@@ -297,7 +300,49 @@ namespace TileGraphicsPlugin
                     tiledObjectTypeCreator.RefreshFile();
                 }
             };
+
+            this.ModifyAddEntityWindow += ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;
+            this.ReactToNewEntityCreated += NewEntityCreatedReactionLogic.ReactToNewEntityCreated;
         }
+
+
+
+        private static void SaveTemplateTmx()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            string whatToSave = "TileGraphicsPlugin.Content.Levels.TiledMap.tmx";
+            //C:\Users\Victor\AppData\Roaming\Glue\FilesForAddNewFile\
+
+            string destination = FileManager.UserApplicationData +
+                @"Glue\FilesForAddNewFile\TiledMap.tmx";
+            try
+            {
+                FileManager.SaveEmbeddedResource(assembly, whatToSave, destination);
+            }
+            catch (Exception e)
+            {
+                PluginManager.ReceiveError("Error trying to save tmx: " + e.ToString());
+            }
+        }
+
+        private void AddCodeGenerators()
+        {
+            CodeWriter.CodeGenerators.Add(new LevelCodeGenerator());
+
+        }
+
+        #endregion
+
+        #region Methods
+
+        public override bool ShutDown(FlatRedBall.Glue.Plugins.Interfaces.PluginShutDownReason reason)
+        {
+            // Do anything your plugin needs to do to shut down
+            // or don't shut down and return false
+            return true;
+        }
+
+
 
         private bool HandleTryAddContainedObjects(string absoluteFile, List<string> availableObjects)
         {
@@ -455,35 +500,6 @@ namespace TileGraphicsPlugin
             }
         }
 
-        private void InitializeTab()
-        {
-            try
-            {
-                mControl = new TmxEditor.TmxEditorControl();
-            }
-            catch(System.NotSupportedException exc)
-            {
-                GlueCommands.PrintError("Could not find a graphics device that supports XNA hi-def. Attempting to load Tiled plugin without the control tab");
-            }
-
-            if(mControl != null)
-            {
-                mControl.AnyTileMapChange += HandleUserChangeTmx;
-                mControl.LoadEntities += OnLoadEntities;
-                var commandLineArgumentsView = new TileGraphicsPlugin.Views.CommandLineArgumentsView();
-                mCommandLineViewModel = new CommandLineViewModel();
-
-                mCommandLineViewModel.CommandLineChanged += HandleCommandLinePropertyChanged;
-
-                commandLineArgumentsView.DataContext = mCommandLineViewModel;
-                mControl.AddTab("Command Line", commandLineArgumentsView);
-
-
-                mTilesetXnaRightClickController = new TilesetXnaRightClickController();
-                mTilesetXnaRightClickController.Initialize(mControl.TilesetXnaContextMenu);
-                mControl.TilesetDisplayRightClick += (o, s) => mTilesetXnaRightClickController.RefreshMenuItems();
-            }
-        }
 
         private void HandleCommandLinePropertyChanged()
         {

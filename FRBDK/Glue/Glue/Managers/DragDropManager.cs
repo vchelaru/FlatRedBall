@@ -131,7 +131,8 @@ namespace FlatRedBall.Glue.Managers
 
                     IElement elementToAddTo = movingNos.GetContainer();
                     container.ContainedObjects.Remove(movingNos);
-                    NamedObjectSaveExtensionMethodsGlue.AddNewNamedObjectToElementTreeNode(EditorLogic.CurrentElementTreeNode, movingNos, false);
+                    NamedObjectSaveExtensionMethodsGlue.AddExistingNamedObjectToElement(
+                        GlueState.Self.CurrentElement, movingNos, false);
                     EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
 
                     IElement elementToRegenerate = targetNode.Parent.Tag as IElement;
@@ -514,11 +515,6 @@ namespace FlatRedBall.Glue.Managers
 
             }
 
-            BaseElementTreeNode elementTreeNode = GlueState.Self.Find.ElementTreeNode(elementToCreateIn);
-
-            //EntityTreeNode entityTreeNode =
-            //    ElementViewWindow.GetEntityTreeNode(entityToCreateIn); 
-
             NamedObjectSave newNamedObject = new NamedObjectSave();
 
             // We'll add "List" or "Instance" below
@@ -574,7 +570,7 @@ namespace FlatRedBall.Glue.Managers
             //newNamedObject.AddToManagers = true;
 
 
-            NamedObjectSaveExtensionMethodsGlue.AddNewNamedObjectToElementTreeNode(elementTreeNode, newNamedObject, true);
+            NamedObjectSaveExtensionMethodsGlue.AddExistingNamedObjectToElement(elementToCreateIn, newNamedObject, true);
 
             Plugins.PluginManager.ReceiveOutput($"Created {newNamedObject}");
 

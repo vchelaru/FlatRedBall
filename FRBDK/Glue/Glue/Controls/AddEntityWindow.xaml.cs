@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,6 +86,21 @@ namespace FlatRedBall.Glue.Controls
             set { ICollidableCheckBox.IsChecked = value; }
         }
 
+        public IReadOnlyCollection<UserControl> UserControlChildren
+        {
+            get
+            {
+                var listToReturn = new List<UserControl>();
+                var uiElements = MainStackPanel.Children.Where(item => item is UserControl);
+                foreach(var element in uiElements)
+                {
+                    listToReturn.Add(element as UserControl);
+                }
+
+                return listToReturn;
+            }
+        }
+
         #endregion
 
         #region Constructor
@@ -100,7 +116,10 @@ namespace FlatRedBall.Glue.Controls
 
         public void AddToStackPanel(UIElement element)
         {
-            this.MainStackPanel.Children.Add(element);
+            var indexToInsertAt = MainStackPanel.Children.Count - 1;
+
+            // above ok/cancel buttons:
+            this.MainStackPanel.Children.Insert(indexToInsertAt, element);
         }
 
         #region Event Handlers

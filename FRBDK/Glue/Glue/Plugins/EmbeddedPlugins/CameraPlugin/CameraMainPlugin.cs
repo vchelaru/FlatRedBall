@@ -76,7 +76,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                     CameraAtiUpdateLogic.UpdateAtiTo(viewModel);
                 }
             }
-        }
+        } 
 
         private void HandleCameraSettings(object sender, EventArgs e)
         {

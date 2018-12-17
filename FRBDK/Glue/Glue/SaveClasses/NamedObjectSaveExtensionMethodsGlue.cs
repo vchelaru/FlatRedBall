@@ -45,7 +45,8 @@ namespace FlatRedBall.Glue.SaveClasses
             return MembershipInfo.NotContained;
         }
 
-        public static NamedObjectSave AddNewNamedObjectToSelectedElement(string objectName, MembershipInfo membershipInfo, bool raisePluginResponse = true)
+        public static NamedObjectSave AddNewNamedObjectTo(string objectName, MembershipInfo membershipInfo, 
+            IElement element, NamedObjectSave namedObjectSave, bool raisePluginResponse = true)
         {
             NamedObjectSave namedObject = new NamedObjectSave();
             namedObject.InstanceName = objectName;
@@ -54,33 +55,17 @@ namespace FlatRedBall.Glue.SaveClasses
 
             #region Adding to a NamedObject (PositionedObjectList)
 
-            if (EditorLogic.CurrentNamedObject != null)
+            if (namedObjectSave != null)
             {
                 AddNamedObjectToCurrentNamedObjectList(namedObject);
 
             }
             #endregion
 
-            #region else adding to Screen
-
-            else if (EditorLogic.CurrentScreenTreeNode != null)
+            else if (element != null)
             {
-                ScreenTreeNode screenTreeNode =
-                    EditorLogic.CurrentScreenTreeNode;
-                AddNewNamedObjectToElementTreeNode(screenTreeNode, namedObject, true);
+                AddExistingNamedObjectToElement(element, namedObject, true);
             }
-
-            #endregion
-
-            #region else adding to an Entity
-            else if (EditorLogic.CurrentEntityTreeNode != null)
-            {
-                EntityTreeNode entityTreeNode =
-                    EditorLogic.CurrentEntityTreeNode;
-
-                AddNewNamedObjectToElementTreeNode(entityTreeNode, namedObject, true);
-            }
-            #endregion
 
             
             if (raisePluginResponse)
@@ -130,44 +115,13 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        internal static void AddNewNamedObjectToElementTreeNode(BaseElementTreeNode elementTreeNode, NamedObjectSave namedObject, bool modifyNamedObject)
+        internal static void AddExistingNamedObjectToElement(IElement element, NamedObjectSave newNamedObject, bool modifyNamedObject)
         {
-            // We no longer need to modify new named objects this way
-            // AttachToContainer defaults to true and won't do anything
-            // on Screens.  It looks like AddToManagers was always true.
-            //if (modifyNamedObject)
-            //{
-            //    if (elementTreeNode.SaveObjectAsElement is EntitySave)
-            //    {
-            //        namedObject.AddToManagers = !(elementTreeNode.SaveObjectAsElement as EntitySave).IsUnique;
+            element.NamedObjects.Add(newNamedObject);
+            GlueCommands.Self.RefreshCommands.RefreshUi(element);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
 
-            //        namedObject.AddToManagers = true;
-            //    }
-            //    else
-            //    {
-            //        // Vic says - when a file is loaded in a Screen, 
-            //        // it is added to managers.  When it is loaded in
-            //        // Entities, it is not and components of it are cloned
-            //        // Therefore, if we're in a Screen, we should assume that
-            //        // we are going to load from a file for this new object and
-            //        // not set the AddToManagers to true.  But IF the new object
-            //        // is going to be an Entity, then the PropetyGrid will handle
-            //        // setting its AddToManagers to true.
-            //    }
-            //}
-
-            elementTreeNode.SaveObjectAsElement.NamedObjects.Add(namedObject);
-
-            elementTreeNode.UpdateReferencedTreeNodes();
-
-            CodeWriter.GenerateCode(elementTreeNode.SaveObjectAsElement);
-
-            // Highlight the newly created object
-            TreeNode treeNode = EditorLogic.CurrentElementTreeNode.GetTreeNodeFor(namedObject);
-            if (treeNode != null)
-            {
-                MainGlueWindow.Self.ElementTreeView.SelectedNode = treeNode;
-            }
+            GlueState.Self.CurrentNamedObjectSave = newNamedObject;
         }
 
     }
