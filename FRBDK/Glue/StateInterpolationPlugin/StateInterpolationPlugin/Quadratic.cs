@@ -6,23 +6,23 @@ namespace FlatRedBall.Glue.StateInterpolation
 {
     public static class Quadratic
     {
-        public static float EaseIn(float t, float b, float c, float d)
+        public static float EaseIn(float timeElapsed, float startingValue, float endingValue, float durationInSeconds)
         {
-		    return c*(t/=d)*t + b;
+		    return endingValue*(timeElapsed/=durationInSeconds)*timeElapsed + startingValue;
 	    }
 
-        public static float EaseOut(float t, float b, float c, float d)
+        public static float EaseOut(float timeElapsed, float startingValue, float endingValue, float durationInSeconds)
         {
-		    return -c *(t/=d)*(t-2) + b;
+		    return -endingValue *(timeElapsed/=durationInSeconds)*(timeElapsed-2) + startingValue;
 	    }
 
-        public static float EaseInOut(float t, float b, float c, float d)
+        public static float EaseInOut(float timeElapsed, float startingValue, float endingValue, float durationInSeconds)
         {
-            if ((t /= d / 2) < 1)
+            if ((timeElapsed /= durationInSeconds / 2) < 1)
             {
-                return c / 2 * t * t + b;
+                return endingValue / 2 * timeElapsed * timeElapsed + startingValue;
             }
-		    return -c/2 * ((--t)*(t-2) - 1) + b;
+		    return -endingValue/2 * ((--timeElapsed)*(timeElapsed-2) - 1) + startingValue;
 	    }
     }
 }

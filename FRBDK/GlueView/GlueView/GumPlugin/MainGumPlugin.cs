@@ -42,7 +42,6 @@ namespace GumPlugin
             gumRuntimeFileManager = new GumRuntimeFileManager();
             gumRuntimeFileManager.SubscribeToFrbWindowResize();
             ReferencedFileRuntimeList.FileManagers.Add(gumRuntimeFileManager);
-
         }
     }
 }

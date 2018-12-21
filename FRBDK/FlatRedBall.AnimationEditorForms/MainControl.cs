@@ -19,6 +19,7 @@ using FlatRedBall.AnimationEditorForms.Converters;
 using FlatRedBall.AnimationEditorForms.Gif;
 using Microsoft.Xna.Framework.Graphics;
 using FlatRedBall.AnimationEditorForms.ViewModels;
+using FlatRedBall.SpecializedXnaControls.Scrolling;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -192,12 +193,12 @@ namespace FlatRedBall.AnimationEditorForms
 
             if (texture == null)
             {
-                mScrollBarControlLogic.UpdateToImage(128, 128);
+                mScrollBarControlLogic.SetDisplayedArea(128, 128);
 
             }
             else
             {
-                mScrollBarControlLogic.UpdateToImage(texture.Width, texture.Height);
+                mScrollBarControlLogic.SetDisplayedArea(texture.Width, texture.Height);
             }
         }
 

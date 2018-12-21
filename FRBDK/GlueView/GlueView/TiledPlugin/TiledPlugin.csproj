@@ -30,7 +30,27 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -42,13 +62,48 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileCollisions\TileShapeCollection.cs">
+      <Link>Rendering\TileShapeCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\AnimationChainContainer.cs">
+      <Link>Rendering\AnimationChainContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\LayeredTileMap.cs">
+      <Link>Rendering\LayeredTileMap.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\LayeredTileMapAnimation.cs">
+      <Link>Rendering\LayeredTileMapAnimation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\MapDrawableBatch.cs">
+      <Link>Rendering\MapDrawableBatch.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\Tileset.cs">
+      <Link>Rendering\Tileset.cs</Link>
+    </Compile>
     <Compile Include="MainTiledPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RuntimeObjects\TiledRuntimeFileManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TMXGlueLib.csproj">
+      <Project>{8600173a-6281-45e1-8076-54366e42cbde}</Project>
+      <Name>TMXGlueLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
+      <Project>{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}</Project>
+      <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Glue\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj">
       <Project>{2c289a72-d6bd-4358-afbc-b71f9d31b01e}</Project>
       <Name>FlatRedBall.Plugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Glue\GluePropertyGridClasses\GluePropertyGridClasses.csproj">
+      <Project>{852a7438-7afe-490e-a0c7-0a35355d6179}</Project>
+      <Name>GluePropertyGridClasses</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Glue\GlueSaveClasses\GlueSaveClasses.csproj">
+      <Project>{545ff183-4d9d-4121-9a04-1d354b0b0dba}</Project>
+      <Name>GlueSaveClasses</Name>
     </ProjectReference>
     <ProjectReference Include="..\GlueView\GlueView.csproj">
       <Project>{84aa3126-0f7a-4836-8eb6-01cd28020308}</Project>
@@ -62,8 +117,16 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="RuntimeObjects\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(SolutionDir)"..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\ md "$(SolutionDir)"..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\
+
+copy "$(ProjectDir)bin\x86\debug\TiledPlugin.dll" "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\TiledPlugin.dll"
+echo "$(ProjectDir)bin\x86\debug\TiledPlugin.dll" to "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\TiledPlugin.dll"
+
+copy "$(ProjectDir)bin\x86\debug\TMXGlueLib.dll" "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\TMXGlueLib.dll"
+echo "$(ProjectDir)bin\x86\debug\TMXGlueLib.dll" to "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\TMXGlueLib.dll"
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>

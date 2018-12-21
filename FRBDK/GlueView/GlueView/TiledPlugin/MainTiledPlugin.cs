@@ -6,12 +6,15 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TiledPlugin.RuntimeObjects;
 
 namespace TiledPlugin
 {
     [Export(typeof(GlueViewPlugin))]
     public class MainTiledPlugin : GlueViewPlugin
     {
+        TiledRuntimeFileManager tiledRuntimeFileManager;
+
         public override string FriendlyName
         {
             get { return "Tiled GlueView Plugin"; }
@@ -31,7 +34,8 @@ namespace TiledPlugin
 
         public override void StartUp()
         {
-            //ReferencedFileRuntimeList.FileManagers.Add(new object);
+            tiledRuntimeFileManager = new TiledRuntimeFileManager();
+            ReferencedFileRuntimeList.FileManagers.Add(tiledRuntimeFileManager);
         }
     }
 }

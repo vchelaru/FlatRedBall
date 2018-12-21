@@ -1,5 +1,4 @@
-﻿using FlatRedBall.Content.AnimationChain;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using RenderingLibrary;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace FlatRedBall.AnimationEditorForms.Controls
+namespace FlatRedBall.SpecializedXnaControls.Scrolling
 {
     public class ScrollBarControlLogic
     {
@@ -16,8 +15,8 @@ namespace FlatRedBall.AnimationEditorForms.Controls
         ScrollBar mVerticalScrollBar;
         ScrollBar mHorizontalScrollBar;
 
-        int mImageWidth = 2048;
-        int mImageHeight = 2048;
+        int displayedAreaWidth = 2048;
+        int displayedAreaHeight = 2048;
 
         float zoomPercentage = 100;
 
@@ -64,7 +63,7 @@ namespace FlatRedBall.AnimationEditorForms.Controls
             mHorizontalScrollBar.ValueChanged += HandleHorizontalScroll;
             panel.Controls.Add(mHorizontalScrollBar);
 
-            UpdateToImage(2048, 2048);
+            SetDisplayedArea(2048, 2048);
 
             mPanel.Resize += HandlePanelResize;
 
@@ -92,10 +91,10 @@ namespace FlatRedBall.AnimationEditorForms.Controls
             mHorizontalScrollBar.Value = (int)Managers.Renderer.Camera.X;
         }
 
-        public void UpdateToImage(int width, int height)
+        public void SetDisplayedArea(int width, int height)
         {
-            mImageWidth = width;
-            mImageHeight = height;
+            displayedAreaWidth = width;
+            displayedAreaHeight = height;
 
             UpdateScrollBars();
 
@@ -125,10 +124,10 @@ namespace FlatRedBall.AnimationEditorForms.Controls
 
 
             mVerticalScrollBar.Minimum = -20;
-            mVerticalScrollBar.Maximum = mImageHeight + 55;
+            mVerticalScrollBar.Maximum = displayedAreaHeight + 55;
 
             mHorizontalScrollBar.Minimum = -20;
-            mHorizontalScrollBar.Maximum = mImageWidth + 35;
+            mHorizontalScrollBar.Maximum = displayedAreaWidth + 35;
 
             float multiplier = 100 / zoomPercentage;
 

@@ -106,6 +106,7 @@
     <Compile Include="ScrollableImageRegionSelectionControl.Designer.cs">
       <DependentUpon>ScrollableImageRegionSelectionControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Scrolling\ScrollBarControlLogic.cs" />
     <Compile Include="TimeManager.cs" />
     <Compile Include="Zooming\ZoomNumbers.cs" />
   </ItemGroup>

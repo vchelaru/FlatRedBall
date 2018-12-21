@@ -164,7 +164,6 @@
     <Compile Include="Controls\PreviewControls.Designer.cs">
       <DependentUpon>PreviewControls.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\ScrollBarControlLogic.cs" />
     <Compile Include="Controls\WireframeEditControls.cs">
       <SubType>UserControl</SubType>
     </Compile>

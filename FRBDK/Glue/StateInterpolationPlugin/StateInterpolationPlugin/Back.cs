@@ -6,24 +6,24 @@ namespace FlatRedBall.Glue.StateInterpolation
 {
     public static class Back
     {
-        public static float EaseIn(float t, float b, float c, float d)
+        public static float EaseIn(float timeElapsed, float startingValue, float endingValue, float durationInSeconds)
         {
-            return c * (t /= d) * t * ((1.70158f + 1) * t - 1.70158f) + b;
+            return endingValue * (timeElapsed /= durationInSeconds) * timeElapsed * ((1.70158f + 1) * timeElapsed - 1.70158f) + startingValue;
         }
 
-        public static float EaseOut(float t, float b, float c, float d)
+        public static float EaseOut(float timeElapsed, float startingValue, float endingValue, float durationInSeconds)
         {
-            return c * ((t = t / d - 1) * t * ((1.70158f + 1) * t + 1.70158f) + 1) + b;
+            return endingValue * ((timeElapsed = timeElapsed / durationInSeconds - 1) * timeElapsed * ((1.70158f + 1) * timeElapsed + 1.70158f) + 1) + startingValue;
         }
 
-        public static float EaseInOut(float t, float b, float c, float d)
+        public static float EaseInOut(float timeElapsed, float startingValue, float endingValue, float durationInSeconds)
         {
             float s = 1.70158f;
-            if ((t /= d / 2) < 1)
+            if ((timeElapsed /= durationInSeconds / 2) < 1)
             {
-                return c / 2 * (t * t * (((s *= (1.525f)) + 1) * t - s)) + b;
+                return endingValue / 2 * (timeElapsed * timeElapsed * (((s *= (1.525f)) + 1) * timeElapsed - s)) + startingValue;
             }
-            return c / 2 * ((t -= 2) * t * (((s *= (1.525f)) + 1) * t + s) + 2) + b;
+            return endingValue / 2 * ((timeElapsed -= 2) * timeElapsed * (((s *= (1.525f)) + 1) * timeElapsed + s) + 2) + startingValue;
         }
     }
 }
