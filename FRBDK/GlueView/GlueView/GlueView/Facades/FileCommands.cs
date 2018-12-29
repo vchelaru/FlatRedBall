@@ -57,6 +57,10 @@ namespace GlueView.Facades
 
         public FilePath GetAbsoluteFileName(ReferencedFileSave rfs)
         {
+            if(rfs == null)
+            {
+                throw new ArgumentNullException(nameof(rfs));
+            }
             return GetAbsoluteFileName(rfs.Name, true);
         }
 

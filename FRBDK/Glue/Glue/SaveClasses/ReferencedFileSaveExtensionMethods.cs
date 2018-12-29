@@ -33,6 +33,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             return toReturn;
         }
+
         public static string GetTypeForCsvFile(this ReferencedFileSave referencedFileSave, string alternativeFileName = null)//string fileName)
         {
             if (referencedFileSave == null)
@@ -101,8 +102,6 @@ namespace FlatRedBall.Glue.SaveClasses
                 return className;
             }
         }
-
-
 
         public static bool IsFileSourceForThis(this ReferencedFileSave instance, string fileName)
         {
@@ -262,7 +261,6 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-
         public static AssetTypeInfo GetAssetTypeInfo(this ReferencedFileSave instance)
         {
             string extension = FileManager.GetExtension(instance.Name);
@@ -297,6 +295,40 @@ namespace FlatRedBall.Glue.SaveClasses
 
             return toReturn;
 
+        }
+
+        public static T GetProperty<T>(this ReferencedFileSave referencedFileSave, string propertyName)
+        {
+            var propertySave = referencedFileSave.Properties.FirstOrDefault(
+                item => item.Name == propertyName);
+
+            if(propertySave?.Value != null)
+            {
+                return (T)propertySave.Value;
+            }
+            else
+            {
+                return default(T);
+            }
+        }
+
+        public static void SetProperty(this ReferencedFileSave referencedFileSave, string propertyName, object value)
+        {
+            var propertySave = referencedFileSave.Properties.FirstOrDefault(
+                item => item.Name == propertyName);
+
+            if(propertySave != null)
+            {
+                propertySave.Value = value;
+            }
+            else
+            {
+                propertySave = new PropertySave();
+                propertySave.Value = value;
+                propertySave.Name = propertyName;
+
+                referencedFileSave.Properties.Add(propertySave);
+            }
         }
     }
 }

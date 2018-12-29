@@ -47,8 +47,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
     
-
-
     #region ProjectSpecificFileConverter
     internal class ProjectSpecificFileConverter : TypeConverter
     {
@@ -65,7 +63,6 @@ namespace FlatRedBall.Glue.SaveClasses
         }
     }
     #endregion
-
 
     #region ProjectSpecificFile
     [TypeConverter(typeof(ProjectSpecificFileConverter))]
@@ -99,7 +96,6 @@ namespace FlatRedBall.Glue.SaveClasses
         }
     }
     #endregion
-
 
     #region Enums
 
