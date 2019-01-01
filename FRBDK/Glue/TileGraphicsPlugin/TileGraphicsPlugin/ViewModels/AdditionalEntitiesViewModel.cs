@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace TileGraphicsPlugin.ViewModels
 {
-    class AdditionalEntitiesViewModel : ViewModel
+    class AdditionalEntitiesControlViewModel : ViewModel
     {
         public bool InstantiateInTileMap
         {
@@ -38,7 +38,7 @@ namespace TileGraphicsPlugin.ViewModels
             set { Set(value); }
         }
 
-        public AdditionalEntitiesViewModel()
+        public AdditionalEntitiesControlViewModel()
         {
             // These will be set to true. The logic
             // behind setting these true is:

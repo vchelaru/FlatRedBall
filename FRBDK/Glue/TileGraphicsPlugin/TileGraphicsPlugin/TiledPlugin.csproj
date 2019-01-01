@@ -77,6 +77,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Managers\EntityCreationManager.cs" />
+    <Compile Include="ViewModels\TiledMapEntityCreationViewModel.cs" />
+    <Compile Include="Views\TiledMapEntityCreationView.xaml.cs">
+      <DependentUpon>TiledMapEntityCreationView.xaml</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TileAnimationFrame.cs">
       <Link>TileAnimationFrame.cs</Link>
     </EmbeddedResource>
@@ -120,6 +125,7 @@
       <Link>EmbeddedCodeFiles\NamedValue.cs</Link>
     </EmbeddedResource>
     <Compile Include="Behaviors\InputBindingsManager.cs" />
+    <Compile Include="CodeGeneration\TmxCodeGenerator.cs" />
     <Compile Include="DataTypes\TiledObjectTypePropertySave.cs" />
     <Compile Include="DataTypes\TiledObjectTypeSave.cs" />
     <EmbeddedResource Include="EmbeddedCodeFiles\CollidableListVsTileShapeCollectionRelationship.cs" />
@@ -251,6 +257,10 @@
     <Page Include="Views\CommandLineArgumentsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TiledMapEntityCreationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

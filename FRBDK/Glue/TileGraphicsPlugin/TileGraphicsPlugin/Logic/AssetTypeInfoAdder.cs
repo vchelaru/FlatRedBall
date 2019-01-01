@@ -12,9 +12,20 @@ namespace TileGraphicsPlugin
 {
     public class AssetTypeInfoAdder : Singleton<AssetTypeInfoAdder>
     {
+        AssetTypeInfo tmxAssetTypeInfo;
 
+        public AssetTypeInfo TmxAssetTypeInfo
+        {
+            get
+            {
+                if(tmxAssetTypeInfo == null)
+                {
+                    tmxAssetTypeInfo = CreateAtiForRawTmx();
+                }
 
-
+                return tmxAssetTypeInfo;
+            }
+        }
         public void UpdateAtiCsvPresence()
         {
             string projectFolder = FileManager.GetDirectory(GlueState.Self.GlueProjectFileName);
@@ -31,12 +42,11 @@ namespace TileGraphicsPlugin
             var layeredTilemapTilb = CreateAtiForLayeredTilemapTilb();
             var tileShapeCollectionAti = CreateAtiForTileShapeCollection();
 
-            AddIfNotPresent(GetAtiForRawTmx());
+            AddIfNotPresent(TmxAssetTypeInfo);
             AddIfNotPresent(layeredTileMapScnx);
             AddIfNotPresent(layeredTilemapTilb);
             AddIfNotPresent(tileShapeCollectionAti);
         }
-
 
         public void AddIfNotPresent(AssetTypeInfo ati)
         {
@@ -45,7 +55,6 @@ namespace TileGraphicsPlugin
                 AvailableAssetTypes.Self.AddAssetType(ati);
             }
         }
-
 
         private AssetTypeInfo CreateAtiForLayeredTilemapScnx()
         {
@@ -89,7 +98,7 @@ namespace TileGraphicsPlugin
             return toReturn;
         }
 
-        private AssetTypeInfo GetAtiForRawTmx()
+        private AssetTypeInfo CreateAtiForRawTmx()
         {
             AssetTypeInfo toReturn = CreateAtiForLayeredTilemapScnx();
 

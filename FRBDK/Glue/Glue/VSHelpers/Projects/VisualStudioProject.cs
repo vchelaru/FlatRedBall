@@ -507,7 +507,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
 #if GLUE
 
-            MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+            var mbmb = new MultiButtonMessageBoxWpf();
 
             mbmb.MessageText = "The item " + buildItem.UnevaluatedInclude + " is part of " +
                 "the project twice.  Glue does not support double-entries in a project.  What would you like to do?";
@@ -516,10 +516,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             mbmb.AddButton("Remove the duplicate, but show me a list of all contained objects before removal", System.Windows.Forms.DialogResult.No);
             mbmb.AddButton("Cancel loading the project - this will throw an exception", System.Windows.Forms.DialogResult.Cancel);
 
-            DialogResult result;
+            DialogResult result = DialogResult.Cancel;
 
-            if (GlueGui.TryShowDialog(mbmb, out result))
+            if(mbmb.ShowDialog() == true)
             {
+                result = (DialogResult)mbmb.ClickedResult;
                 switch (result)
                 {
                     case DialogResult.OK:

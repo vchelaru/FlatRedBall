@@ -30,6 +30,7 @@ using TileGraphicsPlugin.ViewModels;
 using TmxEditor.Events;
 using FlatRedBall.Glue.IO;
 using TileGraphicsPlugin.Logic;
+using System.ComponentModel;
 
 namespace TileGraphicsPlugin
 {
@@ -137,7 +138,9 @@ namespace TileGraphicsPlugin
             // 1.8.1
             //  - The new entity window now has checkboxes for supporting creating the entity through Tiled and for 
             //    adding the entity to all screens containing tmx files directly.
-            get { return new Version(1, 7, 1, 0); }
+            // 2.0.0
+            //  - Added generation of adding entities from Tiled file
+            get { return new Version(2, 0, 0, 0); }
         }
 
 
@@ -211,14 +214,16 @@ namespace TileGraphicsPlugin
             {
                 mControl.AnyTileMapChange += HandleUserChangeTmx;
                 mControl.LoadEntities += OnLoadEntities;
+
+
+                EntityCreationManager.Self.AddEntityCreationView(mControl);
+                
+
                 var commandLineArgumentsView = new TileGraphicsPlugin.Views.CommandLineArgumentsView();
                 mCommandLineViewModel = new CommandLineViewModel();
-
                 mCommandLineViewModel.CommandLineChanged += HandleCommandLinePropertyChanged;
-
                 commandLineArgumentsView.DataContext = mCommandLineViewModel;
                 mControl.AddTab("Command Line", commandLineArgumentsView);
-
 
                 mTilesetXnaRightClickController = new TilesetXnaRightClickController();
                 mTilesetXnaRightClickController.Initialize(mControl.TilesetXnaContextMenu);
@@ -305,8 +310,6 @@ namespace TileGraphicsPlugin
             this.ReactToNewEntityCreated += NewEntityCreatedReactionLogic.ReactToNewEntityCreated;
         }
 
-
-
         private static void SaveTemplateTmx()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -327,8 +330,9 @@ namespace TileGraphicsPlugin
 
         private void AddCodeGenerators()
         {
-            CodeWriter.CodeGenerators.Add(new LevelCodeGenerator());
+            this.RegisterCodeGenerator(new LevelCodeGenerator());
 
+            this.RegisterCodeGenerator(new TmxCodeGenerator());
         }
 
         #endregion
@@ -452,6 +456,8 @@ namespace TileGraphicsPlugin
             string fullFileName = FlatRedBall.Glue.ProjectManager.MakeAbsolute(fileNameToUse, true);
             mLastFile = fullFileName;
             mControl?.LoadFile(fullFileName);
+
+            EntityCreationManager.Self.ReactToRfsSelected(rfs);
         }
 
         private void HandleFileChange(string fileName)

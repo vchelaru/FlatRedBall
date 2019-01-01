@@ -13,7 +13,7 @@ namespace TileGraphicsPlugin.Logic
     {
         public static void HandleModifyAddEntityWindow(AddEntityWindow window)
         {
-            var viewModel = new AdditionalEntitiesViewModel();
+            var viewModel = new AdditionalEntitiesControlViewModel();
 
 
             var control = new AdditionalEntitiesControls();

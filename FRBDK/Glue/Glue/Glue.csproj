@@ -303,6 +303,9 @@
     <Compile Include="Controls\AddEntityWindow.xaml.cs">
       <DependentUpon>AddEntityWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\MultiButtonMessageBoxWpf.xaml.cs">
+      <DependentUpon>MultiButtonMessageBoxWpf.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GlueView\GlueView2RemotingSelectionInterfaceManager.cs" />
     <Compile Include="GlueView\ISelectionInterface.cs" />
     <Compile Include="GlueView\SelectionInterface2.cs" />
@@ -1893,6 +1896,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Controls\AddEntityWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\MultiButtonMessageBoxWpf.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

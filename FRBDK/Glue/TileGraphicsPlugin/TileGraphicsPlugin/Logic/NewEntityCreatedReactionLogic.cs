@@ -19,7 +19,7 @@ namespace TileGraphicsPlugin.Logic
         internal static void ReactToNewEntityCreated(EntitySave newEntity, AddEntityWindow window)
         {
             var control = window.UserControlChildren.First(item => item is AdditionalEntitiesControls);
-            var viewModel = control.DataContext as AdditionalEntitiesViewModel;
+            var viewModel = control.DataContext as AdditionalEntitiesControlViewModel;
 
             if (viewModel.InstantiateInTileMap)
             {

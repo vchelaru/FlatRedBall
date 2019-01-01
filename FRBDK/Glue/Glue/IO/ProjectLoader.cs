@@ -1036,7 +1036,8 @@ namespace FlatRedBall.Glue.IO
                 if (!System.IO.File.Exists(fileToSearchFor))
                 {
                     MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
-                    mbmb.MessageText = "The following file is missing\n\n" + fileToSearchFor + "\n\nwhich is used by\n\n" + element.ToString() + "\n\nWhat would you like to do?";
+                    mbmb.MessageText = "The following file is missing\n\n" + fileToSearchFor + 
+                        "\n\nwhich is used by\n\n" + element.ToString() + "\n\nWhat would you like to do?";
                     mbmb.AddButton("Re-create an empty custom code file", DialogResult.OK);
                     mbmb.AddButton("Ignore this problem", DialogResult.Cancel);
 

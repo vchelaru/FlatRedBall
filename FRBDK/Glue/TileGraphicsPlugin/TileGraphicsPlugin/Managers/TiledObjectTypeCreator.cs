@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace TileGraphicsPlugin.Managers
 
         public void RefreshFile()
         {
-            string fileName = GetTiledObjectTypeFileName();
+            var fileName = GetTiledObjectTypeFileName();
 
             var entities = GetEntitiesForTiledObjectTypeFile();
             var whatToSave = CreateTiledObjectTypeListFrom(entities);
@@ -28,10 +29,10 @@ namespace TileGraphicsPlugin.Managers
             fileContents = fileContents.Replace("</TiledObjectTypeSave>", "</objecttype>");
             fileContents = fileContents.Replace("<ArrayOfTiledObjectTypeSave", "<objecttypes");
             fileContents = fileContents.Replace("</ArrayOfTiledObjectTypeSave>", "</objecttypes>");
-            FlatRedBall.IO.FileManager.SaveText(fileContents, fileName);
+            FlatRedBall.IO.FileManager.SaveText(fileContents, fileName.FullPath);
         }
 
-        private string GetTiledObjectTypeFileName()
+        public static FilePath GetTiledObjectTypeFileName()
         {
             // put this in the content directory
             var directory = GlueState.Self.ContentDirectory;

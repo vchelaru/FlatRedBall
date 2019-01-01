@@ -499,14 +499,23 @@ namespace FlatRedBall.Glue.Managers
 
             if (elementToCreateIn is EntitySave && ((EntitySave)elementToCreateIn).ImplementsIVisible && !blueprintEntity.ImplementsIVisible)
             {
-                MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
-                mbmb.MessageText = "The Entity\n\n" + blueprintEntity + "\n\nDoes not Implement IVisible, but the Entity it is being dropped in does.  " +
+                var mbmb = new MultiButtonMessageBoxWpf();
+                mbmb.MessageText = "The Entity\n\n" + blueprintEntity + 
+                    "\n\nDoes not Implement IVisible, but the Entity it is being dropped in does.  " +
                     "What would you like to do?";
 
                 mbmb.AddButton("Make " + blueprintEntity.Name + " implement IVisible", DialogResult.OK);
                 mbmb.AddButton("Nothing (your code will not compile until this problem is resolved manually)", DialogResult.Cancel);
 
-                DialogResult result = mbmb.ShowDialog(MainGlueWindow.Self);
+                var dialogResult = mbmb.ShowDialog();
+
+                DialogResult result = DialogResult.Cancel;
+
+                if(mbmb.ClickedResult != null  && dialogResult == true)
+                {
+                    result = (DialogResult)mbmb.ClickedResult;
+                }
+
                 if (result == DialogResult.OK)
                 {
                     blueprintEntity.ImplementsIVisible = true;
