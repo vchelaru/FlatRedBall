@@ -15,11 +15,18 @@ namespace FlatRedBall.Glue.CodeGeneration
 {
     internal class CameraSetupCodeGenerator
     {
-        public static void CallSetupCamera(string gameFileName, bool whetherToCall)
+        public static void AddCameraSetupCall(string gameFileName, bool whetherToCall)
         {
+            string contents = null;
             if (!string.IsNullOrEmpty(gameFileName))
             {
-                string contents = FileManager.FromFileText(GlueState.Self.CurrentGlueProjectDirectory + gameFileName);
+
+                GlueCommands.Self.TryMultipleTimes(() =>
+                    contents = FileManager.FromFileText(GlueState.Self.CurrentGlueProjectDirectory + gameFileName));
+            }
+
+            if(!string.IsNullOrEmpty(contents))
+            { 
 
                 string whatToLookFor = "CameraSetup.SetupCamera(SpriteManager.Camera, graphics";
 

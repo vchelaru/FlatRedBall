@@ -183,25 +183,45 @@ namespace FlatRedBall
             }
         }
 
-
+        /// <summary>
+        /// Returns the right-most visible X value at a given absolute Z value.
+        /// The absoluteZ parameter is ignored if the camera has its Orthogonal = true (is 2D)
+        /// </summary>
+        /// <param name="absoluteZ">The absolute Z to use for determining the right-edge.</param>
+        /// <returns>The furthest-right visible X value at the given absolute Z.</returns>
         public float AbsoluteRightXEdgeAt(float absoluteZ)
         {
             return Position.X + RelativeXEdgeAt(absoluteZ);
         }
 
-
+        /// <summary>
+        /// Returns the left-most visible X value at a given absolute Z value.
+        /// The absoluteZ parameter is ignored if the camera has its Orthogonal = true (is 2D)
+        /// </summary>
+        /// <param name="absoluteZ">The absolute Z to use for determing the left-edge.</param>
+        /// <returns>The furthest-left visible X value at the given absolute Z.</returns>
         public float AbsoluteLeftXEdgeAt(float absoluteZ)
         {
             return Position.X - RelativeXEdgeAt(absoluteZ);
         }
 
-
+        /// <summary>
+        /// Returns the top-most visible Y value at a given absolute Z value.
+        /// The absoluteZ parameter is ignored if the camera has its Orthogonal = true (is 2D)
+        /// </summary>
+        /// <param name="absoluteZ">The absolute Z to use for determining the top-edge.</param>
+        /// <returns>The furthest-top visible Y value at the given absolute Z.</returns>
         public float AbsoluteTopYEdgeAt(float absoluteZ)
         {
             return Position.Y + RelativeYEdgeAt(absoluteZ);
         }
 
-
+        /// <summary>
+        /// Returns the bottom-most visible Y value at a given absolute Z value.
+        /// The absoluteZ parameter is ignored if the camera has its Orthogonal = true (is 2D)
+        /// </summary>
+        /// <param name="absoluteZ">The absolute Z to use for determining the bottom-edge.</param>
+        /// <returns>The furthest-bottom visible Y value at the given absolute Z.</returns>
         public float AbsoluteBottomYEdgeAt(float absoluteZ)
         {
             return Position.Y - RelativeYEdgeAt(absoluteZ);
@@ -290,7 +310,12 @@ namespace FlatRedBall
             set;
         }
 
-
+        /// <summary>
+        /// The number of horizontal units shown by the camera when the camera has Orthogonal = true
+        /// </summary>
+        /// <remarks>
+        /// Orthogonal values will not have any impact on rendering if Orthogonal is false.
+        /// </remarks>
         public float OrthogonalWidth
         {
             get { return mOrthogonalWidth; }
@@ -306,7 +331,12 @@ namespace FlatRedBall
             }
         }
 
-
+        /// <summary>
+        /// The number of vertical units shown by the camera when the camera has Orthogonal = true 
+        /// </summary>
+        /// <remarks>
+        /// Orthogonal values will not have any impact on rendering if Orthogonal is false.
+        /// </remarks>
         public float OrthogonalHeight
         {
             get { return mOrthogonalHeight; }
@@ -398,6 +428,12 @@ namespace FlatRedBall
         /// Returns whether the argument sprite is in view, considering the CameraCullMode. This will always return
         /// true if cull mode is set to None.
         /// </summary>
+        /// <remarks>
+        /// This method does not do a perfectly precise check of whether the Sprite is on screen or not, as such
+        /// a check would require considering the Sprite's rotation. Instead, this uses approximations to avoid
+        /// trigonometric functions, and will err on the side of returning true when a Sprite may actually be out
+        /// of view.
+        /// </remarks>
         /// <param name="sprite">The sprite to check in view</param>
         /// <param name="relativeToCamera">Whether the sprite's position is relative to the camera. This value may be true if the 
         /// sprite is on a Layer, and the Layer's RelativeToCamera value is true.</param>
@@ -438,7 +474,7 @@ namespace FlatRedBall
                                 }
                             }
                         }
-                        else // if (camera.cull)
+                        else
                         {
                             // Multiply by 1.5 to increase the range in case the Camera is rotated
                             if (relativeToCamera)

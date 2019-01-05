@@ -30,12 +30,6 @@ namespace FlatRedBall.Glue.SetVariable
             #region SetByDerived
             if (changedMember == "SetByDerived")
             {
-
-
-
-
-
-
                 bool didErrorOccur = false;
 
                 if (customVariable.SetByDerived && customVariable.IsShared)
@@ -160,6 +154,11 @@ namespace FlatRedBall.Glue.SetVariable
             else if (changedMember == "Type")
             {
                 customVariable.SetDefaultValueAccordingToType(customVariable.Type);
+
+                // If the type changed, the Property Grid needs to be re-made so that the new
+                // grid will have the right type for the DefaultValue cell:
+                PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
+
             }
             #endregion
         }

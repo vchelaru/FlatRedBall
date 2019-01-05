@@ -320,7 +320,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // I think we should show an error message.  I had a user
                 // try to add a file and no popup appeared telling them that
                 // the entity was named that.
-                MessageBox.Show(errorMessage);
+                //MessageBox.Show(errorMessage);
+                GlueCommands.Self.DialogCommands.ShowMessageBox(errorMessage);
             }
 
             if (toReturn != null)

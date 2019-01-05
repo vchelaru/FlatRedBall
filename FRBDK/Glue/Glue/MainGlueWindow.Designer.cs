@@ -106,7 +106,6 @@
             this.rightPanelContainer = new System.Windows.Forms.SplitContainer();
             this.MainTabControl = new FlatRedBall.Glue.Controls.TabControlEx();
             this.PropertiesTab = new FlatRedBall.Glue.Controls.PluginTab();
-            this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.CodeTab = new System.Windows.Forms.TabPage();
             this.CodeEditor = new FlatRedBall.Glue.Controls.CodeEditorControl();
             this.CodePreviewTextBox = new System.Windows.Forms.RichTextBox();
@@ -116,7 +115,6 @@
             this.SearchListBox = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.SearchTextbox = new System.Windows.Forms.TextBox();
-            this.PropertyGridContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.topPanelContainer = new System.Windows.Forms.SplitContainer();
             this.tcTop = new FlatRedBall.Glue.Controls.TabControlEx();
             this.leftPanelContainer = new System.Windows.Forms.SplitContainer();
@@ -764,7 +762,6 @@
             // 
             // PropertiesTab
             // 
-            this.PropertiesTab.Controls.Add(this.PropertyGrid);
             this.PropertiesTab.DrawX = false;
             this.PropertiesTab.LastTabControl = this.MainTabControl;
             this.PropertiesTab.LastTimeClicked = new System.DateTime(((long)(0)));
@@ -775,25 +772,6 @@
             this.PropertiesTab.TabIndex = 0;
             this.PropertiesTab.Text = "Properties";
             this.PropertiesTab.UseVisualStyleBackColor = true;
-            // 
-            // PropertyGrid
-            // 
-            this.PropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.PropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PropertyGrid.LineColor = System.Drawing.SystemColors.ControlDark;
-            this.PropertyGrid.Location = new System.Drawing.Point(0, 0);
-            this.PropertyGrid.Margin = new System.Windows.Forms.Padding(0);
-            this.PropertyGrid.Name = "PropertyGrid";
-            this.PropertyGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.PropertyGrid.Size = new System.Drawing.Size(534, 546);
-            this.PropertyGrid.TabIndex = 2;
-            this.PropertyGrid.ToolbarVisible = false;
-            this.PropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
-            this.PropertyGrid.SelectedGridItemChanged += new System.Windows.Forms.SelectedGridItemChangedEventHandler(this.PropertyGrid_SelectedGridItemChanged);
-            this.PropertyGrid.SelectedObjectsChanged += new System.EventHandler(this.PropertyGrid_SelectedObjectsChanged);
-            this.PropertyGrid.Click += new System.EventHandler(this.PropertyGrid_Click);
-            this.PropertyGrid.DoubleClick += new System.EventHandler(this.PropertyGrid_DoubleClick);
-            this.PropertyGrid.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.PropertyGrid_MouseDoubleClick);
             // 
             // CodeTab
             // 
@@ -928,11 +906,6 @@
             this.SearchTextbox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             this.SearchTextbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchTextbox_KeyDown);
             this.SearchTextbox.Leave += new System.EventHandler(this.SearchTextbox_Leave);
-            // 
-            // PropertyGridContextMenu
-            // 
-            this.PropertyGridContextMenu.Name = "PropertyGridContextMenu";
-            this.PropertyGridContextMenu.Size = new System.Drawing.Size(61, 4);
             // 
             // topPanelContainer
             // 
@@ -1124,7 +1097,6 @@
         internal System.Windows.Forms.TreeView ElementTreeView;
         private System.Windows.Forms.ToolStripMenuItem newProjectToolStripMenuItem;
         public System.Windows.Forms.RichTextBox CodePreviewTextBox;
-        public System.Windows.Forms.PropertyGrid PropertyGrid;
         public System.Windows.Forms.ImageList ElementImages;
 		private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem fileAssociationsToolStripMenuItem;
@@ -1159,7 +1131,6 @@
         private System.Windows.Forms.ToolStripMenuItem errorCheckToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cleanAllscnxFilesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cleanAllemixFilesToolStripMenuItem;
-        private System.Windows.Forms.ContextMenuStrip PropertyGridContextMenu;
         private System.Windows.Forms.ToolStripMenuItem getCharacterListInFilesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findFileReferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pluginsToolStripMenuItem;

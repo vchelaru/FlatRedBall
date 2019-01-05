@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Glue;
+using System;
 using System.Windows.Forms;
 
 namespace FlatRedBall.Glue.AutomatedGlue
@@ -55,7 +56,7 @@ namespace FlatRedBall.Glue.AutomatedGlue
             {
                 mMenuStrip.Invoke((MethodInvoker)delegate
                 {
-                    MessageBox.Show(text, caption);
+                    MessageBox.Show(MainGlueWindow.Self, text, caption);
                 });
             }
         }
@@ -66,7 +67,7 @@ namespace FlatRedBall.Glue.AutomatedGlue
             {
                 mMenuStrip.Invoke((MethodInvoker)delegate
                 {
-                    MessageBox.Show(text);
+                    MessageBox.Show(MainGlueWindow.Self, text);
                 });
             }
         }
@@ -78,7 +79,7 @@ namespace FlatRedBall.Glue.AutomatedGlue
                 mMenuStrip.Invoke((MethodInvoker)delegate
                 {
                     // We want to show the exception here so we can diagnose it better.
-                    MessageBox.Show(text + "\n\n\nDetails:\n\n" + ex, caption);
+                    MessageBox.Show(MainGlueWindow.Self, text + "\n\n\nDetails:\n\n" + ex, caption);
                 });
             }
             else

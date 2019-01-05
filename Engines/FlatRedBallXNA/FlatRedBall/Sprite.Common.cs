@@ -327,24 +327,48 @@ namespace FlatRedBall
             set { mScaleYVelocity = value; }
         }
 
+        /// <summary>
+        /// Returns the left X of the Sprite, assuming no rotation.
+        /// </summary>
+        /// <remarks>
+        /// If the sprite is rotated, this property will not return the correct value.
+        /// </remarks>
         public float Left
         {
             get { return Position.X - mScaleX; }
             set { Position.X = value + mScaleX; }
         }
 
+        /// <summary>
+        /// Returns the right X of the sprite, assuming no rotation.
+        /// </summary>
+        /// <remarks>
+        /// If the sprite is rotated, this property will not return the correct value.
+        /// </remarks>
         public float Right
         {
             get { return Position.X + mScaleX; }
             set { Position.X = value - mScaleX; }
         }
 
+        /// <summary>
+        /// Returns the top Y of the sprite, assuming no rotation.
+        /// </summary>
+        /// <remarks>
+        /// If the sprite is rotated, this property will not return the correct value.
+        /// </remarks>
         public float Top
         {
             get { return Position.Y + mScaleY; }
             set { Position.Y = value - mScaleY; }
         }
 
+        /// <summary>
+        /// Returns the bottom Y of the sprite, assuming no rotation.
+        /// </summary>
+        /// <remarks>
+        /// If the sprite is rotated, this property will not return the correct value.
+        /// </remarks>
         public float Bottom
         {
             get { return Position.Y - mScaleY; }

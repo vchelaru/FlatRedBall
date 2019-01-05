@@ -71,7 +71,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                         CameraSetupCodeGenerator.UpdateOrAddCameraSetup();
                     }
 
-                    CameraSetupCodeGenerator.CallSetupCamera(ProjectManager.GameClassFileName, true);
+                    CameraSetupCodeGenerator.AddCameraSetupCall(ProjectManager.GameClassFileName, true);
 
                     CameraAtiUpdateLogic.UpdateAtiTo(viewModel);
                 }

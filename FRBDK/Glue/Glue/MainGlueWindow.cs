@@ -61,6 +61,8 @@ namespace Glue
             get { return mSelf; }
         }
 
+        public System.Windows.Forms.PropertyGrid PropertyGrid;
+        private System.Windows.Forms.ContextMenuStrip PropertyGridContextMenu;
 
 
         private int NumberOfStoredRecentFiles
@@ -77,6 +79,8 @@ namespace Glue
 
             InitializeComponent();
 
+            CreatePropertiesPropertyGrid();
+
             this.FileWatchTimer = new System.Windows.Forms.Timer(this.components);
 
             this.FileWatchTimer.Enabled = true;
@@ -89,6 +93,39 @@ namespace Glue
             this.FileWatchTimer.Interval = 400;
             this.FileWatchTimer.Tick += new System.EventHandler(this.FileWatchTimer_Tick);
 
+        }
+
+        private void CreatePropertiesPropertyGrid()
+        {
+            this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.PropertyGridContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.PropertiesTab.Controls.Add(this.PropertyGrid);
+
+            // 
+            // PropertyGrid
+            // 
+            this.PropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
+            this.PropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PropertyGrid.LineColor = System.Drawing.SystemColors.ControlDark;
+            this.PropertyGrid.Location = new System.Drawing.Point(0, 0);
+            this.PropertyGrid.Margin = new System.Windows.Forms.Padding(0);
+            this.PropertyGrid.Name = "PropertyGrid";
+            this.PropertyGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
+            this.PropertyGrid.Size = new System.Drawing.Size(534, 546);
+            this.PropertyGrid.TabIndex = 2;
+            this.PropertyGrid.ToolbarVisible = false;
+            this.PropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
+            this.PropertyGrid.SelectedGridItemChanged += new System.Windows.Forms.SelectedGridItemChangedEventHandler(this.PropertyGrid_SelectedGridItemChanged);
+            this.PropertyGrid.SelectedObjectsChanged += new System.EventHandler(this.PropertyGrid_SelectedObjectsChanged);
+            this.PropertyGrid.Click += new System.EventHandler(this.PropertyGrid_Click);
+            this.PropertyGrid.DoubleClick += new System.EventHandler(this.PropertyGrid_DoubleClick);
+            this.PropertyGrid.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.PropertyGrid_MouseDoubleClick);
+
+            // 
+            // PropertyGridContextMenu
+            // 
+            this.PropertyGridContextMenu.Name = "PropertyGridContextMenu";
+            this.PropertyGridContextMenu.Size = new System.Drawing.Size(61, 4);
         }
 
         public void Invoke(Action action)
