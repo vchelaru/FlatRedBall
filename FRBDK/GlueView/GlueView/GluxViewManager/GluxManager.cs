@@ -20,6 +20,7 @@ using GluePropertyGridClasses.Interfaces;
 using Microsoft.Build.BuildEngine;
 using Microsoft.Build.Evaluation;
 using FlatRedBall.Instructions;
+using FlatRedBall.Glue.IO;
 
 namespace FlatRedBall.Glue
 {
@@ -579,12 +580,15 @@ namespace FlatRedBall.Glue
         {
             lock (mLockObject)
             {
+                // In case it changes when the instruction is executed
+                var currentElement = CurrentElement;
+
                 if (!string.IsNullOrEmpty(elementName))
                 {
                     string currentElementName = null;
-                    if (CurrentElement != null)
+                    if (currentElement != null)
                     {
-                        currentElementName = CurrentElement.Name;
+                        currentElementName = currentElement.Name;
                     }
 
                     mNextElement = elementName;
@@ -594,11 +598,11 @@ namespace FlatRedBall.Glue
                         ElementToHighlight = null;
                     }
                 }
-                else if(CurrentElement != null)
+                else if(currentElement != null)
                 {
                     InstructionManager.AddSafe(() =>
                     {
-                        CurrentElement.Destroy();
+                        currentElement.Destroy();
                         CurrentElement = null;
                     });
                 }
@@ -794,12 +798,11 @@ namespace FlatRedBall.Glue
             }
             if (!string.IsNullOrEmpty(directoryToUse))
             {
-                // Just in case, we're going to ToLower it.
-                string relativeToProject = FileManager.MakeRelative(fileName, directoryToUse).ToLower() ;
-
-                if (mGlobalContentFilesRuntime.LoadedRfses.ContainsKey(relativeToProject))
+                FilePath filePath = fileName;
+                
+                if (mGlobalContentFilesRuntime.LoadedRfses.Any(item =>item.FilePath == fileName))
                 {
-                    mGlobalContentFilesRuntime.Destroy(relativeToProject);
+                    mGlobalContentFilesRuntime.Destroy(filePath);
                 }
             }
 

@@ -13,14 +13,15 @@ using FlatRedBall.Math.Geometry;
 using FlatRedBall.AI.Pathfinding;
 using FlatRedBall.Graphics.Particle;
 using FlatRedBall.Math.Splines;
+using FlatRedBall.Glue.RuntimeObjects.File;
 
 namespace FlatRedBall.Glue.RuntimeObjects
 {
     public static class NamedObjectManager
     {
         
-        public static object LoadObjectForNos<T>(NamedObjectSave namedObjectSave, IElement elementSave, Layer layerToPutOn,
-            PositionedObjectList<ElementRuntime> listToPopulate, ElementRuntime elementRuntime) where T : new()
+        public static LoadedFile LoadObjectForNos(NamedObjectSave namedObjectSave, IElement elementSave, Layer layerToPutOn,
+            PositionedObjectList<ElementRuntime> listToPopulate, ElementRuntime elementRuntime)
         {
             if (string.IsNullOrEmpty(namedObjectSave.SourceName) || 
                 namedObjectSave.SourceName == "<NONE>" || 
@@ -31,22 +32,16 @@ namespace FlatRedBall.Glue.RuntimeObjects
             else
             {
 
-                Type typeOfT = typeof(T);
-
-                object toReturn = null;
-
-                if (typeOfT == typeof(Scene) || typeOfT == typeof(ShapeCollection) || typeOfT == typeof(EmitterList) || typeOfT == typeof(SplineList))
-                {
-                    toReturn = LoadObject<T>(namedObjectSave, elementSave, layerToPutOn, listToPopulate, elementRuntime);
-                }
+                var toReturn = LoadObject(namedObjectSave, elementSave, layerToPutOn, listToPopulate, elementRuntime);
 
                 return toReturn;
 
             }
         }
 
-        private static object LoadObject<T>(NamedObjectSave namedObjectSave, IElement elementSave, Layer layerToPutOn,
-            PositionedObjectList<ElementRuntime> listToPopulate, ElementRuntime elementRuntime) where T : new()
+        private static LoadedFile LoadObject(NamedObjectSave namedObjectSave, IElement elementSave, 
+            Layer layerToPutOn,
+            PositionedObjectList<ElementRuntime> listToPopulate, ElementRuntime elementRuntime)
         {
             int length = namedObjectSave.SourceName.Length;
             // need to use the last index of ( in case the name has a "(" in it)
@@ -56,28 +51,28 @@ namespace FlatRedBall.Glue.RuntimeObjects
             string objectType = namedObjectSave.SourceName.Substring(indexOfType, length - (indexOfType));
             string sourceFile = namedObjectSave.SourceFile;
 
-            object toReturn = null;
-            object loadedObject = null;
+            LoadedFile toReturn = null;
             bool pullsFromEntireObject = false;
             ReferencedFileSave rfs = elementSave.GetReferencedFileSaveRecursively(sourceFile);
 
-            loadedObject = GetObjectIfFileIsContained(sourceFile, elementRuntime);
+            // This is the original file that contains the object that is going to be cloned from.
+            object loadedObject = GetObjectIfFileIsContained(sourceFile, elementRuntime);
 
             pullsFromEntireObject = loadedObject != null;
 
             if (loadedObject == null)
             {
-                loadedObject = LoadObjectIntoElementRuntime<T>(namedObjectSave, elementRuntime, rfs, elementSave);
-
+                loadedObject = elementRuntime.ReferencedFileRuntimeList.LoadReferencedFileSave(rfs, true, elementSave)?.RuntimeObject;
             }
             ElementRuntime newElementRuntime = CreateNewOrGetExistingElementRuntime(namedObjectSave, layerToPutOn, 
                 listToPopulate, elementRuntime);
 
             object toAddTo = null;
+
             if (!namedObjectSave.IsEntireFile)
             {
-                toAddTo = new T();
-                newElementRuntime.ReferencedFileRuntimeList.Add(toAddTo);
+                // we need to clone the container
+                toAddTo = newElementRuntime.ReferencedFileRuntimeList.CreateAndAddEmptyCloneOf(loadedObject);
             }
 
             Layer layerToAddTo = GetLayerToAddTo(namedObjectSave, layerToPutOn, elementRuntime);
@@ -89,11 +84,20 @@ namespace FlatRedBall.Glue.RuntimeObjects
                 // occur with tools modifying the .glux and not properly verifying that the
                 // file exists.  GView should tolerate this invalid definition.
 
-                toReturn = CreateRuntimeObjectForNamedObject(namedObjectSave, elementSave, elementRuntime, objectType,
-                loadedObject,
-                newElementRuntime,
-                toAddTo,
-                layerToAddTo, rfs, pullsFromEntireObject);
+                var runtimeObject = CreateRuntimeObjectForNamedObject(namedObjectSave, elementSave, elementRuntime, objectType,
+                    loadedObject,
+                    newElementRuntime,
+                    toAddTo,
+                    layerToAddTo, rfs, pullsFromEntireObject);
+
+                toReturn = new LoadedFile();
+                if(rfs != null)
+                {
+                    toReturn.FilePath = ElementRuntime.ContentDirectory + rfs.Name;
+                }
+
+                toReturn.ReferencedFileSave = rfs;
+                toReturn.RuntimeObject = runtimeObject;
 
             }
             newElementRuntime.DirectObjectReference = toReturn;
@@ -133,44 +137,6 @@ namespace FlatRedBall.Glue.RuntimeObjects
 
             return null;
 
-        }
-
-        private static T LoadObjectIntoElementRuntime<T>(NamedObjectSave namedObjectSave, ElementRuntime elementRuntime, ReferencedFileSave rfs, IElement container)
-        {
-            object loadedObject = null;
-
-            string fileName = FileManager.Standardize(ElementRuntime.ContentDirectory + namedObjectSave.SourceFile);
-
-            if (rfs != null && (!rfs.IsSharedStatic || container is ScreenSave))
-            {
-                foreach (var kvp in elementRuntime.ReferencedFileRuntimeList.LoadedRfses)
-                {
-                    if (namedObjectSave.SourceFile.ToLower() == kvp.Key.ToLower())
-                    {
-                        loadedObject = kvp.Value;
-                        break;
-                    }
-                }
-            }
-            else if (FileManager.FileExists(fileName))
-            {
-                loadedObject = FlatRedBallServices.Load<T>(fileName, GluxManager.ContentManagerName);
-                elementRuntime.ReferencedFileRuntimeList.Add(loadedObject);
-            }
-
-            // If the rfs is only loaded when referenced, we want to give the
-            // above a chance to see if it's already been loaded.  If it's not
-            // then this is the first time it's referenced, so let's load it.
-            if (rfs != null && rfs.LoadedOnlyWhenReferenced && loadedObject == null)
-            {
-                loadedObject = FlatRedBallServices.Load<T>(fileName, GluxManager.ContentManagerName);
-                elementRuntime.ReferencedFileRuntimeList.Add(loadedObject);
-                if (!rfs.IsSharedStatic || container is ScreenSave)
-                {
-                    AddObjectToManagers(loadedObject);
-                }
-            }
-            return (T)loadedObject;
         }
 
         private static void AddObjectToManagers(object loadedObject)
@@ -230,6 +196,8 @@ namespace FlatRedBall.Glue.RuntimeObjects
             object toAddTo,
             Layer layerToAddTo, ReferencedFileSave rfs, bool pullsFromEntireNamedObject)
         {
+            var fileName = ElementRuntime.ContentDirectory + objectToLoad.SourceFile;
+
 
             bool shouldClone = rfs != null && (rfs.IsSharedStatic && !(container is ScreenSave)) && !pullsFromEntireNamedObject;
             object toReturn = null;
@@ -260,7 +228,12 @@ namespace FlatRedBall.Glue.RuntimeObjects
                             scene = scene.Clone();
                             elementRuntime.EntireScenes.Add(objectToLoad.SourceFile, scene);
 
-                            newElementRuntime.ReferencedFileRuntimeList.Add(scene);
+                            var loadedFile = new LoadedFile();
+                            loadedFile.RuntimeObject = scene;
+                            loadedFile.FilePath = objectToLoad.SourceFile;
+                            loadedFile.ReferencedFileSave = rfs;
+
+                            newElementRuntime.ReferencedFileRuntimeList.Add(loadedFile);
 
                             scene.AddToManagers(layerToAddTo);
 
@@ -558,7 +531,12 @@ namespace FlatRedBall.Glue.RuntimeObjects
 
                             elementRuntime.EntireSplineLists.Add(splineList.Name, splineList);
 
-                            newElementRuntime.ReferencedFileRuntimeList.Add(splineList);
+                            var loadedFile = new LoadedFile();
+                            loadedFile.RuntimeObject = splineList;
+                            loadedFile.ReferencedFileSave = rfs;
+                            loadedFile.FilePath = objectToLoad.SourceFile;
+
+                            newElementRuntime.ReferencedFileRuntimeList.Add(loadedFile);
 
                             foreach (var spline in splineList)
                             {
@@ -648,7 +626,9 @@ namespace FlatRedBall.Glue.RuntimeObjects
                     ElementRuntime layerContainer = elementRuntime.GetContainedElementRuntime(objectToLoad.LayerOn);
                     if (layerContainer == null)
                     {
-                        System.Windows.Forms.MessageBox.Show("Could not find a Layer by the name \"" + objectToLoad.LayerOn + "\" in the object " + objectToLoad, "Layer not found");
+                        System.Windows.Forms.MessageBox.Show(
+                            "Could not find a Layer by the name \"" + objectToLoad.LayerOn + "\" in the object " + objectToLoad, 
+                            "Layer not found");
                     }
                     else
                     {

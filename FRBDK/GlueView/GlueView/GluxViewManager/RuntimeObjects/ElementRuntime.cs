@@ -27,6 +27,7 @@ using FlatRedBall.IO.Csv;
 using FlatRedBall.Graphics.Particle;
 using FlatRedBall.Instructions;
 using FlatRedBall.Math.Splines;
+using FlatRedBall.Glue.RuntimeObjects.File;
 
 namespace FlatRedBall.Glue
 {
@@ -375,7 +376,8 @@ namespace FlatRedBall.Glue
                 }
                 catch(Exception e)
                 {
-                    throw new Exception("Error loading referenced files for " + elementSave + ":\n\n" + e.ToString());
+                    throw new Exception("Error loading referenced files for " + elementSave + ":\n\n" + e.ToString(),
+                        e);
                 }
                 LoadNamedObjects(elementSave);
                 // October 6, 2011
@@ -421,7 +423,13 @@ namespace FlatRedBall.Glue
         {
             foreach (ReferencedFileSave r in elementSave.ReferencedFiles)
             {
-                mReferencedFileRuntimeList.LoadReferencedFileSave(r, mAssociatedIElement);
+                var shouldLoad = r.LoadedOnlyWhenReferenced == false &&
+                    r.LoadedAtRuntime;
+
+                if(shouldLoad)
+                {
+                    mReferencedFileRuntimeList.LoadReferencedFileSave(r, mAssociatedIElement);
+                }
             }
 
             if (elementSave.BaseElement != null && elementSave.BaseElement != "")
@@ -439,7 +447,7 @@ namespace FlatRedBall.Glue
             return mReferencedFileRuntimeList.LoadReferencedFileSave(r, mAssociatedIElement);
         }
 
-        public object LoadReferencedFileSave(ReferencedFileSave r, bool isBeingAccessed, IElement container)
+        public LoadedFile LoadReferencedFileSave(ReferencedFileSave r, bool isBeingAccessed, IElement container)
         {
             return mReferencedFileRuntimeList.LoadReferencedFileSave(r, isBeingAccessed, container);
         }
@@ -461,22 +469,8 @@ namespace FlatRedBall.Glue
             {
                 throw new ArgumentNullException("Argument elementSave is null", "elementSave");
             }
-
-            elementSave.UpdateCustomProperties();
-
-            var layers = elementSave.AllNamedObjects.Where(item=>item.IsLayer);
-            var entireFiles = elementSave.AllNamedObjects.Where(item => item.IsEntireFile);
-            var everythingElse = elementSave.AllNamedObjects.Where(item => !item.IsLayer && !item.IsEntireFile);
-
-            var ordered = layers.Concat(entireFiles).Concat(everythingElse);
-
-            PositionedObjectList<ElementRuntime> listToPopulate = mContainedElements;
-            PositionedObject parentElementRuntime = this;
-
-            CreateNamedObjectElementRuntime(elementSave, CreationOptions.LayerProvidedByContainer, ordered.ToList(), listToPopulate, parentElementRuntime);
-
-            LoadEmbeddedNamedObjects(elementSave, CreationOptions.LayerProvidedByContainer);
-
+            // Vic says - shouldn't the base be created before the derived? This block of code used to be
+            // at the end of this function, but I moved it to happen earlier on Dec 23, 2018
             if (elementSave.InheritsFromElement())
             {
                 var elementSaveBaseElement = ObjectFinder.Self.GetIElement(elementSave.BaseElement);
@@ -485,6 +479,23 @@ namespace FlatRedBall.Glue
                     LoadNamedObjects(elementSaveBaseElement);
                 }
             }
+
+            elementSave.UpdateCustomProperties();
+
+            var layers = elementSave.AllNamedObjects.Where(item=>item.IsLayer);
+            var entireFiles = elementSave.AllNamedObjects.Where(item => item.IsEntireFile);
+            var everythingElse = elementSave.AllNamedObjects.Where(item => !item.IsLayer && !item.IsEntireFile);
+
+            var ordered = layers.Concat(entireFiles).Concat(everythingElse).ToArray();
+
+            PositionedObjectList<ElementRuntime> listToPopulate = mContainedElements;
+            PositionedObject parentElementRuntime = this;
+
+            CreateNamedObjectElementRuntime(elementSave, CreationOptions.LayerProvidedByContainer, 
+                ordered.ToList(), listToPopulate, parentElementRuntime);
+
+            LoadEmbeddedNamedObjects(elementSave, CreationOptions.LayerProvidedByContainer);
+
         }
 
         private void LoadEmbeddedNamedObjects(IElement element, Layer layerProvidedByContainer)
@@ -949,116 +960,69 @@ namespace FlatRedBall.Glue
 
             if (property != null)
             {
-                //try
-                //{
-                    if (cv.GetIsFile())
+
+                if (cv.GetIsFile())
+                {
+                    object fileRuntime = null;
+
+                    if (valueToSetTo is string)
                     {
-                        object fileRuntime = null;
+                        ReferencedFileSave rfs = GetReferencedFileFromName(valueToSetTo);
 
-                        if (valueToSetTo is string)
+                        if (rfs == null)
                         {
-                            ReferencedFileSave rfs = GetReferencedFileFromName(valueToSetTo);
-
-                            if (rfs == null)
-                            {
-                                fileRuntime = null;
-                            }
-                            else
-                            {
-                                fileRuntime = LoadReferencedFileSave(rfs, true, container);
-                            }
+                            fileRuntime = null;
                         }
                         else
                         {
-                            fileRuntime = valueToSetTo;
+                            fileRuntime = LoadReferencedFileSave(rfs, true, container);
                         }
-
-                        property.SetValue(objectToSetOn, fileRuntime, null);
                     }
                     else
                     {
-                        object convertedValue = valueToSetTo;
-                        if (property.PropertyType == typeof(Microsoft.Xna.Framework.Color) && valueToSetTo is string)
-                        {
-                            convertedValue = PropertyValuePair.ConvertStringToType((string)valueToSetTo, property.PropertyType);
-                        }
-                        if(property.PropertyType == typeof(IList<FlatRedBall.Math.Geometry.Point>))
-                        {
-                            // We may be storing vectors, so if so we need to convert
-                            if (valueToSetTo != null && valueToSetTo is List<Vector2>)
-                            {
-                                List<FlatRedBall.Math.Geometry.Point> converted = new List<FlatRedBall.Math.Geometry.Point>();
-                                foreach(var item in valueToSetTo as List<Vector2>)
-                                {
-                                    converted.Add(new Math.Geometry.Point(item.X, item.Y));
-                                }
-                                convertedValue = converted;
-                            }
-                        }
-                        bool shouldSet = true;
+                        fileRuntime = valueToSetTo;
+                    }
 
-                        if (convertedValue is string &&
-                            (string.IsNullOrEmpty((string)convertedValue)) &&
-                            (
-                            property.PropertyType == typeof(float) ||
-                            property.PropertyType == typeof(bool) ||
-                            property.PropertyType == typeof(long) ||
-                            property.PropertyType == typeof(double) ||
-                            property.PropertyType == typeof(int)))
+                    SetValueUndoOnException(objectToSetOn, property, fileRuntime);
+                }
+                else
+                {
+                    object convertedValue = valueToSetTo;
+                    if (property.PropertyType == typeof(Microsoft.Xna.Framework.Color) && valueToSetTo is string)
+                    {
+                        convertedValue = PropertyValuePair.ConvertStringToType((string)valueToSetTo, property.PropertyType);
+                    }
+                    if(property.PropertyType == typeof(IList<FlatRedBall.Math.Geometry.Point>))
+                    {
+                        // We may be storing vectors, so if so we need to convert
+                        if (valueToSetTo != null && valueToSetTo is List<Vector2>)
                         {
-                            shouldSet = false;
-                        }
-                        if (shouldSet)
-                        {
-                            // It's possible that GlueView
-                            // can set a bad value like float.NaN
-                            // on an X which ultimately makes the engine
-                            // crash hard!  If an exception occurs on a property
-                            // set, then we need to catch it and undo the set, then
-                            // throw an exception so that whoever set it can deal with
-                            // the problem.
-                            object oldValue = null;
-                            if(property.CanRead)
+                            List<FlatRedBall.Math.Geometry.Point> converted = new List<FlatRedBall.Math.Geometry.Point>();
+                            foreach(var item in valueToSetTo as List<Vector2>)
                             {
-                                oldValue = property.GetValue(objectToSetOn, null);
+                                converted.Add(new Math.Geometry.Point(item.X, item.Y));
                             }
-                            try
-                            {
-                                bool wasCustomSet = false;
-
-                                if (objectToSetOn is PositionedObject)
-                                {
-
-                                }
-                                else
-                                {
-
-                                }
-                                property.SetValue(objectToSetOn, convertedValue, null);
-                            }
-                            catch (Exception e)
-                            {
-                                if (property.CanRead)
-                                {
-                                    // We failed, so let's set the value back (if we can)
-                                    try
-                                    {
-                                        property.SetValue(objectToSetOn, oldValue, null);
-                                    }
-                                    catch
-                                    {
-                                        // do nothing
-                                    }
-                                }
-                                //throw new Exception("Error setting " + property.Name + " on " + objectToSetOn + ":\n" + e.ToString());
-                            }
+                            convertedValue = converted;
                         }
                     }
-                //}
-                //catch
-                //{
-                //    // do nothing for now
-                //}
+                    bool shouldSet = true;
+
+                    if (convertedValue is string &&
+                        (string.IsNullOrEmpty((string)convertedValue)) &&
+                        (
+                        property.PropertyType == typeof(float) ||
+                        property.PropertyType == typeof(bool) ||
+                        property.PropertyType == typeof(long) ||
+                        property.PropertyType == typeof(double) ||
+                        property.PropertyType == typeof(int)))
+                    {
+                        shouldSet = false;
+                    }
+                    if (shouldSet)
+                    {
+                        SetValueUndoOnException(objectToSetOn, property, convertedValue);
+                    }
+                }
             }
             else if (field != null)
             {
@@ -1087,6 +1051,42 @@ namespace FlatRedBall.Glue
             }
 
             return parent;
+        }
+
+        private static void SetValueUndoOnException(object objectToSetOn, PropertyInfo property, object valueToSet)
+        {
+            // It's possible that GlueView
+            // can set a bad value like float.NaN
+            // on an X which ultimately makes the engine
+            // crash hard!  If an exception occurs on a property
+            // set, then we need to catch it and undo the set, then
+            // throw an exception so that whoever set it can deal with
+            // the problem.
+            object oldValue = null;
+            if (property.CanRead)
+            {
+                oldValue = property.GetValue(objectToSetOn, null);
+            }
+            try
+            {
+                property.SetValue(objectToSetOn, valueToSet, null);
+            }
+            catch (Exception e)
+            {
+                if (property.CanRead)
+                {
+                    // We failed, so let's set the value back (if we can)
+                    try
+                    {
+                        property.SetValue(objectToSetOn, oldValue, null);
+                    }
+                    catch
+                    {
+                        // do nothing
+                    }
+                }
+                //throw new Exception("Error setting " + property.Name + " on " + objectToSetOn + ":\n" + e.ToString());
+            }
         }
 
         private ReferencedFileSave GetReferencedFileFromName(object valueToSetTo)
@@ -1652,14 +1652,12 @@ namespace FlatRedBall.Glue
 
         public object GetReferencedFileSaveRuntime(string unqualifiedName)
         {
-            foreach (var kvp in mReferencedFileRuntimeList.LoadedRfses)
+            foreach (var loadedFile in mReferencedFileRuntimeList.LoadedRfses)
             {
-                string key = kvp.Key;
-
-                string unqualifiedCandidate = FileManager.RemovePath(FileManager.RemoveExtension(key));
+                string unqualifiedCandidate = FileManager.RemovePath(FileManager.RemoveExtension(loadedFile.FilePath.Original));
                 if (unqualifiedCandidate.ToLower() == unqualifiedName.ToLower())
                 {
-                    return kvp.Value;
+                    return loadedFile.RuntimeObject;
                 }
             }
             return null;
@@ -1811,7 +1809,9 @@ namespace FlatRedBall.Glue
                 }
                 else
                 {
-                    throw new NotImplementedException("GlueView is not properly able to remove object of type " + mDirectObjectReference.GetType());
+                    //throw new NotImplementedException("GlueView is not properly able to remove object of type " + mDirectObjectReference.GetType());
+                    // should be handled by the RFS destroyer so whatever, no need to handle it here...right?
+                    mReferencedFileRuntimeList.DestroyRuntime(mDirectObjectReference);
                 }
 
             }

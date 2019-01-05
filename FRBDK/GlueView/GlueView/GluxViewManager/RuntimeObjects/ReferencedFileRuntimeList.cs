@@ -15,6 +15,7 @@ using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Graphics.Particle;
 using FlatRedBall.Math.Splines;
 using FlatRedBall.Glue.RuntimeObjects.File;
+using FlatRedBall.Glue.IO;
 
 namespace FlatRedBall.Glue.RuntimeObjects
 {
@@ -28,20 +29,20 @@ namespace FlatRedBall.Glue.RuntimeObjects
         /// <remarks>
         /// The key is not absolute.  It's relative to the project
         /// </remarks>
-        Dictionary<string, object> mLoadedRfses = new Dictionary<string, object>();
-        List<object> mAddedRfses = new List<object>();
+        List<LoadedFile> mLoadedRfses = new List<LoadedFile>();
+        List<LoadedFile> mAddedRfses = new List<LoadedFile>();
 
         List<ShapeCollection> mLoadedShapeCollections = new List<ShapeCollection>();
         List<NodeNetwork> mLoadedNodeNetworks = new List<NodeNetwork>();
         List<EmitterList> mLoadedEmitterLists = new List<EmitterList>();
 
-        public static List<IRuntimeFileManager> FileManagers
-        { get; private set; } = new List<IRuntimeFileManager>();
+        public static List<RuntimeFileManager> FileManagers
+        { get; private set; } = new List<RuntimeFileManager>();
 
 
         #endregion
 
-        public Dictionary<string, object> LoadedRfses
+        public List<LoadedFile> LoadedRfses
         {
             get
             {
@@ -60,8 +61,8 @@ namespace FlatRedBall.Glue.RuntimeObjects
             get
             {
                 return mAddedRfses
-                    .Where(item => item is Scene)
-                    .Select(item => (Scene)item)
+                    .Where(item => item.RuntimeObject is Scene)
+                    .Select(item => (Scene)item.RuntimeObject)
                     .ToArray();
             }
         }
@@ -84,26 +85,30 @@ namespace FlatRedBall.Glue.RuntimeObjects
 
         static ReferencedFileRuntimeList()
         {
+            FileManagers.Add(new EmitterListRuntimeFileManager());
+            FileManagers.Add(new NodeNetworkRuntimeFileManager());
             FileManagers.Add(new SceneRuntimeFileManager());
+            FileManagers.Add(new ShapeCollectionRuntimeFileManager());
+            FileManagers.Add(new SplineListRuntimeFileManager());
         }
 
 
-        public void Add(object objectToAdd)
+        public void Add(LoadedFile loadedFile)
         {
-            if (objectToAdd is NodeNetwork)
+            if (loadedFile.RuntimeObject is NodeNetwork)
             {
-                LoadedNodeNetworks.Add(objectToAdd as NodeNetwork);
+                LoadedNodeNetworks.Add(loadedFile.RuntimeObject as NodeNetwork);
             }
-            else if(objectToAdd is EmitterList)
+            else if(loadedFile.RuntimeObject is EmitterList)
             {
-                LoadedEmitterLists.Add(objectToAdd as EmitterList);
+                LoadedEmitterLists.Add(loadedFile.RuntimeObject as EmitterList);
             }
-            else if(objectToAdd is ShapeCollection)
+            else if(loadedFile.RuntimeObject is ShapeCollection)
             {
-                LoadedShapeCollections.Add(objectToAdd as ShapeCollection);
+                LoadedShapeCollections.Add(loadedFile.RuntimeObject as ShapeCollection);
             }
 
-            mAddedRfses.Add(objectToAdd);
+            mAddedRfses.Add(loadedFile);
         }
 
 
@@ -111,7 +116,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
         {
             foreach(var manager in FileManagers)
             {
-                manager.Activity(LoadedRfses.Values);
+                manager.Activity(LoadedRfses);
             }
 
             foreach (NodeNetwork nodeNetwork in mLoadedNodeNetworks)
@@ -127,7 +132,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
         {
             foreach (var manager in FileManagers)
             {
-                manager.Destroy(mAddedRfses);
+                manager.RemoveFromManagers(mAddedRfses);
             }
 
             foreach (ShapeCollection s in mLoadedShapeCollections)
@@ -147,8 +152,8 @@ namespace FlatRedBall.Glue.RuntimeObjects
             }
 
             // todo - move this to a file manager
-            foreach(var item in mAddedRfses.Where(item =>item is SplineList)
-                .Select(item =>item as SplineList))
+            foreach(var item in mAddedRfses.Where(item =>item.RuntimeObject is SplineList)
+                .Select(item =>item.RuntimeObject as SplineList))
             {
                 item.RemoveFromManagers();
             }
@@ -162,14 +167,10 @@ namespace FlatRedBall.Glue.RuntimeObjects
             mLoadedRfses.Clear();
         }
 
-        public void Destroy(string name)
+        public void Destroy(FilePath filePath)
         {
-            name = name.ToLower();
-
-            if (mLoadedRfses.ContainsKey(name))
+            foreach(var loadedObject in mLoadedRfses.Where(item => item.FilePath == filePath))
             {
-                object loadedObject = mLoadedRfses[name];
-
                 foreach(var manager in FileManagers)
                 {
                     if(manager.TryDestroy(loadedObject, mAddedRfses))
@@ -178,45 +179,86 @@ namespace FlatRedBall.Glue.RuntimeObjects
                     }
                 }
 
-                if (loadedObject is ShapeCollection)
+                if (loadedObject.RuntimeObject is ShapeCollection)
                 {
-                    ((ShapeCollection)loadedObject).RemoveFromManagers();
-                    mLoadedShapeCollections.Remove((ShapeCollection)loadedObject);
+                    ((ShapeCollection)loadedObject.RuntimeObject).RemoveFromManagers();
+                    mLoadedShapeCollections.Remove((ShapeCollection)loadedObject.RuntimeObject);
                 }
-                else if (loadedObject is NodeNetwork)
+                else if (loadedObject.RuntimeObject is NodeNetwork)
                 {
-                    ((NodeNetwork)loadedObject).Visible = false;
-                    mLoadedNodeNetworks.Remove((NodeNetwork)loadedObject);
+                    ((NodeNetwork)loadedObject.RuntimeObject).Visible = false;
+                    mLoadedNodeNetworks.Remove((NodeNetwork)loadedObject.RuntimeObject);
                 }
-                else if (loadedObject is EmitterList)
+                else if (loadedObject.RuntimeObject is EmitterList)
                 {
-                    ((EmitterList)loadedObject).RemoveFromManagers();
-                    mLoadedEmitterLists.Remove((EmitterList)loadedObject);
+                    ((EmitterList)loadedObject.RuntimeObject).RemoveFromManagers();
+                    mLoadedEmitterLists.Remove((EmitterList)loadedObject.RuntimeObject);
                 }
-                mAddedRfses.Remove(name);
+                mAddedRfses.Remove(loadedObject);
+            }
+        }
+
+        public void DestroyRuntime(object runtime)
+        {
+            foreach (var manager in FileManagers)
+            {
+                if(manager.DestroyRuntimeObject(runtime))
+                {
+                    break;
+                }
             }
         }
 
         private object LoadRfsAndAddToLists(ReferencedFileSave r, IElement container)
         {
-            object runtimeObject = null;
+            LoadedFile loadedFile = null;
+            bool isAlreadyAdded = false;
 
-            foreach(var manager in FileManagers)
+            FilePath filePath =
+                ElementRuntime.ContentDirectory + r.Name;
+
+            loadedFile = mLoadedRfses.FirstOrDefault(item => item.FilePath == filePath);
+            if (loadedFile != null)
             {
-                runtimeObject = manager.TryCreateFile(r, container);
-                if (runtimeObject != null)
+                if(mAddedRfses.Any(item =>item.FilePath == filePath) == false &&
+                    (r.IsSharedStatic == false || container is ScreenSave))
                 {
-                    if ((!r.IsSharedStatic || container is ScreenSave) && runtimeObject != null)
+                    foreach(var manager in FileManagers)
                     {
-                        LoadedRfses.Add(r.Name, runtimeObject);
+                        if(manager.AddToManagers(loadedFile))
+                        {
+                            mAddedRfses.Add(loadedFile);
+                            break;
+                        }
                     }
-                    break;
+                }
+            }
+            else
+            {
+                foreach(var manager in FileManagers)
+                {
+                    loadedFile = manager.TryCreateFile(r, container);
+                    if (loadedFile != null)
+                    {
+                        if ((!r.IsSharedStatic || container is ScreenSave) && loadedFile != null)
+                        {
+                            LoadedRfses.Add(loadedFile);
+
+                            manager.AddToManagers(loadedFile);
+                            mAddedRfses.Add(loadedFile);
+                        }
+                        break;
+                    }
                 }
             }
 
-            if(runtimeObject == null)
+
+
+
+            if(loadedFile == null)
             {
                 string extension = FileManager.GetExtension(r.Name).ToLower();
+                object runtimeObject = null;
 
                 switch (extension)
                 {
@@ -260,10 +302,20 @@ namespace FlatRedBall.Glue.RuntimeObjects
                         runtimeObject = LoadSplx(r);
                         break;
                 }
+
+                if(runtimeObject != null)
+                {
+                    loadedFile = new LoadedFile();
+                    loadedFile.RuntimeObject = runtimeObject;
+                    loadedFile.ReferencedFileSave = r;
+                    loadedFile.FilePath = ElementRuntime.ContentDirectory + r.Name;
+
+                    LoadedRfses.Add(loadedFile);
+                }
             }
 
 
-            return runtimeObject;
+            return loadedFile?.RuntimeObject;
         }
 
         private object LoadSplx(ReferencedFileSave r)
@@ -338,7 +390,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
             return LoadReferencedFileSave(r, false, container);
         }
 
-        public object LoadReferencedFileSave(ReferencedFileSave r, bool isBeingAccessed, IElement container)
+        public LoadedFile LoadReferencedFileSave(ReferencedFileSave r, bool isBeingAccessed, IElement container)
         {
             //////////////////EARLY OUT///////////////////
             if (r.LoadedAtRuntime == false)
@@ -346,10 +398,14 @@ namespace FlatRedBall.Glue.RuntimeObjects
                 return null;
             }
 
-            if (mLoadedRfses.ContainsKey(r.Name.ToLower()))
+
+            FilePath fileToLoad = ElementRuntime.ContentDirectory + r.Name;
+
+            var alreadyLoaded = mLoadedRfses.FirstOrDefault(item => item.FilePath == fileToLoad);
+            if (alreadyLoaded != null)
             {
                 // do nothing, it's already been loaded)
-                return mLoadedRfses[r.Name.ToLower()];
+                return alreadyLoaded;
             }
             /////////////END EARLY OUT//////////////////////
 
@@ -362,10 +418,15 @@ namespace FlatRedBall.Glue.RuntimeObjects
 
                 if (isBeingAccessed || runtimeObject != null)
                 {
-                    mAddedRfses.Add(runtimeObject);
-                    mLoadedRfses.Add(r.Name.ToLower(), runtimeObject);
+                    var loadedFile = new LoadedFile();
+                    loadedFile.FilePath = fileToLoad;
+                    loadedFile.ReferencedFileSave = r;
+                    loadedFile.RuntimeObject = runtimeObject;
 
-                    return mLoadedRfses[r.Name.ToLower()];
+                    mAddedRfses.Add(loadedFile);
+                    mLoadedRfses.Add(loadedFile);
+
+                    return loadedFile;
                 }
                 else
                 {
@@ -377,6 +438,28 @@ namespace FlatRedBall.Glue.RuntimeObjects
             {
                 return null;
             }
+        }
+
+        public object CreateAndAddEmptyCloneOf(object originalObject)
+        {
+            object cloneToReturn = null;
+            foreach (var manager in FileManagers)
+            {
+                cloneToReturn = manager.CreateEmptyObjectMatchingArgumentType(originalObject);
+
+                if(cloneToReturn != null)
+                {
+                    var loadedFile = new LoadedFile();
+                    loadedFile.FilePath = null;
+                    loadedFile.ReferencedFileSave = null;
+                    loadedFile.RuntimeObject = cloneToReturn;
+
+                    mLoadedRfses.Add(loadedFile);
+                    mAddedRfses.Add(loadedFile);
+                    break;
+                }
+            }
+            return cloneToReturn;
         }
 
         internal void RefreshFiles(string fileName)

@@ -11,61 +11,60 @@ using System.Threading.Tasks;
 
 namespace TiledPlugin.RuntimeObjects
 {
-    public class TiledRuntimeFileManager : IRuntimeFileManager
+    public class TiledRuntimeFileManager : RuntimeFileManager
     {
-        public void Activity(ICollection<object> allFileObjects)
+        public override void Activity(ICollection<LoadedFile> allFileObjects)
         {
 
         }
 
-        public void Destroy(ICollection<object> allFileObjects)
+        public override void RemoveFromManagers(ICollection<LoadedFile> allFileObjects)
         {
             foreach(var fileObject in allFileObjects)
             {
-                if(fileObject is LayeredTileMap)
+                if(fileObject.RuntimeObject is LayeredTileMap)
                 {
-                    ((LayeredTileMap)fileObject).Destroy();
+                    ((LayeredTileMap)fileObject.RuntimeObject).Destroy();
                 }
             }
         }
 
-        public object TryCreateFile(FlatRedBall.Glue.SaveClasses.ReferencedFileSave file, FlatRedBall.Glue.SaveClasses.IElement container)
-        {
-            var filePath = GlueViewCommands.Self.FileCommands.GetAbsoluteFileName(file);
-            return TryCreateFileInternal(filePath);
-        }
 
-        private object TryCreateFileInternal(FlatRedBall.Glue.IO.FilePath fileName)
+        protected override object Load(FlatRedBall.Glue.IO.FilePath fileName)
         {
-            var extension = fileName.Extension;
+            FlatRedBall.Glue.SaveClasses.ReferencedFileSave rfs = null;
 
-            if(extension == "tmx")
+            bool shouldCreate = fileName.Extension == "tmx";
+
+            if (shouldCreate && fileName.Exists())
             {
-                FlatRedBall.Glue.SaveClasses.ReferencedFileSave rfs = GetRfsFromFile(fileName);
+                //var layeredTileMap = new LayeredTileMap();
+                // todo load it
+                string contentManagerName = nameof(TiledRuntimeFileManager);
+                var layeredTileMap =
+                    LayeredTileMap.FromTiledMapSave(fileName.FullPath, contentManagerName);
 
-                if (rfs != null)
-                {
-                    var absoluteFileName = GlueViewCommands.Self.FileCommands.GetAbsoluteFileName(rfs);
+                layeredTileMap.Name = fileName.FullPath;
 
-                    //var layeredTileMap = new LayeredTileMap();
-                    // todo load it
-                    string contentManagerName = nameof(TiledRuntimeFileManager);
-                    var layeredTileMap = 
-                        LayeredTileMap.FromTiledMapSave("content/screens/tiledscreen/tmxfile.tmx", contentManagerName);
-
-                    layeredTileMap.Name = fileName.FullPath;
-
-                    //todo - need to look at the layer it might be on
-                    layeredTileMap.AddToManagers();
-                    return layeredTileMap;
-                    // create the tmx now
-
-
-                }
+                return layeredTileMap;
             }
+            else
+            {
+                return null;
+            }
+        }
 
-            return null;
-
+        public override bool AddToManagers(LoadedFile loadedFile)
+        {
+            if(loadedFile.RuntimeObject is LayeredTileMap)
+            {
+                ((LayeredTileMap)loadedFile.RuntimeObject).AddToManagers();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private static FlatRedBall.Glue.SaveClasses.ReferencedFileSave GetRfsFromFile(FilePath fileName)
@@ -75,53 +74,59 @@ namespace TiledPlugin.RuntimeObjects
                     GlueViewCommands.Self.FileCommands.GetAbsoluteFileName(item) == fileName);
         }
 
-        public bool TryDestroy(object runtimeFileObject, ICollection<object> allFileObjects)
+        public override bool TryDestroy(LoadedFile runtimeFileObject, ICollection<LoadedFile> allFileObjects)
         {
             if (allFileObjects.Contains(runtimeFileObject))
             {
-                if (runtimeFileObject is LayeredTileMap)
-                {
-                    ((LayeredTileMap)runtimeFileObject).Destroy();
-                    return true;
-                }
+                var runtimeObject = runtimeFileObject.RuntimeObject;
+
+                return DestroyRuntimeObject(runtimeObject);
             }
             return false;
         }
 
-        public object TryGetCombinedObjectByName(string name)
+        public override bool DestroyRuntimeObject(object runtimeObject)
+        {
+            if (runtimeObject is LayeredTileMap)
+            {
+                ((LayeredTileMap)runtimeObject).Destroy();
+                return true;
+            }
+            return false;
+        }
+
+        public override object TryGetCombinedObjectByName(string name)
         {
             throw new NotImplementedException();
         }
 
-        public bool TryHandleRefreshFile(string fileName, List<object> allFileObjects)
+        public override bool TryHandleRefreshFile(FilePath fileName, List<LoadedFile> allFileObjects)
         {
-            var filePath = new FilePath(fileName);
-
-
-            var extension = FlatRedBall.IO.FileManager.GetExtension(fileName);
-
-            var isTmx = extension == "tmx";
-
-            if(isTmx)
+            var extension = fileName.Extension;
+            var toReturn = false;
+            if(extension == "tmx")
             {
-                FlatRedBall.Glue.SaveClasses.ReferencedFileSave rfs = GetRfsFromFile(fileName);
-
-                if(rfs != null)
+                foreach(var item in allFileObjects.Where(item =>item.FilePath == fileName))
                 {
-                    var runtime = allFileObjects.FirstOrDefault(item => item is LayeredTileMap &&
-                        ((LayeredTileMap)item).Name == filePath);
+                    ((LayeredTileMap)item.RuntimeObject).Destroy();
+                    var newMap = (LayeredTileMap)Load(fileName);
+                    newMap?.AddToManagers();
+                    item.RuntimeObject = Load(fileName);
 
-                    if(runtime != null)
-                    {
-                        ((LayeredTileMap)runtime).Destroy();
-                        allFileObjects.Remove(runtime);
-                        allFileObjects.Add(TryCreateFileInternal(filePath));
-
-                    }
-                    return true;
+                    toReturn = true;
                 }
             }
-            return false;
+
+            return toReturn;
+        }
+
+        public override object CreateEmptyObjectMatchingArgumentType(object originalObject)
+        {
+            if(originalObject is LayeredTileMap)
+            {
+                //throw new NotImplementedException();
+            }
+            return null;
         }
     }
 }

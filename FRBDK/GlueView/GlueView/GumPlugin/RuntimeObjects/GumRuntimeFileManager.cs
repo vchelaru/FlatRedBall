@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace GumPlugin.RuntimeObjects
 {
-    public class GumRuntimeFileManager : IRuntimeFileManager
+    public class GumRuntimeFileManager : RuntimeFileManager
     {
         GumIdb gumIdb;
 
@@ -108,62 +108,39 @@ namespace GumPlugin.RuntimeObjects
             gumIdb?.Element?.UpdateLayout();
         }
 
-        public void Activity(ICollection<object> allFileObjects)
+        public override void Activity(ICollection<LoadedFile> allFileObjects)
         {
 
         }
 
-        public void Destroy(ICollection<object> allFileObjects)
-        {
-            foreach(var fileObject in allFileObjects)
-            {
-                if(fileObject is GumIdb)
-                {
-                    ((GumIdb)fileObject).Destroy();
-                }
-            }
 
-            gumIdb = null;
-        }
-
-        public object TryCreateFile(FlatRedBall.Glue.SaveClasses.ReferencedFileSave file, FlatRedBall.Glue.SaveClasses.IElement container)
+        protected override object Load(FilePath referencedFilePath)
         {
-            var filePath = GlueViewCommands.Self.FileCommands.GetAbsoluteFileName(file);
-            return TryCreateFileInternal(filePath);
-        }
-
-        private object TryCreateFileInternal(FilePath fileName)
-        {
-            var extension = fileName.Extension;
+            var extension = referencedFilePath.Extension;
             if (extension == "gusx")
             {
-                var rfs = GlueViewState.Self.GetAllReferencedFiles().FirstOrDefault(item => item.Name.ToLowerInvariant().EndsWith(".gumx"));
-                if (rfs != null)
-                {
-                    var absoluteFileName = GlueViewCommands.Self.FileCommands.GetAbsoluteFileName(rfs);
-                    GumIdb.StaticInitialize(absoluteFileName.Standardized);
+                var gumReferencedFile = GlueViewState.Self
+                    .GetAllReferencedFiles()
+                    .FirstOrDefault(item => item.Name.ToLowerInvariant().EndsWith(".gumx"));
+                var absoluteGumxFileName = GlueViewCommands.Self.FileCommands.GetAbsoluteFileName(gumReferencedFile);
 
-                    var contentManagerWrapper = new FlatRedBall.Gum.ContentManagerWrapper();
-                    contentManagerWrapper.ContentManagerName = "test";
-                    RenderingLibrary.Content.LoaderManager.Self.ContentLoader = contentManagerWrapper;
+                GumIdb.StaticInitialize(absoluteGumxFileName.FullPath);
 
-                    gumIdb = new GumIdb();
+                var contentManagerWrapper = new FlatRedBall.Gum.ContentManagerWrapper();
+                contentManagerWrapper.ContentManagerName = "test";
+                RenderingLibrary.Content.LoaderManager.Self.ContentLoader = contentManagerWrapper;
 
-                    string elementFileName = fileName.Standardized;
-                    gumIdb.LoadFromFile(elementFileName);
-                    gumIdb.AssignReferences();
-                    gumIdb.InstanceInitialize();
-                    gumIdb.Element.UpdateLayout();
+                gumIdb = new GumIdb();
 
-                    // Handled in StaticInit
-                    //SpriteManager.AddDrawableBatch(gumIdb);
+                string elementFileName = referencedFilePath.Standardized;
+                gumIdb.LoadFromFile(elementFileName);
+                gumIdb.AssignReferences();
+                gumIdb.Element.UpdateLayout();
 
-                    return gumIdb;
-                }
-                else
-                {
-                    return null;
-                }
+                // Handled in StaticInit
+                //SpriteManager.AddDrawableBatch(gumIdb);
+
+                return gumIdb;
             }
             else
             {
@@ -171,35 +148,74 @@ namespace GumPlugin.RuntimeObjects
             }
         }
 
-        public bool TryDestroy(object runtimeFileObject, ICollection<object> allFileObjects)
+        public override bool AddToManagers(LoadedFile loadedFile)
         {
-            if(allFileObjects.Contains(runtimeFileObject))
+            var runtimeObject = loadedFile.RuntimeObject;
+
+            var gumIdb = runtimeObject as GumIdb;
+            if(gumIdb != null)
             {
-                if(runtimeFileObject is GumIdb)
-                {
-                    if(runtimeFileObject == gumIdb)
-                    {
-                        gumIdb = null;
-                    }
-                    ((GumIdb)runtimeFileObject).Destroy();
-                    return true;
-                }
+                //gumIdb.InstanceInitialize();
+                gumIdb.Element.AddToManagers();
+                return true;
             }
             return false;
         }
 
-        public object TryGetCombinedObjectByName(string name)
+        public override void RemoveFromManagers(ICollection<LoadedFile> allFileObjects)
+        {
+            foreach(var fileObject in allFileObjects)
+            {
+                if(fileObject.RuntimeObject is GumIdb)
+                {
+                    var gumIdb = fileObject.RuntimeObject as GumIdb;
+                    FlatRedBall.SpriteManager.RemoveDrawableBatch(gumIdb);
+
+                    gumIdb.Element.RemoveFromManagers();
+                }
+            }
+
+            gumIdb = null;
+        }
+
+
+
+        public override bool TryDestroy(LoadedFile runtimeFileObject, ICollection<LoadedFile> allFileObjects)
+        {
+            if(allFileObjects.Contains(runtimeFileObject))
+            {
+                var runtimeObject = runtimeFileObject.RuntimeObject;
+
+                return DestroyRuntimeObject(runtimeObject);
+            }
+            return false;
+        }
+
+        public override bool DestroyRuntimeObject(object runtimeObject)
+        {
+            if (runtimeObject is GumIdb)
+            {
+                if (runtimeObject == gumIdb)
+                {
+                    gumIdb = null;
+                }
+                ((GumIdb)runtimeObject).Destroy();
+                return false;
+            }
+
+            return true;
+        }
+
+        public override object TryGetCombinedObjectByName(string name)
         {
             throw new NotImplementedException();
         }
 
-        public bool TryHandleRefreshFile(string fileName, List<object> allFileObjects)
+        public override bool TryHandleRefreshFile(FilePath filePath, List<LoadedFile> allFileObjects)
         {
-            var filePath = new FilePath(fileName);
-
             var shouldRefresh = false;
 
-            var extension = FlatRedBall.IO.FileManager.GetExtension(fileName);
+            var extension = filePath.Extension;
 
             var isGumFile = extension == Gum.DataTypes.GumProjectSave.ScreenExtension ||
                 extension == Gum.DataTypes.GumProjectSave.ComponentExtension ||
@@ -224,7 +240,7 @@ namespace GumPlugin.RuntimeObjects
                             .GetFilesReferencedBy(gumIdb.Element.ElementSave)
                             .Select( item =>new FilePath(item));
 
-                        shouldRefresh = referencedFiles.Any(item => item == fileName);
+                        shouldRefresh = referencedFiles.Any(item => item == filePath);
                     }
                 }
 
@@ -232,12 +248,19 @@ namespace GumPlugin.RuntimeObjects
                 if (shouldRefresh)
                 {
                     gumIdb.Destroy();
-                    allFileObjects.Remove(gumIdb);
+                    allFileObjects.RemoveAll(item =>item.RuntimeObject == gumIdb);
 
                     string fullFileName = GetGumIdbFullFileName();
+                    var existingLoadedFile = allFileObjects.FirstOrDefault(item => item.FilePath == fullFileName);
 
+                    gumIdb = Load(fullFileName) as GumIdb;
 
-                    allFileObjects.Add(TryCreateFileInternal(fullFileName));
+                    gumIdb?.Element.AddToManagers();
+
+                    if (existingLoadedFile != null)
+                    {
+                        existingLoadedFile.RuntimeObject = gumIdb;
+                    }
                 }
 
             }
@@ -268,6 +291,18 @@ namespace GumPlugin.RuntimeObjects
 
             var fullFileName = gumFolder + subFolder + "\\" + element.Name + "." + extension;
             return fullFileName;
+        }
+
+        public override object CreateEmptyObjectMatchingArgumentType(object originalObject)
+        {
+            if(originalObject is GumIdb)
+            {
+                // I don't know if we support clones of these....well I suppose we might, so I should throw an exception:
+                // Eventually we'll want to support this but as of this release I'm focused on
+                // the new structure for file loading, and mot making these changes.
+             //   throw new NotImplementedException();
+            }
+            return null;
         }
     }
 }

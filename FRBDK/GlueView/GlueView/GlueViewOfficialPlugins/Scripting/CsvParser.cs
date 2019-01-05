@@ -39,12 +39,15 @@ namespace GlueViewOfficialPlugins.Scripting
                 // This could be global content or it could be a RFS in the element
                 if (element.ContainsRecursively(rfs))
                 {
-                    rcr = elementRuntime.LoadReferencedFileSave(rfs, true, element) as RuntimeCsvRepresentation;
+                    var loadedFile = elementRuntime.LoadReferencedFileSave(rfs, true, element);
+                    rcr = loadedFile.RuntimeObject as RuntimeCsvRepresentation;
                 }
                 else
                 {
+                    var loadedFile =
+                        GluxManager.GlobalContentFilesRuntime.LoadReferencedFileSave(rfs, true, element);
                     // Load this thing from global content
-                    rcr = GluxManager.GlobalContentFilesRuntime.LoadReferencedFileSave(rfs, true, element) as
+                    rcr = loadedFile.RuntimeObject as
                         RuntimeCsvRepresentation;
                 }
                 if (rcr.GetRequiredIndex() == -1)

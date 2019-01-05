@@ -16,6 +16,7 @@ using FlatRedBall.Graphics.Particle;
 using FlatRedBall.ManagedSpriteGroups;
 using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Math.Splines;
+using FlatRedBall.Glue.RuntimeObjects.File;
 
 namespace FlatRedBall.Glue
 {
@@ -467,38 +468,50 @@ namespace FlatRedBall.Glue
             return returnObject;
         }
 
-        private object CreateObjectBasedOnExtension(NamedObjectSave objectToLoad, IElement elementSave, Layer layerToPutOn, PositionedObjectList<ElementRuntime> listToPopulate, string extension)
+        private LoadedFile CreateObjectBasedOnExtension(NamedObjectSave objectToLoad, IElement elementSave, Layer layerToPutOn, PositionedObjectList<ElementRuntime> listToPopulate, string extension)
         {
-            object returnObject = null;
-
-            switch (extension)
+            LoadedFile returnObject = null;
+            if(!string.IsNullOrEmpty(objectToLoad.SourceFile))
             {
-                case "scnx":
-                    returnObject = NamedObjectManager.LoadObjectForNos<Scene>(objectToLoad, elementSave, layerToPutOn, listToPopulate, this);
-                    break;
+                returnObject = NamedObjectManager.LoadObjectForNos(objectToLoad, elementSave, layerToPutOn, listToPopulate, this);
+                //ReferencedFileSave rfs = elementSave.GetReferencedFileSaveRecursively(
+                //    objectToLoad.SourceFile);
 
-                case "shcx":
-                    returnObject = NamedObjectManager.LoadObjectForNos<ShapeCollection>(objectToLoad, elementSave, layerToPutOn, listToPopulate, this);
-                    break;
-                case "nntx":
-                    //returnObject = NamedObjectManager.LoadNodeNetworkObject(objectToLoad, elementSave, layerToPutOn, listToPopulate, entireFileOnly);
-                    break;
-                case "emix":
-                    returnObject = NamedObjectManager.LoadObjectForNos<EmitterList>(objectToLoad, elementSave, layerToPutOn, listToPopulate, this);
-                    break;
-                case "splx":
-                    returnObject = NamedObjectManager.LoadObjectForNos<SplineList>(objectToLoad, elementSave, layerToPutOn, listToPopulate, this);
-                    break;
+                //if(rfs != null)
+                //{
+                //    returnObject = LoadReferencedFileSave(rfs, true, elementSave);
+                //}
             }
+
+            //switch (extension)
+            //{
+            //    case "scnx":
+            //        returnObject = NamedObjectManager.LoadObjectForNos<Scene>(objectToLoad, elementSave, layerToPutOn, listToPopulate, this);
+            //        break;
+
+            //    case "shcx":
+            //        returnObject = NamedObjectManager.LoadObjectForNos<ShapeCollection>(objectToLoad, elementSave, layerToPutOn, listToPopulate, this);
+            //        break;
+            //    case "nntx":
+            //        //returnObject = NamedObjectManager.LoadNodeNetworkObject(objectToLoad, elementSave, layerToPutOn, listToPopulate, entireFileOnly);
+            //        break;
+            //    case "emix":
+            //        returnObject = NamedObjectManager.LoadObjectForNos<EmitterList>(objectToLoad, elementSave, layerToPutOn, listToPopulate, this);
+            //        break;
+            //    case "splx":
+            //        returnObject = NamedObjectManager.LoadObjectForNos<SplineList>(objectToLoad, elementSave, layerToPutOn, listToPopulate, this);
+            //        break;
+            //    default:
+            //        // todo - loop through the custom object creators here:
+            //        break;
+            //}
             return returnObject;
         }
 
         private void CreateNamedObjectElementRuntime(IElement elementSave, Layer layerProvidedByContainer, List<NamedObjectSave> namedObjectSaveList,
             PositionedObjectList<ElementRuntime> listToPopulate, PositionedObject parentElementRuntime)
         {
-
-
-
+            
             foreach (NamedObjectSave n in namedObjectSaveList)
             {
                 Object newObject = null;
