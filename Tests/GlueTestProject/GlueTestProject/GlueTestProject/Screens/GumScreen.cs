@@ -84,6 +84,22 @@ namespace GlueTestProject.Screens
                 "because trailing spaces should not be removed, and should widen text objects that are sized by their children.");
 
             TestWrappingChangingContainerHeight();
+
+            TestAddChildSetsParent();
+        }
+
+        private void TestAddChildSetsParent()
+        {
+            var first = new ContainerRuntime();
+            var second = new ContainerRuntime();
+
+            first.Children.Add(second);
+
+            second.Parent.ShouldBe(first, "because adding to children should set the child's parent");
+
+            first.Children.Remove(second);
+
+            second.Parent.ShouldBe(null, "because removing the child should set the parent to null");
         }
 
         private void TestWrappingChangingContainerHeight()
