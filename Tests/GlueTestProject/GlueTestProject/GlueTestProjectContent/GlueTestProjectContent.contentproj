@@ -533,6 +533,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>usercontrol</Name>
     </None>
+    <None Include="gumproject\components\folder1\folderedentity1.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>folderedentity1</Name>
+    </None>
+    <None Include="gumproject\components\folder2\folderedentity2.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>folderedentity2</Name>
+    </None>
     <None Include="GumProject\Components\NineSliceButton.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>NineSliceButton</Name>

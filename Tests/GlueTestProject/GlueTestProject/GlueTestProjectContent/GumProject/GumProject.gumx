@@ -49,7 +49,7 @@
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
-    <Name>componentfolder\InFolder1</Name>
+    <Name>ComponentFolder/InFolder1</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
@@ -114,6 +114,14 @@
   </ComponentReference>
   <ComponentReference>
     <Name>DefaultForms/UserControl</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>Folder1/FolderedEntity1</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>Folder2/FolderedEntity2</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
@@ -185,6 +193,10 @@
     <ElementType>Standard</ElementType>
   </StandardElementReference>
   <StandardElementReference>
+    <Name>Polygon</Name>
+    <ElementType>Standard</ElementType>
+  </StandardElementReference>
+  <StandardElementReference>
     <Name>Rectangle</Name>
     <ElementType>Standard</ElementType>
   </StandardElementReference>
@@ -194,10 +206,6 @@
   </StandardElementReference>
   <StandardElementReference>
     <Name>Text</Name>
-    <ElementType>Standard</ElementType>
-  </StandardElementReference>
-  <StandardElementReference>
-    <Name>Polygon</Name>
     <ElementType>Standard</ElementType>
   </StandardElementReference>
   <BehaviorReference>

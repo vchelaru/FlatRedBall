@@ -142,7 +142,7 @@
   </State>
   <Instance>
     <Name>InFolder1Instance</Name>
-    <BaseType>componentfolder\InFolder1</BaseType>
+    <BaseType>ComponentFolder/InFolder1</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors />

@@ -959,6 +959,14 @@
     <Compile Include="GumRuntimes\DerivedScreenGumRuntime.Generated.cs">
       <DependentUpon>DerivedScreenGumRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\Folder1\FolderedEntity1Runtime.cs" />
+    <Compile Include="GumRuntimes\Folder1\FolderedEntity1Runtime.Generated.cs">
+      <DependentUpon>FolderedEntity1Runtime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\Folder2\FolderedEntity2Runtime.cs" />
+    <Compile Include="GumRuntimes\Folder2\FolderedEntity2Runtime.Generated.cs">
+      <DependentUpon>FolderedEntity2Runtime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\GumIdb.Generated.cs" />
     <Compile Include="GumRuntimes\GumScreenLayeredGumRuntime.cs" />
     <Compile Include="GumRuntimes\GumScreenLayeredGumRuntime.Generated.cs">

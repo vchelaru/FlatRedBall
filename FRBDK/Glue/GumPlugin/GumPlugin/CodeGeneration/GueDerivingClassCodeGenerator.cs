@@ -226,7 +226,7 @@ namespace DesktopGlForms.GumRuntimes.DefaultForms
 
             string subNamespace = null;
 
-            if ((elementSave is Gum.DataTypes.ScreenSave || elementSave is Gum.DataTypes.ComponentSave) && elementSave.Name.Contains('/'))
+            if ((elementSave is Gum.DataTypes.ScreenSave || elementSave is Gum.DataTypes.ComponentSave) && (elementSave.Name.Contains('/')))
             {
                 subNamespace = elementSave.Name.Substring(0, elementSave.Name.LastIndexOf('/')).Replace('/', '.');
             }
@@ -713,7 +713,10 @@ namespace DesktopGlForms.GumRuntimes.DefaultForms
                     // Not sure why this was returning CurrentVariableState, as that is the property name,
                     // not the property type, and here we want the property type.  
                     //variableType = elementSave.Name + "Runtime.CurrentVariableState";
-                    variableType = FlatRedBall.IO.FileManager.RemovePath(elementSave.Name) + "Runtime.VariableState";
+                    //variableType = FlatRedBall.IO.FileManager.RemovePath(elementSave.Name) + "Runtime.VariableState";
+                    // Actually we want to include the prefix for namespace:
+                    //variableType = FlatRedBall.IO.FileManager.RemovePath(elementSave.Name) + "Runtime.VariableState";
+                    variableType = elementSave.Name.Replace('/', '.').Replace('\\', '.') + "Runtime.VariableState";
                 }
                 else if( variableSave.Type.EndsWith("State"))
                 {
@@ -722,7 +725,7 @@ namespace DesktopGlForms.GumRuntimes.DefaultForms
                     if (foundCategory != null)
                     {
                         // categorized state enums are nullable
-                        variableType = $"{FlatRedBall.IO.FileManager.RemovePath(elementSave.Name)}Runtime.{foundCategory.Name}?" ;
+                        variableType = $"{elementSave.Name.Replace('/', '.').Replace('\\', '.')}Runtime.{foundCategory.Name}?" ;
                     }
                 }
                 else if(variableSave.IsState(elementSave))
@@ -731,7 +734,7 @@ namespace DesktopGlForms.GumRuntimes.DefaultForms
                     if (foundCategory != null)
                     {
                         // categorized state enums are nullable
-                        variableType = $"{FlatRedBall.IO.FileManager.RemovePath(elementSave.Name)}Runtime.{foundCategory.Name}?";
+                        variableType = $"{elementSave.Name.Replace('/', '.').Replace('\\', '.')}Runtime.{foundCategory.Name}?";
                     }
                 }
             }

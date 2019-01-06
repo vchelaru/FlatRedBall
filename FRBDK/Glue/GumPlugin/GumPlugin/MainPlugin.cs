@@ -230,7 +230,9 @@ namespace GumPlugin
             // - Fixed code generation including ContainedType property on Container object.
             // 1.6.0
             // - Added support for Polygon
-            get { return new Version(1, 6, 0, 0); }
+            // 1.6.0.1
+            // - Fixed codegen issue with states from components in folders.
+            get { return new Version(1, 6, 0, 1); }
         }
 
         #endregion

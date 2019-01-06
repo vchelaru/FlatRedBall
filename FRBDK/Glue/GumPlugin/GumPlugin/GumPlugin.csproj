@@ -554,6 +554,7 @@ copy "$(TargetDir)"\GumPlugin.pdb %25AppData%25\FRBDK\Plugins\GumPlugin\GumPlugi
 
 echo dll copies for Evan GumPlugin
 copy "$(TargetDir)"\GumPlugin.dll "$(SolutionDir)"\Glue\bin\Debug\Plugins\GumPlugin\GumPlugin.dll
+copy "$(TargetDir)"\GumPlugin.pdb "$(SolutionDir)"\Glue\bin\Debug\Plugins\GumPlugin\GumPlugin.pdb
 copy "$(TargetDir)"\Gum.DataTypes.dll "$(SolutionDir)"\Glue\bin\Debug\Plugins\GumPlugin\Gum.DataTypes.dll
 copy "$(TargetDir)"\GumRuntime.dll "$(SolutionDir)"\Glue\bin\Debug\Plugins\GumPlugin\GumRuntime.dll
 copy "$(TargetDir)"\FlatRedBall.InterpolationCore.dll "$(SolutionDir)"\Glue\bin\Debug\Plugins\GumPlugin\FlatRedBall.InterpolationCore.dll

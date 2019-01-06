@@ -2,9 +2,9 @@
     using System.Collections.Generic;
     using System.Linq;
     
-    namespace GlueTestProject.GumRuntimes.ComponentFolder
-{
-        public partial class InFolder1Runtime
+    namespace GlueTestProject.GumRuntimes.Folder1
+    {
+        public partial class FolderedEntity1Runtime
         {
             partial void CustomInitialize () 
             {
