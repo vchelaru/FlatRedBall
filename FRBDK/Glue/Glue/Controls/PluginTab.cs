@@ -13,9 +13,13 @@ namespace FlatRedBall.Glue.Controls
         public delegate void ClosedByUserDelegate(object sender);
         public event ClosedByUserDelegate ClosedByUser;
 
+        public event EventHandler RightClickCloseClicked;
+
         bool mDrawX = true;
 
         MenuItem moveToMenuItem;
+
+        MenuItem closeMenuItem;
 
         public TabControl LastTabControl { get; set; }
 
@@ -46,9 +50,32 @@ namespace FlatRedBall.Glue.Controls
 
             moveToMenuItem = this.ContextMenu.MenuItems.Add("MoveTo");
 
+            closeMenuItem = new MenuItem("Close");
+            closeMenuItem.Click += (not, used) => RightClickCloseClicked?.Invoke(this, null);
         }
 
-        public void RefreshMoveToCommands()
+        public void RefreshRightClickCommands()
+        {
+            RefreshCloseCommands();
+
+            RefreshMoveToCommands();
+        }
+
+        private void RefreshCloseCommands()
+        {
+            var alreadyContains = ContextMenu.MenuItems.Contains(closeMenuItem);
+            if(DrawX && alreadyContains == false)
+            {
+                ContextMenu.MenuItems.Add(closeMenuItem);
+            }
+            if(!DrawX && alreadyContains)
+            {
+                ContextMenu.MenuItems.Remove(closeMenuItem);
+            }
+
+        }
+
+        private void RefreshMoveToCommands()
         {
             moveToMenuItem.MenuItems.Clear();
             if (ParentTabControl != PluginManager.LeftTab)
@@ -117,8 +144,7 @@ namespace FlatRedBall.Glue.Controls
 
         public void CloseTabByUser()
         {
-            if (ClosedByUser != null)
-                ClosedByUser(this);
+            ClosedByUser?.Invoke(this);
         }
     }
 }

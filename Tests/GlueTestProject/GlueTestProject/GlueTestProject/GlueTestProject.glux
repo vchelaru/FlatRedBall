@@ -4094,6 +4094,11 @@
       <Name>Entities\AnimationChainEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>RotationZ</Member>
+            <ValueAsFloat>0.6806784</ValueAsFloat>
+          </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteObject</InstanceName>

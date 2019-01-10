@@ -1,0 +1,82 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Glue\Glue\Elements\AssetTypeInfoExtensionMethods.cs" Link="SaveClasses\AssetTypeInfoExtensionMethods.cs" />
+    <Compile Include="..\..\..\Glue\Glue\FormHelpers\StringConverters\AvailableAnimationChainsStringConverter.cs" Link="StringConverters\AvailableAnimationChainsStringConverter.cs" />
+    <Compile Include="..\..\..\Glue\Glue\SaveClasses\GlueSettingsSave.cs" Link="GlueSettingsSave.cs" />
+    <Compile Include="..\..\..\Glue\Glue\SaveClasses\INamedObjectContainerExtensionMethods.cs" Link="SaveClasses\INamedObjectContainerExtensionMethods.cs" />
+    <Compile Include="..\GluxViewManager\GluxManager.cs" Link="GluxManager.cs" />
+    <Compile Include="..\GluxViewManager\RuntimeObjects\ElementRuntime.cs" Link="RuntimeObjects\ElementRuntime.cs" />
+    <Compile Include="..\GluxViewManager\RuntimeObjects\ElementRuntime.NamedObject.cs" Link="RuntimeObjects\ElementRuntime.NamedObject.cs" />
+    <Compile Include="..\GluxViewManager\RuntimeObjects\ElementRuntimeHighlight.cs" Link="RuntimeObjects\ElementRuntimeHighlight.cs" />
+    <Compile Include="..\GluxViewManager\RuntimeObjects\File\EmitterListRuntimeFileManager.cs" Link="RuntimeObjects\File\EmitterListRuntimeFileManager.cs" />
+    <Compile Include="..\GluxViewManager\RuntimeObjects\File\NodeNetworkRuntimeFileManager.cs" Link="RuntimeObjects\File\NodeNetworkRuntimeFileManager.cs" />
+    <Compile Include="..\GluxViewManager\RuntimeObjects\File\RuntimeFileManager.cs" Link="RuntimeObjects\File\RuntimeFileManager.cs" />
+    <Compile Include="..\GluxViewManager\RuntimeObjects\File\SceneRuntimeFileManager.cs" Link="RuntimeObjects\File\SceneRuntimeFileManager.cs" />
+    <Compile Include="..\GluxViewManager\RuntimeObjects\File\ShapeCollectionRuntimeFileManager.cs" Link="RuntimeObjects\File\ShapeCollectionRuntimeFileManager.cs" />
+    <Compile Include="..\GluxViewManager\RuntimeObjects\File\SplineListRuntimeFileManager.cs" Link="RuntimeObjects\File\SplineListRuntimeFileManager.cs" />
+    <Compile Include="..\GluxViewManager\RuntimeObjects\Highlight.cs" Link="RuntimeObjects\Highlight.cs" />
+    <Compile Include="..\GluxViewManager\RuntimeObjects\NamedObjectManager.cs" Link="RuntimeObjects\NamedObjectManager.cs" />
+    <Compile Include="..\GluxViewManager\RuntimeObjects\ReferencedFileRuntimeList.cs" Link="RuntimeObjects\ReferencedFileRuntimeList.cs" />
+    <Compile Include="..\GluxViewManager\RuntimeObjects\ScalableElementRuntime.cs" Link="RuntimeObjects\ScalableElementRuntime.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Glue\CompareNetObjects\Compare-NET-Objects\Compare-NET-Objects.csproj" />
+    <ProjectReference Include="..\..\..\Glue\GluePropertyGridClasses\GluePropertyGridClasses.csproj" />
+    <ProjectReference Include="..\..\..\Glue\GlueSaveClasses\GlueSaveClasses.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Build">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Conversion.Core">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.Conversion.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Engine">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Framework">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Tasks.Core">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.Tasks.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Utilities.Core">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.Utilities.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Game">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Graphics">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Graphics.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Input.Touch">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Input.Touch.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Dataflow">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\System.Threading.Tasks.Dataflow.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6\System.Windows.Forms.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="StringConverters\" />
+    <Folder Include="RuntimeObjects\File\" />
+    <Folder Include="SaveClasses\" />
+  </ItemGroup>
+
+</Project>

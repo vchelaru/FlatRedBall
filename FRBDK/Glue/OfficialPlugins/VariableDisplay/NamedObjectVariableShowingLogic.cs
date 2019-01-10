@@ -18,6 +18,7 @@ using OfficialPlugins.VariableDisplay.Controls;
 using OfficialPlugins.VariableDisplay.Data;
 using GluePropertyGridClasses.StringConverters;
 using FlatRedBall.Glue.Managers;
+using WpfDataUi.Controls;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -88,7 +89,8 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        private static void CreateCategoriesAndVariables(NamedObjectSave instance, IElement container, List<MemberCategory> categories, AssetTypeInfo ati)
+        private static void CreateCategoriesAndVariables(NamedObjectSave instance, IElement container, 
+            List<MemberCategory> categories, AssetTypeInfo ati)
         {
             // May 13, 2017
             // I'd like to get
@@ -114,7 +116,7 @@ namespace OfficialPlugins.VariableDisplay
                         {
                             typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
 
-                            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati);
+                            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati, variableDefinition);
 
 
                             if (instanceMember != null)
@@ -162,7 +164,8 @@ namespace OfficialPlugins.VariableDisplay
 
         private static void AddForTypedMember(NamedObjectSave instance, IElement container, List<MemberCategory> categories, AssetTypeInfo ati, TypedMemberBase typedMember)
         {
-            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati);
+            var variableDefinition = ati.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
+            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati, variableDefinition);
 
             var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember);
 
@@ -405,7 +408,8 @@ namespace OfficialPlugins.VariableDisplay
             return categoryToAddTo;
         }
 
-        private static InstanceMember CreateInstanceMember(NamedObjectSave instance, IElement container, TypedMemberBase typedMember, AssetTypeInfo ati)
+        private static InstanceMember CreateInstanceMember(NamedObjectSave instance, IElement container, 
+            TypedMemberBase typedMember, AssetTypeInfo ati, VariableDefinition variableDefinition)
         {
             bool shouldBeSkipped = GetIfShouldBeSkipped(typedMember, instance, ati);
 
@@ -419,13 +423,6 @@ namespace OfficialPlugins.VariableDisplay
                 bool isObjectInFile = typeConverter is IObjectsInFileConverter;
 
                 var memberType = typedMember.MemberType;
-
-                VariableDefinition variableDefinition = null;
-
-                if (ati != null)
-                {
-                    variableDefinition = ati.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
-                }
 
                 if(isObjectInFile)
                 {
@@ -455,6 +452,13 @@ namespace OfficialPlugins.VariableDisplay
                     instanceMember = new DataGridItem();
 
 
+                }
+
+                if(variableDefinition?.Name == "RotationZ" && variableDefinition.Type == "float")
+                {
+                    instanceMember.PreferredDisplayer = typeof(AngleSelectorDisplay);
+                    instanceMember.PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.TypeToPushToInstance)] =
+                        AngleType.Radians;
                 }
 
                 instanceMember.FirstGridLength = new System.Windows.GridLength(140);

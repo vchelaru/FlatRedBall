@@ -47,7 +47,8 @@ namespace FlatRedBall.PlatformerPlugin
                 //         uses the last variable's max speed, so that the character doesn't keep sliding.
                 // 1.3.4 - Fixed bug where deceleration would sometimes not use the slowdown speed.
                 // 1.3.5 - Fixed possible crash when generating enums.
-                return new Version(1, 3, 5);
+                // 1.3.6 - New build with latest Glue to address any syntax changes to underlying libs
+                return new Version(1, 3, 6);
             }
         }
 

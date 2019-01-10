@@ -13,6 +13,7 @@ namespace FlatRedBall.Glue.Controls
          Browsable(true)]
         public bool IgnoreFirst { get; set; }
 
+
         public TabControlEx()
             : base()
         {
@@ -32,7 +33,20 @@ namespace FlatRedBall.Glue.Controls
                 var pluginTab = e.Control as PluginTab;
 
                 pluginTab.LastTabControl = this;
+                pluginTab.RightClickCloseClicked += HandleTabRightClickClose;
 
+            }
+        }
+
+        private void HandleTabRightClickClose(object sender, EventArgs e)
+        {
+            var control = sender as PluginTab;
+
+            var index = TabPages.IndexOf(control);
+
+            if(index > -1)
+            {
+                CloseTab(index);
             }
         }
 
@@ -122,7 +136,7 @@ namespace FlatRedBall.Glue.Controls
                         if (clickedTab)
                         {
                             this.SelectedIndex = i;
-                            pluginTab.RefreshMoveToCommands();
+                            pluginTab.RefreshRightClickCommands();
                             // not sure why we have to subtract the height, but if we don't then the menu
                             // seems to be offset by the height of the tab
                             pluginTab.ContextMenu.Show(pluginTab, new Point(e.X, e.Y - tabRect.Height));

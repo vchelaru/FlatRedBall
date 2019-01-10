@@ -70,6 +70,9 @@ namespace FlatRedBall.Glue.Plugins
         public InitializeTabDelegate InitializeTopTabHandler { get; protected set; }
         public InitializeMenuDelegate InitializeMenuHandler { get; protected set; }
 
+        /// <summary>
+        /// Action raised when a new Glue screen is created.
+        /// </summary>
         public Action<ScreenSave> ReactToNewScreenCreated { get; protected set; }
         public Action<EntitySave, AddEntityWindow> ReactToNewEntityCreated { get; protected set; }
 

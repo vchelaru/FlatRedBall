@@ -77,7 +77,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build">
-      <HintPath>..\Glue\Libraries\MSBuild\Current\Microsoft.Build.dll</HintPath>
+      <HintPath>..\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />

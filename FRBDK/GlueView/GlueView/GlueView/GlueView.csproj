@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GlueView</RootNamespace>
     <AssemblyName>GlueView</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
     <XnaPlatform>Windows</XnaPlatform>
     <XnaCrossPlatformGroupID>3072fb5f-5a35-494c-ae46-d001d7c36bef</XnaCrossPlatformGroupID>
@@ -99,18 +99,23 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\ICSharpCode.NRefactory.CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Build">
-      <HintPath>..\..\..\Glue\Glue\Libraries\MSBuild\Current\Microsoft.Build.dll</HintPath>
+    <Reference Include="Microsoft.Build, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Build.Engine">
-      <HintPath>..\..\..\Glue\Glue\Libraries\MSBuild\Current\Microsoft.Build.Engine.dll</HintPath>
+    <Reference Include="Microsoft.Build.Conversion.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.Conversion.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Build.Framework">
-      <HintPath>..\..\..\Glue\Glue\Libraries\MSBuild\Current\Microsoft.Build.Framework.dll</HintPath>
+    <Reference Include="Microsoft.Build.Engine, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Framework, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Tasks.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.Tasks.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Build.Utilities.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Glue\Glue\Libraries\MSBuild\Current\Microsoft.Build.Utilities.Core.dll</HintPath>
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.Utilities.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553">
@@ -162,11 +167,17 @@
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\System.Threading.Tasks.Dataflow.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml">
@@ -373,7 +384,6 @@
     <Content Include="Libraries\ICSharpCode.NRefactory.xml" />
     <Content Include="Libraries\NCalc.dll" />
     <Content Include="Libraries\StaffDotNet.CollapsiblePanel.dll" />
-    <None Include="App1.config" />
     <None Include="packages.config" />
     <None Include="Resources\titleBackground.jpg" />
     <None Include="Resources\ExpandIcon.jpg" />
@@ -477,7 +487,7 @@
       <Name>CollapsibleControl</Name>
     </ProjectReference>
     <ProjectReference Include="..\GluxViewManager\GluxViewManager.csproj">
-      <Project>{6CFA6ADB-1FFD-4DD7-AEF8-090A2B86A620}</Project>
+      <Project>{6cfa6adb-1ffd-4dd7-aef8-090a2b86a620}</Project>
       <Name>GluxViewManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\InteractiveInterface\InteractiveInterface.csproj">

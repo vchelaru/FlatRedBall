@@ -392,18 +392,18 @@ namespace FlatRedBall.Glue
                         {
                             // We want to load the file at this level and pass the result down:
                             ReferencedFileSave rfs = GetReferencedFileFromName(cvino.Value);
-                            object fileRuntime = null;
+                            LoadedFile loadedFile = null;
 
                             if (rfs == null)
                             {
-                                fileRuntime = null;
+                                loadedFile = null;
                             }
                             else
                             {
-                                fileRuntime = LoadReferencedFileSave(rfs, true, this.AssociatedIElement);
+                                loadedFile = LoadReferencedFileSave(rfs, true, this.AssociatedIElement);
                             }
 
-                            customVariable.DefaultValue = fileRuntime;
+                            customVariable.DefaultValue = loadedFile?.RuntimeObject;
                         }
                         if (customVariable.DefaultValue is float && customVariable.SourceObjectProperty == "Z" &&
                             newlyCreatedElementRuntime is PositionedObject && ((PositionedObject)newlyCreatedElementRuntime).Parent == Camera.Main)
