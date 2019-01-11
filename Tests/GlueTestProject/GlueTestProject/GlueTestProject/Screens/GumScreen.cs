@@ -86,6 +86,32 @@ namespace GlueTestProject.Screens
             TestWrappingChangingContainerHeight();
 
             TestAddChildSetsParent();
+
+            TestTextWidth();
+        }
+
+        private void TestTextWidth()
+        {
+            var text = new TextRuntime();
+            text.AddToManagers();
+
+            text.Width = 0;
+            text.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToChildren;
+
+            text.Text = null;
+            text.GetAbsoluteWidth().ShouldBe(0, "because this has no text and its width is based on its 'children' which means its contained text");
+
+            text.Text = "Now this is some longer text";
+            text.GetAbsoluteWidth().ShouldBeGreaterThan(1, "because setting the text should automatically make this wider");
+
+            var widthFromText = text.GetAbsoluteWidth();
+
+            text.Width = 10;
+
+            var newTextWidth = text.GetAbsoluteWidth();
+            newTextWidth.ShouldBe(widthFromText + 10, "because the text should be 10 units larger than its children, which is the measured width");
+
+            text.RemoveFromManagers();
         }
 
         private void TestAddChildSetsParent()

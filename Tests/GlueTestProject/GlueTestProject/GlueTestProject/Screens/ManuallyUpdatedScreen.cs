@@ -209,10 +209,11 @@ namespace GlueTestProject.Screens
 
             }
 
-            if(this.ActivityCallCount == 13)
+            const int numberOfFrames = 14;
+            if(this.ActivityCallCount == numberOfFrames)
             {
                 // UpdateDependencies is only called when there is a draw, and multiple draws may be skipped if fps is low enough
-                TestEntityInListAttachedToObject();
+                TestEntityInListAttachedToObject(numberOfFrames);
 
                 IsActivityFinished = true;
             }
@@ -317,15 +318,15 @@ namespace GlueTestProject.Screens
         }
 
 
-        private void TestEntityInListAttachedToObject()
+        private void TestEntityInListAttachedToObject(int numberOfFrames)
         {
             var item = ManuallyUpdateAllInCodeList[0];
 
             item.Parent.ShouldNotBe(null);
 
             item.X.ShouldBeGreaterThan(item.Parent.X, "because RelativeXVelocity is applied, and the object is attached");
-            item.RelativeX.ShouldBeGreaterThan(11.9f, "because RelativeXVelocity should be applied for items in lists.");
-            item.RelativeX.ShouldBeLessThan(12.1f, "because RelativeXVelocity should be applied for items in lists.");
+            item.RelativeX.ShouldBeGreaterThan(numberOfFrames - 1.1f, "because RelativeXVelocity should be applied for items in lists.");
+            item.RelativeX.ShouldBeLessThan(numberOfFrames - .9f, "because RelativeXVelocity should be applied for items in lists.");
         }
 
 

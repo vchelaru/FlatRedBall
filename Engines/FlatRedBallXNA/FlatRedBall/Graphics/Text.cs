@@ -2,17 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-#if FRB_MDX
-using Microsoft.DirectX.Direct3D;
-using Vector3 = Microsoft.DirectX.Vector3;
-using Matrix = Microsoft.DirectX.Matrix;
-using Point = System.Drawing.Point;
-#else
 using FlatRedBall.Gui;
 using Point = Microsoft.Xna.Framework.Point;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-#endif
 
 using FlatRedBall.Math.Geometry;
 
@@ -40,10 +33,7 @@ namespace FlatRedBall.Graphics
     }
 
     public partial class Text : PositionedObject, IColorable, IReadOnlyScalable,
-        ICursorSelectable, IEquatable<Text>, IVisible
-#if FRB_XNA
-, IMouseOver
-#endif
+        ICursorSelectable, IEquatable<Text>, IVisible, IMouseOver
     {
         #region Fields
 
