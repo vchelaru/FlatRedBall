@@ -138,7 +138,7 @@ namespace FlatRedBall.Forms.Controls
 
         private void UpdateCarrotIndexFromCursor()
         {
-            var cursorScreenX = GuiManager.Cursor.ScreenX;
+            var cursorScreenX = GuiManager.Cursor.GumX();
             var leftOfText = this.textComponent.AbsoluteX;
             var offset = cursorScreenX - leftOfText;
 
