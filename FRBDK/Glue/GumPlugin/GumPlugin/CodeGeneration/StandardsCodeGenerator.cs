@@ -30,7 +30,16 @@ namespace GumPlugin.CodeGeneration
 
         public StandardsCodeGenerator()
         {
-            variablesToCallLayoutAfter.Add("Text");
+            mStandardSetterReplacements.Add("Text", (codeBlock) =>
+            {
+                codeBlock.If("this.WidthUnits == Gum.DataTypes.DimensionUnitType.RelativeToChildren")
+                    .Line("// make it have no line wrap width before assignign the text:")
+                    .Line("ContainedText.Width = 0;");
+
+                codeBlock.Line("ContainedText.RawText = value;");
+                codeBlock.Line("UpdateLayout();");
+            });
+
 
             // This says what the property name is and what the contained variable name is.
             // For example:
@@ -266,7 +275,7 @@ namespace GumPlugin.CodeGeneration
 
             #endregion
 
-            ICodeBlock property = currentBlock.Property("public " + variableType, variable.Name.Replace(" ", ""));
+            ICodeBlock propertyCodeBlock = currentBlock.Property("public " + variableType, variable.Name.Replace(" ", ""));
 
 
             string variableName = variable.Name;
@@ -277,11 +286,11 @@ namespace GumPlugin.CodeGeneration
 
             string whatToGetOrSet = containedGraphicalObjectName + "." + variableName.Replace(" ", "");
 
-            GenerateGetter(containedGraphicalObjectName, variable, property, variableName, whatToGetOrSet, elementSave);
+            GenerateGetter(containedGraphicalObjectName, variable, propertyCodeBlock, variableName, whatToGetOrSet, elementSave);
 
             if(generateSetter)
             {
-                GenerateSetter(containedGraphicalObjectName, variable, property, variableName, whatToGetOrSet, elementSave);
+                GenerateSetter(containedGraphicalObjectName, variable, propertyCodeBlock, variableName, whatToGetOrSet, elementSave);
             }
         }
 
@@ -291,9 +300,9 @@ namespace GumPlugin.CodeGeneration
             bool wasHandled = TryHandleCustomSetter(variable, elementSave, setter);
             if (!wasHandled)
             {
-                if (mStandardSetterReplacements.ContainsKey(variableName))
+                if (mStandardSetterReplacements.ContainsKey(variable.Name))
                 {
-                    mStandardSetterReplacements[propertyName](setter);
+                    mStandardSetterReplacements[variable.Name](setter);
                 }
                 else
                 {

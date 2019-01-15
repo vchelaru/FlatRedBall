@@ -10,7 +10,6 @@ namespace FlatRedBall.Content.Scene
     [XmlRoot("SpriteEditorScene")]
     public partial class SceneSave : SpriteEditorScene
     {
-#if !FRB_MDX
         internal static int AsInt(System.Xml.Linq.XElement element)
         {
             return int.Parse(element.Value, CultureInfo.InvariantCulture);
@@ -27,7 +26,6 @@ namespace FlatRedBall.Content.Scene
                 return float.Parse(subElement.Value, CultureInfo.InvariantCulture);
             }
         }
-#endif
 
         public static void ValidateDependencies(List<SpriteSave> spriteSaves,
             SpriteList spritesToValidate)

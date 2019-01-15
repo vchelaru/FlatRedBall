@@ -47,7 +47,6 @@ using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 
 using Color = Microsoft.Xna.Framework.Color;
-using Microsoft.Xna.Framework.Media;
 using FlatRedBall.Content.ContentLoaders;
 using FlatRedBall.Performance.Measurement;
 

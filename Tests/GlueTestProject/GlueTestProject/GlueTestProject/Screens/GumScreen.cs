@@ -111,6 +111,15 @@ namespace GlueTestProject.Screens
             var newTextWidth = text.GetAbsoluteWidth();
             newTextWidth.ShouldBe(widthFromText + 10, "because the text should be 10 units larger than its children, which is the measured width");
 
+            text.Text = "";
+            text.GetAbsoluteWidth().ShouldBe(10, "because this has 10 + length of text, but there is no text");
+
+            text.Width = 9;
+            text.Text = "This is some much longer text. It should not wrap because the width units is relative to children.";
+
+            var widthAt9Plus = text.GetAbsoluteWidth();
+            widthAt9Plus.ShouldBeGreaterThan(400, "because this is some really long text with a width units of RelativeToChildren");
+
             text.RemoveFromManagers();
         }
 

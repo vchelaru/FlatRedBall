@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("FlatRedBall")]
 [assembly: AssemblyProduct("FlatRedBall XNA Game Engine")]
-[assembly: AssemblyDescription("FlatRedBall XNA Game Engine")]
+[assembly: AssemblyDescription("FlatRedBall Game Engine (MonoGame DesktopGL)")]
 [assembly: AssemblyCompany("FlatRedBall")]
-[assembly: AssemblyCopyright("Copyright ©  2006 - 2016")]
+[assembly: AssemblyCopyright("Copyright ©  2006 - 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -37,4 +37,6 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("2016.3.17.461")]
+[assembly: AssemblyVersion("2019.1.13.461")]
+[assembly: AssemblyFileVersion("2019.1.13.461")]
+
