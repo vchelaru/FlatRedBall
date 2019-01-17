@@ -232,7 +232,10 @@ namespace GumPlugin
             // - Added support for Polygon
             // 1.6.0.1
             // - Fixed codegen issue with states from components in folders.
-            get { return new Version(1, 6, 0, 1); }
+            // 1.6.0.2
+            // - Fixed a bug where drag+dropping an object on Events would not show
+            //   children instance events if the parent container was inheriting its ExposeChildrenEvents value
+            get { return new Version(1, 6, 0, 2); }
         }
 
         #endregion

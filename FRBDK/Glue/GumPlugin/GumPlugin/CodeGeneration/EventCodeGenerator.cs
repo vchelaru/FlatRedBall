@@ -56,22 +56,21 @@ namespace GumPlugin.CodeGeneration
 
         public List<EventSave> GetExposedChildrenEvents(ElementSave elementSave)
         {
-            var defaultState = elementSave.DefaultState;
+            var exposeEventsAsObject = elementSave.GetValueFromThisOrBase("ExposeChildrenEvents");
+
+            bool exposeChildrenEvents = false;
+            if (exposeEventsAsObject is bool)
+            {
+                exposeChildrenEvents = (bool)elementSave.GetValueFromThisOrBase("ExposeChildrenEvents");
+            }
 
             List<EventSave> exposedChildrenEvents = new List<EventSave>();
 
-            if (defaultState != null)
+
+            if (exposeChildrenEvents)
             {
-                var exposeChildrenEventsAsObject = defaultState.GetValue("ExposeChildrenEvents");
-
-                bool exposeChildrenEvents = false;
-
-                if (exposeChildrenEventsAsObject != null)
-                {
-                    exposeChildrenEvents = (bool)exposeChildrenEventsAsObject;
-                }
-
-                if (exposeChildrenEvents)
+                var defaultState = elementSave.DefaultState;
+                if (defaultState != null)
                 {
                     foreach (var child in elementSave.Instances)
                     {
@@ -87,6 +86,7 @@ namespace GumPlugin.CodeGeneration
                         }
                     }
                 }
+
             }
 
             return exposedChildrenEvents;

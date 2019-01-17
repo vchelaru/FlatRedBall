@@ -20,6 +20,7 @@ namespace FlatRedBall.Forms.Controls
                 }
             }
         }
+
         protected override void ReactToVisualChanged()
         {
             base.ReactToVisualChanged();
@@ -37,8 +38,6 @@ namespace FlatRedBall.Forms.Controls
 
         }
 
-
-
         private void UpdateToOrientation()
         {
             if(Visual != null)
@@ -55,7 +54,5 @@ namespace FlatRedBall.Forms.Controls
                 }
             }
         }
-
-        
     }
 }

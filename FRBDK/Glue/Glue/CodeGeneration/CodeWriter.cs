@@ -1532,7 +1532,8 @@ namespace FlatRedBallAddOns.Entities
 
                 if (index == -1)
                 {
-                    throw new CodeParseException("Could not find FlatRedBall.Initialize in the Game file.  Did you delete this?  Glue requires this to be in projects");
+                    throw new CodeParseException("Could not find FlatRedBall.Initialize in the Game file.  Did you delete this?  " + 
+                        "Glue requires this call to be in the Game class. You must manually add this call and reload Glue.");
                 }
                 contents = contents.Insert(index, lineToReplaceWith + Environment.NewLine);
             }

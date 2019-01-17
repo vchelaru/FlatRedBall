@@ -1,4 +1,6 @@
 ﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.VSHelpers.Projects;
 using Gum.DataTypes.Behaviors;
 using GumPlugin.DataGeneration;
 using GumPlugin.Managers;
@@ -60,12 +62,41 @@ namespace GumPlugin.Controls
 
         private void HandleAddAllForms(object sender, RoutedEventArgs e)
         {
-            var viewModel = DataContext as GumViewModel;
+            var project = GlueState.Self.CurrentMainProject;
+            var error = GetWhyAddingMonoGameIsNotSupported(project);
 
-            viewModel.IncludeFormsInComponents = true;
-            viewModel.IncludeComponentToFormsAssociation = true;
-            HandleGenerateBehaviors(this, null);
-            HandleAddFormsComponentsClick(this, null);
+            if(!string.IsNullOrEmpty(error))
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox(error);
+            }
+            else
+            {
+                var viewModel = DataContext as GumViewModel;
+
+                viewModel.IncludeFormsInComponents = true;
+                viewModel.IncludeComponentToFormsAssociation = true;
+                HandleGenerateBehaviors(this, null);
+                HandleAddFormsComponentsClick(this, null);
+            }
+        }
+
+        private string GetWhyAddingMonoGameIsNotSupported(ProjectBase project)
+        {
+            string errorMessage = null;
+
+            if (project == null)
+            {
+                errorMessage = "You must load a project before adding Gum";
+            }
+            else if (project is IosMonogameProject)
+            {
+                errorMessage = "FlatRedBall.Forms is not yet supported on iOS. Complain in chat!";
+            }
+            else if (project is Xna4Project)
+            {
+                errorMessage = "FlatRedBall.Forms is not supported for FlatRedBall XNA projects.";
+            }
+            return errorMessage;
         }
 
         private void HandleGenerateBehaviors(object sender, RoutedEventArgs e)
