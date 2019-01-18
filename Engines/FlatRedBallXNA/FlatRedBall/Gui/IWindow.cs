@@ -10,16 +10,25 @@ using FlatRedBall.Graphics;
 
 namespace FlatRedBall.Gui
 {
+
     public interface IWindow : INameable, IClickable, ILayered, IVisible
     {
 
         #region Events
 
+        /// <summary>
+        /// An event raised when the control is clicked (the user pushes and releases on the window)
+        /// </summary>
         event WindowEvent Click;
         event WindowEvent ClickNoSlide;
         event WindowEvent SlideOnClick;
         event WindowEvent Push;
         event WindowEvent DragOver;
+
+        /// <summary>
+        /// An event raised when the cursor moves onto the control for the first time. 
+        /// This is raised only once until the user moves the cursor off and then back on.
+        /// </summary>
         event WindowEvent RollOn;
         event WindowEvent RollOff;
         event WindowEvent RollOver;
