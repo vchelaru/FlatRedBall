@@ -78,7 +78,12 @@ namespace FlatRedBall.Graphics.Texture
             this.mData = data;
         }
 
-
+        /// <summary>
+        /// Constructs a new ImageData object of the given width and height with the argument data stored as a byte array.
+        /// </summary>
+        /// <param name="width">Width of the image data</param>
+        /// <param name="height">Height of the image data</param>
+        /// <param name="data">Data as a byte array</param>
         public ImageData(int width, int height, byte[] data)
         {
             this.width = width;

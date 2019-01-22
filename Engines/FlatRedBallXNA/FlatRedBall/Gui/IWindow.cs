@@ -17,21 +17,44 @@ namespace FlatRedBall.Gui
         #region Events
 
         /// <summary>
-        /// An event raised when the control is clicked (the user pushes and releases on the window)
+        /// An event raised when the window is clicked (the user pushes and releases on the window)
         /// </summary>
         event WindowEvent Click;
+        /// <summary>
+        /// An event raised when the window is pushed and released without moving.
+        /// </summary>
         event WindowEvent ClickNoSlide;
+        /// <summary>
+        /// An event raised when the cursor is pushed when not on the window, but then released when it is on the window. 
+        /// This can be used as a drag+drop event.
+        /// </summary>
         event WindowEvent SlideOnClick;
+        /// <summary>
+        /// An event raised when the cursor is pushed (not down last frame, is on this frame)
+        /// </summary>
         event WindowEvent Push;
+        /// <summary>
+        /// Event raied when the cursor is pressed and moves over the window.
+        /// </summary>
         event WindowEvent DragOver;
 
         /// <summary>
-        /// An event raised when the cursor moves onto the control for the first time. 
+        /// An event raised when the cursor moves onto the window for the first time. 
         /// This is raised only once until the user moves the cursor off and then back on.
         /// </summary>
         event WindowEvent RollOn;
+        /// <summary>
+        /// An event raised when the cursor moves off of the window 
+        /// </summary>
         event WindowEvent RollOff;
+        /// <summary>
+        /// An event raised when the cursor moves while it is over the window. This is raised every frame that
+        /// the cursor moves and is over the window.
+        /// </summary>
         event WindowEvent RollOver;
+        /// <summary>
+        /// Event raised when the Enabled property changes on the window.
+        /// </summary>
         event WindowEvent EnabledChange;
 
         #endregion

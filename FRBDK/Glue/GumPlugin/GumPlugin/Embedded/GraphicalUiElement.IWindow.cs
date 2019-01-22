@@ -632,7 +632,9 @@ namespace Gum.Wireframe
             MoveToFrbLayer(layer, gumLayer);
         }
 
-
+        /// <summary>
+        /// Completely removes the GraphicalUiElement from rendering managers, UI 
+        /// </summary>
         public void Destroy()
         {
             this.Parent = null;
