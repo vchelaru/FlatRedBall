@@ -14,6 +14,11 @@ namespace FlatRedBall.Glue.RuntimeObjects.File
         public ReferencedFileSave ReferencedFileSave { get; set; }
         public FilePath FilePath { get; set; }
         public object RuntimeObject { get; set; }
+
+        public override string ToString()
+        {
+            return ReferencedFileSave?.Name;
+        }
     }
 
     public abstract class RuntimeFileManager

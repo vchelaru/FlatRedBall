@@ -24,6 +24,9 @@ namespace GumPlugin.CodeGeneration
 
         List<string> mVariableNamesToSkipForProperties = new List<string>();
 
+        // These are new variables that don't appear in the base definitioin of the standard element, but we support in code for convenience
+        List<VariableSave> variableNamesToAddForProperties = new List<VariableSave>();
+
         #endregion
 
         #region Constructor
@@ -115,9 +118,19 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("Wraps Children");
 
             // properties to skip because they're handled in the GUE
-            mVariableNamesToSkipForProperties.Add("Rotation");
-            mVariableNamesToSkipForProperties.Add("Wrap");
+            {
+                mVariableNamesToSkipForProperties.Add("Rotation");
+                mVariableNamesToSkipForProperties.Add("Wrap");
+            }
 
+            variableNamesToAddForProperties.Add(new VariableSave
+            {
+                IsFile = false,
+                IsFont = false,
+
+                Type = "Microsoft.Xna.Framework.Color",
+                Name = "Color"
+            });
 
         }
 
@@ -181,6 +194,11 @@ namespace GumPlugin.CodeGeneration
 
                         GenerateVariable(currentBlock, containedGraphicalObjectName, variable, standardElementSave);
                     }
+                }
+
+                foreach(var additionalVariable in variableNamesToAddForProperties)
+                {
+                    GenerateVariable(currentBlock, containedGraphicalObjectName, additionalVariable, standardElementSave);
                 }
             }
 

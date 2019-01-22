@@ -32,8 +32,6 @@ namespace TiledPlugin.RuntimeObjects
 
         protected override object Load(FlatRedBall.Glue.IO.FilePath fileName)
         {
-            FlatRedBall.Glue.SaveClasses.ReferencedFileSave rfs = null;
-
             bool shouldCreate = fileName.Extension == "tmx";
 
             if (shouldCreate && fileName.Exists())

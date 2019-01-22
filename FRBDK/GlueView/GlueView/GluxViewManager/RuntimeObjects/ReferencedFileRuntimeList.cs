@@ -209,7 +209,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
             }
         }
 
-        private object LoadRfsAndAddToLists(ReferencedFileSave r, IElement container)
+        private LoadedFile LoadRfsAndAddToLists(ReferencedFileSave r, IElement container)
         {
             LoadedFile loadedFile = null;
             bool isAlreadyAdded = false;
@@ -315,7 +315,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
             }
 
 
-            return loadedFile?.RuntimeObject;
+            return loadedFile;
         }
 
         private object LoadSplx(ReferencedFileSave r)
@@ -414,25 +414,9 @@ namespace FlatRedBall.Glue.RuntimeObjects
             if(shouldLoad)
             {
 
-                object runtimeObject = LoadRfsAndAddToLists(r, container);
+                var loadedFile = LoadRfsAndAddToLists(r, container);
 
-                if (isBeingAccessed || runtimeObject != null)
-                {
-                    var loadedFile = new LoadedFile();
-                    loadedFile.FilePath = fileToLoad;
-                    loadedFile.ReferencedFileSave = r;
-                    loadedFile.RuntimeObject = runtimeObject;
-
-                    mAddedRfses.Add(loadedFile);
-                    mLoadedRfses.Add(loadedFile);
-
-                    return loadedFile;
-                }
-                else
-                {
-                    // It's null, but not being accessed so that's okay
-                    return null;
-                }
+                return loadedFile;
             }
             else
             {
