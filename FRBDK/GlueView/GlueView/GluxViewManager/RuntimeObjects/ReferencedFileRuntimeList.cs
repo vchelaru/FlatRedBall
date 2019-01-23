@@ -244,8 +244,11 @@ namespace FlatRedBall.Glue.RuntimeObjects
                         {
                             LoadedRfses.Add(loadedFile);
 
-                            manager.AddToManagers(loadedFile);
-                            mAddedRfses.Add(loadedFile);
+                            if (r.AddToManagers)
+                            {
+                                manager.AddToManagers(loadedFile);
+                                mAddedRfses.Add(loadedFile);
+                            }
                         }
                         break;
                     }

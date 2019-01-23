@@ -144,7 +144,7 @@ namespace OfficialPlugins.VariableDisplay
                     }
                 }
             }
-            else
+            else if(ati != null)
             {
                 for (int i = 0; i < instance.TypedMembers.Count; i++)
                 {

@@ -489,7 +489,7 @@ namespace FlatRedBall.TileGraphics
                     tilesetImageFile = tmxDirectory + tileset.SourceDirectory + tileset.Images[0].Source;
                 }
 
-                var texture = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(tilesetImageFile);
+                var texture = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(tilesetImageFile, contentManager);
 
                 foreach (var tile in tileset.Tiles.Where(item => item.Animation != null && item.Animation.Frames.Count != 0))
                 {

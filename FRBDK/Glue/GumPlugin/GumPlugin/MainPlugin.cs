@@ -235,7 +235,9 @@ namespace GumPlugin
             // 1.6.0.2
             // - Fixed a bug where drag+dropping an object on Events would not show
             //   children instance events if the parent container was inheriting its ExposeChildrenEvents value
-            get { return new Version(1, 6, 0, 2); }
+            // 1.6.1.0
+            // - Added Color property to generated standard elements.
+            get { return new Version(1, 6, 1, 0); }
         }
 
         #endregion

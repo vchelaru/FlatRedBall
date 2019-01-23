@@ -1244,6 +1244,10 @@ namespace FlatRedBall
             contentManager.UnloadAsset<T>(assetToUnload);
         }
 
+        /// <summary>
+        /// Unloads all content contained in the content manager with name matching the parameter contentManagerName.
+        /// </summary>
+        /// <param name="contentManagerName">The content manager to remove.</param>
         public static void Unload(string contentManagerName)
         {
             if (contentManagerName == FlatRedBallServices.GlobalContentManager)

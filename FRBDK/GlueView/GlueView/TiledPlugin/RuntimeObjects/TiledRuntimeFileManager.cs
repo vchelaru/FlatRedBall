@@ -3,6 +3,7 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.RuntimeObjects.File;
 using FlatRedBall.TileGraphics;
 using GlueView.Facades;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -101,7 +102,7 @@ namespace TiledPlugin.RuntimeObjects
         public override bool TryHandleRefreshFile(FilePath fileName, List<LoadedFile> allFileObjects)
         {
             var extension = fileName.Extension;
-            var toReturn = false;
+            var wasHandled = false;
             if(extension == "tmx")
             {
                 foreach(var item in allFileObjects.Where(item =>item.FilePath == fileName))
@@ -111,11 +112,45 @@ namespace TiledPlugin.RuntimeObjects
                     newMap?.AddToManagers();
                     item.RuntimeObject = Load(fileName);
 
-                    toReturn = true;
+                    wasHandled = true;
+                }
+            }
+            else if(extension == "png")
+            {
+                var mapLayersReferencingTexture = new List<MapDrawableBatch>();
+
+                // see if this is referenced by any of the existing TMX's
+                foreach(var tmxLoadedFile in allFileObjects.Where(item =>item.FilePath.Extension == "tmx"))
+                {
+                    var runtimeObject = tmxLoadedFile.RuntimeObject as LayeredTileMap;
+
+                    foreach(var mapLayer in runtimeObject.MapLayers)
+                    {
+                        var referencesTexture = mapLayer.Texture.Name == fileName;
+
+                        if(referencesTexture)
+                        {
+                            mapLayersReferencingTexture.Add(mapLayer);
+                        }
+                    }
+                }
+
+                if(mapLayersReferencingTexture.Count > 0)
+                {
+                    FlatRedBallServices.Unload(nameof(TiledRuntimeFileManager));
+
+                    var newTexture = FlatRedBallServices.Load<Texture2D>(fileName.FullPath, nameof(TiledRuntimeFileManager));
+                    // unload the content manager so that we can re-create the files:
+                    foreach(var layer in mapLayersReferencingTexture)
+                    {
+                        layer.Texture = newTexture;
+                    }
+                    // even though we may have handled it, we don't want to return true because
+                    // other plugins may reload this file too
                 }
             }
 
-            return toReturn;
+            return wasHandled;
         }
 
         public override object CreateEmptyObjectMatchingArgumentType(object originalObject)
