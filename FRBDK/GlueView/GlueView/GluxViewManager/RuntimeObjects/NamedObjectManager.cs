@@ -14,6 +14,7 @@ using FlatRedBall.AI.Pathfinding;
 using FlatRedBall.Graphics.Particle;
 using FlatRedBall.Math.Splines;
 using FlatRedBall.Glue.RuntimeObjects.File;
+using FlatRedBall.Glue.IO;
 
 namespace FlatRedBall.Glue.RuntimeObjects
 {
@@ -46,9 +47,11 @@ namespace FlatRedBall.Glue.RuntimeObjects
             int length = namedObjectSave.SourceName.Length;
             // need to use the last index of ( in case the name has a "(" in it)
             //int indexOfType = namedObjectSave.SourceName.IndexOf("(");
-            int indexOfType = namedObjectSave.SourceName.LastIndexOf("(");
+            // add 1 to not include the opening paren
+            int indexOfType = namedObjectSave.SourceName.LastIndexOf("(") + 1;
 
-            string objectType = namedObjectSave.SourceName.Substring(indexOfType, length - (indexOfType));
+            // subtract 1 to remove the last paren
+            string objectType = namedObjectSave.SourceName.Substring(indexOfType, length - (indexOfType) - 1);
             string sourceFile = namedObjectSave.SourceFile;
 
             LoadedFile toReturn = null;
@@ -136,7 +139,6 @@ namespace FlatRedBall.Glue.RuntimeObjects
             }
 
             return null;
-
         }
 
         private static void AddObjectToManagers(object loadedObject)
@@ -210,7 +212,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
 
             switch (objectType)
             {
-                case "(Scene)":
+                case "Scene":
                     {
                         Scene scene = objectJustLoaded as Scene;
 
@@ -243,7 +245,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                     break;
 
 
-                case "(Sprite)":
+                case "Sprite":
                     {
                         Sprite loadedSprite = null;
                         Scene scene = objectJustLoaded as Scene;
@@ -274,7 +276,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                     break;
 
 
-                case "(SpriteFrame)":
+                case "SpriteFrame":
                     {
                         Scene scene = objectJustLoaded as Scene;
                         SpriteFrame loadedSpriteFrame = scene.SpriteFrames.FindByName(objectName);
@@ -291,7 +293,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                     }
                     break;
 
-                case "(SpriteGrid)":
+                case "SpriteGrid":
                     {
                         Scene scene = objectJustLoaded as Scene;
                         SpriteGrid spriteGrid = null;
@@ -321,7 +323,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                     }
                     break;
                     
-                case "(Text)":
+                case "Text":
                     {
                         Scene scene = objectJustLoaded as Scene;
 
@@ -345,7 +347,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                         toReturn = loadedText;
                     }
                     break;
-                case "(ShapeCollection)":
+                case "ShapeCollection":
                     {
                         ShapeCollection shapeCollection = objectJustLoaded as ShapeCollection;
 
@@ -369,7 +371,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                     }
                     break;
 
-                case "(AxisAlignedCube)":
+                case "AxisAlignedCube":
                     {
                         ShapeCollection shapeCollection = objectJustLoaded as ShapeCollection;
                         AxisAlignedCube loadedAxisAlignedCube = shapeCollection.AxisAlignedCubes.FindByName(objectName);
@@ -387,7 +389,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                     break;
 
 
-                case "(AxisAlignedRectangle)":
+                case "AxisAlignedRectangle":
                     {
                         ShapeCollection shapeCollection = objectJustLoaded as ShapeCollection;
                         AxisAlignedRectangle loadedAxisAlignedRectangle = shapeCollection.AxisAlignedRectangles.FindByName(objectName);
@@ -404,7 +406,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                     }
                     break;
 
-                case "(Circle)":
+                case "Circle":
                     {
                         ShapeCollection shapeCollection = objectJustLoaded as ShapeCollection;
                         Circle loadedCircle = shapeCollection.Circles.FindByName(objectName);
@@ -421,7 +423,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                     }
                     break;
 
-                case "(Polygon)":
+                case "Polygon":
                     {
                         ShapeCollection shapeCollection = objectJustLoaded as ShapeCollection;
                         Polygon loadedPolygon = shapeCollection.Polygons.FindByName(objectName);
@@ -438,7 +440,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                     }
                     break;
 
-                case "(Sphere)":
+                case "Sphere":
                     {
                         ShapeCollection shapeCollection = objectJustLoaded as ShapeCollection;
                         Sphere loadedSphere = shapeCollection.Spheres.FindByName(objectName);
@@ -455,7 +457,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                     }
                     break;
 
-                case "(Capsule2D)":
+                case "Capsule2D":
                     {
                         ShapeCollection shapeCollection = objectJustLoaded as ShapeCollection;
                         Capsule2D loadedCapsule2D = shapeCollection.Capsule2Ds.FindByName(objectName);
@@ -471,7 +473,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                         toReturn = loadedCapsule2D;
                     }
                     break;
-                case "(Emitter)":
+                case "Emitter":
                     {
                         EmitterList emitterList = objectJustLoaded as EmitterList;
                         Emitter loadedEmitter = emitterList.FindByName(objectName);
@@ -485,7 +487,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                         toReturn = loadedEmitter;
                     }
                     break;
-                case "(EmitterList)":
+                case "EmitterList":
                     {
                         EmitterList emitterList = objectJustLoaded as EmitterList;
 
@@ -502,7 +504,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                         toReturn = emitterList;
                     }
                     break;
-                case "(NodeNetwork)":
+                case "NodeNetwork":
                     {
                         NodeNetwork nodeNetwork = objectJustLoaded as NodeNetwork;
 
@@ -521,7 +523,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                         toReturn = nodeNetwork;
                     }
                     break;
-                case "(SplineList)":
+                case "SplineList":
                     {
                         SplineList splineList = objectJustLoaded as SplineList;
 
@@ -555,7 +557,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                     }
                     break;
 
-                case "(Spline)":
+                case "Spline":
                     {
                         SplineList splineList = objectJustLoaded as SplineList;
                         Spline spline = splineList.FirstOrDefault(item=>item.Name == objectName);
@@ -575,6 +577,20 @@ namespace FlatRedBall.Glue.RuntimeObjects
                         toReturn = spline;
                     }
                     break;
+            }
+
+            if(toReturn == null)
+            {
+                foreach(var manager in ReferencedFileRuntimeList.FileManagers)
+                {
+                    var objectFromFile = manager.TryGetObjectFromFile(elementRuntime.ReferencedFileRuntimeList.LoadedRfses, rfs, objectType, objectName);
+
+                    if(objectFromFile != null)
+                    {
+                        toReturn = objectFromFile;
+                        break;
+                    }
+                }
             }
 
 

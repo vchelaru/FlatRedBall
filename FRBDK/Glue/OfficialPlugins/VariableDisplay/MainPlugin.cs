@@ -122,7 +122,7 @@ namespace OfficialPlugins.VariableDisplay
             // I think I'm going to keep it simple and only show the grid if it doesn't come from file:
             bool shouldShowVariables = namedObject.SourceType != SourceType.File;
 
-            if(namedObject.SourceType == SourceType.File)
+            if(shouldShowVariables == false)
             {
                 if(variableGrid != null)
                 {

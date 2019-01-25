@@ -1,6 +1,7 @@
 ﻿using FlatRedBall;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.RuntimeObjects.File;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.TileGraphics;
 using GlueView.Facades;
 using Microsoft.Xna.Framework.Graphics;
@@ -94,10 +95,40 @@ namespace TiledPlugin.RuntimeObjects
             return false;
         }
 
-        public override object TryGetCombinedObjectByName(string name)
+        public override object TryGetObjectFromFile(ICollection<LoadedFile> allFileObjects, ReferencedFileSave rfs, string objectType, string objectName)
         {
-            throw new NotImplementedException();
+            var layeredTileMap = allFileObjects.FirstOrDefault(item => item.ReferencedFileSave == rfs)
+                ?.RuntimeObject as LayeredTileMap;
+
+
+
+            object toReturn = null;
+            if(layeredTileMap != null)
+            {
+                switch(objectType)
+                {
+                    case "FlatRedBall.TileCollisions.TileShapeCollection":
+                    case "TileShapeCollection":
+                        var tileShapeCollection =
+                            layeredTileMap.Collisions.FirstOrDefault(item => item.Name == objectName);
+                        if(tileShapeCollection != null)
+                        {
+                            // temporary: as of January 24, 2019 Glue doesn't allow setting properties on objects
+                            // that come from-file. Therefore we can't have a Visible property in Glue that can be toggled
+                            // off/on to make this visible in GView. Some users may want shape collections to show in GView
+                            // so we'll just have to make them show no matter what for now:
+                            tileShapeCollection.Visible = true;
+
+                        }
+                        toReturn = tileShapeCollection;
+
+                        break;
+                }
+            }
+
+            return toReturn;
         }
+
 
         public override bool TryHandleRefreshFile(FilePath fileName, List<LoadedFile> allFileObjects)
         {

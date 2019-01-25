@@ -59,7 +59,8 @@ namespace FlatRedBall.Glue.RuntimeObjects.File
 
         public abstract bool DestroyRuntimeObject(object runtimeObject);
 
-        public abstract object TryGetCombinedObjectByName(string name);
+        public abstract object TryGetObjectFromFile(ICollection<LoadedFile> allFileObjects, ReferencedFileSave rfs, string objectType, string objectName);
+
 
         public abstract bool TryHandleRefreshFile(FilePath fileName, List<LoadedFile> allFileObjects);
         public abstract object CreateEmptyObjectMatchingArgumentType(object originalObject);

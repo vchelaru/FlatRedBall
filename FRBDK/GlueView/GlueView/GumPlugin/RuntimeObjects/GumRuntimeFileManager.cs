@@ -1,6 +1,7 @@
 ﻿using FlatRedBall;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.RuntimeObjects.File;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Gum;
 using GlueView.Facades;
 using Gum.Wireframe;
@@ -206,9 +207,9 @@ namespace GumPlugin.RuntimeObjects
             return true;
         }
 
-        public override object TryGetCombinedObjectByName(string name)
+        public override object TryGetObjectFromFile(ICollection<LoadedFile> allFileObjects, ReferencedFileSave rfs, string objectType, string objectName)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public override bool TryHandleRefreshFile(FilePath filePath, List<LoadedFile> allFileObjects)

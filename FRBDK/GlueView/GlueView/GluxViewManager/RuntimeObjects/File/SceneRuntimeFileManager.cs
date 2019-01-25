@@ -56,9 +56,9 @@ namespace FlatRedBall.Glue.RuntimeObjects.File
             }
         }
 
-        public override object TryGetCombinedObjectByName(string name)
+        public override object TryGetObjectFromFile(ICollection<LoadedFile> allFileObjects, ReferencedFileSave rfs, string objectType, string objectName)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         protected override object Load(FilePath filePath)

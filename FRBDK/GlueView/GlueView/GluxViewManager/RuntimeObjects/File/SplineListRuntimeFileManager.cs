@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math.Splines;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace FlatRedBall.Glue.RuntimeObjects.File
             return false;
         }
 
-        public override object TryGetCombinedObjectByName(string name)
+        public override object TryGetObjectFromFile(ICollection<LoadedFile> allFileObjects, ReferencedFileSave rfs, string objectType, string objectName)
         {
             return null;
         }
