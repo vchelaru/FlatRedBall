@@ -115,7 +115,7 @@ namespace GumPlugin.RuntimeObjects
         }
 
 
-        protected override object Load(FilePath referencedFilePath)
+        protected override void Load(FilePath referencedFilePath, out object runtimeObjects, out object dataModel)
         {
             var extension = referencedFilePath.Extension;
             if (extension == "gusx")
@@ -141,11 +141,13 @@ namespace GumPlugin.RuntimeObjects
                 // Handled in StaticInit
                 //SpriteManager.AddDrawableBatch(gumIdb);
 
-                return gumIdb;
+                runtimeObjects = gumIdb;
+                dataModel = gumIdb.Element;
             }
             else
             {
-                return null;
+                runtimeObjects = null;
+                dataModel = null;
             }
         }
 
@@ -254,7 +256,11 @@ namespace GumPlugin.RuntimeObjects
                     string fullFileName = GetGumIdbFullFileName();
                     var existingLoadedFile = allFileObjects.FirstOrDefault(item => item.FilePath == fullFileName);
 
-                    gumIdb = Load(fullFileName) as GumIdb;
+                    object gumIdbAsObject;
+                    object dataModel;
+                    Load(fullFileName, out gumIdbAsObject, out dataModel);
+                        
+                    gumIdb = gumIdbAsObject as GumIdb;
 
                     gumIdb?.Element.AddToManagers();
 

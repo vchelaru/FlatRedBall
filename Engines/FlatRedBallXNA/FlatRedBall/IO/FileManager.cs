@@ -1125,6 +1125,16 @@ namespace FlatRedBall.IO
 
         public static bool IsRelativeTo(string fileName, string directory)
         {
+            if(string.IsNullOrEmpty(fileName))
+            {
+                throw new ArgumentNullException(nameof(fileName));
+            }
+
+            if(string.IsNullOrEmpty(directory))
+            {
+                throw new ArgumentNullException(nameof(directory));
+            }
+
             if (!IsRelative(fileName))
             {
                 // the filename is an absolute path

@@ -144,7 +144,8 @@ namespace OfficialPlugins.VariableDisplay
                     }
                 }
             }
-            else if(ati != null)
+
+            else // This is used when viewing a  NOS that is of entity type (no ATI)
             {
                 for (int i = 0; i < instance.TypedMembers.Count; i++)
                 {
@@ -164,7 +165,7 @@ namespace OfficialPlugins.VariableDisplay
 
         private static void AddForTypedMember(NamedObjectSave instance, IElement container, List<MemberCategory> categories, AssetTypeInfo ati, TypedMemberBase typedMember)
         {
-            var variableDefinition = ati.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
+            var variableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
             InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember, ati, variableDefinition);
 
             var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember);

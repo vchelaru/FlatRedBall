@@ -14,6 +14,7 @@ namespace FlatRedBall.Glue.RuntimeObjects.File
         public ReferencedFileSave ReferencedFileSave { get; set; }
         public FilePath FilePath { get; set; }
         public object RuntimeObject { get; set; }
+        public object DataModel { get; set; }
 
         public override string ToString()
         {
@@ -31,25 +32,28 @@ namespace FlatRedBall.Glue.RuntimeObjects.File
                 ElementRuntime.ContentDirectory + file.Name;
 
 
-                var runtimeObject = Load(filePath);
+            object runtimeObject;
+            object dataModel;
+            Load(filePath, out runtimeObject, out dataModel);
 
-                if(runtimeObject != null)
-                {
-                    var loadedFile = new LoadedFile();
-                    loadedFile.FilePath = filePath;
-                    loadedFile.ReferencedFileSave = file;
-                    loadedFile.RuntimeObject = runtimeObject;
+            if(runtimeObject != null)
+            {
+                var loadedFile = new LoadedFile();
+                loadedFile.FilePath = filePath;
+                loadedFile.ReferencedFileSave = file;
+                loadedFile.RuntimeObject = runtimeObject;
+                loadedFile.DataModel = dataModel;
 
-                    return loadedFile;
-                }
-                else
-                {
-                    return null;
-                }
+                return loadedFile;
+            }
+            else
+            {
+                return null;
+            }
 
         }
 
-        protected abstract object Load(FilePath filePath);
+        protected abstract void Load(FilePath filePath, out object runtimeObjects, out object dataModel);
 
         public abstract bool AddToManagers(LoadedFile loadedFile);
 

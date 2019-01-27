@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMXGlueLib;
 
 namespace TiledPlugin.RuntimeObjects
 {
@@ -31,8 +32,7 @@ namespace TiledPlugin.RuntimeObjects
             }
         }
 
-
-        protected override object Load(FlatRedBall.Glue.IO.FilePath fileName)
+        protected override void Load(FlatRedBall.Glue.IO.FilePath fileName, out object runtimeObjects, out object dataModel)
         {
             bool shouldCreate = fileName.Extension == "tmx";
 
@@ -41,16 +41,22 @@ namespace TiledPlugin.RuntimeObjects
                 //var layeredTileMap = new LayeredTileMap();
                 // todo load it
                 string contentManagerName = nameof(TiledRuntimeFileManager);
+
+                var tiledMapSave = TiledMapSave.FromFile(fileName.FullPath);
+
                 var layeredTileMap =
-                    LayeredTileMap.FromTiledMapSave(fileName.FullPath, contentManagerName);
+                    LayeredTileMap.FromTiledMapSave(fileName.FullPath, contentManagerName, tiledMapSave);
 
                 layeredTileMap.Name = fileName.FullPath;
 
-                return layeredTileMap;
+                runtimeObjects = layeredTileMap;
+                dataModel = tiledMapSave;
             }
             else
             {
-                return null;
+
+                runtimeObjects = null;
+                dataModel = null;
             }
         }
 
@@ -129,59 +135,113 @@ namespace TiledPlugin.RuntimeObjects
             return toReturn;
         }
 
-
         public override bool TryHandleRefreshFile(FilePath fileName, List<LoadedFile> allFileObjects)
         {
             var extension = fileName.Extension;
             var wasHandled = false;
             if(extension == "tmx")
             {
-                foreach(var item in allFileObjects.Where(item =>item.FilePath == fileName))
-                {
-                    ((LayeredTileMap)item.RuntimeObject).Destroy();
-                    var newMap = (LayeredTileMap)Load(fileName);
-                    newMap?.AddToManagers();
-                    item.RuntimeObject = Load(fileName);
-
-                    wasHandled = true;
-                }
+                wasHandled = TryHandleTmxRefresh(fileName, allFileObjects);
             }
             else if(extension == "png")
             {
-                var mapLayersReferencingTexture = new List<MapDrawableBatch>();
+                // We never say "handled = true" for PNGs since others might want to handle it too
+                TryHandlePngRefresh(fileName, allFileObjects);
+            }
+            else if(extension == "tsx")
+            {
+                wasHandled = TryHandleTsxRefresh(fileName, allFileObjects);
+            }
+            return wasHandled;
+        }
 
-                // see if this is referenced by any of the existing TMX's
-                foreach(var tmxLoadedFile in allFileObjects.Where(item =>item.FilePath.Extension == "tmx"))
+        private bool TryHandleTsxRefresh(FilePath tsxFileName, List<LoadedFile> allFileObjects)
+        {
+            foreach(var item in allFileObjects.Where(item =>item.DataModel is TiledMapSave))
+            {
+                var tiledMapSave = item.DataModel as TiledMapSave;
+
+                var tmxDirectory = item.FilePath.GetDirectoryContainingThis();
+
+                foreach(var tileset in tiledMapSave.Tilesets)
                 {
-                    var runtimeObject = tmxLoadedFile.RuntimeObject as LayeredTileMap;
+                    var path = tmxDirectory + tileset.Source;
 
-                    foreach(var mapLayer in runtimeObject.MapLayers)
+                    if(path == tsxFileName)
                     {
-                        var referencesTexture = mapLayer.Texture.Name == fileName;
-
-                        if(referencesTexture)
-                        {
-                            mapLayersReferencingTexture.Add(mapLayer);
-                        }
+                        RefreshTmx(item);
+                        break;
                     }
-                }
-
-                if(mapLayersReferencingTexture.Count > 0)
-                {
-                    FlatRedBallServices.Unload(nameof(TiledRuntimeFileManager));
-
-                    var newTexture = FlatRedBallServices.Load<Texture2D>(fileName.FullPath, nameof(TiledRuntimeFileManager));
-                    // unload the content manager so that we can re-create the files:
-                    foreach(var layer in mapLayersReferencingTexture)
-                    {
-                        layer.Texture = newTexture;
-                    }
-                    // even though we may have handled it, we don't want to return true because
-                    // other plugins may reload this file too
                 }
             }
 
+            return true;
+        }
+
+        private static void TryHandlePngRefresh(FilePath fileName, List<LoadedFile> allFileObjects)
+        {
+            var mapLayersReferencingTexture = new List<MapDrawableBatch>();
+
+            // see if this is referenced by any of the existing TMX's
+            foreach (var tmxLoadedFile in allFileObjects.Where(item => item.FilePath.Extension == "tmx"))
+            {
+                var runtimeObject = tmxLoadedFile.RuntimeObject as LayeredTileMap;
+
+                foreach (var mapLayer in runtimeObject.MapLayers)
+                {
+                    var referencesTexture = mapLayer.Texture.Name == fileName;
+
+                    if (referencesTexture)
+                    {
+                        mapLayersReferencingTexture.Add(mapLayer);
+                    }
+                }
+            }
+
+            if (mapLayersReferencingTexture.Count > 0)
+            {
+                FlatRedBallServices.Unload(nameof(TiledRuntimeFileManager));
+
+                var newTexture = FlatRedBallServices.Load<Texture2D>(fileName.FullPath, nameof(TiledRuntimeFileManager));
+                // unload the content manager so that we can re-create the files:
+                foreach (var layer in mapLayersReferencingTexture)
+                {
+                    layer.Texture = newTexture;
+                }
+                // even though we may have handled it, we don't want to return true because
+                // other plugins may reload this file too
+            }
+        }
+
+        private bool TryHandleTmxRefresh(FilePath fileName, List<LoadedFile> allFileObjects)
+        {
+            bool wasHandled = false;
+            foreach (var item in allFileObjects.Where(item => item.FilePath == fileName))
+            {
+                RefreshTmx(item);
+
+                wasHandled = true;
+            }
+
             return wasHandled;
+        }
+
+        private void RefreshTmx(LoadedFile item)
+        {
+            ((LayeredTileMap)item.RuntimeObject).Destroy();
+            LayeredTileMap newMap;
+            TiledMapSave tiledMapSave;
+
+            object newMapAsObject;
+            object tiledMapSaveAsObject;
+
+            Load(item.FilePath, out newMapAsObject, out tiledMapSaveAsObject);
+            newMap = (LayeredTileMap)newMapAsObject;
+            tiledMapSave = (TiledMapSave)tiledMapSaveAsObject;
+
+            newMap?.AddToManagers();
+            item.RuntimeObject = newMap;
+            item.DataModel = tiledMapSaveAsObject;
         }
 
         public override object CreateEmptyObjectMatchingArgumentType(object originalObject)

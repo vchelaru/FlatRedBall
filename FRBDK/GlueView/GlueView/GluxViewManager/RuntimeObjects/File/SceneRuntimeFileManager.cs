@@ -61,8 +61,9 @@ namespace FlatRedBall.Glue.RuntimeObjects.File
             return null;
         }
 
-        protected override object Load(FilePath filePath)
+        protected override void Load(FilePath filePath, out object runtimeObjects, out object dataModel)
         {
+            dataModel = null;
             Scene newScene = null;
             try
             {
@@ -79,13 +80,15 @@ namespace FlatRedBall.Glue.RuntimeObjects.File
                             text.DisplayText = LocalizationManager.Translate(text.DisplayText);
                         }
                     }
+
+                    runtimeObjects = newScene;
                 }
             }
             catch (Exception e)
             {
                 throw new Exception("Error loading Scene file " + ElementRuntime.ContentDirectory + filePath.FullPath + e.ToString());
             }
-            return newScene;
+            runtimeObjects = newScene;
         }
 
         public override bool AddToManagers(LoadedFile loadedFile)

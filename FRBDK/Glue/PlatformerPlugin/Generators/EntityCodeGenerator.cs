@@ -320,6 +320,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 this.HorizontalInput =
                     FlatRedBall.Input.InputManager.Xbox360GamePads[0].LeftStick.Horizontal;
+
+                this.VerticalInput =
+                    FlatRedBall.Input.InputManager.Xbox360GamePads[0].LeftStick.Vertical;
             }
             else
             {
@@ -328,6 +331,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 this.HorizontalInput =
                     FlatRedBall.Input.InputManager.Keyboard.Get1DInput(Microsoft.Xna.Framework.Input.Keys.Left, Microsoft.Xna.Framework.Input.Keys.Right);
+
+                this.VerticalInput =
+                    FlatRedBall.Input.InputManager.Keyboard.Get1DInput(Microsoft.Xna.Framework.Input.Keys.Down, Microsoft.Xna.Framework.Input.Keys.Up);
             }
 
             InputEnabled = true;

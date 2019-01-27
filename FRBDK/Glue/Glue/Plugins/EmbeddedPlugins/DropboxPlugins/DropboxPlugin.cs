@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.AutomatedGlue;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -18,14 +19,23 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.DropboxPlugins
 
         private void HandleGluxLoad()
         {
-            string folder = ProjectManager.ProjectRootDirectory;
-            bool isInDropboxFolder = GetIfIsInDropBoxFolder(folder);
+            string folder = GlueState.Self.CurrentGlueProjectDirectory;
 
-            if (isInDropboxFolder)
+            // This happened once, not sure why
+            if(string.IsNullOrEmpty(folder))
             {
-                GlueGui.ShowMessageBox("This project appears to be in a Dropbox folder.  " + 
-                    "Working with projects while they are in Dropbox folders may cause problems.\n\n" + 
-                    "Consider moving the project out of a Dropbox folder or pausing syncing while working.");
+                int m = 3;
+            }
+            else
+            {
+                bool isInDropboxFolder = GetIfIsInDropBoxFolder(folder);
+
+                if (isInDropboxFolder)
+                {
+                    GlueGui.ShowMessageBox("This project appears to be in a Dropbox folder.  " + 
+                        "Working with projects while they are in Dropbox folders may cause problems.\n\n" + 
+                        "Consider moving the project out of a Dropbox folder or pausing syncing while working.");
+                }
             }
         }
 

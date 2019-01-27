@@ -146,7 +146,7 @@ namespace FlatRedBall.Glue.VSHelpers
 
             if (succeeded)
             {
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.TryMultipleTimes(() => GlueCommands.Self.ProjectCommands.SaveProjects());
             }
 
             return succeeded;

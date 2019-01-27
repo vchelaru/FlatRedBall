@@ -336,6 +336,11 @@ namespace FlatRedBall.TileGraphics
         public static LayeredTileMap FromTiledMapSave(string fileName, string contentManager)
         {
             TiledMapSave tms = TiledMapSave.FromFile(fileName);
+            return FromTiledMapSave(fileName, contentManager, tms);
+        }
+
+        public static LayeredTileMap FromTiledMapSave(string tiledMapSaveFile, string contentManager, TiledMapSave tms)
+        {
 
             // Ultimately properties are tied to tiles by the tile name.
             // If a tile has no name but it has properties, those properties
@@ -350,12 +355,12 @@ namespace FlatRedBall.TileGraphics
             tms.NameUnnamedObjects();
 
 
-            string directory = FlatRedBall.IO.FileManager.GetDirectory(fileName);
+            string directory = FlatRedBall.IO.FileManager.GetDirectory(tiledMapSaveFile);
 
             var rtmi = ReducedTileMapInfo.FromTiledMapSave(
                 tms, 1, 0, directory, FileReferenceType.Absolute);
 
-            var toReturn = FromReducedTileMapInfo(rtmi, contentManager, fileName);
+            var toReturn = FromReducedTileMapInfo(rtmi, contentManager, tiledMapSaveFile);
 
             AddShapeCollections(toReturn, tms);
 
@@ -450,7 +455,7 @@ namespace FlatRedBall.TileGraphics
                 }
             }
 
-            var tmxDirectory = FileManager.GetDirectory(fileName);
+            var tmxDirectory = FileManager.GetDirectory(tiledMapSaveFile);
 
             // add image layers
             foreach (var imageLayer in tms.ImageLayers)

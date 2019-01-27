@@ -120,6 +120,19 @@ namespace OfficialPlugins.VariableDisplay
             // 4. This may confuse users who are expecting the changes in Glue to modify the original
             //    file, instead of them understanding that Glue overrides the file. 
             // I think I'm going to keep it simple and only show the grid if it doesn't come from file:
+            // Update Jan 24, 2019
+            // I thought about this problem for a bit and realized that this can be solved in two steps.
+            // 1. The problem is that if we show the values that come from the AssetTypeInfo on a from-file
+            //    object, the default values in the ATI may not match the values of the object in the file, which
+            //    has mislead developers in the past. That is why I opted to just not show a property grid at all.
+            //    However, if we just didn't show any defaults at all, that would solve the problem! To do this, we
+            //    just need to take the AssetTypeInfo, clone it, and make the default values for all variables be null.
+            //    This should result in a property grid that shows the variables with blank boxes/UI so that the user can
+            //    fill it in.
+            // 2. Plugins could be given the copied ATI to fill in with values from-file. If plugins don't, then the values
+            //    would be blank, but if the plugin does want to, then the values from-file would show up.
+            // I'm not going to implement this solution just yet, but I thought of how it could be done and thought it would
+            // be good to document it here for future reference.
             bool shouldShowVariables = namedObject.SourceType != SourceType.File;
 
             if(shouldShowVariables == false)

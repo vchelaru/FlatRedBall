@@ -220,7 +220,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             bool copied = false;
 
-            if (!FileManager.IsRelativeTo(fileName, ProjectManager.ProjectRootDirectory) && isBuiltFile)
+            var projectRootDirectory = ProjectManager.ProjectRootDirectory;
+
+            if (!FileManager.IsRelativeTo(fileName, projectRootDirectory) && isBuiltFile)
             {
                 copied = PluginManager.TryCopyFile(fileName, targetFileWithOriginalExtension);
 

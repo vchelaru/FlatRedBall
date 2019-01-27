@@ -53,9 +53,10 @@ namespace FlatRedBall.Glue.RuntimeObjects.File
             return false;
         }
 
-        protected override object Load(FilePath filePath)
+        protected override void Load(FilePath filePath, out object runtimeObjects, out object dataModel)
         {
-            return null;
+            runtimeObjects = null;
+            dataModel = null;
         }
     }
 }
