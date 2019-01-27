@@ -54,18 +54,21 @@ namespace FlatRedBall.Glue.RuntimeObjects
             string objectType = namedObjectSave.SourceName.Substring(indexOfType, length - (indexOfType) - 1);
             string sourceFile = namedObjectSave.SourceFile;
 
-            LoadedFile toReturn = null;
             bool pullsFromEntireObject = false;
             ReferencedFileSave rfs = elementSave.GetReferencedFileSaveRecursively(sourceFile);
 
+            var rfsFilePath = ElementRuntime.ContentDirectory + rfs.Name;
+
             // This is the original file that contains the object that is going to be cloned from.
-            object loadedObject = GetObjectIfFileIsContained(sourceFile, elementRuntime);
+            var loadedObjectToPullFrom =
+                elementRuntime.ReferencedFileRuntimeList.LoadedRfses.FirstOrDefault(item => item.FilePath ==
+                rfsFilePath);
 
-            pullsFromEntireObject = loadedObject != null;
+            pullsFromEntireObject = loadedObjectToPullFrom != null;
 
-            if (loadedObject == null)
+            if (loadedObjectToPullFrom == null)
             {
-                loadedObject = elementRuntime.ReferencedFileRuntimeList.LoadReferencedFileSave(rfs, true, elementSave)?.RuntimeObject;
+                loadedObjectToPullFrom = elementRuntime.ReferencedFileRuntimeList.LoadReferencedFileSave(rfs, true, elementSave);
             }
             ElementRuntime newElementRuntime = CreateNewOrGetExistingElementRuntime(namedObjectSave, layerToPutOn, 
                 listToPopulate, elementRuntime);
@@ -75,35 +78,33 @@ namespace FlatRedBall.Glue.RuntimeObjects
             if (!namedObjectSave.IsEntireFile)
             {
                 // we need to clone the container
-                toAddTo = newElementRuntime.ReferencedFileRuntimeList.CreateAndAddEmptyCloneOf(loadedObject);
+                toAddTo = newElementRuntime.ReferencedFileRuntimeList.CreateAndAddEmptyCloneOf(loadedObjectToPullFrom);
             }
 
             Layer layerToAddTo = GetLayerToAddTo(namedObjectSave, layerToPutOn, elementRuntime);
 
-            if (loadedObject != null)
+            LoadedFile toReturn = null;
+            if (loadedObjectToPullFrom != null)
             {
                 // This might be null if the NOS references a file that doesn't exist.
                 // This is usually not a valid circumstance but it's something that can
                 // occur with tools modifying the .glux and not properly verifying that the
                 // file exists.  GView should tolerate this invalid definition.
 
-                var runtimeObject = CreateRuntimeObjectForNamedObject(namedObjectSave, elementSave, elementRuntime, objectType,
-                    loadedObject,
+                toReturn = CreateRuntimeObjectForNamedObject(namedObjectSave, elementSave, elementRuntime, 
+                    objectType,
+                    loadedObjectToPullFrom,
                     newElementRuntime,
                     toAddTo,
                     layerToAddTo, rfs, pullsFromEntireObject);
 
-                toReturn = new LoadedFile();
-                if(rfs != null)
+                if(toReturn != null)
                 {
-                    toReturn.FilePath = ElementRuntime.ContentDirectory + rfs.Name;
+                    elementRuntime.ReferencedFileRuntimeList.Add(toReturn);
                 }
 
-                toReturn.ReferencedFileSave = rfs;
-                toReturn.RuntimeObject = runtimeObject;
-
             }
-            newElementRuntime.DirectObjectReference = toReturn;
+            newElementRuntime.DirectObjectReference = toReturn?.RuntimeObject;
 
 
             return toReturn;
@@ -190,10 +191,23 @@ namespace FlatRedBall.Glue.RuntimeObjects
         }
 
 
-
-        private static object CreateRuntimeObjectForNamedObject(NamedObjectSave objectToLoad, 
+        /// <summary>
+        ///  Creates a runtime object and adds the LoadedFile to the element.
+        /// </summary>
+        /// <param name="objectToLoad"></param>
+        /// <param name="container"></param>
+        /// <param name="elementRuntime"></param>
+        /// <param name="objectType"></param>
+        /// <param name="objectJustLoaded"></param>
+        /// <param name="newElementRuntime"></param>
+        /// <param name="toAddTo"></param>
+        /// <param name="layerToAddTo"></param>
+        /// <param name="rfs"></param>
+        /// <param name="pullsFromEntireNamedObject"></param>
+        /// <returns></returns>
+        private static LoadedFile CreateRuntimeObjectForNamedObject(NamedObjectSave objectToLoad, 
             IElement container, ElementRuntime elementRuntime, string objectType,
-            object objectJustLoaded,
+            LoadedFile objectJustLoaded,
             ElementRuntime newElementRuntime, 
             object toAddTo,
             Layer layerToAddTo, ReferencedFileSave rfs, bool pullsFromEntireNamedObject)
@@ -202,7 +216,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
 
 
             bool shouldClone = rfs != null && (rfs.IsSharedStatic && !(container is ScreenSave)) && !pullsFromEntireNamedObject;
-            object toReturn = null;
+            LoadedFile toReturn = null;
 
             // This could have a ( in the name in a file like .scnx, so use the last (
             //int indexOfType = objectToLoad.SourceName.IndexOf("(");
@@ -214,7 +228,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
             {
                 case "Scene":
                     {
-                        Scene scene = objectJustLoaded as Scene;
+                        Scene scene = objectJustLoaded.RuntimeObject as Scene;
 
                         foreach (Text text in scene.Texts)
                         {
@@ -234,13 +248,13 @@ namespace FlatRedBall.Glue.RuntimeObjects
                             loadedFile.RuntimeObject = scene;
                             loadedFile.FilePath = objectToLoad.SourceFile;
                             loadedFile.ReferencedFileSave = rfs;
+                            toReturn = loadedFile;
 
                             newElementRuntime.ReferencedFileRuntimeList.Add(loadedFile);
 
                             scene.AddToManagers(layerToAddTo);
 
                         }
-                        toReturn = scene;
                     }
                     break;
 
@@ -248,7 +262,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
                 case "Sprite":
                     {
                         Sprite loadedSprite = null;
-                        Scene scene = objectJustLoaded as Scene;
+                        Scene scene = objectJustLoaded.RuntimeObject as Scene;
                         if (scene != null)
                         {
                             loadedSprite = scene.Sprites.FindByName(objectName);
@@ -269,16 +283,23 @@ namespace FlatRedBall.Glue.RuntimeObjects
                                 (toAddTo as Scene).Sprites.Add(loadedSprite);
                                 SpriteManager.AddToLayer(loadedSprite, layerToAddTo);
 
+                                var loadedFile = new LoadedFile();
+
+                                loadedFile.RuntimeObject = loadedSprite;
+                                loadedFile.FilePath = objectJustLoaded.FilePath;
+                                loadedFile.DataModel = objectJustLoaded.DataModel;
+                                loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+
+                                toReturn = loadedFile;
                             }
                         }
-                        toReturn = loadedSprite;
                     }
                     break;
 
 
                 case "SpriteFrame":
                     {
-                        Scene scene = objectJustLoaded as Scene;
+                        Scene scene = objectJustLoaded.RuntimeObject as Scene;
                         SpriteFrame loadedSpriteFrame = scene.SpriteFrames.FindByName(objectName);
                         if (loadedSpriteFrame != null)
                         {
@@ -287,15 +308,22 @@ namespace FlatRedBall.Glue.RuntimeObjects
                                 loadedSpriteFrame = loadedSpriteFrame.Clone();
                                 (toAddTo as Scene).SpriteFrames.Add(loadedSpriteFrame);
                                 SpriteManager.AddToLayer(loadedSpriteFrame, layerToAddTo);
+
+                                var loadedFile = new LoadedFile();
+
+                                loadedFile.RuntimeObject = loadedSpriteFrame;
+                                loadedFile.FilePath = objectJustLoaded.FilePath;
+                                loadedFile.DataModel = objectJustLoaded.DataModel;
+                                loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                                toReturn = loadedFile;
                             }
                         }
-                        toReturn = loadedSpriteFrame;
                     }
                     break;
 
                 case "SpriteGrid":
                     {
-                        Scene scene = objectJustLoaded as Scene;
+                        Scene scene = objectJustLoaded.RuntimeObject as Scene;
                         SpriteGrid spriteGrid = null;
                         for (int i = 0; i < scene.SpriteGrids.Count; i++)
                         {
@@ -315,17 +343,24 @@ namespace FlatRedBall.Glue.RuntimeObjects
                                 spriteGrid.PopulateGrid();
                                 spriteGrid.RefreshPaint();
                                 spriteGrid.Manage();
+
+                                var loadedFile = new LoadedFile();
+
+                                loadedFile.RuntimeObject = spriteGrid;
+                                loadedFile.FilePath = objectJustLoaded.FilePath;
+                                loadedFile.DataModel = objectJustLoaded.DataModel;
+                                loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                                toReturn = loadedFile;
                             }
 
 
                         }
-                        toReturn = spriteGrid;
                     }
                     break;
                     
                 case "Text":
                     {
-                        Scene scene = objectJustLoaded as Scene;
+                        Scene scene = objectJustLoaded.RuntimeObject as Scene;
 
                         Text loadedText = scene.Texts.FindByName(objectName);
                         if (loadedText != null)
@@ -337,6 +372,14 @@ namespace FlatRedBall.Glue.RuntimeObjects
 
                                 TextManager.AddToLayer(loadedText, layerToAddTo);
 
+                                var loadedFile = new LoadedFile();
+
+                                loadedFile.RuntimeObject = loadedText;
+                                loadedFile.FilePath = objectJustLoaded.FilePath;
+                                loadedFile.DataModel = objectJustLoaded.DataModel;
+                                loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                                toReturn = loadedFile;
+
                             }
                             loadedText.AdjustPositionForPixelPerfectDrawing = true;
                             if (LocalizationManager.HasDatabase)
@@ -344,12 +387,11 @@ namespace FlatRedBall.Glue.RuntimeObjects
                                 loadedText.DisplayText = LocalizationManager.Translate(loadedText.DisplayText);
                             }
                         }
-                        toReturn = loadedText;
                     }
                     break;
                 case "ShapeCollection":
                     {
-                        ShapeCollection shapeCollection = objectJustLoaded as ShapeCollection;
+                        ShapeCollection shapeCollection = objectJustLoaded.RuntimeObject as ShapeCollection;
 
                         if (shouldClone)
                         {
@@ -360,6 +402,14 @@ namespace FlatRedBall.Glue.RuntimeObjects
 
                             shapeCollection.AddToManagers(layerToAddTo);
 
+                            var loadedFile = new LoadedFile();
+
+                            loadedFile.RuntimeObject = shapeCollection;
+                            loadedFile.FilePath = objectJustLoaded.FilePath;
+                            loadedFile.DataModel = objectJustLoaded.DataModel;
+                            loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                            toReturn = loadedFile;
+
                         }
                         // Most cases are handled below in an AttachTo method, but 
                         // ShapeCollection isn't a PositionedObject so we have to do it manually here
@@ -367,13 +417,12 @@ namespace FlatRedBall.Glue.RuntimeObjects
                         {
                             shapeCollection.AttachTo(elementRuntime, true);
                         }
-                        toReturn = shapeCollection;
                     }
                     break;
 
                 case "AxisAlignedCube":
                     {
-                        ShapeCollection shapeCollection = objectJustLoaded as ShapeCollection;
+                        ShapeCollection shapeCollection = objectJustLoaded.RuntimeObject as ShapeCollection;
                         AxisAlignedCube loadedAxisAlignedCube = shapeCollection.AxisAlignedCubes.FindByName(objectName);
 
 
@@ -382,16 +431,24 @@ namespace FlatRedBall.Glue.RuntimeObjects
                             loadedAxisAlignedCube = loadedAxisAlignedCube.Clone();
                             (toAddTo as ShapeCollection).AxisAlignedCubes.Add(loadedAxisAlignedCube);
                             ShapeManager.AddToLayer(loadedAxisAlignedCube, layerToAddTo);
+
+                            var loadedFile = new LoadedFile();
+
+                            loadedFile.RuntimeObject = loadedAxisAlignedCube;
+                            loadedFile.FilePath = objectJustLoaded.FilePath;
+                            loadedFile.DataModel = objectJustLoaded.DataModel;
+                            loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                            toReturn = loadedFile;
+
                         }
 
-                        toReturn = loadedAxisAlignedCube;
                     }
                     break;
 
 
                 case "AxisAlignedRectangle":
                     {
-                        ShapeCollection shapeCollection = objectJustLoaded as ShapeCollection;
+                        ShapeCollection shapeCollection = objectJustLoaded.RuntimeObject as ShapeCollection;
                         AxisAlignedRectangle loadedAxisAlignedRectangle = shapeCollection.AxisAlignedRectangles.FindByName(objectName);
 
 
@@ -400,15 +457,22 @@ namespace FlatRedBall.Glue.RuntimeObjects
                             loadedAxisAlignedRectangle = loadedAxisAlignedRectangle.Clone();
                             (toAddTo as ShapeCollection).AxisAlignedRectangles.Add(loadedAxisAlignedRectangle);
                             ShapeManager.AddToLayer(loadedAxisAlignedRectangle, layerToAddTo);
-                        }
 
-                        toReturn = loadedAxisAlignedRectangle;
+                            var loadedFile = new LoadedFile();
+
+                            loadedFile.RuntimeObject = loadedAxisAlignedRectangle ;
+                            loadedFile.FilePath = objectJustLoaded.FilePath;
+                            loadedFile.DataModel = objectJustLoaded.DataModel;
+                            loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                            toReturn = loadedFile;
+
+                        }
                     }
                     break;
 
                 case "Circle":
                     {
-                        ShapeCollection shapeCollection = objectJustLoaded as ShapeCollection;
+                        ShapeCollection shapeCollection = objectJustLoaded.RuntimeObject as ShapeCollection;
                         Circle loadedCircle = shapeCollection.Circles.FindByName(objectName);
 
 
@@ -417,15 +481,22 @@ namespace FlatRedBall.Glue.RuntimeObjects
                             loadedCircle = loadedCircle.Clone();
                             (toAddTo as ShapeCollection).Circles.Add(loadedCircle);
                             ShapeManager.AddToLayer(loadedCircle, layerToAddTo);
-                        }
 
-                        toReturn = loadedCircle;
+                            var loadedFile = new LoadedFile();
+
+                            loadedFile.RuntimeObject = loadedCircle;
+                            loadedFile.FilePath = objectJustLoaded.FilePath;
+                            loadedFile.DataModel = objectJustLoaded.DataModel;
+                            loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                            toReturn = loadedFile;
+
+                        }
                     }
                     break;
 
                 case "Polygon":
                     {
-                        ShapeCollection shapeCollection = objectJustLoaded as ShapeCollection;
+                        ShapeCollection shapeCollection = objectJustLoaded.RuntimeObject as ShapeCollection;
                         Polygon loadedPolygon = shapeCollection.Polygons.FindByName(objectName);
 
 
@@ -434,15 +505,22 @@ namespace FlatRedBall.Glue.RuntimeObjects
                             loadedPolygon = loadedPolygon.Clone();
                             (toAddTo as ShapeCollection).Polygons.Add(loadedPolygon);
                             ShapeManager.AddToLayer(loadedPolygon, layerToAddTo);
-                        }
 
-                        toReturn = loadedPolygon;
+                            var loadedFile = new LoadedFile();
+
+                            loadedFile.RuntimeObject = loadedPolygon;
+                            loadedFile.FilePath = objectJustLoaded.FilePath;
+                            loadedFile.DataModel = objectJustLoaded.DataModel;
+                            loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                            toReturn = loadedFile;
+
+                        }
                     }
                     break;
 
                 case "Sphere":
                     {
-                        ShapeCollection shapeCollection = objectJustLoaded as ShapeCollection;
+                        ShapeCollection shapeCollection = objectJustLoaded.RuntimeObject as ShapeCollection;
                         Sphere loadedSphere = shapeCollection.Spheres.FindByName(objectName);
 
 
@@ -451,15 +529,22 @@ namespace FlatRedBall.Glue.RuntimeObjects
                             loadedSphere = loadedSphere.Clone();
                             (toAddTo as ShapeCollection).Spheres.Add(loadedSphere);
                             ShapeManager.AddToLayer(loadedSphere, layerToAddTo);
-                        }
 
-                        toReturn = loadedSphere;
+                            var loadedFile = new LoadedFile();
+
+                            loadedFile.RuntimeObject = loadedSphere;
+                            loadedFile.FilePath = objectJustLoaded.FilePath;
+                            loadedFile.DataModel = objectJustLoaded.DataModel;
+                            loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                            toReturn = loadedFile;
+
+                        }
                     }
                     break;
 
                 case "Capsule2D":
                     {
-                        ShapeCollection shapeCollection = objectJustLoaded as ShapeCollection;
+                        ShapeCollection shapeCollection = objectJustLoaded.RuntimeObject as ShapeCollection;
                         Capsule2D loadedCapsule2D = shapeCollection.Capsule2Ds.FindByName(objectName);
 
 
@@ -468,14 +553,21 @@ namespace FlatRedBall.Glue.RuntimeObjects
                             loadedCapsule2D = loadedCapsule2D.Clone();
                             (toAddTo as ShapeCollection).Capsule2Ds.Add(loadedCapsule2D);
                             ShapeManager.AddToLayer(loadedCapsule2D, layerToAddTo);
-                        }
 
-                        toReturn = loadedCapsule2D;
+                            var loadedFile = new LoadedFile();
+
+                            loadedFile.RuntimeObject = loadedCapsule2D;
+                            loadedFile.FilePath = objectJustLoaded.FilePath;
+                            loadedFile.DataModel = objectJustLoaded.DataModel;
+                            loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                            toReturn = loadedFile;
+
+                        }
                     }
                     break;
                 case "Emitter":
                     {
-                        EmitterList emitterList = objectJustLoaded as EmitterList;
+                        EmitterList emitterList = objectJustLoaded.RuntimeObject as EmitterList;
                         Emitter loadedEmitter = emitterList.FindByName(objectName);
 
                         if (shouldClone && loadedEmitter != null)
@@ -483,13 +575,21 @@ namespace FlatRedBall.Glue.RuntimeObjects
                             loadedEmitter = loadedEmitter.Clone();
                             (toAddTo as EmitterList).Add(loadedEmitter);
                             SpriteManager.AddEmitter(loadedEmitter, layerToAddTo);
+
+                            var loadedFile = new LoadedFile();
+
+                            loadedFile.RuntimeObject = loadedEmitter;
+                            loadedFile.FilePath = objectJustLoaded.FilePath;
+                            loadedFile.DataModel = objectJustLoaded.DataModel;
+                            loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                            toReturn = loadedFile;
+
                         }
-                        toReturn = loadedEmitter;
                     }
                     break;
                 case "EmitterList":
                     {
-                        EmitterList emitterList = objectJustLoaded as EmitterList;
+                        EmitterList emitterList = objectJustLoaded.RuntimeObject as EmitterList;
 
                         if(shouldClone && emitterList != null)
                         {
@@ -499,14 +599,21 @@ namespace FlatRedBall.Glue.RuntimeObjects
                             {
                                 SpriteManager.AddEmitter(item);
                             }
-                        }
 
-                        toReturn = emitterList;
+                            var loadedFile = new LoadedFile();
+
+                            loadedFile.RuntimeObject = emitterList;
+                            loadedFile.FilePath = objectJustLoaded.FilePath;
+                            loadedFile.DataModel = objectJustLoaded.DataModel;
+                            loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                            toReturn = loadedFile;
+
+                        }
                     }
                     break;
                 case "NodeNetwork":
                     {
-                        NodeNetwork nodeNetwork = objectJustLoaded as NodeNetwork;
+                        NodeNetwork nodeNetwork = objectJustLoaded.RuntimeObject as NodeNetwork;
 
                         if (shouldClone)
                         {
@@ -516,29 +623,27 @@ namespace FlatRedBall.Glue.RuntimeObjects
 
                             newElementRuntime.ReferencedFileRuntimeList.LoadedNodeNetworks.Add(nodeNetwork);
 
-                            // don't need to add NodeNetworks to managers - this will be done if it is visible automatically
+                            var loadedFile = new LoadedFile();
+
+                            loadedFile.RuntimeObject = nodeNetwork;
+                            loadedFile.FilePath = objectJustLoaded.FilePath;
+                            loadedFile.DataModel = objectJustLoaded.DataModel;
+                            loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                            toReturn = loadedFile;
+
                         }
 
-                        // can't attach the NodeNetwork 
-                        toReturn = nodeNetwork;
                     }
                     break;
                 case "SplineList":
                     {
-                        SplineList splineList = objectJustLoaded as SplineList;
+                        SplineList splineList = objectJustLoaded.RuntimeObject as SplineList;
 
                         if (shouldClone)
                         {
                             splineList = splineList.Clone();
 
                             elementRuntime.EntireSplineLists.Add(splineList.Name, splineList);
-
-                            var loadedFile = new LoadedFile();
-                            loadedFile.RuntimeObject = splineList;
-                            loadedFile.ReferencedFileSave = rfs;
-                            loadedFile.FilePath = objectToLoad.SourceFile;
-
-                            newElementRuntime.ReferencedFileRuntimeList.Add(loadedFile);
 
                             foreach (var spline in splineList)
                             {
@@ -550,16 +655,24 @@ namespace FlatRedBall.Glue.RuntimeObjects
                             
 
                             splineList[0].UpdateShapes();
+
+                            var loadedFile = new LoadedFile();
+
+                            loadedFile.RuntimeObject = splineList;
+                            loadedFile.FilePath = objectJustLoaded.FilePath;
+                            loadedFile.DataModel = objectJustLoaded.DataModel;
+                            loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                            toReturn = loadedFile;
+
                         }
 
-                        toReturn = splineList;
 
                     }
                     break;
 
                 case "Spline":
                     {
-                        SplineList splineList = objectJustLoaded as SplineList;
+                        SplineList splineList = objectJustLoaded.RuntimeObject as SplineList;
                         Spline spline = splineList.FirstOrDefault(item=>item.Name == objectName);
 
                         
@@ -570,11 +683,19 @@ namespace FlatRedBall.Glue.RuntimeObjects
 
                             // Eventually support layers?
                             //ShapeManager.AddToLayer(spline, layerToAddTo);
+
+                            var loadedFile = new LoadedFile();
+
+                            loadedFile.RuntimeObject = spline;
+                            loadedFile.FilePath = objectJustLoaded.FilePath;
+                            loadedFile.DataModel = objectJustLoaded.DataModel;
+                            loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                            toReturn = loadedFile;
+
                         }
                         spline.CalculateVelocities();
                         spline.CalculateAccelerations();
-
-                        toReturn = spline;
+                        
                     }
                     break;
             }
@@ -587,7 +708,18 @@ namespace FlatRedBall.Glue.RuntimeObjects
 
                     if(objectFromFile != null)
                     {
-                        toReturn = objectFromFile;
+
+                        var runtimeObject = objectFromFile;
+
+                        var loadedFile = new LoadedFile();
+
+                        loadedFile.RuntimeObject = runtimeObject;
+                        loadedFile.FilePath = objectJustLoaded.FilePath;
+                        loadedFile.DataModel = objectJustLoaded.DataModel;
+                        loadedFile.ReferencedFileSave = objectJustLoaded.ReferencedFileSave;
+                        toReturn = loadedFile;
+
+
                         break;
                     }
                 }
@@ -596,23 +728,23 @@ namespace FlatRedBall.Glue.RuntimeObjects
 
             if (toReturn != null && objectToLoad.AttachToContainer)
             {
-                if (toReturn is PositionedObject)
+                if (toReturn.RuntimeObject is PositionedObject)
                 {
                     // If the object is already attached to something, that means it
                     // came from a file, so we don't want to re-attach it.
-                    PositionedObject asPositionedObject = toReturn as PositionedObject;
+                    PositionedObject asPositionedObject = toReturn.RuntimeObject as PositionedObject;
                     if (asPositionedObject.Parent == null)
                     {
                         asPositionedObject.AttachTo(elementRuntime, true);
                     }
                 }
-                else if (toReturn is Scene)
+                else if (toReturn.RuntimeObject is Scene)
                 {
-                    ((Scene)toReturn).AttachAllDetachedTo(elementRuntime, true);
+                    ((Scene)toReturn.RuntimeObject).AttachAllDetachedTo(elementRuntime, true);
                 }
-                else if (toReturn is ShapeCollection)
+                else if (toReturn.RuntimeObject is ShapeCollection)
                 {
-                    ((ShapeCollection)toReturn).AttachAllDetachedTo(elementRuntime, true);
+                    ((ShapeCollection)toReturn.RuntimeObject).AttachAllDetachedTo(elementRuntime, true);
                 }
             }
 

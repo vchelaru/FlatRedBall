@@ -18,7 +18,7 @@ namespace FlatRedBall.Glue.RuntimeObjects.File
 
         public override string ToString()
         {
-            return ReferencedFileSave?.Name;
+            return $"{ReferencedFileSave?.Name} from {DataModel?.GetType()} as {RuntimeObject?.GetType()}";
         }
     }
 
@@ -66,7 +66,7 @@ namespace FlatRedBall.Glue.RuntimeObjects.File
         public abstract object TryGetObjectFromFile(ICollection<LoadedFile> allFileObjects, ReferencedFileSave rfs, string objectType, string objectName);
 
 
-        public abstract bool TryHandleRefreshFile(FilePath fileName, List<LoadedFile> allFileObjects);
+        public abstract bool TryHandleRefreshFile(FilePath fileName, List<LoadedFile> loadedFiles, List<LoadedFile> addedFiles);
         public abstract object CreateEmptyObjectMatchingArgumentType(object originalObject);
     }
 }

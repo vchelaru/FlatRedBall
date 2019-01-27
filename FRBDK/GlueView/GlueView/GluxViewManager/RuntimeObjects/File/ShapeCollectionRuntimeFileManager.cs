@@ -48,7 +48,7 @@ namespace FlatRedBall.Glue.RuntimeObjects.File
             return null;
         }
 
-        public override bool TryHandleRefreshFile(FilePath fileName, List<LoadedFile> allFileObjects)
+        public override bool TryHandleRefreshFile(FilePath fileName, List<LoadedFile> loadedFiles, List<LoadedFile> addedFiles)
         {
             return false;
         }

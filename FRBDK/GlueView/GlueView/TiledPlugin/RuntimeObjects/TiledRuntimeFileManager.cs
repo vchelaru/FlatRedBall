@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.RuntimeObjects.File;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.TileCollisions;
 using FlatRedBall.TileGraphics;
 using GlueView.Facades;
 using Microsoft.Xna.Framework.Graphics;
@@ -135,46 +136,72 @@ namespace TiledPlugin.RuntimeObjects
             return toReturn;
         }
 
-        public override bool TryHandleRefreshFile(FilePath fileName, List<LoadedFile> allFileObjects)
+        public override bool TryHandleRefreshFile(FilePath fileName, List<LoadedFile> loadedFiles, List<LoadedFile> addedFiles)
         {
             var extension = fileName.Extension;
             var wasHandled = false;
             if(extension == "tmx")
             {
-                wasHandled = TryHandleTmxRefresh(fileName, allFileObjects);
+                wasHandled = TryHandleTmxRefresh(fileName, loadedFiles, addedFiles);
             }
             else if(extension == "png")
             {
                 // We never say "handled = true" for PNGs since others might want to handle it too
-                TryHandlePngRefresh(fileName, allFileObjects);
+                TryHandlePngRefresh(fileName, loadedFiles);
             }
             else if(extension == "tsx")
             {
-                wasHandled = TryHandleTsxRefresh(fileName, allFileObjects);
+                wasHandled = TryHandleTsxRefresh(fileName, loadedFiles, addedFiles);
             }
             return wasHandled;
         }
 
-        private bool TryHandleTsxRefresh(FilePath tsxFileName, List<LoadedFile> allFileObjects)
+        private bool TryHandleTsxRefresh(FilePath tsxFileName, List<LoadedFile> loadedFiles, List<LoadedFile> addedFiles)
         {
-            foreach(var item in allFileObjects.Where(item =>item.DataModel is TiledMapSave))
+            foreach(var loadedFile in loadedFiles.Where(item =>item.DataModel is TiledMapSave))
             {
-                var tiledMapSave = item.DataModel as TiledMapSave;
+                var tiledMapSave = loadedFile.DataModel as TiledMapSave;
 
-                var tmxDirectory = item.FilePath.GetDirectoryContainingThis();
+                var tmxDirectory = loadedFile.FilePath.GetDirectoryContainingThis();
 
-                foreach(var tileset in tiledMapSave.Tilesets)
+                if(tiledMapSave != null)
                 {
-                    var path = tmxDirectory + tileset.Source;
-
-                    if(path == tsxFileName)
+                    foreach(var tileset in tiledMapSave.Tilesets)
                     {
-                        RefreshTmx(item);
-                        break;
+                        var path = tmxDirectory + tileset.Source;
+
+                        if(path == tsxFileName)
+                        {
+                            if(loadedFile.RuntimeObject is LayeredTileMap)
+                            {
+                                RefreshTmx(loadedFile);
+                            }
+                            break;
+                        }
                     }
                 }
             }
 
+            foreach (var addedFile in addedFiles.Where(item =>  item.DataModel is TiledMapSave && item.RuntimeObject is TileShapeCollection))
+            {
+                var tiledMapSave = addedFile.DataModel as TiledMapSave;
+
+                var tmxDirectory = addedFile.FilePath.GetDirectoryContainingThis();
+
+                if (tiledMapSave != null)
+                {
+                    foreach (var tileset in tiledMapSave.Tilesets)
+                    {
+                        var path = tmxDirectory + tileset.Source;
+
+                        if (path == tsxFileName)
+                        {
+                            RefreshTileShapeCollection(addedFile, loadedFiles);
+                            break;
+                        }
+                    }
+                }
+            }
             return true;
         }
 
@@ -213,14 +240,27 @@ namespace TiledPlugin.RuntimeObjects
             }
         }
 
-        private bool TryHandleTmxRefresh(FilePath fileName, List<LoadedFile> allFileObjects)
+        private bool TryHandleTmxRefresh(FilePath fileName, List<LoadedFile> loadedFiles, List<LoadedFile> addedFiles)
         {
             bool wasHandled = false;
-            foreach (var item in allFileObjects.Where(item => item.FilePath == fileName))
+            foreach (var item in loadedFiles.Where(item => item.FilePath == fileName))
             {
                 RefreshTmx(item);
 
                 wasHandled = true;
+            }
+
+
+            foreach (var addedFile in addedFiles.Where(item => 
+                item.FilePath == fileName && 
+                item.DataModel is TiledMapSave &&
+                item.RuntimeObject is TileShapeCollection))
+            {
+                var tiledMapSave = addedFile.DataModel as TiledMapSave;
+
+                var tmxDirectory = addedFile.FilePath.GetDirectoryContainingThis();
+
+                RefreshTileShapeCollection(addedFile, loadedFiles);
             }
 
             return wasHandled;
@@ -242,6 +282,28 @@ namespace TiledPlugin.RuntimeObjects
             newMap?.AddToManagers();
             item.RuntimeObject = newMap;
             item.DataModel = tiledMapSaveAsObject;
+        }
+
+        private void RefreshTileShapeCollection(LoadedFile tileShapeCollectionLoadedFile, List<LoadedFile> loadedFiles)
+        {
+            var oldTileShapeCollection =
+                ((TileShapeCollection)tileShapeCollectionLoadedFile.RuntimeObject);
+            // find the loaded file that has the runtime LayeredTileMap and adjust the runtime:
+            oldTileShapeCollection.RemoveFromManagers();
+
+            var layeredTileMapLoadedFile = loadedFiles
+                .FirstOrDefault(item => item.FilePath == item.FilePath && item.RuntimeObject is LayeredTileMap);
+
+            if(layeredTileMapLoadedFile != null)
+            {
+                var layeredTileMap = layeredTileMapLoadedFile.RuntimeObject as LayeredTileMap;
+
+                var newTileMap =
+                    layeredTileMap.Collisions.FirstOrDefault(item => item.Name == oldTileShapeCollection.Name);
+
+                tileShapeCollectionLoadedFile.RuntimeObject = newTileMap;
+                newTileMap.Visible = true;
+            }
         }
 
         public override object CreateEmptyObjectMatchingArgumentType(object originalObject)

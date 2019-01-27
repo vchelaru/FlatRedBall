@@ -51,6 +51,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
         }
 
 
+
         public List<NodeNetwork> LoadedNodeNetworks
         {
             get { return mLoadedNodeNetworks; }
@@ -453,7 +454,7 @@ namespace FlatRedBall.Glue.RuntimeObjects
         {
             foreach(var manager in FileManagers)
             {
-                if(manager.TryHandleRefreshFile(fileName, mAddedRfses))
+                if(manager.TryHandleRefreshFile(fileName, mLoadedRfses, mAddedRfses))
                 {
                     break;
                 }

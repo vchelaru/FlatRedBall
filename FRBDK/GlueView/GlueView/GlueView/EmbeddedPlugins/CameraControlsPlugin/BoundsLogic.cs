@@ -1,4 +1,6 @@
 ﻿using EditorObjects;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math.Geometry;
 using GlueView.Facades;
 using Microsoft.Xna.Framework;
@@ -131,6 +133,30 @@ namespace GlueView.EmbeddedPlugins.CameraControlsPlugin
                 {
                     boundsRectangle.Width = glueProject.OrthogonalWidth;
                     boundsRectangle.Height = glueProject.OrthogonalHeight;
+                }
+
+                var currentElement = GlueViewState.Self.CurrentElement;
+                var recursiveNamedObjects = currentElement.GetAllNamedObjectsRecurisvely();
+
+                // see if the current element has a camera and if it's offset...
+                var cameraNoses = recursiveNamedObjects
+                    .Where(item =>
+                        item.SourceType == FlatRedBall.Glue.SaveClasses.SourceType.FlatRedBallType &&
+                        item.SourceClassType == "Camera");
+
+                foreach(var cameraNos in cameraNoses)
+                {
+                    var xAsObject = cameraNos.GetPropertyValue("X");
+                    var yAsObject = cameraNos.GetPropertyValue("Y");
+
+                    if(xAsObject is float)
+                    {
+                        boundsRectangle.X = (float)xAsObject;
+                    }
+                    if(yAsObject is float)
+                    {
+                        boundsRectangle.Y = (float)yAsObject;
+                    }
                 }
             }
         }

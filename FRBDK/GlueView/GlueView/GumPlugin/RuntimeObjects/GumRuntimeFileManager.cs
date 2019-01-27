@@ -214,7 +214,7 @@ namespace GumPlugin.RuntimeObjects
             return null;
         }
 
-        public override bool TryHandleRefreshFile(FilePath filePath, List<LoadedFile> allFileObjects)
+        public override bool TryHandleRefreshFile(FilePath filePath, List<LoadedFile> loadedFiles, List<LoadedFile> addedFiles)
         {
             var shouldRefresh = false;
 
@@ -251,10 +251,10 @@ namespace GumPlugin.RuntimeObjects
                 if (shouldRefresh)
                 {
                     gumIdb.Destroy();
-                    allFileObjects.RemoveAll(item =>item.RuntimeObject == gumIdb);
+                    loadedFiles.RemoveAll(item =>item.RuntimeObject == gumIdb);
 
                     string fullFileName = GetGumIdbFullFileName();
-                    var existingLoadedFile = allFileObjects.FirstOrDefault(item => item.FilePath == fullFileName);
+                    var existingLoadedFile = loadedFiles.FirstOrDefault(item => item.FilePath == fullFileName);
 
                     object gumIdbAsObject;
                     object dataModel;

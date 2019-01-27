@@ -102,7 +102,7 @@ namespace FlatRedBall.Glue.RuntimeObjects.File
             return false;
         }
 
-        public override bool TryHandleRefreshFile(FilePath fileName, List<LoadedFile> allFileObjects)
+        public override bool TryHandleRefreshFile(FilePath fileName, List<LoadedFile> loadedFiles, List<LoadedFile> addedFiles)
         {
             // do nothing for now...ever? .scnx is going out of style
             return false;
