@@ -804,6 +804,8 @@ namespace GumPlugin.Managers
         {
             string contentFullFileName = FileManager.GetDirectory(contentProject.FullFileName) + buildItem.UnevaluatedInclude;
 
+            contentFullFileName = FileManager.RemoveDotDotSlash(contentFullFileName);
+
             bool isFontCacheFile = FileManager.IsRelativeTo(contentFullFileName, fontCacheFolder);
 
             if(isFontCacheFile)

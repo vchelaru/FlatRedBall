@@ -57,6 +57,11 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
+        internal AnimationChainSave HandleDuplicate(string requestedName = null)
+        {
+            return Duplicate(FileManager.CloneObject(SelectedState.Self.SelectedChain), requestedName);
+        }
+
         internal void HandlePaste()
         {
             var dataObject = Clipboard.GetDataObject();
@@ -77,25 +82,32 @@ namespace FlatRedBall.AnimationEditorForms
                 {
                     object data = dataObject.GetData("chain");
                     AnimationChainSave whatToCopy = data as AnimationChainSave;
-                    AnimationChainSave newAcs = FileManager.CloneObject(whatToCopy);
-
-                    List<string> existingNames = ProjectManager.Self.AnimationChainListSave.AnimationChains.Select(item => item.Name).ToList();
-
-                    newAcs.Name = StringFunctions.MakeStringUnique(newAcs.Name, existingNames, 2);
-
-
-                    ProjectManager.Self.AnimationChainListSave.AnimationChains.Add(newAcs);
-                    TreeViewManager.Self.RefreshTreeNode(newAcs);
-
-                    MainControl.Self.RaiseAnimationChainChanges(null, null);
-
-                    SelectedState.Self.SelectedChain = newAcs;
-
+                    Duplicate(whatToCopy);
 
                 }
             }
         }
 
+        private static AnimationChainSave Duplicate(AnimationChainSave whatToCopy, string requestedName = null)
+        {
+            AnimationChainSave newAcs = FileManager.CloneObject(whatToCopy);
+            if(requestedName != null)
+            {
+                newAcs.Name = requestedName;
+            }
+            List<string> existingNames = ProjectManager.Self.AnimationChainListSave.AnimationChains.Select(item => item.Name).ToList();
 
+            newAcs.Name = StringFunctions.MakeStringUnique(newAcs.Name, existingNames, 2);
+
+
+            ProjectManager.Self.AnimationChainListSave.AnimationChains.Add(newAcs);
+            TreeViewManager.Self.RefreshTreeNode(newAcs);
+
+            MainControl.Self.RaiseAnimationChainChanges(null, null);
+
+            SelectedState.Self.SelectedChain = newAcs;
+
+            return newAcs;
+        }
     }
 }

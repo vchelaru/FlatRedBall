@@ -82,6 +82,9 @@ namespace FlatRedBall.AnimationEditorForms
                 mMenu.Items.Add("Add AnimationChain", null, AddChainClick);
                 mMenu.Items.Add("Add Frame", null, AddFrameClick);
                 mMenu.Items.Add("-");
+
+                CreateDuplicateToolStripItems();
+
                 mMenu.Items.Add("Copy", null, CopyClick);
                 mMenu.Items.Add("Paste", null, PasteClick);
                 mMenu.Items.Add("-");
@@ -102,6 +105,101 @@ namespace FlatRedBall.AnimationEditorForms
 
             mMenu.Items.Add("Sort Animations Alphabetically", null, SortAnimationsAlphabetically );
             
+        }
+
+        private void CreateDuplicateToolStripItems()
+        {
+            SelectedState state = SelectedState.Self;
+
+            var toolStripMenuItem = new ToolStripMenuItem("Duplicate...");
+
+            var currentChainName = state.SelectedChain.Name;
+
+
+            toolStripMenuItem.DropDownItems.Add("Original", null, (not, used) => HandleDuplicateOriginalClicked(false, false, null));
+
+            string horizontallyText = "Flipped Horizontally";
+            string newHorizontalName = null;
+
+            var hasLeft = currentChainName?.ToLowerInvariant().Contains("left") == true;
+            var hasRight = currentChainName?.ToLowerInvariant().Contains("right") == true;
+            if(hasLeft)
+            {
+                newHorizontalName = currentChainName
+                    .Replace("Left", "Right")
+                    .Replace("left", "right")
+                    .Replace("LEFT", "RIGHT");
+            }
+            else if(hasRight)
+            {
+                newHorizontalName = currentChainName
+                    .Replace("Right", "Left")
+                    .Replace("right", "left")
+                    .Replace("RIGHT", "LEFT");
+            }
+            // Do a comparison against the original name in case the value hasn't been replaced due to caps
+            if(newHorizontalName == currentChainName)
+            {
+                newHorizontalName = null;
+            }
+
+            if(newHorizontalName != null)
+            {
+                horizontallyText += $" as {newHorizontalName}";
+            }
+            toolStripMenuItem.DropDownItems.Add(horizontallyText, null, (not, used) => HandleDuplicateOriginalClicked(true, false, newHorizontalName));
+
+
+            string verticallyText = "Flipped Vertically";
+            string newVerticalName = null;
+
+            var hasUp = currentChainName?.ToLowerInvariant().Contains("up") == true;
+            var hasDown = currentChainName?.ToLowerInvariant().Contains("down") == true;
+            if(hasUp)
+            {
+                newVerticalName = currentChainName
+                    .Replace("Up", "Down")
+                    .Replace("up", "down")
+                    .Replace("UP", "DOWN");
+            }
+            else if(hasDown)
+            {
+                newVerticalName = currentChainName
+                    .Replace("Down", "Up")
+                    .Replace("down", "up")
+                    .Replace("DOWN", "UP");
+            }
+            // Do a coparison against the original name in case the value hasn't been replaced due to caps
+            if(newVerticalName == currentChainName)
+            {
+                newVerticalName = null;
+            }
+
+            if(newVerticalName != null )
+            {
+                verticallyText += $" as {newVerticalName}";
+            }
+
+            toolStripMenuItem.DropDownItems.Add(verticallyText, null, (not, used) => HandleDuplicateOriginalClicked(false, true, newVerticalName));
+
+            mMenu.Items.Add(toolStripMenuItem);
+        }
+
+        private void HandleDuplicateOriginalClicked(bool flipHorizontal, bool flipVertical, string newName)
+        {
+            var newCopy = CopyManager.Self.HandleDuplicate(newName);
+
+            if(flipHorizontal)
+            {
+                FlipHorizontally(newCopy);
+            }
+
+            if(flipVertical)
+            {
+                FlipVertically(newCopy);
+            }
+
+            CallAnimationChainsChange();
         }
 
         public void MoveToTopClick(object sender, EventArgs e)
@@ -233,17 +331,22 @@ namespace FlatRedBall.AnimationEditorForms
 
             if (acs != null)
             {
-                foreach (AnimationFrameSave afs in acs.Frames)
-                {
-                    afs.RelativeY *= -1;
-                    afs.FlipVertical = !afs.FlipVertical;
-                }
+                FlipVertically(acs);
 
-                WireframeManager.Self.RefreshAll();
-                PreviewManager.Self.RefreshAll();
                 CallAnimationChainsChange();
-
             }
+        }
+
+        private void FlipVertically(AnimationChainSave acs)
+        {
+            foreach (AnimationFrameSave afs in acs.Frames)
+            {
+                afs.RelativeY *= -1;
+                afs.FlipVertical = !afs.FlipVertical;
+            }
+
+            WireframeManager.Self.RefreshAll();
+            PreviewManager.Self.RefreshAll();
         }
 
         private void FlipAnimationChainHorizontally(object sender, EventArgs e)
@@ -252,16 +355,21 @@ namespace FlatRedBall.AnimationEditorForms
 
             if (acs != null)
             {
-                foreach (AnimationFrameSave afs in acs.Frames)
-                {
-                    afs.RelativeX *= -1;
-                    afs.FlipHorizontal = !afs.FlipHorizontal;
-                }
-
-                WireframeManager.Self.RefreshAll();
-                PreviewManager.Self.RefreshAll();
+                FlipHorizontally(acs);
                 CallAnimationChainsChange();
             }
+        }
+
+        private void FlipHorizontally(AnimationChainSave acs)
+        {
+            foreach (AnimationFrameSave afs in acs.Frames)
+            {
+                afs.RelativeX *= -1;
+                afs.FlipHorizontal = !afs.FlipHorizontal;
+            }
+
+            WireframeManager.Self.RefreshAll();
+            PreviewManager.Self.RefreshAll();
         }
 
         public void AddChainClick(object sender, EventArgs args)
