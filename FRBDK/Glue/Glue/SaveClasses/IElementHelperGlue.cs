@@ -203,6 +203,13 @@ namespace FlatRedBall.Glue.SaveClasses
                         string relativeNew = FileManager.MakeRelative(absoluteNewFile);
 
                         ProjectManager.ProjectBase.RenameItem(relativeOld, relativeNew);
+
+                        foreach(var syncedProject in GlueState.Self.SyncedProjects)
+                        {
+                            string syncedRelativeOld = FileManager.MakeRelative(absoluteOldFile, syncedProject.Directory);
+                            string syncedRelativeNew = FileManager.MakeRelative(absoluteNewFile, syncedProject.Directory);
+                            syncedProject.RenameItem(syncedRelativeOld, syncedRelativeNew);
+                        }
                     }
                 }
             }
