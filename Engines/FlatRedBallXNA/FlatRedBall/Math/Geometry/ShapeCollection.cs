@@ -14,7 +14,7 @@ using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace FlatRedBall.Math.Geometry
 {
-    public class ShapeCollection : IEquatable<ShapeCollection> 
+    public class ShapeCollection : ICollidable, IEquatable<ShapeCollection> 
 #if FRB_XNA
         ,IMouseOver
 #endif
@@ -54,6 +54,9 @@ namespace FlatRedBall.Math.Geometry
         #endregion
 
         #region Properties
+
+        ShapeCollection ICollidable.Collision { get { return this; } }
+
         public PositionedObjectList<AxisAlignedRectangle> AxisAlignedRectangles
         {
             get { return mAxisAlignedRectangles; }
