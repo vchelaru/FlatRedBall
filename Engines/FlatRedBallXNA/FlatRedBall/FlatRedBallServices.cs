@@ -1478,9 +1478,18 @@ namespace FlatRedBall
 
                 Renderer.Update();
 
-                foreach (IManager manager in mManagers)
+                // The foreach requires that no managers are
+                // created inside any of the update for other managers
+                // but that can happen. For example a TweenerManager may
+                // add itself to the mManagers when it is accessed through
+                // it's .Self property, and this could be done in another manager
+                // like the collision manager.
+                // Switching to a for loop lets us modify this list
+                //foreach (IManager manager in mManagers)
+                for(int i = 0; i < mManagers.Count; i++)
                 {
-                    manager.Update();
+
+                    mManagers[i].Update();
                 }
 
                 DestroyContentManagersReadyToBeDestroyed();
