@@ -172,6 +172,13 @@ namespace FlatRedBall
             }
             set
             {
+#if DEBUG
+                if(mAnimationChains == null)
+                {
+                    throw new NullReferenceException("AnimationChains is null - this must be assigned first before setting the CurrentChainName?");
+                }
+#endif
+
                 if (mCurrentChainIndex == -1 ||
                     mCurrentChainIndex >= mAnimationChains.Count ||
                     mAnimationChains[mCurrentChainIndex].Name != value)

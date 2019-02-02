@@ -140,7 +140,9 @@ namespace TileGraphicsPlugin
             //    adding the entity to all screens containing tmx files directly.
             // 2.0.0
             //  - Added generation of adding entities from Tiled file
-            get { return new Version(2, 0, 0, 0); }
+            // 2.0.1
+            // - Added support for setting AnimationChains on an entity through Tiled
+            get { return new Version(2, 0, 1, 0); }
         }
 
 
