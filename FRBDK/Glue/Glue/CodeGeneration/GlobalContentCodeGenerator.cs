@@ -12,6 +12,7 @@ using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.Parsing
 {
@@ -50,7 +51,8 @@ namespace FlatRedBall.Glue.Parsing
             {
 
                 FileWatchManager.IgnoreNextChangeOnFile(absoluteFileName);
-                FileManager.SaveText(classContent.ToString(), absoluteFileName);
+                GlueCommands.Self.TryMultipleTimes(() => 
+                    FileManager.SaveText(classContent.ToString(), absoluteFileName));
             }
             catch
             {

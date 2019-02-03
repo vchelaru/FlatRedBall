@@ -51,7 +51,8 @@ namespace FlatRedBall.Math.Collision
 
         /// <summary>
         /// Whether the CollisionManager autoamtically calls DoCollisions on this relationship every frame.
-        /// If set to false, the CollisionManager will not call DoCollision, but DoCollision can be called automatically
+        /// If set to false, the CollisionManager will not call DoCollision, but DoCollision can be called manually
+        /// to perform collision.
         /// </summary>
         public bool IsActive { get; set; } = true;
 

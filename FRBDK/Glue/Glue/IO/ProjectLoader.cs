@@ -444,7 +444,9 @@ namespace FlatRedBall.Glue.IO
                 // to be explicitly made:
                 UpdateGlobalContentFileProjectMembership();
 
-                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
+                // I think this is handled automatically when regenerating all code...
+                // Yes, down in GenerateAllCodeTask
+                //GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
                 #endregion
                 Section.EndContextAndTime();
@@ -490,7 +492,7 @@ namespace FlatRedBall.Glue.IO
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("GenerateAllCode");
                 SetInitWindowText("Generating all code");
-                GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
+                GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
                 Section.EndContextAndTime();
                 GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh = false;
             }

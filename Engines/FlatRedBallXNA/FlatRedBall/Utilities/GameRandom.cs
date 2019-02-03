@@ -13,7 +13,20 @@ namespace FlatRedBall.Utilities
         /// <typeparam name="T">The list type.</typeparam>
         /// <param name="list">The list to return an element from.</param>
         /// <returns>A random element, obtained by using the Next method to obtain a random index.</returns>
-        public T In<T>(IList<T> list) => list[Next(list.Count)];
+        public T In<T>(IList<T> list)
+        {
+#if DEBUG
+            if(list == null)
+            {
+                throw new ArgumentNullException("list argument cannot be null");
+            }
+            if(list.Count == 0)
+            {
+                throw new InvalidOperationException("Cannot get a random element from an empty list");
+            }
+#endif
+            return list[Next(list.Count)];
+        }
 
         /// <summary>
         /// Returns a random number within the specified range (inclusive).
