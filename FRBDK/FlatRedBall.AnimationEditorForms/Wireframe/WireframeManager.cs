@@ -690,6 +690,8 @@ namespace FlatRedBall.AnimationEditorForms
                 ShowSpriteOutlineForTexture(Texture);
                 UpdateLineGridToTexture(Texture);
 
+                
+
                 string folder = null;
                 bool doAnyFramesUseThisTexture = false;
 
@@ -966,7 +968,7 @@ namespace FlatRedBall.AnimationEditorForms
 
             mLastTexture = newName;
 
-            //mControl.BringSpriteInView();
+            mControl.BringSpriteInView();
         }
 
         private static void MoveOriginToTopLeft(RenderingLibrary.Camera camera)

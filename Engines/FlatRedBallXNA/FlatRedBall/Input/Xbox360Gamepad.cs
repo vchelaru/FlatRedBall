@@ -350,34 +350,37 @@ namespace FlatRedBall.Input
             get { return mRightTrigger; }
         }
 
+        /// <summary>
+        /// Returns whether this game pad was disconnected last frame but is connected this frame.
+        /// </summary>
         public bool WasConnectedThisFrame
         {
             get
             {
-#if !SILVERLIGHT && !MONODROID
                 if (mLastGamePadState == null)
                 {
                     return false;
                 }
                 else
-#endif
                 {
                     return !mLastGamePadState.IsConnected && mGamePadState.IsConnected;
                 }
             }
         }
 
+
+        /// <summary>
+        /// Returns whether this game pad was connected last frame but is disconnected this frame.
+        /// </summary>
         public bool WasDisconnectedThisFrame
         {
             get
             {
-#if !SILVERLIGHT && !MONODROID
                 if (mLastGamePadState == null)
                 {
                     return false;
                 }
                 else
-#endif
                 {
                     return mLastGamePadState.IsConnected && !mGamePadState.IsConnected;
                 }

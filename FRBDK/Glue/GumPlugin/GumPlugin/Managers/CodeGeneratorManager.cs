@@ -312,13 +312,16 @@ namespace GumPlugin.Managers
 
             if (resultToReturn.DidSaveGenerated)
             {
-                TrySaveMultipleTimes(generatedSaveLocation, generatedCode);
+                GlueCommands.Self.TryMultipleTimes(() => 
+                    System.IO.File.WriteAllText(generatedSaveLocation, generatedCode));
             }
 
             if(resultToReturn.DidSaveCustom)
             {
                 var customCode = mGueDerivingClassCodeGenerator.GetCustomCodeTemplateCode(element);
-                TrySaveMultipleTimes(customCodeSaveLocation, customCode);
+
+                GlueCommands.Self.TryMultipleTimes(() =>
+                    System.IO.File.WriteAllText(customCodeSaveLocation, customCode));
             }
 
             return resultToReturn;
@@ -343,7 +346,8 @@ namespace GumPlugin.Managers
 
             string whereToSave = GumRuntimesFolder + "GumIdb.Generated.cs";
 
-            TrySaveMultipleTimes(whereToSave, contents);
+            GlueCommands.Self.TryMultipleTimes(() =>
+                System.IO.File.WriteAllText(whereToSave, contents));
 
             wasAdded |=
                 FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
@@ -425,7 +429,8 @@ namespace GumPlugin.Managers
 
             if(!string.IsNullOrEmpty(generatedCode))
             {
-                didSave = TrySaveMultipleTimes(saveLocation, generatedCode);
+                didSave = GlueCommands.Self.TryMultipleTimes(() =>
+                    System.IO.File.WriteAllText(saveLocation, generatedCode));
             }
 
             if(didSave)

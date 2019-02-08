@@ -209,10 +209,11 @@ namespace GlueTestProject.Screens
 
             }
 
-            const int numberOfFrames = 14;
+            const int numberOfFrames = 15;
             if(this.ActivityCallCount == numberOfFrames)
             {
                 // UpdateDependencies is only called when there is a draw, and multiple draws may be skipped if fps is low enough
+                // If this fails, increase numberOfFrames above
                 TestEntityInListAttachedToObject(numberOfFrames);
 
                 IsActivityFinished = true;

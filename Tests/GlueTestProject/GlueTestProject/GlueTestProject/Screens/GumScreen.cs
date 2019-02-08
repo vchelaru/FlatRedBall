@@ -87,7 +87,37 @@ namespace GlueTestProject.Screens
 
             TestAddChildSetsParent();
 
+            TestHeightDependsOnChildrenWithCenteredChildren();
+
             TestTextWidth();
+        }
+
+        private void TestHeightDependsOnChildrenWithCenteredChildren()
+        {
+            GraphicalUiElement.IsAllLayoutSuspended = true;
+            var parentContainer = new ContainerRuntime();
+            parentContainer.Height = 4;
+            parentContainer.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToChildren;
+
+            var child = new ContainerRuntime();
+            child.YOrigin = VerticalAlignment.Center;
+            child.YUnits = Gum.Converters.GeneralUnitType.PixelsFromMiddle;
+            child.Height = 10;
+            child.HeightUnits = Gum.DataTypes.DimensionUnitType.Absolute;
+            child.Y = 0;
+
+            parentContainer.Children.Add(child);
+            GraphicalUiElement.IsAllLayoutSuspended = false;
+
+            parentContainer.UpdateLayout();
+
+            var parentAbsoluteHeight = parentContainer.GetAbsoluteHeight();
+            
+            parentAbsoluteHeight.ShouldBe(child.Height + parentContainer.Height, "because the parent container should be the height of its child plus the padding");
+
+            var childAbsoluteY = child.GetAbsoluteY();
+
+            childAbsoluteY.ShouldBe(2, "because this child should be centered");
         }
 
         private void TestTextWidth()

@@ -89,7 +89,7 @@ namespace FlatRedBall.Instructions
 
             if (foundField == null && foundProperty == null)
             {
-                throw new Exception("The type " + typeof(T) + " does not have a variable " + memberToSet);
+                throw new Exception("The type " + typeof(T) + " does not have a public field or property named " + memberToSet);
             }
             else
             {

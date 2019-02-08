@@ -33,11 +33,9 @@ namespace FlatRedBall.Graphics.Animation
 
         #region Properties
 
-        #region XML Docs
         /// <summary>
-        /// Sets the frameTime of each AnimationFrame in the AnimationChain to the passed value.
+        /// Sets the frame time to every frame in the animation to the value. For example, assigning a FrameTime of .2 will make every frame in the animation last .2 seconds.
         /// </summary>
-        #endregion
         public float FrameTime
         {
             set
@@ -100,11 +98,9 @@ namespace FlatRedBall.Graphics.Animation
             set { mParentGifFileName = value; }
         }
 
-        #region XML Docs
         /// <summary>
-        /// Returns the sum of the FrameLengths of all contained AnimationFrames.
+        /// The total duration of the animation in seconds. This is obtained by adding the FrameTime of all contained frames.
         /// </summary>
-        #endregion
         public float TotalLength
         {
             get

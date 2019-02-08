@@ -279,7 +279,8 @@ namespace FlatRedBall.TileEntities
                 // If name is EntityToCreate, skip it:
                 string propertyName = property.Name;
 
-                bool shouldSet = propertyName != "EntityToCreate";
+                bool shouldSet = propertyName != "EntityToCreate" && 
+                            propertyName != "Type";
 
                 if (shouldSet)
                 {
@@ -429,6 +430,13 @@ namespace FlatRedBall.TileEntities
                         break;
                     }
                 }
+            }
+            // todo - could add support for more file types here like textures, etc...
+            else if (valueType == "FlatRedBall.Graphics.Animation.AnimationChainList")
+            {
+                var method = entityType.GetMethod("GetFile");
+
+                valueToSet = method.Invoke(null, new object[] { valueToSet });
             }
             // If this has a + in it, then that might mean it's a state. We should try to get the type, and if we find it, stuff
             // it in allDictionaries to make future calls faster

@@ -23,6 +23,10 @@ namespace FlatRedBall.Math.Collision
 
         public CollidableVsTileShapeCollectionData(TileShapeCollection tileShapeCollection)
         {
+            if (tileShapeCollection == null)
+            {
+                throw new ArgumentNullException("The tileShapeCollection for the relationship cannot be null");
+            }
             this.tileShapeCollection = tileShapeCollection;
         }
 

@@ -75,10 +75,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             IO.ProjectLoader.Self.LoadProject(fileName);
         }
 
-        public void TryMultipleTimes(Action action, int numberOfTimesToTry = 5)
+        public bool TryMultipleTimes(Action action, int numberOfTimesToTry = 5)
         {
             const int msSleep = 200;
-
+            var didSucceed = false;
             int failureCount = 0;
 
             while (failureCount < numberOfTimesToTry)
@@ -86,6 +86,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 try
                 {
                     action();
+                    didSucceed = true;
                     break;
                 }
 
@@ -100,6 +101,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                     }
                 }
             }
+
+            didSucceed;
         }
 
         public GlueCommands()

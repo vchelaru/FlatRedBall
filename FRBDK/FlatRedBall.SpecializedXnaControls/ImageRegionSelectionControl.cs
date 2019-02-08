@@ -533,50 +533,17 @@ namespace FlatRedBall.SpecializedXnaControls
         {
             if (mCurrentTexture != null)
             {
-                const float pixelBorder = 10;
+                var minX = -Camera.ClientWidth / 2.0f;
+                var maxX = mCurrentTexture.Width - Camera.ClientWidth / 2.0f;
 
-                bool isAbove = mCurrentTextureSprite.Y + mCurrentTexture.Height < Camera.AbsoluteTop;
-                bool isBelow = mCurrentTextureSprite.Y > Camera.AbsoluteBottom;
+                var minY = -Camera.ClientHeight / 2.0f;
+                var maxY = mCurrentTexture.Height - Camera.ClientHeight / 2.0f;
 
-                bool isLeft = mCurrentTextureSprite.X + mCurrentTexture.Width < Camera.AbsoluteLeft;
-                bool isRight = mCurrentTextureSprite.X> Camera.AbsoluteRight;
+                Camera.X = Math.Max(minX, Camera.X);
+                Camera.X = Math.Min(maxX, Camera.X);
 
-                // If it's both above and below, that means the user has zoomed in a lot so that the Sprite is bigger than
-                // the camera view.  
-                // If it's neither, then the entire Sprite is in view.
-                // If it's only one or the other, that means that part of the Sprite is hanging off the edge, and we can adjust.
-                bool adjustY = (isAbove || isBelow) && !(isAbove && isBelow);
-                bool adjustX = (isLeft || isRight) && !(isLeft && isRight);
-
-                if (adjustY)
-                {
-                    bool isTallerThanCamera = mCurrentTexture.Height * Camera.Zoom > Camera.ClientHeight;
-
-                    if ((isTallerThanCamera && isAbove) || (!isTallerThanCamera && isBelow))
-                    {
-                        // Move Camera so Sprite is on bottom
-                        Camera.Y = mCurrentTextureSprite.Y + mCurrentTexture.Height - (Camera.ClientHeight / 2.0f - pixelBorder) / Camera.Zoom;
-                    }
-                    else
-                    {
-                        // Move Camera so Sprite is on top
-                        Camera.Y = mCurrentTextureSprite.Y + (Camera.ClientHeight / 2.0f - pixelBorder) / Camera.Zoom;
-                    }
-                }
-
-                if (adjustX)
-                {
-                    bool isWiderThanCamera = mCurrentTexture.Width * Camera.Zoom > Camera.ClientWidth;
-
-                    if ((isWiderThanCamera && isLeft) || (!isWiderThanCamera && isRight))
-                    {
-                        Camera.X = mCurrentTextureSprite.X + mCurrentTexture.Width - (Camera.ClientWidth / 2.0f - pixelBorder) / Camera.Zoom;
-                    }
-                    else
-                    {
-                        Camera.X = mCurrentTextureSprite.X + (Camera.ClientWidth / 2.0f - pixelBorder) / Camera.Zoom;
-                    }
-                }
+                Camera.Y = Math.Max(minY, Camera.Y);
+                Camera.Y = Math.Min(maxY, Camera.Y);
             }
         }
 
