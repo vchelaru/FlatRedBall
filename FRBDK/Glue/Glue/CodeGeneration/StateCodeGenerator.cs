@@ -96,20 +96,22 @@ namespace FlatRedBall.Glue.CodeGeneration
             return new List<string>(names.Keys);
         }
 
-        private static ICodeBlock CreateClassForStateCategory(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, string enumName, IElement element)
+        private static ICodeBlock CreateClassForStateCategory(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, string categoryClassName, IElement element)
         {
             if (statesForThisCategory.Count != 0)
             {
                 string prefix = "public";
 
                 string postfix = null;
-                if (IsStateDefinedInBase(element, enumName))
+                if (IsStateDefinedInBase(element, categoryClassName))
                 {
-                    postfix = $" : {element.BaseElement.Replace("\\", ".")}.{enumName}";
+                    postfix = $" : {element.BaseElement.Replace("\\", ".")}.{categoryClassName}";
                 }
 
 
-                currentBlock = currentBlock.Class(prefix, enumName, postfix);
+                currentBlock = currentBlock.Class(prefix, categoryClassName, postfix);
+
+                currentBlock.Line($"public string Name;");
 
                 foreach(var variable in element.CustomVariables)
                 {
@@ -136,8 +138,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     var state = statesForThisCategory[i];
 
-                    currentBlock.Line($"public static {enumName} {state.Name} = new {enumName}()");
+                    currentBlock.Line($"public static {categoryClassName} {state.Name} = new {categoryClassName}()");
                     var variableBlock = currentBlock.Block();
+
+                    variableBlock.Line($"Name = \"{state.Name}\",");
+
                     foreach(var instruction in state.InstructionSaves)
                     {
                         if(instruction.Value != null)

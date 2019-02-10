@@ -59,34 +59,15 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             string absoluteFileName = ProjectSpecificFullFileName;
 
-            const int numberOfTimesToTry = 5;
-
-            int numberOfFailures = 0;
-            bool succeeded = false;
-            while (numberOfFailures < numberOfTimesToTry)
+            try
             {
-                try
-                {
-                    FileManager.SaveText(codeContents, absoluteFileName);
-
-                    succeeded = true;
-                    break;
-                }
-                catch
-                {
-                    numberOfFailures++;
-                }
-
+                GlueCommands.Self.TryMultipleTimes(() =>
+                        FileManager.SaveText(codeContents, absoluteFileName));
             }
-
-            if (!succeeded)
+            catch(System.Exception e)
             {
-                GlueGui.ShowMessageBox("Failed to generate factory at file:\n\n" +
-                    absoluteFileName + "\n\nIs the file being locked by something?\n" +
-                    "This is not a fatal error - you can manually re-generate this " +
-                    "object or make a change to it to force a regeneration.");
+                GlueCommands.Self.PrintError("Could not save factory, but will try again next time Glue is restarted:\n" + e);
             }
-
 
             if (ProjectManager.ProjectBase != null && IsPartOfProject == false)
             {

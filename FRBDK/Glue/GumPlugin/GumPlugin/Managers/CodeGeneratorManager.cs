@@ -429,8 +429,16 @@ namespace GumPlugin.Managers
 
             if(!string.IsNullOrEmpty(generatedCode))
             {
-                didSave = GlueCommands.Self.TryMultipleTimes(() =>
-                    System.IO.File.WriteAllText(saveLocation, generatedCode));
+                try
+                {
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                        System.IO.File.WriteAllText(saveLocation, generatedCode));
+                    didSave = true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Failed to generate:\n" + e);
+                }
             }
 
             if(didSave)

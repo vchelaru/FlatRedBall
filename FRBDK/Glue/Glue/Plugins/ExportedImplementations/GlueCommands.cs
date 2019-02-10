@@ -75,10 +75,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             IO.ProjectLoader.Self.LoadProject(fileName);
         }
 
-        public bool TryMultipleTimes(Action action, int numberOfTimesToTry = 5)
+        /// <summary>
+        /// Tries an action multiple time, sleeping and repeating if an exception is thrown.
+        /// If the number of times is exceeded, the exception is rethrown and needs to be caught
+        /// by the caller.
+        /// </summary>
+        /// <param name="action">The action to invoke</param>
+        /// <param name="numberOfTimesToTry">The number of times to try</param>
+        public void TryMultipleTimes(Action action, int numberOfTimesToTry = 5)
         {
             const int msSleep = 200;
-            var didSucceed = false;
             int failureCount = 0;
 
             while (failureCount < numberOfTimesToTry)
@@ -86,7 +92,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 try
                 {
                     action();
-                    didSucceed = true;
                     break;
                 }
 
@@ -101,8 +106,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                     }
                 }
             }
-
-            didSucceed;
         }
 
         public GlueCommands()
