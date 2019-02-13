@@ -235,8 +235,10 @@ namespace GumPlugin.Managers
                     string instanceName = variable.SourceObject;
 
                     var instance = state.ParentContainer.GetInstance(variable.SourceObject);
-
-                    rootElementSave = ObjectFinder.Self.GetElementSave(instance.BaseType);
+                    if(instance != null)
+                    {
+                        rootElementSave = ObjectFinder.Self.GetElementSave(instance.BaseType);
+                    }
                 }
 
                 return rootElementSave is StandardElementSave && rootElementSave.Name == "NineSlice";
