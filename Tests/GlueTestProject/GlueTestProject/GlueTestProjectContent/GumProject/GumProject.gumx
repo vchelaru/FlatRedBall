@@ -9,6 +9,10 @@
   <RestrictFileNamesForAndroid>false</RestrictFileNamesForAndroid>
   <Guides />
   <ScreenReference>
+    <Name>BaseGlueScreenNotBaseGum</Name>
+    <ElementType>Screen</ElementType>
+  </ScreenReference>
+  <ScreenReference>
     <Name>DerivedScreenGum</Name>
     <ElementType>Screen</ElementType>
   </ScreenReference>
@@ -41,15 +45,15 @@
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
+    <Name>ComponentFolder/InFolder1</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>ComponentFolder/SameNameComponent</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
     <Name>ComponentFolder/StateComponentContainedFoldered</Name>
-    <ElementType>Component</ElementType>
-  </ComponentReference>
-  <ComponentReference>
-    <Name>ComponentFolder/InFolder1</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>

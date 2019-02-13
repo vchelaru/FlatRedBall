@@ -30,6 +30,8 @@ namespace FlatRedBall.Gum
 
         GraphicalUiElement element;
 
+        public static GumIdb Self { get; private set;}
+
         #endregion
 
         #region Properties
@@ -164,8 +166,8 @@ namespace FlatRedBall.Gum
                 };
 
                 var instruction = new FlatRedBall.Instructions.DelegateInstruction(primaryThreadAction);
-                FlatRedBall.Instructions.InstructionManager.Add(instruction);
-
+                FlatRedBall.Instructions.InstructionManager.AddSafe(instruction);
+                Self = idb;
             }
 
             if (projectFileName == null)

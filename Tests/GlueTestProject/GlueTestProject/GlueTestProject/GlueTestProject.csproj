@@ -856,6 +856,10 @@
     <Compile Include="GumRuntimes\AnimatedComponentRuntime.Generated.cs">
       <DependentUpon>AnimatedComponentRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\BaseGlueScreenNotBaseGumRuntime.cs" />
+    <Compile Include="GumRuntimes\BaseGlueScreenNotBaseGumRuntime.Generated.cs">
+      <DependentUpon>BaseGlueScreenNotBaseGumRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\Behaviors\IButtonBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\ICheckBoxBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\IComboBoxBehavior.Generated.cs" />

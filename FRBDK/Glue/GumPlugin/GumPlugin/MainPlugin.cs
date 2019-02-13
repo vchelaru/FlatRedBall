@@ -237,7 +237,10 @@ namespace GumPlugin
             //   children instance events if the parent container was inheriting its ExposeChildrenEvents value
             // 1.6.1.0
             // - Added Color property to generated standard elements.
-            get { return new Version(1, 6, 1, 0); }
+            // 1.6.2.0
+            // - Fixed double-loading of Gum screens in a derived Glue screen.
+            // - Added GumIdb.Self for global access to GumIdb
+            get { return new Version(1, 6, 2, 0); }
         }
 
         #endregion

@@ -96,11 +96,27 @@ namespace GumPlugin.Managers
                     mScreenAti.Extension = "gusx";
                     mScreenAti.AddToManagersMethod.Add("this.InstanceInitialize(); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += this.HandleResolutionChanged");
                     mScreenAti.CustomLoadMethod =
-                        "Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = true;  {THIS} = new FlatRedBall.Gum.GumIdb();  {THIS}.LoadFromFile(\"{FILE_NAME}\");  {THIS}.AssignReferences();" +
+                        // February 11, 2019
+                        // We don't use content
+                        // managers to load gum, 
+                        // but doing a null check
+                        // effectively prevents the
+                        // content from being re-loaded.
+                        // This is a bug that was discovered
+                        // during a monthly when a derived screen
+                        // was loading its screen 2 times.
+                        "if({THIS} == null)\n" +
+                        "{{\n" +
+                        "Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = true;\n" +
+                        "{THIS} = new FlatRedBall.Gum.GumIdb(); \n" +
+                        "{THIS}.LoadFromFile(\"{FILE_NAME}\");  {THIS}.AssignReferences();" +
 
+                        "Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = false;\n" +
+                        "{THIS}.Element.UpdateLayout();\n" +
                         // HACK!  There's a bug in the UpdateLayout that makes a single UpdateLayout not work right - a 2nd one fixes it. I'm adding this in temporarily until
                         // I have time to dig into the UpdateLayout to see why it's properly positioning all children.
-                        "Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = false; {THIS}.Element.UpdateLayout(); {THIS}.Element.UpdateLayout();";
+                        "{THIS}.Element.UpdateLayout();\n" +
+                        "}}";
 
                     
                     mScreenAti.DestroyMethod = "FlatRedBall.SpriteManager.RemoveDrawableBatch(this); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged -= this.HandleResolutionChanged";
