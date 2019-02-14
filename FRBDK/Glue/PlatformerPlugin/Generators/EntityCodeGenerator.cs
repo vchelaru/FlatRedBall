@@ -372,8 +372,6 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             var walkingUphill = (currentSlope > 0 && currentSlope < 90);
 
-            FlatRedBall.Debugging.Debugger.Write(currentSlope);
-
             if (CurrentMovement.UphillStopSpeedSlope != CurrentMovement.UphillFullSpeedSlope &&
                 currentSlope >= (float)CurrentMovement.UphillFullSpeedSlope &&
                 // make sure actually walking uphill:
