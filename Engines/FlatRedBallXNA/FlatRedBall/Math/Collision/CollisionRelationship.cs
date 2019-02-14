@@ -824,7 +824,7 @@ namespace FlatRedBall.Math.Collision
             {
                 skippedFrames++;
             }
-            else
+            else if(list.Count > 0)
             {
                 skippedFrames = 0;
                 int startInclusive;

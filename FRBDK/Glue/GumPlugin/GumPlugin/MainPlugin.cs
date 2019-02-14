@@ -240,7 +240,9 @@ namespace GumPlugin
             // 1.6.2.0
             // - Fixed double-loading of Gum screens in a derived Glue screen.
             // - Added GumIdb.Self for global access to GumIdb
-            get { return new Version(1, 6, 2, 0); }
+            // 1.6.2.1
+            // - More fixes when tracking files on instances that have been removed from their respective screen or component
+            get { return new Version(1, 6, 2, 1); }
         }
 
         #endregion

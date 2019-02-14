@@ -279,9 +279,23 @@ namespace GumPlugin.Managers
 
                     var instance = state.ParentContainer.GetInstance(instanceName);
 
-                    var basicElement = ObjectFinder.Self.GetRootStandardElementSave( instance.GetBaseElementSave());
+                    if(instance != null)
+                    {
+                        var basicElement = ObjectFinder.Self.GetRootStandardElementSave( instance.GetBaseElementSave());
 
-                    isTextObject = basicElement?.Name == "Text";
+                        isTextObject = basicElement?.Name == "Text";
+                    }
+                    else
+                    {
+                        // This code is used to
+                        // determine whether a referenced
+                        // file is necessary in the project.
+                        // Since the instance doesn't exist, we
+                        // won't actually use the variable for the
+                        // instance, so we don't want to track the file.
+                        // We can do this by marking isTextObject as false.
+                        isTextObject = false; 
+                    }
                 }
 
 

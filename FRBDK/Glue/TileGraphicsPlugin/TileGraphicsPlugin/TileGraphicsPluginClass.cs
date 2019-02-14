@@ -142,7 +142,9 @@ namespace TileGraphicsPlugin
             //  - Added generation of adding entities from Tiled file
             // 2.0.1
             // - Added support for setting AnimationChains on an entity through Tiled
-            get { return new Version(2, 0, 1, 0); }
+            // 2.1.0
+            // - Every layer now creates a tile shape collection regardless of whether it contains shapes
+            get { return new Version(2, 1, 0, 0); }
         }
 
 

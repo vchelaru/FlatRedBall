@@ -579,8 +579,6 @@ namespace FlatRedBall.TileGraphics
         {
             var allTilesets = tms.Tilesets;
 
-            Dictionary<TMXGlueLib.Tileset, bool> hasShapesDictionary = new Dictionary<TMXGlueLib.Tileset, bool>();
-
             Dictionary<string, TileCollisions.TileShapeCollection> nameCollisionPairs = new Dictionary<string, TileCollisions.TileShapeCollection>();
 
 
@@ -596,24 +594,12 @@ namespace FlatRedBall.TileGraphics
 
                     if (tileset != null)
                     {
-                        bool hasShapes;
-                        if (hasShapesDictionary.ContainsKey(tileset))
-                        {
-                            hasShapes = hasShapesDictionary[tileset];
-                        }
-                        else
-                        {
-                            // We don't know if this tileset has shapes yet, so let's figure it out:
-                            hasShapes = tileset.Tiles.Any(item => item.Objects?.@object?.Length > 0);
-
-                            hasShapesDictionary[tileset] = hasShapes;
-                        }
-
-                        if (hasShapes)
-                        {
-                            AddTileShapeCollectionForLayer(layer, nameCollisionPairs, tileset, tms.tilewidth, i);
-
-                        }
+                        // We used to only create collision if the layer
+                        // had any shapes, but we actually want to always create 
+                        // them even if the layer has no shapes because Glue lets
+                        // the user create TileShapeCollections for layers regardless
+                        // of shapes.
+                        AddTileShapeCollectionForLayer(layer, nameCollisionPairs, tileset, tms.tilewidth, i);
                     }
                 }
             }
