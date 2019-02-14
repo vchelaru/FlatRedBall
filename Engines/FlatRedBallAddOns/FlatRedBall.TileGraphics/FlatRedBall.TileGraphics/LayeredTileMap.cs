@@ -776,8 +776,12 @@ namespace FlatRedBall.TileGraphics
                 var cloned = rectangle.Clone();
 
                 // Offset by .5 since polygons are positioned by their center, tiles by top left
-                cloned.X = (xIndex + .5f) * tileDimension;
-                cloned.Y = -(yIndex + .5f) * tileDimension;
+                //cloned.X = (xIndex + .5f) * tileDimension;
+                //cloned.Y = -(yIndex + .5f) * tileDimension;
+                // Actually use the X and Y to get the top left, then use the actual rectangle's X and Y values so that
+                // its offset applies:
+                cloned.X = rectangle.X + (xIndex) * tileDimension;
+                cloned.Y = rectangle.Y - (yIndex) * tileDimension;
 
                 collectionForThisName.Rectangles.Add(cloned);
 

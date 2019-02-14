@@ -144,6 +144,8 @@ namespace TileGraphicsPlugin
             // - Added support for setting AnimationChains on an entity through Tiled
             // 2.1.0
             // - Every layer now creates a tile shape collection regardless of whether it contains shapes
+            // 2.1.1
+            // - Tile rectangle collision can now be offset
             get { return new Version(2, 1, 0, 0); }
         }
 
