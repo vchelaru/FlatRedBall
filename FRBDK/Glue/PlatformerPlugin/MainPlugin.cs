@@ -50,7 +50,9 @@ namespace FlatRedBall.PlatformerPlugin
                 // 1.3.6 - New build with latest Glue to address any syntax changes to underlying libs
                 // 1.3.7 - Added default input for vertical movement (jumping through clouds)
                 // 1.3.8 - Removed "0" in top left corner caused by debug write
-                return new Version(1, 3, 8);
+                // 1.3.9 - Fixed blend operation setting on maps - if a previous sprite used add, then
+                //         the layer was drawn with add
+                return new Version(1, 3, 9);
             }
         }
 
