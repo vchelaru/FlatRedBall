@@ -146,7 +146,10 @@ namespace TileGraphicsPlugin
             // - Every layer now creates a tile shape collection regardless of whether it contains shapes
             // 2.1.1
             // - Tile rectangle collision can now be offset
-            get { return new Version(2, 1, 0, 0); }
+            // 2.1.2
+            // - Fixed bug where layers weren't resetting their blend op to normal (from additive) which can
+            //   result in additive layers.
+            get { return new Version(2, 1, 2, 0); }
         }
 
 
