@@ -451,12 +451,14 @@ namespace FlatRedBall.Screens
         {
             this.IsPaused = true;
             InstructionManager.PauseEngine();
+            Math.Collision.CollisionManager.Self.IsPausedByScreen = true;
 
         }
 
         public virtual void UnpauseThisScreen()
         {
             InstructionManager.UnpauseEngine();
+            Math.Collision.CollisionManager.Self.IsPausedByScreen = false;
             this.IsPaused = false;
         }
 

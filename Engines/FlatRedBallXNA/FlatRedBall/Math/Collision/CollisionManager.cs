@@ -39,6 +39,8 @@ namespace FlatRedBall.Math.Collision
             }
         }
 
+        public bool IsPausedByScreen { get; set; }
+
         #endregion
 
         #region Constructor/Init
@@ -137,6 +139,14 @@ namespace FlatRedBall.Math.Collision
 
         public void Update()
         {
+            ////////early out////////////
+            if(IsPausedByScreen)
+            {
+                return;
+            }
+            //////End Early Out
+            
+
             foreach(var partition in this.partitions)
             {
                 if (partition.SortEveryFrame)
