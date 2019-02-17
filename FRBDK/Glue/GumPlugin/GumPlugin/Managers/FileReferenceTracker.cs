@@ -21,11 +21,17 @@ namespace GumPlugin.Managers
 {
     public class FileReferenceTracker : Singleton<FileReferenceTracker>
     {
+        #region Enums
+
         enum ProjectOrDisk
         {
             Project,
             Disk
         }
+
+        #endregion
+
+        #region Fields/Properties
 
         public bool UseAtlases
         {
@@ -33,6 +39,9 @@ namespace GumPlugin.Managers
             set;
 
         }
+
+        #endregion
+
         public static bool CanTrackDependenciesOn(string fileName)
         {
 
@@ -124,9 +133,7 @@ namespace GumPlugin.Managers
 
                 TryGetFontReferences(topLevelOrRecursive, listToFill, state);
 
-
-
-                GetRegularVariableFileReferences(listToFill, state, projectOrDisk);
+                GetRegularVariableFileReferences(listToFill, state, element.Instances, projectOrDisk);
 
                 foreach (var variableList in state.VariableLists)
                 {
@@ -137,85 +144,95 @@ namespace GumPlugin.Managers
                 }
             }
 
-                foreach (var instance in element.Instances)
+            foreach (var instance in element.Instances)
+            {
+                var type = instance.BaseType;
+
+                // find the element.
+                var referencedElement = AppState.Self.GetElementSave(type);
+
+                if (referencedElement != null)
                 {
-                    var type = instance.BaseType;
-
-                    // find the element.
-                    var referencedElement = AppState.Self.GetElementSave(type);
-
-                    if (referencedElement != null)
+                    if (referencedElement is StandardElementSave)
                     {
-                        if (referencedElement is StandardElementSave)
-                        {
-                            listToFill.Add(FileManager.RelativeDirectory + "Standards/" + referencedElement.Name + ".gutx");
-                        }
-                        else if (referencedElement is ComponentSave)
-                        {
-                            listToFill.Add(FileManager.RelativeDirectory + "Components/" + referencedElement.Name + ".gucx");
+                        listToFill.Add(FileManager.RelativeDirectory + "Standards/" + referencedElement.Name + ".gutx");
+                    }
+                    else if (referencedElement is ComponentSave)
+                    {
+                        listToFill.Add(FileManager.RelativeDirectory + "Components/" + referencedElement.Name + ".gucx");
 
-                        }
-                        else
-                        {
-                            throw new Exception();
-                        }
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
 
-                        if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
-                        {
-                            GetFilesReferencedBy(referencedElement, topLevelOrRecursive, listToFill, projectOrDisk);
-                        }
+                    if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
+                    {
+                        GetFilesReferencedBy(referencedElement, topLevelOrRecursive, listToFill, projectOrDisk);
                     }
                 }
+            }
 
             StringFunctions.RemoveDuplicates(listToFill);
         }
 
-        private void GetRegularVariableFileReferences(List<string> listToFill, Gum.DataTypes.Variables.StateSave state, ProjectOrDisk projectOrDisk)
+        private void GetRegularVariableFileReferences(List<string> listToFill, Gum.DataTypes.Variables.StateSave state, IList<InstanceSave> instances, ProjectOrDisk projectOrDisk)
         {
-            foreach (var variable in state.Variables.Where(item=>item.IsFile))
+            var fileVariables = state.Variables
+                .Where(item => item.IsFile &&  !string.IsNullOrEmpty(item.Value as string))
+                .ToArray();
+
+            foreach (var variable in fileVariables)
             {
-                if (!string.IsNullOrEmpty(variable.Value as string))
+                bool isGraphicFile = FileManager.IsGraphicFile(variable.Value as string);
+
+                bool shouldConsider = !UseAtlases || !isGraphicFile || projectOrDisk == ProjectOrDisk.Disk;
+
+                var instanceName = variable.SourceObject;
+
+                if(shouldConsider && !string.IsNullOrEmpty(instanceName))
                 {
-                    bool isGraphicFile = FileManager.IsGraphicFile(variable.Value as string);
+                    // make sure this isn't a left-over variable reference 
+                    var foundInstance = instances.FirstOrDefault(item => item.Name == instanceName);
 
-                    bool shouldConsider = !UseAtlases || !isGraphicFile || projectOrDisk == ProjectOrDisk.Disk;
+                    shouldConsider = foundInstance != null;
+                }
 
-                    if (shouldConsider)
+                if (shouldConsider)
+                {
+
+                    if (IsNineSliceSource(variable, state))
                     {
+                        string variableValue = variable.Value as string;
 
-                        if (IsNineSliceSource(variable, state))
+                        var shouldUsePattern = RenderingLibrary.Graphics.NineSlice.GetIfShouldUsePattern(variableValue);
+
+                        if (shouldUsePattern)
                         {
-                            string variableValue = variable.Value as string;
+                            string extension = FileManager.GetExtension(variableValue);
 
-                            var shouldUsePattern = RenderingLibrary.Graphics.NineSlice.GetIfShouldUsePattern(variableValue);
+                            string variableWithoutExtension = FileManager.RemoveExtension(variableValue);
 
-                            if (shouldUsePattern)
+                            string bareTexture = RenderingLibrary.Graphics.NineSlice.GetBareTextureForNineSliceTexture(
+                                variableValue);
+
+                            foreach (var side in RenderingLibrary.Graphics.NineSlice.PossibleNineSliceEndings)
                             {
-                                string extension = FileManager.GetExtension(variableValue);
-
-                                string variableWithoutExtension = FileManager.RemoveExtension(variableValue);
-
-                                string bareTexture = RenderingLibrary.Graphics.NineSlice.GetBareTextureForNineSliceTexture(
-                                    variableValue);
-
-                                foreach (var side in RenderingLibrary.Graphics.NineSlice.PossibleNineSliceEndings)
-                                {
-                                    listToFill.Add(FileManager.RelativeDirectory + bareTexture + side + "." + extension);
-                                }
-                            }
-                            else
-                            {
-                                listToFill.Add(FileManager.RelativeDirectory + variableValue);
+                                listToFill.Add(FileManager.RelativeDirectory + bareTexture + side + "." + extension);
                             }
                         }
                         else
                         {
-
-                            string absoluteFileName = FileManager.RelativeDirectory + variable.Value as string;
-                            absoluteFileName = FileManager.RemoveDotDotSlash(absoluteFileName);
-
-                            listToFill.Add(absoluteFileName);
+                            listToFill.Add(FileManager.RelativeDirectory + variableValue);
                         }
+                    }
+                    else
+                    {
+                        string absoluteFileName = FileManager.RelativeDirectory + variable.Value as string;
+                        absoluteFileName = FileManager.RemoveDotDotSlash(absoluteFileName);
+
+                        listToFill.Add(absoluteFileName);
                     }
                 }
             }
@@ -349,7 +366,6 @@ namespace GumPlugin.Managers
                 }
             }
         }
-
 
 
         string GetGumxDirectory(string possibleGumx)

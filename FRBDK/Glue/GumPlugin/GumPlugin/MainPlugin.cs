@@ -242,7 +242,9 @@ namespace GumPlugin
             // - Added GumIdb.Self for global access to GumIdb
             // 1.6.2.1
             // - More fixes when tracking files on instances that have been removed from their respective screen or component
-            get { return new Version(1, 6, 2, 1); }
+            // 1.6.2.2
+            // - Fixed the plugin reporting errors for referenced files when those files are tied to deleted instances.
+            get { return new Version(1, 6, 2, 2); }
         }
 
         #endregion
