@@ -892,7 +892,7 @@ namespace FlatRedBall.Graphics.Particle
         }
 
 
-        public void SimulatePriorEmissions(float time)
+        public void SimulatePriorEmissions(float secondsToSimulate)
         {
 
             //Don't worry about emissions that aren't timed
@@ -902,16 +902,17 @@ namespace FlatRedBall.Graphics.Particle
                 float firstParticleTime = 0;
                 Sprite currentparticle;
                 float spawnTime;
-                float lifeSpan;
+                float secondsToSimulateThisParticle;
 
+                int numberOfEmissions = (int)(secondsToSimulate / mSecondFrequency);
 
-                for (float i = 0; i < time / mSecondFrequency; ++i)
+                for (float i = 0; i < numberOfEmissions; ++i)
                 {
 
                     spawnTime = i * mSecondFrequency;
-                    lifeSpan = time - spawnTime;
+                    secondsToSimulateThisParticle = secondsToSimulate - spawnTime;
 
-                    if (RemovalEvent == RemovalEventType.Timed && lifeSpan >= SecondsLasting)
+                    if (RemovalEvent == RemovalEventType.Timed && secondsToSimulateThisParticle >= SecondsLasting)
                     {
                         firstParticleTime += frameInterval;
                         continue;
@@ -937,7 +938,10 @@ namespace FlatRedBall.Graphics.Particle
                                     SpriteManager.RemoveSprite(sprite);
 
                                 });
-                            delegateInstruction.TimeToExecute = TimeManager.CurrentTime + SecondsLasting - lifeSpan;
+
+                            // we handle subtracting simulation time below.
+                            //delegateInstruction.TimeToExecute = TimeManager.CurrentTime + SecondsLasting - secondsToSimulateThisParticle;
+                            delegateInstruction.TimeToExecute = TimeManager.CurrentTime + spawnTime + SecondsLasting;
                             sprite.Instructions.Add(delegateInstruction);
 
                             // timed removal screws up the emitter list
@@ -953,14 +957,20 @@ namespace FlatRedBall.Graphics.Particle
                 }
                 int maxThisFrame;
                 int removedModifier = 1;
-                for (int i = 0; i < time / frameInterval - firstParticleTime / frameInterval; ++i)
+
+                var numberOfIterations =
+                    secondsToSimulate / frameInterval - firstParticleTime / frameInterval;
+
+                var frameIntervalSquaredDividedBy2 = (frameInterval * frameInterval) / 2;
+
+                for (int i = 0; i < numberOfIterations; ++i)
                 {
                     maxThisFrame = removedModifier + (int)((i * frameInterval) / mSecondFrequency);
                     for (int j = 0; j < particles.Count && j < maxThisFrame; ++j)
                     {
                         currentparticle = particles[j];
 
-                        currentparticle.TimedActivity(frameInterval, (System.Math.Pow(frameInterval, 2) / 2), 0);
+                        currentparticle.TimedActivity(frameInterval, frameIntervalSquaredDividedBy2, 0);
 
                         //Check for instructions and execute when needed
                         if (currentparticle.Instructions.Count > 0 &&
@@ -997,7 +1007,7 @@ namespace FlatRedBall.Graphics.Particle
                 {
                     foreach (Instruction instruction in sprite.Instructions)
                     {
-                        instruction.TimeToExecute -= time;
+                        instruction.TimeToExecute -= secondsToSimulate;
                     }
                 }
             }
