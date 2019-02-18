@@ -779,7 +779,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         }
                         else if (EditorLogic.CurrentEntityTreeNode != null)
                         {
-                            EditorLogic.CurrentEntityTreeNode.UpdateReferencedTreeNodes(false);
+                            EditorLogic.CurrentEntityTreeNode.UpdateReferencedTreeNodes();
                         }
                         if (regenerateCode)
                         {

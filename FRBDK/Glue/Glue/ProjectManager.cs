@@ -687,9 +687,9 @@ namespace FlatRedBall.Glue
                     element.Events.Remove(ers);
                 }
             }
-            UpdateCurrentTreeNodeAndCodeAndSave(false);
+            UpdateCurrentTreeNodeAndCodeAndSave();
 
-            UpdateAllDerivedElementFromBaseValues(false, true);
+            UpdateAllDerivedElementFromBaseValues(true);
 
             PluginManager.ReactToVariableRemoved(customVariable);
         }
@@ -942,7 +942,7 @@ namespace FlatRedBall.Glue
 
         }
 
-        public static void UpdateAllDerivedElementFromBaseValues(bool performSave, bool regenerateCode)
+        public static void UpdateAllDerivedElementFromBaseValues(bool regenerateCode)
         {
             if (EditorLogic.CurrentEntitySave != null)
             {
@@ -960,7 +960,7 @@ namespace FlatRedBall.Glue
                     entitySave.UpdateFromBaseType();
                     // Update the tree nodes
                     EntityTreeNode treeNode = GlueState.Self.Find.EntityTreeNode(entitySave);
-                    treeNode.UpdateReferencedTreeNodes(performSave);
+                    treeNode.UpdateReferencedTreeNodes();
 
                     if (regenerateCode)
                     {
@@ -991,7 +991,7 @@ namespace FlatRedBall.Glue
                     screenSave.UpdateFromBaseType();
 
                     ScreenTreeNode treeNode = GlueState.Self.Find.ScreenTreeNode(screenSave);
-                    treeNode.UpdateReferencedTreeNodes(performSave);
+                    treeNode.UpdateReferencedTreeNodes();
 
                     if (regenerateCode)
                     {
@@ -1201,21 +1201,15 @@ namespace FlatRedBall.Glue
 
         }
 
-        private static void UpdateCurrentTreeNodeAndCodeAndSave(bool generateAndSave)
+        private static void UpdateCurrentTreeNodeAndCodeAndSave()
         {
             if (EditorLogic.CurrentScreenTreeNode != null)
             {
-                EditorLogic.CurrentScreenTreeNode.UpdateReferencedTreeNodes(generateAndSave);
+                EditorLogic.CurrentScreenTreeNode.UpdateReferencedTreeNodes();
             }
             else if (EditorLogic.CurrentEntityTreeNode != null)
             {
-                EditorLogic.CurrentEntityTreeNode.UpdateReferencedTreeNodes(generateAndSave);
-            }
-
-            if (generateAndSave)
-            {
-                ElementViewWindow.GenerateSelectedElementCode();
-                GluxCommands.Self.SaveGlux();
+                EditorLogic.CurrentEntityTreeNode.UpdateReferencedTreeNodes();
             }
         }
 

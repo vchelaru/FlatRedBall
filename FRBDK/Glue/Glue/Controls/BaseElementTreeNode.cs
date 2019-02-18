@@ -43,6 +43,11 @@ namespace FlatRedBall.Glue.Controls
     public abstract class BaseElementTreeNode : TreeNode
     {
         #region Fields
+
+        protected TreeNode mCodeTreeNode;
+
+        protected StateListTreeNode mStateListTreeNode;
+
         public const bool UseIcons = true; 
         
         protected NamedObjectListTreeNode mObjectsTreeNode;
@@ -54,7 +59,15 @@ namespace FlatRedBall.Glue.Controls
 
         protected ReferencedFileListTreeNode mFilesTreeNode;
 
+        protected IElement mSaveObject;
+
+
         #endregion
+
+        public IElement SaveObject
+        {
+            get { return mSaveObject; }
+        }
 
         public ReferencedFileListTreeNode FilesTreeNode
         {
@@ -96,15 +109,268 @@ namespace FlatRedBall.Glue.Controls
             set;
         }
 
-        public abstract void UpdateReferencedTreeNodes();
+        public void UpdateReferencedTreeNodes()
+        {
+            ElementViewWindow.SuppressSelectionEvents = true;
 
-        public abstract void UpdateReferencedTreeNodes(bool performSave);
+            const int numberOfTimesToAllowFailures = 5;
+
+            int numberOfFailures = 0;
+            Exception lastException = null;
+
+            while (numberOfFailures < numberOfTimesToAllowFailures)
+            {
+                try
+                {
+                    Section.GetAndStartContextAndTime("Text");
+
+                    #region Set this Text
+                    if (Text != FileManager.RemovePath(SaveObject.Name))
+                    {
+                        this.Text = FileManager.RemovePath(SaveObject.Name);
+                    }
+                    #endregion
+
+                    Section.EndContextAndTime();
+                    Section.GetAndStartContextAndTime("UpdateToReferencedFiles");
+
+                    mFilesTreeNode.UpdateToReferencedFiles(mSaveObject.ReferencedFiles, SaveObject);
+
+
+                    Section.EndContextAndTime();
+                    Section.GetAndStartContextAndTime("UpdateToNamedObjectSaves");
+
+                    mObjectsTreeNode.UpdateToNamedObjectSaves(mSaveObject.NamedObjects);
+
+
+                    Section.EndContextAndTime();
+                    Section.GetAndStartContextAndTime("UpdateToStates");
+
+                    mStateListTreeNode.UpdateToStates(mSaveObject.States, mSaveObject.StateCategoryList);
+
+                    Section.EndContextAndTime();
+                    Section.GetAndStartContextAndTime("UpdateVariablesTreeNode");
+
+                    UpdateVariablesTreeNode();
+
+
+                    Section.EndContextAndTime();
+                    Section.GetAndStartContextAndTime("UpdateEventsTreeNode");
+
+                    UpdateEventsTreeNode();
+
+
+                    Section.EndContextAndTime();
+                    Section.GetAndStartContextAndTime("UpdateCodeTreeNodes");
+
+                    UpdateCodeTreeNodes();
+
+
+                    Section.EndContextAndTime();
+                    Section.GetAndStartContextAndTime("SaveProjects");
+
+                    Section.EndContextAndTime();
+
+                    break;
+                }
+                catch (Exception e)
+                {
+                    lastException = e;
+                    System.Threading.Thread.Sleep(20);
+                    numberOfFailures++;
+                }
+            }
+
+            if (numberOfFailures >= numberOfTimesToAllowFailures)
+            {
+                int m = 3;
+            }
+
+            ElementViewWindow.SuppressSelectionEvents = false;
+
+        }
+
+        private void UpdateVariablesTreeNode()
+        {
+            Section.GetAndStartContextAndTime("Add nodes");
+            while (this.mVariablesTreeNode.Nodes.Count < mSaveObject.CustomVariables.Count)
+            {
+                int indexToAddAt = mVariablesTreeNode.Nodes.Count;
+                TreeNode treeNode = mVariablesTreeNode.Nodes.Add(GetDisplayTextForCustomVariable(mSaveObject.CustomVariables[indexToAddAt]));
+
+                if (UseIcons)
+                {
+                    treeNode.ImageKey = "variable.png";
+                    treeNode.SelectedImageKey = "variable.png";
+                }
+            }
+
+            Section.EndContextAndTime();
+
+            Section.GetAndStartContextAndTime("Remove nodes");
+
+            while (this.mVariablesTreeNode.Nodes.Count > mSaveObject.CustomVariables.Count)
+            {
+                mVariablesTreeNode.Nodes.RemoveAt(mVariablesTreeNode.Nodes.Count - 1);
+
+            }
+
+            Section.EndContextAndTime();
+
+            Section.GetAndStartContextAndTime("Modify nodes");
+
+            for (int i = 0; i < mSaveObject.CustomVariables.Count; i++)
+            {
+                Section.GetAndStartContextAndTime("Set Tag");
+
+                TreeNode treeNode = mVariablesTreeNode.Nodes[i];
+
+                CustomVariable customVariable = mSaveObject.CustomVariables[i];
+
+                if (treeNode.Tag != customVariable)
+                {
+                    treeNode.Tag = customVariable;
+                }
+
+                Section.EndContextAndTime();
+
+                Section.GetAndStartContextAndTime("Get Text to set");
+                string textToSet = GetDisplayTextForCustomVariable(customVariable);
+                Section.EndContextAndTime();
+
+                Section.GetAndStartContextAndTime("Set Text");
+                if (treeNode.Text != textToSet)
+                {
+                    treeNode.Text = textToSet;
+                }
+
+                // Vic says - no need to support disabled custom variables
+                //if (mSaveObject.NamedObjects[i].IsDisabled)
+                //{
+                //    treeNode.ForeColor = DisabledColor;
+                //}
+                Section.EndContextAndTime();
+
+                Section.GetAndStartContextAndTime("Set Color");
+                Color colorToSet;
+                if (customVariable.SetByDerived)
+                {
+                    colorToSet = ElementViewWindow.SetByDerivedColor;
+                }
+                else if (customVariable.DefinedByBase)
+                {
+                    colorToSet = ElementViewWindow.DefinedByBaseColor;
+                }
+                else if (!string.IsNullOrEmpty(customVariable.SourceObject) && mSaveObject.GetNamedObjectRecursively(customVariable.SourceObject) == null)
+                {
+                    colorToSet = ElementViewWindow.MissingObjectColor;
+                }
+                else
+                {
+                    colorToSet = Color.White;
+                }
+
+                if (treeNode.ForeColor != colorToSet)
+                {
+                    treeNode.ForeColor = colorToSet;
+                }
+                Section.EndContextAndTime();
+            }
+
+
+            Section.EndContextAndTime();
+        }
+
 
         public abstract void RefreshStateCategoryUi(StateSaveCategory category);
 
         //public abstract void GenerateCode();
 
+        private static string GetDisplayTextForCustomVariable(CustomVariable customVariable)
+        {
+            if (string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+            {
+                return
+                    customVariable.Name + " (" + customVariable.Type + ")";
+            }
+            else
+            {
+                return
+                    customVariable.Name + " (" + customVariable.Type + " as " + customVariable.OverridingPropertyType + ")";
+            }
+        }
 
+        private void UpdateEventsTreeNode()
+        {
+            while (this.mEventsTreeNode.Nodes.Count < mSaveObject.Events.Count)
+            {
+                int indexAddingAt = mEventsTreeNode.Nodes.Count;
+
+                TreeNode newNode = mEventsTreeNode.Nodes.Add(mSaveObject.Events[indexAddingAt].EventName);
+                newNode.ImageKey = "edit_code.png";
+                newNode.SelectedImageKey = "edit_code.png";
+            }
+
+            while (this.mEventsTreeNode.Nodes.Count > mSaveObject.Events.Count)
+            {
+                mEventsTreeNode.Nodes.RemoveAt(mEventsTreeNode.Nodes.Count - 1);
+
+            }
+
+            for (int i = 0; i < mSaveObject.Events.Count; i++)
+            {
+                TreeNode treeNode = mEventsTreeNode.Nodes[i];
+
+                EventResponseSave eventSave = mSaveObject.Events[i];
+
+                if (treeNode.Tag != eventSave)
+                {
+                    treeNode.Tag = eventSave;
+                }
+
+
+                string textToSet = eventSave.EventName;
+
+                if (treeNode.Text != textToSet)
+                {
+                    treeNode.Text = textToSet;
+                }
+            }
+
+        }
+
+        public void UpdateCodeTreeNodes()
+        {
+            mCodeTreeNode.Nodes.Clear();
+
+            List<string> files = CodeWriter.GetAllCodeFilesFor(SaveObject);
+
+            foreach (string file in files)
+            {
+                // See if there is already a tree node for this
+                TreeNode foundTreeNode = null;
+                string text = FileManager.MakeRelative(file);
+                foreach (TreeNode treeNode in mCodeTreeNode.Nodes)
+                {
+                    if (treeNode.Text == text)
+                    {
+                        foundTreeNode = treeNode;
+                        break;
+                    }
+                }
+
+                if (foundTreeNode == null)
+                {
+                    TreeNode treeNode = new TreeNode(text);
+                    if (UseIcons)
+                    {
+                        treeNode.SelectedImageKey = "code.png";
+                        treeNode.ImageKey = "code.png";
+                    }
+                    mCodeTreeNode.Nodes.Add(treeNode);
+                }
+            }
+        }
 
         public static IElement GetElementIfCustomVariableIsVariableState(CustomVariable customVariable, IElement saveObject)
         {
@@ -200,19 +466,9 @@ namespace FlatRedBall.Glue.Controls
 
         #region Fields
 
-
-        protected StateListTreeNode mStateListTreeNode;
-        
-        protected TreeNode mCodeTreeNode;
-  
         protected TreeNode mCodeFile;
 
         protected TreeNode mGeneratedCodeFile;
-
-        protected T mSaveObject;
-
-
-
 
         #endregion
 
@@ -266,10 +522,6 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
-        public T SaveObject
-        {
-            get { return mSaveObject; }
-        }
 
         public override IElement SaveObjectAsElement
         {
@@ -344,286 +596,12 @@ namespace FlatRedBall.Glue.Controls
 
         #region Public Methods
         
-        public override void UpdateReferencedTreeNodes()
-        {
-            UpdateReferencedTreeNodes(false);
-        }
-
-        public override void UpdateReferencedTreeNodes(bool performSave)
-        {
-            
-            ElementViewWindow.SuppressSelectionEvents = true;
-
-            const int numberOfTimesToAllowFailures = 5;
-
-            int numberOfFailures = 0;
-            Exception lastException = null;
-
-            while (numberOfFailures < numberOfTimesToAllowFailures)
-            {
-                try
-                {
-                    Section.GetAndStartContextAndTime("Text");
-
-                    #region Set this Text
-                    if (Text != FileManager.RemovePath(SaveObject.Name))
-                    {
-                        this.Text = FileManager.RemovePath(SaveObject.Name);
-                    }
-                    #endregion
-
-                    Section.EndContextAndTime();
-                    Section.GetAndStartContextAndTime("UpdateToReferencedFiles");
-
-                    mFilesTreeNode.UpdateToReferencedFiles(mSaveObject.ReferencedFiles, SaveObject);
-
-
-                    Section.EndContextAndTime();
-                    Section.GetAndStartContextAndTime("UpdateToNamedObjectSaves");
-
-                    mObjectsTreeNode.UpdateToNamedObjectSaves(mSaveObject.NamedObjects);
-
-
-                    Section.EndContextAndTime();
-                    Section.GetAndStartContextAndTime("UpdateToStates");
-
-                    RefreshStatesUi();
-
-                    Section.EndContextAndTime();
-                    Section.GetAndStartContextAndTime("UpdateVariablesTreeNode");
-
-                    UpdateVariablesTreeNode();
-
-
-                    Section.EndContextAndTime();
-                    Section.GetAndStartContextAndTime("UpdateEventsTreeNode");
-
-                    UpdateEventsTreeNode();
-
-
-                    Section.EndContextAndTime();
-                    Section.GetAndStartContextAndTime("UpdateCodeTreeNodes");
-
-                    UpdateCodeTreeNodes();
-
-
-                    Section.EndContextAndTime();
-                    Section.GetAndStartContextAndTime("SaveProjects");
-
-                    if (performSave)
-                    {
-                        ProjectManager.SaveProjects();
-                    }
-
-
-                    Section.EndContextAndTime();
-
-                    break;
-                }
-                catch (Exception e)
-                {
-                    lastException = e;
-                    System.Threading.Thread.Sleep(20);
-                    numberOfFailures++;
-                }
-            }
-
-            if (numberOfFailures >= numberOfTimesToAllowFailures)
-            {
-                int m = 3;
-            }
-
-            ElementViewWindow.SuppressSelectionEvents = false;
-
-        }
-
-        private void RefreshStatesUi()
-        {
-            mStateListTreeNode.UpdateToStates(mSaveObject.States, mSaveObject.StateCategoryList);
-        }
 
         public override void RefreshStateCategoryUi(StateSaveCategory category)
         {
             mStateListTreeNode.UpdateToStateCategory(category);
         }
 
-        private void UpdateVariablesTreeNode()
-        {
-            Section.GetAndStartContextAndTime("Add nodes");
-            while (this.mVariablesTreeNode.Nodes.Count < mSaveObject.CustomVariables.Count)
-            {
-                int indexToAddAt = mVariablesTreeNode.Nodes.Count;
-                TreeNode treeNode = mVariablesTreeNode.Nodes.Add(GetDisplayTextForCustomVariable(mSaveObject.CustomVariables[indexToAddAt]));
-
-                if (UseIcons)
-                {
-                    treeNode.ImageKey = "variable.png";
-                    treeNode.SelectedImageKey = "variable.png";
-                }
-            }
-
-            Section.EndContextAndTime();
-
-            Section.GetAndStartContextAndTime("Remove nodes");
-
-            while (this.mVariablesTreeNode.Nodes.Count > mSaveObject.CustomVariables.Count)
-            {
-                mVariablesTreeNode.Nodes.RemoveAt(mVariablesTreeNode.Nodes.Count - 1);
-
-            }
-
-            Section.EndContextAndTime();
-
-            Section.GetAndStartContextAndTime("Modify nodes");
-
-            for (int i = 0; i < mSaveObject.CustomVariables.Count; i++)
-            {
-                Section.GetAndStartContextAndTime("Set Tag");
-
-                TreeNode treeNode = mVariablesTreeNode.Nodes[i];
-
-                CustomVariable customVariable = mSaveObject.CustomVariables[i];
-
-                if (treeNode.Tag != customVariable)
-                {
-                    treeNode.Tag = customVariable;
-                }
-
-                Section.EndContextAndTime();
-
-                Section.GetAndStartContextAndTime("Get Text to set");
-                string textToSet = GetDisplayTextForCustomVariable(customVariable);
-                Section.EndContextAndTime();
-
-                Section.GetAndStartContextAndTime("Set Text");
-                if (treeNode.Text != textToSet)
-                {
-                    treeNode.Text = textToSet;
-                }
-
-                // Vic says - no need to support disabled custom variables
-                //if (mSaveObject.NamedObjects[i].IsDisabled)
-                //{
-                //    treeNode.ForeColor = DisabledColor;
-                //}
-                Section.EndContextAndTime();
-
-                Section.GetAndStartContextAndTime("Set Color");
-                Color colorToSet;
-                if (customVariable.SetByDerived)
-                {
-                    colorToSet = ElementViewWindow.SetByDerivedColor;
-                }
-                else if (customVariable.DefinedByBase)
-                {
-                    colorToSet = ElementViewWindow.DefinedByBaseColor;
-                }
-                else if (!string.IsNullOrEmpty(customVariable.SourceObject) && mSaveObject.GetNamedObjectRecursively(customVariable.SourceObject) == null)
-                {
-                    colorToSet = ElementViewWindow.MissingObjectColor;
-                }
-                else
-                {
-                    colorToSet = Color.White;
-                }
-
-                if (treeNode.ForeColor != colorToSet)
-                {
-                    treeNode.ForeColor = colorToSet;
-                }
-                Section.EndContextAndTime();
-            }
-
-
-            Section.EndContextAndTime();
-        }
-
-        private void UpdateEventsTreeNode()
-        {
-            while (this.mEventsTreeNode.Nodes.Count < mSaveObject.Events.Count)
-            {
-                int indexAddingAt = mEventsTreeNode.Nodes.Count;
-
-                TreeNode newNode = mEventsTreeNode.Nodes.Add(mSaveObject.Events[indexAddingAt].EventName);
-                newNode.ImageKey = "edit_code.png";
-                newNode.SelectedImageKey = "edit_code.png";
-            }
-
-            while (this.mEventsTreeNode.Nodes.Count > mSaveObject.Events.Count)
-            {
-                mEventsTreeNode.Nodes.RemoveAt(mEventsTreeNode.Nodes.Count - 1);
-
-            }
-
-            for (int i = 0; i < mSaveObject.Events.Count; i++)
-            {
-                TreeNode treeNode = mEventsTreeNode.Nodes[i];
-
-                EventResponseSave eventSave = mSaveObject.Events[i];
-
-                if (treeNode.Tag != eventSave)
-                {
-                    treeNode.Tag = eventSave;
-                }
-
-
-                string textToSet = eventSave.EventName;
-
-                if (treeNode.Text != textToSet)
-                {
-                    treeNode.Text = textToSet;
-                }
-            }
-
-        }
-
-        private static string GetDisplayTextForCustomVariable(CustomVariable customVariable)
-        {
-            if (string.IsNullOrEmpty(customVariable.OverridingPropertyType))
-            {
-                return
-                    customVariable.Name + " (" + customVariable.Type + ")";
-            }
-            else
-            {
-                return
-                    customVariable.Name + " (" + customVariable.Type + " as " + customVariable.OverridingPropertyType + ")";
-            }
-        }
-
-        public void UpdateCodeTreeNodes()
-        {
-            mCodeTreeNode.Nodes.Clear();
-
-            List<string> files = CodeWriter.GetAllCodeFilesFor(SaveObject);
-
-            foreach (string file in files)
-            {
-                // See if there is already a tree node for this
-                TreeNode foundTreeNode = null;
-                string text = FileManager.MakeRelative(file);
-                foreach (TreeNode treeNode in mCodeTreeNode.Nodes)
-                {
-                    if (treeNode.Text == text)
-                    {
-                        foundTreeNode = treeNode;
-                        break;
-                    }
-                }
-
-                if (foundTreeNode == null)
-                {
-                    TreeNode treeNode = new TreeNode(text);
-                    if (UseIcons)
-                    {
-                        treeNode.SelectedImageKey = "code.png";
-                        treeNode.ImageKey = "code.png";
-                    }
-                    mCodeTreeNode.Nodes.Add(treeNode);
-                }
-            }
-
-        }
 
         #endregion
 

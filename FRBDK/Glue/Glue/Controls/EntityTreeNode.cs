@@ -16,7 +16,7 @@ namespace FlatRedBall.Glue.Controls
 
         public EntitySave EntitySave
         {
-            get { return mSaveObject; }
+            get { return mSaveObject as EntitySave; }
             set { mSaveObject = value; this.Tag = mSaveObject; }
         }
 

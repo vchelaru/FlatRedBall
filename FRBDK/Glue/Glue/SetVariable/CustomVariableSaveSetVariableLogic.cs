@@ -44,7 +44,7 @@ namespace FlatRedBall.Glue.SetVariable
                 }
                 else
                 {
-                    ProjectManager.UpdateAllDerivedElementFromBaseValues(false, true);
+                    ProjectManager.UpdateAllDerivedElementFromBaseValues(true);
                 }
             }
             #endregion

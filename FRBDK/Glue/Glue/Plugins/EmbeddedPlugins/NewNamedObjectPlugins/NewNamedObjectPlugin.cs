@@ -18,6 +18,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
 
         void AdjustNewNamedObject(NamedObjectSave nos)
         {
+            //ExportedImplementations.GlueState.Self.CurrentElement;
             IElement element = EditorLogic.CurrentElement;
 
             if (element != null)

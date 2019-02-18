@@ -1349,7 +1349,6 @@
     <Compile Include="Plugins\Interfaces\IMenuStripPlugin.cs" />
     <Compile Include="Plugins\Interfaces\INamedObject.cs" />
     <Compile Include="Plugins\Interfaces\INewFile.cs" />
-    <Compile Include="Plugins\Interfaces\INewObject.cs" />
     <Compile Include="Plugins\Interfaces\IPropertyGridRightClick.cs" />
     <Compile Include="Plugins\Interfaces\IStateChange.cs" />
     <Compile Include="Plugins\Interfaces\ITopTab.cs" />

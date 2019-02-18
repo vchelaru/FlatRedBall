@@ -166,7 +166,7 @@ namespace FlatRedBall.Glue.SetVariable
                 }
                 else
                 {
-                    ProjectManager.UpdateAllDerivedElementFromBaseValues(false, true);
+                    ProjectManager.UpdateAllDerivedElementFromBaseValues(true);
                 }
             }
 
@@ -187,7 +187,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 SetExposedByDerivedRecursively(namedObjectSave, oldValue);
 
-                ProjectManager.UpdateAllDerivedElementFromBaseValues(false, true);
+                ProjectManager.UpdateAllDerivedElementFromBaseValues(true);
             }
 
 
@@ -473,7 +473,7 @@ namespace FlatRedBall.Glue.SetVariable
                 }
             }
 
-            ProjectManager.UpdateAllDerivedElementFromBaseValues(false, true);
+            ProjectManager.UpdateAllDerivedElementFromBaseValues(true);
         }
 
 

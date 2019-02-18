@@ -698,7 +698,7 @@ namespace FlatRedBall.Glue.IO
                 CheckForMissingCustomFile(entityTreeNode);
 
 
-                entityTreeNode.UpdateReferencedTreeNodes(performSave: false);
+                entityTreeNode.UpdateReferencedTreeNodes();
 
                 // moved above
                 //entityTreeNode.EntitySave.UpdateCustomProperties();
@@ -756,7 +756,7 @@ namespace FlatRedBall.Glue.IO
                     screenTreeNode.BackColor = ElementViewWindow.RequiredScreenColor;
                 }
 
-                screenTreeNode.UpdateReferencedTreeNodes(performSave: false);
+                screenTreeNode.UpdateReferencedTreeNodes();
 
                 screenTreeNode.ScreenSave.UpdateCustomProperties();
             }

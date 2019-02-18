@@ -14,7 +14,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             if (EditorLogic.CurrentElementTreeNode != null)
                 MainGlueWindow.Self.BeginInvoke(
-                    new EventHandler(delegate { EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes(false); }));
+                    new EventHandler(delegate { EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes(); }));
             
         }
 
@@ -23,15 +23,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (ProjectManager.ProjectBase != null)
             {
                 var elementTreeNode = GlueState.Self.Find.ElementTreeNode(element);
-                if (elementTreeNode != null)
-                {
-                    MainGlueWindow.Self.BeginInvoke(new EventHandler(delegate { elementTreeNode.UpdateReferencedTreeNodes(false); }));
-                }
-                else
-                {
-
-
-                }
+                elementTreeNode?.UpdateReferencedTreeNodes();
             }
         }
 

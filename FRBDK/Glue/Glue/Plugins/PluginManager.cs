@@ -50,9 +50,6 @@ namespace FlatRedBall.Glue.Plugins
         public IEnumerable<IPropertyGridRightClick> PropertyGridRightClickPlugins { get; set; }
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<INewObject> NewObjectPlugins { get; set; }
-
-        [ImportMany(AllowRecomposition = true)]
         public IEnumerable<IOpenVisualStudio> OpenVisualStudioPlugins { get; set; }
 
         [ImportMany(AllowRecomposition = true)]
@@ -212,7 +209,7 @@ namespace FlatRedBall.Glue.Plugins
         {
             var allPlugins = new List<IEnumerable<IPlugin>>
             {
-                TreeViewPlugins, PropertyGridRightClickPlugins, NewObjectPlugins,
+                TreeViewPlugins, PropertyGridRightClickPlugins,
                 OpenVisualStudioPlugins, TreeItemSelectPlugins, NewFilePlugins, MenuStripPlugins,
                 TopTabPlugins, LeftTabPlugins, BottomTabPlugins, RightTabPlugins, CenterTabPlugins,
                 GluxLoadPlugins, NamedObjectsPlugins, PropertyChangePlugins, CodeGeneratorPlugins,
@@ -251,7 +248,6 @@ namespace FlatRedBall.Glue.Plugins
             ImportedPlugins = new List<PluginBase>();
             TreeViewPlugins = new List<ITreeViewRightClick>();
             PropertyGridRightClickPlugins = new List<IPropertyGridRightClick>();
-            NewObjectPlugins = new List<INewObject>();
             OpenVisualStudioPlugins = new List<IOpenVisualStudio>();
             TreeItemSelectPlugins = new List<ITreeItemSelect>();
             NewFilePlugins = new List<INewFile>();
@@ -928,21 +924,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (INewObject plugin in pluginManager.NewObjectPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        INewObject plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToNewObject(newObject);
-                            }, container, "Failed in ReactToNewObject");
-                    }
-                }
-
-                // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToNewObjectHandler != null);
                 foreach (var plugin in plugins)
                 {

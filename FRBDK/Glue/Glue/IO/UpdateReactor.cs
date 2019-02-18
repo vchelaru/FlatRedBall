@@ -481,7 +481,7 @@ namespace FlatRedBall.Glue.IO
                     {
                         var treeNode = GlueState.Self.Find.ElementTreeNode(element);
 
-                        treeNode?.UpdateReferencedTreeNodes(performSave:false);
+                        treeNode?.UpdateReferencedTreeNodes();
 
                         if (element == EditorLogic.CurrentElement && EditorLogic.CurrentEventResponseSave != null &&
                             MainGlueWindow.Self.CodeEditor.ContainsFocus == false)

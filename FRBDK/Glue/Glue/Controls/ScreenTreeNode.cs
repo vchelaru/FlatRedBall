@@ -21,7 +21,7 @@ namespace FlatRedBall.Glue.Controls
 
         public ScreenSave ScreenSave
         {
-            get { return mSaveObject; }
+            get { return mSaveObject as ScreenSave; }
             set { mSaveObject = value; Tag = mSaveObject; }
         }
 
