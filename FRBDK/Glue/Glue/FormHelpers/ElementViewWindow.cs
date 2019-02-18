@@ -208,17 +208,14 @@ namespace FlatRedBall.Glue.FormHelpers
             
             mGlobalContentNode = globalContentNode;
 
-            if (BaseElementTreeNode.UseIcons)
-            {
-                mEntityNode.SelectedImageKey = "master_entity.png";
-                mEntityNode.ImageKey = "master_entity.png";
+            mEntityNode.SelectedImageKey = "master_entity.png";
+            mEntityNode.ImageKey = "master_entity.png";
 
-                mScreenNode.SelectedImageKey = "master_screen.png";
-                mScreenNode.ImageKey = "master_screen.png";
+            mScreenNode.SelectedImageKey = "master_screen.png";
+            mScreenNode.ImageKey = "master_screen.png";
 
-                mGlobalContentNode.SelectedImageKey = "master_file.png";
-                mGlobalContentNode.ImageKey = "master_file.png";
-            }
+            mGlobalContentNode.SelectedImageKey = "master_file.png";
+            mGlobalContentNode.ImageKey = "master_file.png";
         }
 
 
@@ -467,7 +464,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             screenTreeNode.GeneratedCodeFile = generatedFile;
 
-            screenTreeNode.ScreenSave = screenSave;
+            screenTreeNode.SaveObject = screenSave;
 
             int desiredIndex = ProjectManager.GlueProjectSave.Screens.IndexOf(screenSave);
 
@@ -487,13 +484,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static void GenerateSelectedElementAndDerivedCode()
         {
-            if (EditorLogic.CurrentScreenTreeNode != null)
+            if (GlueState.Self.CurrentElement != null)
             {
-                CodeGeneratorIElement.GenerateElementAndDerivedCode(EditorLogic.CurrentScreenSave);
-            }
-            else if (EditorLogic.CurrentEntityTreeNode != null)
-            {
-                CodeGeneratorIElement.GenerateElementAndDerivedCode(EditorLogic.CurrentEntitySave);
+                CodeGeneratorIElement.GenerateElementAndDerivedCode(GlueState.Self.CurrentElement);
             }
             else if (EditorLogic.CurrentReferencedFile != null)
             {
@@ -562,7 +555,7 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             for (int i = 0; i < mScreenNode.Nodes.Count; i++)
             {
-                if (((ScreenTreeNode)mScreenNode.Nodes[i]).ScreenSave == screenToRemove)
+                if (((BaseElementTreeNode)mScreenNode.Nodes[i]).SaveObject == screenToRemove)
                 {
                     mScreenNode.Nodes.RemoveAt(i);
                     break;
@@ -573,13 +566,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static void UpdateCurrentObjectReferencedTreeNodes()
         {
-            if (EditorLogic.CurrentEntityTreeNode != null)
+            if (EditorLogic.CurrentElementTreeNode != null)
             {
-                EditorLogic.CurrentEntityTreeNode.UpdateReferencedTreeNodes();
-            }
-            else if (EditorLogic.CurrentScreenTreeNode != null)
-            {
-                EditorLogic.CurrentScreenTreeNode.UpdateReferencedTreeNodes();
+                EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
             }
             else if (EditorLogic.CurrentTreeNode != null && EditorLogic.CurrentTreeNode.Root().IsGlobalContentContainerNode())
             {
@@ -641,11 +630,8 @@ namespace FlatRedBall.Glue.FormHelpers
                     {
                         nodeForFile = new TreeNode(FileManager.RemovePath(rfs.Name));
 
-                        if (BaseElementTreeNode.UseIcons)
-                        {
-                            nodeForFile.ImageKey = "file.png";
-                            nodeForFile.SelectedImageKey = "file.png";
-                        }
+                        nodeForFile.ImageKey = "file.png";
+                        nodeForFile.SelectedImageKey = "file.png";
 
                         string absoluteRfs = ProjectManager.MakeAbsolute(rfs.Name, true);
 
@@ -867,11 +853,8 @@ namespace FlatRedBall.Glue.FormHelpers
                             treeNode = parentTreeNode.Nodes.Add(FileManager.RemovePath(directory));
                         }
 
-                        if (BaseElementTreeNode.UseIcons)
-                        {
-                            treeNode.ImageKey = "folder.png";
-                            treeNode.SelectedImageKey = "folder.png";
-                        }
+                        treeNode.ImageKey = "folder.png";
+                        treeNode.SelectedImageKey = "folder.png";
 
                         treeNode.ForeColor = ElementViewWindow.FolderColor;
 

@@ -266,7 +266,7 @@ namespace FlatRedBall.Glue.Managers
                 {
                     ScreenTreeNode asScreenTreeNode = ElementViewWindow.ScreensTreeNode.Nodes[i] as ScreenTreeNode;
 
-                    if (asScreenTreeNode.ScreenSave.Name == screenFileName)
+                    if (asScreenTreeNode.SaveObject.Name == screenFileName)
                     {
                         return asScreenTreeNode;
                     }
@@ -284,7 +284,7 @@ namespace FlatRedBall.Glue.Managers
                 {
                     ScreenTreeNode asScreenTreeNode = ElementViewWindow.ScreensTreeNode.Nodes[i] as ScreenTreeNode;
 
-                    if (asScreenTreeNode.ScreenSave == screenSave)
+                    if (asScreenTreeNode.SaveObject == screenSave)
                     {
                         return asScreenTreeNode;
                     }

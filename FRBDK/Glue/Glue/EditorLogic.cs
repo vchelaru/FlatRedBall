@@ -206,9 +206,9 @@ namespace FlatRedBall.Glue
 
                 while (treeNode != null)
                 {
-                    if (treeNode is ScreenTreeNode)
+                    if (treeNode is BaseElementTreeNode && ((BaseElementTreeNode)treeNode).SaveObject is ScreenSave)
                     {
-                        return ((ScreenTreeNode)treeNode).ScreenSave;
+                        return ((BaseElementTreeNode)treeNode).SaveObject as ScreenSave;
                     }
                     else
                     {

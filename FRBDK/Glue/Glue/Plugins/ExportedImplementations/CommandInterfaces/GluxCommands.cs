@@ -697,7 +697,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 foreach (BaseElementTreeNode treeNode in treeNodesForElementsToRegenerate)
                 {
-                    CodeWriter.GenerateCode(treeNode.SaveObjectAsElement);
+                    CodeWriter.GenerateCode(treeNode.SaveObject);
                 }
             }
 

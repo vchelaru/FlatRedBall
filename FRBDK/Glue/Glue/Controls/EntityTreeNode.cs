@@ -27,11 +27,8 @@ namespace FlatRedBall.Glue.Controls
 
         public EntityTreeNode(string text) : base(text)
         {
-            if (BaseElementTreeNode.UseIcons)
-            {
-                ImageKey = "entity.png";
-                SelectedImageKey = "entity.png";
-            }
+            ImageKey = "entity.png";
+            SelectedImageKey = "entity.png";
         }      
 
         #endregion

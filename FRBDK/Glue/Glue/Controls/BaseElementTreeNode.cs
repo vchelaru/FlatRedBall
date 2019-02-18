@@ -48,8 +48,6 @@ namespace FlatRedBall.Glue.Controls
 
         protected StateListTreeNode mStateListTreeNode;
 
-        public const bool UseIcons = true; 
-        
         protected NamedObjectListTreeNode mObjectsTreeNode;
 
 
@@ -67,6 +65,11 @@ namespace FlatRedBall.Glue.Controls
         public IElement SaveObject
         {
             get { return mSaveObject; }
+            set
+            {
+
+                mSaveObject = value; Tag = value;
+            }
         }
 
         public ReferencedFileListTreeNode FilesTreeNode
@@ -100,13 +103,6 @@ namespace FlatRedBall.Glue.Controls
             {
                 return (element as ScreenSave).IsOnOwnLayer;
             }
-        }
-
-
-        public abstract IElement SaveObjectAsElement
-        {
-            get;
-            set;
         }
 
         public void UpdateReferencedTreeNodes()
@@ -198,11 +194,8 @@ namespace FlatRedBall.Glue.Controls
                 int indexToAddAt = mVariablesTreeNode.Nodes.Count;
                 TreeNode treeNode = mVariablesTreeNode.Nodes.Add(GetDisplayTextForCustomVariable(mSaveObject.CustomVariables[indexToAddAt]));
 
-                if (UseIcons)
-                {
-                    treeNode.ImageKey = "variable.png";
-                    treeNode.SelectedImageKey = "variable.png";
-                }
+                treeNode.ImageKey = "variable.png";
+                treeNode.SelectedImageKey = "variable.png";
             }
 
             Section.EndContextAndTime();
@@ -362,11 +355,10 @@ namespace FlatRedBall.Glue.Controls
                 if (foundTreeNode == null)
                 {
                     TreeNode treeNode = new TreeNode(text);
-                    if (UseIcons)
-                    {
-                        treeNode.SelectedImageKey = "code.png";
-                        treeNode.ImageKey = "code.png";
-                    }
+
+                    treeNode.SelectedImageKey = "code.png";
+                    treeNode.ImageKey = "code.png";
+
                     mCodeTreeNode.Nodes.Add(treeNode);
                 }
             }
@@ -522,13 +514,6 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
-
-        public override IElement SaveObjectAsElement
-        {
-            get { return mSaveObject; }
-            set { mSaveObject = (T)(object)value; Tag = value; }
-        }
-
         #endregion
 
         #region Methods
@@ -540,53 +525,35 @@ namespace FlatRedBall.Glue.Controls
 
 
             mFilesTreeNode = new ReferencedFileListTreeNode("Files");
-            if (BaseElementTreeNode.UseIcons)
-            {
-                mFilesTreeNode.ImageKey = "master_file.png";
-                mFilesTreeNode.SelectedImageKey = "master_file.png";
-            }
+            mFilesTreeNode.ImageKey = "master_file.png";
+            mFilesTreeNode.SelectedImageKey = "master_file.png";
             this.Nodes.Add(mFilesTreeNode);
 
             mObjectsTreeNode = new NamedObjectListTreeNode("Objects");
-            if (BaseElementTreeNode.UseIcons)
-            {
-                mObjectsTreeNode.ImageKey = "master_object.png";
-                mObjectsTreeNode.SelectedImageKey = "master_object.png";
-            }
+            mObjectsTreeNode.ImageKey = "master_object.png";
+            mObjectsTreeNode.SelectedImageKey = "master_object.png";
             this.Nodes.Add(mObjectsTreeNode);
 
             mVariablesTreeNode = new TreeNode("Variables");
-            if (BaseElementTreeNode.UseIcons)
-            {
-                mVariablesTreeNode.ImageKey = "master_variables.png";
-                mVariablesTreeNode.SelectedImageKey = "master_variables.png";                
-            }
+            mVariablesTreeNode.ImageKey = "master_variables.png";
+            mVariablesTreeNode.SelectedImageKey = "master_variables.png";                
             this.Nodes.Add(mVariablesTreeNode);
 
             mStateListTreeNode = new StateListTreeNode("States");
-            if (BaseElementTreeNode.UseIcons)
-            {
-                mStateListTreeNode.ImageKey = "master_states.png";
-                mStateListTreeNode.SelectedImageKey = "master_states.png";                
-            }
+            mStateListTreeNode.ImageKey = "master_states.png";
+            mStateListTreeNode.SelectedImageKey = "master_states.png";                
             this.Nodes.Add(mStateListTreeNode);
 
 
             mEventsTreeNode = new TreeNode("Events");
-            if (BaseElementTreeNode.UseIcons)
-            {
-                mEventsTreeNode.ImageKey = "master_code.png";
-                mEventsTreeNode.SelectedImageKey = "master_code.png";                
-            }
+            mEventsTreeNode.ImageKey = "master_code.png";
+            mEventsTreeNode.SelectedImageKey = "master_code.png";                
             this.Nodes.Add(mEventsTreeNode);
 
            
             mCodeTreeNode = new TreeNode("Code");
-            if (BaseElementTreeNode.UseIcons)
-            {
-                mCodeTreeNode.ImageKey = "master_code.png";
-                mCodeTreeNode.SelectedImageKey = "master_code.png";
-            }
+            mCodeTreeNode.ImageKey = "master_code.png";
+            mCodeTreeNode.SelectedImageKey = "master_code.png";
             this.Nodes.Add(mCodeTreeNode);
 
 

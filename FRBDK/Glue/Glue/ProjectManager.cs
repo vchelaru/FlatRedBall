@@ -1203,14 +1203,7 @@ namespace FlatRedBall.Glue
 
         private static void UpdateCurrentTreeNodeAndCodeAndSave()
         {
-            if (EditorLogic.CurrentScreenTreeNode != null)
-            {
-                EditorLogic.CurrentScreenTreeNode.UpdateReferencedTreeNodes();
-            }
-            else if (EditorLogic.CurrentEntityTreeNode != null)
-            {
-                EditorLogic.CurrentEntityTreeNode.UpdateReferencedTreeNodes();
-            }
+            EditorLogic.CurrentElementTreeNode?.UpdateReferencedTreeNodes();
         }
 
         private static CheckResult InheritanceVerificationHelper(ref INamedObjectContainer node, ref string cycleString)

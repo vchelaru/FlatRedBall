@@ -158,13 +158,13 @@ namespace FlatRedBall.Glue.IO
 
                 foreach (ScreenTreeNode screenNode in ElementViewWindow.AllScreens)
                 {
-                    if (screenNode.ScreenSave == null)
+                    if (screenNode.SaveObject == null)
                     {
                         ScreenSave screenSave = new ScreenSave();
                         screenSave.Name = screenNode.Text;
 
                         ProjectManager.GlueProjectSave.Screens.Add(screenSave);
-                        screenNode.ScreenSave = screenSave;
+                        screenNode.SaveObject = screenSave;
                     }
                 }
 
@@ -746,7 +746,7 @@ namespace FlatRedBall.Glue.IO
 
                 #endregion
 
-                screenTreeNode.ScreenSave = ProjectManager.GlueProjectSave.Screens[i];
+                screenTreeNode.SaveObject = ProjectManager.GlueProjectSave.Screens[i];
 
                 CheckForMissingCustomFile(screenTreeNode);
 
@@ -758,7 +758,7 @@ namespace FlatRedBall.Glue.IO
 
                 screenTreeNode.UpdateReferencedTreeNodes();
 
-                screenTreeNode.ScreenSave.UpdateCustomProperties();
+                screenTreeNode.SaveObject.UpdateCustomProperties();
             }
         }
 
@@ -1031,7 +1031,7 @@ namespace FlatRedBall.Glue.IO
         {
             if (baseElementTreeNode != null)
             {
-                IElement element = baseElementTreeNode.SaveObjectAsElement;
+                IElement element = baseElementTreeNode.SaveObject;
 
                 string fileToSearchFor = FileManager.RelativeDirectory + element.Name + ".cs";
 

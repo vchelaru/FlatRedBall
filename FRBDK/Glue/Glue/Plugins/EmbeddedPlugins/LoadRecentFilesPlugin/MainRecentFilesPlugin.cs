@@ -54,6 +54,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
             }
 
             ProjectManager.GlueSettingsSave.RecentFiles.RemoveAll(item =>
+                string.IsNullOrEmpty(item) ||
                 FileManager.Standardize(item).ToLowerInvariant() == standardized);
             // newest first
             ProjectManager.GlueSettingsSave.RecentFiles.Insert(0, standardized);

@@ -108,11 +108,8 @@ namespace FlatRedBall.Glue.Controls
                     string fullFile = ProjectManager.MakeAbsolute(referencedFiles[i].GetRelativePath(), true);
                     nodeForFile = new TreeNode(FileManager.RemovePath(referencedFiles[i].Name));
 
-                    if (BaseElementTreeNode.UseIcons)
-                    {
-                        nodeForFile.ImageKey = "file.png";
-                        nodeForFile.SelectedImageKey = "file.png";
-                    }
+                    nodeForFile.ImageKey = "file.png";
+                    nodeForFile.SelectedImageKey = "file.png";
 
                     string directoryNodeToFind = FileManager.GetDirectory(fullFile);
                     string thisAbsolute = ProjectManager.MakeAbsolute(this.GetRelativePath(), true);
@@ -333,11 +330,8 @@ namespace FlatRedBall.Glue.Controls
 
                             newNode.ForeColor = ElementViewWindow.FolderColor;
 
-                            if (BaseElementTreeNode.UseIcons)
-                            {
-                                newNode.ImageKey = "folder.png";
-                                newNode.SelectedImageKey = "folder.png";
-                            }
+                            newNode.ImageKey = "folder.png";
+                            newNode.SelectedImageKey = "folder.png";
 
                             treeNode.Nodes.Add(newNode);
                         }

@@ -940,11 +940,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (parentTreeNode.IsRootNamedObjectNode() && parentTreeNode.Parent.IsEntityNode())
             {
-                container = ((EntityTreeNode)parentTreeNode.Parent).EntitySave;
+                container = ((EntityTreeNode)parentTreeNode.Parent).SaveObject;
             }
             else if (parentTreeNode.IsRootNamedObjectNode() && parentTreeNode.Parent.IsScreenNode())
             {
-                container = ((ScreenTreeNode)parentTreeNode.Parent).ScreenSave;
+                container = ((ScreenTreeNode)parentTreeNode.Parent).SaveObject;
             }
             else if (parentTreeNode.IsNamedObjectNode())
             {
@@ -2743,7 +2743,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             containerTreeNode.UpdateReferencedTreeNodes();
 
-            CodeWriter.GenerateCode(containerTreeNode.SaveObjectAsElement);
+            CodeWriter.GenerateCode(containerTreeNode.SaveObject);
         }
 
 

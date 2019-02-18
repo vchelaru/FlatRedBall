@@ -365,7 +365,7 @@ namespace FlatRedBall.Glue.IO
                                 var treeNode = GlueState.Self.Find.ElementTreeNode(element);
 
 
-                                treeNode.SaveObjectAsElement = replacement;
+                                treeNode.SaveObject = replacement;
 
 
                                 // Gotta regen this and update the UI and refresh the PropertyGrid if it's selected

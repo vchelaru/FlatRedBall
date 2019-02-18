@@ -115,7 +115,7 @@ namespace FlatRedBall.Glue.Managers
             // Let's see if it's the Objects that contains node or another one
 
             IElement parentOfMovingNos = movingNos.GetContainer();
-            IElement elementMovingInto = ((BaseElementTreeNode)targetNode.Parent).SaveObjectAsElement;
+            IElement elementMovingInto = ((BaseElementTreeNode)targetNode.Parent).SaveObject;
 
             if (parentOfMovingNos == elementMovingInto)
             {
@@ -414,7 +414,7 @@ namespace FlatRedBall.Glue.Managers
 
             else if (targetNode.IsGlobalContentContainerNode())
             {
-                AskAndAddAllContainedRfsToGlobalContent(treeNodeMoving.SaveObjectAsElement);
+                AskAndAddAllContainedRfsToGlobalContent(treeNodeMoving.SaveObject);
             }
 
             return newTreeNode;
@@ -471,11 +471,11 @@ namespace FlatRedBall.Glue.Managers
             if (targetNode.IsRootNamedObjectNode())
             {
                 BaseElementTreeNode baseElementTreeNode = targetNode.Parent as BaseElementTreeNode;
-                elementToCreateIn = baseElementTreeNode.SaveObjectAsElement;
+                elementToCreateIn = baseElementTreeNode.SaveObject;
             }
             else
             {
-                elementToCreateIn = ((BaseElementTreeNode)targetNode).SaveObjectAsElement;
+                elementToCreateIn = ((BaseElementTreeNode)targetNode).SaveObject;
             }
 
             #endregion

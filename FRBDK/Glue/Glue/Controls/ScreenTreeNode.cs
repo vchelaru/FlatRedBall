@@ -19,23 +19,14 @@ namespace FlatRedBall.Glue.Controls
 	{
         #region Properties
 
-        public ScreenSave ScreenSave
-        {
-            get { return mSaveObject as ScreenSave; }
-            set { mSaveObject = value; Tag = mSaveObject; }
-        }
-
 		#endregion
 
 		#region Methods
 
         public ScreenTreeNode(string text) : base(text)
         {
-            if (BaseElementTreeNode.UseIcons)
-            {
-                ImageKey = "screen.png";
-                SelectedImageKey = "screen.png";
-            }
+            ImageKey = "screen.png";
+            SelectedImageKey = "screen.png";
         }
                
         #endregion

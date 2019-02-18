@@ -82,11 +82,9 @@ namespace FlatRedBall.Glue.Controls
                 treeNode = new TreeNode(stateSaveCategory.Name);
                 treeNode.ForeColor = ElementViewWindow.StateCategoryColor;
 
-                if (BaseElementTreeNode.UseIcons)
-                {
-                    treeNode.ImageKey = "folder.png";
-                    treeNode.SelectedImageKey = "folder.png";
-                }
+                treeNode.ImageKey = "folder.png";
+                treeNode.SelectedImageKey = "folder.png";
+
                 this.Nodes.Add(treeNode);
 
             }
@@ -153,12 +151,8 @@ namespace FlatRedBall.Glue.Controls
                 {
                     treeNode = new TreeNode(stateSave.Name);
 
-                    if (BaseElementTreeNode.UseIcons)
-                    {
-                        treeNode.ImageKey = "states.png";
-                        treeNode.SelectedImageKey = "states.png";
-                    }
-
+                    treeNode.ImageKey = "states.png";
+                    treeNode.SelectedImageKey = "states.png";
 
                     parentTreeNode.Nodes.Add(treeNode);
                 }
