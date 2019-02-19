@@ -331,12 +331,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 var container = instance.GetContainer();
 
-                if(container == null)
-                {
-                    throw new InvalidOperationException($"Could not find asset type info for instance {instance} because it doesn't have a container");
-                }
-
-                var rfs = container.GetReferencedFileSave(instance.SourceFile);
+                var rfs = container?.GetReferencedFileSave(instance.SourceFile);
 
                 if (rfs != null)
                 {
