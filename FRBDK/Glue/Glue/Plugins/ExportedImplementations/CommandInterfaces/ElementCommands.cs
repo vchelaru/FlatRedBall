@@ -117,7 +117,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // Now we only want to do it if there are no
             // other Screens.  Otherwise they can just use
             // GlueView.
-            ScreenTreeNode screenTreeNode = ElementViewWindow.AddScreen(screenSave);
+            var screenTreeNode = ElementViewWindow.AddScreen(screenSave);
             if (glueProject.Screens.Count == 1)
             {
                 ElementViewWindow.StartUpScreen = screenTreeNode;
