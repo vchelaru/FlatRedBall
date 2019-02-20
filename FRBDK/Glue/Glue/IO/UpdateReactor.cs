@@ -75,9 +75,10 @@ namespace FlatRedBall.Glue.IO
 
                                 shouldSave = true;
                             }
-                            catch(Exception e)
+                            catch (Exception e)
                             {
-                                MessageBox.Show("Error saving Class from CSV " + rfs.Name);
+                                GlueCommands.Self.PrintError("Error saving Class from CSV " + rfs.Name +
+                                    "\n" + e.ToString());
                             }
                         }
                     }

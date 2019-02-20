@@ -266,7 +266,8 @@ namespace FlatRedBall.Glue
                 {
                     ReferencedFileSave foundRfs = ObjectFinder.Self.GetReferencedFileSaveFromFile(name);
 
-                    if (foundRfs != null)
+                    // A dupe was added one during a Glue crash, so let's protect against that:
+                    if (foundRfs != null && rfsesForClass.Contains(foundRfs) == false)
                     {
                         rfsesForClass.Add(foundRfs);
 

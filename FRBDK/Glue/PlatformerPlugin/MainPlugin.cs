@@ -52,7 +52,9 @@ namespace FlatRedBall.PlatformerPlugin
                 // 1.3.8 - Removed "0" in top left corner caused by debug write
                 // 1.3.9 - Fixed blend operation setting on maps - if a previous sprite used add, then
                 //         the layer was drawn with add
-                return new Version(1, 3, 9);
+                // 1.4.0 - If the user is holding the down vertical input, in the air, and the movement
+                //         values allow falling through clouds, cloud collision will not be tested.
+                return new Version(1, 4, 0);
             }
         }
 
