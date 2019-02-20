@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.ErrorPlugin.Logic;
@@ -43,7 +44,7 @@ namespace OfficialPlugins.ErrorPlugin
             control = new ErrorWindow();
             tab = AddToTab(PluginManager.BottomTab, control, "Errors");
 
-            errorListViewModel = new ErrorListViewModel();
+            errorListViewModel = GlueState.Self.ErrorList;
             errorListViewModel.Errors.CollectionChanged += HandleErrorsCollectionChanged;
             errorListViewModel.RefreshClicked += HandleRefreshClicked;
 

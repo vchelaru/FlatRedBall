@@ -275,29 +275,22 @@ namespace FlatRedBall.Glue
                 // stray .sln file.  Not sure
                 // what to do about that though.
                 // We'll live with it for now.
-                string projectFileName = GlueProjectFileName;
-                string directory = FileManager.GetDirectory(projectFileName);
 
-                bool foundSln = false;
+                var foundSlnFileName = GlueState.Self.GetSlnFileName();
 
-                while (!string.IsNullOrEmpty(directory))
+                if (foundSlnFileName != null)
                 {
-                    List<string> foundSlnFiles = FileManager.GetAllFilesInDirectory(directory, "sln", 0);
-                    foundSln |= foundSlnFiles.Count != 0;
-
-                    if (foundSln && FileManager.IsRelativeTo(ContentDirectory, directory))
-                    {
-                        return directory;
-                    }
-
-
-                    //We'll assume the root is in the location of the .sln
-                    directory = FileManager.GetDirectory(directory);
+                    return foundSlnFileName.GetDirectoryContainingThis().FullPath;
                 }
-
-                return null;
+                else
+                {
+                    // if we got here then there is no .sln (the user may have deleted it). In that case we'll
+                    // just use the parent directory of the glue project file name
+                    return FileManager.GetDirectory(FileManager.GetDirectory(GlueState.Self.GlueProjectFileName));
+                }
             }
         }
+
 
         public static ReadOnlyCollection<ProjectBase> SyncedProjects
         {
@@ -336,11 +329,6 @@ namespace FlatRedBall.Glue
             VerificationId = 0;
 
         }
-
-
-
-
-
 
         public static ProjectBase AddSyncedProject(string fileName)
         {
@@ -628,24 +616,15 @@ namespace FlatRedBall.Glue
                 #endregion
 
 
-                if (element is ScreenSave)
-                {
-                    ScreenTreeNode stn = GlueState.Self.Find.ScreenTreeNode(element as ScreenSave);
-                    if (updateUi)
-                    {
-                        stn.UpdateReferencedTreeNodes();
-                    }
-                    CodeWriter.GenerateCode(element);
-                }
-                else
-                {
-                    EntityTreeNode etn = GlueState.Self.Find.EntityTreeNode(element as EntitySave);
-                    if (updateUi)
-                    {
-                        etn.UpdateReferencedTreeNodes();
-                    }
-                    CodeWriter.GenerateCode(element);
+                var elementTreeNode = GlueState.Self.Find.ElementTreeNode(element);
 
+                if (updateUi)
+                {
+                    elementTreeNode.UpdateReferencedTreeNodes();
+                }
+                CodeWriter.GenerateCode(element);
+                if (element is EntitySave)
+                {
                     List<NamedObjectSave> entityNamedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(element.Name);
 
                     foreach (NamedObjectSave nos in entityNamedObjects)
@@ -1328,9 +1307,6 @@ namespace FlatRedBall.Glue
         #endregion
 
         #endregion
-
-
-
 
         internal static void RemoveSyncedProject(VSHelpers.Projects.ProjectBase project)
         {

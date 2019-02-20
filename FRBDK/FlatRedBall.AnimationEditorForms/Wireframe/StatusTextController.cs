@@ -44,8 +44,11 @@ namespace FlatRedBall.AnimationEditorForms.Wireframe
             }
             else if (SelectedState.Self.SelectedChain == null)
             {
-                mText.Visible = true;
-                mText.RawText = "Select an animation or frame to view its information.";
+                // We don't want to do this anymore because we typically will show a texture there for users to add new animations.
+                // This lets users CTRL+Click to add new animations.
+            //    mText.Visible = true;
+            //    mText.RawText = "Select an animation or frame to view its information.";
+                mText.Visible = false;
             }
             else if (SelectedState.Self.SelectedChain.Frames.Count == 0)
             {

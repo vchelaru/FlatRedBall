@@ -439,14 +439,14 @@ namespace FlatRedBall.Glue.FormHelpers
 
 
 
-        public static ScreenTreeNode AddScreen(ScreenSave screenSave)
+        public static BaseElementTreeNode AddScreen(ScreenSave screenSave)
         {
             string screenFileName = screenSave.Name + ".cs";
             
 
             string screenFileWithoutExtension = FileManager.RemoveExtension(screenFileName);
 
-            ScreenTreeNode screenTreeNode = new ScreenTreeNode(FileManager.RemovePath(screenFileWithoutExtension));
+            var screenTreeNode = new ScreenTreeNode(FileManager.RemovePath(screenFileWithoutExtension));
 
 
 

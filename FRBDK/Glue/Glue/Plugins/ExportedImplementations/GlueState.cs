@@ -9,6 +9,9 @@ using FlatRedBall.Glue.Data;
 using FlatRedBall.Glue.Managers;
 using Glue;
 using FlatRedBall.IO;
+using FlatRedBall.Glue.Errors;
+using System.Linq;
+using FlatRedBall.Glue.IO;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
@@ -193,6 +196,38 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public ProjectBase CurrentMainContentProject { get { return ProjectManager.ContentProject; } }
 
+        public FilePath GetSlnFileName()
+        {
+            string projectFileName = GlueState.Self.GlueProjectFileName;
+            string directory = FileManager.GetDirectory(projectFileName);
+            string foundSlnFileName = null;
+
+            while (!string.IsNullOrEmpty(directory))
+            {
+                List<string> foundSlnFiles = FileManager.GetAllFilesInDirectory(directory, "sln", 0);
+
+                if (foundSlnFiles.Count != 0 && FileManager.IsRelativeTo(ContentDirectory, directory))
+                {
+                    foundSlnFileName = foundSlnFiles.First();
+                    break;
+                }
+
+
+                //We'll assume the root is in the location of the .sln
+                directory = FileManager.GetDirectory(directory);
+            }
+
+            if(foundSlnFileName == null)
+            {
+                return null;
+            }
+            else
+            {
+                return foundSlnFileName;
+            }
+        }
+
+
         public string ProjectNamespace
         {
             get
@@ -329,5 +364,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             return ObjectFinder.Self.GetAllReferencedFiles();
         }
 
+        public ErrorListViewModel ErrorList { get; private set; } = new ErrorListViewModel();
     }
 }

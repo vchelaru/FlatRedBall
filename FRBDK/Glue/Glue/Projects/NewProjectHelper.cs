@@ -130,7 +130,7 @@ namespace FlatRedBall.Glue.Projects
 
             if (!String.IsNullOrEmpty(createdProject))
             {
-                ProjectLoader.Self.LoadProject(createdProject, null);
+                GlueCommands.Self.LoadProject(createdProject);
             }
         }
 

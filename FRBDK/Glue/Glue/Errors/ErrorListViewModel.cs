@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace OfficialPlugins.ErrorPlugin.ViewModels
+namespace FlatRedBall.Glue.Errors
 {
     public class ErrorListViewModel : ViewModel
     {

@@ -95,7 +95,9 @@ namespace AnimationEditorPlugin
             // - Texture dropdown now reflects the selected AnimaitonFrame.
             // 3.1.1
             // - Fixed snapping size not applying until checkbox is checked/unchecked.
-            get { return new Version(3, 1, 1); }
+            // 3.1.2
+            // - Removed text showing up when no animation chains are selected, overlapping the texture and making % selection not work.
+            get { return new Version(3, 1, 2); }
         }
 
         public bool IsSelectedItemSprite

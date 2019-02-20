@@ -62,17 +62,9 @@ namespace FlatRedBall.Glue.IO
 
         #endregion
 
-        public void LoadProject(string projectFileName)
+        
+        public void LoadProject(string projectFileName, InitializationWindow initializationWindow = null)
         {
-            LoadProject(projectFileName, null);
-        }
-
-
-        public void LoadProject(string projectFileName, InitializationWindow initializationWindow)
-        {
-
-
-
             TimeManager.Initialize();
             var topSection = Section.GetAndStartContextAndTime("All");
             ////////////////// EARLY OUT!!!!!!!!!
@@ -111,6 +103,13 @@ namespace FlatRedBall.Glue.IO
             {
 
                 ProjectManager.ProjectBase.Load(projectFileName);
+
+                var sln = GlueState.Self.GetSlnFileName();
+
+                if(sln == null)
+                {
+                    GlueCommands.Self.PrintError("Could not find .sln file for project - this may cause file reference errors, and may need to be manually fixed");
+                }
 
 
                 SetInitWindowText("Finding Game class");

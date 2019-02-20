@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace OfficialPlugins.ErrorPlugin.ViewModels
+namespace FlatRedBall.Glue.Errors
 {
     public class ErrorViewModel : ViewModel
     {
