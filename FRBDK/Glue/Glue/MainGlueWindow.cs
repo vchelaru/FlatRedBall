@@ -604,7 +604,7 @@ namespace Glue
 
         private void existingFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RightClickHelper.AddExistingFileClick();
+            AddExistingFileManager.Self.AddExistingFileClick();
         }
 
         private void newFileToolStripMenuItem_Click(object sender, EventArgs e)

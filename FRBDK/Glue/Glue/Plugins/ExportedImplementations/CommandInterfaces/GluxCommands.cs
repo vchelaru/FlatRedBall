@@ -314,6 +314,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 PluginManager.ReactToNewFile(toReturn);
                 GluxCommands.Self.SaveGlux();
                 TaskManager.Self.AddSync(GluxCommands.Self.ProjectCommands.SaveProjects, "Saving projects after adding file");
+
             }
 
             if (!string.IsNullOrWhiteSpace(errorMessage))
@@ -329,6 +330,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (toReturn != null)
             {
                 ApplyOptions(toReturn, options);
+
+                TaskManager.Self.AddSync( () =>
+                    TaskManager.Self.OnUiThread( () => 
+                        GlueState.Self.CurrentReferencedFileSave = toReturn), "Select new file");
             }
 
             return toReturn;

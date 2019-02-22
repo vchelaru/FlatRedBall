@@ -92,7 +92,7 @@ namespace AtlasPlugin.Managers
             {
                 bool cancelled = false;
 
-                var newFile = FlatRedBall.Glue.FormHelpers.RightClickHelper.AddSingleFile(
+                var newFile = AddExistingFileManager.Self.AddSingleFile(
                     fileName, ref cancelled);
 
                 // After we add it, we want to make sure the atlas is the first item in the list, so that it's loaded before anything that may depend on it:

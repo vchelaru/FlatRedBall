@@ -169,7 +169,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 // to the code that adds existing
                 // files now that we have a file and
                 // that's exactly what we're doing.
-                rfs = RightClickHelper.AddSingleFile(createdFile, ref userCancelled, option);
+                rfs = AddExistingFileManager.Self.AddSingleFile(createdFile, ref userCancelled, option);
 
                 if (rfs == null && !userCancelled)
                 {

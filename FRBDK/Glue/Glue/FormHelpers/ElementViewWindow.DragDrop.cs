@@ -327,7 +327,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     }
                     else
                     {
-                        RightClickHelper.AddSingleFile(fileName, ref userCancelled);
+                        AddExistingFileManager.Self.AddSingleFile(fileName, ref userCancelled);
                     }
                 }
 
@@ -351,7 +351,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     FlatRedBall.Glue.Managers.TaskManager.Self.AddSync(() =>
                         {
-                            var newRfs = RightClickHelper.AddSingleFile(fileName, ref userCancelled, element, directoryPath);
+                            var newRfs = AddExistingFileManager.Self.AddSingleFile(fileName, ref userCancelled, element, directoryPath);
 
                             GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.SelectCommands.Select(newRfs));
                         },

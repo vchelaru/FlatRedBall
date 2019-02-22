@@ -303,6 +303,9 @@
     <Compile Include="Controls\AddEntityWindow.xaml.cs">
       <DependentUpon>AddEntityWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\AddExistingFileWindow.xaml.cs">
+      <DependentUpon>AddExistingFileWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\MultiButtonMessageBoxWpf.xaml.cs">
       <DependentUpon>MultiButtonMessageBoxWpf.xaml</DependentUpon>
     </Compile>
@@ -313,6 +316,7 @@
     <Compile Include="GlueView\ISelectionInterface.cs" />
     <Compile Include="GlueView\SelectionInterface2.cs" />
     <Compile Include="GlueView\SelectionInterfaceClient.cs" />
+    <Compile Include="Managers\AddExistingFileManager.cs" />
     <Compile Include="Managers\DragDropManager.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\AddToShapeCollectionPlugin\MainAddToShapeCollectionPlugin.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\AddVariablePlugin\Controls\CreateNewVariableControl.xaml.cs">
@@ -830,6 +834,7 @@
     </Compile>
     <Compile Include="Plugins\EmbeddedPlugins\UnreferencedFiles\UnreferencedFilesViewModel.cs" />
     <Compile Include="Utilities\IEnumerableExtensionMethods.cs" />
+    <Compile Include="ViewModels\AddExistingFileViewModel.cs" />
     <Compile Include="ViewModels\AddObjectViewModel.cs" />
     <Compile Include="ViewModels\CustomClassViewModel.cs" />
     <Compile Include="VSHelpers\CodeBuildItemAdder.cs" />
@@ -1898,6 +1903,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Controls\AddEntityWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\AddExistingFileWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

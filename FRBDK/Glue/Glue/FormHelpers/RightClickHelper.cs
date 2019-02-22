@@ -484,10 +484,10 @@ namespace FlatRedBall.Glue.FormHelpers
             PluginManager.ReactToTreeViewRightClick(targetNode, menu);
         }
 
-
-        
-
-
+        public static ReferencedFileSave AddSingleFile(string fullFileName, ref bool cancelled)
+        {
+            return AddExistingFileManager.Self.AddSingleFile(fullFileName, ref cancelled);
+        }
 
         public static void Initialize()
         {
@@ -2049,89 +2049,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #endregion
         }
-
-        public static void AddExistingFileClick()
-        {
-            bool userCancelled = false;
-            // add externally built file, add external file, add built file
-            if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
-            {
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-
-                openFileDialog.Multiselect = true;
-
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    var element = GlueState.Self.CurrentElement;
-                    string directoryOfTreeNode = EditorLogic.CurrentTreeNode.GetRelativePath();
-
-                    foreach (string fileName in openFileDialog.FileNames)
-                    {
-                        string fileNameLocal = fileName;
-                        TaskManager.Self.AddSync(() =>
-                        {
-                            AddSingleFile(fileName, ref userCancelled, element, directoryOfTreeNode, null);
-
-                        }, $"Adding file {fileNameLocal}");
-                    }
-                }
-            }
-        }
-
-        public static ReferencedFileSave AddSingleFile(string fileName, ref bool userCancelled, string options = null)
-        {
-
-            var element = GlueState.Self.CurrentElement;
-            string directoryOfTreeNode = EditorLogic.CurrentTreeNode.GetRelativePath();
-            return AddSingleFile(fileName, ref userCancelled, element, directoryOfTreeNode, options);
-        }
-
-
-        public static ReferencedFileSave AddSingleFile(string fileName, ref bool userCancelled, IElement element, string directoryOfTreeNode, string options = null)
-        {
-            ReferencedFileSave toReturn = null;
-
-            #region Find the BuildToolAssociation for the selected file
-
-            string rfsName = FileManager.RemoveExtension(FileManager.RemovePath(fileName));
-            string extraCommandLineArguments = null;
-
-            BuildToolAssociation buildToolAssociation = null;
-            bool isBuiltFile = BuildToolAssociationManager.Self.GetIfIsBuiltFile(fileName);
-            bool userPickedNone = false;
-
-            if (isBuiltFile)
-            {
-                buildToolAssociation = BuildToolAssociationManager.Self.GetBuildToolAssocationAndNameFor(fileName, out userCancelled, out userPickedNone, out rfsName, out extraCommandLineArguments);
-            }
-
-            #endregion
-
-            string sourceExtension = FileManager.GetExtension(fileName);
-
-            if(userPickedNone)
-            {
-                isBuiltFile = false;
-            }
-
-            if (isBuiltFile && buildToolAssociation == null && !userPickedNone)
-            {
-                GlueCommands.Self.PrintOutput("Couldn't find a tool for the file extension " + sourceExtension);
-            }
-
-            else if (!userCancelled)
-            {
-
-                toReturn = GlueCommands.Self.GluxCommands.AddSingleFileTo(fileName, rfsName, extraCommandLineArguments, buildToolAssociation,
-                    isBuiltFile, options, element, directoryOfTreeNode);
-            }
-
-
-
-            return toReturn;
-
-        }
-
 
         internal static void AddVariableClick(CustomVariableType variableType = CustomVariableType.Exposed, string tunnelingObject = "")
         {

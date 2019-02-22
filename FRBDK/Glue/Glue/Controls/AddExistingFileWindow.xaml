@@ -1,0 +1,46 @@
+﻿<Window x:Class="FlatRedBall.Glue.Controls.AddExistingFileWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
+             WindowStartupLocation="Manual"
+             mc:Ignorable="d" 
+             WindowStyle="ToolWindow" ResizeMode="CanResizeWithGrip"
+             Height="300" Width="450">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBox 
+                 x:Name="SearchTextBox"
+                 Margin="5" 
+                 KeyDown="TextBox_KeyDown"
+                 PreviewKeyDown="TextBox_PreviewKeyDown"
+                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+        <ListBox x:Name="ListBoxInstance"
+                 Grid.Row="1" Margin="5,0,5,5" 
+                 ItemsSource="{Binding FilteredFileList}"
+                 SelectedItem="{Binding SelectedListBoxItem}"
+                 SelectionChanged="ListBoxInstance_SelectionChanged"
+                 ></ListBox>
+        <TextBlock FontSize="10" Margin="5,0,5,5" TextWrapping="Wrap" Grid.Row="2">
+            The list above shows all files in the game's content folder. <LineBreak></LineBreak>
+            To add files from outside of the content folder, click the Browse button. Files from outside of the content folder will be copied to the content folder.</TextBlock>
+        <Grid Grid.Row="3" Margin="5,0,15,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Click="HandleBrowseClicked">Browse...</Button>
+            <Button Grid.Column="2" Margin="0,0,5,0" Click="OkButtonClicked">OK</Button>
+            <Button Grid.Column="3" Click="CancelButtonClicked">Cancel</Button>
+        </Grid>
+    </Grid>
+</Window>

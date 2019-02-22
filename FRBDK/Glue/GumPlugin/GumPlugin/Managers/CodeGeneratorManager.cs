@@ -274,7 +274,7 @@ namespace GumPlugin.Managers
 
             string generatedCode = mGueDerivingClassCodeGenerator.GenerateCodeFor(element);
 
-            string generatedSaveLocation = directoryToSave + element.Name + "Runtime.Generated.cs";
+            FilePath generatedSaveLocation = directoryToSave + element.Name + "Runtime.Generated.cs";
             string customCodeSaveLocation = directoryToSave + element.Name + "Runtime.cs";
 
             if (savingBehavior == CodeGenerationSavingBehavior.AlwaysSave)
@@ -284,13 +284,13 @@ namespace GumPlugin.Managers
             else // if(savingBehavior == CodeGenerationSavingBehavior.SaveIfGeneratedDiffers)
             {
                 // We only want to save this file if what we've just generated is different than what is already on disk:
-                if(!System.IO.File.Exists(generatedSaveLocation))
+                if(!generatedSaveLocation.Exists())
                 {
                     resultToReturn.DidSaveGenerated = true;
                 }
                 else
                 {
-                    var existingText = File.ReadAllText(generatedSaveLocation);
+                    var existingText = File.ReadAllText(generatedSaveLocation.FullPath);
 
                     resultToReturn.DidSaveGenerated = existingText != generatedCode;
                 }
@@ -312,8 +312,13 @@ namespace GumPlugin.Managers
 
             if (resultToReturn.DidSaveGenerated)
             {
+                // in case directory doesn't exist
+                var directory = generatedSaveLocation.GetDirectoryContainingThis();
+
+                System.IO.Directory.CreateDirectory(directory.FullPath);
+
                 GlueCommands.Self.TryMultipleTimes(() => 
-                    System.IO.File.WriteAllText(generatedSaveLocation, generatedCode));
+                    System.IO.File.WriteAllText(generatedSaveLocation.FullPath, generatedCode));
             }
 
             if(resultToReturn.DidSaveCustom)
