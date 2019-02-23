@@ -350,6 +350,7 @@ namespace FlatRedBall.Screens
             FlatRedBall.Input.InputManager.CurrentFrameInputSuspended = true;
 
             newScreen.Initialize(true);
+            TimeManager.SetNextFrameTimeTo0 = true;
 
             newScreen.ApplyRestartVariables();
 
@@ -402,6 +403,7 @@ namespace FlatRedBall.Screens
                         mCurrentScreen = newScreen;
                     }
                     newScreen.Initialize(addToManagers);
+                    TimeManager.SetNextFrameTimeTo0 = true;
 
                     newScreen.ApplyRestartVariables();
                 }

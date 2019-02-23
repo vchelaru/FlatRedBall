@@ -171,6 +171,11 @@ namespace FlatRedBall
             get { return sections.Count; }
         }
 
+        public static bool SetNextFrameTimeTo0
+        {
+            get; set;
+        }
+
         #endregion
 
         #region Methods
@@ -570,7 +575,15 @@ namespace FlatRedBall
                 mCurrentTime = currentSystemTime;
                 */
 
-                elapsedTime = time.ElapsedGameTime.TotalSeconds * mTimeFactor;
+                if(SetNextFrameTimeTo0)
+                {
+                    elapsedTime = 0;
+                    SetNextFrameTimeTo0 = false;
+                }
+                else
+                {
+                    elapsedTime = time.ElapsedGameTime.TotalSeconds * mTimeFactor;
+                }
 
                 //stop big frame times
                 if (elapsedTime > MaxFrameTime)
@@ -590,10 +603,6 @@ namespace FlatRedBall
             mSecondDifferenceSquaredDividedByTwo = (mSecondDifference * mSecondDifference) / 2.0f;
             mCurrentTimeForTimedSections = currentSystemTime;
 #else
-            mSecondDifference = (float)time.ElapsedGameTime.TotalSeconds;
-            mSecondDifferenceSquaredDividedByTwo = (mSecondDifference * mSecondDifference) / 2.0F;
-
-            CurrentTime = time.TotalGameTime.TotalSeconds;
             
 #endif
         }
