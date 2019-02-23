@@ -365,9 +365,24 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 var elseBlock = ifBlock.End().Else();
                 {
-                    widthVariable = $"(int)({widthVariable} * Data.Scale/ 100.0f)";
-                    heightVariable = $"(int)({heightVariable} * Data.Scale/ 100.0f)";
-                    elseBlock.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution({widthVariable}, {heightVariable});");
+                    //widthVariable = $"(int)({widthVariable} * Data.Scale/ 100.0f)";
+                    //heightVariable = $"(int)({heightVariable} * Data.Scale/ 100.0f)";
+                    //elseBlock.Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution({widthVariable}, {heightVariable});");
+
+                    //var width = (int)(Data.ResolutionWidth * Data.Scale / 100.0f); 
+                    //var height = (int)(Data.ResolutionHeight * Data.Scale / 100.0f);
+                    elseBlock.Line($"var width = (int)({widthVariable} * Data.Scale / 100.0f);");
+                    elseBlock.Line($"var height = (int)({heightVariable} * Data.Scale / 100.0f);");
+
+                    elseBlock.Line("// subtract to leave room for windows borders");
+                    elseBlock.Line("var maxWidth = Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 6;");
+                    elseBlock.Line("var maxHeight = Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 28;");
+
+                    elseBlock.Line("width = System.Math.Min(width, maxWidth);");
+                    elseBlock.Line("height = System.Math.Min(height, maxHeight);");
+
+                    elseBlock.Line("FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(width, height);");
+
                 }
 
 
