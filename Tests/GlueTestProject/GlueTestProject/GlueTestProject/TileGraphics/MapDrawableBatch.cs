@@ -924,7 +924,8 @@ namespace FlatRedBall.TileGraphics
                     FlatRedBallServices.GraphicsOptions.TextureFilter = this.TextureFilter.Value;
                 }
                 TextureAddressMode oldTextureAddressMode;
-                Effect effectTouse = PrepareRenderingStates(camera, out oldTextureAddressMode);
+                FlatRedBall.Graphics.BlendOperation oldBlendOp;
+                Effect effectTouse = PrepareRenderingStates(camera, out oldTextureAddressMode, out oldBlendOp);
 
                 foreach (EffectPass pass in effectTouse.CurrentTechnique.Passes)
                 {
@@ -949,6 +950,8 @@ namespace FlatRedBall.TileGraphics
                 }
 
                 Renderer.TextureAddressMode = oldTextureAddressMode;
+                FlatRedBall.Graphics.Renderer.BlendOperation = oldBlendOp;
+
                 if (ZBuffered)
                 {
                     FlatRedBallServices.GraphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
@@ -960,12 +963,12 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        private Effect PrepareRenderingStates(Camera camera, out TextureAddressMode oldTextureAddressMode)
+        private Effect PrepareRenderingStates(Camera camera, out TextureAddressMode oldTextureAddressMode, out FlatRedBall.Graphics.BlendOperation oldBlendOperation)
         {
             // Set graphics states
             FlatRedBallServices.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
-            var oldBlendOp = FlatRedBall.Graphics.Renderer.BlendOperation;
+            oldBlendOperation = FlatRedBall.Graphics.Renderer.BlendOperation;
 
 #if TILEMAPS_ALPHA_AND_COLOR
             FlatRedBall.Graphics.Renderer.BlendOperation = BlendOperation.Regular;
@@ -1010,10 +1013,7 @@ namespace FlatRedBall.TileGraphics
             // on non-power-of-two textures.
             oldTextureAddressMode = Renderer.TextureAddressMode;
             Renderer.TextureAddressMode = TextureAddressMode.Clamp;
-
-
-            FlatRedBall.Graphics.Renderer.BlendOperation = oldBlendOp;
-
+            
             return effectTouse;
         }
 

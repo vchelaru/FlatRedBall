@@ -84,7 +84,14 @@
                 }
                 else
                 {
-                    FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution((int)(Data.ResolutionWidth * Data.Scale/ 100.0f), (int)(Data.ResolutionHeight * Data.Scale/ 100.0f));
+                    var width = (int)(Data.ResolutionWidth * Data.Scale / 100.0f);
+                    var height = (int)(Data.ResolutionHeight * Data.Scale / 100.0f);
+                    // subtract to leave room for windows borders
+                    var maxWidth = Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 6;
+                    var maxHeight = Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 28;
+                    width = System.Math.Min(width, maxWidth);
+                    height = System.Math.Min(height, maxHeight);
+                    FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(width, height);
                 }
                 #elif IOS || ANDROID
                 FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight);
@@ -95,8 +102,8 @@
                 }
                 else
                 {
-                    FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution((int)(Data.ResolutionWidth * Data.Scale/ 100.0f), (int)(Data.ResolutionHeight * Data.Scale/ 100.0f));
-                    var newWindowSize = new Windows.Foundation.Size((int)(Data.ResolutionWidth * Data.Scale/ 100.0f), (int)(Data.ResolutionHeight * Data.Scale/ 100.0f));
+                    FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(Data.ResolutionWidth, Data.ResolutionHeight);
+                    var newWindowSize = new Windows.Foundation.Size(Data.ResolutionWidth, Data.ResolutionHeight);
                     Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TryResizeView(newWindowSize); 
                 }
                 #endif

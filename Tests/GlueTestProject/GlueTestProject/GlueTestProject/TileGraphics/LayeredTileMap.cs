@@ -579,8 +579,6 @@ namespace FlatRedBall.TileGraphics
         {
             var allTilesets = tms.Tilesets;
 
-            Dictionary<TMXGlueLib.Tileset, bool> hasShapesDictionary = new Dictionary<TMXGlueLib.Tileset, bool>();
-
             Dictionary<string, TileCollisions.TileShapeCollection> nameCollisionPairs = new Dictionary<string, TileCollisions.TileShapeCollection>();
 
 
@@ -590,32 +588,13 @@ namespace FlatRedBall.TileGraphics
                 // Currently we only support 1 tileset per layer, so we'll find the tileset for this layer
                 var firstNonZero = layer.data[0].tiles.FirstOrDefault(item => item != 0);
 
+                TMXGlueLib.Tileset tileset = null;
+
                 if (firstNonZero != 0)
                 {
-                    var tileset = tms.GetTilesetForGid(firstNonZero);
-
-                    if (tileset != null)
-                    {
-                        bool hasShapes;
-                        if (hasShapesDictionary.ContainsKey(tileset))
-                        {
-                            hasShapes = hasShapesDictionary[tileset];
-                        }
-                        else
-                        {
-                            // We don't know if this tileset has shapes yet, so let's figure it out:
-                            hasShapes = tileset.Tiles.Any(item => item.Objects?.@object?.Length > 0);
-
-                            hasShapesDictionary[tileset] = hasShapes;
-                        }
-
-                        if (hasShapes)
-                        {
-                            AddTileShapeCollectionForLayer(layer, nameCollisionPairs, tileset, tms.tilewidth, i);
-
-                        }
-                    }
+                    tileset = tms.GetTilesetForGid(firstNonZero);
                 }
+                AddTileShapeCollectionForLayer(layer, nameCollisionPairs, tileset, tms.tilewidth, i);
             }
             foreach (var item in nameCollisionPairs.Values)
             {
@@ -663,8 +642,11 @@ namespace FlatRedBall.TileGraphics
 
             bool sortOnY = layer.height > layer.width;
 
+            var collection = GetOrAddTileShapeCollection(layer.Name, collisionDictionary);
 
-            foreach (var tilesetTile in tileset.Tiles.Where(item => item.Objects?.@object?.Length > 0))
+            if(tileset != null)
+            {
+                foreach (var tilesetTile in tileset.Tiles.Where(item => item.Objects?.@object?.Length > 0))
             {
                 var tilesetTileGid = tilesetTile.id + tileset.Firstgid;
                 foreach (var tilesetObject in tilesetTile.Objects.@object)
@@ -673,7 +655,6 @@ namespace FlatRedBall.TileGraphics
                     TiledMapToShapeCollectionConverter.ConvertTiledObjectToFrbShape(tilesetObject, out polygon, out rectangle, out circle);
                     if (rectangle != null)
                     {
-                        TileCollisions.TileShapeCollection collection = null;
                         rectangle.Z = z;
                         if (sortOnY)
                         {
@@ -681,7 +662,7 @@ namespace FlatRedBall.TileGraphics
                             {
                                 for (int x = 0; x < layer.width; x++)
                                 {
-                                    AddRectangleCloneAtXY(layer, tileDimension, rectangle, tiles, tilesetTileGid, x, y, collisionDictionary, ref collection);
+                                    AddRectangleCloneAtXY(layer, tileDimension, rectangle, tiles, tilesetTileGid, x, y, collection);
                                 }
                             }
                         }
@@ -691,14 +672,13 @@ namespace FlatRedBall.TileGraphics
                             {
                                 for (int y = 0; y < layer.height; y++)
                                 {
-                                    AddRectangleCloneAtXY(layer, tileDimension, rectangle, tiles, tilesetTileGid, x, y, collisionDictionary, ref collection);
+                                    AddRectangleCloneAtXY(layer, tileDimension, rectangle, tiles, tilesetTileGid, x, y, collection);
                                 }
                             }
                         }
                     }
                     else if (polygon != null)
                     {
-                        TileCollisions.TileShapeCollection collection = null;
 
                         // For tile polygons we want them to be centered on the tile.
                         // To do this, we shift all points by its position:
@@ -720,7 +700,8 @@ namespace FlatRedBall.TileGraphics
                             {
                                 for (int x = 0; x < layer.width; x++)
                                 {
-                                    AddPolygonCloneAtXY(layer, tileDimension, polygon, tiles, tilesetTileGid, x, y, collisionDictionary, ref collection);
+                                    AddPolygonCloneAtXY(layer, tileDimension, polygon, tiles, tilesetTileGid, x, y, collection);
+
                                 }
                             }
                         }
@@ -730,7 +711,7 @@ namespace FlatRedBall.TileGraphics
                             {
                                 for (int y = 0; y < layer.height; y++)
                                 {
-                                    AddPolygonCloneAtXY(layer, tileDimension, polygon, tiles, tilesetTileGid, x, y, collisionDictionary, ref collection);
+                                    AddPolygonCloneAtXY(layer, tileDimension, polygon, tiles, tilesetTileGid, x, y, collection);
                                 }
                             }
                         }
@@ -742,20 +723,17 @@ namespace FlatRedBall.TileGraphics
                     }
                 }
             }
+            }
 
         }
 
         private static void AddPolygonCloneAtXY(MapLayer layer, float tileDimension, Polygon polygon, List<uint> tiles, long tilesetTileGid, int x, int y,
-            Dictionary<string, TileCollisions.TileShapeCollection> dictionary, ref TileCollisions.TileShapeCollection collectionForThisName)
+            TileCollisions.TileShapeCollection collectionForThisName)
         {
             var i = y * layer.width + x;
 
             if (tiles[i] == tilesetTileGid)
             {
-                if (collectionForThisName == null)
-                {
-                    collectionForThisName = GetOrAddTileShapeCollection(polygon.Name ?? layer.Name, dictionary);
-                }
                 int xIndex = i % layer.width;
                 // intentional int division
                 int yIndex = i / layer.width;
@@ -770,18 +748,15 @@ namespace FlatRedBall.TileGraphics
         }
 
         private static void AddRectangleCloneAtXY(MapLayer layer, float tileDimension, AxisAlignedRectangle rectangle, List<uint> tiles, long tilesetTileGid, int x, int y,
-            Dictionary<string, TileCollisions.TileShapeCollection> dictionary, ref TileCollisions.TileShapeCollection collectionForThisName)
+            TileCollisions.TileShapeCollection collectionForThisName)
         {
+
             var i = y * layer.width + x;
 
-            var stripedId = tiles[i] & 0x0fffffff;
+            var strippedId = tiles[i] & 0x0fffffff;
 
-            if (stripedId == tilesetTileGid)
+            if (strippedId == tilesetTileGid)
             {
-                if (collectionForThisName == null)
-                {
-                    collectionForThisName = GetOrAddTileShapeCollection(rectangle.Name ?? layer.Name, dictionary);
-                }
 
                 float xIndex = i % layer.width;
                 // intentional int division
@@ -790,8 +765,12 @@ namespace FlatRedBall.TileGraphics
                 var cloned = rectangle.Clone();
 
                 // Offset by .5 since polygons are positioned by their center, tiles by top left
-                cloned.X = (xIndex + .5f) * tileDimension;
-                cloned.Y = -(yIndex + .5f) * tileDimension;
+                //cloned.X = (xIndex + .5f) * tileDimension;
+                //cloned.Y = -(yIndex + .5f) * tileDimension;
+                // Actually use the X and Y to get the top left, then use the actual rectangle's X and Y values so that
+                // its offset applies:
+                cloned.X = rectangle.X + (xIndex) * tileDimension;
+                cloned.Y = rectangle.Y - (yIndex) * tileDimension;
 
                 collectionForThisName.Rectangles.Add(cloned);
 

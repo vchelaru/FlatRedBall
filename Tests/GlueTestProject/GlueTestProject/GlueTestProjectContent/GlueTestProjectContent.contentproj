@@ -957,6 +957,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TilbTest</Name>
     </None>
+    <None Include="screens\tmxscreen\tilesetwithentities.tsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>tilesetwithentities</Name>
+    </None>
     <None Include="Screens\TmxScreen\TmxForObjectSourceFile.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TmxForObjectSourceFile</Name>
@@ -964,6 +968,10 @@
     <None Include="Screens\TmxScreen\TmxWithEmptyLayers.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TmxWithEmptyLayers</Name>
+    </None>
+    <None Include="Screens\TmxScreen\TmxWithEntities.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxWithEntities</Name>
     </None>
     <None Include="Screens\TmxScreen\TmxWithLayersWithProperties.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

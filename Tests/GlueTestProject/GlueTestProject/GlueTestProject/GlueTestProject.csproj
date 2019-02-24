@@ -396,6 +396,10 @@
     <Compile Include="Entities\EntityFolder\StateEntityInFolder.Generated.cs">
       <DependentUpon>StateEntityInFolder.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\EntityFolder\TiledEntityInFolder.cs" />
+    <Compile Include="Entities\EntityFolder\TiledEntityInFolder.Generated.cs">
+      <DependentUpon>TiledEntityInFolder.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\EntityForTestPlugin.cs" />
     <Compile Include="Entities\EntityForTestPlugin.Generated.cs">
       <DependentUpon>EntityForTestPlugin.cs</DependentUpon>
@@ -842,6 +846,7 @@
     <Compile Include="Factories\RecyclableEntityFactory.Generated.cs" />
     <Compile Include="Factories\ShapeEntityCreatedByOtherEntitiesFactory.Generated.cs" />
     <Compile Include="Factories\TextInheritingEntityFactory.Generated.cs" />
+    <Compile Include="Factories\TiledEntityInFolderFactory.Generated.cs" />
     <Compile Include="FileAliases.Generated.cs" />
     <Compile Include="Forms\Controls\CustomUserControl.cs" />
     <Compile Include="Game1.Custom.cs">
