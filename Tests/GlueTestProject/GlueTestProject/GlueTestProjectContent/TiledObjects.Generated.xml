@@ -17,6 +17,7 @@
   <objecttype name="DerivedPooledFromPooled" />
   <objecttype name="DrivedNotPooledFromBaseNotPooled" />
   <objecttype name="EntityInFolder" />
+  <objecttype name="TiledEntityInFolder" />
   <objecttype name="FactoryEntity">
     <property name="Visible" type="bool" default="true" />
   </objecttype>

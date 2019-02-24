@@ -326,15 +326,15 @@ namespace FlatRedBall.Glue.CodeGeneration
         private static bool GenerateInstantiationOrAssignment(NamedObjectSave namedObject, IElement saveObject, 
             ICodeBlock codeBlock, string overridingName, List<string[]> referencedFilesAlreadyUsingFullFile)
         {
-            AssetTypeInfo nosAti = namedObject.GetAssetTypeInfo();
 
-            string objectName = namedObject.FieldName;
 
             bool succeeded = true;
 
             #region If SourceType is File
             if (namedObject.SourceType == SourceType.File)
             {
+                AssetTypeInfo nosAti = namedObject.GetAssetTypeInfo();
+
                 if (string.IsNullOrEmpty(namedObject.SourceFile))
                 {
                     succeeded = false;
@@ -385,22 +385,19 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     if (succeeded)
                     {
-                        string containerName = overridingName;
-                        if (rfs != null)
-                        {
-                            containerName = rfs.GetInstanceName();// FileManager.RemovePath(FileManager.RemoveExtension(namedObject.SourceFile));
-                        }
+                        string objectName = namedObject.FieldName;
 
                         List<StateSave> statesUsingThisNamedObject = saveObject.GetAllStatesReferencingObject(objectName);
 
                         if (statesUsingThisNamedObject.Count != 0)
                         {
                             InstantiateObjectInSwitchStatement(namedObject, codeBlock, referencedFilesAlreadyUsingFullFile,
-                                nosAti, objectName, rfs, statesUsingThisNamedObject, saveObject, containerName, null);
+                                rfs, statesUsingThisNamedObject, saveObject, overridingName);
                         }
                         else
                         {
-                            InstantiateObjectUsingFile(namedObject, codeBlock, referencedFilesAlreadyUsingFullFile, nosAti, objectName, rfs, saveObject, containerName, overridingName);
+                            //InstantiateObjectUsingFile(namedObject, codeBlock, referencedFilesAlreadyUsingFullFile, rfs, saveObject, containerName, overridingName);
+                            WriteMethodForClone(namedObject, codeBlock, referencedFilesAlreadyUsingFullFile, rfs, saveObject, overridingName);
                         }
                     }
                 }
@@ -410,7 +407,10 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             else if (namedObject.SourceType == SourceType.FlatRedBallType)
             {
-                if(nosAti?.ConstructorFunc != null)
+                string objectName = namedObject.FieldName;
+                AssetTypeInfo nosAti = namedObject.GetAssetTypeInfo();
+
+                if (nosAti?.ConstructorFunc != null)
                 {
                     string line = nosAti.ConstructorFunc(saveObject, namedObject, null);
                     codeBlock.Line(line);
@@ -463,6 +463,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             else // SourceType == SourceType.Entity
             {
+                string objectName = namedObject.FieldName;
+
                 codeBlock.Line(string.Format("{0} = new {1}(ContentManagerName, false);", objectName,
                                              GetQualifiedTypeName(namedObject)));
                 codeBlock.Line(string.Format("{0}.Name = \"{1}\";", objectName, objectName));
@@ -490,57 +492,40 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         private static void InstantiateObjectInSwitchStatement(NamedObjectSave namedObject, ICodeBlock codeBlock,
-            List<string[]> referencedFilesAlreadyUsingFullFile, AssetTypeInfo ati, string objectName, ReferencedFileSave rfs,
-            List<StateSave> stateSaves, IElement saveObject, string defaultContainer, string overridingName)
+            List<string[]> referencedFilesAlreadyUsingFullFile, ReferencedFileSave rfs,
+            List<StateSave> stateSaves, IElement saveObject, string overridingName)
         {
+            string containerName = overridingName;
+            if (rfs != null)
+            {
+                containerName = rfs.GetInstanceName();// FileManager.RemovePath(FileManager.RemoveExtension(namedObject.SourceFile));
+            }
+
             var switchBlock = codeBlock.Switch("LoadingState");
 
             for (int i = 0; i < stateSaves.Count; i++)
             {
                 StateSave stateSave = stateSaves[i];
 
-                string name = "";
-
                 // I don't think we're going to use these anymore
                 //NamedObjectPropertyOverride objectOverride = stateSave.GetNamedObjectOverride(objectName);
                 //name = FileManager.RemovePath(FileManager.RemoveExtension(objectOverride.SourceFile));
 
-                InstantiateObjectUsingFile(namedObject, switchBlock.Case("VariableState." + stateSave.Name), referencedFilesAlreadyUsingFullFile, ati, objectName, rfs,
-                    saveObject,
-                    name, overridingName);
+                //InstantiateObjectUsingFile(namedObject, switchBlock.Case("VariableState." + stateSave.Name), referencedFilesAlreadyUsingFullFile, rfs,
+                //    saveObject,
+                //    name, overridingName);
+                WriteMethodForClone(namedObject, switchBlock.Case("VariableState." + stateSave.Name), referencedFilesAlreadyUsingFullFile, rfs, 
+                    saveObject, overridingName);
+
             }
 
-            InstantiateObjectUsingFile(namedObject, switchBlock.Case("VariableState.Uninitialized:"), referencedFilesAlreadyUsingFullFile, ati, objectName, rfs,
-                saveObject, defaultContainer, overridingName);
+            //InstantiateObjectUsingFile(namedObject, switchBlock.Case("VariableState.Uninitialized:"), referencedFilesAlreadyUsingFullFile, rfs,
+            //    saveObject, defaultContainer, overridingName);
+            WriteMethodForClone(namedObject, switchBlock.Case("VariableState.Uninitialized:"), referencedFilesAlreadyUsingFullFile, rfs,
+                saveObject, overridingName);
+
         }
 
-
-        private static void InstantiateObjectUsingFile(NamedObjectSave namedObject, ICodeBlock codeBlock,
-            List<string[]> referencedFilesAlreadyUsingFullFile, AssetTypeInfo nosAti, string objectName,
-            ReferencedFileSave rfs, IElement container, string containerName, string overridingName)
-        {
-            #region If the user hasn't picked an object inside the file, it's either a SpriteRig or we should return ""
-
-            if (string.IsNullOrEmpty(namedObject.SourceName) || namedObject.SourceName == "<NONE>")
-            {
-                if (FileManager.GetExtension(namedObject.SourceFile) == "srgx")
-                {
-                    codeBlock.Line(objectName + " = " + containerName + ";");
-                }
-            }
-
-            #endregion
-
-            #region else, the user has picked a file
-
-            else
-            {
-                containerName = WriteMethodForClone(namedObject, codeBlock, referencedFilesAlreadyUsingFullFile, nosAti, objectName, rfs, container, containerName, overridingName);
-
-            }
-
-            #endregion
-        }
 
         private static void WriteCopyToAbsoluteInInitializeCode(NamedObjectSave namedObject, ICodeBlock codeBlock, List<string[]> referencedFilesAlreadyUsingFullFile, AssetTypeInfo ati, string objectName, ReferencedFileSave rfs)
         {
@@ -587,9 +572,19 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         private static string WriteMethodForClone(NamedObjectSave namedObject, ICodeBlock codeBlock,
-            List<string[]> referencedFilesAlreadyUsingFullFile, AssetTypeInfo nosAti, string objectName,
-            ReferencedFileSave rfs, IElement container, string containerName, string overridingName)
+            List<string[]> referencedFilesAlreadyUsingFullFile,
+            ReferencedFileSave rfs, IElement container, string overridingName)
         {
+            string containerName = overridingName;
+            if (rfs != null)
+            {
+                containerName = rfs.GetInstanceName();// FileManager.RemovePath(FileManager.RemoveExtension(namedObject.SourceFile));
+            }
+
+            string objectName = namedObject.FieldName;
+            AssetTypeInfo nosAti = namedObject.GetAssetTypeInfo();
+
+
             int lastParen = namedObject.SourceName.LastIndexOf(" (");
             string nameOfSourceInContainer = namedObject.SourceName.Substring(0, lastParen);
             // This could have a quote in the name.  If so we want to escape it since this will be put in code:
