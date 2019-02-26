@@ -66,6 +66,8 @@ namespace GlueTestProject.Screens
 
             TestEntitiesInFolders();
 
+            TestCollisionLayerByType();
+
             // Make the shapes visible, to make sure that they get removed when the screen is destroyed:
             foreach(var shapeCollection in TmxWithShapes.ShapeCollections)
             {
@@ -73,6 +75,12 @@ namespace GlueTestProject.Screens
                 shapeCollection.AddToManagers();
             }
 		}
+
+        private void TestCollisionLayerByType()
+        {
+            var layer = WaterTypeCollisionLayer;
+            layer.Rectangles.Count.ShouldBe(5, "because there are 5 water tiles, and non-water tiles should be ignored");
+        }
 
         private void TestEntitiesInFolders()
         {

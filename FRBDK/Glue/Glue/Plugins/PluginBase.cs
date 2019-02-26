@@ -22,6 +22,15 @@ using FlatRedBall.Glue.Errors;
 
 namespace FlatRedBall.Glue.Plugins
 {
+    public enum TabLocation
+    {
+        Top,
+        Left,
+        Center,
+        Right,
+        Bottom
+    }
+
     public abstract class PluginBase : IPlugin
     {
         Dictionary<ToolStripMenuItem, ToolStripMenuItem> toolStripItemsAndParents = new Dictionary<ToolStripMenuItem, ToolStripMenuItem>();
@@ -164,7 +173,7 @@ namespace FlatRedBall.Glue.Plugins
         public Action<NamedObjectSave, List<ExposableEvent>> AddEventsForObject { get; protected set; }
         public Action<ProjectBase> ReactToLoadedSyncedProject { get; protected set; }
 
-        public GetEventTypeAndSignature GetEventSignatureArgs { get; protected set;}
+        public GetEventTypeAndSignature GetEventSignatureArgs { get; protected set; }
 
         public Func<IElement, NamedObjectSave, TypedMemberBase, TypeConverter> GetTypeConverter { get; protected set; }
         public Action<NamedObjectSave, ICodeBlock, InstructionSave> WriteInstanceVariableAssignment { get; protected set; }
@@ -174,10 +183,10 @@ namespace FlatRedBall.Glue.Plugins
         /// string - The name of the variable that changed
         /// object - The old value for the variable
         /// </summary>
-        public Action<string, object> ReactToReferencedFileChangedValueHandler { get;  protected set;}
+        public Action<string, object> ReactToReferencedFileChangedValueHandler { get; protected set; }
         public Action<CustomVariable> ReactToVariableAdded { get; protected set; }
         public Action<CustomVariable> ReactToVariableRemoved { get; protected set; }
-        
+
 
         public Func<string, bool> GetIfUsesContentPipeline { get; protected set; }
 
@@ -227,14 +236,14 @@ namespace FlatRedBall.Glue.Plugins
 
             var toAddTo = tray.ToolBars.FirstOrDefault(item => item.Name == toolbarName);
 
-            if(toAddTo == null)
+            if (toAddTo == null)
             {
                 toAddTo = new System.Windows.Controls.ToolBar();
                 toAddTo.Name = toolbarName;
                 tray.ToolBars.Add(toAddTo);
             }
 
-            control.Padding = new System.Windows.Thickness(3,0,3,0);
+            control.Padding = new System.Windows.Thickness(3, 0, 3, 0);
 
             toAddTo.Items.Add(control);
 
@@ -280,6 +289,40 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
+        protected PluginTab CreateTab(System.Windows.Controls.UserControl control, string tabName)
+        {
+            System.Windows.Forms.Integration.ElementHost wpfHost;
+            wpfHost = new System.Windows.Forms.Integration.ElementHost();
+            wpfHost.Dock = DockStyle.Fill;
+            wpfHost.Child = control;
+
+            var pluginTab = new PluginTab();
+
+            pluginTab.ClosedByUser += new PluginTab.ClosedByUserDelegate(OnClosedByUser);
+
+            pluginTab.Text = "  " + tabName;
+            pluginTab.Controls.Add(wpfHost);
+            wpfHost.Dock = DockStyle.Fill;
+
+            return pluginTab;
+        }
+
+        private static TabControl GetTabContainerFromLocation(TabLocation tabLocation)
+        {
+            System.Windows.Forms.TabControl tabContainer = null;
+
+            switch (tabLocation)
+            {
+                case TabLocation.Top: tabContainer = PluginManager.TopTab; break;
+                case TabLocation.Left: tabContainer = PluginManager.LeftTab; break;
+                case TabLocation.Center: tabContainer = PluginManager.CenterTab; break;
+                case TabLocation.Right: tabContainer = PluginManager.RightTab; break;
+                case TabLocation.Bottom: tabContainer = PluginManager.BottomTab; break;
+            }
+
+            return tabContainer;
+        }
+
         protected PluginTab AddToTab(System.Windows.Forms.TabControl tabContainer, System.Windows.Forms.Control control, string tabName)
         {
             mTabContainer = tabContainer;
@@ -296,8 +339,9 @@ namespace FlatRedBall.Glue.Plugins
 
             return PluginTab;
         }
-
-        protected PluginTab AddToTab(System.Windows.Forms.TabControl tabContainer, System.Windows.Controls.UserControl control, string tabName)
+        [Obsolete("Use CreateTab and then call AddTab/Remove Tab to hide/show the tab")]
+        protected PluginTab AddToTab(System.Windows.Forms.TabControl tabContainer, 
+            System.Windows.Controls.UserControl control, string tabName)
         {
             System.Windows.Forms.Integration.ElementHost wpfHost;
             wpfHost = new System.Windows.Forms.Integration.ElementHost();
@@ -343,6 +387,16 @@ namespace FlatRedBall.Glue.Plugins
             {
                 container = pluginTab.LastTabControl;
             }
+            if (container.Controls.Contains(pluginTab) == false)
+            {
+                container.Controls.Add(pluginTab);
+            }
+        }
+
+        protected void ShowTab(PluginTab pluginTab, TabLocation tabLocation)
+        {
+            var container = GetTabContainerFromLocation(tabLocation);
+
             if (container.Controls.Contains(pluginTab) == false)
             {
                 container.Controls.Add(pluginTab);

@@ -35,13 +35,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
     public class NamedObjectSaveCodeGenerator : ElementComponentCodeGenerator
     {
-        static List<string[]> mReusableEntireFileRfses;
-
-        public static List<string[]> ReusableEntireFileRfses
-        {
-            get { return mReusableEntireFileRfses; }
-            set { mReusableEntireFileRfses = value; }
-        }
+        public static Dictionary<string, string> ReusableEntireFileRfses { get; set; }
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
@@ -258,9 +252,9 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         public static void WriteCodeForNamedObjectInitialize(NamedObjectSave namedObject, IElement saveObject,
-            ICodeBlock codeBlock, string overridingName)
+            ICodeBlock codeBlock, string overridingContainerName)
         {
-            List<string[]> referencedFilesAlreadyUsingFullFile = ReusableEntireFileRfses;
+            var referencedFilesAlreadyUsingFullFile = ReusableEntireFileRfses;
 
             CodeGenerationType codeGenerationType = GetInitializeCodeGenerationType(namedObject, saveObject);
 
@@ -284,7 +278,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             if (!namedObject.InstantiatedByBase)
             {
                 succeeded = GenerateInstantiationOrAssignment(
-                    namedObject, saveObject, codeBlock, overridingName, referencedFilesAlreadyUsingFullFile);
+                    namedObject, saveObject, codeBlock, overridingContainerName, referencedFilesAlreadyUsingFullFile);
             }
             #endregion
 
@@ -324,7 +318,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
         private static bool GenerateInstantiationOrAssignment(NamedObjectSave namedObject, IElement saveObject, 
-            ICodeBlock codeBlock, string overridingName, List<string[]> referencedFilesAlreadyUsingFullFile)
+            ICodeBlock codeBlock, string overridingName, Dictionary<string, string> referencedFilesAlreadyUsingFullFile)
         {
 
 
@@ -492,7 +486,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         private static void InstantiateObjectInSwitchStatement(NamedObjectSave namedObject, ICodeBlock codeBlock,
-            List<string[]> referencedFilesAlreadyUsingFullFile, ReferencedFileSave rfs,
+            Dictionary<string, string> referencedFilesAlreadyUsingFullFile, ReferencedFileSave rfs,
             List<StateSave> stateSaves, IElement saveObject, string overridingName)
         {
             string containerName = overridingName;
@@ -527,7 +521,8 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-        private static void WriteCopyToAbsoluteInInitializeCode(NamedObjectSave namedObject, ICodeBlock codeBlock, List<string[]> referencedFilesAlreadyUsingFullFile, AssetTypeInfo ati, string objectName, ReferencedFileSave rfs)
+        private static void WriteCopyToAbsoluteInInitializeCode(NamedObjectSave namedObject, ICodeBlock codeBlock, 
+            Dictionary<string, string> referencedFilesAlreadyUsingFullFile, AssetTypeInfo ati, string objectName, ReferencedFileSave rfs)
         {
             if ((ati != null && ati.ShouldAttach) ||
                 namedObject.SourceType == SourceType.Entity &&
@@ -552,13 +547,9 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if (rfs != null)
                 {
-                    foreach (string[] stringPair in referencedFilesAlreadyUsingFullFile)
+                    if(!isEntireFile && referencedFilesAlreadyUsingFullFile.ContainsKey(rfs.Name))
                     {
-                        if (stringPair[0] == rfs.Name && !isEntireFile)
-                        {
-                            namedObjectToPullFrom = stringPair[1];
-                            break;
-                        }
+                        namedObjectToPullFrom = referencedFilesAlreadyUsingFullFile[rfs.Name];
                     }
                 }
 
@@ -571,167 +562,145 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static string WriteMethodForClone(NamedObjectSave namedObject, ICodeBlock codeBlock,
-            List<string[]> referencedFilesAlreadyUsingFullFile,
-            ReferencedFileSave rfs, IElement container, string overridingName)
+        private static void WriteMethodForClone(NamedObjectSave namedObject, ICodeBlock codeBlock,
+            Dictionary<string, string> referencedFilesAlreadyUsingFullFile,
+            ReferencedFileSave rfs, IElement container, string overridingContainerName)
         {
-            string containerName = overridingName;
+            string containerName = overridingContainerName;
             if (rfs != null)
             {
                 containerName = rfs.GetInstanceName();// FileManager.RemovePath(FileManager.RemoveExtension(namedObject.SourceFile));
             }
 
-            string objectName = namedObject.FieldName;
             AssetTypeInfo nosAti = namedObject.GetAssetTypeInfo();
 
-
-            int lastParen = namedObject.SourceName.LastIndexOf(" (");
-            string nameOfSourceInContainer = namedObject.SourceName.Substring(0, lastParen);
-            // This could have a quote in the name.  If so we want to escape it since this will be put in code:
-            nameOfSourceInContainer = nameOfSourceInContainer.Replace("\"", "\\\"");
-
-            string cloneString = ".Clone()";
-
-            string namedObjectToPullFrom = null;
-            foreach (string[] stringPair in referencedFilesAlreadyUsingFullFile)
+            if(nosAti?.GetObjectFromFileFunc != null)
             {
-                if (rfs != null && stringPair[0] == rfs.Name && !namedObject.SourceName.StartsWith("Entire File ("))
-                {
-                    namedObjectToPullFrom = stringPair[1];
-                    break;
-                }
-            }
+                var code = nosAti.GetObjectFromFileFunc(container, namedObject, rfs, overridingContainerName);
 
-            // September 30, 2012
-            // Now all files - whether
-            // they are part of an Entity
-            // or part of a Screen, are static.
-            // This means that the rfs.IsSharedStatic
-            // check will usually fail.  However, Screens
-            // will still add to managers even for static
-            // object, so we want to make sure that we don't
-            // clone an object already added to managers, so we
-            // need the last check to see if the container is a ScreenSave.
-            if (nosAti == null || !nosAti.CanBeCloned || namedObjectToPullFrom != null || (rfs != null && rfs.IsSharedStatic == false) || container is ScreenSave)
-            {
-                cloneString = "";
-            }
-
-            if (nosAti != null && !string.IsNullOrEmpty(nosAti.CustomCloneMethod))
-            {
-                cloneString = nosAti.CustomCloneMethod;
-
-            }
-            AssetTypeInfo rfsAti = null;
-            if (rfs != null)
-            {
-                rfsAti = rfs.GetAssetTypeInfo();
-            }
-
-            bool usesFullConversion = false;
-
-            if (rfsAti != null && rfsAti.Conversion.Count != 0)
-            {
-                var foundConversion = rfsAti.Conversion.FirstOrDefault(item => item.ToType == namedObject.InstanceType);
-
-                if (foundConversion != null)
-                {
-                    cloneString = foundConversion.ConversionPattern.Replace("{NEW}", objectName);
-                    cloneString = cloneString.Replace("{THIS}", rfs.GetInstanceName());
-                    usesFullConversion = true;
-                }
-            }
-
-            if (namedObjectToPullFrom != null)
-            {
-                containerName = namedObjectToPullFrom;
-            }
-            if (!string.IsNullOrEmpty(overridingName))
-            {
-                containerName = overridingName;
-            }
-
-            string listMemberName = ContentParser.GetMemberNameForList(FileManager.GetExtension(namedObject.SourceFile), namedObject.InstanceType);
-
-            if (!string.IsNullOrEmpty(listMemberName))
-            {
-                listMemberName += ".";
-            }
-
-            if (nameOfSourceInContainer == "Entire File" && string.IsNullOrEmpty(listMemberName))
-            {
-                if (usesFullConversion)
-                {
-                    codeBlock.Line(cloneString + ";");
-                }
-                else if (cloneString.Contains("{THIS}"))
-                {
-                    string entireString = cloneString.Replace("{THIS}", objectName);
-                    entireString = entireString.Replace("{SOURCE_FILE}", containerName);
-
-                    codeBlock.Line(entireString);
-                }
-                else
-                {
-                    codeBlock.Line(string.Format("{0} = {1}{2};",
-                                                 objectName,
-                                                 containerName,
-                                                 cloneString));
-                }
+                codeBlock.Line(code);
             }
             else
             {
-                string findByNameLine = "";
-                if (nosAti != null)
+                int lastParen = namedObject.SourceName.LastIndexOf(" (");
+                string nameOfSourceInContainer = namedObject.SourceName.Substring(0, lastParen);
+                // This could have a quote in the name.  If so we want to escape it since this will be put in code:
+                nameOfSourceInContainer = nameOfSourceInContainer.Replace("\"", "\\\"");
+
+                string cloneString = ".Clone()";
+
+                string namedObjectToPullFrom = null;
+
+                if (rfs != null && referencedFilesAlreadyUsingFullFile.ContainsKey(rfs.Name) && !namedObject.SourceName.StartsWith("Entire File ("))
+            {
+                namedObjectToPullFrom = referencedFilesAlreadyUsingFullFile[rfs.Name];
+            }
+
+                // September 30, 2012
+                // Now all files - whether
+                // they are part of an Entity
+                // or part of a Screen, are static.
+                // This means that the rfs.IsSharedStatic
+                // check will usually fail.  However, Screens
+                // will still add to managers even for static
+                // object, so we want to make sure that we don't
+                // clone an object already added to managers, so we
+                // need the last check to see if the container is a ScreenSave.
+                if (nosAti == null || !nosAti.CanBeCloned || namedObjectToPullFrom != null || (rfs != null && rfs.IsSharedStatic == false) || container is ScreenSave)
                 {
-                    findByNameLine = nosAti.FindByNameSyntax;
+                    cloneString = "";
+                }
 
-                    if (string.IsNullOrEmpty(findByNameLine))
+                if (nosAti != null && !string.IsNullOrEmpty(nosAti.CustomCloneMethod))
+                {
+                    cloneString = nosAti.CustomCloneMethod;
+
+                }
+
+                AssetTypeInfo rfsAti = null;
+                if (rfs != null)
+                {
+                    rfsAti = rfs.GetAssetTypeInfo();
+                }
+
+                bool usesFullConversion = false;
+
+                if (rfsAti != null && rfsAti.Conversion.Count != 0)
+                {
+                    var foundConversion = rfsAti.Conversion.FirstOrDefault(item => item.ToType == namedObject.InstanceType);
+
+                    if (foundConversion != null)
                     {
-                        string message = "The object " + namedObject.ToString() + " is part of a file.  To be properly generated " +
-                            "the AssetTypeInfo (or CSV value) for " + nosAti.ToString() + " must contain a FindByNameSyntax property";
-
-                        throw new Exception(message);
+                        cloneString = foundConversion.ConversionPattern.Replace("{NEW}", namedObject.FieldName);
+                        cloneString = cloneString.Replace("{THIS}", rfs.GetInstanceName());
+                        usesFullConversion = true;
                     }
                 }
 
-
-
-                findByNameLine = findByNameLine.Replace("OBJECTNAME", nameOfSourceInContainer);
-
-                string possibleDot = ".";
-
-                if (findByNameLine.StartsWith("["))
+                if (namedObjectToPullFrom != null)
                 {
-                    possibleDot = "";
+                    containerName = namedObjectToPullFrom;
+                }
+                if (!string.IsNullOrEmpty(overridingContainerName))
+                {
+                    containerName = overridingContainerName;
                 }
 
-                //if (namedObject.AddToManagers)
-                {
-                    // Not sure why we don't clone on a non add to manager.  This post right here suggests we should
-                    // and I tend to believe Scott so...I'm following his advice:
-                    // http://www.flatredball.com/frb/forum/viewtopic.php?f=26&t=4741
-                    codeBlock.Line(string.Format("{0} = {1}{2}{3}{4}{5};",
-                                                 objectName,
-                                                 containerName,
-                                                 possibleDot,
-                                                 listMemberName,
-                                                 findByNameLine,
-                                                 cloneString));
-                }
-                //else
-                //{
+                string listMemberName = ContentParser.GetMemberNameForList(FileManager.GetExtension(namedObject.SourceFile), namedObject.InstanceType);
 
-                //    stringBuilder.AppendLine(
-                //        string.Format("\t\t\t{0} = {1}{2}{3}{4};",
-                //            objectName,
-                //            containerName,
-                //            possibleDot,
-                //            listMemberName,
-                //            findByNameLine));
-                //}
+                if (!string.IsNullOrEmpty(listMemberName))
+                {
+                    listMemberName += ".";
+                }
+                if (nameOfSourceInContainer == "Entire File" && string.IsNullOrEmpty(listMemberName))
+                {
+                    if (usesFullConversion)
+                    {
+                        codeBlock.Line(cloneString + ";");
+                    }
+                    else if (cloneString.Contains("{THIS}"))
+                    {
+                        string entireString = cloneString.Replace("{THIS}", namedObject.FieldName);
+                        entireString = entireString.Replace("{SOURCE_FILE}", containerName);
+
+                        codeBlock.Line(entireString);
+                    }
+                    else
+                    {
+                        codeBlock.Line($"{namedObject.FieldName} = {containerName}{cloneString};");
+                    }
+                }
+                else
+                {
+                    string findByNameLine = "";
+                    if (nosAti != null)
+                    {
+                        findByNameLine = nosAti.FindByNameSyntax;
+
+                        if (string.IsNullOrEmpty(findByNameLine))
+                        {
+                            string message = "The object " + namedObject.ToString() + " is part of a file.  To be properly generated " +
+                                "the AssetTypeInfo (or CSV value) for " + nosAti.ToString() + " must contain a FindByNameSyntax property";
+
+                            throw new Exception(message);
+                        }
+                    }
+
+
+
+                    findByNameLine = findByNameLine.Replace("OBJECTNAME", nameOfSourceInContainer);
+
+                    string possibleDot = ".";
+
+                    if (findByNameLine.StartsWith("["))
+                    {
+                        possibleDot = "";
+                    }
+
+                    codeBlock.Line($"{namedObject.FieldName} = {containerName}{possibleDot}{listMemberName}{findByNameLine}{cloneString};");
+                }
             }
-            return containerName;
+
         }
 
         public static void WriteTextSpecificInitialization(ReferencedFileSave rfs, ICodeBlock codeBlock)
@@ -747,7 +716,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void WriteTextSpecificInitialization(NamedObjectSave namedObject, IElement element, ICodeBlock codeBlock, List<string[]> referencedFilesAlreadyUsingFullFile)
+        private static void WriteTextSpecificInitialization(NamedObjectSave namedObject, IElement element, ICodeBlock codeBlock, 
+            Dictionary<string, string> referencedFilesAlreadyUsingFullFile)
         {
             if (namedObject.SourceType == SourceType.File)
             {
@@ -779,13 +749,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                         // we don't double-translate
                         bool isAlreadyTranslated = false;
 
-                        foreach (string[] stringPair in referencedFilesAlreadyUsingFullFile)
+                        if (referencedFilesAlreadyUsingFullFile.ContainsKey(namedObject.SourceFile) && !namedObject.SourceName.StartsWith("Entire File ("))
                         {
-                            if (stringPair[0] == namedObject.SourceFile && !namedObject.SourceName.StartsWith("Entire File ("))
-                            {
-                                isAlreadyTranslated = true;
-                                break;
-                            }
+                            isAlreadyTranslated = true;
                         }
 
                         if (!isAlreadyTranslated)
@@ -1465,7 +1431,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public static void WriteAddToManagersBottomUpForNamedObjectList(List<NamedObjectSave> namedObjectList, ICodeBlock codeBlock, IElement element, List<string[]> reusableEntireFileRfses)
+        public static void WriteAddToManagersBottomUpForNamedObjectList(List<NamedObjectSave> namedObjectList, ICodeBlock codeBlock, 
+            IElement element, Dictionary<string, string> reusableEntireFileRfses)
         {
             foreach(var nos in namedObjectList.Where(nos=>
                     nos.SourceType != SourceType.FlatRedBallType || 
@@ -1473,7 +1440,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 ReferencedFileSave filePullingFrom = null;
 
-                string[] foundPair = null;
+                string foundSourceFileValue = null;
+                NamedObjectSave entireFileNos = null;
 
                 if (nos.SourceType == SourceType.File && nos.SourceName != null)
                 {
@@ -1481,25 +1449,13 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         filePullingFrom = element.GetReferencedFileSave(nos.SourceFile);
                     }
-                    else
+                    else if(reusableEntireFileRfses.ContainsKey(nos.SourceFile))
                     {
-                        foreach (string[] stringPair in reusableEntireFileRfses)
-                        {
-                            if (stringPair[0] == nos.SourceFile)
-                            {
-                                foundPair = stringPair;
-                                break;
-                            }
-                        }
+                        entireFileNos = element.GetNamedObjectRecursively(reusableEntireFileRfses[nos.SourceFile]);
                     }
                 }
 
-                NamedObjectSave entireFileNos = null;
-
-                if (foundPair != null)
-                {
-                    entireFileNos = element.GetNamedObjectRecursively(foundPair[1]);
-                }
+                
 
                 //mReusableEntireFileRfses
 
@@ -1794,12 +1750,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                     return true;
                 }
 
-                foreach (string[] stringPair in ReusableEntireFileRfses)
+                if (ReusableEntireFileRfses.ContainsKey( namedObject.SourceFile) && !namedObject.SourceName.StartsWith("Entire File ("))
                 {
-                    if (stringPair[0] == namedObject.SourceFile && !namedObject.SourceName.StartsWith("Entire File ("))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return false;
@@ -2302,7 +2255,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        private static void WriteAttachTo(NamedObjectSave namedObject, ICodeBlock codeBlock, List<string[]> referencedFilesAlreadyUsingFullFile, ReferencedFileSave rfs)
+        private static void WriteAttachTo(NamedObjectSave namedObject, ICodeBlock codeBlock, 
+            Dictionary<string, string> referencedFilesAlreadyUsingFullFile, ReferencedFileSave rfs)
         {
 
             string objectName = namedObject.FieldName;
@@ -2473,7 +2427,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public static void WriteConvertToManuallyUpdated(ICodeBlock codeBlock, IElement element, List<string[]> reusableEntireFileRfses)
+        public static void WriteConvertToManuallyUpdated(ICodeBlock codeBlock, IElement element, Dictionary<string, string> reusableEntireFileRfses)
         {
             foreach (NamedObjectSave nos in element.NamedObjects)
             {
@@ -2520,14 +2474,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                             !string.IsNullOrEmpty(nos.SourceName) &&
                             !nos.SourceName.StartsWith("Entire File ("))
                         {
-
-                            foreach (string[] stringPair in reusableEntireFileRfses)
+                            if(reusableEntireFileRfses.ContainsKey(nos.SourceFile))
                             {
-                                if (stringPair[0] == nos.SourceFile)
-                                {
-                                    alreadyHandledByEntireFileObject = true;
-                                    break;
-                                }
+                                alreadyHandledByEntireFileObject = true;
                             }
                         }
 

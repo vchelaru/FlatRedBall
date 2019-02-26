@@ -77,10 +77,15 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\TileShapeCollectionsPropertiesController.cs" />
     <Compile Include="Managers\EntityCreationManager.cs" />
     <Compile Include="ViewModels\TiledMapEntityCreationViewModel.cs" />
+    <Compile Include="ViewModels\TileShapeCollectionPropertiesViewModel.cs" />
     <Compile Include="Views\TiledMapEntityCreationView.xaml.cs">
       <DependentUpon>TiledMapEntityCreationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TileShapeCollectionProperties.xaml.cs">
+      <DependentUpon>TileShapeCollectionProperties.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TileAnimationFrame.cs">
       <Link>TileAnimationFrame.cs</Link>
@@ -259,6 +264,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\TiledMapEntityCreationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TileShapeCollectionProperties.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

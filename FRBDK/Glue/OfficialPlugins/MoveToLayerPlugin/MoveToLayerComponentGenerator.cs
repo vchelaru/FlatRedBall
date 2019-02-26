@@ -132,16 +132,10 @@ namespace PluginTestbed.MoveToLayerPlugin
                 {
                     return true;
                 }
-                if (!nos.SourceName.StartsWith("Entire File ("))
+                if (!nos.SourceName.StartsWith("Entire File (") &&
+                    NamedObjectSaveCodeGenerator.ReusableEntireFileRfses.ContainsKey(nos.SourceFile))
                 {
-                    // this could be handled by another object
-                    foreach (string[] stringPair in NamedObjectSaveCodeGenerator.ReusableEntireFileRfses)
-                    {
-                        if (stringPair[0] == nos.SourceFile)
-                        {
-                            return true;
-                        }
-                    }
+                    return true;
                 }
             }
 

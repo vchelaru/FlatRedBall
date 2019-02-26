@@ -101,6 +101,7 @@ namespace FlatRedBall.Glue.Plugins
 
 
         private static MenuStrip mMenuStrip;
+
         private static TabControl mTopTab;
         private static TabControl mLeftTab;
         private static TabControl mBottomTab;

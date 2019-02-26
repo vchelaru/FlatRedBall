@@ -985,6 +985,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TmxWithTileProperties</Name>
     </None>
+    <None Include="Screens\TmxScreen\TmxWithTileShapeCollectionLayers.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxWithTileShapeCollectionLayers</Name>
+    </None>
     <None Include="Screens\TmxScreen\WithLargeObjectOnFirstLayer.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>WithLargeObjectOnFirstLayer</Name>

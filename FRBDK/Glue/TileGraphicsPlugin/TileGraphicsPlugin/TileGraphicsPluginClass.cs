@@ -44,10 +44,13 @@ namespace TileGraphicsPlugin
         string mLastFile;
 
         TmxEditor.TmxEditorControl mControl;
+        PluginTab collisionTab;
 
         CommandLineViewModel mCommandLineViewModel;
 
         TiledObjectTypeCreator tiledObjectTypeCreator;
+
+
         #endregion
 
         #region Properties
@@ -435,6 +438,24 @@ namespace TileGraphicsPlugin
             if (shouldRemove)
             {
                 RemoveTab();
+            }
+
+            if(TileShapeCollectionsPropertiesController.Self.IsTileShapeCollection(treeNode?.Tag as NamedObjectSave))
+            {
+                if(collisionTab == null)
+                {
+                    var view = TileShapeCollectionsPropertiesController.Self.GetView();
+
+                    collisionTab = base.CreateTab(view, "Collision Properties");
+                }
+
+                TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(treeNode?.Tag as NamedObjectSave);
+
+                this.ShowTab(collisionTab, TabLocation.Center);
+            }
+            else if(collisionTab != null)
+            {
+                base.RemoveTab(collisionTab);
             }
         }
 

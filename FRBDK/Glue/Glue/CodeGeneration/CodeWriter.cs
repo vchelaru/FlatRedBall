@@ -606,33 +606,24 @@ namespace FlatRedBallAddOns.Entities
             PluginManager.ReceiveOutput("Glue has created the generated file " + FileManager.RelativeDirectory + saveObject.Name + ".cs");
         }
 
-        static List<string[]> mReusableEntireFileRfses = new List<string[]>();
-
-        public static List<string[]> ReusableEntireFileRfses
-        {
-            get
-            {
-                return mReusableEntireFileRfses;
-            }
-        }
+        public static Dictionary<string, string> ReusableEntireFileRfses { get; } = new Dictionary<string, string>();
 
         private static void RefreshReusableEntireFileRfses(IElement element)
         {
-            mReusableEntireFileRfses.Clear();
+            ReusableEntireFileRfses.Clear();
 
             // Fill the mReusableEntireFileRfses
             for (int i = 0; i < element.NamedObjects.Count; i++)
             {
                 NamedObjectSave nos = element.NamedObjects[i];
 
-                if (nos.IsEntireFile)
+                if (nos.IsEntireFile && ReusableEntireFileRfses.ContainsKey(nos.SourceFile) == false)
                 {
-                    string[] stringPairToAdd = new string[] { nos.SourceFile, nos.FieldName };
-                    mReusableEntireFileRfses.Add(stringPairToAdd);
+                    ReusableEntireFileRfses.Add(nos.SourceFile, nos.FieldName);
                 }
             }
-            IVisibleCodeGenerator.ReusableEntireFileRfses = mReusableEntireFileRfses;
-            NamedObjectSaveCodeGenerator.ReusableEntireFileRfses = mReusableEntireFileRfses;
+            IVisibleCodeGenerator.ReusableEntireFileRfses = ReusableEntireFileRfses;
+            NamedObjectSaveCodeGenerator.ReusableEntireFileRfses = ReusableEntireFileRfses;
         }
 
         internal static ICodeBlock GenerateFields(IElement saveObject, ICodeBlock codeBlock)
@@ -2184,7 +2175,7 @@ namespace FlatRedBallAddOns.Entities
             return false;
         }
 
-        internal static void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, IElement element, List<string[]> reusableEntireFileRfses)
+        internal static void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, IElement element, Dictionary<string, string> reusableEntireFileRfses)
         {
             bool isEntity = element is EntitySave;
             bool isScreen = element is ScreenSave;
@@ -2357,7 +2348,7 @@ namespace FlatRedBallAddOns.Entities
             return codeBlock;
         }
 
-        internal static void GenerateConvertToManuallyUpdated(ICodeBlock codeBlock, IElement saveObject, List<string[]> reusableEntireFileRfses)
+        internal static void GenerateConvertToManuallyUpdated(ICodeBlock codeBlock, IElement saveObject, Dictionary<string, string> reusableEntireFileRfses)
         {
             bool hasBase = saveObject.InheritsFromElement();
 
@@ -2414,13 +2405,13 @@ namespace FlatRedBallAddOns.Entities
 
             CodeWriter.GeneratePostInitialize(codeBlock, element);
 
-            CodeWriter.GenerateAddToManagersBottomUp(currentBlock, element, mReusableEntireFileRfses);
+            CodeWriter.GenerateAddToManagersBottomUp(currentBlock, element, ReusableEntireFileRfses);
 
             CodeWriter.GenerateRemoveFromManagers(currentBlock, element);
 
             GenerateAssignCustomVariables(codeBlock, element);
 
-            CodeWriter.GenerateConvertToManuallyUpdated(currentBlock, element, mReusableEntireFileRfses);
+            CodeWriter.GenerateConvertToManuallyUpdated(currentBlock, element, ReusableEntireFileRfses);
 
             CodeWriter.GenerateLoadStaticContent(currentBlock, element);
 

@@ -13,7 +13,7 @@ namespace FlatRedBall.Glue.CodeGeneration
     {
 
         static List<NamedObjectSave> mPreservedVisibleNoses = new List<NamedObjectSave>();
-        public static List<string[]> ReusableEntireFileRfses
+        public static Dictionary<string, string> ReusableEntireFileRfses
         {
             get;
             set;

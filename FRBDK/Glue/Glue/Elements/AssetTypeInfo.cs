@@ -136,7 +136,12 @@ namespace FlatRedBall.Glue.Elements
 		public string FriendlyName;
         /// <summary>
         /// Func which can be used to provide a custom AddToManagers method. The parameters are
-        /// the containing element (screen or entity), NamedObjectSave, ReferencedFileSave, and the name of the layer (such as "layerToAddTo")
+        /// * IElement - the containing element (screen or entity), 
+        /// * NamedObjectSave - the NamedObjectSave to add add to managers which may be null, 
+        /// * ReferencedFileSave - The associated ReferencedFileSave which may be null
+        /// * string - the name of the layer (such as "layerToAddTo")
+        /// 
+        /// The returned string is the code for adding.
         /// </summary>
         [XmlIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> AddToManagersFunc;
@@ -146,6 +151,9 @@ namespace FlatRedBall.Glue.Elements
         /// </summary>
         [XmlIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, string> ConstructorFunc;
+
+        [XmlIgnore]
+        public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> GetObjectFromFileFunc;
 
         /// <summary>
         /// The generated code to include to add the object to managers.

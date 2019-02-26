@@ -3827,6 +3827,12 @@
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
+        <ReferencedFileSave>
+          <Name>Screens/TmxScreen/TmxWithTileShapeCollectionLayers.tmx</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
       </ReferencedFiles>
       <NamedObjects>
         <NamedObjectSave>
@@ -3863,6 +3869,47 @@
           <SourceClassType>PositionedObjectList&lt;T&gt;</SourceClassType>
           <SourceClassGenericType>Entities\EntityFolder\TiledEntityInFolder</SourceClassGenericType>
           <InstanceName>TiledEntityInFolderList</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <Properties>
+            <PropertySave>
+              <Name>CollisionInclusion</Name>
+              <ValueAsString>EntireLayer</ValueAsString>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionTileType</Name>
+            </PropertySave>
+          </Properties>
+          <SourceType>File</SourceType>
+          <SourceFile>Screens/TmxScreen/TmxWithTileShapeCollectionLayers.tmx</SourceFile>
+          <SourceName>CollisionLayer1 (FlatRedBall.TileCollisions.TileShapeCollection)</SourceName>
+          <InstanceName>CollisionLayer1</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <Properties>
+            <PropertySave>
+              <Name>CollisionInclusion</Name>
+              <ValueAsString>ByType</ValueAsString>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionTileType</Name>
+              <ValueAsString>Water</ValueAsString>
+            </PropertySave>
+            <PropertySave>
+              <Name>IsCollisionVisible</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
+          <SourceType>File</SourceType>
+          <SourceFile>Screens/TmxScreen/TmxWithTileShapeCollectionLayers.tmx</SourceFile>
+          <SourceName>WaterTypeCollisionLayer (FlatRedBall.TileCollisions.TileShapeCollection)</SourceName>
+          <InstanceName>WaterTypeCollisionLayer</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>

@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace TileGraphicsPlugin
     public class AssetTypeInfoAdder : Singleton<AssetTypeInfoAdder>
     {
         AssetTypeInfo tmxAssetTypeInfo;
+        AssetTypeInfo tileShapeCollectionAssetTypeInfo;
 
         public AssetTypeInfo TmxAssetTypeInfo
         {
@@ -26,6 +28,18 @@ namespace TileGraphicsPlugin
                 return tmxAssetTypeInfo;
             }
         }
+        public AssetTypeInfo TileShapeCollectionAssetTypeInfo
+        {
+            get
+            {
+                if(tileShapeCollectionAssetTypeInfo == null)
+                {
+                    tileShapeCollectionAssetTypeInfo = CreateAtiForTileShapeCollection();
+                }
+                return tileShapeCollectionAssetTypeInfo;
+            }
+        }
+
         public void UpdateAtiCsvPresence()
         {
             string projectFolder = FileManager.GetDirectory(GlueState.Self.GlueProjectFileName);
@@ -40,12 +54,11 @@ namespace TileGraphicsPlugin
 
             var layeredTileMapScnx = CreateAtiForLayeredTilemapScnx();
             var layeredTilemapTilb = CreateAtiForLayeredTilemapTilb();
-            var tileShapeCollectionAti = CreateAtiForTileShapeCollection();
 
             AddIfNotPresent(TmxAssetTypeInfo);
             AddIfNotPresent(layeredTileMapScnx);
             AddIfNotPresent(layeredTilemapTilb);
-            AddIfNotPresent(tileShapeCollectionAti);
+            AddIfNotPresent(TileShapeCollectionAssetTypeInfo);
         }
 
         public void AddIfNotPresent(AssetTypeInfo ati)
@@ -128,7 +141,7 @@ namespace TileGraphicsPlugin
             return toReturn;
         }
 
-        public AssetTypeInfo CreateAtiForTileShapeCollection()
+        private AssetTypeInfo CreateAtiForTileShapeCollection()
         {
 
             AssetTypeInfo toReturn = new AssetTypeInfo();
@@ -149,10 +162,54 @@ namespace TileGraphicsPlugin
             toReturn.CanBeObject = true;
             toReturn.HasVisibleProperty = true;
             toReturn.FindByNameSyntax = $"Collisions.First(item => item.Name == \"OBJECTNAME\");";
+
+            toReturn.GetObjectFromFileFunc = GetObjectFromFileFunc;
+
             toReturn.VariableDefinitions.Add(new VariableDefinition() { Name = "Visible", DefaultValue = "false", Type = "bool" });
 
             return toReturn;
         }
 
+        private string GetObjectFromFileFunc(IElement element, NamedObjectSave namedObjectSave, 
+            ReferencedFileSave referencedFileSave, string overridingContainerName)
+        {
+            // CollisionLayer1 = TmxWithTileShapeCollectionLayers.Collisions.First(item => item.Name == "CollisionLayer1");
+
+            var sourceName = namedObjectSave.SourceNameWithoutParenthesis;
+
+            var valueAsString = namedObjectSave.Properties.GetValue<string>(
+                nameof(ViewModels.TileShapeCollectionPropertiesViewModel.CollisionInclusion));
+
+            var hasSpecificType = valueAsString ==
+                ViewModels.CollisionInclusion.ByType.ToString();
+
+            if(hasSpecificType)
+            {
+                var tileType = namedObjectSave.Properties.GetValue<string>(
+                    nameof(ViewModels.TileShapeCollectionPropertiesViewModel.CollisionTileType));
+
+                var toReturn = $"{namedObjectSave.FieldName} = new FlatRedBall.TileCollisions.TileShapeCollection();\n";
+
+
+                toReturn +=
+                    "FlatRedBall.TileCollisions.TileShapeCollectionLayeredTileMapExtensions.AddCollisionFrom(\n" +
+                    $"{namedObjectSave.FieldName},\n" +
+                    $"{referencedFileSave.GetInstanceName()}.MapLayers.FindByName(\"{namedObjectSave.FieldName}\"),\n" +
+                    $"{referencedFileSave.GetInstanceName()},\n" +
+                    $"list => list.Any(item => item.Name == \"Type\" && item.Value as string == \"{tileType}\"));\n";
+
+                if(namedObjectSave.Properties.GetValue<bool>(nameof(ViewModels.TileShapeCollectionPropertiesViewModel.IsCollisionVisible)))
+                {
+                    toReturn += $"{namedObjectSave.FieldName}.Visible = true;\n";
+                }
+
+                return toReturn;
+            }
+            else
+            {
+                return $"{namedObjectSave.FieldName} = {referencedFileSave.GetInstanceName()}.Collisions.First(item => item.Name == \"{sourceName}\");";
+            }
+
+        }
     }
 }
