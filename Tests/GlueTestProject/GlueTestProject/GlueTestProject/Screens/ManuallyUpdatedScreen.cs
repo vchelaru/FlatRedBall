@@ -14,13 +14,13 @@ using FlatRedBall.Localization;
 using FlatRedBall.Graphics;
 using FlatRedBall.Math;
 using GlueTestProject.TestFramework;
+using System.Runtime.CompilerServices;
 
 namespace GlueTestProject.Screens
 {
 	public partial class ManuallyUpdatedScreen
 	{
         Text manuallyUpdatedTextInCode;
-
         #region Initialize Methods
 
         void CustomInitialize()
@@ -40,8 +40,6 @@ namespace GlueTestProject.Screens
             SetManualUpdateSpriteInheritingVariables();
 
             SetManualUpdateTextInheritVariables();
-
-            SetManualUpdateSpriteIsContainerVariables();
 
             SetManuallyUpdatedInheritFromSpriteNoAttachInstanceVariables();
 
@@ -144,15 +142,19 @@ namespace GlueTestProject.Screens
             ManuallyUpdatedInheritFromSpriteNoAttachInstance.TextureScale = 0;
         }
 
+        const float inListRelativeXVelocity = 60;
+        double timeAttachmentWasMade;
+
         private void SetEntityInListAttachedToObject()
         {
             PositionedObject parent = new PositionedObject();
             var entity = new Entities.ManuallyUpdateAllInCode();
             entity.AttachTo(parent);
             parent.X = 120;
-            entity.RelativeXVelocity = 1 * 60;
-
+            entity.RelativeXVelocity = inListRelativeXVelocity;
+            timeAttachmentWasMade = TimeManager.CurrentTime;
             this.ManuallyUpdateAllInCodeList.Add(entity);
+
         }
 
         private void TestManuallyUpdatedEntityIneritingFromSprite()
@@ -165,8 +167,8 @@ namespace GlueTestProject.Screens
         #region Activity Methods
 
         void CustomActivity(bool firstTimeCalled)
-		{
-            if(this.ActivityCallCount == 1)
+        {
+            if (this.ActivityCallCount == 1)
             {
                 TextManager.AutomaticallyUpdatedTexts.Contains(manuallyUpdatedTextInCode).ShouldBe(false);
 
@@ -183,12 +185,15 @@ namespace GlueTestProject.Screens
 
             if (this.ActivityCallCount == 2)
             {
-                TextManualUpdateSpriteIsContainerVariables();
-
+                SetManualUpdateSpriteIsContainerVariables();
             }
-            
+            if (this.ActivityCallCount == 3)
+            {
+                TextManualUpdateSpriteIsContainerVariables();
+            }
+
             // Give us some time to do instructions and time-based checks
-            if (this.ActivityCallCount == 5)
+            if (this.ActivityCallCount == 8)
             {
                 TestDetachedManualUpdateVelocityVariables();
 
@@ -209,18 +214,17 @@ namespace GlueTestProject.Screens
 
             }
 
-            const int numberOfFrames = 16;
-            if(this.ActivityCallCount == numberOfFrames)
+            if (this.PauseAdjustedCurrentTime > .2f)
             {
                 // UpdateDependencies is only called when there is a draw, 
                 // and multiple draws may be skipped if fps is low enough
                 // If this fails, increase numberOfFrames above
-                TestEntityInListAttachedToObject(numberOfFrames);
+                TestEntityInListAttachedToObject();
 
                 IsActivityFinished = true;
             }
-		}
-
+        }
+        
         private void TestAttachedManualUpdateVariables()
         {
             AttachedUpdatedInCodeInstance.X.ShouldBe(100, "because this entity is attached to a position object that has moved");
@@ -320,15 +324,19 @@ namespace GlueTestProject.Screens
         }
 
 
-        private void TestEntityInListAttachedToObject(int numberOfFrames)
+        private void TestEntityInListAttachedToObject()
         {
             var item = ManuallyUpdateAllInCodeList[0];
 
             item.Parent.ShouldNotBe(null);
 
             item.X.ShouldBeGreaterThan(item.Parent.X, "because RelativeXVelocity is applied, and the object is attached");
-            item.RelativeX.ShouldBeGreaterThan(numberOfFrames - 1.1f, "because RelativeXVelocity should be applied for items in lists.");
-            item.RelativeX.ShouldBeLessThan(numberOfFrames - .9f, "because RelativeXVelocity should be applied for items in lists.");
+
+            var timePassed = TimeManager.SecondsSince(timeAttachmentWasMade);
+            float desiredRelativeX = (float)(timePassed * inListRelativeXVelocity);
+
+            item.RelativeX.ShouldBeGreaterThan(desiredRelativeX - .1f, "because RelativeXVelocity should be applied for items in lists.");
+            item.RelativeX.ShouldBeLessThan(desiredRelativeX + .1f, "because RelativeXVelocity should be applied for items in lists.");
         }
 
 

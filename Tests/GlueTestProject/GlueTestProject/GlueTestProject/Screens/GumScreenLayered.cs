@@ -30,7 +30,7 @@ namespace GlueTestProject.Screens
 
 		void CustomActivity(bool firstTimeCalled)
 		{
-            if(!HasDrawBeenCalled)
+            if(HasDrawBeenCalled)
             {
                 IsActivityFinished = true;
             }

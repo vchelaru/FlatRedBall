@@ -14,6 +14,50 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
+      <NextScreen>Screens\ManuallyUpdatedScreen</NextScreen>
+      <Name>Screens\AnimationChainScreen</Name>
+      <ReferencedFiles>
+        <ReferencedFileSave>
+          <Name>Screens/FirstScreen/AnimationChainListFile.achx</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>FlatRedBall.Graphics.Animation.AnimationChainList</RuntimeType>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
+        <ReferencedFileSave>
+          <Name>Screens/FirstScreen/Running.png</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
+      </ReferencedFiles>
+      <NamedObjects>
+        <NamedObjectSave>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>TextureScale</Member>
+            <ValueAsFloat>1</ValueAsFloat>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>FlatRedBall.Graphics.Animation.AnimationChainList</Type>
+            <Member>AnimationChains</Member>
+            <ValueAsString>AnimationChainListFile</ValueAsString>
+          </CustomProperty>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>Sprite</SourceClassType>
+          <InstanceName>SpriteInstance</InstanceName>
+          <AttachToContainer>false</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+      </NamedObjects>
+    </ScreenSave>
+    <ScreenSave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <NextScreen>Screens\GlobalContentScreen</NextScreen>
       <Name>Screens\AudioScreen</Name>
       <ReferencedFiles>
@@ -1134,7 +1178,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
-      <NextScreen>Screens\ManuallyUpdatedScreen</NextScreen>
+      <NextScreen>Screens\AnimationChainScreen</NextScreen>
       <Name>Screens\FirstScreen</Name>
     </ScreenSave>
     <ScreenSave>

@@ -813,6 +813,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Book</Name>
     </None>
+    <None Include="Screens\FirstScreen\AnimationChainListFile.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimationChainListFile</Name>
+    </None>
+    <None Include="Screens\FirstScreen\Running.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Running</Name>
+    </None>
     <None Include="Screens\FlatRedBallTypeScreen\Aura.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Aura</Name>

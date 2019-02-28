@@ -1058,6 +1058,10 @@
     <Compile Include="Rendering\RenderTargetRenderer.cs" />
     <Compile Include="RuntimeTypes\LinesOfText.cs" />
     <Compile Include="RuntimeTypes\TestRuntimeClass.cs" />
+    <Compile Include="Screens\AnimationChainScreen.cs" />
+    <Compile Include="Screens\AnimationChainScreen.Generated.cs">
+      <DependentUpon>AnimationChainScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Screens\AudioScreen.cs" />
     <Compile Include="Screens\AudioScreen.Generated.cs">
       <DependentUpon>AudioScreen.cs</DependentUpon>

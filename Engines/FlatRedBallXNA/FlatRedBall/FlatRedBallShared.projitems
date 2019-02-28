@@ -90,7 +90,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)FlatRedBallServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationChain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationChainList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\IAnimationChainAnimatable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\BatchForwardVectorSorter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\BitmapCharacterInfo.cs" />

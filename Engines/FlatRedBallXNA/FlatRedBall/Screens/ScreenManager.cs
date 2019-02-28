@@ -127,11 +127,11 @@ namespace FlatRedBall.Screens
         {
             if (mCurrentScreen == null) return;
 
-            mCurrentScreen.Activity(false);
+            mCurrentScreen.Activity(mCurrentScreen.ActivityCallCount == 0);
 
             mCurrentScreen.ActivityCallCount++;
 
-            if (mCurrentScreen.ActivityCallCount == 2 && mWasFixedTimeStep.HasValue)
+            if (mCurrentScreen.ActivityCallCount == 1 && mWasFixedTimeStep.HasValue)
             {
                 FlatRedBallServices.Game.IsFixedTimeStep = mWasFixedTimeStep.Value;
                 TimeManager.TimeFactor = mLastTimeFactor.Value;
@@ -200,10 +200,7 @@ namespace FlatRedBall.Screens
 
                     mCurrentScreen.AddToManagers();
 
-                    mCurrentScreen.Activity(true);
 
-
-                    mCurrentScreen.ActivityCallCount++;
                 }
                 mNumberOfFramesSinceLastScreenLoad = 0;
             }
@@ -355,9 +352,6 @@ namespace FlatRedBall.Screens
             newScreen.ApplyRestartVariables();
 
 
-            newScreen.Activity(true);
-
-            newScreen.ActivityCallCount++;
 
             return newScreen;
         }
@@ -413,13 +407,7 @@ namespace FlatRedBall.Screens
                 nextCallback = null;
 
 
-                if (addToManagers)
-                {
-                    newScreen.Activity(true);
 
-
-                    newScreen.ActivityCallCount++;
-                }
             }
 
             return newScreen;
