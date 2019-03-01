@@ -1922,13 +1922,20 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
-      <NextScreen>Screens\GumScreenLayered</NextScreen>
+      <NextScreen>Screens\GumScreenNoGumIdbScreen</NextScreen>
       <Name>Screens\GumScreen</Name>
       <ReferencedFiles>
         <ReferencedFileSave>
           <Name>GumProject/Screens/TestScreen.gusx</Name>
           <IsSharedStatic>true</IsSharedStatic>
+          <Summary>This gum screen uses the "old" GumIdb runtime type. We are going to also test the new one in a separate file.</Summary>
           <RuntimeType>FlatRedBall.Gum.GumIdb</RuntimeType>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
+        <ReferencedFileSave>
+          <Name>GumProject/Screens/ScreenLoadedAsGraphicalUiElement.gusx</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>Gum.Wireframe.GraphicalUiElement</RuntimeType>
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
       </ReferencedFiles>
@@ -2162,6 +2169,22 @@
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
       </NamedObjects>
+    </ScreenSave>
+    <ScreenSave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
+      <NextScreen>Screens\GumScreenLayered</NextScreen>
+      <Name>Screens\GumScreenNoGumIdbScreen</Name>
+      <ReferencedFiles>
+        <ReferencedFileSave>
+          <Name>gumproject/Screens/GumScreenNoGumIdbScreenGum.gusx</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>Gum.Wireframe.GraphicalUiElement</RuntimeType>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
+      </ReferencedFiles>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -16740,6 +16763,10 @@
         </PropertySave>
         <PropertySave>
           <Name>IncludeComponentToFormsAssociation</Name>
+          <ValueAsBool>true</ValueAsBool>
+        </PropertySave>
+        <PropertySave>
+          <Name>AutoCreateGumScreens</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>

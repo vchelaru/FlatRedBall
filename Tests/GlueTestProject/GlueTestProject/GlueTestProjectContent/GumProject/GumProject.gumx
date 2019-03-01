@@ -21,6 +21,14 @@
     <ElementType>Screen</ElementType>
   </ScreenReference>
   <ScreenReference>
+    <Name>GumScreenNoGumIdbScreenGum</Name>
+    <ElementType>Screen</ElementType>
+  </ScreenReference>
+  <ScreenReference>
+    <Name>ScreenLoadedAsGraphicalUiElement</Name>
+    <ElementType>Screen</ElementType>
+  </ScreenReference>
+  <ScreenReference>
     <Name>TestScreen</Name>
     <ElementType>Screen</ElementType>
   </ScreenReference>

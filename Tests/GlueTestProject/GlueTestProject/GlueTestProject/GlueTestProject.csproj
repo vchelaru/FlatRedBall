@@ -981,6 +981,8 @@
     <Compile Include="GumRuntimes\GumScreenLayeredGumRuntime.Generated.cs">
       <DependentUpon>GumScreenLayeredGumRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\GumScreenNoGumIdbScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\GumScreenNoGumIdbScreenGumRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.cs" />
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.Generated.cs">
       <DependentUpon>NineSliceButtonRuntime.cs</DependentUpon>
@@ -998,6 +1000,10 @@
     <Compile Include="GumRuntimes\SameNameComponentRuntime.cs" />
     <Compile Include="GumRuntimes\SameNameComponentRuntime.Generated.cs">
       <DependentUpon>SameNameComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\ScreenLoadedAsGraphicalUiElementRuntime.cs" />
+    <Compile Include="GumRuntimes\ScreenLoadedAsGraphicalUiElementRuntime.Generated.cs">
+      <DependentUpon>ScreenLoadedAsGraphicalUiElementRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\SpriteInheritingComponntRuntime.cs" />
     <Compile Include="GumRuntimes\SpriteInheritingComponntRuntime.Generated.cs">
@@ -1163,6 +1169,10 @@
     <Compile Include="Screens\GumScreenLayered.cs" />
     <Compile Include="Screens\GumScreenLayered.Generated.cs">
       <DependentUpon>GumScreenLayered.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\GumScreenNoGumIdbScreen.cs" />
+    <Compile Include="Screens\GumScreenNoGumIdbScreen.Generated.cs">
+      <DependentUpon>GumScreenNoGumIdbScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\InheritanceScreen.cs" />
     <Compile Include="Screens\InheritanceScreen.Generated.cs">

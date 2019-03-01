@@ -17,7 +17,8 @@ namespace GumPlugin.Managers
         #region Fields
 
         AssetTypeInfo mComponentAti;
-        AssetTypeInfo mScreenAti;
+        AssetTypeInfo mScreenIdbAti;
+        AssetTypeInfo screenAti;
         AssetTypeInfo mGraphicalUiElementAti;
         AssetTypeInfo mGumxAti;
 
@@ -83,19 +84,55 @@ namespace GumPlugin.Managers
         {
             get
             {
-                if (mScreenAti == null)
+                if (screenAti == null)
                 {
-                    mScreenAti = new AssetTypeInfo();
-                    mScreenAti.FriendlyName = "Gum Screen (.gusx)";
-                    mScreenAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
+                    screenAti = new AssetTypeInfo();
+                    screenAti.FriendlyName = "Gum Screen (.gusx)";
+                    screenAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
+                    {
+                        QualifiedType = "Gum.Wireframe.GraphicalUiElement"
+                    };
+
+
+                    screenAti.QualifiedSaveTypeName = "Gum.Data.ScreenSave";
+                    screenAti.Extension = "gusx";
+                    screenAti.AddToManagersMethod.Add("this.AddToManagers()");
+                    screenAti.CustomLoadMethod =
+                        "{THIS} = GumRuntime.ElementSaveExtensions.CreateGueForElement( Gum.Managers.ObjectFinder.Self.GetScreen(FlatRedBall.IO.FileManager.RemoveExtension(FlatRedBall.IO.FileManager.RemovePath(\"{FILE_NAME}\"))), true)";
+                    screenAti.DestroyMethod = "this.RemoveFromManagers()";
+                    screenAti.SupportsMakeOneWay = false;
+                    screenAti.ShouldAttach = false;
+                    screenAti.MustBeAddedToContentPipeline = false;
+                    screenAti.CanBeCloned = false;
+                    screenAti.HasCursorIsOn = false;
+                    screenAti.HasVisibleProperty = false;
+                    screenAti.CanIgnorePausing = false;
+                    screenAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\")";
+                    screenAti.ShouldAttach = false;
+                    screenAti.HideFromNewFileWindow = true;
+                }
+
+                return screenAti;
+            }
+        }
+
+        AssetTypeInfo ScreenIdbAti
+        {
+            get
+            {
+                if (mScreenIdbAti == null)
+                {
+                    mScreenIdbAti = new AssetTypeInfo();
+                    mScreenIdbAti.FriendlyName = "Gum Screen (.gusx)";
+                    mScreenIdbAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
                     {
                         QualifiedType = "FlatRedBall.Gum.GumIdb"
                     };
 
-                    mScreenAti.QualifiedSaveTypeName = "Gum.Data.ScreenSave";
-                    mScreenAti.Extension = "gusx";
-                    mScreenAti.AddToManagersMethod.Add("this.InstanceInitialize(); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += this.HandleResolutionChanged");
-                    mScreenAti.CustomLoadMethod =
+                    mScreenIdbAti.QualifiedSaveTypeName = "Gum.Data.ScreenSave";
+                    mScreenIdbAti.Extension = "gusx";
+                    mScreenIdbAti.AddToManagersMethod.Add("this.InstanceInitialize(); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += this.HandleResolutionChanged");
+                    mScreenIdbAti.CustomLoadMethod =
                         // February 11, 2019
                         // We don't use content
                         // managers to load gum, 
@@ -119,19 +156,19 @@ namespace GumPlugin.Managers
                         "}}";
 
                     
-                    mScreenAti.DestroyMethod = "FlatRedBall.SpriteManager.RemoveDrawableBatch(this); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged -= this.HandleResolutionChanged";
-                    mScreenAti.SupportsMakeOneWay = false;
-                    mScreenAti.ShouldAttach = false;
-                    mScreenAti.MustBeAddedToContentPipeline = false;
-                    mScreenAti.CanBeCloned = false;
-                    mScreenAti.HasCursorIsOn = false;
-                    mScreenAti.HasVisibleProperty = false;
-                    mScreenAti.CanIgnorePausing = false;
-                    mScreenAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\")";
-                    mScreenAti.HideFromNewFileWindow = true;
+                    mScreenIdbAti.DestroyMethod = "FlatRedBall.SpriteManager.RemoveDrawableBatch(this); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged -= this.HandleResolutionChanged";
+                    mScreenIdbAti.SupportsMakeOneWay = false;
+                    mScreenIdbAti.ShouldAttach = false;
+                    mScreenIdbAti.MustBeAddedToContentPipeline = false;
+                    mScreenIdbAti.CanBeCloned = false;
+                    mScreenIdbAti.HasCursorIsOn = false;
+                    mScreenIdbAti.HasVisibleProperty = false;
+                    mScreenIdbAti.CanIgnorePausing = false;
+                    mScreenIdbAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\")";
+                    mScreenIdbAti.HideFromNewFileWindow = true;
                 }
 
-                return mScreenAti;
+                return mScreenIdbAti;
             }
         }
 
@@ -266,6 +303,7 @@ namespace GumPlugin.Managers
             AddIfNotPresent(ComponentAti);
 
             AddIfNotPresent(ScreenAti);
+            AddIfNotPresent(ScreenIdbAti);
 
             AddIfNotPresent(GraphicalUiElementAti);
         }
@@ -274,7 +312,11 @@ namespace GumPlugin.Managers
 
         public void AddIfNotPresent(AssetTypeInfo ati)
         {
-            if (AvailableAssetTypes.Self.AllAssetTypes.Any(item => item.FriendlyName == ati.FriendlyName) == false)
+            var alreadyAdded = AvailableAssetTypes.Self.AllAssetTypes
+                .Any(item => 
+                    item.FriendlyName == ati.FriendlyName && 
+                    item.QualifiedRuntimeTypeName.QualifiedType == ati.QualifiedRuntimeTypeName.QualifiedType);
+            if (alreadyAdded == false)
             {
                 AvailableAssetTypes.Self.AddAssetType(ati);
             }

@@ -244,7 +244,9 @@ namespace GumPlugin
             // - More fixes when tracking files on instances that have been removed from their respective screen or component
             // 1.6.2.2
             // - Fixed the plugin reporting errors for referenced files when those files are tied to deleted instances.
-            get { return new Version(1, 6, 2, 2); }
+            // 2.0
+            // - Screens no longer generate IDBs - they are just GraphicalUiElements
+            get { return new Version(2, 0, 0, 0); }
         }
 
         #endregion
