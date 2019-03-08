@@ -7,8 +7,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsNetworkScreen}">
-            Is Network Screen</CheckBox>
+            Is Network Screen
+        </CheckBox>
 
     </Grid>
 </UserControl>

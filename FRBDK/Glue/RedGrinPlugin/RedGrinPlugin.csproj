@@ -55,6 +55,9 @@
     <Compile Include="Views\MainEntityView.xaml.cs">
       <DependentUpon>MainEntityView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\MainScreenView.xaml.cs">
+      <DependentUpon>MainScreenView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj">
@@ -89,6 +92,10 @@
   <ItemGroup />
   <ItemGroup>
     <Page Include="Views\MainEntityView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MainScreenView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
