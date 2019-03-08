@@ -5,6 +5,7 @@ using Gum.DataTypes.Behaviors;
 using GumPlugin.DataGeneration;
 using GumPlugin.Managers;
 using GumPlugin.ViewModels;
+using HQ.Util.Unmanaged;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -160,6 +161,30 @@ namespace GumPlugin.Controls
         {
             var viewModel = DataContext as GumViewModel;
             viewModel.ShowAdvanced = false;
+        }
+
+        private void RegenerateFontsClicked(object sender, RoutedEventArgs e)
+        {
+            // --rebuildfonts "C:\Users\Victor\Documents\TestProject2\TestProject2\Content\GumProject\GumProject.gumx"
+            var gumFileName = AppState.Self.GumProjectSave.FullFileName;
+
+            var executable = FileAssociation.GetExecFileAssociatedToExtension("gumx");
+
+            if(string.IsNullOrEmpty(executable))
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox(
+                    "Could not find file association for Gum files - you need to set this up before performing this operation");
+            }
+            else
+            {
+                var startInfo = new System.Diagnostics.ProcessStartInfo();
+                startInfo.Arguments = $@"--rebuildfonts ""{gumFileName}""";
+                startInfo.FileName = executable;
+                startInfo.UseShellExecute = false;
+
+                System.Diagnostics.Process.Start(startInfo);
+
+            }
         }
     }
 }

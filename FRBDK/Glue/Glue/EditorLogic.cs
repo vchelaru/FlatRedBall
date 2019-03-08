@@ -320,7 +320,7 @@ namespace FlatRedBall.Glue
         }
 
 
-
+        [Obsolete("Use GlueState")]
         public static StateSave CurrentStateSave
         {
             get

@@ -246,7 +246,9 @@ namespace GumPlugin
             // - Fixed the plugin reporting errors for referenced files when those files are tied to deleted instances.
             // 2.0
             // - Screens no longer generate IDBs - they are just GraphicalUiElements
-            get { return new Version(2, 0, 0, 0); }
+            // 2.0.1
+            // - Fixed freeze/behavior generation failing because a directory was not being created
+            get { return new Version(2, 0, 1, 0); }
         }
 
         #endregion

@@ -36,6 +36,8 @@ using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.ViewModels;
 using Microsoft.Xna.Framework;
+using EditorObjects.IoC;
+using FlatRedBall.Glue.SetVariable;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -904,7 +906,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static void DuplicateClick(object sender, EventArgs e)
         {
-            if (EditorLogic.CurrentNamedObject != null)
+            if (GlueState.Self.CurrentNamedObjectSave != null)
             {
                 DuplicateCurrentNamedObject();
             }
@@ -917,7 +919,7 @@ namespace FlatRedBall.Glue.FormHelpers
         private static void DuplicateCurrentNamedObject()
         {
             // Duplicate duplicate named object, copy named object, copy object
-            NamedObjectSave namedObjectToDuplicate = EditorLogic.CurrentNamedObject;
+            NamedObjectSave namedObjectToDuplicate = GlueState.Self.CurrentNamedObjectSave;
 
             NamedObjectSave newNamedObject = namedObjectToDuplicate.Clone();
 
@@ -931,7 +933,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #endregion
 
-            TreeNode treeNodeForNamedObject = GlueState.Self.Find.NamedObjectTreeNode(EditorLogic.CurrentNamedObject);
+            TreeNode treeNodeForNamedObject = GlueState.Self.Find.NamedObjectTreeNode(namedObjectToDuplicate);
             TreeNode parentTreeNode = treeNodeForNamedObject.Parent;
 
             #region Get the container
@@ -955,7 +957,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (container != null)
             {
-                int indexToInsertAt = 1 + container.NamedObjects.IndexOf(EditorLogic.CurrentNamedObject);
+                int indexToInsertAt = 1 + container.NamedObjects.IndexOf(namedObjectToDuplicate);
 
                 while (container.GetNamedObjectRecursively(newNamedObject.InstanceName) != null)
                 {
@@ -970,7 +972,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 if (list != null && list.IsList)
                 {
-                    int indexToInsertAt = 1 + list.ContainedObjects.IndexOf(EditorLogic.CurrentNamedObject);
+                    int indexToInsertAt = 1 + list.ContainedObjects.IndexOf(namedObjectToDuplicate);
 
                     container = EditorLogic.CurrentElement;
 
@@ -983,6 +985,11 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 }
 
+            }
+
+            if(newNamedObject.SetByDerived)
+            {
+                Container.Get<NamedObjectSetVariableLogic>().ReactToChangedSetByDerived(newNamedObject);
             }
 
 

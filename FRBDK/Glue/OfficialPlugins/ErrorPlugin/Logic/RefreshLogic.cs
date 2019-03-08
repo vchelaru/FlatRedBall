@@ -18,18 +18,20 @@ namespace OfficialPlugins.ErrorPlugin.Logic
         {
             TaskManager.Self.AddSync(() =>
             {
-                GlueCommands.Self.DoOnUiThread(() =>
-               {
 
-                   errorListViewModel.Errors.Clear();
-
+                   lock (GlueState.ErrorListSyncLock)
+                   {
+                       errorListViewModel.Errors.Clear();
+                   }
                    var missingFiles = ErrorCreateRemoveLogic.GetMissingFileErrorViewModels();
 
                    foreach (var missingFile in missingFiles)
                    {
-                       errorListViewModel.Errors.Add(missingFile);
+                       lock (GlueState.ErrorListSyncLock)
+                       {
+                           errorListViewModel.Errors.Add(missingFile);
+                       }
                    }
-               });
             }
             , "Refresh all errors");
         }
@@ -38,13 +40,10 @@ namespace OfficialPlugins.ErrorPlugin.Logic
         {
             TaskManager.Self.AddSync(() =>
             {
-                GlueCommands.Self.DoOnUiThread(() =>
-                {
                     // Add new errors:
                     ErrorCreateRemoveLogic.AddNewErrorsForChangedFile(filePath, errorListViewModel);
 
                     ErrorCreateRemoveLogic.RemoveFixedErrorsForChangedFile(filePath, errorListViewModel);
-                });
 
             }, $"Handle file change {filePath}");
         }
@@ -53,10 +52,7 @@ namespace OfficialPlugins.ErrorPlugin.Logic
         {
             TaskManager.Self.AddSync(() =>
             {
-                GlueCommands.Self.DoOnUiThread(() =>
-                {
                     ErrorCreateRemoveLogic.RemoveFixedErrorsForRemovedRfs(removedFile, errorListViewModel);
-                });
 
             }, $"Handle referenced file removed {removedFile}");
         }
@@ -65,10 +61,7 @@ namespace OfficialPlugins.ErrorPlugin.Logic
         {
             TaskManager.Self.AddSync(() =>
             {
-                GlueCommands.Self.DoOnUiThread(() =>
-                {
                     ErrorCreateRemoveLogic.AddNewErrorsForFileReadError(filePath, errorListViewModel);
-                });
 
             }, $"Handle file read error {filePath}");
 

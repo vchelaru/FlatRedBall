@@ -21,14 +21,14 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region Name
 
-            if (changedMember == "Name")
+            if (changedMember == nameof(CustomVariable.Name))
             {
                 ReactToChangedCustomVariableName((string)oldValue, customVariable);
             }
             #endregion
 
             #region SetByDerived
-            if (changedMember == "SetByDerived")
+            if (changedMember == nameof(CustomVariable.SetByDerived))
             {
                 bool didErrorOccur = false;
 
@@ -51,7 +51,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region IsShared
 
-            else if (changedMember == "IsShared")
+            else if (changedMember == nameof(CustomVariable.IsShared))
             {
                 HandleIsSharedVariableSet(customVariable, oldValue);
             }
@@ -59,7 +59,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region SouceObjectProperty
 
-            else if (changedMember == "SourceObjectProperty")
+            else if (changedMember == nameof(CustomVariable.SourceObjectProperty))
             {
                 // See if there is already a NOS that uses this SourceObject/SourceObjectProperty combo
                 IElement currentElement = EditorLogic.CurrentElement;
@@ -89,7 +89,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region DefaultValue
 
-            else if (changedMember == "DefaultValue")
+            else if (changedMember == nameof(CustomVariable.DefaultValue))
             {
                 customVariable.FixEnumerationTypes();
 
@@ -131,7 +131,7 @@ namespace FlatRedBall.Glue.SetVariable
             #endregion
 
             #region HasAccompanyingVelocityProperty
-            else if (changedMember == "HasAccompanyingVelocityProperty")
+            else if (changedMember == nameof(CustomVariable.HasAccompanyingVelocityProperty))
             {
                 ReactToChangedHasAccompanyingVelocityProperty(customVariable);
             }
@@ -139,7 +139,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region OverridingPropertyType
 
-            else if (changedMember == "OverridingPropertyType")
+            else if (changedMember == nameof(CustomVariable.OverridingPropertyType))
             {
                 if (customVariable.OverridingPropertyType != null)
                 {
@@ -151,7 +151,7 @@ namespace FlatRedBall.Glue.SetVariable
             #endregion
 
             #region Type
-            else if (changedMember == "Type")
+            else if (changedMember == nameof(CustomVariable.Type))
             {
                 customVariable.SetDefaultValueAccordingToType(customVariable.Type);
 

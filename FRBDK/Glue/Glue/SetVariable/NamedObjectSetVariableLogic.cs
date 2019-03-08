@@ -53,7 +53,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
 
             #region SourceType changed
-            else if (changedMember == "SourceType")
+            else if (changedMember == nameof(NamedObjectSave.SourceType))
             {
                 bool didErrorOccur = false;
 
@@ -79,7 +79,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region SourceClassType changed
 
-            else if (changedMember == "SourceClassType")
+            else if (changedMember == nameof(NamedObjectSave.SourceClassType))
             {
                 ReactToChangedSourceClassType(namedObjectSave, oldValue);
             }
@@ -87,7 +87,7 @@ namespace FlatRedBall.Glue.SetVariable
             #endregion
 
             #region SourceFile changed
-            else if (changedMember == "SourceFile")
+            else if (changedMember == nameof(NamedObjectSave.SourceFile))
             {
                 if (namedObjectSave.SourceFile != (string)oldValue)
                 {
@@ -110,7 +110,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region SourceName
 
-            else if (changedMember == "SourceName")
+            else if (changedMember == nameof(NamedObjectSave.SourceName))
             {
                 // This needs to happen before we update custom properties
                 ReactToChangedNosSourceName(namedObjectSave, oldValue as string);
@@ -123,7 +123,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region InstanceName changed
 
-            else if (changedMember == "InstanceName")
+            else if (changedMember == nameof(NamedObjectSave.InstanceName))
             {
                 ReactToNamedObjectChangedInstanceName(namedObjectSave, oldValue);
             }
@@ -132,49 +132,16 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region SetByDerived Changed
 
-            else if (changedMember == "SetByDerived")
+            else if (changedMember ==nameof(NamedObjectSave.SetByDerived))
             {
-                if (namedObjectSave.SourceType == SourceType.Entity &&
-                    !string.IsNullOrEmpty(namedObjectSave.SourceClassType))
-                {
-                    if (ProjectManager.VerifyReferenceGraph(ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassType)) == ProjectManager.CheckResult.Failed)
-                        namedObjectSave.SetByDerived = !namedObjectSave.SetByDerived;
-                }
-
-
-                if (namedObjectSave.SetByDerived && namedObjectSave.ExposedInDerived)
-                {
-                    // The user has just set SetByDerived to true, but ExposedInDerived means that
-                    // the derived expects that the base instantiates.  We need to tell the user that
-                    // both values can't be true at the same time, and that ExposedInDerived will be set
-                    // to false.
-                    MessageBox.Show("You have set SetByDerived to true, but ExposedInDerived is also true.  Both cannot be true at the same time " +
-                        "so Glue will set ExposedInDerived to false.");
-                    namedObjectSave.ExposedInDerived = false;
-                }
-
-
-                if (namedObjectSave.SourceType == SourceType.FlatRedBallType &&
-                    namedObjectSave.IsList &&
-                    namedObjectSave.SetByDerived == true &&
-                    namedObjectSave.ContainedObjects.Count != 0)
-                {
-                    MessageBox.Show("This list is not empty, so it can't be set to \"Set By Derived\".  You must first empty the list", "Invalid Setting");
-
-                    namedObjectSave.SetByDerived = false;
-
-                }
-                else
-                {
-                    ProjectManager.UpdateAllDerivedElementFromBaseValues(true);
-                }
+                ReactToChangedSetByDerived(namedObjectSave);
             }
 
             #endregion
 
             #region ExposedInDerived Changed
 
-            else if (changedMember == "ExposedInDerived")
+            else if (changedMember == nameof(NamedObjectSave.ExposedInDerived))
             {
                 if (namedObjectSave.SetByDerived && namedObjectSave.ExposedInDerived)
                 {
@@ -195,7 +162,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region SourceClassGenericType
 
-            else if (changedMember == "SourceClassGenericType")
+            else if (changedMember == nameof(NamedObjectSave.SourceClassGenericType))
             {
                 ReactToSourceClassGenericType(namedObjectSave, oldValue);
             }
@@ -204,7 +171,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region IsDisabled
 
-            else if (changedMember == "IsDisabled")
+            else if (changedMember == nameof(NamedObjectSave.IsDisabled))
             {
                 GlueState.Self.Find.ElementTreeNode(EditorLogic.CurrentElement).UpdateReferencedTreeNodes();
             }
@@ -212,7 +179,7 @@ namespace FlatRedBall.Glue.SetVariable
             #endregion
 
             #region SetByContainer Changed
-            else if (changedMember == "SetByContainer")
+            else if (changedMember == nameof(NamedObjectSave.SetByContainer))
             {
 
                 if (namedObjectSave.SourceType == SourceType.Entity &&
@@ -251,7 +218,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region AddToManagers Changed
 
-            else if (changedMember == "AddToManagers")
+            else if (changedMember == nameof(NamedObjectSave.AddToManagers))
             {
                 if (namedObjectSave.AddToManagers &&
                     namedObjectSave.GetContainerType() == ContainerType.Screen && namedObjectSave.SourceType == SourceType.File)
@@ -282,7 +249,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region LayerOn
 
-            else if (changedMember == "LayerOn")
+            else if (changedMember == nameof(NamedObjectSave.LayerOn))
             {
                 if (namedObjectSave.IsList)
                 {
@@ -313,7 +280,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region IsContainer
 
-            else if (changedMember == "IsContainer")
+            else if (changedMember == nameof(NamedObjectSave.IsContainer))
             {
                 HandleChangedIsContainer(namedObjectSave, element);
             
@@ -324,7 +291,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region AttachToCamera
 
-            else if (changedMember == "AttachToCamera")
+            else if (changedMember == nameof(NamedObjectSave.AttachToCamera))
             {
                 if (namedObjectSave.IsList)
                 {
@@ -355,7 +322,7 @@ namespace FlatRedBall.Glue.SetVariable
             #endregion
 
             #region DestinationRectangle.Y (for Layers)
-            else if (parent == "DestinationRectangle" && changedMember == "Y")
+            else if (parent == nameof(NamedObjectSave.DestinationRectangle) && changedMember == "Y")
             {
                 // If the Y is odd, we should warn the user that it should be even
                 // or else text will draw incorrectly
@@ -372,7 +339,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region RemoveFromManagersWhenInvisible
 
-            else if (changedMember == "RemoveFromManagersWhenInvisible")
+            else if (changedMember == nameof(NamedObjectSave.RemoveFromManagersWhenInvisible))
             {
                 // is this an Entity instance?
                 if (namedObjectSave.SourceType == SourceType.Entity && namedObjectSave.RemoveFromManagersWhenInvisible)
@@ -436,6 +403,44 @@ namespace FlatRedBall.Glue.SetVariable
             PropertyGridHelper.UpdateNamedObjectDisplay();
 
             PluginManager.ReactToNamedObjectChangedValue(changedMember, oldValue);
+        }
+
+        public void ReactToChangedSetByDerived(NamedObjectSave namedObjectSave)
+        {
+            if (namedObjectSave.SourceType == SourceType.Entity &&
+                !string.IsNullOrEmpty(namedObjectSave.SourceClassType))
+            {
+                if (ProjectManager.VerifyReferenceGraph(ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassType)) == ProjectManager.CheckResult.Failed)
+                    namedObjectSave.SetByDerived = !namedObjectSave.SetByDerived;
+            }
+
+
+            if (namedObjectSave.SetByDerived && namedObjectSave.ExposedInDerived)
+            {
+                // The user has just set SetByDerived to true, but ExposedInDerived means that
+                // the derived expects that the base instantiates.  We need to tell the user that
+                // both values can't be true at the same time, and that ExposedInDerived will be set
+                // to false.
+                MessageBox.Show("You have set SetByDerived to true, but ExposedInDerived is also true.  Both cannot be true at the same time " +
+                    "so Glue will set ExposedInDerived to false.");
+                namedObjectSave.ExposedInDerived = false;
+            }
+
+
+            if (namedObjectSave.SourceType == SourceType.FlatRedBallType &&
+                namedObjectSave.IsList &&
+                namedObjectSave.SetByDerived == true &&
+                namedObjectSave.ContainedObjects.Count != 0)
+            {
+                MessageBox.Show("This list is not empty, so it can't be set to \"Set By Derived\".  You must first empty the list", "Invalid Setting");
+
+                namedObjectSave.SetByDerived = false;
+
+            }
+            else
+            {
+                ProjectManager.UpdateAllDerivedElementFromBaseValues(true);
+            }
         }
 
         private void ReactToSourceClassGenericType(NamedObjectSave namedObjectSave, object oldValue)

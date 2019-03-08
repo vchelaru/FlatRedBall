@@ -76,11 +76,10 @@ namespace FlatRedBall.Graphics
 
         #region Properties
 
-        #region XML Docs
         /// <summary>
-        /// Gets or sets the current texture filter
+        /// Gets or sets the current texture filter. If SuspendDeviceReset has not been called then 
+        /// this setter will immediately apply the texture filter.
         /// </summary>
-        #endregion
         public TextureFilter TextureFilter
         {
             get { return mTextureFilter; }
@@ -606,11 +605,10 @@ namespace FlatRedBall.Graphics
             mSuspendDeviceReset = false;
         }
 
-            #region XML Docs
         /// <summary>
-        /// Resets the device
+        /// Resets the device if the device is not currently rendering, if the graphics device is not null, and if 
+        /// device resetting is not suspended.
         /// </summary>
-            #endregion
         public void ResetDevice()
         {
             if (mIsInAReset)

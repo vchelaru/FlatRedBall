@@ -13,21 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace OfficialPlugins.ErrorPlugin.Views
+namespace RedGrinPlugin.Views
 {
     /// <summary>
-    /// Interaction logic for ErrorWindow.xaml
+    /// Interaction logic for MainScreenView.xaml
     /// </summary>
-    public partial class ErrorWindow : UserControl
+    public partial class MainScreenView : UserControl
     {
-        public ErrorWindow()
+        public MainScreenView()
         {
             InitializeComponent();
-        }
-
-        public void ForceRefreshErrors()
-        {
-            ListBox.Items.Refresh();
         }
     }
 }

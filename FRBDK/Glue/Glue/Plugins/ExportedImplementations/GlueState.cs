@@ -277,12 +277,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
+        public ErrorListViewModel ErrorList { get; private set; } = new ErrorListViewModel();
+
+        public static object ErrorListSyncLock = new object();
         #endregion
 
         public GlueState()
         {
             Find = new FindManager();
             Clipboard = new States.Clipboard();
+
+            System.Windows.Data.BindingOperations.EnableCollectionSynchronization(
+                ErrorList.Errors, ErrorListSyncLock);
         }
 
         public IElement GetElement(string name)
@@ -364,6 +370,5 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             return ObjectFinder.Self.GetAllReferencedFiles();
         }
 
-        public ErrorListViewModel ErrorList { get; private set; } = new ErrorListViewModel();
     }
 }

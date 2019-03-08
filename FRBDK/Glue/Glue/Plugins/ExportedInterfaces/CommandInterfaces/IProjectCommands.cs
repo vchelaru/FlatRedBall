@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.SaveClasses;
+﻿using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using System.Collections.Generic;
 
@@ -19,10 +20,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         /// <summary>
         /// Creates an empty code file (if it doesn't already exist), and adds it to the main project. If the file already exists, then it 
-        /// is not modified on disk, but is still added to the code project.
+        /// is not modified on disk, but is still added to the code project. The code project is saved if added.
         /// </summary>
         /// <param name="relativeFileName">The file name.</param>
         void CreateAndAddCodeFile(string relativeFileName);
+
+        /// <summary>
+        /// Creates an empty code file (if it doesn't already exist), and adds it to the main project. If the file already exists, then it 
+        /// is not modified on disk, but is still added to the code project. The code project is saved if added.
+        /// </summary>
+        /// <param name="filePath">The file path to save.</param>
+        void CreateAndAddCodeFile(FilePath filePath);
 
         void AddContentFileToProject(string absoluteFileName, bool saveProjects = true);
 

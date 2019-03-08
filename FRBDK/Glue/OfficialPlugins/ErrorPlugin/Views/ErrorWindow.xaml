@@ -31,7 +31,7 @@
                 <Image Source="/OfficialPlugins;component/ErrorPlugin/Icons/Refresh.png"></Image>
             </Button>
         </StackPanel>
-        <ListBox Grid.Row="1" ItemsSource="{Binding Errors}" 
+        <ListBox Grid.Row="1" x:Name="ListBox" ItemsSource="{Binding Errors}" 
                  SelectedItem="{Binding SelectedError}" 
                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" 
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False">

@@ -1,0 +1,28 @@
+﻿<UserControl x:Class="RedGrinPlugin.Views.MainEntityView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RedGrinPlugin.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="280">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsNetworkEntity}">Is Network Entity</CheckBox>
+        <TextBlock Grid.Row="1" Margin="0,8,0,0">Network Variables:</TextBlock>
+        <ListBox Grid.Column="0" Grid.Row="2" 
+                     ItemsSource="{Binding VariableList}" 
+                     IsEnabled="{Binding IsNetworkEntity}"
+                        VerticalAlignment="Stretch">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <CheckBox Content="{Binding Name}" IsChecked="{Binding IsChecked}" VerticalContentAlignment="Center"></CheckBox>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</UserControl>

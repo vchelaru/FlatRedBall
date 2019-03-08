@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using Glue;
 using System;
+using FlatRedBall.Glue.Errors;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
@@ -53,10 +54,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             PluginManager.ReceiveOutput(output);
         }
 
-
         public void PrintError(string output)
         {
             PluginManager.ReceiveError(output);
+        }
+
+        public void AddError(ErrorViewModel errorViewModel)
+        {
+            lock(GlueState.ErrorListSyncLock)
+            {
+                GlueState.Self.ErrorList.Errors.Add(errorViewModel);
+            }
         }
 
         public void DoOnUiThread(Action action)

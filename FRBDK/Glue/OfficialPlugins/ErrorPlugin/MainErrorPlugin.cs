@@ -48,6 +48,9 @@ namespace OfficialPlugins.ErrorPlugin
             errorListViewModel.Errors.CollectionChanged += HandleErrorsCollectionChanged;
             errorListViewModel.RefreshClicked += HandleRefreshClicked;
 
+            control.DataContext = errorListViewModel;
+
+
             this.ReactToLoadedGlux += HandleLoadedGlux;
             this.ReactToFileChangeHandler += HandleFileChanged;
             this.ReactToFileRemoved += HandleFileRemoved;
@@ -62,17 +65,19 @@ namespace OfficialPlugins.ErrorPlugin
 
         private void HandleErrorsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            RefreshTabText();
-
-            if(e.NewItems?.Count > 0)
+            GlueCommands.Self.DoOnUiThread(() =>
             {
-                FocusTab();
-            }
+                RefreshTabText();
+
+
+                if(e.NewItems?.Count > 0)
+                {
+                    FocusTab();
+                }
+            });
 
             // If I don't do this the list shows an extra item. Not sure why...
-            control.DataContext = null;
-            control.DataContext = errorListViewModel;
-
+            //control.ForceRefreshErrors();
         }
 
         private void HandleFileReadError(FilePath fileName, GeneralResponse response)
@@ -110,7 +115,10 @@ namespace OfficialPlugins.ErrorPlugin
 
         private void HandleUnloadedGlux()
         {
-            errorListViewModel.Errors.Clear();
+            lock (GlueState.ErrorListSyncLock)
+            {
+                errorListViewModel.Errors.Clear();
+            }
         }
     }
 }

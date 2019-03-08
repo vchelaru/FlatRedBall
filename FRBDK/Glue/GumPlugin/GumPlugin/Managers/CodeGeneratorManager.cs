@@ -430,6 +430,8 @@ namespace GumPlugin.Managers
 
             string saveLocation = directoryToSave + "I" + behavior.Name + ".Generated.cs";
 
+            System.IO.Directory.CreateDirectory(directoryToSave);
+
             bool didSave = false;
 
             if(!string.IsNullOrEmpty(generatedCode))

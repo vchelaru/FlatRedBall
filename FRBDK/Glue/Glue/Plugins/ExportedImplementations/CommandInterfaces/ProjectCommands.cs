@@ -14,6 +14,7 @@ using FlatRedBall.Glue.Projects;
 using EditorObjects.Parsing;
 using FlatRedBall.Glue.Errors;
 using System.Linq;
+using FlatRedBall.Glue.IO;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -330,38 +331,42 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
         public void CreateAndAddCodeFile(string relativeFileName)
-        { 
+        {
             //////////////Early Out///////////////////
             // Just in case this is called when the project is unloaded:
-            if(GlueState.Self.CurrentGlueProject == null)
+            if (GlueState.Self.CurrentGlueProject == null)
             {
                 return;
             }
             ////////////End Early Out////////////////
 
             // see if the file exists. If not, create it:
-            var absoluteFileName = GlueState.Self.CurrentGlueProjectDirectory + relativeFileName;
+            FilePath filePath = GlueState.Self.CurrentGlueProjectDirectory + relativeFileName;
 
-            var directory = FileManager.GetDirectory(absoluteFileName);
+            CreateAndAddCodeFile(filePath);
+        }
 
-            System.IO.Directory.CreateDirectory(directory);
+        public void CreateAndAddCodeFile(FilePath filePath)
+        {
+            var directory = filePath.GetDirectoryContainingThis();
 
-            if(System.IO.File.Exists(absoluteFileName) == false)
+            System.IO.Directory.CreateDirectory(directory.FullPath);
+
+            if (filePath.Exists() == false)
             {
                 // will get back in later
-                System.IO.File.WriteAllText(absoluteFileName, "");
+                System.IO.File.WriteAllText(filePath.FullPath, "");
             }
 
             var mainProject = GlueState.Self.CurrentMainProject;
-            if(mainProject.IsFilePartOfProject(absoluteFileName) == false)
+            if (mainProject.IsFilePartOfProject(filePath.FullPath) == false)
             {
-                mainProject.AddCodeBuildItem(absoluteFileName);
+                mainProject.AddCodeBuildItem(filePath.FullPath);
 
                 GlueCommands.Self.TryMultipleTimes(mainProject.Save, 5);
                 // do we need to project sync?
             }
         }
-
 
         public void CopyToBuildFolder(ReferencedFileSave rfs)
         {

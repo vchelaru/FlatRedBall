@@ -18,6 +18,7 @@
                   Content="Automatically Create Gum Screens for Glue Screens" IsChecked="{Binding AutoCreateGumScreens}"></CheckBox>
             <CheckBox x:Name="UseAtlasesCheckBox" VerticalContentAlignment="Center" 
                   Content="Use Atlases" IsChecked="{Binding UseAtlases}"></CheckBox>
+            <Button Margin="7,5,0,0" Width="200" HorizontalAlignment="Left" Click="RegenerateFontsClicked">Re-generate Fonts</Button>
             <GroupBox Header="Core Gum Addition">
                 <StackPanel >
                     <RadioButton GroupName="AdditionType" x:Name="IncludeNoFilesRadio" 

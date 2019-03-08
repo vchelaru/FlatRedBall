@@ -135,8 +135,10 @@ namespace OfficialPlugins.ErrorPlugin.Logic
 
                     if(!alreadyExists)
                     {
-                        errors.Errors.Add(newError);
-
+                        lock (GlueState.ErrorListSyncLock)
+                        {
+                            errors.Errors.Add(newError);
+                        }
                     }
                 }
             }
@@ -167,7 +169,10 @@ namespace OfficialPlugins.ErrorPlugin.Logic
                 var shouldAdd = existingIndirects.Any(item => item.Matches(candidateToAdd)) == false;
                 if (shouldAdd)
                 {
-                    errors.Errors.Add(candidateToAdd);
+                    lock (GlueState.ErrorListSyncLock)
+                    {
+                        errors.Errors.Add(candidateToAdd);
+                    }
                 }
             }
         }
@@ -187,7 +192,10 @@ namespace OfficialPlugins.ErrorPlugin.Logic
                 {
                     // add it:
                     FileParseErrorViewModel newError = new FileParseErrorViewModel(fileName, generalResponse);
-                    errors.Errors.Add(newError);
+                    lock (GlueState.ErrorListSyncLock)
+                    {
+                        errors.Errors.Add(newError);
+                    }
                 }
 
             }
@@ -205,7 +213,10 @@ namespace OfficialPlugins.ErrorPlugin.Logic
 
                 if (error.ReactsToFileChange(filePath) && error.GetIfIsFixed())
                 {
-                    errorListViewModel.Errors.RemoveAt(i);
+                    lock (GlueState.ErrorListSyncLock)
+                    {
+                        errorListViewModel.Errors.RemoveAt(i);
+                    }
                 }
             }
         }
@@ -220,7 +231,10 @@ namespace OfficialPlugins.ErrorPlugin.Logic
 
                 if (error.ReactsToFileChange(filePath) && error.GetIfIsFixed())
                 {
-                    errorListViewModel.Errors.RemoveAt(i);
+                    lock (GlueState.ErrorListSyncLock)
+                    {
+                        errorListViewModel.Errors.RemoveAt(i);
+                    }
                 }
             }
         }
