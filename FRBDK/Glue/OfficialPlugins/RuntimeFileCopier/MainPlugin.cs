@@ -51,7 +51,7 @@ namespace OfficialPlugins.RuntimeFileCopier
 
         private void HandleFileChanged(string fileName)
         {
-            if (GlueState.Self.GlueSettingsSave.AutoCopyFilesOnChange && ShouldCopyFile(fileName))
+            if (GlueState.Self.GlueSettingsSave.AutoCopyFilesOnChange && ShouldCopyFile(fileName) && System.IO.File.Exists(fileName))
             {
                 GlueCommands.Self.ProjectCommands.CopyToBuildFolder(fileName);
             }

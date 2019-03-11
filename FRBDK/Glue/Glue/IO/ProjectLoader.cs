@@ -426,7 +426,8 @@ namespace FlatRedBall.Glue.IO
                 Section.GetAndStartContextAndTime("MakeGeneratedItemsNested");
 
                 // This should happen after loading synced projects
-                MakeGeneratedItemsNested();
+                SetInitWindowText("Nesting generated items");
+                GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("GlobalContent");
 
@@ -1170,52 +1171,5 @@ namespace FlatRedBall.Glue.IO
             }
             return succeeded;
         }
-
-        internal void MakeGeneratedItemsNested()
-        {
-            SetInitWindowText("Nesting generated items");
-
-            foreach (var bi in ProjectManager.ProjectBase.EvaluatedItems)
-            {
-
-                string biInclude = bi.UnevaluatedInclude;
-
-                if (biInclude.EndsWith(".cs") && FileManager.RemovePath(biInclude).IndexOf('.') != FileManager.RemovePath(biInclude).Length - 3)
-                {
-                    // Don't do it for factories!
-                    if (bi.UnevaluatedInclude.StartsWith("Factories\\") || bi.UnevaluatedInclude.StartsWith("Factories/"))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        string whatToNestUnder = FileManager.RemovePath(bi.UnevaluatedInclude);
-                        whatToNestUnder = whatToNestUnder.Substring(0, whatToNestUnder.IndexOf('.')) + ".cs";
-
-                        // make sure there is an object to nest under in this directory
-                        string whatToNextUnderWithPath = FileManager.GetDirectory(bi.UnevaluatedInclude, RelativeType.Relative) + whatToNestUnder;
-
-                        if (ProjectManager.ProjectBase.GetItem(whatToNextUnderWithPath) != null)
-                        {
-                            ProjectManager.ProjectBase.MakeBuildItemNested(bi, whatToNestUnder);
-
-                            foreach (ProjectBase project in ProjectManager.SyncedProjects)
-                            {
-                                var associatedBuildItem = project.GetItem(ProjectManager.MakeAbsolute(biInclude));
-                                if (associatedBuildItem != null)
-                                {
-                                    project.MakeBuildItemNested(associatedBuildItem, whatToNestUnder);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // Don't do anything - this guy shouldn't be nested
-                        }
-                    }
-                }
-            }
-        }
-
     }
 }

@@ -11,76 +11,48 @@ using System.Threading.Tasks;
 
 namespace RedGrinPlugin.CodeGenerators
 {
-    class NetworkCodeGenerator
+    class NetworkEntityCodeGenerator
     {
         public static void GenerateCodeFor(EntitySave entitySave)
         {
-            var isNetworkEntity = entitySave.Properties
-                .GetValue<bool>(nameof(NetworkEntityViewModel.IsNetworkEntity));
+            var isNetworkEntity = NetworkEntityViewModel.IsNetworked(entitySave);
 
             if(isNetworkEntity)
             {
                 var entityGeneratedCode = GetGeneratedEntityNetworkCode(entitySave);
-                var generatedEntityNetworkFilePath = GetGeneratedentityNetworkFileNameFor(entitySave);
+                var generatedEntityNetworkFilePath = CodeGeneratorCommonLogic.GetGeneratedElementNetworkFilePathFor(entitySave);
 
-                SaveFile(entityGeneratedCode, generatedEntityNetworkFilePath);
-                AddCodeFileToProject(generatedEntityNetworkFilePath);
+                CodeGeneratorCommonLogic.SaveFile(entityGeneratedCode, generatedEntityNetworkFilePath);
+                CodeGeneratorCommonLogic.AddCodeFileToProject(generatedEntityNetworkFilePath);
 
                 var netStateGeneratedCode = GenerateNetStateGeneratedCode(entitySave);
-                var generatedNetStateFilePath = GetGeneratedNetStateFilePathFor(entitySave);
+                var generatedNetStateFilePath = CodeGeneratorCommonLogic.GetGeneratedNetStateFilePathFor(entitySave);
 
-                SaveFile(netStateGeneratedCode, generatedNetStateFilePath);
-                AddCodeFileToProject(generatedNetStateFilePath);
+                CodeGeneratorCommonLogic.SaveFile(netStateGeneratedCode, generatedNetStateFilePath);
+                CodeGeneratorCommonLogic.AddCodeFileToProject(generatedNetStateFilePath);
 
-                var customNetStateFilePath = GetCustomNetStateFilePathFor(entitySave);
+                var customNetStateFilePath = CodeGeneratorCommonLogic.GetCustomNetStateFilePathFor(entitySave);
                 if(customNetStateFilePath.Exists() == false)
                 {
                     var customNetStateCode = GenerateEmptyCustomNetStateCode(entitySave);
-                    SaveFile(customNetStateCode, customNetStateFilePath);
+                    CodeGeneratorCommonLogic.SaveFile(customNetStateCode, customNetStateFilePath);
                 }
-                AddCodeFileToProject(customNetStateFilePath);
+                CodeGeneratorCommonLogic.AddCodeFileToProject(customNetStateFilePath);
 
-                var customEntityNetworkFilePath = GetCustomEntityNetworkFilePath(entitySave);
+                var customEntityNetworkFilePath = CodeGeneratorCommonLogic.GetCustomElementNetworkFilePathFor(entitySave);
                 if(customEntityNetworkFilePath.Exists() == false)
                 {
                     var customEntityNetworkCode = GenerateEmptyCustomEntityNetworkCode(entitySave);
-                    SaveFile(customEntityNetworkCode, customEntityNetworkFilePath);
+                    CodeGeneratorCommonLogic.SaveFile(customEntityNetworkCode, customEntityNetworkFilePath);
                 }
-                AddCodeFileToProject(customEntityNetworkFilePath);
+                CodeGeneratorCommonLogic.AddCodeFileToProject(customEntityNetworkFilePath);
+
+
+
+                GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }
-
-        #region FilePath Methods
-
-        private static FilePath GetCustomEntityNetworkFilePath(EntitySave entitySave)
-        {
-            return GlueState.Self.CurrentGlueProjectDirectory +
-                entitySave.Name + 
-                ".Network.cs";
-        }
-
-        private static FilePath GetGeneratedentityNetworkFileNameFor(EntitySave entitySave)
-        {
-            return GlueState.Self.CurrentGlueProjectDirectory +
-                entitySave.Name +
-                ".Generated.Network.cs";
-        }
-
-        private static FilePath GetGeneratedNetStateFilePathFor(EntitySave entitySave)
-        {
-            return GlueState.Self.CurrentGlueProjectDirectory +
-                entitySave.Name +
-                "NetState.Generated.cs";
-        }
-
-        private static FilePath GetCustomNetStateFilePathFor(EntitySave entitySave)
-        {
-            return GlueState.Self.CurrentGlueProjectDirectory +
-                entitySave.Name +
-                "NetState.cs";
-        }
-
-        #endregion
 
         #region Generated code methods
 
@@ -88,9 +60,7 @@ namespace RedGrinPlugin.CodeGenerators
         {
             ICodeBlock topBlock = new CodeBlockBaseNoIndent(null);
 
-            string entityNamespace = GlueState.Self.ProjectNamespace +
-                "." + entitySave.Name.Replace("/", ".").Replace("\\", ".").Substring(
-                0, entitySave.Name.Length - (entitySave.ClassName.Length + 1));
+            string entityNamespace = CodeGeneratorCommonLogic.GetElementNamespace(entitySave);
 
             ICodeBlock codeBlock = topBlock.Namespace(entityNamespace);
 
@@ -106,6 +76,8 @@ namespace RedGrinPlugin.CodeGenerators
             return topBlock.ToString();
         }
 
+
+
         private static void GenerateUpdatestateMethod(EntitySave entitySave, ICodeBlock codeBlock)
         {
             var functionBlock = codeBlock.Function("public void", "UpdateState", "object entityState, double stateTime");
@@ -114,7 +86,7 @@ namespace RedGrinPlugin.CodeGenerators
 
             if(variables.Any())
             {
-                var netStateFullName = GetNetStateFullName(entitySave);
+                var netStateFullName = CodeGeneratorCommonLogic.GetNetStateFullName(entitySave);
 
                 //var state = entityState as NetStates.Entity2NetState();
                 functionBlock.Line($"var state = entityState as {netStateFullName};");
@@ -133,7 +105,7 @@ namespace RedGrinPlugin.CodeGenerators
 
         private static void GenerateGetStateMethod(EntitySave entitySave, ICodeBlock codeBlock)
         {
-            var netStateFullName = GetNetStateFullName(entitySave);
+            var netStateFullName = CodeGeneratorCommonLogic.GetNetStateFullName(entitySave);
 
             var getStateFunc = codeBlock.Function("public object", "GetState");
             getStateFunc.Line($"var state = new {netStateFullName}();");
@@ -148,18 +120,12 @@ namespace RedGrinPlugin.CodeGenerators
             getStateFunc.Line("return state;");
         }
 
-        private static string GetNetStateFullName(EntitySave entitySave)
-        {
-            var netStateFullName = $"{GetNetStateNamespace(entitySave)}.{entitySave.GetStrippedName()}NetState";
-
-            return netStateFullName;
-        }
 
         private static string GenerateNetStateGeneratedCode(EntitySave entitySave)
         {
             ICodeBlock topBlock = new CodeBlockBaseNoIndent(null);
 
-            string netStateNamespace = GetNetStateNamespace(entitySave);
+            string netStateNamespace = CodeGeneratorCommonLogic.GetNetStateNamespace(entitySave);
 
             ICodeBlock codeBlock = topBlock.Namespace(netStateNamespace);
 
@@ -179,7 +145,7 @@ namespace RedGrinPlugin.CodeGenerators
         {
             return entitySave.CustomVariables
                 .Where(item =>
-                    item.Properties.GetValue<bool>(NetworkEntityViewModel.IsNetworkVariableProperty))
+                    NetworkEntityViewModel.IsNetworked(item))
                 .ToArray();
         }
 
@@ -191,16 +157,14 @@ namespace RedGrinPlugin.CodeGenerators
         {
             ICodeBlock topBlock = new CodeBlockBaseNoIndent(null);
 
-            string entityNamespace = GlueState.Self.ProjectNamespace +
-                "." + entitySave.Name.Replace("/", ".").Replace("\\", ".").Substring(
-                0, entitySave.Name.Length - (entitySave.ClassName.Length + 1));
+            string entityNamespace = CodeGeneratorCommonLogic.GetElementNamespace(entitySave);
 
             ICodeBlock codeBlock = topBlock.Namespace(entityNamespace);
 
             codeBlock = codeBlock.Class("public partial", entitySave.GetStrippedName());
 
-            codeBlock.Function("void", "CustomUpdateFromState", $"{GetNetStateFullName(entitySave)} state");
-            codeBlock.Function("void", "CustomGetState", $"{GetNetStateFullName(entitySave)} state");
+            codeBlock.Function("void", "CustomUpdateFromState", $"{CodeGeneratorCommonLogic.GetNetStateFullName(entitySave)} state");
+            codeBlock.Function("void", "CustomGetState", $"{CodeGeneratorCommonLogic.GetNetStateFullName(entitySave)} state");
 
 
 
@@ -211,7 +175,7 @@ namespace RedGrinPlugin.CodeGenerators
         {
             ICodeBlock topBlock = new CodeBlockBaseNoIndent(null);
 
-            string netStateNamespace = GetNetStateNamespace(entitySave);
+            string netStateNamespace = CodeGeneratorCommonLogic.GetNetStateNamespace(entitySave);
 
             ICodeBlock codeBlock = topBlock.Namespace(netStateNamespace);
 
@@ -220,43 +184,7 @@ namespace RedGrinPlugin.CodeGenerators
             return topBlock.ToString();
         }
 
-        private static string GetNetStateNamespace(EntitySave entitySave)
-        {
-            string entityNamespace =
-                entitySave.Name.Replace("/", ".").Replace("\\", ".").Substring(
-                0, entitySave.Name.Length - (entitySave.ClassName.Length + 1));
-
-            var removedEntities = entityNamespace.Substring("Entities".Length);
-
-            if(string.IsNullOrEmpty(removedEntities))
-            {
-                entityNamespace = "NetStates";
-            }
-            else
-            {
-                entityNamespace = "NetStates." + removedEntities;
-            }
-
-            entityNamespace = "." + entityNamespace;
-            entityNamespace = GlueState.Self.ProjectNamespace + entityNamespace;
-            return entityNamespace;
-        }
-
         #endregion
 
-        #region Utility Methods
-
-        private static void SaveFile(string code, FilePath filePath)
-        {
-            System.IO.Directory.CreateDirectory(filePath.GetDirectoryContainingThis().FullPath);
-            GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(filePath.FullPath, code));
-        }
-
-        private static void AddCodeFileToProject(FilePath filePath)
-        {
-            GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(filePath);
-        }
-
-        #endregion
     }
 }

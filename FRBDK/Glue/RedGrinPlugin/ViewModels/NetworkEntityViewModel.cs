@@ -55,7 +55,7 @@ namespace RedGrinPlugin.ViewModels
             {
                 var variableVm = new NetworkVariableViewModel();
                 variableVm.Name = variable.Name;
-                variableVm.IsChecked = variable.Properties.GetValue<bool>(IsNetworkVariableProperty);
+                variableVm.IsChecked = IsNetworked(variable);
                 variableVm.PropertyChanged += HandleVariableVmPropertyChanged;
                 temporaryList.Add(variableVm);
             }
@@ -118,6 +118,17 @@ namespace RedGrinPlugin.ViewModels
             }
 
             return createdNewVariable;
+        }
+
+        public static bool IsNetworked(EntitySave entity)
+        {
+            return entity.Properties
+               .GetValue<bool>(nameof(NetworkEntityViewModel.IsNetworkEntity));
+        }
+        public static bool IsNetworked(CustomVariable variable)
+        {
+            return variable.Properties
+               .GetValue<bool>(IsNetworkVariableProperty);
         }
     }
 }

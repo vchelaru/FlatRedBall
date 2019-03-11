@@ -118,6 +118,16 @@ namespace FlatRedBall.Glue.Plugins
         public ReactToStateRemovedDelegate ReactToStateRemovedHandler { get; protected set; }
 
         public Action<IElement, ReferencedFileSave> ReactToFileRemoved { get; protected set; }
+
+        /// <summary>
+        /// Delegate raised whenever an entity is going to be removed. The first argument
+        /// (EntitySave) is the entity to remove. The string list argument is 
+        /// a list of to-be-removed files. Entities can add addiitonal files.
+        /// </summary>
+        public Action<EntitySave, List<string>> ReactToEntityRemoved { get; protected set; }
+
+        public Action<ScreenSave, List<string>> ReactToScreenRemoved { get; protected set; }
+
         public Action<IElement, EventResponseSave> ReactToEventRemoved { get; protected set; }
 
         public Action<IElement, CustomVariable> ReactToElementVariableChange { get; protected set; }

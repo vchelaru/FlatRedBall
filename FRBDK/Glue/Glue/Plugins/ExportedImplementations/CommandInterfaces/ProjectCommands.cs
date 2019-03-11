@@ -535,6 +535,56 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         }
 
+        public void MakeGeneratedCodeItemsNested()
+        {
+            foreach (var bi in ProjectManager.ProjectBase.EvaluatedItems)
+            {
+
+                string biInclude = bi.UnevaluatedInclude;
+
+                if (biInclude.EndsWith(".cs") && FileManager.RemovePath(biInclude).IndexOf('.') != FileManager.RemovePath(biInclude).Length - 3)
+                {
+                    // Don't do it for factories!
+                    if (bi.UnevaluatedInclude.StartsWith("Factories\\") || bi.UnevaluatedInclude.StartsWith("Factories/"))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        string whatToNestUnder = FileManager.RemovePath(bi.UnevaluatedInclude);
+                        whatToNestUnder = whatToNestUnder.Substring(0, whatToNestUnder.IndexOf('.')) + ".cs";
+
+                        // make sure there is an object to nest under in this directory
+                        string whatToNextUnderWithPath = FileManager.GetDirectory(bi.UnevaluatedInclude, RelativeType.Relative) + whatToNestUnder;
+
+                        if (ProjectManager.ProjectBase.GetItem(whatToNextUnderWithPath) != null)
+                        {
+                            ProjectManager.ProjectBase.MakeBuildItemNested(bi, whatToNestUnder);
+
+                            foreach (ProjectBase project in ProjectManager.SyncedProjects)
+                            {
+                                var associatedBuildItem = project.GetItem(ProjectManager.MakeAbsolute(biInclude));
+                                if (associatedBuildItem != null)
+                                {
+                                    project.MakeBuildItemNested(associatedBuildItem, whatToNestUnder);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Don't do anything - this guy shouldn't be nested
+                        }
+                    }
+                }
+            }
+        }
+
+
+        public void RemoveFromProjects(FilePath filePath)
+        {
+            ProjectManager.RemoveItemFromAllProjects(filePath.FullPath);
+        }
+
         public void RemoveFromProjects(string absoluteFileName)
         {
             ProjectManager.RemoveItemFromAllProjects(absoluteFileName);

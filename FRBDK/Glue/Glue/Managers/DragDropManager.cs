@@ -450,11 +450,11 @@ namespace FlatRedBall.Glue.Managers
             if (succeeded)
             {
                 // 7: Save it!
-                ProjectLoader.Self.MakeGeneratedItemsNested();
+                GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
                 CodeWriter.GenerateCode(entitySave);
 
                 GluxCommands.Self.SaveGlux();
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
 
                 GlueState.Self.CurrentElement = entitySave;
             }

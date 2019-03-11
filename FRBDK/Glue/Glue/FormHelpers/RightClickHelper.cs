@@ -1456,6 +1456,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 ProjectManager.GlueProjectSave.Entities.Remove(entityToRemove);
 
 
+
                 RemoveUnreferencedFiles(entityToRemove, filesThatCouldBeRemoved);
 
                 for (int i = 0; i < namedObjectsToRemove.Count; i++)
@@ -1493,7 +1494,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 ProjectManager.RemoveCodeFilesForElement(filesThatCouldBeRemoved, entityToRemove);
 
+                PluginManager.ReactToEntityRemoved(entityToRemove, filesThatCouldBeRemoved);
+
                 ProjectManager.SaveProjects();
+
                 GluxCommands.Self.SaveGlux();
             }
         }
@@ -1574,6 +1578,9 @@ namespace FlatRedBall.Glue.FormHelpers
                         ElementViewWindow.RemoveScreen(screenToRemove);
                     });
                 IElement element = screenToRemove;
+
+                PluginManager.ReactToScreenRemoved(screenToRemove, filesThatCouldBeRemoved);
+
 
                 ProjectManager.RemoveCodeFilesForElement(filesThatCouldBeRemoved, element);
 
@@ -1939,7 +1946,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     treeNode.Text = inputWindow.Result;
 
-                    ProjectLoader.Self.MakeGeneratedItemsNested();
+                    GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
                     GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                     
                     GluxCommands.Self.SaveGlux();

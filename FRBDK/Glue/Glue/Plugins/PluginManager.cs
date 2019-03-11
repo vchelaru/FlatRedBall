@@ -901,6 +901,31 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+        internal static void ReactToEntityRemoved(EntitySave entity, List<string> filesToRemove)
+        {
+            CallMethodOnPlugin((plugin) =>
+            {
+                if (plugin.ReactToEntityRemoved != null)
+                {
+                    plugin.ReactToEntityRemoved(entity, filesToRemove);
+                }
+            },
+            nameof(ReactToEntityRemoved));
+        }
+
+        internal static void ReactToScreenRemoved(ScreenSave screenSave, List<string> filesToRemove)
+        {
+            CallMethodOnPlugin((plugin) =>
+            {
+                if (plugin.ReactToScreenRemoved != null)
+                {
+                    plugin.ReactToScreenRemoved(screenSave, filesToRemove);
+                }
+            },
+            nameof(ReactToScreenRemoved));
+            
+        }
+
         internal static void ReactToElementVariableChange(IElement element, CustomVariable variable)
         {
             foreach (PluginManager pluginManager in mInstances)

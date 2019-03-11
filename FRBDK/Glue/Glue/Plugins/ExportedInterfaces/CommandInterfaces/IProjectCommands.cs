@@ -43,6 +43,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         string MakeAbsolute(string relativeFileName, bool forceAsContent);
 
+        void MakeGeneratedCodeItemsNested();
+
+        void RemoveFromProjects(FilePath filePath);
         void RemoveFromProjects(string absoluteFileName);
 
         bool UpdateFileMembershipInProject(ReferencedFileSave referencedFileSave);
