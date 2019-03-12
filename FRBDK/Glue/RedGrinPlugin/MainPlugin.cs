@@ -158,7 +158,10 @@ namespace RedGrinPlugin
                             {
                                 CodeGeneratorCommonLogic.RemoveCodeFileFromProject(file);
                             }
-
+                        }
+                        else
+                        {
+                            NetworkConfigurationCodeGenerator.GenerateConfiguration();
                         }
                         NetworkScreenCodeGenerator.GenerateAllNetworkScreenCode();
                     }
@@ -191,6 +194,10 @@ namespace RedGrinPlugin
                             CodeGeneratorCommonLogic.RemoveCodeFileFromProject(
                                 CodeGeneratorCommonLogic.GetCustomElementNetworkFilePathFor(currentScreen));
 
+                        }
+                        else
+                        {
+                            NetworkConfigurationCodeGenerator.GenerateConfiguration();
                         }
                     }
                     if (shouldRegenerate)

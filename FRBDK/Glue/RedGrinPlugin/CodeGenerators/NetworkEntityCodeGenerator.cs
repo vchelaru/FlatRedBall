@@ -84,12 +84,11 @@ namespace RedGrinPlugin.CodeGenerators
 
             var variables = GetNetworkVariables(entitySave);
 
+            var netStateFullName = CodeGeneratorCommonLogic.GetNetStateFullName(entitySave);
+            functionBlock.Line($"var state = entityState as {netStateFullName};");
+
             if(variables.Any())
             {
-                var netStateFullName = CodeGeneratorCommonLogic.GetNetStateFullName(entitySave);
-
-                //var state = entityState as NetStates.Entity2NetState();
-                functionBlock.Line($"var state = entityState as {netStateFullName};");
 
                 foreach(var variable in variables)
                 {
