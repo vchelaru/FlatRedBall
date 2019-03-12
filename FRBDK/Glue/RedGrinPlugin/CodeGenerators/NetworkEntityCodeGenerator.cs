@@ -71,16 +71,16 @@ namespace RedGrinPlugin.CodeGenerators
 
             GenerateGetStateMethod(entitySave, codeBlock);
 
-            GenerateUpdatestateMethod(entitySave, codeBlock);
+            GenerateUpdateFromStateMethod(entitySave, codeBlock);
 
             return topBlock.ToString();
         }
 
 
 
-        private static void GenerateUpdatestateMethod(EntitySave entitySave, ICodeBlock codeBlock)
+        private static void GenerateUpdateFromStateMethod(EntitySave entitySave, ICodeBlock codeBlock)
         {
-            var functionBlock = codeBlock.Function("public void", "UpdateState", "object entityState, double stateTime");
+            var functionBlock = codeBlock.Function("public void", "UpdateFromState", "object entityState, double stateTime");
 
             var variables = GetNetworkVariables(entitySave);
 

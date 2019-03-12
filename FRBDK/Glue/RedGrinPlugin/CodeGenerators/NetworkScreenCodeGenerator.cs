@@ -123,7 +123,7 @@ namespace RedGrinPlugin.CodeGenerators
                     ifBlock.Line($"entity = new {fullEntityType}();");
                 }
 
-                ifBlock.Line("entity.UpdateState(entityData, 0);");
+                ifBlock.Line("entity.UpdateFromState(entityData, 0);");
 
                 needsElseIf = true;
             }
