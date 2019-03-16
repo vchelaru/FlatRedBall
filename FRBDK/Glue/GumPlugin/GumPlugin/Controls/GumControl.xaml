@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GumPlugin.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="330" d:DesignWidth="300">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <TextBlock HorizontalAlignment="Center" FontSize="16" Text="Gum Project Properties"></TextBlock>
@@ -18,7 +18,7 @@
                   Content="Automatically Create Gum Screens for Glue Screens" IsChecked="{Binding AutoCreateGumScreens}"></CheckBox>
             <CheckBox x:Name="UseAtlasesCheckBox" VerticalContentAlignment="Center" 
                   Content="Use Atlases" IsChecked="{Binding UseAtlases}"></CheckBox>
-            <Button Margin="7,5,0,0" Width="200" HorizontalAlignment="Left" Click="RegenerateFontsClicked">Re-generate Fonts</Button>
+            <Button Margin="7,5,0,0" Width="220" HorizontalAlignment="Left" Click="RegenerateFontsClicked">Re-generate Fonts</Button>
             <GroupBox Header="Core Gum Addition">
                 <StackPanel >
                     <RadioButton GroupName="AdditionType" x:Name="IncludeNoFilesRadio" 
@@ -32,7 +32,7 @@
             <GroupBox Header="FlatRedBall.Forms">
                 <StackPanel>
                     <StackPanel x:Name="Basic" Visibility="{Binding BasicVisibility}">
-                        <Button HorizontalAlignment="Left" Margin="0,5,0,0" Width="200" Click="HandleAddAllForms">Add Forms to Project</Button>
+                        <Button HorizontalAlignment="Left" Margin="0,5,0,0" Width="220" Click="HandleAddAllForms">Add Forms to Project</Button>
 
                         <TextBlock>           
                             <Hyperlink Click="AdvancedClick">
@@ -48,8 +48,9 @@
 
                         <CheckBox VerticalContentAlignment="Center"
                                   Content="Add Default Forms to Gum Component Associations" IsChecked="{Binding IncludeComponentToFormsAssociation, Mode=TwoWay}"></CheckBox>
-                        <Button HorizontalAlignment="Left" Margin="0,10,0,0" Width="200" Click="HandleGenerateBehaviors">Generate FlatRedBall Behaviors</Button>
-                        <Button HorizontalAlignment="Left" Margin="0,5,0,0" Width="200" Click="HandleAddFormsComponentsClick">Add Forms Components to Gum</Button>
+                        <Button HorizontalAlignment="Left" Margin="0,10,0,0" Width="220" Click="HandleGenerateBehaviors">Generate FlatRedBall Behaviors</Button>
+                        <Button HorizontalAlignment="Left" Margin="0,5,0,0" Width="220" 
+                                Click="HandleAddFormsComponentsClick">Add/Refresh Gum Form Components</Button>
                         <TextBlock>           
                             <Hyperlink Click="SimpleClick">
                                 &lt;&lt; Simple

@@ -6,25 +6,32 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using System.Collections;
 
 namespace FlatRedBall.Forms.Controls
 {
-    public class ListBox : ScrollViewer
+    public class ListBox : ItemsControl
     {
         #region Fields/Properties
 
         int selectedIndex = -1;
 
-        public Type ListBoxItemGumType { get; set; }
-        public Type ListBoxItemFormsType { get; set; } = typeof(ListBoxItem);
-
-        public ObservableCollection<object> Items
+        public Type ListBoxItemGumType
         {
-            get;
-            private set;
-        } = new ObservableCollection<object>();
-
-        List<ListBoxItem> listBoxItems = new List<ListBoxItem>();
+            get
+            {
+                return base.ItemGumType;
+            }
+            set
+            {
+                base.ItemGumType = value;
+            }
+        }
+        public Type ListBoxItemFormsType
+        {
+            get { return base.ItemFormsType; }
+            set { base.ItemFormsType = value; }
+        }
 
         public object SelectedObject
         {
@@ -104,145 +111,26 @@ namespace FlatRedBall.Forms.Controls
 
         public ListBox() : base()
         {
-            Items.CollectionChanged += HandleCollectionChanged;
         }
 
         public ListBox(GraphicalUiElement visual) : base(visual) 
         {
-            Items.CollectionChanged += HandleCollectionChanged;
-        }
-
-        private ListBoxItem CreateNewListItemVisual(object o)
-        {
-            ListBoxItem item;
-            if(o is ListBoxItem)
-            {
-                // the user provided a list box item, so just use that directly instead of creating a new one
-                item = o as ListBoxItem;
-                // let's hope the item doesn't already have this event - if the user recycles them that could be a problem...
-                item.Selected += HandleItemSelected;
-            }
-            else
-            {
-                var listBoxItemGumType = ListBoxItemGumType;
-
-                if(listBoxItemGumType == null && DefaultFormsComponents.ContainsKey(typeof(ListBoxItem)))
-                {
-
-                    listBoxItemGumType = DefaultFormsComponents[typeof(ListBoxItem)];
-                }
-#if DEBUG
-                if (listBoxItemGumType == null)
-                {
-                    throw new Exception("The list box does not have a ListBoxItemGumType specified, nor does the DefaultFormsControl have an entry for ListBoxItem. " + 
-                        "This property must be set before adding any items");
-                }
-                if(ListBoxItemFormsType == null)
-                {
-                    throw new Exception("The list box does not have a ListBoxItemFormsType specified. " +
-                        "This property must be set before adding any items");
-                }
-#endif
-                // vic says - this uses reflection, could be made faster, somehow...
-                var gumConstructor = listBoxItemGumType.GetConstructor(new[] {typeof(bool), typeof(bool)});
-                var visual = gumConstructor.Invoke(new object[] { true, true }) as GraphicalUiElement;
-
-                var listBoxFormsConstructor = ListBoxItemFormsType.GetConstructor(new Type[] { typeof(GraphicalUiElement) });
-
-                if(listBoxFormsConstructor == null)
-                {
-                    string message =
-                        $"Could not find a constructor for {ListBoxItemFormsType} which takes a single GraphicalUiElement argument. If you defined {ListBoxItemFormsType} without specifying a constructor, you need to add a constructor which takes a GraphicalUiElement and calls the base constructor.";
-                    throw new Exception(message);
-                }
-
-                item = listBoxFormsConstructor.Invoke(new object[] { visual }) as ListBoxItem;
-                item.Selected += HandleItemSelected;
-                item.UpdateToObject(o);
-            }
-
-
-            return item;
         }
 
         #endregion
 
-        #region Event Handler methods
-
-        private void HandleCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        protected override void OnItemSelected(object sender, SelectionChangedEventArgs args)
         {
-            switch(e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-
-                    foreach(var item in e.NewItems)
-                    {
-                        var newItem = CreateNewListItemVisual(item);
-
-                        var newIndex = e.NewStartingIndex;
-                        InnerPanel.Children.Insert(newIndex, newItem.Visual);
-
-                        newItem.Visual.Parent = base.InnerPanel;
-
-                        listBoxItems.Insert(e.NewStartingIndex, newItem);
-
-                    }
-
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    {
-                        var index = e.OldStartingIndex;
-
-                        var listItem = InnerPanel.Children[index];
-                        listBoxItems.RemoveAt(index);
-                        listItem.Parent = null;
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-
-                    for(int i = InnerPanel.Children.Count - 1; i > -1; i--)
-                    {
-                        InnerPanel.Children[i].Parent = null;
-                    }
-                    listBoxItems.Clear();
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                    {
-                        var index = e.NewStartingIndex;
-                        var listItem = InnerPanel.Children[index];
-
-                        listBoxItems[e.NewStartingIndex].UpdateToObject(Items[index]);
-                    }
-
-                    break;
-            }
-        }
-
-        private void HandleItemSelected(object sender, EventArgs e)
-        {
-            var args = new SelectionChangedEventArgs();
-
-            for(int i = 0; i < listBoxItems.Count; i++)
-            {
-                var listBoxItem = listBoxItems[i];
-                if(listBoxItem != sender && listBoxItem.IsSelected)
-                {
-                    args.RemovedItems.Add(Items[i]);
-                    listBoxItem.IsSelected = false;
-                }
-            }
+            base.OnItemSelected(sender, args);
 
             selectedIndex = listBoxItems.IndexOf(sender as ListBoxItem);
-            if(selectedIndex > -1)
+            if (selectedIndex > -1)
             {
                 args.AddedItems.Add(Items[selectedIndex]);
             }
 
             SelectionChanged?.Invoke(this, args);
-
         }
-
-        #endregion
 
     }
 }

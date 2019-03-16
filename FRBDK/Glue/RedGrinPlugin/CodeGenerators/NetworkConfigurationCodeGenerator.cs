@@ -60,7 +60,7 @@ namespace RedGrinPlugin.CodeGenerators
 
         private static FilePath GetConfigurationFilePath()
         {
-            return GlueState.Self.CurrentGlueProjectDirectory + "GameNetworkConfiguration.Generated.cs";
+            return GlueState.Self.CurrentGlueProjectDirectory + "Setup\\GameNetworkConfiguration.Generated.cs";
         }
 
     }

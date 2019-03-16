@@ -34,5 +34,14 @@ using System.Runtime.InteropServices;
 // 1.2.1:
 //   - Fixed bug where setting IsChecked on a RadioButton would not uncheck others in the
 //     same group.
-[assembly: AssemblyVersion("1.2.1.0")]
-[assembly: AssemblyFileVersion("1.2.1.0")]
+// 1.3.0
+//   - Added SHIFT, drag, and double-click selection of text in text box
+//   - Added windows Desktop GL and UWP CTRL+C/X/V hotkeys
+//   - Added Android text box scrolling by swiping horizontally
+//   - Added TextBox KeyDown event
+//   - Added Android Scroll View (and List Box) scrolling with push+drag on Android
+//   - Scroll bars thumb now continues to follow the cursor even if the cursor moves
+//     off the scroll bar thumb.
+//   - Fixed radio buttons not being highlighted properly
+[assembly: AssemblyVersion("1.3.0.0")]
+[assembly: AssemblyFileVersion("1.3.0.0")]

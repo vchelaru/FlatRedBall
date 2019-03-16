@@ -258,11 +258,11 @@ namespace FlatRedBall.Forms.Controls
                     }
                     else if (cursor.LastInputDevice != InputDevice.TouchScreen)
                     {
-                        Visual.SetProperty("RadioButtonCategoryState", "EnabledOff");
+                        Visual.SetProperty("RadioButtonCategoryState", "HighlightedOff");
                     }
                     else
                     {
-                        Visual.SetProperty("RadioButtonCategoryState", "HighlightedOff");
+                        Visual.SetProperty("RadioButtonCategoryState", "EnabledOff");
                     }
                 }
                 else

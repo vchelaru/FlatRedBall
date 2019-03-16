@@ -805,31 +805,6 @@ namespace FlatRedBall.Gui
 
                     #region looping through all regular windows
 
-                        // First check all floating windows
-                    else if (c.WindowOver == null)
-                    {
-                        for (int i = mWindowArray.Count - 1; i > -1; i--)
-                        {
-                            if (!mWindowArray[i].GuiManagerDrawn || mWindowArray[i].Visible == false || !mWindowArray[i].Enabled)
-                                continue;
-
-                            IWindow windowOver = c.GetDeepestFloatingChildWindowOver(mWindowArray[i]);
-                            IWindow tempWindow = mWindowArray[i]; 
-
-                            if (windowOver != null)
-                            {
-                                windowOver.TestCollision(c);
-
-                                if (c.PrimaryPush && i < mWindowArray.Count)
-                                {// we pushed a button, so let's bring it to the front
-                                    mWindowArray.Remove(tempWindow); 
-                                    mWindowArray.Add(tempWindow);
-                                }
-                                break;
-                            }
-                        }
-                    }
-
                     if (c.WindowOver == null)
                     {
                         for (int i = mWindowArray.Count - 1; i > -1; i--)

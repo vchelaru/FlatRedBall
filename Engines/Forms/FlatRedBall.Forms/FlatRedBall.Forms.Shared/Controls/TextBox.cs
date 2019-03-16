@@ -37,7 +37,6 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-
         #endregion
 
         #region Events
@@ -52,17 +51,29 @@ namespace FlatRedBall.Forms.Controls
 
         public TextBox(GraphicalUiElement visual) : base(visual) { }
 
+        protected override void ReactToVisualChanged()
+        {
+            base.ReactToVisualChanged();
 
+            if(selectionInstance != null)
+            {
+                selectionInstance.Visible = false;
+            }
+        }
 
         #endregion
 
         #region Event Handler Methods
 
-
         public override void HandleCharEntered(char character)
         {
             if(hasFocus)
             {
+                if(selectionLength != 0)
+                {
+                    DeleteSelection();
+                }
+
                 // If text is null force it to be an empty string so we can add characters
                 Text = Text ?? "";
 
@@ -76,9 +87,10 @@ namespace FlatRedBall.Forms.Controls
                     // do nothing, handled with a backspace above
                 //    HandleBackspace();
                 }
-                else if (character == '\r')
+                else if (character == '\r' || character == '\n')
                 {
-                    this.Text += '\n';
+                    // We don't support multiline yet
+                    //this.Text += '\n';
                 }
                 else
                 {
@@ -95,7 +107,11 @@ namespace FlatRedBall.Forms.Controls
         {
             if (hasFocus && caretIndex > 0 && Text != null)
             {
-                if(isCtrlDown)
+                if(selectionLength > 0)
+                {
+                    DeleteSelection();
+                }
+                else if (isCtrlDown)
                 {
                     var indexBeforeNullable = GetSpaceIndexBefore(caretIndex);
 
@@ -119,9 +135,104 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void HandleDelete()
         {
-            if (caretIndex < (Text?.Length ?? 0))
+            if (selectionLength > 0)
+            {
+                DeleteSelection();
+            }
+            else if (caretIndex < (Text?.Length ?? 0))
             {
                 this.Text = this.Text.Remove(caretIndex, 1);
+            }
+        }
+
+        protected override void HandleCopy()
+        {
+            if(selectionLength != 0)
+            {
+                var whatToCopy = DisplayedText.Substring(
+                    selectionStart, selectionLength);
+                Clipboard.ClipboardImplementation.PushStringToClipboard(
+                    whatToCopy);
+            }
+        }
+
+        protected override void HandleCut()
+        {
+            if (selectionLength != 0)
+            {
+                var whatToCopy = DisplayedText.Substring(
+                    selectionStart, selectionLength);
+                Clipboard.ClipboardImplementation.PushStringToClipboard(
+                    whatToCopy);
+
+                DeleteSelection();
+            }
+        }
+
+        protected override void HandlePaste()
+        {
+            var whatToPaste = Clipboard.ClipboardImplementation.GetText();
+
+            if(!string.IsNullOrEmpty(whatToPaste))
+            {
+                if(selectionLength != 0)
+                {
+                    DeleteSelection();
+                }
+                foreach(var character in whatToPaste)
+                {
+                    this.Text = this.Text.Insert(caretIndex, "" + character);
+                    caretIndex++;
+                }
+                UpdateToCaretIndex();
+                OffsetTextToKeepCaretInView();
+            }
+        }
+
+        private void DeleteSelection()
+        {
+            this.Text = Text.Remove(selectionStart, selectionLength);
+            CaretIndex = selectionStart;
+            SelectionLength = 0;
+        }
+
+        #endregion
+
+        #region UpdateTo
+
+        protected override void UpdateToCaretChanged(int oldIndex, int newIndex, bool isShiftDown)
+        {
+            if(isShiftDown)
+            {
+                var change = oldIndex - newIndex;
+
+                if(SelectionLength == 0)
+                {
+                    selectionStart = System.Math.Min(oldIndex, newIndex);
+                    SelectionLength = System.Math.Abs(oldIndex - newIndex);
+                }
+                else
+                {
+                    int leftMost = 0;
+                    int rightMost = 0;
+                    if(oldIndex == selectionStart)
+                    {
+                        leftMost = System.Math.Min(selectionStart + selectionLength, newIndex);
+                        rightMost = System.Math.Max(selectionStart + selectionLength, newIndex);
+                    }
+                    else
+                    {
+                        leftMost = System.Math.Min(selectionStart, newIndex);
+                        rightMost = System.Math.Max(selectionStart, newIndex);
+                    }
+
+                    selectionStart = leftMost;
+                    SelectionLength = rightMost - leftMost;
+                }
+            }
+            else
+            {
+                SelectionLength = 0;
             }
         }
 

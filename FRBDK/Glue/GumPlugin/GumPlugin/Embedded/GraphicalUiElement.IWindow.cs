@@ -14,6 +14,7 @@ namespace Gum.Wireframe
         class HandledActions
         {
             public bool HandledMouseWheel;
+            public bool HandledRollOver;
         }
 
 
@@ -22,12 +23,14 @@ namespace Gum.Wireframe
         public event WindowEvent SlideOnClick;
         public event WindowEvent Push;
         public event WindowEvent DragOver;
+
         public event WindowEvent RollOn;
         public event WindowEvent RollOff;
         public event WindowEvent RollOver;
         public event WindowEvent EnabledChange;
 
         public event Action<IWindow, FlatRedBall.Gui.RoutedEventArgs> MouseWheelScroll;
+        public event Action<IWindow, FlatRedBall.Gui.RoutedEventArgs> RollOverBubbling;
 
         /// <summary>
         /// Event which is raised whenever this loses a push. A push occurs when the
@@ -105,7 +108,7 @@ namespace Gum.Wireframe
 
         #region IWindow implementation
 
-        public void Activity(FlatRedBall.Camera camera)
+        public virtual void Activity(FlatRedBall.Camera camera)
         {
 
         }
@@ -339,7 +342,6 @@ namespace Gum.Wireframe
             // Even though the cursor is over "this", we need to check if the cursor is over any children in case "this" exposes its children events:
             if (isOver && this.ExposeChildrenEvents)
             {
-
                 #region Try handling by children
 
                 // Let's see if any children have the cursor over:
@@ -435,12 +437,22 @@ namespace Gum.Wireframe
 
                         }
                     }
-                    if (HasEvents && cursor.ZVelocity != 0 && handledActions.HandledMouseWheel == false &&
-                        Enabled)
+                    if (HasEvents && Enabled)
                     {
-                        FlatRedBall.Gui.RoutedEventArgs args = new FlatRedBall.Gui.RoutedEventArgs();
-                        MouseWheelScroll?.Invoke(this, args);
-                        handledActions.HandledMouseWheel = args.Handled;
+                        if (handledActions.HandledRollOver == false)
+                        {
+                            FlatRedBall.Gui.RoutedEventArgs args = new FlatRedBall.Gui.RoutedEventArgs();
+                            RollOverBubbling?.Invoke(this, args);
+                            handledActions.HandledRollOver = args.Handled;
+                        }
+
+
+                        if (cursor.ZVelocity != 0 && handledActions.HandledMouseWheel == false)
+                        {
+                            FlatRedBall.Gui.RoutedEventArgs args = new FlatRedBall.Gui.RoutedEventArgs();
+                            MouseWheelScroll?.Invoke(this, args);
+                            handledActions.HandledMouseWheel = args.Handled;
+                        }
                     }
                 }
             }

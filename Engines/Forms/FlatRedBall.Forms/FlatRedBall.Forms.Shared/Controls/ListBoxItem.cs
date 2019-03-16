@@ -30,7 +30,7 @@ namespace FlatRedBall.Forms.Controls
         }
 
         GraphicalUiElement text;
-        RenderingLibrary.Graphics.Text coreText;
+        protected RenderingLibrary.Graphics.Text coreText;
 
         #endregion
 
@@ -49,6 +49,7 @@ namespace FlatRedBall.Forms.Controls
         protected override void ReactToVisualChanged()
         {
             Visual.Push += this.HandlePush;
+            Visual.Click += this.HandleClick;
             Visual.RollOn += this.HandleRollOn;
             Visual.RollOff += this.HandleRollOff;
 
@@ -79,7 +80,19 @@ namespace FlatRedBall.Forms.Controls
 
         private void HandlePush(IWindow window)
         {
-            IsSelected = true;
+            if(GuiManager.Cursor.LastInputDevice == InputDevice.Mouse)
+            {
+                IsSelected = true;
+            }
+        }
+
+        private void HandleClick(IWindow window)
+        {
+            if(GuiManager.Cursor.LastInputDevice == InputDevice.TouchScreen &&
+                GuiManager.Cursor.PrimaryClickNoSlide)
+            {
+                IsSelected = true;
+            }
         }
 
         #endregion

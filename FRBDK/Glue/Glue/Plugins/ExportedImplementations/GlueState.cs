@@ -196,37 +196,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public ProjectBase CurrentMainContentProject { get { return ProjectManager.ContentProject; } }
 
-        public FilePath GetSlnFileName()
+        public FilePath CurrentSlnFileName
         {
-            string projectFileName = GlueState.Self.GlueProjectFileName;
-            string directory = FileManager.GetDirectory(projectFileName);
-            string foundSlnFileName = null;
-
-            while (!string.IsNullOrEmpty(directory))
+            get
             {
-                List<string> foundSlnFiles = FileManager.GetAllFilesInDirectory(directory, "sln", 0);
-
-                if (foundSlnFiles.Count != 0 && FileManager.IsRelativeTo(ContentDirectory, directory))
-                {
-                    foundSlnFileName = foundSlnFiles.First();
-                    break;
-                }
-
-
-                //We'll assume the root is in the location of the .sln
-                directory = FileManager.GetDirectory(directory);
-            }
-
-            if(foundSlnFileName == null)
-            {
-                return null;
-            }
-            else
-            {
-                return foundSlnFileName;
+                return VSHelpers.ProjectSyncer.LocateSolution(CurrentGlueProjectFileName);
             }
         }
-
 
         public string ProjectNamespace
         {
@@ -269,13 +245,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
-        public string CurrentSlnFileName
-        {
-            get
-            {
-                return VSHelpers.ProjectSyncer.LocateSolution(CurrentGlueProjectFileName);
-            }
-        }
 
         public ErrorListViewModel ErrorList { get; private set; } = new ErrorListViewModel();
 

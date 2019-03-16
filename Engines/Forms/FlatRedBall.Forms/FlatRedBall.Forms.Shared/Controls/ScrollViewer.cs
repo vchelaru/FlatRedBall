@@ -53,11 +53,22 @@ namespace FlatRedBall.Forms.Controls
             clipContainer = Visual.GetGraphicalUiElementByName("ClipContainerInstance");
 
             Visual.MouseWheelScroll += HandleMouseWheelScroll;
+            Visual.RollOverBubbling += HandleRollOver;
             Visual.SizeChanged += HandleVisualSizeChanged;
 
             UpdateVerticalScrollBarValues();
 
             base.ReactToVisualChanged();
+        }
+
+        private void HandleRollOver(IWindow window, RoutedEventArgs args)
+        {
+            if(GuiManager.Cursor.PrimaryDown && GuiManager.Cursor.LastInputDevice == InputDevice.TouchScreen)
+            {
+                verticalScrollBar.Value -= GuiManager.Cursor.ScreenYChange /
+                    global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom;
+                args.Handled = true;
+            }
         }
 
         private void HandleMouseWheelScroll(IWindow window, FlatRedBall.Gui.RoutedEventArgs args)

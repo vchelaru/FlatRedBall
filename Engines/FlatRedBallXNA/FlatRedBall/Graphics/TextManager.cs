@@ -1017,22 +1017,13 @@ namespace FlatRedBall.Graphics
                 halfFirstCharaterWidth = mDefaultFont.GetCharacterScaleX(textToWrite[0]) * mScaleForVertexBuffer;
             }
 
-#if FRB_MDX
-                uint color = (uint)(System.Drawing.Color.FromArgb((int)mAlphaForVertexBuffer, (int)mRedForVertexBuffer,
-                    (int)mGreenForVertexBuffer, (int)mBlueForVertexBuffer).ToArgb());
-#else
+
             Color color = new Color(new Vector4(mRedForVertexBuffer, mGreenForVertexBuffer,
                 mBlueForVertexBuffer, mAlphaForVertexBuffer));
-#endif
 
             // keep the centerX a certain number of pixels from the edge
             
             float leftEdge = (SpriteManager.Camera.X - SpriteManager.Camera.RelativeXEdgeAt(mZForVertexBuffer));
-
-#if SILVERLIGHT
-            float tempXToUse = mXForVertexBuffer;
-            float tempYToUse = mYForVertexBuffer;
-#else
 
             float unitsFromEdge = mXForVertexBuffer - leftEdge;
             //unitsFromEdge = Text.PixelPerfectOffset + Math.MathFunctions.RoundFloat(unitsFromEdge, 1 / SpriteManager.Camera.PixelsPerUnitAt(mZForVertexBuffer));
@@ -1048,7 +1039,7 @@ namespace FlatRedBall.Graphics
                                 GuiManager.YEdge * 2 / (float)SpriteManager.Camera.DestinationRectangle.Height);
             
             unitsFromEdge += SpriteManager.Camera.YEdge * .1f / (float)SpriteManager.Camera.DestinationRectangle.Height;
-#endif
+
             float sx = 0;
             if (mAlignmentForVertexBuffer == HorizontalAlignment.Left)
             { sx = tempXToUse; }

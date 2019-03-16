@@ -276,7 +276,7 @@ namespace FlatRedBall.Glue
                 // what to do about that though.
                 // We'll live with it for now.
 
-                var foundSlnFileName = GlueState.Self.GetSlnFileName();
+                var foundSlnFileName = GlueState.Self.CurrentSlnFileName;
 
                 if (foundSlnFileName != null)
                 {

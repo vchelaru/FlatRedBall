@@ -248,7 +248,10 @@ namespace GumPlugin
             // - Screens no longer generate IDBs - they are just GraphicalUiElements
             // 2.0.1
             // - Fixed freeze/behavior generation failing because a directory was not being created
-            get { return new Version(2, 0, 1, 0); }
+            // 2.0.2
+            // - Add forms button now indicates that it will refresh forms controls.
+            // - Adding/refreshing forms gum components will now ask you if you want to replace them
+            get { return new Version(2, 0, 2, 0); }
         }
 
         #endregion

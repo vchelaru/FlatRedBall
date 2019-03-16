@@ -222,7 +222,8 @@ namespace FlatRedBall.Input
                     {
                         for (int i = 0; i < stringTyped.Length; i++)
                         {
-                            InputReceiver.HandleCharEntered(stringTyped[i]);
+                            // receiver could get nulled out by itself when something like enter is pressed
+                            InputReceiver?.HandleCharEntered(stringTyped[i]);
                         }
                     }
                 }

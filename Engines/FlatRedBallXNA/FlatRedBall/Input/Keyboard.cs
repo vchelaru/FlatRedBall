@@ -293,7 +293,7 @@ namespace FlatRedBall.Input
                     Keys asKey = (Keys)i;
 
 
-                    if (isCtrlPressed && (asKey == Keys.V || asKey == Keys.C || asKey == Keys.Z || asKey == Keys.A))
+                    if (isCtrlPressed && (asKey == Keys.V || asKey == Keys.C || asKey == Keys.Z || asKey == Keys.A || asKey == Keys.X))
                     {
                         continue;
                     }
@@ -607,25 +607,9 @@ namespace FlatRedBall.Input
             mKeyToChar[(int)Keys.Decimal] = '.';
 
             mKeyToChar[(int)Keys.Space] = ' ';
+            mKeyToChar[(int)Keys.Enter] = '\n';
 
 
-#if FRB_MDX
-
-            mKeyToChar[(int)Keys.Space] = ' ';
-            mKeyToChar[(int)Keys.Equals] = '=';
-            mKeyToChar[(int)Keys.SemiColon] = ';';
-            mKeyToChar[(int)Keys.Slash] = '/';
-            mKeyToChar[(int)Keys.BackSlash] = '\\';
-            mKeyToChar[(int)Keys.Apostrophe] = '\'';
-            mKeyToChar[(int)Keys.LeftBracket] = '[';
-            mKeyToChar[(int)Keys.RightBracket] = ']';
-            mKeyToChar[(int)Keys.Period] = '.';
-            mKeyToChar[(int)Keys.NumPadPeriod] = '.';
-            mKeyToChar[(int)Keys.Comma] = ',';
-            mKeyToChar[(int)Keys.Minus] = '-';
-            mKeyToChar[(int)Key.NumPadMinus] = '-';
-            mKeyToChar[(int)Key.Grave] = '`';
-#else
             mKeyToChar[(int)Keys.Subtract] = '-';
             mKeyToChar[(int)Keys.Add] = '+';
             mKeyToChar[(int)Keys.Divide] = '/';
@@ -642,7 +626,7 @@ namespace FlatRedBall.Input
             mKeyToChar[(int)Keys.OemCloseBrackets] = ']';
             mKeyToChar[(int)Keys.OemMinus] = '-';
             mKeyToChar[(int)Keys.OemComma] = ',';
-#endif
+
 
         }
 
@@ -650,7 +634,7 @@ namespace FlatRedBall.Input
         {
             bool isShiftDown = KeyDown(Keys.LeftShift) || KeyDown(Keys.RightShift);
 
-#if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
             if (System.Windows.Forms.Control.IsKeyLocked(System.Windows.Forms.Keys.CapsLock))
             {
                 isShiftDown = !isShiftDown;

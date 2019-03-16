@@ -104,7 +104,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
 
         private VSSolution GetMainSolution()
         {
-            string mainSln = GlueState.Self.CurrentSlnFileName;
+            var mainSln = GlueState.Self.CurrentSlnFileName;
 
             var solution = VSSolution.FromFile(mainSln);
 

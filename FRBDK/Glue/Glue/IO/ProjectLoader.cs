@@ -104,7 +104,7 @@ namespace FlatRedBall.Glue.IO
 
                 ProjectManager.ProjectBase.Load(projectFileName);
 
-                var sln = GlueState.Self.GetSlnFileName();
+                var sln = GlueState.Self.CurrentSlnFileName;
 
                 if(sln == null)
                 {

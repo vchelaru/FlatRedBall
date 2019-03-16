@@ -117,7 +117,7 @@ namespace FlatRedBall.Forms.Controls.Primitives
                 thumb = thumbVisual.FormsControlAsObject as Button;
             }
             thumb.Push += HandleThumbPush;
-            thumb.Visual.RollOver += HandleThumbRollOver;
+            thumb.Visual.DragOver += HandleThumbRollOver;
             // do this before assigning any values like Minimum, Maximum
             var thumbHeight = thumb.ActualHeight;
 

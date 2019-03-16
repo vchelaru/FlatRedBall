@@ -1,4 +1,5 @@
-﻿using FlatRedBall.IO;
+﻿using FlatRedBall.Glue.IO;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,13 +22,13 @@ namespace FlatRedBall.Glue.VSHelpers
             set;
         }
 
-        public static VSSolution FromFile(string fileName)
+        public static VSSolution FromFile(FilePath fileName)
         {
             VSSolution toReturn = new VSSolution();
 
-            toReturn.FullFileName = fileName;
+            toReturn.FullFileName = fileName.FullPath;
 
-            var lines = System.IO.File.ReadAllLines(fileName);
+            var lines = System.IO.File.ReadAllLines(fileName.FullPath);
 
             foreach(var line in lines)
             {

@@ -34,13 +34,29 @@ namespace GumPlugin.DataGeneration
                 .ToArray();
             
 
+
             foreach (var file in componentFiles)
             {
                 // example:
                 // "GumPlugin.Embedded.EmbeddedObjectGumProject.Components.DefaultFormsButton.gucx"
                 var resourceName = "GumPlugin/Embedded/EmbeddedObjectGumProject/Components/DefaultForms/" + file + ".gucx";
-                FileManager.SaveEmbeddedResource(assembly, resourceName.Replace("/", "."), componentDestination + file + ".gucx");
 
+                var destination = componentDestination + file + ".gucx";
+
+                var shouldSave = true;
+                if(System.IO.File.Exists(destination))
+                {
+                    var result = System.Windows.Forms.MessageBox.Show($"The file {destination} already exists. Save anyway?", 
+                        "Overwrite?",
+                        System.Windows.Forms.MessageBoxButtons.YesNo);
+
+                    shouldSave = result == System.Windows.Forms.DialogResult.Yes;
+                }
+
+                if(shouldSave)
+                {
+                    FileManager.SaveEmbeddedResource(assembly, resourceName.Replace("/", "."), destination);
+                }
             }
 
             var contentDestination = gumDirectory;

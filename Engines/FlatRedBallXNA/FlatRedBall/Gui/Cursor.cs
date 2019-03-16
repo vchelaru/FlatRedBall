@@ -1316,11 +1316,6 @@ namespace FlatRedBall.Gui
             float cursorX = XForUI;
             float cursorY = YForUI;
 
-            if (mWindowGrabbed.GuiManagerDrawn == false && mWindowGrabbed.SpriteFrame != null)
-            {
-                GetCursorPosition(out cursorX, out cursorY, mWindowGrabbed.SpriteFrame.Z);
-            }
-
             if (mWindowGrabbed != null)
             {
                 mGrabbedWindowRelativeX = (float)(windowToGrab.WorldUnitX - cursorX);
@@ -2731,6 +2726,9 @@ namespace FlatRedBall.Gui
 
                     if (!handled && (SupportedInputDevices & Gui.InputDevice.Mouse) == Gui.InputDevice.Mouse)
                     {
+
+                        LastInputDevice = InputDevice.Mouse;
+
                         // If we are using both mouse and touch screen we only
                         // want the mouse to set its values if the user has actually
                         // moved it
@@ -2928,28 +2926,6 @@ namespace FlatRedBall.Gui
                     float oldScaleY = WindowPushed.ScaleY;
 
 
-                    if (WindowPushed.SpriteFrame != null)
-                    {
-                        // Use XVelocity and YVelocity as it will work in both
-                        // orthogonal and perspective views.
-                        WindowPushed.ScaleX += this.ActualXVelocityAt(WindowPushed.SpriteFrame.Z) / 2.0f;
-                        WindowPushed.X += WindowPushed.ScaleX - oldScaleX;
-
-                        WindowPushed.ScaleY -= this.ActualYVelocityAt(WindowPushed.SpriteFrame.Z) / 2.0f;
-                        WindowPushed.Y -= WindowPushed.ScaleY - oldScaleY;
-                    }
-                    else
-                    {
-#if !XNA4
-                        // Use XVelocity and YVelocity as it will work in both
-                        // orthogonal and perspective views.
-                        WindowPushed.ScaleX += this.XVelocity / 2.0f;
-                        WindowPushed.X += WindowPushed.ScaleX - oldScaleX;
-
-                        WindowPushed.ScaleY -= this.YVelocity / 2.0f;
-                        WindowPushed.Y += WindowPushed.ScaleY - oldScaleY;
-#endif
-                    }
 
                     #region Keep the Window from becoming too small
 
@@ -2966,14 +2942,8 @@ namespace FlatRedBall.Gui
                         float difference = 1 - WindowPushed.ScaleY;
 
                         WindowPushed.ScaleY += difference;
-                        if (WindowPushed.SpriteFrame != null)
-                        {
-                            WindowPushed.Y -= difference;
-                        }
-                        else
-                        {
-                            WindowPushed.Y += difference;
-                        }
+
+                        WindowPushed.Y += difference;
                     }
 
                     #endregion
@@ -2983,16 +2953,6 @@ namespace FlatRedBall.Gui
                     float ScaleXDifference = WindowPushed.ScaleX - oldScaleX;
                     float ScaleYDifference = WindowPushed.ScaleY - oldScaleY;
 
-                    if (ScaleXDifference != 0 || ScaleYDifference != 0)
-                    {
-#if SUPPORTS_FRB_DRAWN_GUI
-                        foreach (Window w in WindowPushed.Children)
-                        {
-                            w.WorldUnitRelativeX -= ScaleXDifference;
-                            w.WorldUnitRelativeY += ScaleYDifference;
-                        }
-#endif
-                    }
 
                     if (ScaleXDifference != 0 || ScaleYDifference != 0)
                     {
@@ -3034,57 +2994,22 @@ namespace FlatRedBall.Gui
                     if (mWindowGrabbed.Parent == null)
                     {
 
-                        if (mWindowGrabbed.GuiManagerDrawn)
-                        {
-                            mWindowGrabbed.X = GuiManager.UnmodifiedXEdge + XForUI + mGrabbedWindowRelativeX;
-                            mWindowGrabbed.Y = GuiManager.UnmodifiedYEdge - (YForUI) - mGrabbedWindowRelativeY;
-                        }
-                        else
-                        {
-                            float outX = 0;
-                            float outY = 0;
+                        float outX = 0;
+                        float outY = 0;
 
-                            GetCursorPosition(out outX, out outY, mWindowGrabbed.SpriteFrame.Z);
-                            mWindowGrabbed.WorldUnitX = outX + mGrabbedWindowRelativeX;
-                            mWindowGrabbed.WorldUnitY = outY + mGrabbedWindowRelativeY;
-                        }
+                        GetCursorPosition(out outX, out outY, 0);
+                        mWindowGrabbed.WorldUnitX = outX + mGrabbedWindowRelativeX;
+                        mWindowGrabbed.WorldUnitY = outY + mGrabbedWindowRelativeY;
                     }
                     else
                     {
                         float cursorX = XForUI;
                         float cursorY = YForUI;
 
-                        if (mWindowGrabbed.GuiManagerDrawn == false)
-                        {
-                            GetCursorPosition(out cursorX, out cursorY, mWindowGrabbed.SpriteFrame.Z);
-                        }
+                        GetCursorPosition(out cursorX, out cursorY, 0);
 
                         mWindowGrabbed.WorldUnitRelativeX = cursorX + mGrabbedWindowRelativeX - mWindowGrabbed.Parent.WorldUnitX;
                         mWindowGrabbed.WorldUnitRelativeY = cursorY + mGrabbedWindowRelativeY - mWindowGrabbed.Parent.WorldUnitY;
-
-#if SUPPORTS_FRB_DRAWN_GUI
-                        ScrollBar parentScrollBar = mWindowGrabbed.Parent as ScrollBar;
-                        if (parentScrollBar != null) // we have a scroll bar
-                        {
-                            parentScrollBar.FixBar();
-
-                            mWindowGrabbed.UpdateDependencies();
-
-                            ListBoxBase clb = mWindowGrabbed.Parent.Parent as ListBoxBase;
-                            if (clb != null)
-                                clb.mStartAt = parentScrollBar.GetNumDown();
-
-                            // I've changed how the highlighted works here.  Now, highlighted stuff is absolute, not relative to 
-                            // list box position, so all this will do is change the startAt
-                            ListBoxBase tempListBox = mWindowGrabbed.Parent.Parent as ListBoxBase;
-                            if (tempListBox != null)
-                                tempListBox.StartAt = parentScrollBar.GetNumDown();
-
-                            parentScrollBar.RaisePositionBarMoveEvent();
-
-
-                        }
-#endif
                     }
                 }
 

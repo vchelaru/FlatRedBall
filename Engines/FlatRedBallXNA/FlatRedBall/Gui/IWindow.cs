@@ -34,7 +34,8 @@ namespace FlatRedBall.Gui
         /// </summary>
         event WindowEvent Push;
         /// <summary>
-        /// Event raied when the cursor is pressed and moves over the window.
+        /// Event raied when the cursor moves and this window is the pressed window. This is called whether
+        /// the cursor is over the current window or not.
         /// </summary>
         event WindowEvent DragOver;
 
@@ -49,8 +50,9 @@ namespace FlatRedBall.Gui
         event WindowEvent RollOff;
         /// <summary>
         /// An event raised when the cursor moves while it is over the window. This is raised every frame that
-        /// the cursor moves and is over the window.
+        /// the cursor moves and is over the window. This event is not raised unless the cursor is over the window.
         /// </summary>
+        /// <seealso cref="DragOver"/>
         event WindowEvent RollOver;
         /// <summary>
         /// Event raised when the Enabled property changes on the window.
@@ -93,11 +95,6 @@ namespace FlatRedBall.Gui
             get;
         }
 
-        SpriteFrame SpriteFrame
-        {
-            get;
-            set;
-        }
 
         float WorldUnitX
         {

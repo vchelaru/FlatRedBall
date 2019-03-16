@@ -25,7 +25,7 @@ namespace FlatRedBall.Glue.Projects
             return RunNewProjectCreator(null, null, false);
         }
 
-        public static Process RunNewProjectCreator(string directoryForNewProject, string namespaceForNewProject, bool creatingSyncedProject)
+        public static Process RunNewProjectCreator(FilePath directoryForNewProject, string namespaceForNewProject, bool creatingSyncedProject)
         {
 
             string directory =
@@ -80,10 +80,10 @@ namespace FlatRedBall.Glue.Projects
                 processStartInfo.RedirectStandardOutput = true;
                 processStartInfo.UseShellExecute = false;
 
-                if (!string.IsNullOrEmpty(directoryForNewProject))
+                if (directoryForNewProject != null)
                 {
 
-                    processStartInfo.Arguments = "directory=\"" + directoryForNewProject + "\"" +
+                    processStartInfo.Arguments = "directory=\"" + directoryForNewProject.FullPath + "\"" +
                         " namespace=" + namespaceForNewProject;
                 }
 
@@ -154,21 +154,13 @@ namespace FlatRedBall.Glue.Projects
                 return;
             }
 
+
+
             // Gotta find the .sln of this project so we can put the synced project in there
-            string directory = ProjectManager.ProjectBase.Directory;
+            var directory = GlueState.Self.CurrentSlnFileName?.GetDirectoryContainingThis();
 
-            List<string> files = new List<string>();
-
-            FileManager.GetAllFilesInDirectory(directory, "sln", 0, files);
-
-            while (files.Count == 0)
-            {
-                directory = FileManager.GetDirectory(directory);
-                FileManager.GetAllFilesInDirectory(directory, "sln", 0, files);
-            }
-
-
-            Process process = NewProjectHelper.RunNewProjectCreator(directory, ProjectManager.ProjectBase.Name, creatingSyncedProject:true);
+            Process process = NewProjectHelper.RunNewProjectCreator(directory, 
+                GlueState.Self.ProjectNamespace, creatingSyncedProject:true);
 
             if (process != null)
             {
