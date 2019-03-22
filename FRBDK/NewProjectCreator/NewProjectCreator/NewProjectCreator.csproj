@@ -122,6 +122,9 @@
       <Link>Controls\MultiButtonMessageBox.designer.cs</Link>
       <DependentUpon>MultiButtonMessageBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\Glue\Glue\IO\FilePath.cs">
+      <Link>IO\FilePath.cs</Link>
+    </Compile>
     <Compile Include="..\..\Glue\Glue\VSHelpers\VSSolution.cs">
       <Link>DataTypes\VSSolution.cs</Link>
     </Compile>
