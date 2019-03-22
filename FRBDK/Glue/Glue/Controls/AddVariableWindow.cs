@@ -141,6 +141,10 @@ namespace FlatRedBall.Glue.Controls
                 else
                     return null;
             }
+            set
+            {
+                TunnelingVariableComboBox.Text = value;
+            }
         }
 
         public string OverridingType

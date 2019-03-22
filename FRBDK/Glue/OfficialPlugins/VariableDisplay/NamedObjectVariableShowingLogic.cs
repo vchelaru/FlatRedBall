@@ -546,7 +546,22 @@ namespace OfficialPlugins.VariableDisplay
                         }
                     };
 
-
+                instanceMember.ContextMenuEvents.Add("Tunnel Variable", (not, used) =>
+                {
+                    string variableToTunnel = null;
+                    if (variableDefinition != null)
+                    {
+                        variableToTunnel = variableDefinition?.Name;
+                    }
+                    else if(typedMember != null)
+                    {
+                        variableToTunnel = typedMember.MemberName;
+                    }
+                    GlueCommands.Self.DialogCommands.ShowAddNewVariableDialog(
+                        FlatRedBall.Glue.Controls.CustomVariableType.Tunneled,
+                        instance.InstanceName,
+                        variableToTunnel);
+                });
             }
             return instanceMember;
         }

@@ -14,6 +14,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Utilities;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using FlatRedBall.Glue.Reflection;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -174,6 +175,149 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         }
                     }
                 }
+            }
+        }
+
+        public void ShowAddNewVariableDialog(CustomVariableType variableType = CustomVariableType.Exposed, 
+            string tunnelingObject = "",
+            string tunneledVariableName = "")
+        {
+            // Search terms:  add new variable, addnewvariable, add variable
+
+            AddVariableWindow addVariableWindow = new AddVariableWindow(EditorLogic.CurrentElement);
+            addVariableWindow.DesiredVariableType = variableType;
+
+            addVariableWindow.TunnelingObject = tunnelingObject;
+            addVariableWindow.TunnelingVariable = tunneledVariableName;
+
+            if (addVariableWindow.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
+            {
+                HandleAddVariableOk(addVariableWindow);
+            }
+        }
+
+        private static void HandleAddVariableOk(AddVariableWindow addVariableWindow)
+        {
+            string resultName = addVariableWindow.ResultName;
+            IElement currentElement = EditorLogic.CurrentElement;
+            string failureMessage;
+
+            bool didFailureOccur = IsVariableInvalid(addVariableWindow, resultName, currentElement, out failureMessage);
+
+
+            if (!didFailureOccur)
+            {
+                if (!string.IsNullOrEmpty(addVariableWindow.TunnelingObject) && string.IsNullOrEmpty(addVariableWindow.TunnelingVariable))
+                {
+                    didFailureOccur = true;
+                    failureMessage = $"You must select a variable on {addVariableWindow.TunnelingObject}";
+                }
+            }
+
+            if (didFailureOccur)
+            {
+                MessageBox.Show(failureMessage);
+            }
+            else
+            {
+
+                // See if there is already a variable in the base with this name
+                CustomVariable existingVariableInBase = EditorLogic.CurrentElement.GetCustomVariableRecursively(resultName);
+
+                bool canCreate = true;
+                bool isDefinedByBase = false;
+                if (existingVariableInBase != null)
+                {
+                    if (existingVariableInBase.SetByDerived)
+                    {
+                        isDefinedByBase = true;
+                    }
+                    else
+                    {
+                        MessageBox.Show("There is already a variable named\n\n" + resultName +
+                            "\n\nin the base element, but it is not SetByDerived.\nGlue will not " +
+                            "create a variable because it would result in a name conflict.");
+
+                        canCreate = false;
+                    }
+                }
+
+                if (canCreate)
+                {
+                    string type = addVariableWindow.ResultType;
+                    string sourceObject = addVariableWindow.TunnelingObject;
+                    string sourceObjectProperty = null;
+                    if (!string.IsNullOrEmpty(sourceObject))
+                    {
+                        sourceObjectProperty = addVariableWindow.TunnelingVariable;
+                    }
+                    string overridingType = addVariableWindow.OverridingType;
+                    string typeConverter = addVariableWindow.TypeConverter;
+
+                    CustomVariable newVariable = RightClickHelper.CreateAndAddNewVariable(resultName, type, sourceObject, sourceObjectProperty, overridingType, typeConverter);
+
+                    if (isDefinedByBase)
+                    {
+                        newVariable.DefinedByBase = isDefinedByBase;
+                        // Refresh the UI - it's refreshed above in CreateAndAddNewVariable,
+                        // but we're changing the DefinedByBase property which changes the color
+                        // of the variable so refresh it again
+                        EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
+                    }
+                    ElementViewWindow.ShowAllElementVariablesInPropertyGrid();
+
+
+                    if (GlueState.Self.CurrentElement != null)
+                    {
+                        PluginManager.ReactToItemSelect(GlueState.Self.CurrentTreeNode);
+                    }
+                }
+            }
+        }
+
+        public static bool IsVariableInvalid(AddVariableWindow addVariableWindow, string resultName, IElement currentElement, out string failureMessage)
+        {
+            bool didFailureOccur = false;
+
+            string whyItIsntValid = "";
+
+            didFailureOccur = NameVerifier.IsCustomVariableNameValid(resultName, null, currentElement, ref whyItIsntValid) == false;
+            failureMessage = null;
+            if (didFailureOccur)
+            {
+                failureMessage = whyItIsntValid;
+
+            }
+            else if (addVariableWindow != null && NameVerifier.DoesTunneledVariableAlreadyExist(addVariableWindow.TunnelingObject, addVariableWindow.TunnelingVariable, currentElement))
+            {
+                didFailureOccur = true;
+                failureMessage = "There is already a variable that is modifying " + addVariableWindow.TunnelingVariable + " on " + addVariableWindow.TunnelingObject;
+            }
+            else if (addVariableWindow != null && IsUserTryingToCreateNewWithExposableName(addVariableWindow.ResultName, addVariableWindow.DesiredVariableType == CustomVariableType.Exposed))
+            {
+                didFailureOccur = true;
+                failureMessage = "The variable\n\n" + resultName + "\n\nis an expoable variable.  Please use a different variable name or select the variable through the Expose tab";
+            }
+
+            else if (ExposedVariableManager.IsReservedPositionedPositionedObjectMember(resultName) && currentElement is EntitySave)
+            {
+                didFailureOccur = true;
+                failureMessage = "The variable\n\n" + resultName + "\n\nis reserved by FlatRedBall.";
+            }
+
+            return didFailureOccur;
+        }
+
+        private static bool IsUserTryingToCreateNewWithExposableName(string resultName, bool isExposeTabSelected)
+        {
+            List<string> exposables = ExposedVariableManager.GetExposableMembersFor(EditorLogic.CurrentElement, false).Select(item => item.Member).ToList();
+            if (exposables.Contains(resultName))
+            {
+                return isExposeTabSelected == false;
+            }
+            else
+            {
+                return false;
             }
         }
 

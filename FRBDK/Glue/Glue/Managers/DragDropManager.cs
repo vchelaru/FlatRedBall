@@ -212,7 +212,9 @@ namespace FlatRedBall.Glue.Managers
             if (succeeded)
             {
                 // show the add new variable window and select this object
-                RightClickHelper.AddVariableClick(CustomVariableType.Tunneled, ((NamedObjectSave)treeNodeMoving.Tag).InstanceName);
+                GlueCommands.Self.DialogCommands.ShowAddNewVariableDialog(
+                    CustomVariableType.Tunneled, 
+                    ((NamedObjectSave)treeNodeMoving.Tag).InstanceName);
             }
 
             return succeeded;

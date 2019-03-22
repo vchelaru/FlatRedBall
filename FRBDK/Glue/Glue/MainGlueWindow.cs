@@ -770,7 +770,7 @@ namespace Glue
        
         private void addVariableToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RightClickHelper.AddVariableClick();
+            GlueCommands.Self.DialogCommands.ShowAddNewVariableDialog();
         }
 
 

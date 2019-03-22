@@ -65,21 +65,20 @@ namespace OfficialPlugins.VariableDisplay
 
                 TypeConverter converter = variable.GetTypeConverter(element);
                 instanceMember.TypeConverter = converter;
-
+                
                 instanceMember.CustomSetEvent += (intance, value) =>
                 {
                     instanceMember.IsDefault = false;
 
                     RefreshLogic.IgnoreNextRefresh();
 
-                    var customVariable = element.GetCustomVariableRecursively(name);
 
-                    var oldValue = customVariable.DefaultValue;
+                    var oldValue = variable.DefaultValue;
 
-                    customVariable.DefaultValue = value;
+                    variable.DefaultValue = value;
 
                     EditorObjects.IoC.Container.Get<CustomVariableSaveSetVariableLogic>().ReactToCustomVariableChangedValue(
-                        "DefaultValue", customVariable, oldValue);
+                        "DefaultValue", variable, oldValue);
 
 
 
@@ -123,6 +122,8 @@ namespace OfficialPlugins.VariableDisplay
                         GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                     }
                 };
+
+                instanceMember.ContextMenuEvents.Add("Variable Properties", (sender, args) => GlueState.Self.CurrentCustomVariable = variable);
 
                 category.Members.Add(instanceMember);
             }

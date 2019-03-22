@@ -97,13 +97,13 @@
     <Variable>
       <Type>float</Type>
       <Name>CaretInstance.X</Name>
-      <Value xsi:type="xsd:float">45</Value>
+      <Value xsi:type="xsd:float">5</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
       <Name>CaretInstance.X Units</Name>
-      <Value xsi:type="xsd:int">2</Value>
+      <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -116,6 +116,12 @@
       <Type>bool</Type>
       <Name>Clips Children</Name>
       <Value xsi:type="xsd:boolean">true</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>Height</Name>
+      <Value xsi:type="xsd:float">30</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -155,12 +161,6 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>float</Type>
-      <Name>Height</Name>
-      <Value xsi:type="xsd:float">30</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
       <Type>State</Type>
       <Name>State</Name>
       <SetsValue>true</SetsValue>
@@ -192,6 +192,7 @@
       <Type>string</Type>
       <Name>TextInstance.Text</Name>
       <Value xsi:type="xsd:string">Hello</Value>
+      <ExposedAsName>Text</ExposedAsName>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -215,7 +216,7 @@
     <Variable>
       <Type>float</Type>
       <Name>TextInstance.X</Name>
-      <Value xsi:type="xsd:float">15</Value>
+      <Value xsi:type="xsd:float">5</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -227,7 +228,7 @@
     <Variable>
       <Type>PositionUnitType</Type>
       <Name>TextInstance.X Units</Name>
-      <Value xsi:type="xsd:int">2</Value>
+      <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>

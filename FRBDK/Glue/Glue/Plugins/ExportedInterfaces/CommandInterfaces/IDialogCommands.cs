@@ -13,6 +13,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
 #if GLUE
         NamedObjectSave ShowAddNewObjectDialog(FlatRedBall.Glue.ViewModels.AddObjectViewModel addObjectViewModel = null);
+
+        void ShowAddNewVariableDialog(Controls.CustomVariableType variableType = Controls.CustomVariableType.Exposed, 
+            string tunnelingObject = "",
+            string tunneledVariableName = "");
+
+
         void SetFormOwner(System.Windows.Forms.Form form);
 #endif
     }

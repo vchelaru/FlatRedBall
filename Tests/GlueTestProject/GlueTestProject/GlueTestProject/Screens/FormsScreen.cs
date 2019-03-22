@@ -29,7 +29,31 @@ namespace GlueTestProject.Screens
 
             TestRadioButtonSelected();
 
+            TestListBoxSelected();
+
 		}
+
+        private void TestListBoxSelected()
+        {
+            var listBox = new ListBox();
+
+            var listBoxItem = new ListBoxItem();
+            listBox.Items.Add(listBoxItem);
+
+            listBox.Items.Add(1);
+            listBox.Items.Add(2);
+
+            object selectedItem = null;
+
+            listBox.SelectionChanged += (not, used) =>
+            {
+                selectedItem = listBox.SelectedObject;
+            };
+
+            listBox.SelectedObject = listBoxItem;
+
+            selectedItem.ShouldBe(listBoxItem, "because the SelectionChanged should be raised");
+        }
 
         private void TestRadioButtonSelected()
         {
