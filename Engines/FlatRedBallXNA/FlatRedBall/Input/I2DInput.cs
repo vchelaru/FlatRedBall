@@ -72,7 +72,45 @@ namespace FlatRedBall.Input
             this.xVelocity = xVelocity;
             this.yVelocity = yVelocity;
         }
+    }
 
+    public static class I2DInputExtensions
+    {
+        public static Multiple2DInputs Or(this I2DInput thisInput, I2DInput input)
+        {
+            Multiple2DInputs toReturn;
+            if(thisInput is Multiple2DInputs)
+            {
+                toReturn = (Multiple2DInputs)thisInput;
+            }
+            else
+            {
+                toReturn = new Multiple2DInputs();
+                toReturn.Inputs.Add(thisInput);
+            }
+
+            toReturn.Inputs.Add(input);
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Returns the angle in radians of the input object, where 0 is to the right, rotating counterclockwise.
+        /// Returns null if the X and Y values are 0 (meaning the input device is centered)
+        /// </summary>
+        /// <param name="instance">The I2DInput instance</param>
+        /// <returns>The angle, or null if X and Y are 0</returns>
+        public static float? GetAngle(this I2DInput instance)
+        {
+            if(instance.X == 0 && instance.Y == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return (float)System.Math.Atan2(instance.Y, instance.X);
+            }
+        }
     }
 
     /// <summary>
@@ -185,25 +223,5 @@ namespace FlatRedBall.Input
         }
     }
 
-    public static class I2DInputExtensions
-    {
-        /// <summary>
-        /// Returns the angle in radians of the input object, where 0 is to the right, rotating counterclockwise.
-        /// Returns null if the X and Y values are 0 (meaning the input device is centered)
-        /// </summary>
-        /// <param name="instance">The I2DInput instance</param>
-        /// <returns>The angle, or null if X and Y are 0</returns>
-        public static float? GetAngle(this I2DInput instance)
-        {
-            if(instance.X == 0 && instance.Y == 0)
-            {
-                return null;
-            }
-            else
-            {
-                return (float)System.Math.Atan2(instance.Y, instance.X);
-            }
-        }
-    }
 }
 
