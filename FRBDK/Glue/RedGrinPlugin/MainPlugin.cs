@@ -33,7 +33,8 @@ namespace RedGrinPlugin
         {
             get
             {
-                return new Version(1, 0, 0);
+                // 1.0.1 - Fixed possible threading issue accessing current element 
+                return new Version(1, 0, 1);
             }
         }
 
@@ -136,7 +137,7 @@ namespace RedGrinPlugin
 
                     if (createdNewVariable)
                     {
-                        GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
+                        GlueCommands.Self.RefreshCommands.RefreshUi(currentEntity);
                     }
 
                     GlueCommands.Self.GluxCommands.SaveGluxTask();
