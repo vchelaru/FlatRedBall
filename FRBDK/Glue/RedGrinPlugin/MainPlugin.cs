@@ -34,7 +34,8 @@ namespace RedGrinPlugin
             get
             {
                 // 1.0.1 - Fixed possible threading issue accessing current element 
-                return new Version(1, 0, 1);
+                // 1.0.2 - Added startup code generation for generated entities/screens and added configuration file.
+                return new Version(1, 0, 2);
             }
         }
 
@@ -59,6 +60,7 @@ namespace RedGrinPlugin
 
         private void AssignEvents()
         {
+            base.ReactToLoadedGlux += HandleGluxLoaded;
             base.ReactToItemSelectHandler += HandleItemSelected;
             base.ReactToChangedPropertyHandler += HandlePropertyChanged;
             this.ReactToVariableRemoved += HandleVariableRemoved;
@@ -77,6 +79,37 @@ namespace RedGrinPlugin
         }
 
         #endregion
+
+        private void HandleGluxLoaded()
+        {
+            TaskManager.Self.AddSync(() =>
+            {
+                var areAnyNetworked = false;
+                foreach(var screen in GlueState.Self.CurrentGlueProject.Screens)
+                {
+                    if(NetworkScreenViewModel.IsNetworked(screen))
+                    {
+                        areAnyNetworked = true;
+                        NetworkScreenCodeGenerator.GenerateCodeFor(screen, save: false);
+                    }
+                }
+                foreach(var entity in GlueState.Self.CurrentGlueProject.Entities)
+                {
+                    if (NetworkEntityViewModel.IsNetworked(entity))
+                    {
+                        areAnyNetworked = true;
+                        NetworkEntityCodeGenerator.GenerateCodeFor(entity, save:false);
+                    }
+                }
+
+                if(areAnyNetworked)
+                {
+                    NetworkConfigurationCodeGenerator.GenerateConfiguration();
+
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                }
+            }, "Regenerating network files");
+        }
 
         private void HandleItemSelected(TreeNode selectedTreeNode)
         {

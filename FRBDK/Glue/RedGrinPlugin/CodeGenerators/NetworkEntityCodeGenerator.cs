@@ -13,7 +13,7 @@ namespace RedGrinPlugin.CodeGenerators
 {
     class NetworkEntityCodeGenerator
     {
-        public static void GenerateCodeFor(EntitySave entitySave)
+        public static void GenerateCodeFor(EntitySave entitySave, bool save = true)
         {
             var isNetworkEntity = NetworkEntityViewModel.IsNetworked(entitySave);
 
@@ -47,10 +47,12 @@ namespace RedGrinPlugin.CodeGenerators
                 }
                 CodeGeneratorCommonLogic.AddCodeFileToProject(customEntityNetworkFilePath);
 
-
-
                 GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
-                GlueCommands.Self.ProjectCommands.SaveProjects();
+
+                if(save)
+                {
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                }
             }
         }
 

@@ -24,7 +24,7 @@ namespace RedGrinPlugin.CodeGenerators
             }
         }
 
-        public static void GenerateCodeFor(ScreenSave screenSave)
+        public static void GenerateCodeFor(ScreenSave screenSave, bool save = false)
         {
             var isNetworkScreen = NetworkScreenViewModel.IsNetworked(screenSave);
 
@@ -44,9 +44,12 @@ namespace RedGrinPlugin.CodeGenerators
                 }
                 CodeGeneratorCommonLogic.AddCodeFileToProject(customScreenNetworkFilePath);
 
-
                 GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
-                GlueCommands.Self.ProjectCommands.SaveProjects();
+
+                if(save)
+                {
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                }
             }
         }
 
