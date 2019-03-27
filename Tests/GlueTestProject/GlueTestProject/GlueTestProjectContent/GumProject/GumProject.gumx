@@ -137,6 +137,10 @@
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
+    <Name>InheritFromInFolder</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>NineSliceButton</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>

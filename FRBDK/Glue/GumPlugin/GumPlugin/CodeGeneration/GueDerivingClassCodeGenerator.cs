@@ -192,7 +192,7 @@ namespace DesktopGlForms.GumRuntimes.DefaultForms
 
             if(elementSave.BaseType != "Component" && !string.IsNullOrEmpty(elementSave.BaseType))
             {
-                inheritance = GueRuntimeNamespace + "." + elementSave.BaseType + "Runtime";
+                inheritance = GueRuntimeNamespace + "." + elementSave.BaseType.Replace("/", ".") + "Runtime";
             }
 
             var asComponentSave = elementSave as ComponentSave;

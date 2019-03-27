@@ -251,7 +251,9 @@ namespace GumPlugin
             // 2.0.2
             // - Add forms button now indicates that it will refresh forms controls.
             // - Adding/refreshing forms gum components will now ask you if you want to replace them
-            get { return new Version(2, 0, 2, 0); }
+            // 2.0.3
+            // - Fixed bug in code generation when inheriting one component from another component that is in a folder.
+            get { return new Version(2, 0, 3, 0); }
         }
 
         #endregion

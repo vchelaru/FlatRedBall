@@ -541,6 +541,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>folderedentity2</Name>
     </None>
+    <None Include="gumproject\components\inheritfrominfolder.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>inheritfrominfolder</Name>
+    </None>
     <None Include="GumProject\Components\NineSliceButton.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>NineSliceButton</Name>

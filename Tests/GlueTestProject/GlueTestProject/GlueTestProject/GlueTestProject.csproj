@@ -985,6 +985,10 @@
     <Compile Include="GumRuntimes\GumScreenNoGumIdbScreenGumRuntime.Generated.cs">
       <DependentUpon>GumScreenNoGumIdbScreenGumRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\InheritFromInFolderRuntime.cs" />
+    <Compile Include="GumRuntimes\InheritFromInFolderRuntime.Generated.cs">
+      <DependentUpon>InheritFromInFolderRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.cs" />
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.Generated.cs">
       <DependentUpon>NineSliceButtonRuntime.cs</DependentUpon>
