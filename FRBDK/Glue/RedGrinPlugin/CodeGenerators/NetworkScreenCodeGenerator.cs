@@ -126,6 +126,12 @@ namespace RedGrinPlugin.CodeGenerators
                     ifBlock.Line($"entity = new {fullEntityType}();");
                 }
 
+                // Even though the NetworkManager assigns the owner ID, we're going to do it here
+                // to before calling UpdateFromState, so that any custom code that gets triggered from
+                // UpdateFromState are guaranteed to have the right ID:
+
+                ifBlock.Line("entity.OwnerId = ownerId;");
+
                 ifBlock.Line("entity.UpdateFromState(entityData, 0);");
 
                 needsElseIf = true;

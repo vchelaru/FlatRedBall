@@ -38,6 +38,8 @@ namespace RedGrinPlugin.ViewModels
 
             string[] variablesToAlwaysInclude = new string[]
             {
+                // Don't include Name because this isn't something Glue understands as a variable
+                //nameof(PositionedObject.Name),
                 nameof(PositionedObject.X),
                 nameof(PositionedObject.Y),
                 nameof(PositionedObject.XVelocity),

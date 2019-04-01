@@ -78,8 +78,6 @@ namespace RedGrinPlugin.CodeGenerators
             return topBlock.ToString();
         }
 
-
-
         private static void GenerateUpdateFromStateMethod(EntitySave entitySave, ICodeBlock codeBlock)
         {
             var functionBlock = codeBlock.Function("public void", "UpdateFromState", "object entityState, double stateTime");
@@ -120,7 +118,6 @@ namespace RedGrinPlugin.CodeGenerators
 
             getStateFunc.Line("return state;");
         }
-
 
         private static string GenerateNetStateGeneratedCode(EntitySave entitySave)
         {

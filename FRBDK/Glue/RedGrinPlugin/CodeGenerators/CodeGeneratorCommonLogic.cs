@@ -44,7 +44,12 @@ namespace RedGrinPlugin.CodeGenerators
                 entitySave.Name.Replace("/", ".").Replace("\\", ".").Substring(
                 0, entitySave.Name.Length - (entitySave.ClassName.Length + 1));
 
-            var removedEntities = entityNamespace.Substring("Entities".Length);
+            string removedEntities = entityNamespace.Substring("Entities".Length);
+
+            if(removedEntities.StartsWith("."))
+            {
+                removedEntities = removedEntities.Substring(1);
+            }
 
             if (string.IsNullOrEmpty(removedEntities))
             {
@@ -52,7 +57,7 @@ namespace RedGrinPlugin.CodeGenerators
             }
             else
             {
-                entityNamespace = "NetStates." + removedEntities;
+                entityNamespace = removedEntities + ".NetStates";
             }
 
             entityNamespace = "." + entityNamespace;
