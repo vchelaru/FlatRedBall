@@ -666,7 +666,7 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        private void RegisterName(string name, int tileIndex)
+        public void RegisterName(string name, int tileIndex)
         {
             int throwaway;
             if (!string.IsNullOrEmpty(name) && !int.TryParse(name, out throwaway))

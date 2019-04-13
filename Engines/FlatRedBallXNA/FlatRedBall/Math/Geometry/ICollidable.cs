@@ -17,17 +17,17 @@ namespace FlatRedBall.Math.Geometry
 
         public static bool CollideAgainst(this ICollidable thisInstance, ICollidable other)
         {
-            return thisInstance.Collision.CollideAgainst(other.Collision);
+            return other != null && thisInstance != null && thisInstance.Collision.CollideAgainst(other.Collision);
         }
 
         public static bool CollideAgainstMove(this ICollidable thisInstance, ICollidable other, float thisMass, float otherMass)
         {
-            return thisInstance.Collision.CollideAgainstMove(other.Collision, thisMass, otherMass);
+            return other != null && thisInstance != null && thisInstance.Collision.CollideAgainstMove(other.Collision, thisMass, otherMass);
         }
 
         public static bool CollideAgainstBounce(this ICollidable thisInstance, ICollidable other, float thisMass, float otherMass, float elasticity)
         {
-            return thisInstance.Collision.CollideAgainstBounce(other.Collision, thisMass, otherMass, elasticity);
+            return other != null && thisInstance != null && thisInstance.Collision.CollideAgainstBounce(other.Collision, thisMass, otherMass, elasticity);
         }
 
         public static bool CollideAgainst(this ICollidable thisInstance, AxisAlignedRectangle other)

@@ -152,7 +152,9 @@ namespace TileGraphicsPlugin
             // 2.1.2
             // - Fixed bug where layers weren't resetting their blend op to normal (from additive) which can
             //   result in additive layers.
-            get { return new Version(2, 1, 2, 0); }
+            // 2.1.3
+            // - Made RegisterName property public so it can be called outside of MapDrawableBatch
+            get { return new Version(2, 1, 3, 0); }
         }
 
 

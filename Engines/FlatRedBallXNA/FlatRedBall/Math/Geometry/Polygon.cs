@@ -110,13 +110,26 @@ namespace FlatRedBall.Math.Geometry
 
         #region XML Docs
         /// <summary>
-        /// The Position-relative points of the Polygon.
+        /// The Position-relative points of the Polygon. A point at 0,0 will be positioned at the center of the Polygon.
         /// </summary>
         /// <remarks>
         /// This value can be assigned to completely replace the points in a polygon.
         /// Changing this list updates the Vertices internally and immediately
-        /// makes the polygon available for rendering.
+        /// makes the polygon available for rendering. Note that a closed polygon will have its first point repeated. For example
+        /// a closed rectangle will have 5 points (the normal 4 points, plus the last point repeating the first).
         /// </remarks>
+        /// <example>
+        /// Point[] points = new Point[5];
+        /// points[0].X = 100;
+        /// points[0].Y = 100;
+        /// 
+        /// points[1].X = 100;
+        /// points[1].Y = -100;
+        /// 
+        /// ...
+        /// 
+        /// polygonInstance.Points = points;
+        /// </example>
         #endregion
         public IList<Point> Points
         {
@@ -1990,7 +2003,10 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-
+        /// <summary>
+        /// Scales all points in the polygon by the argument value. A value of 1 will leave the polygon unchanged.
+        /// </summary>
+        /// <param name="amountToScaleBy">The value to scale by. For example, a value of 2 will double the X and Y values of all points.</param>
         public void ScaleBy(double amountToScaleBy)
         {
             for (int i = 0; i < mPoints.Length; i++)
@@ -2003,13 +2019,11 @@ namespace FlatRedBall.Math.Geometry
 
         }
 
-        #region XML Docs
         /// <summary>
         /// Scales all points in object space.
         /// </summary>
-        /// <param name="scaleX">Amount to scale by on the object's X axis.</param>
-        /// <param name="scaleY">Amount to scale by on the object's Y axis.</param>
-        #endregion
+        /// <param name="scaleX">Amount to scale by on the object's X axis. For example, a value of 2 would double the relative X values of all points.</param>
+        /// <param name="scaleY">Amount to scale by on the object's Y axis. For example, a value of 2 would double the relative Y values of all points.</param>
         public void ScaleBy(double scaleX, double scaleY)
         {
             for (int i = 0; i < mPoints.Length; i++)

@@ -75,6 +75,52 @@ namespace GlueTestProject.Screens
             CreateCollisionRelationships();
 
             TestEntityVsShapeCollection();
+
+            TestNullSubcollision();
+        }
+
+        private void TestNullSubcollision()
+        {
+            CollisionEntityList[0].Collision.ShouldNotBe(null);
+
+            // event collision, both null
+            var relationship = CollisionManager.Self.CreateRelationship(CollisionEntityList, CollisionEntityList);
+            relationship.SetFirstSubCollision(item => item.NullCollidableEntityInstance);
+            relationship.SetSecondSubCollision(item => item.NullCollidableEntityInstance);
+            relationship.CollisionOccurred += (first, second) => { };
+            relationship.DoCollisions();
+
+            // Move collision, both null
+            relationship = CollisionManager.Self.CreateRelationship(CollisionEntityList, CollisionEntityList);
+            relationship.SetFirstSubCollision(item => item.NullCollidableEntityInstance);
+            relationship.SetSecondSubCollision(item => item.NullCollidableEntityInstance);
+            relationship.SetMoveCollision(1, 1);
+            relationship.DoCollisions();
+
+            // Bounce collision, both null
+            relationship = CollisionManager.Self.CreateRelationship(CollisionEntityList, CollisionEntityList);
+            relationship.SetFirstSubCollision(item => item.NullCollidableEntityInstance);
+            relationship.SetSecondSubCollision(item => item.NullCollidableEntityInstance);
+            relationship.SetBounceCollision(1, 1, 1);
+            relationship.DoCollisions();
+
+            // event collision, second null
+            relationship = CollisionManager.Self.CreateRelationship(CollisionEntityList, CollisionEntityList);
+            relationship.SetSecondSubCollision(item => item.NullCollidableEntityInstance);
+            relationship.CollisionOccurred += (first, second) => { };
+            relationship.DoCollisions();
+
+            // Move collision, second null
+            relationship = CollisionManager.Self.CreateRelationship(CollisionEntityList, CollisionEntityList);
+            relationship.SetSecondSubCollision(item => item.NullCollidableEntityInstance);
+            relationship.SetMoveCollision(1, 1);
+            relationship.DoCollisions();
+
+            // Bounce collision, second null
+            relationship = CollisionManager.Self.CreateRelationship(CollisionEntityList, CollisionEntityList);
+            relationship.SetSecondSubCollision(item => item.NullCollidableEntityInstance);
+            relationship.SetBounceCollision(1, 1, 1);
+            relationship.DoCollisions();
         }
 
         private void CreateCollisionRelationships()
