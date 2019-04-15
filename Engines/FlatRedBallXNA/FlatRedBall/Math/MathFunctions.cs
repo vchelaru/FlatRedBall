@@ -1382,7 +1382,6 @@ namespace FlatRedBall.Math
         }
 
 
-#if FRB_XNA
         public static Matrix LerpRotationMatrix(Matrix currentRotationMatrix, Matrix destinationRotationMatrix, float amount)
         {
             // Create quaternions
@@ -1489,7 +1488,6 @@ namespace FlatRedBall.Math
             return new Vector3((float)System.Math.Cos((double)radians), (float)System.Math.Sin((double)radians), 0f);
         }
 
-#endif
         #endregion
     }
 }
