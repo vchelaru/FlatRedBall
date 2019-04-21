@@ -182,6 +182,25 @@ namespace FlatRedBall.Forms.Controls
             {
                 UpdateCarrotIndexFromCursor();
             }
+
+            GuiManager.AddNextPushAction(TryLoseFocusFromPush);
+
+        }
+
+        private void TryLoseFocusFromPush()
+        {
+            var cursor = GuiManager.Cursor;
+
+
+            var clickedOnThisOrChild =
+                cursor.WindowOver == this.Visual ||
+                (cursor.WindowOver != null && cursor.WindowOver.IsInParentChain(this.Visual));
+
+            if (clickedOnThisOrChild == false &&
+                HasFocus)
+            {
+                this.HasFocus = false;
+            }
         }
 
         private void HandleClickOff()

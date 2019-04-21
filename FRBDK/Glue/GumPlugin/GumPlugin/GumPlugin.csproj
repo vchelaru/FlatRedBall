@@ -545,6 +545,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Embedded\EmbeddedObjectGumProject\GumProject.gumx" />
+    <EmbeddedResource Include="Embedded\EmptyProject\Standards\Polygon.gutx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

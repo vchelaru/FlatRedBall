@@ -253,7 +253,9 @@ namespace GumPlugin
             // - Adding/refreshing forms gum components will now ask you if you want to replace them
             // 2.0.3
             // - Fixed bug in code generation when inheriting one component from another component that is in a folder.
-            get { return new Version(2, 0, 3, 0); }
+            // 2.0.4
+            // - Added missing Polygon standard
+            get { return new Version(2, 0, 4, 0); }
         }
 
         #endregion

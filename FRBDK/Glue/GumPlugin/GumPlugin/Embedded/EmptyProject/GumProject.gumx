@@ -29,6 +29,10 @@
     <ElementType>Standard</ElementType>
   </StandardElementReference>
   <StandardElementReference>
+    <Name>Polygon</Name>
+    <ElementType>Standard</ElementType>
+  </StandardElementReference>
+  <StandardElementReference>
     <Name>Rectangle</Name>
     <ElementType>Standard</ElementType>
   </StandardElementReference>
@@ -38,10 +42,6 @@
   </StandardElementReference>
   <StandardElementReference>
     <Name>Text</Name>
-    <ElementType>Standard</ElementType>
-  </StandardElementReference>
-  <StandardElementReference>
-    <Name>Polygon</Name>
     <ElementType>Standard</ElementType>
   </StandardElementReference>
 </GumProjectSave>

@@ -31,6 +31,7 @@ namespace GumPlugin.Managers
             SaveGumFile("Standards/Component.gutx");
             SaveGumFile("Standards/Container.gutx");
             SaveGumFile("Standards/NineSlice.gutx");
+            SaveGumFile("Standards/Polygon.gutx");
             SaveGumFile("Standards/Rectangle.gutx");
             SaveGumFile("Standards/Sprite.gutx");
             SaveGumFile("Standards/Text.gutx");

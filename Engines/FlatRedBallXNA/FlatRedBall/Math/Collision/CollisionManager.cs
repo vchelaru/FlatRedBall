@@ -18,7 +18,8 @@ namespace FlatRedBall.Math.Collision
 
         /// <summary>
         /// The relationships which are currently part of the collision manager. This should not be added to
-        /// by regular game code. This is exposed so that collision manager extension methods can add new relationships.
+        /// by regular game code. This is exposed so that collision manager extension methods can add new relationships, and
+        /// so relationships can be cleared.
         /// </summary>
         public List<CollisionRelationship> Relationships { get; private set; } = new List<CollisionRelationship>();
 
