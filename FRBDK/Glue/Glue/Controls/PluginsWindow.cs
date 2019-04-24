@@ -552,35 +552,12 @@ namespace FlatRedBall.Glue.Controls
 
         private void RespondToRequiredByProject(PluginContainer pluginContainer, bool requiredByProject)
         {
-            var name = pluginContainer.Name;
+            var didChange = GlueCommands.Self.GluxCommands.SetPluginRequirement(
+                pluginContainer.Plugin, requiredByProject);
 
-            var requiredPlugins = GlueState.Self.CurrentGlueProject.PluginData.RequiredPlugins;
-
-            bool shouldSave = false;
-
-            if(requiredByProject && requiredPlugins.Any(item =>item.Name == name) == false)
+            if(didChange)
             {
-                var pluginToAdd = new PluginRequirement
-                {
-                    Name = name,
-                    Version = pluginContainer.Plugin.Version.ToString()
-                };
-                
-                requiredPlugins.Add(pluginToAdd);
-                shouldSave = true;
-            }
-            else if(requiredByProject == false && requiredPlugins.Any(item => item.Name == name))
-            {
-                var toRemove = requiredPlugins.First(item => item.Name == name);
-                requiredPlugins.Remove(toRemove);
-                shouldSave = true;
-            }
-
-            if(shouldSave)
-            {
-                TaskManager.Self.AddAsyncTask(
-                    ()=>GlueCommands.Self.GluxCommands.SaveGlux(),
-                    "Saving project after changing plugin requirements");
+                GlueCommands.Self.GluxCommands.SaveGluxTask();
             }
         }
 

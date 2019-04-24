@@ -23,6 +23,7 @@ using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.IO.Zip;
 using FlatRedBall.Glue.Errors;
+using GlueSaveClasses;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -940,6 +941,36 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
         }
+
+        public bool SetPluginRequirement(Interfaces.IPlugin plugin, bool requiredByProject)
+        {
+            var name = plugin.FriendlyName;
+
+            var requiredPlugins = GlueState.Self.CurrentGlueProject.PluginData.RequiredPlugins;
+
+            bool didChange = false;
+
+            if (requiredByProject && requiredPlugins.Any(item => item.Name == name) == false)
+            {
+                var pluginToAdd = new PluginRequirement
+                {
+                    Name = name,
+                    Version = plugin.Version.ToString()
+                };
+
+                requiredPlugins.Add(pluginToAdd);
+                didChange = true;
+            }
+            else if (requiredByProject == false && requiredPlugins.Any(item => item.Name == name))
+            {
+                var toRemove = requiredPlugins.First(item => item.Name == name);
+                requiredPlugins.Remove(toRemove);
+                didChange = true;
+            }
+
+            return didChange;
+        }
+        
 
         public void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value)
         {

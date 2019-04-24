@@ -255,6 +255,8 @@ namespace GumPlugin
             // - Fixed bug in code generation when inheriting one component from another component that is in a folder.
             // 2.0.4
             // - Added missing Polygon standard
+            // 2.0.5
+            // - Gum plugin will now ask to make itself 
             get { return new Version(2, 0, 4, 0); }
         }
 
@@ -589,10 +591,25 @@ namespace GumPlugin
 
                 // show the tab for the new file:
                 this.FocusTab();
+
+                GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
+                    "Would you like to mark the Gum plugin as a required plugin for this project? " +
+                    "This can help others who open this project",
+                    yesAction:HandleMakePluginRequiredYes);
             }
 
             propertiesManager.IsReactingToProperyChanges = true;
 
+        }
+
+        private void HandleMakePluginRequiredYes()
+        {
+            var changed = GlueCommands.Self.GluxCommands.SetPluginRequirement(this, true);
+
+            if(changed)
+            {
+                GlueCommands.Self.GluxCommands.SaveGluxTask();
+             }
         }
 
         private void HandleGluxLoadEarly()
