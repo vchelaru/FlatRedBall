@@ -107,6 +107,14 @@ namespace FlatRedBall.Math.Collision
             return relationship;
         }
 
+        public PositionedObjectVsShapeCollection<FirstCollidableT> CreateRelationship<FirstCollidableT>(FirstCollidableT first, ShapeCollection shapeCollection)
+            where FirstCollidableT : PositionedObject, ICollidable
+        {
+            var relationship = new PositionedObjectVsShapeCollection<FirstCollidableT>(first, shapeCollection);
+            relationship.Partitions = Partitions;
+            this.Relationships.Add(relationship);
+            return relationship;
+        }
 
         // List vs. ShapeCollection
         public ListVsShapeCollectionRelationship<FirstCollidableT> CreateRelationship<FirstCollidableT>(PositionedObjectList<FirstCollidableT> first, ShapeCollection shapeCollection)

@@ -56,8 +56,6 @@ namespace GlueTestProject.Screens
             }
 
 
-
-
             // Try positive infinity, call with the immovable:
             MovableRectangle.X = 1;
             ImmovableRectangle.CollideAgainstMove(MovableRectangle, float.PositiveInfinity, 1);
@@ -74,9 +72,26 @@ namespace GlueTestProject.Screens
 
             CreateCollisionRelationships();
 
+            TestEntityListVsShapeCollection();
+
             TestEntityVsShapeCollection();
 
             TestNullSubcollision();
+
+
+        }
+
+        private void TestEntityVsShapeCollection()
+        {
+            var singleEntity = new Entities.CollidableEntity();
+
+            // for now just testing that the method exists:
+            var relationship = CollisionManager.Self.CreateRelationship(singleEntity, ShapeCollectionInstance);
+
+
+
+            CollisionManager.Self.Relationships.Remove(relationship);
+            singleEntity.Destroy();
         }
 
         private void TestNullSubcollision()
@@ -141,8 +156,7 @@ namespace GlueTestProject.Screens
 
         }
 
-
-        private void TestEntityVsShapeCollection()
+        private void TestEntityListVsShapeCollection()
         {
             var entityVsShapeCollection = CollisionManager.Self.CreateRelationship(CollidableList, ShapeCollectionInstance);
 
@@ -160,6 +174,7 @@ namespace GlueTestProject.Screens
             collidedEntities.Contains(At200).ShouldBe(true);
             collidedEntities.Contains(At400).ShouldBe(false);
         }
+
         private void Test_L_RepositonDirection()
         {
             ShapeCollection rectangles = new ShapeCollection();

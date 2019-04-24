@@ -945,6 +945,9 @@ namespace FlatRedBall.TileGraphics
             this.mMapLists.MakeTwoWay();
         }
 
+        /// <summary>
+        /// Fully removes the LayeredTileMap from the engine, including the rendering and collision.
+        /// </summary>
         public void Destroy()
         {
             // Make it one-way because we want the 
