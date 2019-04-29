@@ -1,6 +1,6 @@
 "FriendlyName (System.String, required)",Namespace (System.String),ZipName (System.String),Url (System.String),SupportedInGlue (bool)
 Anfloga (requires XNA),Anfloga,Anfloga.zip,https://github.com/vchelaru/Anfloga/archive/master.zip,TRUE
-Brake Neck (Desktop GL),BrakeNeckGL,BrakeNeckGL.zip,https://github.com/patridge/BrakeNeck-DesktopGL/archive/master.zip,TRUE
+Brake Neck (Desktop GL),BrakeNeck,BrakeNeckGL.zip,https://github.com/patridge/BrakeNeck-DesktopGL/archive/master.zip,TRUE
 Brake Neck (requires XNA),BrakeNeck,BrakeNeck.zip,https://github.com/vchelaru/BrakeNeck/archive/master.zip,TRUE
 Farseer Samples (requires XNA),FarseerProjectDesktop,FarseerSamples.zip,https://github.com/vchelaru/FarseerStarter/archive/master.zip,TRUE
 Legend of Dodgeball (requires XNA),Dodgeball,Dodgeball.zip,https://github.com/vchelaru/Dodgeball/archive/master.zip,TRUE
