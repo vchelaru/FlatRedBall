@@ -107,40 +107,40 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Glue\Events\EventResponseSave.cs">
-      <Link>EventResponseSave.cs</Link>
+      <Link>Models\EventResponseSave.cs</Link>
     </Compile>
     <Compile Include="..\Glue\Events\EventSave.cs">
-      <Link>EventSave.cs</Link>
+      <Link>Models\EventSave.cs</Link>
     </Compile>
     <Compile Include="..\Glue\Events\IEventContainer.cs">
-      <Link>IEventContainer.cs</Link>
+      <Link>Models\Interfaces\IEventContainer.cs</Link>
     </Compile>
     <Compile Include="..\Glue\SaveClasses\CustomClassSave.cs">
-      <Link>CustomClassSave.cs</Link>
+      <Link>Models\CustomClassSave.cs</Link>
     </Compile>
     <Compile Include="..\Glue\SaveClasses\CustomVariable.cs">
-      <Link>CustomVariable.cs</Link>
+      <Link>Models\CustomVariable.cs</Link>
     </Compile>
     <Compile Include="..\Glue\SaveClasses\CustomVariableInNamedObject.cs">
-      <Link>CustomVariableInNamedObject.cs</Link>
+      <Link>Models\CustomVariableInNamedObject.cs</Link>
     </Compile>
     <Compile Include="..\Glue\SaveClasses\EntitySave.cs">
-      <Link>EntitySave.cs</Link>
+      <Link>Models\EntitySave.cs</Link>
     </Compile>
     <Compile Include="..\Glue\SaveClasses\GlobalContentSettingsSave.cs">
-      <Link>GlobalContentSettingsSave.cs</Link>
+      <Link>Models\GlobalContentSettingsSave.cs</Link>
     </Compile>
     <Compile Include="..\Glue\SaveClasses\GlueProjectSave.cs">
-      <Link>GlueProjectSave.cs</Link>
+      <Link>Models\GlueProjectSave.cs</Link>
     </Compile>
     <Compile Include="..\Glue\SaveClasses\IElement.cs">
-      <Link>IElement.cs</Link>
+      <Link>Models\Interfaces\IElement.cs</Link>
     </Compile>
     <Compile Include="..\Glue\SaveClasses\IFileReferencer.cs">
-      <Link>IFileReferencer.cs</Link>
+      <Link>Models\Interfaces\IFileReferencer.cs</Link>
     </Compile>
     <Compile Include="..\Glue\SaveClasses\INamedObjectContainer.cs">
-      <Link>INamedObjectContainer.cs</Link>
+      <Link>Models\Interfaces\INamedObjectContainer.cs</Link>
     </Compile>
     <Compile Include="..\Glue\SaveClasses\NamedObjectPropertyOverride.cs">
       <Link>NamedObjectPropertyOverride.cs</Link>
@@ -169,12 +169,12 @@
     <Compile Include="..\Glue\SaveClasses\TranslatedFileSave.cs">
       <Link>TranslatedFileSave.cs</Link>
     </Compile>
-    <Compile Include="DisplaySettings.cs" />
-    <Compile Include="FloatRectangle.cs" />
-    <Compile Include="FloatRectangleTypeConverter.cs" />
-    <Compile Include="GlueProjectSaveExtensions.cs" />
-    <Compile Include="ITaggable.cs" />
-    <Compile Include="GluxPluginData.cs" />
+    <Compile Include="Models\DisplaySettings.cs" />
+    <Compile Include="Models\FloatRectangle.cs" />
+    <Compile Include="Models\TypeConverters\FloatRectangleTypeConverter.cs" />
+    <Compile Include="ExtensionMethods\GlueProjectSaveExtensions.cs" />
+    <Compile Include="Models\Interfaces\ITaggable.cs" />
+    <Compile Include="Models\GluxPluginData.cs" />
     <Compile Include="PluginRequirement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReferencedFileReference.cs" />

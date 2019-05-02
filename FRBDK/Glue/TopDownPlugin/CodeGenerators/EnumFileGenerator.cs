@@ -1,5 +1,4 @@
-﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
-using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System;
 using System.Collections.Generic;
@@ -7,18 +6,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlatRedBall.PlatformerPlugin.Generators
+namespace TopDownPlugin.CodeGenerators
 {
     class EnumFileGenerator : Singleton<EnumFileGenerator>
     {
         public void GenerateAndSaveEnumFile()
         {
-
             TaskManager.Self.AddSync(() =>
             {
                 var contents = GenerateFileContents();
 
-                var relativeDirectory = "Platformer/Enums.cs";
+                var relativeDirectory = "TopDown/Enums.cs";
 
                 GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeDirectory);
 
@@ -27,9 +25,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 GlueCommands.Self.TryMultipleTimes(() =>
                     System.IO.File.WriteAllText(fullFile, contents));
 
-            }, "Adding platformer enum files to the project");
-
-            
+            }, "Adding top-down enum files to the project");
         }
 
         private string GenerateFileContents()
@@ -40,17 +36,25 @@ $@"
 
 namespace {GlueState.Self.ProjectNamespace}.Entities
 {{
-    public enum MovementType
+    public enum TopDownDirection
     {{
-        Ground,
-        Air,
-        AfterDoubleJump
+        Right = 0,
+        UpRight = 1,
+        Up = 2,
+        UpLeft = 3,
+        Left = 4,
+        DownLeft = 5,
+        Down = 6,
+        DownRight = 7
     }}
-    public enum HorizontalDirection
+
+    public enum PossibleDirections
     {{
-        Left,
-        Right
+        LeftRight,
+        FourWay,
+        EightWay
     }}
+
 }}
 
 ";

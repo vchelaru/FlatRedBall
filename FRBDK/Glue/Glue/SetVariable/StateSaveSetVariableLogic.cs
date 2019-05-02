@@ -19,35 +19,6 @@ namespace FlatRedBall.Glue.SetVariable
                 updateTreeView = false;
             }
 
-            // See if this is an Unmodified object
-            // We don't support NamedObjectPropertyOverrides anymore
-            //NamedObjectPropertyOverride propertyOverride = parentObject as NamedObjectPropertyOverride;
-            //if (propertyOverride != null)
-            //{
-            //    if (stateSave.NamedObjectPropertyOverrides.Contains(propertyOverride))
-            //    {
-            //        if (changedMember == "SourceFile" && propertyOverride.SourceFile == AvailableFileStringConverter.UseDefaultString)
-            //        {
-            //            propertyOverride.SourceFile = null;
-            //        }
-
-            //        if (propertyOverride.IsNulledOut)
-            //        {
-            //            stateSave.NamedObjectPropertyOverrides.Remove(propertyOverride);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        switch (changedMember)
-            //        {
-            //            case "SourceFile":
-            //                propertyOverride.SourceFile = NamedObjectPropertyOverride.SourceFileBuffer;
-            //                break;
-            //        }
-            //        stateSave.NamedObjectPropertyOverrides.Add(propertyOverride);
-            //    }
-            //}
-
             if (changedMember == "Name")
             {
                 string whyItIsntValid;

@@ -2064,22 +2064,10 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
         }
 
-        public static CustomVariable CreateAndAddNewVariable(string resultName, string type, string sourceObject, string sourceObjectProperty, string overridingType, string typeConverter)
+        public static CustomVariable CreateAndAddNewVariable(CustomVariable newVariable, bool save = true)
         {
             IElement currentElement = EditorLogic.CurrentElement;
-            CustomVariable newVariable = new CustomVariable();
-            newVariable.Type = type;
-            newVariable.Name = resultName;
-            newVariable.SourceObject = sourceObject;
-            newVariable.SourceObjectProperty = sourceObjectProperty;
 
-
-
-            if (!string.IsNullOrEmpty(overridingType))
-            {
-                newVariable.OverridingPropertyType = overridingType;
-                newVariable.TypeConverter = typeConverter;
-            }
 
             currentElement.CustomVariables.Add(newVariable);
 
@@ -2087,8 +2075,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (EditorLogic.CurrentEntityTreeNode != null)
             {
-
-
                 EditorLogic.CurrentEntityTreeNode.UpdateReferencedTreeNodes();
 
             }
@@ -2106,8 +2092,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
             PluginManager.ReactToVariableAdded(newVariable);
 
-
-            GluxCommands.Self.SaveGlux();
+            if(save)
+            {
+                GluxCommands.Self.SaveGlux();
+            }
 
             return newVariable;
         }

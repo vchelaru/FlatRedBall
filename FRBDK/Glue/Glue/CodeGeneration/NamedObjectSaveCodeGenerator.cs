@@ -381,18 +381,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         string objectName = namedObject.FieldName;
 
-                        List<StateSave> statesUsingThisNamedObject = saveObject.GetAllStatesReferencingObject(objectName);
 
-                        if (statesUsingThisNamedObject.Count != 0)
-                        {
-                            InstantiateObjectInSwitchStatement(namedObject, codeBlock, referencedFilesAlreadyUsingFullFile,
-                                rfs, statesUsingThisNamedObject, saveObject, overridingName);
-                        }
-                        else
-                        {
-                            //InstantiateObjectUsingFile(namedObject, codeBlock, referencedFilesAlreadyUsingFullFile, rfs, saveObject, containerName, overridingName);
-                            WriteMethodForClone(namedObject, codeBlock, referencedFilesAlreadyUsingFullFile, rfs, saveObject, overridingName);
-                        }
+                        //InstantiateObjectUsingFile(namedObject, codeBlock, referencedFilesAlreadyUsingFullFile, rfs, saveObject, containerName, overridingName);
+                        WriteMethodForClone(namedObject, codeBlock, referencedFilesAlreadyUsingFullFile, rfs, saveObject, overridingName);
+                        
                     }
                 }
             }
@@ -501,13 +493,6 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 StateSave stateSave = stateSaves[i];
 
-                // I don't think we're going to use these anymore
-                //NamedObjectPropertyOverride objectOverride = stateSave.GetNamedObjectOverride(objectName);
-                //name = FileManager.RemovePath(FileManager.RemoveExtension(objectOverride.SourceFile));
-
-                //InstantiateObjectUsingFile(namedObject, switchBlock.Case("VariableState." + stateSave.Name), referencedFilesAlreadyUsingFullFile, rfs,
-                //    saveObject,
-                //    name, overridingName);
                 WriteMethodForClone(namedObject, switchBlock.Case("VariableState." + stateSave.Name), referencedFilesAlreadyUsingFullFile, rfs, 
                     saveObject, overridingName);
 

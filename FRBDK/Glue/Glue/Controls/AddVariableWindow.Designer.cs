@@ -59,7 +59,7 @@
             // 
             this.mCancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.mCancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.mCancelButton.Location = new System.Drawing.Point(302, 292);
+            this.mCancelButton.Location = new System.Drawing.Point(302, 330);
             this.mCancelButton.Name = "mCancelButton";
             this.mCancelButton.Size = new System.Drawing.Size(70, 23);
             this.mCancelButton.TabIndex = 4;
@@ -70,7 +70,7 @@
             // 
             this.mOkWindow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.mOkWindow.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.mOkWindow.Location = new System.Drawing.Point(226, 292);
+            this.mOkWindow.Location = new System.Drawing.Point(226, 330);
             this.mOkWindow.Name = "mOkWindow";
             this.mOkWindow.Size = new System.Drawing.Size(70, 23);
             this.mOkWindow.TabIndex = 3;
@@ -126,7 +126,7 @@
             this.TunnelVariablePanel.Controls.Add(this.label4);
             this.TunnelVariablePanel.Location = new System.Drawing.Point(3, 89);
             this.TunnelVariablePanel.Name = "TunnelVariablePanel";
-            this.TunnelVariablePanel.Size = new System.Drawing.Size(372, 194);
+            this.TunnelVariablePanel.Size = new System.Drawing.Size(372, 232);
             this.TunnelVariablePanel.TabIndex = 2;
             this.TunnelVariablePanel.Visible = false;
             // 
@@ -288,7 +288,7 @@
             // 
             this.NewVariablePanel.Location = new System.Drawing.Point(5, 90);
             this.NewVariablePanel.Name = "NewVariablePanel";
-            this.NewVariablePanel.Size = new System.Drawing.Size(372, 197);
+            this.NewVariablePanel.Size = new System.Drawing.Size(372, 216);
             this.NewVariablePanel.TabIndex = 29;
             this.NewVariablePanel.Text = "elementHost1";
             this.NewVariablePanel.Child = this.createNewVariableControl1;
@@ -299,7 +299,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.mCancelButton;
-            this.ClientSize = new System.Drawing.Size(384, 327);
+            this.ClientSize = new System.Drawing.Size(384, 365);
             this.Controls.Add(this.mCancelButton);
             this.Controls.Add(this.mOkWindow);
             this.Controls.Add(this.panel1);
@@ -307,8 +307,8 @@
             this.Controls.Add(this.radTunnelVariable);
             this.Controls.Add(this.radExistingVariable);
             this.Controls.Add(this.ExistingVariablePanel);
-            this.Controls.Add(this.TunnelVariablePanel);
             this.Controls.Add(this.NewVariablePanel);
+            this.Controls.Add(this.TunnelVariablePanel);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(400, 334);

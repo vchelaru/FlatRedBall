@@ -115,6 +115,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SelectionInterface", "..\Gl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedGrinPlugin", "RedGrinPlugin\RedGrinPlugin.csproj", "{DB697A6B-679E-44CE-A7BA-7DECCE9DB404}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopDownPlugin", "TopDownPlugin\TopDownPlugin.csproj", "{CE3CC7E8-0005-4551-B94A-FA28E2480A00}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
@@ -802,6 +804,22 @@ Global
 		{DB697A6B-679E-44CE-A7BA-7DECCE9DB404}.UnitTests|Any CPU.Build.0 = Release|Any CPU
 		{DB697A6B-679E-44CE-A7BA-7DECCE9DB404}.UnitTests|x86.ActiveCfg = Release|Any CPU
 		{DB697A6B-679E-44CE-A7BA-7DECCE9DB404}.UnitTests|x86.Build.0 = Release|Any CPU
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.Debug|x86.ActiveCfg = Debug|x86
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.Debug|x86.Build.0 = Debug|x86
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.DebugWithPlugins|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.DebugWithPlugins|Any CPU.Build.0 = Debug|Any CPU
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.DebugWithPlugins|x86.ActiveCfg = Debug|Any CPU
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.DebugWithPlugins|x86.Build.0 = Debug|Any CPU
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.Release|x86.ActiveCfg = Release|Any CPU
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.Release|x86.Build.0 = Release|Any CPU
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.UnitTests|Any CPU.ActiveCfg = Release|Any CPU
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.UnitTests|Any CPU.Build.0 = Release|Any CPU
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.UnitTests|x86.ActiveCfg = Release|Any CPU
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00}.UnitTests|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -856,6 +874,7 @@ Global
 		{F6356008-3AB7-418C-A3C0-DDEA4361A7D0} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
 		{B85CC176-2137-4A85-91BA-CE9D703BBA00} = {4532DFDF-D042-4AEE-9FBE-92A1A7BC5F5D}
 		{DB697A6B-679E-44CE-A7BA-7DECCE9DB404} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
+		{CE3CC7E8-0005-4551-B94A-FA28E2480A00} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {878CCBB8-EADE-4F25-9DE7-D55D999D414A}

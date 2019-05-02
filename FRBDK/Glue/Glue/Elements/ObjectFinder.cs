@@ -634,16 +634,6 @@ namespace FlatRedBall.Glue.Elements
             return GlueProject.GetElementContaining(customVariable);
         }
 
-
-        //public IElement GetElementContaining(NamedObjectPropertyOverride propertyOverride)
-        //{
-        //    if (GlueProject != null)
-        //    {
-        //        return GlueProject.GetElementContaining(propertyOverride);
-        //    }
-        //    return null;
-        //}
-
         public IElement GetElementContaining(NamedObjectSave namedObjectSave)
         {
             for (int i = 0; i < ObjectFinder.Self.GlueProject.Screens.Count; i++)

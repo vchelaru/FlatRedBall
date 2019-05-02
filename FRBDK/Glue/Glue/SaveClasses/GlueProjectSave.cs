@@ -403,43 +403,6 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        // I don't think we're going to use these anymore
-        //public IElement GetElementContaining(NamedObjectPropertyOverride propertyOverride)
-        //{
-
-        //    foreach (EntitySave entitySave in Entities)
-        //    {
-        //        foreach (StateSave containedStateSave in entitySave.AllStates)
-        //        {
-        //            // I don't think we're going to use these anymore
-
-        //            //if (containedStateSave.NamedObjectPropertyOverrides.Contains(propertyOverride))
-        //            //{
-        //            //    return entitySave;
-        //            //}
-        //        }
-
-        //    }
-
-
-        //    foreach (ScreenSave screenSave in Screens)
-        //    {
-        //        foreach (StateSave containedStateSave in screenSave.AllStates)
-        //        {
-        //            // I don't think we're going to use these anymore
-
-        //            //if (containedStateSave.NamedObjectPropertyOverrides.Contains(propertyOverride))
-        //            //{
-        //            //    return screenSave;
-        //            //}
-        //        }
-        //    }
-
-        //    return null;
-
-
-        //}
-
         public IElement GetElementContaining(CustomVariable customVariable)
         {
             foreach (EntitySave entitySave in Entities)

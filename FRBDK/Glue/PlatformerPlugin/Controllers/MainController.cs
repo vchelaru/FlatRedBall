@@ -22,7 +22,6 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
         PlatformerEntityViewModel viewModel;
         MainControl mainControl;
-        EnumFileGenerator enumFileGenerator;
 
         bool ignoresPropertyChanges = false;
 
@@ -30,7 +29,6 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
         public MainController()
         {
-            enumFileGenerator = new EnumFileGenerator();
         }
 
         public MainControl GetControl()
@@ -49,12 +47,12 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
         private void HandleViewModelPropertyChange(object sender, PropertyChangedEventArgs e)
         {
-            // early out
+            /////////// early out ///////////
             if (ignoresPropertyChanges)
             {
                 return;
             }
-            // end early out
+            ///////////// end early out ///////////
 
             var entity = GlueState.Self.CurrentEntitySave;
             var viewModel = sender as PlatformerEntityViewModel;
@@ -70,7 +68,6 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             if(shouldAddPlatformerVariables)
             {
                 AddPlatformerVariables(entity);
-
             }
 
             if (shouldGenerateEntity)
@@ -89,7 +86,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
             if (shouldGenerateCsv || shouldGenerateEntity || shouldAddPlatformerVariables)
             {
-                enumFileGenerator.GenerateAndSaveEnumFile();
+                EnumFileGenerator.Self.GenerateAndSaveEnumFile();
                 TaskManager.Self.AddAsyncTask(
                     () => GlueCommands.Self.GluxCommands.SaveGlux(),
                     "Saving Glue Project");
@@ -228,7 +225,6 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                         shouldAddMovementVariables = false;
                         break;
                 }
-
             }
         }
 
@@ -281,17 +277,6 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             }
 
             return csvValues;
-        }
-
-
-        internal void ShowTabForEntity(EntitySave currentEntitySave, MainPlugin mainPlugin)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void HideTab(MainPlugin mainPlugin)
-        {
-            throw new NotImplementedException();
         }
     }
 }

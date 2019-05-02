@@ -235,13 +235,13 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             {
                 // We're going to make a bool Visible for this now.
 
+                CustomVariable newVariable = new CustomVariable();
+                newVariable.Name = "Visible";
+                newVariable.Type = "bool";
+
+
                 RightClickHelper.CreateAndAddNewVariable(
-                    "Visible",
-                    "bool",
-                    null,
-                    null,
-                    null,
-                    null);
+                    newVariable);
 
             }
         }

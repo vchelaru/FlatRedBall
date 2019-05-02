@@ -13,23 +13,15 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
 {
     public class PlatformerEntityViewModel : ViewModel
     {
-        bool isPlatformer;
-
         public ObservableCollection<PlatformerValuesViewModel> PlatformerValues { get; private set; }
 
         public bool IsPlatformer
         {
-            get
-            {
-                return isPlatformer;
-            }
-            set
-            {
-                base.ChangeAndNotify(ref isPlatformer, value);
-                NotifyPropertyChanged(nameof(PlatformerUiVisibility));
-            }
+            get => Get<bool>();
+            set => Set(value);
         }
 
+        [DependsOn(nameof(IsPlatformer))]
         public Visibility PlatformerUiVisibility
         {
             get
@@ -54,8 +46,6 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
 
         private void HandlePlatformerValuesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            int m = 3;
-
             switch(e.Action)
             {
                 case NotifyCollectionChangedAction.Add:

@@ -26,16 +26,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public List<InstructionSave> InstructionSaves = new List<InstructionSave>();
 
-        // As the class NamedObjectPropertyOverride indicates, I don't think we're 
-        // using this anymore.  It's causing Glue to take a long time in reloading .glux
-        // files because of the comparisons that must be made.  Therefore, I'm going to remove
-        // it to make reloads faster.
-        //public List<NamedObjectPropertyOverride> NamedObjectPropertyOverrides = new List<NamedObjectPropertyOverride>();
-        //public bool ShouldSerializeNamedObjectPropertyOverrides()
-        //{
-        //    return NamedObjectPropertyOverrides != null && NamedObjectPropertyOverrides.Count != 0;
-        //}
-
         #endregion
 
         #region Properties
@@ -59,19 +49,11 @@ namespace FlatRedBall.Glue.SaveClasses
             StateSave newStateSave = this.MemberwiseClone() as StateSave;
 
             newStateSave.InstructionSaves = new List<InstructionSave>();
-            // I don't think we're going to use these anymore
-            //newStateSave.NamedObjectPropertyOverrides = new List<NamedObjectPropertyOverride>();
 
             foreach (InstructionSave instructionSave in InstructionSaves)
             {
                 newStateSave.InstructionSaves.Add(instructionSave.Clone());
             }
-
-            // I don't think we're going to use these anymore
-            //foreach (NamedObjectPropertyOverride nopo in NamedObjectPropertyOverrides)
-            //{
-            //    newStateSave.NamedObjectPropertyOverrides.Add(nopo.Clone());
-            //}
 
             return newStateSave;
         }
@@ -87,19 +69,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
             return false;
         }
-
-        // I don't think we're going to use these anymore
-        //public NamedObjectPropertyOverride GetNamedObjectOverride(string namedObjectName)
-        //{
-        //    foreach (NamedObjectPropertyOverride propertyOverride in NamedObjectPropertyOverrides)
-        //    {
-        //        if (propertyOverride.Name == namedObjectName)
-        //        {
-        //            return propertyOverride;
-        //        }
-        //    }
-        //    return null;
-        //}            
+       
 
         
         public void SortInstructionSaves(List<CustomVariable> customVariables)

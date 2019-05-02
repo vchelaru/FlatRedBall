@@ -51,26 +51,6 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static List<StateSave> GetAllStatesReferencingObject(this IElement element, string objectName)
-        {
-            List<StateSave> states = new List<StateSave>();
-
-            // I don't think we're going to use these anymore
-            //foreach (StateSave stateSave in element.AllStates)
-            //{
-            //    foreach (NamedObjectPropertyOverride propertyOverride in stateSave.NamedObjectPropertyOverrides)
-            //    {
-            //        if (propertyOverride.Name == objectName)
-            //        {
-            //            states.Add(stateSave);
-            //            break;
-            //        }
-            //    }
-            //}
-
-            return states;
-        }
-
         public static void CleanUnusedVariablesFromStates(this IElement element)
         {
             foreach (StateSave state in element.AllStates)

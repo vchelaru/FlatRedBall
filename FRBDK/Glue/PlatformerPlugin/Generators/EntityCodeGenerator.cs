@@ -284,6 +284,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             }
             /////////////////End Early Out/////////////////////////////
 
+
             #region Huge Code Block
 
             codeBlock.Line(

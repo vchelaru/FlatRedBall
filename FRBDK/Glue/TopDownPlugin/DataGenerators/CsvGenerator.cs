@@ -1,21 +1,22 @@
 ﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
+using FlatRedBall.IO.Csv;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FlatRedBall.PlatformerPlugin.ViewModels;
-using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using FlatRedBall.IO;
-using FlatRedBall.Glue.Plugins;
-using FlatRedBall.IO.Csv;
-using FlatRedBall.PlatformerPlugin.SaveClasses;
+using TopDownPlugin.Models;
+using TopDownPlugin.ViewModels;
 
-namespace FlatRedBall.PlatformerPlugin.Generators
+namespace TopDownPlugin.DataGenerators
 {
     public class CsvGenerator : Singleton<CsvGenerator>
     {
+        public const string StrippedCsvFile = "TopDownValues";
+        public const string RelativeCsvFile = StrippedCsvFile + ".csv";
 
         public string CsvFileFor(EntitySave entity)
         {
@@ -23,11 +24,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             return absoluteFileName;
         }
 
-        public const string StrippedCsvFile = "PlatformerValues";
-        public const string RelativeCsvFile = StrippedCsvFile + ".csv";
-
-
-        internal void GenerateFor(EntitySave entity, PlatformerEntityViewModel viewModel)
+        internal void GenerateFor(EntitySave entity, TopDownEntityViewModel viewModel)
         {
             string contents = GetCsvContents(entity, viewModel);
 
@@ -39,13 +36,14 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             });
         }
 
-        private string GetCsvContents(EntitySave entity, PlatformerEntityViewModel viewModel)
+        private string GetCsvContents(EntitySave entity, TopDownEntityViewModel viewModel)
         {
-            List<PlatformerValues> values = new List<PlatformerValues>();
+            List<TopDownValues> values = new List<TopDownValues>();
 
-            foreach(var valuesViewModel in viewModel.PlatformerValues)
+            foreach (var valuesViewModel in viewModel.TopDownValues)
             {
-                values.Add(valuesViewModel.ToValues());
+                // todo - finish here
+                //values.Add(valuesViewModel.ToValues());
             }
 
             RuntimeCsvRepresentation rcr = RuntimeCsvRepresentation.FromList(values);
@@ -64,5 +62,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             return toReturn;
         }
+
+
     }
 }

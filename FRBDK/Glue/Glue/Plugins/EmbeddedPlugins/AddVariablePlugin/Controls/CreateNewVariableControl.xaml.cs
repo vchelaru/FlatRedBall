@@ -22,6 +22,8 @@ namespace FlatRedBall.Glue.Controls.AddVariable
     {
         public string VariableName => TextBox.Text;
 
+        public bool IsStatic => IsStaticCheckBox.IsChecked == true;
+
         public string SelectedType
         {
             get

@@ -254,7 +254,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     string overridingType = addVariableWindow.OverridingType;
                     string typeConverter = addVariableWindow.TypeConverter;
 
-                    CustomVariable newVariable = RightClickHelper.CreateAndAddNewVariable(resultName, type, sourceObject, sourceObjectProperty, overridingType, typeConverter);
+                    CustomVariable newVariable = new CustomVariable();
+                    newVariable.Name = resultName;
+                    newVariable.Type = type;
+                    newVariable.SourceObject = sourceObject;
+                    newVariable.SourceObjectProperty = sourceObjectProperty;
+
+                    newVariable.IsShared = addVariableWindow.IsStatic;
+
+
+
+                    if (!string.IsNullOrEmpty(overridingType))
+                    {
+                        newVariable.OverridingPropertyType = overridingType;
+                        newVariable.TypeConverter = typeConverter;
+                    }
+
+
+                    RightClickHelper.CreateAndAddNewVariable(newVariable);
 
                     if (isDefinedByBase)
                     {

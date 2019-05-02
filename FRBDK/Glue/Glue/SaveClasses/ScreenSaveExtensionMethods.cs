@@ -91,10 +91,5 @@ namespace FlatRedBall.Glue.SaveClasses
             return NamedObjectContainerHelper.DoesMemberNeedToBeSetByContainer(instance, memberName);
         }
 
-        public static List<StateSave> GetAllStatesReferencingObject(this ScreenSave instance, string objectName)
-        {
-            return IElementHelper.GetAllStatesReferencingObject(instance, objectName);
-        }
-
     }
 }

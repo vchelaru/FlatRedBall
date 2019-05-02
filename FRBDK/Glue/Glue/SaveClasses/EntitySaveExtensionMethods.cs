@@ -427,9 +427,5 @@ namespace FlatRedBall.Glue.SaveClasses
             return typedMembers;
         }
 
-        public static List<StateSave> GetAllStatesReferencingObject(this EntitySave instance, string objectName)
-        {
-            return IElementHelper.GetAllStatesReferencingObject(instance, objectName);
-        }
     }
 }

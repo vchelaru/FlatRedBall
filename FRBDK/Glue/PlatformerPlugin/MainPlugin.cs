@@ -12,6 +12,7 @@ using FlatRedBall.PlatformerPlugin.Controllers;
 using FlatRedBall.PlatformerPlugin.Views;
 using FlatRedBall.PlatformerPlugin.Generators;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Controls;
 
 namespace FlatRedBall.PlatformerPlugin
 {
@@ -21,8 +22,7 @@ namespace FlatRedBall.PlatformerPlugin
         #region Fields/Properties
 
         MainControl control;
-
-        EntityCodeGenerator codeGenerator;
+        PluginTab pluginTab;
 
         public override string FriendlyName
         {
@@ -63,8 +63,8 @@ namespace FlatRedBall.PlatformerPlugin
         public override void StartUp()
         {
             base.RegisterCodeGenerator(new EntityCodeGenerator());
-            this.ReactToItemSelectHandler += HandleItemSelected;
             this.ReactToLoadedGlux += HandleGluxLoaded;
+            this.ReactToItemSelectHandler += HandleItemSelected;
         }
 
         private void HandleGluxLoaded()
@@ -79,7 +79,7 @@ namespace FlatRedBall.PlatformerPlugin
             if(anyPlatformer)
             {
                 // just in case it's not there:
-                new EnumFileGenerator().GenerateAndSaveEnumFile();
+                EnumFileGenerator.Self.GenerateAndSaveEnumFile();
             }
         }
 
@@ -94,17 +94,18 @@ namespace FlatRedBall.PlatformerPlugin
                 if(control == null)
                 {
                     control = MainController.Self.GetControl();
-                    this.AddToTab(PluginManager.CenterTab, control, "Platformer");
+                    pluginTab = this.CreateTab(control, "Platformer");
+                    this.ShowTab(pluginTab, TabLocation.Center);
                 }
                 else
                 {
-                    this.AddTab();
+                    this.ShowTab(pluginTab);
                 }
                 MainController.Self.UpdateTo(GlueState.Self.CurrentEntitySave);
             }
             else
             {
-                this.RemoveTab();
+                this.RemoveTab(pluginTab);
             }
         }
 

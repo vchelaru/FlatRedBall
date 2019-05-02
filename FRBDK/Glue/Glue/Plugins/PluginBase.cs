@@ -349,7 +349,7 @@ namespace FlatRedBall.Glue.Plugins
 
             return PluginTab;
         }
-        [Obsolete("Use CreateTab and then call AddTab/Remove Tab to hide/show the tab")]
+        [Obsolete("Use CreateTab and then call ShowTab/RemoveTab to hide/show the tab")]
         protected PluginTab AddToTab(System.Windows.Forms.TabControl tabContainer, 
             System.Windows.Controls.UserControl control, string tabName)
         {
@@ -403,9 +403,24 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        protected void ShowTab(PluginTab pluginTab, TabLocation tabLocation)
+        protected void ShowTab(PluginTab pluginTab, TabLocation? tabLocation = null)
         {
-            var container = GetTabContainerFromLocation(tabLocation);
+            TabControl container = null;
+            if(tabLocation == null)
+            {
+                if(pluginTab.LastTabControl != null)
+                {
+                    container = pluginTab.LastTabControl;
+                }
+                else
+                {
+                    container = GetTabContainerFromLocation(TabLocation.Left);
+                }
+            }
+            else
+            {
+                container = GetTabContainerFromLocation(tabLocation.Value);
+            }
 
             if (container.Controls.Contains(pluginTab) == false)
             {

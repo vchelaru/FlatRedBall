@@ -7,6 +7,7 @@ using FlatRedBall.AnimationEditorForms.Data;
 using FlatRedBall.IO;
 using RenderingLibrary.Content;
 using FlatRedBall.AnimationEditorForms.Converters;
+using FilePath = ToolsUtilities.FilePath;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -61,25 +62,29 @@ namespace FlatRedBall.AnimationEditorForms
         #endregion
 
 
-        internal void LoadAnimationChain(string fileName)
+        internal void LoadAnimationChain(FilePath fileName)
         {
             // Reset all textures
             LoaderManager.Self.CacheTextures = false;
             LoaderManager.Self.CacheTextures = true;
 
-            AnimationChainListSave acls = AnimationChainListSave.FromFile(fileName);
-
-
-            AnimationChainListSave = acls;
-
-            FileName = fileName;
-
-            //Now just convert back to pixel when saving out
-            if (acls.CoordinateType == Graphics.TextureCoordinateType.Pixel)
+            if(fileName.Exists())
             {
-                acls.ConvertToUvCoordinates();
-            }
+                AnimationChainListSave acls = null;
 
+                acls = AnimationChainListSave.FromFile(fileName.FullPath);
+
+
+                AnimationChainListSave = acls;
+
+                FileName = fileName.FullPath;
+
+                //Now just convert back to pixel when saving out
+                if (acls.CoordinateType == Graphics.TextureCoordinateType.Pixel)
+                {
+                    acls.ConvertToUvCoordinates();
+                }
+            }
         }
 
         

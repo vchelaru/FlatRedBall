@@ -163,6 +163,14 @@ namespace FlatRedBall.Glue.Controls
             get { return TypeConverterComboBox.Text; }
         }
 
+        public bool IsStatic
+        {
+            get
+            {
+                return createNewVariableControl1.IsStatic;
+            }
+        }
+
         #endregion
 
         #region Methods

@@ -48,31 +48,6 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                 }
             }
 
-            //NamedObjectPropertyOverride propertyOverride = stateSave.GetNamedObjectOverride(variableName);
-
-            //if (propertyOverride != null)
-            //{
-            //    return propertyOverride;
-            //}
-            //else
-            //{
-            //    IElement element = ObjectFinder.Self.GetElementContaining(stateSave);
-
-            //    if (element != null)
-            //    {
-            //        NamedObjectSave namedObject = element.GetNamedObjectRecursively(variableName);
-            //        if (namedObject != null)
-            //        {
-            //            propertyOverride = new NamedObjectPropertyOverride();
-
-            //            propertyOverride.Name = variableName;
-
-            //            return propertyOverride;
-            //        }
-            //    }
-            //}
-
-
             return null;
         }
 
@@ -209,24 +184,6 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
                     );
             }
-
-
-            //if (false)
-            //{
-
-            //    #region Add the Object Overrides
-
-            //    Type namedObjectPropertyOverrideType = typeof(NamedObjectPropertyOverride);
-            //    TypeConverter expandableTypeConverter = new ExpandableObjectConverter();
-
-            //    List<NamedObjectSave> namedObjectList = element.NamedObjects;
-
-            //    pdc = AddNamedObjectOverrides(pdc, namedObjectPropertyOverrideType, expandableTypeConverter, namedObjectList);
-
-            //    #endregion
-            //}
-
-
         }
 
         public static StateSave GetStateThatVariableBelongsTo(CustomVariable variable, IElement element)

@@ -8,6 +8,7 @@
              d:DesignHeight="190" d:DesignWidth="372">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -17,15 +18,18 @@
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <TextBlock>Type:</TextBlock>
-        <ListBox ItemsSource="{Binding AvailableVariableTypes}" x:Name="ListBox" Grid.Column="1"></ListBox>
+        <TextBlock Grid.Row="0" Grid.Column="1">Type:</TextBlock>
+        <ListBox ItemsSource="{Binding AvailableVariableTypes}" x:Name="ListBox" 
+                 Grid.Row="1" Grid.Column="1"></ListBox>
 
-        <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IncludeStateCategories}"  
-                  VerticalContentAlignment="Center" HorizontalAlignment="Right">Include State Categories</CheckBox>
+        <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IncludeStateCategories}"  
+                  VerticalContentAlignment="Center" HorizontalAlignment="Right">Show State Categories</CheckBox>
         <!--<CheckBox x:Name="IsNullableCheckBox" Grid.Row="1" Grid.Column="1" 
                   VerticalContentAlignment="Center">Is Nullable</CheckBox>-->
 
-        <TextBlock Grid.Row="2">Name:</TextBlock>
-        <TextBox x:Name="TextBox" Grid.Row="2" Grid.Column="1"></TextBox>
+        <TextBlock Margin="0,0,2,0" Grid.Row="2" VerticalAlignment="Center">Name:</TextBlock>
+        <TextBox Margin="0,4,0,0" VerticalContentAlignment ="Center" Height="24" x:Name="TextBox" Grid.Row="2" Grid.Column="1"></TextBox>
+        <CheckBox Margin="0,4,0,0" VerticalContentAlignment="Center" 
+                  x:Name="IsStaticCheckBox" Grid.Column="1" Grid.Row="3">Static (all objects share one copy of the same variable)</CheckBox>
     </Grid>
 </UserControl>
