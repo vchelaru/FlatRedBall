@@ -38,6 +38,7 @@ namespace FlatRedBall.Math.Collision
         protected float moveSecondMass;
         protected float bounceElasticity;
 
+        public bool CollidedThisFrame { get; protected set; }
 
         public int DeepCollisionsThisFrame { get; set; }
 
@@ -571,6 +572,9 @@ namespace FlatRedBall.Math.Collision
                     didCollisionOccur = true;
                 }
             }
+
+            this.CollidedThisFrame = didCollisionOccur;
+
             return didCollisionOccur;
         }
     }
@@ -695,6 +699,9 @@ namespace FlatRedBall.Math.Collision
                     }
                 }
             }
+
+            this.CollidedThisFrame = didCollisionOccur;
+
             return didCollisionOccur;
         }
 
@@ -843,6 +850,9 @@ namespace FlatRedBall.Math.Collision
                     }
                 }
             }
+
+            this.CollidedThisFrame = didCollisionOccur;
+
             return didCollisionOccur;
         }
     }
@@ -1047,6 +1057,9 @@ namespace FlatRedBall.Math.Collision
                     }
                 }
             }
+
+            this.CollidedThisFrame = collisionOccurred;
+
             return collisionOccurred;
         }
 
@@ -1379,6 +1392,9 @@ namespace FlatRedBall.Math.Collision
                     }
                 }
             }
+
+            this.CollidedThisFrame = didCollisionOccur;
+
             return didCollisionOccur;
         }
 

@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeGenerators\CodeGeneratorCommonLogic.cs" />
+    <Compile Include="CodeGenerators\MessagesCodeGenerator.cs" />
     <Compile Include="CodeGenerators\NetworkConfigurationCodeGenerator.cs" />
     <Compile Include="CodeGenerators\NetworkEntityCodeGenerator.cs" />
     <Compile Include="CodeGenerators\NetworkScreenCodeGenerator.cs" />

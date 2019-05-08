@@ -1638,11 +1638,6 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        internal static void AddEntityToolStripClick()
-        {
-            GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog();
-        }
-
         internal static void IgnoreDirectoryClick()
         {
             string directoryToIgnore = EditorLogic.CurrentTreeNode.GetRelativePath();

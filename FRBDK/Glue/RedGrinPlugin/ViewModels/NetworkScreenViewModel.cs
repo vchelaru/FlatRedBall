@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RedGrinPlugin.ViewModels
 {
@@ -14,6 +15,22 @@ namespace RedGrinPlugin.ViewModels
         {
             get { return Get<bool>(); }
             set { Set(value); }
+        }
+
+        [DependsOn(nameof(IsNetworkScreen))]
+        public Visibility Game1CodeVisibility
+        {
+            get
+            {
+                if (IsNetworkScreen)
+                {
+                    return System.Windows.Visibility.Visible;
+                }
+                else
+                {
+                    return System.Windows.Visibility.Collapsed;
+                }
+            }
         }
 
         internal void SetFrom(ScreenSave screen)

@@ -69,10 +69,52 @@ namespace RedGrinPlugin.CodeGenerators
 
             GenerateRequestDestroy(codeBlock);
 
+            GenerateSendClaimEntity(codeBlock);
 
+            GenerateReceiveClaimEntity(codeBlock, screenSave);
 
             return topBlock.ToString();
 
+        }
+
+        private static void GenerateSendClaimEntity(ICodeBlock codeBlock)
+        {
+            var function = codeBlock.Function("private void", "Claim", "RedGrin.INetworkEntity entity");
+
+            var ifBlock = function.If("RedGrin.NetworkManager.Self.Role == RedGrin.NetworkRole.Server");
+
+            ifBlock.Line("entity.OwnerId = RedGrin.NetworkManager.Self.NetworkId;");
+            ifBlock.Line($"var claim = new {GlueState.Self.ProjectNamespace}.Messages.ClaimEntity();");
+            ifBlock.Line($"entity.OwnerId = RedGrin.NetworkManager.Self.NetworkId;");
+            ifBlock.Line("claim.EntityName = ((FlatRedBall.Utilities.INameable)entity).Name;");
+            ifBlock.Line("RedGrin.NetworkManager.Self.AddToEntities(entity);");
+            ifBlock.Line("claim.EntityId = entity.EntityId;");
+            ifBlock.Line("RedGrin.NetworkManager.Self.RequestGenericMessage(claim);");
+
+            var elseBlock = function.Else();
+
+            elseBlock.Line("RedGrin.NetworkManager.Self.AddToEntities(entity);");
+        }
+
+        private static void GenerateReceiveClaimEntity(ICodeBlock codeBlock, ScreenSave screen)
+        {
+            var function = codeBlock.Function("private void", "HandleClaimEntity",
+                $"{GlueState.Self.ProjectNamespace}.Messages.ClaimEntity claim");
+
+            var switchBlock = function.Switch("claim.EntityName");
+            foreach(var instance in screen.AllNamedObjects)
+            {
+                var entity = instance.GetReferencedElement() as EntitySave;
+
+                if(entity != null && NetworkEntityViewModel.IsNetworked(entity))
+                {
+                    var caseBlock = switchBlock.Case($"\"{instance.FieldName}\"");
+
+                    caseBlock.Line($"{instance.FieldName}.OwnerId = claim.OwnerId;");
+                    caseBlock.Line($"{instance.FieldName}.EntityId = claim.EntityId;");
+                    // break is automatically added
+                }
+            }
         }
 
         private static void GenerateRequestDestroy(ICodeBlock codeBlock)

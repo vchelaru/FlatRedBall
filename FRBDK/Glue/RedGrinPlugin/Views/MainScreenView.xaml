@@ -9,10 +9,17 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsNetworkScreen}">
             Is Network Screen
         </CheckBox>
 
+        <TextBlock Grid.Row="1" Visibility="{Binding Game1CodeVisibility}">Add the following code to you Game1.cs:</TextBlock>
+        <TextBox x:Name="CodeTextBox" Visibility="{Binding Game1CodeVisibility}" AcceptsReturn="True" TextWrapping="Wrap" 
+                 IsReadOnly="True" Height="100" Grid.Row="2"
+                 FontFamily="Consolas">
+        </TextBox>
     </Grid>
 </UserControl>

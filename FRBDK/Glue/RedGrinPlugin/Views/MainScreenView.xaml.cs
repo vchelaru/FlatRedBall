@@ -23,6 +23,10 @@ namespace RedGrinPlugin.Views
         public MainScreenView()
         {
             InitializeComponent();
+
+            CodeTextBox.Text =
+                "var networkConfiguration = new GameNetworkConfiguration();\n" +
+                "RedGrin.NetworkManager.Self.Initialize(networkConfiguration, Network.NetworkLogger.Self);";
         }
     }
 }

@@ -136,7 +136,7 @@ namespace TopDownPlugin.Controllers
         {
             TaskManager.Self.AddAsyncTask(
                                 () => CsvGenerator.Self.GenerateFor(entity, viewModel),
-                                "Generating Platformer CSV for " + entity.Name);
+                                "Generating Top Down CSV for " + entity.Name);
 
 
             TaskManager.Self.AddAsyncTask(
@@ -168,7 +168,7 @@ namespace TopDownPlugin.Controllers
                         GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
                     }
 
-                    const string customClassName = "PlatformerValues";
+                    const string customClassName = "TopDownValues";
                     if (GlueState.Self.CurrentGlueProject.CustomClasses.Any(item => item.Name == customClassName) == false)
                     {
                         CustomClassSave throwaway;
@@ -186,7 +186,7 @@ namespace TopDownPlugin.Controllers
                         }
                     }
                 },
-                "Adding csv to platformer entity"
+                "Adding csv to top down entity"
                 );
         }
 
@@ -194,7 +194,7 @@ namespace TopDownPlugin.Controllers
         {
             // We don't make any variables because currently there's no concept of
             // different movement types that the plugin can switch between, the way
-            // the platformer plugin switches between ground/air/double-jump
+            // the top down plugin switches between ground/air/double-jump
         }
 
         internal void UpdateTo(EntitySave currentEntitySave)
@@ -241,7 +241,7 @@ namespace TopDownPlugin.Controllers
                 }
                 catch (Exception e)
                 {
-                    PluginManager.ReceiveError("Error trying to load platformer csv:\n" + e.ToString());
+                    PluginManager.ReceiveError("Error trying to load top down csv:\n" + e.ToString());
                 }
             }
 

@@ -13,6 +13,8 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsNetworkEntity}">Is Network Entity</CheckBox>
+
+
         <TextBlock Grid.Row="1" Margin="0,8,0,0">Network Variables:</TextBlock>
         <ListBox Grid.Column="0" Grid.Row="2" 
                      ItemsSource="{Binding VariableList}" 

@@ -198,17 +198,18 @@ namespace FlatRedBall.Glue
                 succeeded = CreateConstsForCsvEntries(rfs, members, untypedMembers, codeBlock);
             }
 
+            string absoluteFileName = null;
+
             if (succeeded)
             {
 
                 ICodeBlock codeContent = CodeWriter.CreateClass(ProjectManager.ProjectNamespace + ".DataTypes", className, true, members,
                     false, new List<string>(), untypedMembers, codeBlock);
 
-                string absoluteFileName = null;
 
                 if (rfs != null)
                 {
-                    absoluteFileName = Plugins.ExportedImplementations.GlueState.Self.CurrentGlueProjectDirectory + GetFullDataFileNameFor(rfs);
+                     absoluteFileName = Plugins.ExportedImplementations.GlueState.Self.CurrentGlueProjectDirectory + GetFullDataFileNameFor(rfs);
                 }
                 else
                 {
@@ -235,7 +236,7 @@ namespace FlatRedBall.Glue
                 string message;
                 if (rfs != null)
                 {
-                    message = "Generating class " + className + " from CSV " + rfs.Name;
+                    message = "Generating class " + className + " from CSV " + rfs.Name + " to " + absoluteFileName;
                 }
                 else
                 {

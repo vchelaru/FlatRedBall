@@ -193,7 +193,7 @@ namespace GlueTestProject.Screens
             }
 
             // Give us some time to do instructions and time-based checks
-            if (this.ActivityCallCount == 9)
+            if (this.ActivityCallCount == 10)
             {
                 TestDetachedManualUpdateVelocityVariables();
 

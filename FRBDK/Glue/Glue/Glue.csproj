@@ -272,7 +272,7 @@
     </Compile>
     <Compile Include="AutomatedGlue\AutoGlue.cs" />
     <Compile Include="AutomatedGlue\GlueGui.cs" />
-    <Compile Include="CodeGeneration\CameraSetupCodeGenerator.cs" />
+    <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSetupCodeGenerator.cs" />
     <Compile Include="CodeGeneration\CodeBuilder\CodeBlockBase.cs" />
     <Compile Include="CodeGeneration\CodeBuilder\CodeBlockClass.cs" />
     <Compile Include="CodeGeneration\CodeBuilder\CodeBlockException.cs" />

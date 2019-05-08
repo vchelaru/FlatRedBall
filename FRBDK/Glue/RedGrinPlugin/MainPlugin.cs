@@ -105,6 +105,7 @@ namespace RedGrinPlugin
                 if(areAnyNetworked)
                 {
                     NetworkConfigurationCodeGenerator.GenerateConfiguration();
+                    MessagesCodeGenerator.GenerateAllMessages();
 
                     GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
@@ -196,6 +197,7 @@ namespace RedGrinPlugin
                         else
                         {
                             NetworkConfigurationCodeGenerator.GenerateConfiguration();
+                            MessagesCodeGenerator.GenerateAllMessages();
                         }
                         NetworkScreenCodeGenerator.GenerateAllNetworkScreenCode();
                     }
@@ -232,6 +234,7 @@ namespace RedGrinPlugin
                         else
                         {
                             NetworkConfigurationCodeGenerator.GenerateConfiguration();
+                            MessagesCodeGenerator.GenerateAllMessages();
                         }
                     }
                     if (shouldRegenerate)

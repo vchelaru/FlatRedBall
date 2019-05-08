@@ -78,7 +78,34 @@ namespace GlueTestProject.Screens
 
             TestNullSubcollision();
 
+            TestCollidedThisFrame();
 
+        }
+
+        private void TestCollidedThisFrame()
+        {
+            var firstEntity = new Entities.CollidableEntity();
+            var secondEntity = new Entities.CollidableEntity();
+
+            var relationship = CollisionManager.Self.CreateRelationship(firstEntity, secondEntity);
+
+            relationship.CollidedThisFrame.ShouldBe(false);
+
+            var collided = relationship.DoCollisions();
+
+            collided.ShouldBe(true);
+
+            relationship.CollidedThisFrame.ShouldBe(true);
+
+
+            firstEntity.X += 10000;
+            firstEntity.ForceUpdateDependenciesDeep();
+
+            collided = relationship.DoCollisions();
+
+            collided.ShouldBe(false);
+
+            relationship.CollidedThisFrame.ShouldBe(false);
         }
 
         private void TestEntityVsShapeCollection()

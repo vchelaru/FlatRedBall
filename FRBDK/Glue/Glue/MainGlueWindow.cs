@@ -726,8 +726,7 @@ namespace Glue
 
         private void addEntityToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RightClickHelper.AddEntityToolStripClick();
-
+            GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
