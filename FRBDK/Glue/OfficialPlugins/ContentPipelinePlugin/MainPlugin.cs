@@ -213,10 +213,7 @@ namespace OfficialPlugins.MonoGameContent
             viewModel.IsProjectLoaded = true;
             controller.LoadOrCreateSettings();
             viewModel.UseContentPipelineOnPngs = controller.Settings.UseContentPipelineOnAllPngs;
-            if(viewModel.UseContentPipelineOnPngs)
-            {
-                aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
-            }
+            aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
             BuildLogic.Self.RefreshBuiltFilesFor(GlueState.CurrentMainProject, viewModel.UseContentPipelineOnPngs);
         }
 
