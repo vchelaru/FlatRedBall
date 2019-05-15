@@ -68,7 +68,6 @@ namespace FlatRedBall.AI.Pathfinding
 
         #region Properties
 
-        #region XML docs
         /// <summary>
         /// Returns the cost to get to this node from the start node.  This
         /// value is only accurate if the node is contained in list returned
@@ -77,18 +76,15 @@ namespace FlatRedBall.AI.Pathfinding
         /// <remarks>
         /// This value is reset anytime GetPath is called on the containing NodeNetwork.
         /// </remarks>
-        #endregion
         public float CostToGetHere
         {
             get { return mCostToGetHere; }
         }
 
-        #region XML Docs
         /// <summary>
         /// The Node's name.  Mainly used for saving NodeNetworks since saved Links reference
         /// PositionedNodes by name.
         /// </summary>
-        #endregion
         public string Name
         {
             get
@@ -101,11 +97,9 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The X position of the PositionedNode.
         /// </summary>
-        #endregion
         public float X
         {
             get
@@ -119,11 +113,9 @@ namespace FlatRedBall.AI.Pathfinding
         }
 
 
-        #region XML Docs
         /// <summary>
         /// The Y position of the PositionedNode.
         /// </summary>
-        #endregion
         public float Y
         {
             get
@@ -136,11 +128,9 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
-        #region XMl Docs
         /// <summary>
         /// The Z position of the PositionedNode.
         /// </summary>
-        #endregion
         public float Z
         {
             get
@@ -153,7 +143,6 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The links belonging to this PositionedNode.
         /// </summary>
@@ -162,7 +151,6 @@ namespace FlatRedBall.AI.Pathfinding
         /// Links are one-way and PositionedNodes that this links to do not necessarily contain
         /// Links back to this.
         /// </remarks>
-        #endregion
         public ReadOnlyCollection<Link> Links
         {
             get { return mLinksReadOnly; }

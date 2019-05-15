@@ -40,6 +40,7 @@ namespace FlatRedBall.Glue.SaveClasses
         public int Scale { get; set; }
 
         public ResizeBehavior ResizeBehavior { get; set; }
+        public ResizeBehavior ResizeBehaviorGum { get; set; }
         public WidthOrHeight DominantInternalCoordinates { get; set; } = WidthOrHeight.Height;
     }
 }

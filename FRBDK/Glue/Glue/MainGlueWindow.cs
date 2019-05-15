@@ -95,6 +95,8 @@ namespace Glue
 
         }
 
+
+
         private void CreatePropertiesPropertyGrid()
         {
             this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
@@ -979,39 +981,7 @@ namespace Glue
 
         private void ElementTreeView_MouseHover(object sender, EventArgs e)
         {
-            //Point mousePoint = new Point(Form1.MousePosition.X, Form1.MousePosition.Y);
 
-            //mousePoint = ElementTreeView.PointToClient(mousePoint);
-            //TreeNode node = ElementTreeView.GetNodeAt(mousePoint);
-            //ElementViewWindowToolTip.Show("Hi there", ElementTreeView);
-
-            //if (node != null)
-            //{
-            //    string toolTip = null;
-
-            //    if (node.IsEntityNode())
-            //    {
-            //        toolTip = ((EntityTreeNode)node).EntitySave.Summary;
-            //        toolTip = "Yeah!";
-            //    }
-            //    else if (node.IsScreenNode())
-            //    {
-            //        toolTip = ((ScreenTreeNode)node).ScreenSave.Summary;
-            //    }
-            //    else if (node.IsNamedObjectNode())
-            //    {
-            //        toolTip = ((NamedObjectSave)node.Tag).Summary;
-            //    }
-            //    else if (node.IsCustomVariable())
-            //    {
-            //        toolTip = ((CustomVariable)node.Tag).Summary;
-            //    }
-
-            //    if (!string.IsNullOrEmpty(toolTip))
-            //    {
-            //        ElementViewWindowToolTip.Show(toolTip, ElementTreeView);
-            //    }
-            //}
         }
 
         private void setCreatedClassToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1721,10 +1691,6 @@ namespace Glue
 
             return false;
         }
-
-
-        
-
 
         private void ElementTreeView_BeforeSelect(object sender, TreeViewCancelEventArgs e)
         {

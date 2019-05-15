@@ -90,9 +90,6 @@ namespace GumPlugin.Managers
 
         private void UpdateShowDottedOutlines()
         {
-            AssetTypeInfoManager.Self.RefreshGumxLoadCode();
-
-
             var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
 
             if (gumRfs != null)

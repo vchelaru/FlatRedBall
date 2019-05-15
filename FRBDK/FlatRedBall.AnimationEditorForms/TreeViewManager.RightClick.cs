@@ -40,6 +40,11 @@ namespace FlatRedBall.AnimationEditorForms
             // so check the frame first
             if (state.SelectedFrame != null)
             {
+                AddReorderOptions();
+
+                mMenu.Items.Add("-");
+
+
                 mMenu.Items.Add("Copy", null, CopyClick);
                 mMenu.Items.Add("Paste", null, PasteClick);
                 mMenu.Items.Add("View Texture in Explorer", null, ViewTextureInExplorer);
@@ -49,26 +54,7 @@ namespace FlatRedBall.AnimationEditorForms
             }
             else if (state.SelectedChain != null)
             {
-                var mMoveToTop = new ToolStripMenuItem("^^ Move To Top");
-                mMoveToTop.ShortcutKeyDisplayString = "Alt+Shift+Up";
-                mMoveToTop.Click += new System.EventHandler(MoveToTopClick);
-                mMenu.Items.Add(mMoveToTop);
-
-                var mMoveUp = new ToolStripMenuItem("^ Move Up");
-                mMoveUp.ShortcutKeyDisplayString = "Alt+Up";
-                mMoveUp.Click += new System.EventHandler(MoveUpClick);
-                mMenu.Items.Add(mMoveUp);
-
-                var mMoveDown = new ToolStripMenuItem("v Move Down");
-                mMoveDown.ShortcutKeyDisplayString = "Alt+Down";
-                mMoveDown.Click += new System.EventHandler(MoveDownClick);
-                mMenu.Items.Add(mMoveDown);
-
-                var mMoveToBottom = new ToolStripMenuItem("vv Move To Bottom");
-                mMoveToBottom.ShortcutKeyDisplayString = "Alt+Shift+Down";
-                mMoveToBottom.Click += new System.EventHandler(MoveToBottomClick);
-                mMenu.Items.Add(mMoveToBottom);
-
+                AddReorderOptions();
 
                 mMenu.Items.Add("-");
 
@@ -105,6 +91,29 @@ namespace FlatRedBall.AnimationEditorForms
 
             mMenu.Items.Add("Sort Animations Alphabetically", null, SortAnimationsAlphabetically );
             
+        }
+
+        private void AddReorderOptions()
+        {
+            var mMoveToTop = new ToolStripMenuItem("^^ Move To Top");
+            mMoveToTop.ShortcutKeyDisplayString = "Alt+Shift+Up";
+            mMoveToTop.Click += new System.EventHandler(MoveToTopClick);
+            mMenu.Items.Add(mMoveToTop);
+
+            var mMoveUp = new ToolStripMenuItem("^ Move Up");
+            mMoveUp.ShortcutKeyDisplayString = "Alt+Up";
+            mMoveUp.Click += new System.EventHandler(MoveUpClick);
+            mMenu.Items.Add(mMoveUp);
+
+            var mMoveDown = new ToolStripMenuItem("v Move Down");
+            mMoveDown.ShortcutKeyDisplayString = "Alt+Down";
+            mMoveDown.Click += new System.EventHandler(MoveDownClick);
+            mMenu.Items.Add(mMoveDown);
+
+            var mMoveToBottom = new ToolStripMenuItem("vv Move To Bottom");
+            mMoveToBottom.ShortcutKeyDisplayString = "Alt+Shift+Down";
+            mMoveToBottom.Click += new System.EventHandler(MoveToBottomClick);
+            mMenu.Items.Add(mMoveToBottom);
         }
 
         private void CreateDuplicateToolStripItems()
@@ -204,75 +213,123 @@ namespace FlatRedBall.AnimationEditorForms
 
         public void MoveToTopClick(object sender, EventArgs e)
         {
-            var chain = SelectedState.Self.SelectedChain;
-            if (ProjectManager.Self.AnimationChainListSave != null && 
-                chain != null &&
-                ProjectManager.Self.AnimationChainListSave.AnimationChains.First() != chain
-                )
+            if (ProjectManager.Self.AnimationChainListSave != null)
             {
-                ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
-                ProjectManager.Self.AnimationChainListSave.AnimationChains.Insert(0, chain);
+                var chain = SelectedState.Self.SelectedChain;
+                var frame = SelectedState.Self.SelectedFrame;
+                if(frame != null && chain != null && frame != chain.Frames[0])
+                {
+                    chain.Frames.Remove(frame);
+                    chain.Frames.Insert(0, frame);
+                    TreeViewManager.Self.RefreshTreeNode(chain);
+                    SelectedState.Self.SelectedFrame = frame;
+                    CallAnimationChainsChange();
+                }
+                else if(chain != null &&
+                    ProjectManager.Self.AnimationChainListSave.AnimationChains.First() != chain)
+                {
+
+                    ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
+                    ProjectManager.Self.AnimationChainListSave.AnimationChains.Insert(0, chain);
                 
-                TreeViewManager.Self.RefreshTreeView();
-                CallAnimationChainsChange();
+                    TreeViewManager.Self.RefreshTreeView();
+                    CallAnimationChainsChange();
+
+                }
 
             }
         }
 
         public void MoveUpClick(object sender, EventArgs e)
         {
-            var chain = SelectedState.Self.SelectedChain;
-            if (ProjectManager.Self.AnimationChainListSave != null &&
-                chain != null &&
-                ProjectManager.Self.AnimationChainListSave.AnimationChains.First() != chain
-                )
+            if (ProjectManager.Self.AnimationChainListSave != null)
             {
-                var oldIndex = ProjectManager.Self.AnimationChainListSave.AnimationChains.IndexOf(chain);
+                var chain = SelectedState.Self.SelectedChain;
+                var frame = SelectedState.Self.SelectedFrame;
+                if(frame != null && chain != null && frame != chain.Frames[0])
+                {
+                    var oldIndex = chain.Frames.IndexOf(frame);
 
-                ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
-                ProjectManager.Self.AnimationChainListSave.AnimationChains.Insert(oldIndex-1, chain);
+                    chain.Frames.Remove(frame);
+                    chain.Frames.Insert(oldIndex - 1, frame);
+                    TreeViewManager.Self.RefreshTreeNode(chain);
+                    SelectedState.Self.SelectedFrame = frame;
 
-                TreeViewManager.Self.RefreshTreeView();
-                CallAnimationChainsChange();
+                    CallAnimationChainsChange();
+                }
+                else if (chain != null &&
+                    ProjectManager.Self.AnimationChainListSave.AnimationChains.First() != chain)
+                {
+                    var oldIndex = ProjectManager.Self.AnimationChainListSave.AnimationChains.IndexOf(chain);
+
+                    ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
+                    ProjectManager.Self.AnimationChainListSave.AnimationChains.Insert(oldIndex-1, chain);
+
+                    TreeViewManager.Self.RefreshTreeView();
+                    CallAnimationChainsChange();
+
+                }
 
             }
         }
 
         public void MoveDownClick(object sender, EventArgs e)
         {
-            var chain = SelectedState.Self.SelectedChain;
-            if (ProjectManager.Self.AnimationChainListSave != null &&
-                chain != null &&
-                ProjectManager.Self.AnimationChainListSave.AnimationChains.Last() != chain
-                )
+            if (ProjectManager.Self.AnimationChainListSave != null)
             {
-                var oldIndex = ProjectManager.Self.AnimationChainListSave.AnimationChains.IndexOf(chain);
+                var chain = SelectedState.Self.SelectedChain;
+                var frame = SelectedState.Self.SelectedFrame;
+                if(frame != null && chain != null && frame != chain.Frames.Last())
+                {
+                    var oldIndex = chain.Frames.IndexOf(frame);
 
-                ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
-                ProjectManager.Self.AnimationChainListSave.AnimationChains.Insert(oldIndex + 1, chain);
+                    chain.Frames.Remove(frame);
+                    chain.Frames.Insert(oldIndex + 1, frame);
+                    TreeViewManager.Self.RefreshTreeNode(chain);
+                    SelectedState.Self.SelectedFrame = frame;
 
-                TreeViewManager.Self.RefreshTreeView();
-                CallAnimationChainsChange();
+                    CallAnimationChainsChange();
+                }
+                else if(chain != null &&
+                    ProjectManager.Self.AnimationChainListSave.AnimationChains.Last() != chain)
+                {
+                    var oldIndex = ProjectManager.Self.AnimationChainListSave.AnimationChains.IndexOf(chain);
+
+                    ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
+                    ProjectManager.Self.AnimationChainListSave.AnimationChains.Insert(oldIndex + 1, chain);
+
+                    TreeViewManager.Self.RefreshTreeView();
+                    CallAnimationChainsChange();
+
+                }
 
             }
         }
 
         public void MoveToBottomClick(object sender, EventArgs e)
         {
-            var chain = SelectedState.Self.SelectedChain;
-            if (ProjectManager.Self.AnimationChainListSave != null &&
-                chain != null &&
-                ProjectManager.Self.AnimationChainListSave.AnimationChains.Last() != chain
-                )
+            if (ProjectManager.Self.AnimationChainListSave != null)
             {
-                var oldIndex = ProjectManager.Self.AnimationChainListSave.AnimationChains.IndexOf(chain);
+                var chain = SelectedState.Self.SelectedChain;
+                var frame = SelectedState.Self.SelectedFrame;
+                if (frame != null && chain != null && frame != chain.Frames.Last())
+                {
+                    chain.Frames.Remove(frame);
+                    chain.Frames.Add(frame);
+                    TreeViewManager.Self.RefreshTreeNode(chain);
+                    SelectedState.Self.SelectedFrame = frame;
 
-                ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
-                ProjectManager.Self.AnimationChainListSave.AnimationChains.Add(chain);
+                    CallAnimationChainsChange();
+                }
+                else if (chain != null &&
+                    ProjectManager.Self.AnimationChainListSave.AnimationChains.Last() != chain)
+                {
+                    ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
+                    ProjectManager.Self.AnimationChainListSave.AnimationChains.Add(chain);
 
-                TreeViewManager.Self.RefreshTreeView();
-                CallAnimationChainsChange();
-
+                    TreeViewManager.Self.RefreshTreeView();
+                    CallAnimationChainsChange();
+                }
             }
         }
 

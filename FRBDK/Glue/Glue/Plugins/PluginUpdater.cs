@@ -47,7 +47,7 @@ namespace FlatRedBall.Glue.Plugins
                 // try install;
                 if (doesFileExist)
                 {
-                    bool succeeded = InstallPluginWindow.InstallPlugin(InstallationType.ForUser, absoluteFile);
+                    bool succeeded = PluginManager.InstallPlugin(InstallationType.ForUser, absoluteFile);
 
                 }
             }

@@ -621,10 +621,6 @@ namespace GumPlugin
             // These are needed for code gen
             AssetTypeInfoManager.Self.AddProjectSpecificAtis();
 
-            // They may already have been added, which means the ATI for .gumx
-            // would not be refreshed. Force it:
-            AssetTypeInfoManager.Self.RefreshGumxLoadCode();
-
             EventsManager.Self.RefreshEvents();
         }
 

@@ -325,6 +325,10 @@ namespace FlatRedBall.Glue.FormHelpers
                     {
                         ElementImporter.ImportElementFromFile(fileName, true);
                     }
+                    else if(extension == "plug")
+                    {
+                        Plugins.PluginManager.InstallPlugin(InstallationType.ForUser, fileName);
+                    }
                     else
                     {
                         AddExistingFileManager.Self.AddSingleFile(fileName, ref userCancelled);

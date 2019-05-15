@@ -118,6 +118,13 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
+        /// <summary>
+        /// Adds a new node at the world X and Y location. Internally the world coordinates are converted to x,y indexes and the node is stored
+        /// in a 2D grid.
+        /// </summary>
+        /// <param name="worldX">The world X units.</param>
+        /// <param name="worldY">The world Y units.</param>
+        /// <returns>The newly-created PositionedNode</returns>
         public PositionedNode AddAndLinkTiledNodeWorld(float worldX, float worldY)
         {
             int x;
@@ -128,10 +135,24 @@ namespace FlatRedBall.AI.Pathfinding
             return AddAndLinkTiledNode(x, y, mDirectionalType);
         }
 
+        /// <summary>
+        /// Adds a new node at the tile index x, y.
+        /// </summary>
+        /// <param name="x">The x index of the tile.</param>
+        /// <param name="y">The y index of the tile.</param>
+        /// <returns>The newly-created PositionedNode</returns>
         public PositionedNode AddAndLinkTiledNode(int x, int y)
         {
             return AddAndLinkTiledNode(x, y, mDirectionalType);
         }
+
+        /// <summary>
+        /// Creates a new node at index x, y and links the node to adjacent nodes given the TileNodeNetwork's GridSpacing
+        /// </summary>
+        /// <param name="x">The X index</param>
+        /// <param name="y">The Y index</param>
+        /// <param name="directionalType">The DirectionalType, which is either Four or Eight way. Four will link in cardinal directions, while Eight will also link diagonally.</param>
+        /// <returns></returns>
         public PositionedNode AddAndLinkTiledNode(int x, int y, DirectionalType directionalType)
         {
             PositionedNode node = null;

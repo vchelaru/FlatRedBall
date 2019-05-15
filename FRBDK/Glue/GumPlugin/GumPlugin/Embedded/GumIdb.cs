@@ -102,6 +102,11 @@ namespace FlatRedBall.Gum
             set;
         }
 
+        public static decimal? FixedCanvasAspectRatio
+        {
+            get; set;
+        }
+
         #endregion
 
         #region Public Functions
@@ -255,19 +260,49 @@ namespace FlatRedBall.Gum
         {
             var frbCamera = FlatRedBall.Camera.Main;
 
-            if (FlatRedBall.Camera.Main.Orthogonal)
+            if(FixedCanvasAspectRatio != null)
             {
-                GraphicalUiElement.CanvasHeight = frbCamera.OrthogonalHeight;
-                GraphicalUiElement.CanvasWidth = frbCamera.OrthogonalWidth;
+                if (FlatRedBall.Camera.Main.Orthogonal)
+                {
+                    var frbAspectRatio = (decimal)FlatRedBallServices.Game.Window.ClientBounds.Width / (decimal)
+                        FlatRedBallServices.Game.Window.ClientBounds.Height;
 
-                var zoom = frbCamera.DestinationRectangle.Height / frbCamera.OrthogonalHeight;
+                    if (frbAspectRatio < FixedCanvasAspectRatio)
+                    {
+                        // width constrained
+                        var zoom = FlatRedBallServices.Game.Window.ClientBounds.Width /
+                            frbCamera.OrthogonalWidth;
+                        global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;
 
-                global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;
+                    }
+                    else
+                    {
+                        // height constrained
+                        var zoom = FlatRedBallServices.Game.Window.ClientBounds.Height / frbCamera.OrthogonalHeight;
+
+                        global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;
+
+                    }
+                }
             }
             else
             {
-                GraphicalUiElement.CanvasHeight = frbCamera.DestinationRectangle.Height;
-                GraphicalUiElement.CanvasWidth = frbCamera.DestinationRectangle.Width;
+
+                if (FlatRedBall.Camera.Main.Orthogonal)
+                {
+                    GraphicalUiElement.CanvasHeight = frbCamera.OrthogonalHeight;
+                    GraphicalUiElement.CanvasWidth = frbCamera.OrthogonalWidth;
+
+                    var zoom = frbCamera.DestinationRectangle.Height / frbCamera.OrthogonalHeight;
+
+                    global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;
+                }
+                else
+                {
+                    GraphicalUiElement.CanvasHeight = frbCamera.DestinationRectangle.Height;
+                    GraphicalUiElement.CanvasWidth = frbCamera.DestinationRectangle.Width;
+                }
+
             }
         }
 

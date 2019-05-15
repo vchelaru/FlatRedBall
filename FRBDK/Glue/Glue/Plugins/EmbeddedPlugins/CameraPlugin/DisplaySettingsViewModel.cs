@@ -235,6 +235,54 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             }
         }
 
+        // always show this even in 3D projects
+        [DependsOn(nameof(HasGumProject))]
+        public Visibility OnResizeGumUiVisibility
+        {
+            get
+            {
+                if (HasGumProject) return Visibility.Visible;
+                else return Visibility.Collapsed;
+            }
+        }
+
+        public bool HasGumProject
+        {
+            get
+            {
+                var rfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.GetAllReferencedFiles()
+                    .FirstOrDefault(item => FlatRedBall.IO.FileManager.GetExtension(item.Name) == "gumx");
+
+                return rfs != null;
+            }
+        }
+
+        public ResizeBehavior ResizeGumBehavior
+        {
+            get { return Get<ResizeBehavior>(); }
+            set { Set(value); }
+        }
+
+        [DependsOn(nameof(ResizeGumBehavior))]
+        public bool UseStretchResizeGumBehavior
+        {
+            get { return ResizeGumBehavior == ResizeBehavior.StretchVisibleArea; }
+            set
+            {
+                if (value) ResizeGumBehavior = ResizeBehavior.StretchVisibleArea;
+            }
+        }
+
+        [DependsOn(nameof(ResizeGumBehavior))]
+        public bool UseIncreaseVisibleResizeGumBehavior
+        {
+            get { return ResizeGumBehavior == ResizeBehavior.IncreaseVisibleArea; }
+            set
+            {
+                if (value) ResizeGumBehavior = ResizeBehavior.IncreaseVisibleArea;
+            }
+        }
+
         Visibility supportedOrientationsLinkVisibility;
         public Visibility SupportedOrientationsLinkVisibility
         {
@@ -272,6 +320,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             this.Scale = displaySettings.Scale;
 
             this.ResizeBehavior = displaySettings.ResizeBehavior;
+            this.ResizeGumBehavior = displaySettings.ResizeBehaviorGum;
 
             this.DominantInternalCoordinates = displaySettings.DominantInternalCoordinates;
         }
@@ -305,6 +354,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             toReturn.Scale = this.Scale;
 
             toReturn.ResizeBehavior = this.ResizeBehavior;
+            toReturn.ResizeBehaviorGum = this.ResizeGumBehavior;
 
             toReturn.DominantInternalCoordinates = this.DominantInternalCoordinates;
 

@@ -81,8 +81,6 @@ namespace FlatRedBall.Math.Collision
                     }
                 }
             }
-
-            this.CollidedThisFrame = didCollisionOccur;
             return didCollisionOccur;
         }
     }

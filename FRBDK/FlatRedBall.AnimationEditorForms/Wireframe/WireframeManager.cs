@@ -39,7 +39,7 @@ namespace FlatRedBall.AnimationEditorForms
         SystemManagers mManagers;
 
         LineRectangle mSpriteOutline;
-        LineRectangle mMagicWandPreviewRectangle;
+        LineRectangle selectionPreviewRectangle;
 
         LineGrid mLineGrid;
         WireframeEditControls mWireframeControl;
@@ -147,6 +147,8 @@ namespace FlatRedBall.AnimationEditorForms
 
                 TryHandleMagicWandClicking();
 
+                TrySnapToGridClicking();
+
                 if (AnimationFrameChange != null)
                 {
                     AnimationFrameChange(this, null);
@@ -155,6 +157,53 @@ namespace FlatRedBall.AnimationEditorForms
                 {
                     AnimationChainChange(this, null);
                 }
+            }
+        }
+
+        private void TrySnapToGridClicking()
+        {
+            var gridSize = WireframeEditControlsViewModel.GridSize;
+            if (WireframeEditControlsViewModel.IsSnapToGridChecked &&
+                gridSize > 0 &&
+                mControl.CurrentTexture != null)
+            {
+
+                float worldX = mControl.XnaCursor.GetWorldX(mManagers);
+                float worldY = mControl.XnaCursor.GetWorldY(mManagers);
+
+                int pixelX = (int)worldX;
+                int pixelY = (int)worldY;
+
+
+                var minX = gridSize * ((pixelX) / gridSize);
+                var minY = gridSize * ((pixelY) / gridSize);
+
+                bool isCtrlDown =
+                    keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl) ||
+                    keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.RightControl);
+
+                var didChange = false;
+                if (isCtrlDown)
+                {
+                    CreateNewFrameFromMagicWand(minX, minY, minX + gridSize, minY + gridSize);
+                    didChange = true;
+                }
+                else
+                {
+                    // do nothing...yet?
+                    //SetCurrentFrameFromMagicWand(minX, minY, maxX, maxY);
+                }
+
+                if(didChange)
+                {
+                    RefreshAll();
+
+                    if (AnimationFrameChange != null)
+                    {
+                        AnimationFrameChange(this, null);
+                    }
+                }
+
             }
         }
 
@@ -366,12 +415,12 @@ namespace FlatRedBall.AnimationEditorForms
             mSpriteOutline.Visible = false;
             mSpriteOutline.Color = OutlineColor;
 
-            mMagicWandPreviewRectangle = new LineRectangle(managers);
-            managers.ShapeManager.Add(mMagicWandPreviewRectangle);
-            mMagicWandPreviewRectangle.Visible = false;
-            mMagicWandPreviewRectangle.Color = MagicWandPreviewColor;
+            selectionPreviewRectangle = new LineRectangle(managers);
+            managers.ShapeManager.Add(selectionPreviewRectangle);
+            selectionPreviewRectangle.Visible = false;
+            selectionPreviewRectangle.Color = MagicWandPreviewColor;
             // Move them up one Z to put them above the sprites:
-            mMagicWandPreviewRectangle.Z = 1;
+            selectionPreviewRectangle.Z = 1;
 
             mLineGrid = new LineGrid(managers);
             managers.ShapeManager.Add(mLineGrid);
@@ -403,6 +452,9 @@ namespace FlatRedBall.AnimationEditorForms
                 case nameof(WireframeEditControlsViewModel.IsMagicWandSelected):
                     ReactToMagicWandChange(this, null);
                     break;
+                case nameof(WireframeEditControlsViewModel.IsSnapToGridChecked):
+                    ReactToSnapToGridChecedChange();
+                    break;
             }
         }
 
@@ -424,6 +476,14 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
+        private void ReactToSnapToGridChecedChange()
+        {
+            if(WireframeEditControlsViewModel.IsSnapToGridChecked)
+            {
+                mControl.Focus();
+            }
+        }
+
         void mControl_XnaInitialize()
         {
             RefreshAll();
@@ -438,6 +498,8 @@ namespace FlatRedBall.AnimationEditorForms
 
             PerformMagicWandPreviewLogic();
 
+            PerformSnapToGridPreviewLogic();
+
             if (mControl.XnaCursor.IsInWindow)
             {
                 PerformCursorUpdateLogic();
@@ -446,6 +508,34 @@ namespace FlatRedBall.AnimationEditorForms
                 StatusBarManager.Self.SetCursorPosition(
                     mControl.XnaCursor.GetWorldX(mManagers),
                     mControl.XnaCursor.GetWorldY(mManagers));
+            }
+        }
+
+        private void PerformSnapToGridPreviewLogic()
+        {
+            bool isCtrlDown =
+                keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl) ||
+                keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.RightControl);
+
+            // CTRL + Click adds frame when snap to grid is on, but only then do we show the outline
+            if (isCtrlDown &&
+                WireframeEditControlsViewModel.IsSnapToGridChecked && 
+                mControl.XnaCursor.IsInWindow && mControl.CurrentTexture != null &&
+                WireframeEditControlsViewModel.GridSize > 0)
+            {
+                float worldX = mControl.XnaCursor.GetWorldX(mManagers);
+                float worldY = mControl.XnaCursor.GetWorldY(mManagers);
+
+                var gridSize = WireframeEditControlsViewModel.GridSize;
+
+                var minX =  gridSize * ( ((int)worldX) / gridSize);
+                var minY = gridSize * ( ((int)worldY) / gridSize);
+
+                selectionPreviewRectangle.Visible = true;
+                selectionPreviewRectangle.X = minX;
+                selectionPreviewRectangle.Y = minY;
+                selectionPreviewRectangle.Width = gridSize;
+                selectionPreviewRectangle.Height = gridSize;
             }
         }
 
@@ -461,11 +551,11 @@ namespace FlatRedBall.AnimationEditorForms
                 float worldX = mControl.XnaCursor.GetWorldX(mManagers);
                 float worldY = mControl.XnaCursor.GetWorldY(mManagers);
 
-                var isOutsideOfPreview = mMagicWandPreviewRectangle.Visible == false ||
-                    worldX < mMagicWandPreviewRectangle.GetAbsoluteLeft() ||
-                    worldX > mMagicWandPreviewRectangle.GetAbsoluteRight() ||
-                    worldY < mMagicWandPreviewRectangle.GetAbsoluteTop() ||
-                    worldY > mMagicWandPreviewRectangle.GetAbsoluteBottom();
+                var isOutsideOfPreview = selectionPreviewRectangle.Visible == false ||
+                    worldX < selectionPreviewRectangle.GetAbsoluteLeft() ||
+                    worldX > selectionPreviewRectangle.GetAbsoluteRight() ||
+                    worldY < selectionPreviewRectangle.GetAbsoluteTop() ||
+                    worldY > selectionPreviewRectangle.GetAbsoluteBottom();
 
                 if(timeSinceLastUpdate > UpateFrequency || isOutsideOfPreview)
                 {
@@ -482,17 +572,17 @@ namespace FlatRedBall.AnimationEditorForms
                         lastUpdate = TimeManager.Self.CurrentTime;
                     }
 
-                    mMagicWandPreviewRectangle.Visible = true;
-                    mMagicWandPreviewRectangle.X = minX;
-                    mMagicWandPreviewRectangle.Y = minY;
-                    mMagicWandPreviewRectangle.Width = maxX - minX;
-                    mMagicWandPreviewRectangle.Height = maxY - minY;
+                    selectionPreviewRectangle.Visible = true;
+                    selectionPreviewRectangle.X = minX;
+                    selectionPreviewRectangle.Y = minY;
+                    selectionPreviewRectangle.Width = maxX - minX;
+                    selectionPreviewRectangle.Height = maxY - minY;
 
                 }
             }
             else
             {
-                mMagicWandPreviewRectangle.Visible = false;
+                selectionPreviewRectangle.Visible = false;
             }
         }
 
@@ -502,9 +592,14 @@ namespace FlatRedBall.AnimationEditorForms
 
             bool isCtrlDown =
                 keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl) ||
-                keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.RightControl); ;
+                keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.RightControl); 
 
             if (isCtrlDown && WireframeEditControlsViewModel.IsMagicWandSelected && 
+                SelectedState.Self.SelectedChain != null)
+            {
+                cursorToAssign = addCursor;
+            }
+            else if(isCtrlDown && WireframeEditControlsViewModel.IsSnapToGridChecked &&
                 SelectedState.Self.SelectedChain != null)
             {
                 cursorToAssign = addCursor;

@@ -862,6 +862,12 @@
     </Compile>
     <Compile Include="Wcf\WcfManager.cs" />
     <Compile Include="Wcf\WcfService.cs" />
+    <None Include="Content\Icons\IncreaseAreaGum.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Icons\StretchAreaGum.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Libraries\BMFont\bmfont.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

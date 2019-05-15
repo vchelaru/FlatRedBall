@@ -97,7 +97,12 @@ namespace AnimationEditorPlugin
             // - Fixed snapping size not applying until checkbox is checked/unchecked.
             // 3.1.2
             // - Removed text showing up when no animation chains are selected, overlapping the texture and making % selection not work.
-            get { return new Version(3, 1, 2); }
+            // 3.2.0
+            // - Added CTRL+click when snapping is on to create animation 
+            // frames based on the grid size
+            // 3.2.1
+            // - Added frame reordering through right-click and alt arrows.
+            get { return new Version(3, 2, 1); }
         }
 
         public bool IsSelectedItemSprite

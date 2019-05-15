@@ -832,6 +832,7 @@ namespace FlatRedBall.TileGraphics
         ///     4 points defining the boundaries in the texture for the tile.
         ///     (X = left, Y = right, Z = top, W = bottom)
         /// </param>
+        /// <returns>The index of the tile in the tile map, which can be used to modify the painted tile at a later time.</returns>
         public int AddTile(Vector3 bottomLeftPosition, Vector2 dimensions, Vector4 texture)
         {
             int toReturn = mCurrentNumberOfTiles;
@@ -871,10 +872,10 @@ namespace FlatRedBall.TileGraphics
         /// </summary>
         /// <param name="bottomLeftPosition"></param>
         /// <param name="tileDimensions"></param>
-        /// <param name="textureTopLeftX">Top left X coordinate in the core texture</param>
-        /// <param name="textureTopLeftY">Top left Y coordinate in the core texture</param>
-        /// <param name="textureBottomRightX">Bottom right X coordinate in the core texture</param>
-        /// <param name="textureBottomRightY">Bottom right Y coordinate in the core texture</param>
+        /// <param name="textureTopLeftX">Top left pixel X coordinate in the core texture</param>
+        /// <param name="textureTopLeftY">Top left pixel Y coordinate in the core texture</param>
+        /// <param name="textureBottomRightX">Bottom right pixel X coordinate in the core texture</param>
+        /// <param name="textureBottomRightY">Bottom right pixel Y coordinate in the core texture</param>
         public int AddTile(Vector3 bottomLeftPosition, Vector2 tileDimensions, int textureTopLeftX, int textureTopLeftY, int textureBottomRightX, int textureBottomRightY)
         {
             // Form vector4 for AddTile overload

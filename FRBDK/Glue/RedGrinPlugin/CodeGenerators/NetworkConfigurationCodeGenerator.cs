@@ -38,7 +38,7 @@ namespace RedGrinPlugin.CodeGenerators
             var constructor = codeBlock.Constructor("public", "GameNetworkConfiguration", "");
 
 
-            var portNumber = projectName.GetHashCode() % (ushort.MaxValue - 1024) + 1024;
+            var portNumber = (ushort)( (ushort)(projectName.GetHashCode() % (ushort.MaxValue - 1024)) + (ushort)1024);
             
 
             constructor.Line($"ApplicationName = \"{projectName}\";");

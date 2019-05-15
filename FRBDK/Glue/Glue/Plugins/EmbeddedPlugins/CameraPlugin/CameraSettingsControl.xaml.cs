@@ -50,6 +50,19 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             IncreaseAreaMediaElement.Play();
         }
 
+        private void StretchRadioButtonGumChecked(object sender, RoutedEventArgs e)
+        {
+            StretchAreaGumMediaElement.Position = new TimeSpan(0, 0, 1);
+            StretchAreaGumMediaElement.Play();
+        }
+
+        private void IncreaseAreaRadioButtonGumChecked(object sender, RoutedEventArgs e)
+        {
+            IncreaseAreaGumMediaElement.Position = new TimeSpan(0, 0, 1);
+            IncreaseAreaGumMediaElement.Play();
+        }
+
+
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));

@@ -187,6 +187,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>RegularScene</Name>
     </None>
+    <None Include="Entities\FileReferencingEntity\Running.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Running</Name>
+    </None>
     <None Include="Entities\FileReferencingEntity\SceneLoadedOnlyWhenReferenced.scnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>SceneLoadedOnlyWhenReferenced</Name>

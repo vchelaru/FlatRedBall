@@ -21,7 +21,7 @@ namespace FlatRedBall.Glue.CodeGeneration
     }
 
 
-    internal class ReferencedFileSaveCodeGenerator : ElementComponentCodeGenerator
+    public class ReferencedFileSaveCodeGenerator : ElementComponentCodeGenerator
     {
 
         // When Entities/Screens write themselves, they need to see if they
@@ -610,7 +610,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             string formattableLine = null;
 
-            if (!string.IsNullOrEmpty(ati.CustomLoadMethod))
+            if(ati.CustomLoadFunc != null)
+            {
+                var line = ati.CustomLoadFunc(container, null, rfs);
+                codeBlock.Line(line);
+            }
+            else if (!string.IsNullOrEmpty(ati.CustomLoadMethod))
             {
                 formattableLine = ati.CustomLoadMethod;
                 // Replace the expressive variable names with ints:
@@ -635,27 +640,28 @@ namespace FlatRedBall.Glue.CodeGeneration
             bool shouldAddExtensionOnNonXnaPlatforms = 
                 FileManager.GetExtension(fileNameToLoad) != extension && extension == "png";
 
-                
-            if(shouldAddExtensionOnNonXnaPlatforms)
+            if(!string.IsNullOrEmpty(formattableLine))
             {
-                codeBlock.Line("#if IOS || WINDOWS_8");
+                if(shouldAddExtensionOnNonXnaPlatforms)
+                {
+                    codeBlock.Line("#if IOS || WINDOWS_8");
+
+                    codeBlock.Line(
+                        string.Format(formattableLine,
+                                    variableName, ati.QualifiedRuntimeTypeName.QualifiedType, fileNameToLoad + "." + extension, contentManagerString));
+                    codeBlock.Line("#else");
+
+                }
 
                 codeBlock.Line(
                     string.Format(formattableLine,
-                                variableName, ati.QualifiedRuntimeTypeName.QualifiedType, fileNameToLoad + "." + extension, contentManagerString));
-                codeBlock.Line("#else");
+                                variableName, ati.QualifiedRuntimeTypeName.QualifiedType, fileNameToLoad, contentManagerString));
 
+                if (shouldAddExtensionOnNonXnaPlatforms)
+                {
+                    codeBlock.Line("#endif");
+                }
             }
-
-            codeBlock.Line(
-                string.Format(formattableLine,
-                            variableName, ati.QualifiedRuntimeTypeName.QualifiedType, fileNameToLoad, contentManagerString));
-
-            if (shouldAddExtensionOnNonXnaPlatforms)
-            {
-                codeBlock.Line("#endif");
-            }
-
         }
 
         private static void WriteLoadedOnlyWhenReferencedPropertyBody(ReferencedFileSave referencedFile, IElement element, 

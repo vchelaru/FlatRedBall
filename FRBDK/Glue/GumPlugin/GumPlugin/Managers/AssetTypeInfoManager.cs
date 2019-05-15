@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.CodeGeneration;
 
 namespace GumPlugin.Managers
 {
@@ -237,7 +238,9 @@ namespace GumPlugin.Managers
                     };
                     mGumxAti.QualifiedSaveTypeName = "Gum.Data.ProjectSave";
                     mGumxAti.Extension = "gumx";
-                    mGumxAti.CustomLoadMethod = GetGumxLoadCode();
+                    mGumxAti.CustomLoadFunc = GetGumxLoadCode;
+
+
                     mGumxAti.SupportsMakeOneWay = false;
                     mGumxAti.ShouldAttach = false;
                     mGumxAti.MustBeAddedToContentPipeline = false;
@@ -257,26 +260,31 @@ namespace GumPlugin.Managers
             }
         }
 
-        /// <summary>
-        /// Adjusts the load code according to Gumx RFS settings such as whether to show outlines.
-        /// </summary>
-        /// <remarks>
-        /// Normally something like this might be handled by a code generator, but there is no
-        /// plugin support for directly generating code inside of global content - the only access
-        /// plugins have is through the ATIs, so we'll adjust them dynamically.
-        /// </remarks>
-        public void RefreshGumxLoadCode()
+        string GetGumxLoadCode(IElement element, NamedObjectSave nos, ReferencedFileSave rfs)
         {
-            GumxAti.CustomLoadMethod = GetGumxLoadCode();
-        }
+            string fileNameToLoad = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(rfs, mGumxAti);
 
-
-        string GetGumxLoadCode()
-        {
-            string toReturn = "FlatRedBall.Gum.GumIdb.StaticInitialize(\"{FILE_NAME}\"); " +
+            string toReturn = $"FlatRedBall.Gum.GumIdb.StaticInitialize(\"{fileNameToLoad}\"); " +
                         "FlatRedBall.Gum.GumIdbExtensions.RegisterTypes();  " +
-                        "FlatRedBall.Gui.GuiManager.BringsClickedWindowsToFront = false;" +
-                        "FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (not, used) => {{ FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera(); }};"
+                        "FlatRedBall.Gui.GuiManager.BringsClickedWindowsToFront = false;";
+
+            var displaySettings = GlueState.Self.CurrentGlueProject?.DisplaySettings;
+
+            if(displaySettings != null)
+            {
+                if(displaySettings.FixedAspectRatio == false || displaySettings.AspectRatioHeight == 0)
+                {
+                    toReturn += "FlatRedBall.Gum.GumIdb.FixedCanvasAspectRatio = null;";
+                }
+                else
+                {
+                    var aspectRatio = displaySettings.AspectRatioWidth / displaySettings.AspectRatioHeight;
+                    toReturn += $"FlatRedBall.Gum.GumIdb.FixedCanvasAspectRatio = {displaySettings.AspectRatioWidth}/{displaySettings.AspectRatioHeight}m;";
+                }
+            }
+
+            toReturn +=
+                        "FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (not, used) => { FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera(); };"
                         ;
 
             var gumxRfs = GumProjectManager.Self.GetRfsForGumProject();

@@ -243,6 +243,11 @@ namespace FlatRedBall.Glue.Elements
         /// </remarks>
         public string CustomLoadMethod;
 
+
+        [XmlIgnore]
+        public Func<IElement, NamedObjectSave, ReferencedFileSave, string> CustomLoadFunc;
+
+
         public string CustomBuildToolName;
 
         public bool ImplementsIWindow;

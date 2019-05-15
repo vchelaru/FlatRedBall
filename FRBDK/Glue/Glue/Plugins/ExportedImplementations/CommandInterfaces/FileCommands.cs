@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
+    #region Enums
 
     enum ProjectOrDisk
     {
@@ -23,6 +24,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         Disk
     }
 
+    #endregion
 
     class FileCommands : IFileCommands
     {
