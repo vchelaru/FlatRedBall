@@ -48,7 +48,7 @@ namespace FlatRedBall.Graphics.Animation
 
                 if(layerAtI == layer)
                 {
-                    return true;
+                    return !string.IsNullOrEmpty(layerAtI.CurrentChainName);
                 }
                 else if(!string.IsNullOrEmpty(layerAtI.CurrentChainName))
                 {
