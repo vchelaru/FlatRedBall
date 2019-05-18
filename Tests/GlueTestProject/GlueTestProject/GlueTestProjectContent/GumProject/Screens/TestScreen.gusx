@@ -10,6 +10,42 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>int</Type>
+      <Name>ColoredComponentWithColoredStatesInstance.Blue</Name>
+      <Value xsi:type="xsd:int">200</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>int</Type>
+      <Name>ColoredComponentWithColoredStatesInstance.Green</Name>
+      <Value xsi:type="xsd:int">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>int</Type>
+      <Name>ColoredComponentWithColoredStatesInstance.Red</Name>
+      <Value xsi:type="xsd:int">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>State</Type>
+      <Name>ColoredComponentWithColoredStatesInstance.State</Name>
+      <Value xsi:type="xsd:string">Red</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ColoredComponentWithColoredStatesInstance.X</Name>
+      <Value xsi:type="xsd:float">323</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ColoredComponentWithColoredStatesInstance.Y</Name>
+      <Value xsi:type="xsd:float">15.5</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>float</Type>
       <Name>ColoredRectangleInstance.Height</Name>
       <Value xsi:type="xsd:float">6</Value>
@@ -1005,6 +1041,11 @@
   <Instance>
     <Name>PolygonInstance</Name>
     <BaseType>Polygon</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>ColoredComponentWithColoredStatesInstance</Name>
+    <BaseType>ColoredComponentWithColoredStates</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
 </ScreenSave>

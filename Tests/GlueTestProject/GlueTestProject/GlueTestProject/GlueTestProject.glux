@@ -17098,6 +17098,7 @@
     <AllowWindowResizing>true</AllowWindowResizing>
     <Scale>100</Scale>
     <ResizeBehavior>StretchVisibleArea</ResizeBehavior>
+    <ResizeBehaviorGum>StretchVisibleArea</ResizeBehaviorGum>
     <DominantInternalCoordinates>Height</DominantInternalCoordinates>
   </DisplaySettings>
 </GlueProjectSave>

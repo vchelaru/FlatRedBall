@@ -49,6 +49,10 @@
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
+    <Name>ColoredComponentWithColoredStates</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>ComponentContainingSprite</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>

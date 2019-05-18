@@ -457,6 +457,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ChildStateComponent</Name>
     </None>
+    <None Include="gumproject\components\coloredcomponentwithcoloredstates.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>coloredcomponentwithcoloredstates</Name>
+    </None>
     <None Include="GumProject\Components\ComponentContainingSprite.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ComponentContainingSprite</Name>

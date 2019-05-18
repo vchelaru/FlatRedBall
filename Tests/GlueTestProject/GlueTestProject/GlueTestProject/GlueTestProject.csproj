@@ -882,6 +882,10 @@
       <DependentUpon>ChildStateComponentRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\CircleRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\ColoredComponentWithColoredStatesRuntime.cs" />
+    <Compile Include="GumRuntimes\ColoredComponentWithColoredStatesRuntime.Generated.cs">
+      <DependentUpon>ColoredComponentWithColoredStatesRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\ColoredRectangleRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\ComponentContainingSpriteRuntime.cs" />
     <Compile Include="GumRuntimes\ComponentContainingSpriteRuntime.Generated.cs">

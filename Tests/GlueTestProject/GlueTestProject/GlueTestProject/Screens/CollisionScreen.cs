@@ -106,6 +106,9 @@ namespace GlueTestProject.Screens
             collided.ShouldBe(false);
 
             relationship.CollidedThisFrame.ShouldBe(false);
+
+            firstEntity.Destroy();
+            secondEntity.Destroy();
         }
 
         private void TestEntityVsShapeCollection()

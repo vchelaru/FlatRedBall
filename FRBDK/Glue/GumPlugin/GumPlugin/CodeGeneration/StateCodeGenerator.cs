@@ -445,7 +445,11 @@ namespace GumPlugin.CodeGeneration
                         // If they're attached in the wrong order, then stacking won't work properly:
                         var instanceNames = container.Instances.Select(item => item.Name).ToList();
 
-                        var orderedVariables = state.Variables.OrderBy(variable => instanceNames.IndexOf(variable.SourceObject)).ToList();
+                        var orderedVariables = state.Variables
+                            .OrderByDescending(variable => variable.GetRootName() == "Parent")
+                            .ThenByDescending(variable => variable.IsState(container))
+                            .ThenBy(variable => instanceNames.IndexOf(variable.SourceObject))
+                            .ToList();
 
                         foreach (var variable in orderedVariables)
                         {

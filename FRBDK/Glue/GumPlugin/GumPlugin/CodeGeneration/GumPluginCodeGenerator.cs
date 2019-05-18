@@ -112,9 +112,17 @@ namespace GumPlugin.CodeGeneration
             {
                 var method = codeBlock.Function("private void", "RefreshLayoutInternal", "object sender, EventArgs e");
 
+                var ati = gumScreenRfs.GetAssetTypeInfo();
 
+                if(ati.RuntimeTypeName == "GumIdb")
+                {
+                    method.Line($"{gumScreenRfs.GetInstanceName()}.Element.UpdateLayout();");
+                }
+                else
+                {
+                    method.Line($"{gumScreenRfs.GetInstanceName()}.UpdateLayout();");
+                }
 
-                method.Line($"{gumScreenRfs.GetInstanceName()}.UpdateLayout();");
             }
 
             return codeBlock;

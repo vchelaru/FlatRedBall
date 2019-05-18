@@ -283,7 +283,7 @@ namespace GlueTestProject.Screens
             if (this.ActivityCallCount > numberOfFramesToWait)
             {
                 IsActivityFinished = true;
-			}
+            }
 		}
 
 		void CustomDestroy()
