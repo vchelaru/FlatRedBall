@@ -97,10 +97,12 @@ namespace GumPlugin.Managers
 
                     screenAti.QualifiedSaveTypeName = "Gum.Data.ScreenSave";
                     screenAti.Extension = "gusx";
-                    screenAti.AddToManagersMethod.Add("this.AddToManagers()");
+                    screenAti.AddToManagersMethod.Add("this.AddToManagers();" +
+                        "FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += RefreshLayoutInternal");
                     screenAti.CustomLoadMethod =
-                        "{THIS} = GumRuntime.ElementSaveExtensions.CreateGueForElement( Gum.Managers.ObjectFinder.Self.GetScreen(FlatRedBall.IO.FileManager.RemoveExtension(FlatRedBall.IO.FileManager.RemovePath(\"{FILE_NAME}\"))), true)";
-                    screenAti.DestroyMethod = "this.RemoveFromManagers()";
+                        "FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();{THIS} = GumRuntime.ElementSaveExtensions.CreateGueForElement( Gum.Managers.ObjectFinder.Self.GetScreen(FlatRedBall.IO.FileManager.RemoveExtension(FlatRedBall.IO.FileManager.RemovePath(\"{FILE_NAME}\"))), true)";
+                    screenAti.DestroyMethod = "this.RemoveFromManagers();" +
+                        "FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged -= RefreshLayoutInternal";
                     screenAti.SupportsMakeOneWay = false;
                     screenAti.ShouldAttach = false;
                     screenAti.MustBeAddedToContentPipeline = false;

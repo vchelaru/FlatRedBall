@@ -194,7 +194,6 @@ namespace Glue
 
         public void LoadProject(string projectFileName, InitializationWindow initializationWindow)
         {
-
             ProjectLoader.Self.LoadProject(projectFileName, initializationWindow);
         }
 

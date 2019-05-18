@@ -102,6 +102,24 @@ namespace GumPlugin.CodeGeneration
             return codeBlock;
         }
 
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        {
+            bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
+
+            var gumScreenRfs = GetGumScreenRfs(element);
+
+            if(isGlueScreen && gumScreenRfs != null)
+            {
+                var method = codeBlock.Function("private void", "RefreshLayoutInternal", "object sender, EventArgs e");
+
+
+
+                method.Line($"{gumScreenRfs.GetInstanceName()}.UpdateLayout();");
+            }
+
+            return codeBlock;
+        }
+
         private static bool GetIfHasGumProject()
         {
             return GlueState.Self.CurrentGlueProject.GlobalFiles.FirstOrDefault(item => item.Name.EndsWith(".gumx")) != null;
@@ -125,19 +143,24 @@ namespace GumPlugin.CodeGeneration
             return false;
         }
 
-        private bool GetIfContainsAnyGumScreenFiles(IElement element)
+        private ReferencedFileSave GetGumScreenRfs(IElement element)
         {
             foreach (var file in element.ReferencedFiles)
             {
-                string extension = FileManager.GetExtension( file.Name);
+                string extension = FileManager.GetExtension(file.Name);
 
                 if (file.LoadedAtRuntime && extension == GumProjectSave.ScreenExtension)
                 {
-                    return true;
+                    return file;
                 }
             }
 
-            return false;
+            return null;
+        }
+
+        private bool GetIfContainsAnyGumScreenFiles(IElement element)
+        {
+            return GetGumScreenRfs(element) != null;
         }
 
         public override void GeneratePauseThisScreen(ICodeBlock codeBlock, IElement element)

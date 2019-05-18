@@ -131,6 +131,9 @@ namespace FlatRedBall.Glue.IO
                 {
                     ProjectManager.GlueProjectSave = new GlueProjectSave();
 
+                    GlueCommands.Self.PrintOutput($"Trying to load {glueProjectFile}, but could not find it, so" +
+                        $"creating a new .glux file");
+
                     // temporary - eventually this will just be done in the .glux itself, or by the plugin 
                     // but for now we do it here because we only want to do it on new projects
                     Plugins.EmbeddedPlugins.CameraPlugin.CameraMainPlugin.CreateGlueProjectSettingsFor(ProjectManager.GlueProjectSave);

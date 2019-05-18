@@ -260,7 +260,15 @@ namespace FlatRedBall.Gum
         {
             var frbCamera = FlatRedBall.Camera.Main;
 
-            if(FixedCanvasAspectRatio != null)
+            // for now the Gum resolution must match the FRB camera ortho resolution.
+            // This may change in the future.
+            if (FlatRedBall.Camera.Main.Orthogonal)
+            {
+                GraphicalUiElement.CanvasHeight = frbCamera.OrthogonalHeight;
+                GraphicalUiElement.CanvasWidth = frbCamera.OrthogonalWidth;
+            }
+
+            if (FixedCanvasAspectRatio != null)
             {
                 if (FlatRedBall.Camera.Main.Orthogonal)
                 {
@@ -290,9 +298,6 @@ namespace FlatRedBall.Gum
 
                 if (FlatRedBall.Camera.Main.Orthogonal)
                 {
-                    GraphicalUiElement.CanvasHeight = frbCamera.OrthogonalHeight;
-                    GraphicalUiElement.CanvasWidth = frbCamera.OrthogonalWidth;
-
                     var zoom = frbCamera.DestinationRectangle.Height / frbCamera.OrthogonalHeight;
 
                     global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;

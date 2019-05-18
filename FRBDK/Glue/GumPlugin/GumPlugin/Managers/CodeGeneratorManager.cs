@@ -16,6 +16,7 @@ using FlatRedBall.Glue.IO;
 
 namespace GumPlugin.Managers
 {
+    #region Structs/Enums
     public struct GenerationResult
     {
         public bool DidSaveGenerated;
@@ -28,6 +29,8 @@ namespace GumPlugin.Managers
         AlwaysSave,
         SaveIfGeneratedDiffers
     }
+
+    #endregion
 
     public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
     {
