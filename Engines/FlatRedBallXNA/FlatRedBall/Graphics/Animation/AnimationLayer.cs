@@ -25,6 +25,7 @@ namespace FlatRedBall.Graphics.Animation
         PlayingMode playingMode;
 
         public Func<string> EveryFrameAction;
+        public Action OnAnimationFinished;
 
         internal AnimationController Container { get; set; }
 
@@ -85,7 +86,7 @@ namespace FlatRedBall.Graphics.Animation
             }
             else
             {
-
+                var playingModeThisFrame = playingMode;
                 switch(playingMode)
                 {
                     case PlayingMode.Duration:
@@ -101,10 +102,11 @@ namespace FlatRedBall.Graphics.Animation
                         cachedChainName = lastPlayCallAnimation;
                         break;
                     case PlayingMode.Loop:
+                        cachedChainName = lastPlayCallAnimation;
+                        
                         if(Container.AnimatedObject.JustCycled)
                         {
                             loopsLeft--;
-                            cachedChainName = lastPlayCallAnimation;
 
                             if (loopsLeft <= 0)
                             {
@@ -125,6 +127,11 @@ namespace FlatRedBall.Graphics.Animation
                         }
 
                         break;
+                }
+
+                if(playingModeThisFrame != PlayingMode.NotPlaying && OnAnimationFinished != null && string.IsNullOrEmpty(cachedChainName))
+                {
+                    OnAnimationFinished();
                 }
             }
         }
