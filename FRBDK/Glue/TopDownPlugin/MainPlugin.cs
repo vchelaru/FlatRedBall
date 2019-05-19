@@ -20,8 +20,9 @@ namespace TopDownPlugin
     {
         public override string FriendlyName => "Top Down Plugin";
 
+        // 1.1 - Added support for 0 time speedup and slowdown
         public override Version Version => 
-            new Version(1, 0);
+            new Version(1, 1);
 
         MainEntityView control;
         PluginTab pluginTab;

@@ -176,24 +176,32 @@ namespace TopDownPlugin.CodeGenerators
                     mCurrentMovement.AccelerationTime,
                     accelerationRatio);
 
-                var accelerationMagnitude = mCurrentMovement.MaxSpeed / secondsToTake;
-
-                var nonNormalizedDifference = difference;
-
-                difference.Normalize();
-
-                var accelerationToSet = accelerationMagnitude * difference;
-                var expectedVelocityToAdd = accelerationToSet * TimeManager.SecondDifference;
-
-                if(expectedVelocityToAdd.Length() > nonNormalizedDifference.Length())
+                if(secondsToTake == 0)
                 {
-                    // we will overshoot it, so let's adjust the acceleration accordingly:
-                    var ratioOfToAdd = nonNormalizedDifference.Length() / expectedVelocityToAdd.Length();
-                    this.Acceleration = accelerationToSet * ratioOfToAdd;
+                    this.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                    this.Velocity = desiredVelocity;
                 }
                 else
                 {
-                    this.Acceleration = accelerationToSet;
+                    var accelerationMagnitude = mCurrentMovement.MaxSpeed / secondsToTake;
+                
+                    var nonNormalizedDifference = difference;
+                
+                    difference.Normalize();
+                
+                    var accelerationToSet = accelerationMagnitude * difference;
+                    var expectedVelocityToAdd = accelerationToSet * TimeManager.SecondDifference;
+                
+                    if(expectedVelocityToAdd.Length() > nonNormalizedDifference.Length())
+                    {
+                        // we will overshoot it, so let's adjust the acceleration accordingly:
+                        var ratioOfToAdd = nonNormalizedDifference.Length() / expectedVelocityToAdd.Length();
+                        this.Acceleration = accelerationToSet * ratioOfToAdd;
+                    }
+                    else
+                    {
+                        this.Acceleration = accelerationToSet;
+                    }
                 }
 
                 const float velocityEpsilon = .1f;
