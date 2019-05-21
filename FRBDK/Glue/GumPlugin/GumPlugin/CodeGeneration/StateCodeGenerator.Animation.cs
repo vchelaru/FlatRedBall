@@ -124,7 +124,15 @@ namespace GumPlugin.CodeGeneration
                 {
                     if(string.IsNullOrEmpty(subAnimation.SourceObject) == false)
                     {
-                        ifBlock.Line($"{fieldName}.SubAnimations.Add({subAnimation.PropertyNameInCode()});");
+                        var isMissingInstance = context.Element.GetInstance(subAnimation.SourceObject) == null;
+                        if(isMissingInstance)
+                        {
+                            ifBlock.Line($"//Missing object {subAnimation.SourceObject}");
+                        }
+                        else
+                        {
+                            ifBlock.Line($"{fieldName}.SubAnimations.Add({subAnimation.PropertyNameInCode()});");
+                        }
                     }
                 }
             }
@@ -293,7 +301,7 @@ namespace GumPlugin.CodeGeneration
 
                 if (nextAnimationTime < nextStateTime)
                 {
-                    CreateInstructionForSubAnimation(currentBlock, remainingSubAnimations[0], absoluteOrRelative, animation);
+                    CreateInstructionForSubAnimation(currentBlock, remainingSubAnimations[0], absoluteOrRelative, animation, context);
 
                     remainingSubAnimations.RemoveAt(0);
                 }
@@ -309,7 +317,7 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
-        private static void CreateInstructionForSubAnimation(ICodeBlock currentBlock, AnimationReferenceSave animationReferenceSave, AbsoluteOrRelative absoluteOrRelative, AnimationSave parentAnimation)
+        private static void CreateInstructionForSubAnimation(ICodeBlock currentBlock, AnimationReferenceSave animationReferenceSave, AbsoluteOrRelative absoluteOrRelative, AnimationSave parentAnimation, StateCodeGeneratorContext context)
         {
             currentBlock = currentBlock.Block();
 
@@ -317,6 +325,18 @@ namespace GumPlugin.CodeGeneration
             //FlatRedBall.Instructions.InstructionManager.Instructions.AddRange(ClickableBushInstance.GrowAnimation));
             //instruction.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + asdf;
             //yield return instruction;
+
+            var isReferencingMissingInstance = !string.IsNullOrEmpty(animationReferenceSave.SourceObject) &&
+                context.Element.GetInstance(animationReferenceSave.SourceObject) == null;
+
+            ////////////////Early Out///////////////
+            if(isReferencingMissingInstance)
+            {
+                currentBlock.Line($"// This animation references a missing instance named {animationReferenceSave.SourceObject}");
+                return;
+            }
+            /////////////End Early Out/////////////
+
 
             string animationName = animationReferenceSave.PropertyNameInCode();
                 //animationReferenceSave. FlatRedBall.IO.FileManager.RemovePath(animationReferenceSave.Name) + "Animation";
