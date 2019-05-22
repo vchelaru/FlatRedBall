@@ -34,12 +34,19 @@ namespace TopDownPlugin.ViewModels
             set { Set(value); }
         }
 
+        public bool UpdateDirectionFromVelocity
+        {
+            get { return Get<bool>(); }
+            set { Set(value); }
+        }
+
         internal void SetFrom(TopDownValues values)
         {
             this.Name = values.Name;
             this.MaxSpeed = values.MaxSpeed;
             this.AccelerationTime = values.AccelerationTime;
             this.DecelerationTime = values.DecelerationTime;
+            this.UpdateDirectionFromVelocity = values.UpdateDirectionFromVelocity;
         }
 
         internal TopDownValues ToValues()
@@ -50,6 +57,7 @@ namespace TopDownPlugin.ViewModels
             toReturn.MaxSpeed = this.MaxSpeed;
             toReturn.AccelerationTime = this.AccelerationTime;
             toReturn.DecelerationTime = this.DecelerationTime;
+            toReturn.UpdateDirectionFromVelocity = this.UpdateDirectionFromVelocity;
 
             return toReturn;
         }

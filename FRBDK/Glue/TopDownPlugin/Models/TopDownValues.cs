@@ -13,7 +13,7 @@ namespace TopDownPlugin.Models
         public float MaxSpeed { get; set; }
         public float AccelerationTime { get; set; }
         public float DecelerationTime { get; set; }
-
+        public bool UpdateDirectionFromVelocity { get; set; } = true;
 
 
     }

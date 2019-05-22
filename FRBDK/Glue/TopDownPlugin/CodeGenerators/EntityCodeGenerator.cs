@@ -207,71 +207,15 @@ namespace TopDownPlugin.CodeGenerators
                 const float velocityEpsilon = .1f;
                 var shouldAssignDirection = this.Velocity.Length() > velocityEpsilon || difference.Length() > 0;
                 // player stopped moving, don't apply direction
-                if(shouldAssignDirection && secondsToTake == 0 && this.Velocity.LengthSquared() == 0)
+                if(this.Velocity.LengthSquared() == 0)
                 {
                     shouldAssignDirection = false;
                 }
 
-                if (shouldAssignDirection)
+                if (shouldAssignDirection && mCurrentMovement.UpdateDirectionFromVelocity)
                 {
-                    // now assign the direction:
-                    switch(PossibleDirections)
-                    {
-                        case PossibleDirections.LeftRight:
-                            if(XVelocity > 0)
-                            {
-                                mDirectionFacing = TopDownDirection.Right;
-                            }
-                            else if(XVelocity < 0)
-                            {
-                                mDirectionFacing = TopDownDirection.Left;
-                            }
-                            break;
-                        case PossibleDirections.FourWay:
-                            var absXVelocity = Math.Abs(XVelocity);
-                            var absYVelocity = Math.Abs(YVelocity);
-
-                            if(absXVelocity > absYVelocity)
-                            {
-                                if(XVelocity > 0)
-                                {
-                                    mDirectionFacing = TopDownDirection.Right;
-                                }
-                                else if(XVelocity < 0)
-                                {
-                                    mDirectionFacing = TopDownDirection.Left;
-                                }
-                            }
-                            else if(absYVelocity > absXVelocity)
-                            {
-                                if(YVelocity > 0)
-                                {
-                                    mDirectionFacing = TopDownDirection.Up;
-                                }
-                                else if(YVelocity < 0)
-                                {
-                                    mDirectionFacing = TopDownDirection.Down;
-                                }
-                            }
-                            break;
-                        case PossibleDirections.EightWay:
-                            if(Velocity.X != 0 || velocity.Y != 0)
-                            {
-                                var angle = FlatRedBall.Math.MathFunctions.RegulateAngle(
-                                    (float)System.Math.Atan2(Velocity.Y, Velocity.X));
-
-                                var ratioOfCircle = angle / Microsoft.Xna.Framework.MathHelper.TwoPi;
-
-                                var eights = FlatRedBall.Math.MathFunctions.RoundToInt(ratioOfCircle * 8)%8;
-
-                                mDirectionFacing = (TopDownDirection)eights;
-                            }
-
-                            break;
-                    }
-
+                    mDirectionFacing = TopDownDirectionExtensions.FromDirection(XVelocity, YVelocity, PossibleDirections);
                 }
-
             }
             else
             {

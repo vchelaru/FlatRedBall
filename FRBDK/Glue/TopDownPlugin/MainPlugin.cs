@@ -23,6 +23,9 @@ namespace TopDownPlugin
         // 1.1 - Added support for 0 time speedup and slowdown
         // 1.2 - Fixed direction being reset when not moving with 
         //       a slowdown time of 0.
+        // 1.3 - Added ability to get direction from velocity
+        //     - Added ability to invert direction and mirror direction
+        
         public override Version Version => 
             new Version(1, 2);
 
