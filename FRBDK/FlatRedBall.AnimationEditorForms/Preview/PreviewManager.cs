@@ -237,7 +237,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             mManagers.Renderer.Camera.X = -50;
             mManagers.Renderer.Camera.Y = -50;
 
-            cameraController = new CameraController(Camera, mManagers, mCursor, mControl, mTopRuler, mLeftRuler);
+            cameraController = new CameraController(Camera, mManagers, mCursor, mKeyboard, mControl, mTopRuler, mLeftRuler);
 
         }
 
@@ -252,7 +252,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         void HandleXnaUpdate()
         {
             mCursor.Activity(TimeManager.Self.CurrentTime);
-
+            mKeyboard.Activity();
             // I think we only want to do this if we're actually in the window
             // No, we want to always do it otherwise the user can't delete guides.
             // We will make checks internally

@@ -28,7 +28,14 @@ namespace GumPlugin.CodeGeneration
 
         public static string MemberNameInCode(this StateSave stateSave)
         {
-            return stateSave.Name.Replace(" ", "_").Replace("-", "_");
+            var toReturn =  stateSave.Name.Replace(" ", "_").Replace("-", "_");
+
+            if(toReturn.Length > 0 && char.IsDigit(toReturn[0]))
+            {
+                toReturn = "_" + toReturn;
+            }
+
+            return toReturn;
         }
 
         public static string MemberTypeInCode(this ElementSave element)

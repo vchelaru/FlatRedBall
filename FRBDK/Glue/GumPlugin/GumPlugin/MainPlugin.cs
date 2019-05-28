@@ -257,7 +257,9 @@ namespace GumPlugin
             // - Added missing Polygon standard
             // 2.0.5
             // - Gum plugin will now ask to make itself 
-            get { return new Version(2, 0, 4, 0); }
+            // 2.0.6
+            // - Fixed compile error generated if state begins with a number like "1st". Now it prefixes an underscore
+            get { return new Version(2, 0, 6, 0); }
         }
 
         #endregion

@@ -55,7 +55,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             private set;
         }
 
-        public CameraController(RenderingLibrary.Camera camera, SystemManagers managers, Cursor cursor, GraphicsDeviceControl control, Ruler topRuler, Ruler leftRuler)
+        public CameraController(RenderingLibrary.Camera camera, SystemManagers managers, Cursor cursor, Keyboard keyboard, GraphicsDeviceControl control, Ruler topRuler, Ruler leftRuler)
         {
             this.TopRuler = topRuler;
             this.LeftRuler = leftRuler;
@@ -63,7 +63,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             Camera = camera;
             Managers = managers;
 
-            cameraPanningLogic = new CameraPanningLogic(control, managers, cursor, null);
+            cameraPanningLogic = new CameraPanningLogic(control, managers, cursor, keyboard);
 
         }
 
