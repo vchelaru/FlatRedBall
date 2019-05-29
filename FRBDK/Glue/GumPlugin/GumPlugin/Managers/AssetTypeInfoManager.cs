@@ -119,7 +119,7 @@ namespace GumPlugin.Managers
             }
         }
 
-        AssetTypeInfo ScreenIdbAti
+        public AssetTypeInfo ScreenIdbAti
         {
             get
             {
