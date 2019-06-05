@@ -236,7 +236,10 @@ namespace FlatRedBall.Glue.Controls
             }
             else
             {
-                this.SelectedPluginViewModel.LastUpdatedText = null;
+                if (SelectedPluginViewModel != null)
+                {
+                    this.SelectedPluginViewModel.LastUpdatedText = null;
+                }
                 PluginView.Visible = false;
             }
 

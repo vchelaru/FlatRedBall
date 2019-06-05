@@ -25,6 +25,10 @@ namespace FlatRedBall.Input
             return false;
         }
 
+        /// <summary>
+        /// Clears the keyboard states, simulating the keyboard
+        /// not having any values down or pressed
+        /// </summary>
         public void Clear()
         {
             mKeyboardState = new KeyboardState();
