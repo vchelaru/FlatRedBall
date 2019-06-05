@@ -154,7 +154,9 @@ namespace TileGraphicsPlugin
             //   result in additive layers.
             // 2.1.3
             // - Made RegisterName property public so it can be called outside of MapDrawableBatch
-            get { return new Version(2, 1, 3, 0); }
+            // 2.1.4
+            // - Added support for objects that are larger than the default tile size (scaled sprites in Tiled)
+            get { return new Version(2, 1, 4, 0); }
         }
 
 
