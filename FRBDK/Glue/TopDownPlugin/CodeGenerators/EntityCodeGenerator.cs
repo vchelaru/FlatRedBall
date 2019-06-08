@@ -121,6 +121,12 @@ namespace TopDownPlugin.CodeGenerators
             InputEnabled = true;
         }
 
+        public void InitializeTopDownInput(FlatRedBall.Input.IInputDevice inputDevice)
+        {
+            this.MovementInput = inputDevice.Default2DInput;
+            InputEnabled = true;
+        }
+
 
         private void ApplyMovementInput()
         {

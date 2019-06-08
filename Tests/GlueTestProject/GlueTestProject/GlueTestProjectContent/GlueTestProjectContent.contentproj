@@ -331,6 +331,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TmxFile</Name>
     </None>
+    <None Include="Entities\TopDownPluginEntity\TopDownValues.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TopDownValues</Name>
+    </None>
     <None Include="Entities\TunneledVariableEntity\AnimationChainListFile.achx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>AnimationChainListFile</Name>

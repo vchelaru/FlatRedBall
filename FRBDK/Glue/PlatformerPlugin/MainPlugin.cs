@@ -54,7 +54,8 @@ namespace FlatRedBall.PlatformerPlugin
                 //         the layer was drawn with add
                 // 1.4.0 - If the user is holding the down vertical input, in the air, and the movement
                 //         values allow falling through clouds, cloud collision will not be tested.
-                return new Version(1, 4, 0);
+                // 1.5   - Added InitializePlatformerInput which takes an IInputDevice
+                return new Version(1, 5, 0);
             }
         }
 

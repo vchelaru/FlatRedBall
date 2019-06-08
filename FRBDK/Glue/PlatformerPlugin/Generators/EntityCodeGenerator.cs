@@ -344,6 +344,13 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             InputEnabled = true;
         }
 
+        public void InitializePlatformerInput(FlatRedBall.Input.IInputDevice inputDevice)
+        {
+            this.JumpInput = inputDevice.DefaultPrimaryActionInput;
+            this.HorizontalInput = inputDevice.DefaultHorizontalInput;
+            this.VerticalInput = inputDevice.DefaultVerticalInput;
+        }
+
 
         /// <summary>
         /// Reads all input and applies the read-in values to control

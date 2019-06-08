@@ -148,6 +148,7 @@
     <Compile Include="DataTypes\TileMapInfo.Generated.cs" />
     <Compile Include="DataTypes\TmxWithLayersWithProperties.Generated.cs" />
     <Compile Include="DataTypes\TmxWithTileProperties.Generated.cs" />
+    <Compile Include="DataTypes\TopDownValues.Generated.cs" />
     <Compile Include="DataTypes\Waves.Generated.cs" />
     <Compile Include="DataTypes\WithFileAtEnd.Generated.cs" />
     <Compile Include="Entities\AndroidTests.cs" />
@@ -805,6 +806,10 @@
     <Compile Include="Entities\ToBeDeleted.Generated.cs">
       <DependentUpon>ToBeDeleted.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\TopDownPluginEntity.cs" />
+    <Compile Include="Entities\TopDownPluginEntity.Generated.cs">
+      <DependentUpon>TopDownPluginEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\TunneledVariableEntity.cs" />
     <Compile Include="Entities\TunneledVariableEntity.Generated.cs">
       <DependentUpon>TunneledVariableEntity.cs</DependentUpon>
@@ -994,7 +999,9 @@
       <DependentUpon>InheritFromInFolderRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\InputScreenGumRuntime.cs" />
-    <Compile Include="GumRuntimes\InputScreenGumRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\InputScreenGumRuntime.Generated.cs">
+      <DependentUpon>InputScreenGumRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.cs" />
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.Generated.cs">
       <DependentUpon>NineSliceButtonRuntime.cs</DependentUpon>
@@ -1335,6 +1342,7 @@
     <Compile Include="TileGraphics\TileNodeNetworkCreator.cs" />
     <Compile Include="TileGraphics\Tileset.cs" />
     <Compile Include="TileGraphics\TilesetExtensionMethods.cs" />
+    <Compile Include="TopDown\Enums.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

@@ -25,9 +25,9 @@ namespace TopDownPlugin
         //       a slowdown time of 0.
         // 1.3 - Added ability to get direction from velocity
         //     - Added ability to invert direction and mirror direction
-        
+        // 1.4 - Added InitializeTopDownInput which takes an IInputDevice
         public override Version Version => 
-            new Version(1, 2);
+            new Version(1, 4);
 
         MainEntityView control;
         PluginTab pluginTab;
