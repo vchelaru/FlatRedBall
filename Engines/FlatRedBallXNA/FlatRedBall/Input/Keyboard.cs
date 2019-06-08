@@ -706,7 +706,16 @@ namespace FlatRedBall.Input
                 return this.Get2DInput(Keys.A, Keys.D, Keys.W, Keys.S);
             }
         }
-         
+
+        IPressableInput IInputDevice.DefaultUpPressable
+        { get { return GetKey(Keys.W); } }
+        IPressableInput IInputDevice.DefaultDownPressable
+        { get { return GetKey(Keys.S); } }
+        IPressableInput IInputDevice.DefaultLeftPressable
+        { get { return GetKey(Keys.A); } }
+        IPressableInput IInputDevice.DefaultRightPressable
+        { get { return GetKey(Keys.D); } }
+
         I1DInput IInputDevice.DefaultHorizontalInput
         {
             get

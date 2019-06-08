@@ -7,6 +7,12 @@ namespace FlatRedBall.Input
     public interface IInputDevice
     {
         I2DInput Default2DInput { get; }
+
+        IPressableInput DefaultUpPressable { get; }
+        IPressableInput DefaultDownPressable { get; }
+        IPressableInput DefaultLeftPressable { get; }
+        IPressableInput DefaultRightPressable { get; }
+
         I1DInput DefaultHorizontalInput { get; }
         I1DInput DefaultVerticalInput { get; }
         IPressableInput DefaultPrimaryActionInput { get; }

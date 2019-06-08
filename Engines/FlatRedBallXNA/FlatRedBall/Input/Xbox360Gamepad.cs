@@ -1238,6 +1238,15 @@ namespace FlatRedBall.Input
             }
         }
 
+        IPressableInput IInputDevice.DefaultUpPressable
+        { get { return GetButton(Button.DPadUp).Or(LeftStick.UpAsButton); } }
+        IPressableInput IInputDevice.DefaultDownPressable
+        { get { return GetButton(Button.DPadDown).Or(LeftStick.DownAsButton); } }
+        IPressableInput IInputDevice.DefaultLeftPressable
+        { get { return GetButton(Button.DPadLeft).Or(LeftStick.LeftAsButton); } }
+        IPressableInput IInputDevice.DefaultRightPressable
+        { get { return GetButton(Button.DPadRight).Or(LeftStick.RightAsButton); } }
+
         I1DInput IInputDevice.DefaultHorizontalInput
         {
             get
