@@ -25,6 +25,10 @@
     <ElementType>Screen</ElementType>
   </ScreenReference>
   <ScreenReference>
+    <Name>InputScreenGum</Name>
+    <ElementType>Screen</ElementType>
+  </ScreenReference>
+  <ScreenReference>
     <Name>ScreenLoadedAsGraphicalUiElement</Name>
     <ElementType>Screen</ElementType>
   </ScreenReference>

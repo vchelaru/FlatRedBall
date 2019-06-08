@@ -275,6 +275,9 @@ namespace TMXGlueLib.DataTypes
                     quad.LeftQuadCoordinate = (float)objectInstance.x;
                     quad.BottomQuadCoordinate = (float)-objectInstance.y;
 
+                    quad.OverridingWidth = objectInstance.width;
+                    quad.OverridingHeight = objectInstance.height;
+
                     quad.RotationDegrees = (float)objectInstance.Rotation;
 
                     quad.FlipFlags = (byte)(gid.Value & 0xf0000000 >> 7);

@@ -30,6 +30,9 @@ namespace TMXGlueLib.DataTypes
         public ushort LeftTexturePixel;
         public ushort TopTexturePixel;
 
+        public float? OverridingWidth;
+        public float? OverridingHeight;
+
         public byte FlipFlags;
 
         public string Name;

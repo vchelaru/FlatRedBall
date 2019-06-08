@@ -993,6 +993,8 @@
     <Compile Include="GumRuntimes\InheritFromInFolderRuntime.Generated.cs">
       <DependentUpon>InheritFromInFolderRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\InputScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\InputScreenGumRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.cs" />
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.Generated.cs">
       <DependentUpon>NineSliceButtonRuntime.cs</DependentUpon>
@@ -1187,6 +1189,10 @@
     <Compile Include="Screens\InheritanceScreen.cs" />
     <Compile Include="Screens\InheritanceScreen.Generated.cs">
       <DependentUpon>InheritanceScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\InputScreen.cs" />
+    <Compile Include="Screens\InputScreen.Generated.cs">
+      <DependentUpon>InputScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\InstructionScreen.cs" />
     <Compile Include="Screens\InstructionScreen.Generated.cs">

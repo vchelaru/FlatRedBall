@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace FlatRedBall.Input
 {
-    public partial class Keyboard : IInputReceiverKeyboard
+    public partial class Keyboard : IInputReceiverKeyboard, IInputDevice
     {
         #region Enums
 
@@ -694,6 +694,70 @@ namespace FlatRedBall.Input
         }
 
         #endregion
+
+        #endregion
+
+        #region IInputDevice Explicit Implementation
+
+        I2DInput IInputDevice.Default2DInput
+        {
+            get
+            {
+                return this.Get2DInput(Keys.A, Keys.D, Keys.W, Keys.S);
+            }
+        }
+         
+        I1DInput IInputDevice.DefaultHorizontalInput
+        {
+            get
+            {
+                return this.Get1DInput(Keys.A, Keys.D);
+            }
+        }
+        I1DInput IInputDevice.DefaultVerticalInput
+        {
+            get
+            {
+                return this.Get1DInput(Keys.S, Keys.W);
+            }
+        }
+
+        IPressableInput IInputDevice.DefaultPrimaryActionInput
+        {
+            get
+            {
+                return this.GetKey(Keys.Space);
+            }
+        }
+        IPressableInput IInputDevice.DefaultConfirmInput
+        {
+            get
+            {
+                return this.GetKey(Keys.Enter);
+            }
+        }
+        IPressableInput IInputDevice.DefaultJoinInput
+        {
+            get
+            {
+                return this.GetKey(Keys.Enter);
+            }
+        }
+        IPressableInput IInputDevice.DefaultPauseInput
+        {
+            get
+            {
+                return this.GetKey(Keys.Escape);
+            }
+        }
+        IPressableInput IInputDevice.DefaultBackInput
+        {
+            get
+            {
+                return this.GetKey(Keys.Escape);
+            }
+        }
+
 
         #endregion
     }

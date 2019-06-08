@@ -665,6 +665,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>GumScreenNoGumIdbScreenGum</Name>
     </None>
+    <None Include="gumproject\Screens\InputScreenGum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>InputScreenGum</Name>
+    </None>
     <None Include="gumproject\screens\screenloadedasgraphicaluielement.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>screenloadedasgraphicaluielement</Name>

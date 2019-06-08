@@ -17,7 +17,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace FlatRedBall.Input
 {
-    public class Xbox360GamePad
+    public class Xbox360GamePad : IInputDevice
     {
         #region Enums
 
@@ -1227,5 +1227,71 @@ namespace FlatRedBall.Input
         #endregion
 
         #endregion
+
+        #region IInputDevice Explicit Implementation
+
+        I2DInput IInputDevice.Default2DInput
+        {
+            get
+            {
+                return this.LeftStick.Or(this.DPad);
+            }
+        }
+
+        I1DInput IInputDevice.DefaultHorizontalInput
+        {
+            get
+            {
+                return this.LeftStick.Horizontal;
+            }
+        }
+
+        I1DInput IInputDevice.DefaultVerticalInput
+        {
+            get
+            {
+                return this.LeftStick.Vertical;
+            }
+        }
+
+        IPressableInput IInputDevice.DefaultPrimaryActionInput
+        {
+            get
+            {
+                return this.GetButton(Button.A);
+            }
+        }
+        IPressableInput IInputDevice.DefaultConfirmInput
+        {
+            get
+            {
+                return this.GetButton(Button.A);
+            }
+        }
+        IPressableInput IInputDevice.DefaultJoinInput
+        {
+            get
+            {
+                return this.GetButton(Button.Start);
+            }
+        }
+        IPressableInput IInputDevice.DefaultPauseInput
+        {
+            get
+            {
+                return this.GetButton(Button.Start);
+            }
+        }
+        IPressableInput IInputDevice.DefaultBackInput
+        {
+            get
+            {
+                return this.GetButton(Button.Back);
+            }
+        }
+
+
+        #endregion
+
     }
 }

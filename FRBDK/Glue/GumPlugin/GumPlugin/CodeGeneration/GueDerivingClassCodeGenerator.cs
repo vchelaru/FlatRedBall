@@ -280,6 +280,8 @@ namespace DesktopGlForms.GumRuntimes.DefaultForms
         {
             GenerateInstanceProperties(elementSave, currentBlock);
 
+            // We only generate exposed variables here, because all other
+            // variables are declared in the base class.
             GenerateExposedVariableProperties(elementSave, currentBlock);
         }
 
