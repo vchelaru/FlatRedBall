@@ -52,6 +52,14 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
+        public string NoPathNoExtension
+        {
+            get
+            {
+                return FileManager.RemovePath(FileManager.RemoveExtension(FullPath));
+            }
+        }
+
         public string FullPath
         {
             get

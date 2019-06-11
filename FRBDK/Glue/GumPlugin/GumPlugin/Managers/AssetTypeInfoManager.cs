@@ -262,7 +262,7 @@ namespace GumPlugin.Managers
             }
         }
 
-        string GetGumxLoadCode(IElement element, NamedObjectSave nos, ReferencedFileSave rfs)
+        string GetGumxLoadCode(IElement element, NamedObjectSave nos, ReferencedFileSave rfs, string contentManagerName)
         {
             string fileNameToLoad = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(rfs, mGumxAti);
 

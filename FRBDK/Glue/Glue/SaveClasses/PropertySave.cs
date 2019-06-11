@@ -83,7 +83,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (isDefault)
             {
-                propertySaveList.Remove(nameToSearchFor);
+                propertySaveList.RemoveAll(item => item.Name == nameToSearchFor);
             }
             else
             {

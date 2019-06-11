@@ -272,6 +272,8 @@
     </Compile>
     <Compile Include="AutomatedGlue\AutoGlue.cs" />
     <Compile Include="AutomatedGlue\GlueGui.cs" />
+    <Compile Include="MVVM\PropertyListContainerViewModel.cs" />
+    <Compile Include="MVVM\ViewModel.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSetupCodeGenerator.cs" />
     <Compile Include="CodeGeneration\CodeBuilder\CodeBlockBase.cs" />
     <Compile Include="CodeGeneration\CodeBuilder\CodeBlockClass.cs" />
@@ -747,7 +749,6 @@
     <Compile Include="Tasks\GlueTask.cs" />
     <Compile Include="Tasks\TaskManager.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\UnreferencedFiles\UnreferencedFilesManager.cs" />
-    <Compile Include="MVVM\ViewModel.cs" />
     <Compile Include="Parsing\CodeParseException.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\BitmapFonts\BitmapFontPlugin.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\CollisionPlugin\CollisionPluginCodeGenerator.cs" />

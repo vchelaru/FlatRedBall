@@ -14,6 +14,7 @@ using FlatRedBall.Glue.Events;
 using FlatRedBall.Utilities;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using FlatRedBall.Glue.Interfaces;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -61,13 +62,17 @@ namespace FlatRedBall.Glue.SaveClasses
     
     #endregion
 
-    public class NamedObjectSave : INameable
+    public class NamedObjectSave : INameable, IPropertyListContainer
     {
         #region Fields
         [XmlIgnore]
         public static NamedObjectToString ToStringDelegate;
 
-        public List<PropertySave> Properties = new List<PropertySave>();
+        public List<PropertySave> Properties
+        {
+            get;
+            set;
+        } = new List<PropertySave>();
         public bool ShouldSerializeProperties()
         {
             return Properties != null && Properties.Count != 0;

@@ -190,7 +190,7 @@ namespace FlatRedBall.Audio
         {
             AreSoundEffectsEnabled = true;
             AreSongsEnabled = true;
-#if !WINDOWS_PHONE && !MONOGAME && !SILVERLIGHT
+#if !MONOGAME
             SoundListener = new PositionedSoundListener();
             PositionedSounds = new PositionedObjectList<PositionedSound>();
 #endif

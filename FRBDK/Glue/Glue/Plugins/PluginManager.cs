@@ -408,7 +408,36 @@ namespace FlatRedBall.Glue.Plugins
 
                             Plugins.PluginManager.ReceiveOutput("Installed to " + installPath);
 
-                            MessageBox.Show(@"Successfully installed.  Restart Glue to use the new plugin.");
+                            // This plugin may be installed in a secondary location, but the same plugin may be installed in a primary location overriding this
+                            // plugin. If so, we should warn the user.
+
+                            List<FilePath> existingInstallLocations = new List<FilePath>();
+                            foreach(var instance in mInstances)
+                            {
+                                existingInstallLocations.AddRange(instance.PluginContainers
+                                    .Select(item => new FilePath(item.Value.AssemblyLocation)
+                                        .GetDirectoryContainingThis()
+                                        ));
+                            }
+
+                            existingInstallLocations = existingInstallLocations.Distinct((first, second) => first == second).ToList();
+
+                            // see if any are in the same folder name in a different location.
+
+                            var endResultDirectory = FileManager.UserApplicationData + @"FRBDK\Plugins\" + rootDirectory;
+
+                            var firstMatching = existingInstallLocations.FirstOrDefault(item => item.StandardizedNoPathNoExtension == rootDirectory &&
+                                item != endResultDirectory);
+                            //var existingPlugins = 
+
+                            var message =
+                                $"On restart plugin will be installed to\n{endResultDirectory}\nRestart Glue to use the new plugin.";
+
+                            if(firstMatching != null)
+                            {
+                                message += $"\n\nNote that Glue also has a plugin installed at \n{firstMatching.FullPath}";
+                            }
+                            MessageBox.Show(message);
                         }
                         else
                         {

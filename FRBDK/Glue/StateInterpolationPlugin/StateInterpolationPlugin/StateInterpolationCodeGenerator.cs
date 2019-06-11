@@ -147,14 +147,8 @@ namespace OfficialPlugins.StateInterpolation
         public static bool SupportsAdvancedInterpolation(this IElement element)
         {
 
-            if (element is ScreenSave)
-            {
-                return ((ScreenSave)element).SupportsAdvancedInterpolation();
-            }
-            else
-            {
-                return ((EntitySave)element).SupportsAdvancedInterpolation();
-            }
+            return element.Properties.ContainsValue(StateInterpolationPlugin.VariableName) &&
+                element.Properties.GetValue<bool>(StateInterpolationPlugin.VariableName);
         }
 
         public static List<string> GetStateEnumNames(this IElement element)
@@ -182,19 +176,7 @@ namespace OfficialPlugins.StateInterpolation
             return toReturn;
         }
 
-        public static bool SupportsAdvancedInterpolation(this ScreenSave screenSave)
-        {
-            return screenSave.Properties.ContainsValue(StateInterpolationPlugin.VariableName) &&
-                screenSave.Properties.GetValue<bool>(StateInterpolationPlugin.VariableName);
 
-        }
-
-        public static bool SupportsAdvancedInterpolation(this EntitySave entitySave)
-        {
-            return entitySave.Properties.ContainsValue(StateInterpolationPlugin.VariableName) &&
-                entitySave.Properties.GetValue<bool>(StateInterpolationPlugin.VariableName);
-
-        }
 
 
     }

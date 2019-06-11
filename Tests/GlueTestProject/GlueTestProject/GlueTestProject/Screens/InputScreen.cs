@@ -38,6 +38,11 @@ namespace GlueTestProject.Screens
             inputDevice.DefaultJoinInput          .ShouldNotBe(null);
             inputDevice.DefaultPauseInput         .ShouldNotBe(null);
             inputDevice.DefaultBackInput.ShouldNotBe(null);
+
+            inputDevice.DefaultUpPressable.ShouldNotBe(null);
+            inputDevice.DefaultDownPressable.ShouldNotBe(null);
+            inputDevice.DefaultLeftPressable.ShouldNotBe(null);
+            inputDevice.DefaultRightPressable.ShouldNotBe(null);
         }
 
         private void TestXboxGamePadInputDevice()
@@ -53,6 +58,12 @@ namespace GlueTestProject.Screens
             inputDevice.DefaultJoinInput.ShouldNotBe(null);
             inputDevice.DefaultPauseInput.ShouldNotBe(null);
             inputDevice.DefaultBackInput.ShouldNotBe(null);
+
+
+            inputDevice.DefaultUpPressable.ShouldNotBe(null);
+            inputDevice.DefaultDownPressable.ShouldNotBe(null);
+            inputDevice.DefaultLeftPressable.ShouldNotBe(null);
+            inputDevice.DefaultRightPressable.ShouldNotBe(null);
         }
 
         void CustomActivity(bool firstTimeCalled)

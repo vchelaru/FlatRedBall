@@ -8,6 +8,7 @@ using System.IO;
 
 using System.ComponentModel;
 using FlatRedBall.Glue.Events;
+using FlatRedBall.Glue.Interfaces;
 
 #if GLUE
 using FlatRedBall.Glue.FormHelpers.PropertyGrids;
@@ -25,7 +26,7 @@ namespace FlatRedBall.Glue.SaveClasses
         Entity
     }
 
-    public interface IElement : INamedObjectContainer, INameable, IFileReferencer, IEventContainer
+    public interface IElement : INamedObjectContainer, INameable, IFileReferencer, IEventContainer, IPropertyListContainer
     {
         //[Browsable(false)]
         //[BroadcastAttribute(BroadcastStaticOrInstance.Internal)]

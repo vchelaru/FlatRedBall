@@ -906,9 +906,7 @@ namespace FlatRedBall.Content
 			}
 			else
 			{
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 				base.Unload();
-#endif
 
 				this.mAssets.Clear();
 				this.mNonDisposableDictionary.Clear();

@@ -549,7 +549,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static bool NeedsFullProperty(ReferencedFileSave referencedFile, IElement container)
+        public static bool NeedsFullProperty(ReferencedFileSave referencedFile, IElement container)
         {
 
             return (ProjectManager.GlueProjectSave.GlobalContentSettingsSave.LoadAsynchronously && container == null) || 
@@ -612,7 +612,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if(ati.CustomLoadFunc != null)
             {
-                var line = ati.CustomLoadFunc(container, null, rfs);
+                var line = ati.CustomLoadFunc(container, null, rfs, contentManagerString);
                 codeBlock.Line(line);
             }
             else if (!string.IsNullOrEmpty(ati.CustomLoadMethod))

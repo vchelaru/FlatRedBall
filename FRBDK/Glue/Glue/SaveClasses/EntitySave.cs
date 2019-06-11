@@ -10,6 +10,7 @@ using FlatRedBall.Utilities;
 using FlatRedBall.IO;
 using System.IO;
 using FlatRedBall.Glue.Events;
+using FlatRedBall.Glue.Interfaces;
 
 #if GLUE
 using Microsoft.Build.BuildEngine;
@@ -39,7 +40,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
 
-    public class EntitySave : IFileReferencer, IElement, ITaggable
+    public class EntitySave : IFileReferencer, IElement, ITaggable, IPropertyListContainer
     {
         #region Fields
 
@@ -51,7 +52,11 @@ namespace FlatRedBall.Glue.SaveClasses
         string mCurrentStateChange;
 
 
-        public List<PropertySave> Properties = new List<PropertySave>();
+        public List<PropertySave> Properties
+        {
+            get;
+            set;
+        } = new List<PropertySave>();
         public bool ShouldSerializeProperties()
         {
             return Properties != null && Properties.Count != 0;
@@ -63,11 +68,6 @@ namespace FlatRedBall.Glue.SaveClasses
         #endregion
 
         #region Properties
-
-        List<PropertySave> IElement.Properties
-        {
-            get { return Properties; }
-        }
 
         [Browsable(false)]
         [XmlIgnore]

@@ -169,12 +169,15 @@
     <Compile Include="..\Glue\SaveClasses\TranslatedFileSave.cs">
       <Link>TranslatedFileSave.cs</Link>
     </Compile>
+    <Compile Include="Interfaces\IPropertyListContainer.cs" />
     <Compile Include="Models\DisplaySettings.cs" />
     <Compile Include="Models\FloatRectangle.cs" />
     <Compile Include="Models\TypeConverters\FloatRectangleTypeConverter.cs" />
     <Compile Include="ExtensionMethods\GlueProjectSaveExtensions.cs" />
     <Compile Include="Models\Interfaces\ITaggable.cs" />
     <Compile Include="Models\GluxPluginData.cs" />
+    <Compile Include="Models\TypeConverters\IConverter.cs" />
+    <Compile Include="Models\TypeConverters\InverterConverter.cs" />
     <Compile Include="PluginRequirement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReferencedFileReference.cs" />

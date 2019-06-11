@@ -299,8 +299,7 @@ namespace FlatRedBall.Glue.Plugins
 
             var pluginDirectories = GetPluginDirectories(folderInAppData);
 
-            foreach (
-                var directory in pluginDirectories)
+            foreach (var directory in pluginDirectories)
             {
                 AddPluginsFromDirectory(pluginsToIgnore, returnValue, directory);
             }

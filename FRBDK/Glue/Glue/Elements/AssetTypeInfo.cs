@@ -244,8 +244,16 @@ namespace FlatRedBall.Glue.Elements
         public string CustomLoadMethod;
 
 
+        /// <summary>
+        /// Func which can be used to perform custom loading of an asset. Parameters are:
+        /// * IElement - The Screen or Entity containing the file
+        /// * NamedObjectSave - the NamedObjectSave associated with the load
+        /// * ReferencedFileSave - the file being loaded
+        /// * string - the content manager in context
+        /// * string - the return value which is the code for loading
+        /// </summary>
         [XmlIgnore]
-        public Func<IElement, NamedObjectSave, ReferencedFileSave, string> CustomLoadFunc;
+        public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> CustomLoadFunc;
 
 
         public string CustomBuildToolName;

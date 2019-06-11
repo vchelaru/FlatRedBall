@@ -247,6 +247,12 @@
     <Compile Include="RuntimeFileCopier\MainPlugin.cs" />
     <Compile Include="RuntimeFileWatcherPlugin\FileSystemWatcherCodeGenerator.cs" />
     <Compile Include="RuntimeFileWatcherPlugin\MainPlugin.cs" />
+    <Compile Include="SongPlugin\CodeGenerators\SongPluginCodeGenerator.cs" />
+    <Compile Include="SongPlugin\MainSongPlugin.cs" />
+    <Compile Include="SongPlugin\ViewModels\MainSongControlViewModel.cs" />
+    <Compile Include="SongPlugin\Views\MainSongControl.xaml.cs">
+      <DependentUpon>MainSongControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="StateDataPlugin\Controls\StateDataControl.xaml.cs">
       <DependentUpon>StateDataControl.xaml</DependentUpon>
     </Compile>
@@ -352,6 +358,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="FilesPlugin\Controls\FileReferenceControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SongPlugin\Views\MainSongControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

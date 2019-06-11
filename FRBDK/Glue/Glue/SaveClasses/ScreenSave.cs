@@ -22,7 +22,7 @@ namespace FlatRedBall.Glue.SaveClasses
         string mBaseScreen;
         string mNextScreen;
 
-        public List<PropertySave> Properties = new List<PropertySave>();
+        public List<PropertySave> Properties { get; set; } = new List<PropertySave>();
         public bool ShouldSerializeProperties()
         {
             return Properties != null && Properties.Count != 0;
@@ -43,11 +43,6 @@ namespace FlatRedBall.Glue.SaveClasses
         string ITaggable.Source
         {
             get { return this.Source; }
-        }
-
-        List<PropertySave> IElement.Properties
-        {
-            get { return Properties; }
         }
 
         [Browsable(false)]

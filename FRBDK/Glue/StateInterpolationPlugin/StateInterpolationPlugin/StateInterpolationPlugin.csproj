@@ -68,10 +68,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Glue\Glue\bin\Debug\FlatRedBall.PropertyGrid.dll</HintPath>
     </Reference>
-    <Reference Include="GlueSaveClasses, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Glue\Glue\bin\Debug\GlueSaveClasses.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -109,6 +105,10 @@
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
       <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
       <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GlueSaveClasses\GlueSaveClasses.csproj">
+      <Project>{545ff183-4d9d-4121-9a04-1d354b0b0dba}</Project>
+      <Name>GlueSaveClasses</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Glue\Glue.csproj">
       <Project>{213357e3-f729-4ff3-9b99-e91c40d50e6e}</Project>

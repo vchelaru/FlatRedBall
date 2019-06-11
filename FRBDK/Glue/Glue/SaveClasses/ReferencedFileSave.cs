@@ -12,8 +12,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Content;
 //using FlatRedBall.Gui;
 using Microsoft.Xna.Framework.Content.Pipeline.Processors;
-
-
+using FlatRedBall.Glue.Interfaces;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -128,7 +127,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
     public delegate string ReferencedFileSaveToString(ReferencedFileSave rfs);
 
-    public class ReferencedFileSave
+    public class ReferencedFileSave : IPropertyListContainer
     {
         #region Fields
 
@@ -164,7 +163,7 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             get;
             set;
-        }
+        } = new List<PropertySave>();
         public bool ShouldSerializeProperties()
         {
             return Properties != null && Properties.Count != 0;
@@ -213,18 +212,27 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
         
+        // Moved to Properties June 9, 2019
+        // Eventually will want to mark this as XmlIgnore
         [Category("Memory and Performance"), DefaultValue(false)]
         public bool LoadedOnlyWhenReferenced
         {
-            get;
-            set;
+            get
+            {
+                return Properties.GetValue<bool>(nameof(LoadedOnlyWhenReferenced));
+            }
+            set
+            {
+                Properties.SetValue(nameof(LoadedOnlyWhenReferenced), value);
+            }
         }
 
-        [Category("Destroy"), DefaultValue(true)]
+        // converted to properties on June 9, 2019
+        [Category("Destroy")]
         public bool DestroyOnUnload
         {
-            get;
-            set;
+            get { return Properties.GetValue<bool>(nameof(DestroyOnUnload)); }
+            set { Properties.SetValue(nameof(DestroyOnUnload), value); }
         }
 
         public string Summary
@@ -342,11 +350,11 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             get
             {
-                return Properties.ContainsValue("IsDatabaseForLocalizing") && ((bool)Properties.GetValue("IsDatabaseForLocalizing"));
+                return Properties.GetValue<bool>(nameof(IsDatabaseForLocalizing));
             }
             set
             {
-                Properties.SetValue("IsDatabaseForLocalizing", value);
+                Properties.SetValue(nameof(IsDatabaseForLocalizing), value);
             }
         }
 
@@ -468,7 +476,6 @@ namespace FlatRedBall.Glue.SaveClasses
             ProjectsToExcludeFrom = new List<string>();
             AddToManagers = true;
             DestroyOnUnload = true;
-            Properties = new List<PropertySave>();
             CsvDelimiter = AvailableDelimiters.Comma;
             SourceFileCache = new List<Content.SourceReferencingFile>();
             LoadedAtRuntime = true;
