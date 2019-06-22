@@ -88,7 +88,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 if (instance.InheritsFromFrbType())
                 {
 
-                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(instance.BaseEntity);
+                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(instance.BaseEntity, instance);
 
                     if (ati != null)
                     {
@@ -116,7 +116,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 if (instance.InheritsFromFrbType())
                 {
 
-                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(instance.BaseEntity);
+                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(instance.BaseEntity, instance);
 
                     if (ati != null)
                     {

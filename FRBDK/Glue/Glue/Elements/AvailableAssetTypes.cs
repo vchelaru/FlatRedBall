@@ -268,7 +268,8 @@ namespace FlatRedBall.Glue.Elements
             return AllAssetTypes.FirstOrDefault(item => item.Extension == extension);
 		}
 
-        public AssetTypeInfo GetAssetTypeFromRuntimeType(string runtimeType, bool? isObject = null)
+        public AssetTypeInfo GetAssetTypeFromRuntimeType(string runtimeType,
+            object callingObject, bool? isObject = null)
         {
             bool isQualified = runtimeType != null && runtimeType.Contains('.');
 
@@ -290,7 +291,11 @@ namespace FlatRedBall.Glue.Elements
             {
                 foreach (var ati in assetsToLoopThrough)
                 {
-                    if (ati.QualifiedRuntimeTypeName.QualifiedType == runtimeType)
+                    var effectiveQualified =
+                        ati.QualifiedRuntimeTypeName.PlatformFunc?.Invoke(callingObject)
+                        ?? ati.QualifiedRuntimeTypeName.QualifiedType;
+
+                    if (effectiveQualified == runtimeType)
                     {
                         return ati;
                     }

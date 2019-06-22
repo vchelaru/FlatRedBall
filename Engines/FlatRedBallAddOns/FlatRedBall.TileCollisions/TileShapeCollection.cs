@@ -14,8 +14,8 @@ namespace FlatRedBall.TileCollisions
 
         ShapeCollection mShapes;
         Axis mSortAxis = Axis.X;
-        float mLeftSeedX = 0;
-        float mBottomSeedY = 0;
+        public float LeftSeedX = 0;
+        public float BottomSeedY = 0;
         float mGridSize;
         bool mVisible = true;
 
@@ -222,8 +222,8 @@ namespace FlatRedBall.TileCollisions
 
         public AxisAlignedRectangle GetRectangleAtPosition(float worldX, float worldY)
         {
-            float middleOfTileX = MathFunctions.RoundFloat(worldX, GridSize, mLeftSeedX + GridSize / 2.0f);
-            float middleOfTileY = MathFunctions.RoundFloat(worldY, GridSize, mBottomSeedY + GridSize / 2.0f);
+            float middleOfTileX = MathFunctions.RoundFloat(worldX, GridSize, LeftSeedX + GridSize / 2.0f);
+            float middleOfTileY = MathFunctions.RoundFloat(worldY, GridSize, BottomSeedY + GridSize / 2.0f);
             float keyValue = GetCoordinateValueForPartitioning(middleOfTileX, middleOfTileY);
 
             float keyValueBefore = keyValue - GridSize / 2.0f;
@@ -243,8 +243,8 @@ namespace FlatRedBall.TileCollisions
 
         public Polygon GetPolygonAtPosition(float worldX, float worldY)
         {
-            float middleOfTileX = MathFunctions.RoundFloat(worldX, GridSize, mLeftSeedX + GridSize / 2.0f);
-            float middleOfTileY = MathFunctions.RoundFloat(worldY, GridSize, mBottomSeedY + GridSize / 2.0f);
+            float middleOfTileX = MathFunctions.RoundFloat(worldX, GridSize, LeftSeedX + GridSize / 2.0f);
+            float middleOfTileY = MathFunctions.RoundFloat(worldY, GridSize, BottomSeedY + GridSize / 2.0f);
             float keyValue = GetCoordinateValueForPartitioning(middleOfTileX, middleOfTileY);
 
             var halfGridSize = GridSize / 2.0f;
@@ -280,8 +280,8 @@ namespace FlatRedBall.TileCollisions
 
         private Polygon GetPolygonAtPosition(float worldX, float worldY, int startInclusive, int endExclusive)
         {
-            float middleOfTileX = MathFunctions.RoundFloat(worldX, GridSize, mLeftSeedX + GridSize / 2.0f);
-            float middleOfTileY = MathFunctions.RoundFloat(worldY, GridSize, mBottomSeedY + GridSize / 2.0f);
+            float middleOfTileX = MathFunctions.RoundFloat(worldX, GridSize, LeftSeedX + GridSize / 2.0f);
+            float middleOfTileY = MathFunctions.RoundFloat(worldY, GridSize, BottomSeedY + GridSize / 2.0f);
 
             var halfGridSize = GridSize / 2.0f;
 
@@ -333,8 +333,8 @@ namespace FlatRedBall.TileCollisions
                 // subtract half width/
                 // height so we can use the
                 // bottom/left
-                float roundedX = MathFunctions.RoundFloat(x - GridSize / 2.0f, GridSize, mLeftSeedX);
-                float roundedY = MathFunctions.RoundFloat(y - GridSize / 2.0f, GridSize, mBottomSeedY);
+                float roundedX = MathFunctions.RoundFloat(x - GridSize / 2.0f, GridSize, LeftSeedX);
+                float roundedY = MathFunctions.RoundFloat(y - GridSize / 2.0f, GridSize, BottomSeedY);
 
                 AxisAlignedRectangle newAar = new AxisAlignedRectangle();
                 newAar.Width = GridSize;

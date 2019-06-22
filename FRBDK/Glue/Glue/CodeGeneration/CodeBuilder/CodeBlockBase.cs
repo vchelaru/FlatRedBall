@@ -11,7 +11,7 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
         private readonly List<ICode> _postCodeLines = new List<ICode>();
         private readonly List<ICode> _postBodyCodeLines = new List<ICode>();
 
-        public CodeBlockBase(ICodeBlock parent)
+        public CodeBlockBase(ICodeBlock parent = null)
         {
             TabCharacter = CodeBuilderDefaults.TabCharacter;
             TabCount = CodeBuilderDefaults.TabCount;

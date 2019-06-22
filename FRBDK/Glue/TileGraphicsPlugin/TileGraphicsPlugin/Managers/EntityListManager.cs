@@ -86,6 +86,8 @@ namespace TileGraphicsPlugin.Managers
                     BuildTool = BuildToolAssociationManager.Self.TmxToCsv.ToString(),
                     IsSharedStatic = true
                 };
+                file.DestroyOnUnload = false;
+                
 
                 string fileName = FlatRedBall.Glue.ProjectManager.ContentDirectory + file.SourceFile;
 

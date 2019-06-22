@@ -161,6 +161,19 @@ namespace FlatRedBallAddOns.Entities
             get { return mEntityTemplateCode; }
         }
 
+        public static List<ElementComponentCodeGenerator> CodeGenerators
+        {
+            get;
+            set;
+        }
+
+        public static List<GlobalContentCodeGeneratorBase> GlobalContentCodeGenerators
+        {
+            get;
+            private set;
+        } = new List<GlobalContentCodeGeneratorBase>();
+
+
         #endregion
 
         #region Methods
@@ -202,18 +215,6 @@ namespace FlatRedBallAddOns.Entities
                 return (element as ScreenSave).IsOnOwnLayer;
             }
         }
-
-        public static List<ElementComponentCodeGenerator> CodeGenerators
-        {
-            get;
-            set;
-        }
-
-        public static List<GlobalContentCodeGeneratorBase> GlobalContentCodeGenerators
-        {
-            get;
-            private set;
-        } = new List<GlobalContentCodeGeneratorBase>();
 
         public static void GenerateCode(IElement element)
         {
@@ -1061,7 +1062,7 @@ namespace FlatRedBallAddOns.Entities
 
                 if (saveObject.InheritsFromFrbType())
                 {
-                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(saveObject.BaseObject);
+                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(saveObject.BaseObject, saveObject);
 
                     if (ati != null)
                     {
@@ -1283,7 +1284,7 @@ namespace FlatRedBallAddOns.Entities
             {
                 if (saveObject.InheritsFromFrbType())
                 {
-                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(saveObject.BaseObject);
+                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(saveObject.BaseObject, saveObject);
 
                     if (ati != null)
                     {
@@ -2374,7 +2375,7 @@ namespace FlatRedBallAddOns.Entities
 
                 if (saveObject.InheritsFromFrbType())
                 {
-                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(saveObject.BaseElement);
+                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(saveObject.BaseElement, saveObject);
 
                     if (ati != null)
                     {
@@ -2508,7 +2509,7 @@ namespace FlatRedBallAddOns.Entities
             {
                 if (saveObject.InheritsFromFrbType())
                 {
-                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(saveObject.BaseObject);
+                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(saveObject.BaseObject, saveObject);
 
                     if (ati != null)
                     {

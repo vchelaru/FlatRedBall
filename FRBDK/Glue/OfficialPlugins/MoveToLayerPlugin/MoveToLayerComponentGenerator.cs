@@ -38,7 +38,7 @@ namespace PluginTestbed.MoveToLayerPlugin
 
             if (element.InheritsFromFrbType())
             {
-                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(element.BaseElement);
+                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(element.BaseElement, element);
 
                 if (ati != null )
                 {

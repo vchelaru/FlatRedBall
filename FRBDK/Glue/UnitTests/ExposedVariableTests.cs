@@ -84,6 +84,8 @@ namespace UnitTests
             ObjectFinder.Self.GlueProject.Entities.Add(mCsvContainerEntitySave);
 
             ReferencedFileSave rfs = new ReferencedFileSave();
+            rfs.DestroyOnUnload = true;
+
             rfs.SourceFile = "Whatever.csv";
             rfs.Name = "Whatever.csv";
             mCsvContainerEntitySave.ReferencedFiles.Add(rfs);

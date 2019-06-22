@@ -351,6 +351,8 @@ namespace TileGraphicsPlugin
             this.RegisterCodeGenerator(new LevelCodeGenerator());
 
             this.RegisterCodeGenerator(new TmxCodeGenerator());
+
+            this.RegisterCodeGenerator(new TileShapeCollectionInitializeCodeGenerator());
         }
 
         #endregion
@@ -455,7 +457,8 @@ namespace TileGraphicsPlugin
                     collisionTab = base.CreateTab(view, "Collision Properties");
                 }
 
-                TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(treeNode?.Tag as NamedObjectSave);
+                TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(treeNode?.Tag as NamedObjectSave,
+                    GlueState.CurrentElement);
 
                 this.ShowTab(collisionTab, TabLocation.Center);
             }

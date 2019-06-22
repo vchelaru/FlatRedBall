@@ -12,7 +12,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         internal static void UpdateAtiTo(DisplaySettingsViewModel viewModel)
         {
             var ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(
-                "FlatRedBall.Camera");
+                "FlatRedBall.Camera", null);
 
             if(ati != null)
             {

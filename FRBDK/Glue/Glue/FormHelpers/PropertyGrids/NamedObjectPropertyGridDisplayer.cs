@@ -371,7 +371,7 @@ namespace FlatRedBall.Glue.GuiDisplay
                 }
 
                 // shapes don't implement ICollidable, but they have collision:
-                bool isShape = assetTypeInfo?.QualifiedRuntimeTypeName.QualifiedType.StartsWith("FlatRedBall.Math.Geometry") ?? false;
+                bool isShape = assetTypeInfo?.QualifiedRuntimeTypeName.QualifiedType?.StartsWith("FlatRedBall.Math.Geometry") ?? false;
                 if (assetTypeInfo != null && assetTypeInfo.ImplementsICollidable == false && !isShape)
                 {
                     shouldIncludeIncludeInICollidable = false;

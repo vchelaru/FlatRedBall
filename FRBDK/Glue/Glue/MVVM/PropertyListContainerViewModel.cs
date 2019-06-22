@@ -6,6 +6,7 @@ using FlatRedBall.Glue.SaveClasses;
 using GlueSaveClasses.Models.TypeConverters;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -38,38 +39,112 @@ namespace FlatRedBall.Glue.MVVM
     {
         #region Embedded Classes
 
-        public class SyncedPropertyInformation
+        public class ViewModelPropertyInformation
         {
             public Type Type { get; set; }
             public IConverter Converter { get; set; }
+            public object DefaultValue { get; set; }
             public string OverridingPropertyName { get; set; }
+            public bool IsSynced { get; set; }
+
         }
 
         #endregion
+
+        #region Fields/Properties
 
         public bool PersistChanges { get; set; } = true;
 
         /// <summary>
         /// The synced properties, where the key is the property name in the view model
         /// </summary>
-        Dictionary<string, SyncedPropertyInformation> syncedProperties = new Dictionary<string, SyncedPropertyInformation>();
+        Dictionary<string, ViewModelPropertyInformation> viewModelProperties = new Dictionary<string, ViewModelPropertyInformation>();
 
-        IPropertyListContainer glueObject;
         public IPropertyListContainer GlueObject
         {
-            get { return glueObject; }
-            set
+            get { return Get<IPropertyListContainer>(); }
+            set { Set(value); }
+        }
+
+        #endregion
+
+        public PropertyListContainerViewModel()
+        {
+            Dictionary<Type, IConverter> converterCache = new Dictionary<Type, IConverter>();
+
+            var derivedType = this.GetType();
+
+            var properties = derivedType.GetRuntimeProperties();
+
+            foreach (var property in properties)
             {
-                glueObject = value;
+                var attributes = property.GetCustomAttributes(true);
+
+                string propertyName = property.Name;
+
+                var information = new ViewModelPropertyInformation();
+                information.Type = property.PropertyType;
+
+                viewModelProperties.Add(
+                    propertyName,
+                    information);
+
+                foreach (var uncastedAttribute in attributes)
+                {
+                    if(uncastedAttribute is DefaultValueAttribute)
+                    {
+                        var defaultValueAttribute = uncastedAttribute as DefaultValueAttribute;
+
+                        information.DefaultValue = defaultValueAttribute.Value;
+                    }
+                    else if (uncastedAttribute is SyncedPropertyAttribute)
+                    {
+                        var syncedPropertyAttribute = uncastedAttribute as SyncedPropertyAttribute;
+
+                        if (syncedPropertyAttribute.ConverterType != null)
+                        {
+                            IConverter toAssign = null;
+                            if (converterCache.ContainsKey(syncedPropertyAttribute.ConverterType))
+                            {
+                                toAssign = converterCache[syncedPropertyAttribute.ConverterType];
+                            }
+                            else
+                            {
+                                var constructor = syncedPropertyAttribute.ConverterType.GetConstructor(new Type[0]);
+
+                                toAssign = (IConverter)constructor.Invoke(new object[0]);
+                                converterCache.Add(syncedPropertyAttribute.ConverterType, toAssign);
+                            }
+                            information.Converter = toAssign;
+                        }
+
+                        information.IsSynced = true;
+
+                        information.OverridingPropertyName =
+                            syncedPropertyAttribute.OverridingPropertyName;
+                    }
+                }
             }
         }
 
-        protected void SetAndPersist<T>(T propertyValue, [CallerMemberName]string propertyName = null)
+        protected virtual void OnSetAndPersist<T>(T propertyValue, string propertyName = null)
         {
-            var propertyInfo = syncedProperties[propertyName];
 
+        }
 
-            if (base.Set(propertyValue, propertyName) && PersistChanges)
+        // made public for reflection
+        public void SetAndPersist<T>(T propertyValue, [CallerMemberName]string propertyName = null)
+        {
+            if(viewModelProperties.ContainsKey(propertyName) == false)
+            {
+                throw new InvalidOperationException($"Did you forget to set the SyncedProperty attribute on {propertyName} in {this.GetType()}?");
+            }
+            var propertyInfo = viewModelProperties[propertyName];
+
+            // don't notify the property change yet, do it after setting the value on the Glue
+            // object in case whoever listens wants to do codegen or other things depending on the
+            // property already being set.
+            if (base.SetWithoutNotifying(propertyValue, propertyName) && PersistChanges)
             {
                 if(propertyInfo.Converter != null)
                 {
@@ -77,7 +152,6 @@ namespace FlatRedBall.Glue.MVVM
                 }
                 var modelName = propertyInfo.OverridingPropertyName ?? propertyName;
 
-                GlueObject.Properties.SetValue(modelName, propertyValue);
 
                 IElement element = null;
                 bool isGlobalContent = false;
@@ -105,6 +179,15 @@ namespace FlatRedBall.Glue.MVVM
                     }
                 }
 
+                //// just in case there's some save/generate running:
+                //TaskManager.Self.Add(() =>
+                //{
+                    GlueObject.Properties.SetValue(modelName, propertyValue);
+                //},
+                NotifyPropertyChanged(modelName);
+                //    "Safely setting property");
+                OnSetAndPersist(propertyValue, modelName);
+
                 if (element != null)
                 {
                     TaskManager.Self.Add(() =>
@@ -127,117 +210,97 @@ namespace FlatRedBall.Glue.MVVM
             }
         }
 
-        public PropertyListContainerViewModel()
-        {
-            Dictionary<Type, IConverter> converterCache = new Dictionary<Type, IConverter>();
-
-            var derivedType = this.GetType();
-
-            var properties = derivedType.GetRuntimeProperties();
-
-            foreach (var property in properties)
-            {
-                var attributes = property.GetCustomAttributes(true);
-
-                string propertyName = property.Name;
-
-                foreach (var uncastedAttribute in attributes)
-                {
-                    if (uncastedAttribute is SyncedPropertyAttribute)
-                    {
-                        var syncedPropertyAttribute = uncastedAttribute as SyncedPropertyAttribute;
-
-                        var information = new SyncedPropertyInformation();
-                        information.Type = property.PropertyType;
-
-                        if (syncedPropertyAttribute.ConverterType != null)
-                        {
-                            IConverter toAssign = null;
-                            if (converterCache.ContainsKey(syncedPropertyAttribute.ConverterType))
-                            {
-                                toAssign = converterCache[syncedPropertyAttribute.ConverterType];
-                            }
-                            else
-                            {
-                                var constructor = syncedPropertyAttribute.ConverterType.GetConstructor(new Type[0]);
-
-                                toAssign = (IConverter)constructor.Invoke(new object[0]);
-                                converterCache.Add(syncedPropertyAttribute.ConverterType, toAssign);
-                            }
-                            information.Converter = toAssign;
-                        }
-
-                        information.OverridingPropertyName =
-                            syncedPropertyAttribute.OverridingPropertyName;
-
-                        syncedProperties.Add(
-                            propertyName,
-                            information);
-
-                    }
-                }
-            }
-        }
-
         public virtual void UpdateFromGlueObject()
         {
-            foreach (var kvp in syncedProperties)
+            var syncedKvps =
+                viewModelProperties.Where(item => item.Value.IsSynced).ToArray();
+
+            foreach (var kvp in syncedKvps)
             {
                 var viewModelPropertyName = kvp.Key;
                 var modelPropertyName = kvp.Value.OverridingPropertyName ?? kvp.Key;
                 var type = kvp.Value.Type;
                 var converter = kvp.Value.Converter;
 
-                var value = GlueObject.Properties.GetValue(modelPropertyName);
 
-                if (type == typeof(float))
-                {
-                    SetInternal<float>(value, viewModelPropertyName, converter);
-                }
-                else if (type == typeof(double))
-                {
-                    SetInternal<double>(value, viewModelPropertyName, converter);
+                var property = GlueObject.Properties.FirstOrDefault(item => item.Name == modelPropertyName);
 
-                }
-                else if (type == typeof(decimal))
-                {
-                    SetInternal<decimal>(value, viewModelPropertyName, converter);
+                object modelValue = null;
 
-                }
-                else if (type == typeof(byte))
-                {
-                    SetInternal<byte>(value, viewModelPropertyName, converter);
+                bool handledByVmDefault = false;
 
-                }
-                else if (type == typeof(bool))
+                if (property == null)
                 {
-                    SetInternal<bool>(value, viewModelPropertyName, converter);
+                    var defaultVmValue = kvp.Value.DefaultValue;
 
-                }
-                else if (type == typeof(int))
-                {
-                    SetInternal<int>(value, viewModelPropertyName, converter);
+                    if(defaultVmValue != null)
+                    {
+                        var method = this.GetType().GetMethod(nameof(SetAndPersist)).MakeGenericMethod(defaultVmValue.GetType());
 
+                        method.Invoke(this, new object[] { defaultVmValue, viewModelPropertyName });
+                        handledByVmDefault = true;
+                    }
                 }
-                else if (type == typeof(string))
-                {
-                    SetInternal<string>(value, viewModelPropertyName, converter);
 
-                }
-                else if (type == typeof(char))
+                if(handledByVmDefault == false)
                 {
-                    SetInternal<char>(value, viewModelPropertyName, converter);
+                    modelValue = GlueObject.Properties.GetValue(modelPropertyName);
 
-                }
-                else
-                {
-                    throw new NotImplementedException();
+                    if (type == typeof(float))
+                    {
+                        SetInternal<float>(modelValue, viewModelPropertyName, converter);
+                    }
+                    else if (type == typeof(double))
+                    {
+                        SetInternal<double>(modelValue, viewModelPropertyName, converter);
+
+                    }
+                    else if (type == typeof(decimal))
+                    {
+                        SetInternal<decimal>(modelValue, viewModelPropertyName, converter);
+
+                    }
+                    else if (type == typeof(byte))
+                    {
+                        SetInternal<byte>(modelValue, viewModelPropertyName, converter);
+
+                    }
+                    else if (type == typeof(bool))
+                    {
+                        SetInternal<bool>(modelValue, viewModelPropertyName, converter);
+
+                    }
+                    else if (type == typeof(int))
+                    {
+                        SetInternal<int>(modelValue, viewModelPropertyName, converter);
+
+                    }
+                    else if (type == typeof(string))
+                    {
+                        SetInternal<string>(modelValue, viewModelPropertyName, converter);
+
+                    }
+                    else if (type == typeof(char))
+                    {
+                        SetInternal<char>(modelValue, viewModelPropertyName, converter);
+                    }
+                    else
+                    {
+                        var methods = this.GetType().GetMethods();
+
+                        var method = this.GetType().GetMethod("SetInternal");
+
+                        var genericMethod = method.MakeGenericMethod(type);
+
+                        genericMethod.Invoke(this, new object[] { modelValue, viewModelPropertyName, converter });
+                    }
                 }
             }
-
+            
         }
 
-        private void SetInternal<T>(object toSet, string propertyName, IConverter converter)
+        // made public for reflection
+        public void SetInternal<T>(object toSet, string propertyName, IConverter converter)
         {
             if(toSet == null)
             {

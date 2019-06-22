@@ -42,7 +42,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             else if (entitySave.InheritsFromFrbType())
             {
-                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(entitySave.BaseEntity);
+                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(entitySave.BaseEntity, entitySave);
 
                 if (ati != null)
                 {

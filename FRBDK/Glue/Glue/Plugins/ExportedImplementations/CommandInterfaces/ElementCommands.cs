@@ -483,7 +483,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
             var referencedFileSave = new ReferencedFileSave();
-
+            referencedFileSave.DestroyOnUnload = false;
             referencedFileSave.SetNameNoCall(fileToAdd);
             referencedFileSave.IsSharedStatic = true;
             referencedFileSave.HasPublicProperty = true;

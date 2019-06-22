@@ -34,6 +34,8 @@ namespace UnitTests.SaveClasses
             EntitySave entitySave = new EntitySave();
 
             ReferencedFileSave rfs = new ReferencedFileSave();
+            rfs.DestroyOnUnload = false;
+
             rfs.Name = "File.png";
             entitySave.ReferencedFiles.Add(rfs);
 

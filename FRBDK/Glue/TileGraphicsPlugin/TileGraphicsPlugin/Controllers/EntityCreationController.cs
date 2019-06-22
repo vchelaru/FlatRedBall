@@ -115,6 +115,8 @@ namespace TileGraphicsPlugin.Controllers
         private ReferencedFileSave CreateReferencedFileSave()
         {
             ReferencedFileSave rfs = new ReferencedFileSave();
+            rfs.DestroyOnUnload = false;
+
             string entireFileName = null;
 
             var currentTileset = AppState.Self.CurrentTileset;

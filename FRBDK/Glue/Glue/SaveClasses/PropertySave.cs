@@ -25,6 +25,11 @@ namespace FlatRedBall.Glue.SaveClasses
         // Can't do this because it's an abstract class
         //[XmlElement("ValueAsEnum", typeof(Enum))]
         public object Value;
+
+        public override string ToString()
+        {
+            return $"{Name} = {Value}";
+        }
     }
 
     public static class PropertySaveListExtensions

@@ -31,7 +31,15 @@ namespace FlatRedBall.Glue.MVVM
 
             if (propertyName != null && propertyDictionary.ContainsKey(propertyName))
             {
-                toReturn = (T)propertyDictionary[propertyName];
+                try
+                {
+                    toReturn = (T)propertyDictionary[propertyName];
+                }
+                catch
+                {
+                    // if it fails, then just return default T because the type may have changed:
+                    toReturn = default(T);
+                }
             }
 
             return toReturn;

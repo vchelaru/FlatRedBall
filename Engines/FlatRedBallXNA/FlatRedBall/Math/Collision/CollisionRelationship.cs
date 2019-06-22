@@ -73,6 +73,8 @@ namespace FlatRedBall.Math.Collision
         // the user can call DoCollision and have it partition automatically.
         public IEnumerable<PartitionedValuesBase> Partitions { get; set; }
 
+        public string Name { get; set; }
+
         #region Set Collision Type Methods
 
         // todo:

@@ -151,8 +151,13 @@
       <DependentUpon>CodeGenerationControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="CodeGenerationPlugin\MainPlugin.cs" />
-    <Compile Include="CollisionPlugin\CollisionCodeGenerator.cs" />
+    <Compile Include="CollisionPlugin\CodeGenerators\CollisionCodeGenerator.cs" />
     <Compile Include="CollisionPlugin\MainCollisionPlugin.cs" />
+    <Compile Include="CollisionPlugin\Managers\AssetTypeInfoManager.cs" />
+    <Compile Include="CollisionPlugin\ViewModels\CollisionRelationshipViewModel.cs" />
+    <Compile Include="CollisionPlugin\Views\CollisionRelationshipView.xaml.cs">
+      <DependentUpon>CollisionRelationshipView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Compiler\Compiler.cs" />
     <Compile Include="Compiler\MainControl.xaml.cs">
       <DependentUpon>MainControl.xaml</DependentUpon>
@@ -325,7 +330,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="CollisionGroup\" />
     <Folder Include="GlueView\" />
   </ItemGroup>
   <ItemGroup>
@@ -334,6 +338,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CodeGenerationPlugin\CodeGenerationControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CollisionPlugin\Views\CollisionRelationshipView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

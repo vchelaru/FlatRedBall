@@ -19,11 +19,7 @@ using System.Collections;
 
 namespace FlatRedBall.Graphics
 {
-#if !SILVERLIGHT
     public class BitmapFont : IEquatable<BitmapFont>
-#else
-    public class BitmapFont : SpriteFont, IEquatable<BitmapFont>
-#endif
     {
         #region Fields
 
@@ -77,13 +73,10 @@ namespace FlatRedBall.Graphics
 
         public BitmapFont(string fontFile, string contentManagerName)
         {
-#if !SILVERLIGHT
             if (FlatRedBall.IO.FileManager.IsRelative(fontFile))
             {
                 fontFile = FlatRedBall.IO.FileManager.RelativeDirectory + fontFile;
             }
-#endif
-
 
             string fontContents = FileManager.FromFileText(fontFile);
             mFontFile = FileManager.Standardize(fontFile);

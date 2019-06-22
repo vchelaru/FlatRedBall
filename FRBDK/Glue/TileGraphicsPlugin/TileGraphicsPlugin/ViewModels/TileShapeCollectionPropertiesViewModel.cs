@@ -1,6 +1,8 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,49 +10,212 @@ using System.Windows;
 
 namespace TileGraphicsPlugin.ViewModels
 {
-    public enum CollisionInclusion
+    #region Fields/Properties
+
+    public enum CollisionCreationOptions
     {
-        EntireLayer,
-        ByType
+        Empty,
+        FillCompletely,
+        BorderOutline,
+        FromProperties,
+        FromLayer
     }
 
-    public class TileShapeCollectionPropertiesViewModel : ViewModel
+    #endregion
+
+    public class TileShapeCollectionPropertiesViewModel : PropertyListContainerViewModel
     {
-        public bool IsCollisionVisible
+        //[SyncedProperty]
+        //public bool IsCollisionVisible
+        //{
+        //    get { return Get<bool>(); }
+        //    set { SetAndPersist(value); }
+        //}
+
+        [SyncedProperty]
+        [DefaultValue(CollisionCreationOptions.Empty)]
+        public CollisionCreationOptions CollisionCreationOptions
         {
-            get { return Get<bool>(); }
-            set { Set(value); }
+            get { return Get<CollisionCreationOptions>(); }
+            set { SetAndPersist(value); }
         }
 
-        public CollisionInclusion CollisionInclusion
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public bool IsEmptyChecked
         {
-            get { return Get<CollisionInclusion>(); }
-            set { Set(value); }
+            get { return CollisionCreationOptions == CollisionCreationOptions.Empty; }
+            set
+            {
+                if(value)
+                {
+                    CollisionCreationOptions = CollisionCreationOptions.Empty;
+                }
+            }
         }
 
-        [DependsOn(nameof(CollisionInclusion))]
-        public bool IncludeEntireLayer
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public bool IsFillCompletelyChecked
         {
-            get { return CollisionInclusion == CollisionInclusion.EntireLayer; }
-            set { if (value) CollisionInclusion = CollisionInclusion.EntireLayer; }
+            get { return CollisionCreationOptions == CollisionCreationOptions.FillCompletely; }
+            set
+            {
+                if(value)
+                {
+                    CollisionCreationOptions = CollisionCreationOptions.FillCompletely;
+                }
+            }
         }
 
-        [DependsOn(nameof(CollisionInclusion))]
-        public bool IncludeByType
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public Visibility FillDimensionsVisibility
         {
-            get { return CollisionInclusion == CollisionInclusion.ByType; }
-            set { if (value) CollisionInclusion = CollisionInclusion.ByType; }
+            get
+            {
+                return CollisionCreationOptions == CollisionCreationOptions.FillCompletely ?
+                  Visibility.Visible :
+                  Visibility.Collapsed;
+            }
         }
 
-        [DependsOn(nameof(IncludeByType))]
-        public Visibility TypeTextBoxVisibility
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public bool IsBorderChecked
         {
-            get { return IncludeByType ? Visibility.Visible : Visibility.Hidden; }
+            get{ return CollisionCreationOptions == CollisionCreationOptions.BorderOutline;}
+            set
+            {
+                if(value)
+                {
+                    CollisionCreationOptions = CollisionCreationOptions.BorderOutline;
+                }
+            }
         }
 
-        public string CollisionTileType
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public Visibility BorderOutlineVisibility
+        {
+            get
+            {
+                if( CollisionCreationOptions == CollisionCreationOptions.BorderOutline)
+                {
+                    return Visibility.Visible;
+                }
+                else
+                {
+                    return Visibility.Collapsed;
+                }
+            }
+        }
+
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public bool IsFromPropertiesChecked
+        {
+            get { return CollisionCreationOptions == CollisionCreationOptions.FromProperties; }
+            set
+            {
+                if(value)
+                {
+                    CollisionCreationOptions = CollisionCreationOptions.FromProperties;
+                }
+            }
+        }
+
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public Visibility FromPropertiesVisibility
+        {
+            get
+            {
+                return CollisionCreationOptions == CollisionCreationOptions.FromProperties ?
+                      Visibility.Visible :
+                      Visibility.Collapsed;
+            }
+        }
+
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public bool IsFromLayerChecked
+        {
+            get { return CollisionCreationOptions == CollisionCreationOptions.FromLayer; }
+            set
+            {
+                if(value)
+                {
+                    CollisionCreationOptions = CollisionCreationOptions.FromLayer;
+                }
+            }
+        }
+
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public Visibility FromLayerVisibility
+        {
+            get
+            {
+                return CollisionCreationOptions == CollisionCreationOptions.FromLayer ?
+                  Visibility.Visible :
+                  Visibility.Collapsed;
+            }
+        }
+
+        public ObservableCollection<string> TmxObjectNames
+        {
+            get { return Get<ObservableCollection<string>>(); }
+            set { Set(value);}
+        }
+
+        [SyncedProperty]
+        [DefaultValue(16.0f)]
+        public float CollisionTileSize
+        {
+            get { return Get<float>(); }
+            set { SetAndPersist(value); }
+        }
+
+        [SyncedProperty]
+        public float CollisionFillLeft
+        {
+            get { return Get<float>(); }
+            set { SetAndPersist(value); }
+        }
+
+        [SyncedProperty]
+        public float CollisionFillTop
+        {
+            get { return Get<float>(); }
+            set { SetAndPersist(value); }
+        }
+
+        [SyncedProperty]
+        [DefaultValue(32)]
+        public int CollisionFillWidth
+        {
+            get { return Get<int>(); }
+            set { SetAndPersist(value); }
+        }
+
+        [SyncedProperty]
+        [DefaultValue(1)]
+        public int CollisionFillHeight
+        {
+            get { return Get<int>(); }
+            set { SetAndPersist(value); }
+        }
+
+        [SyncedProperty]
+        public string SourceTmxName
         {
             get { return Get<string>(); }
+            set { SetAndPersist(value); }
+        }
+
+        // for now a single string, eventually a list?
+        [SyncedProperty]
+        public string CollisionPropertyName
+        {
+            get { return Get<string>(); }
+            set { SetAndPersist(value); }
+        }
+
+        public bool IsEntireViewEnabled
+        {
+            get { return Get<bool>(); }
             set { Set(value); }
         }
     }

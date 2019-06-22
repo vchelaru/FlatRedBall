@@ -23,6 +23,8 @@ using System.Text.RegularExpressions;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
+    #region Enums
+
     public enum CodeGenerationType
     {
         Full,
@@ -30,8 +32,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         Nothing
     }
 
-
-
+    #endregion
 
     public class NamedObjectSaveCodeGenerator : ElementComponentCodeGenerator
     {
@@ -39,8 +40,6 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
-            #region Generate NamedObject Fields
-
             codeBlock.Line("");
 
             for (int i = 0; i < element.NamedObjects.Count; i++)
@@ -49,8 +48,6 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 GenerateFieldAndPropertyForNamedObject(namedObject, codeBlock);
             }
-
-            #endregion
 
             return codeBlock;
         }
@@ -423,13 +420,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 else
                 {
-                    string qualifiedName = namedObject.GetQualifiedClassType();
-
-                    if (namedObject.GetAssetTypeInfo() != null)
-                    {
-                        qualifiedName = namedObject.GetAssetTypeInfo().QualifiedRuntimeTypeName.QualifiedType;
-                    }
-
+                    string qualifiedName = GetQualifiedTypeName(namedObject);
 
                     codeBlock.Line(string.Format("{0} = new {1}();", objectName, qualifiedName));
 
@@ -846,7 +837,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             #endregion
 
-            AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType);
+            AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
 
             #region If object was added to manager, remove this object from managers
 
@@ -929,7 +920,8 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         string genericClassType = namedObject.SourceClassGenericType;
 
-                        AssetTypeInfo atiForListElement = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(genericClassType);
+                        AssetTypeInfo atiForListElement = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(genericClassType,
+                            namedObject);
 
                         if (atiForListElement != null && atiForListElement.DestroyMethod != null)
                         {
@@ -1107,7 +1099,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             }
 
-            AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType);
+            AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
 
             if (ati != null && ati.IsInstantiatedInAddToManagers)
             {
@@ -1154,13 +1146,78 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             else if (namedObjectSave.GetAssetTypeInfo() != null)
             {
-                return namedObjectSave.GetAssetTypeInfo().QualifiedRuntimeTypeName.QualifiedType;
+                var ati = namedObjectSave.GetAssetTypeInfo();
+
+        
+                return
+                    ati.QualifiedRuntimeTypeName.PlatformFunc?.Invoke(namedObjectSave) ?? 
+                    ati.QualifiedRuntimeTypeName.QualifiedType;             }
+            else
+            {
+                return GetQualifiedClassType(namedObjectSave);
+            }
+        }
+
+#if GLUE
+        static string GetQualifiedClassType(NamedObjectSave instance)
+        {
+            if (instance.SourceType == SourceType.FlatRedBallType && !string.IsNullOrEmpty(instance.InstanceType) &&
+                instance.InstanceType.Contains("<T>"))
+            {
+                string genericType = instance.SourceClassGenericType;
+
+                if (genericType == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    // For now we are going to try to qualify this by using the ATIs, but eventually we may want to change the source class generic type to be fully qualified
+                    var ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(genericType, true);
+                    if (ati != null)
+                    {
+                        genericType = ati.QualifiedRuntimeTypeName.QualifiedType;
+                    }
+
+                    string instanceType = instance.InstanceType;
+
+                    if (instanceType == "List<T>")
+                    {
+                        instanceType = "System.Collections.Generic.List<T>";
+                    }
+                    else if (instanceType == "PositionedObjectList<T>")
+                    {
+                        instanceType = "FlatRedBall.Math.PositionedObjectList<T>";
+                    }
+
+                    if (genericType.StartsWith("Entities\\") || genericType.StartsWith("Entities/"))
+                    {
+                        genericType =
+                            ProjectManager.ProjectNamespace + '.' + genericType.Replace('\\', '.');
+                        return instanceType.Replace("<T>", "<" + genericType + ">");
+
+                    }
+                    else
+                    {
+                        if (genericType.Contains("\\"))
+                        {
+                            // The namespace is part of it, so let's remove it
+                            int lastSlash = genericType.LastIndexOf('\\');
+                            genericType = genericType.Substring(lastSlash + 1);
+                        }
+
+
+                        return instanceType.Replace("<T>", "<" + genericType + ">");
+                    }
+                }
             }
             else
             {
-                return namedObjectSave.GetQualifiedClassType();
+                return instance.InstanceType;
             }
+
         }
+#endif
 
         private static void CreateVariableResetField(NamedObjectSave namedObjectSave, string typeName, ICodeBlock codeBlock)
         {
@@ -1306,7 +1363,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 else if (namedObjectSave.SourceType == SourceType.FlatRedBallType &&
                     namedObjectSave.ClassType != null &&
-                    namedObjectSave.ClassType.Contains("PositionedObjectList<"))
+                    namedObjectSave.ClassType.StartsWith("PositionedObjectList<"))
                 {
                     // Now let's see if the object in the list is an entity
                     string genericType = namedObjectSave.SourceClassGenericType;
@@ -1545,7 +1602,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if (!namedObject.SetByDerived && !namedObject.SetByContainer)
                 {
-                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType);
+                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
 
                     if (ati != null && !string.IsNullOrEmpty(ati.PostInitializeCode))
                     {
@@ -1879,7 +1936,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                             {
 
 
-                                if (ati.AddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.AddToManagersMethod[0]))
+                                if (ati.AddToManagersMethod?.Count > 0 && !string.IsNullOrEmpty(ati.AddToManagersMethod[0]))
                                 {
                                     string addLine = DecideOnLineToAdd(namedObject, ati, false);
 
@@ -2012,7 +2069,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static void AssignInstanceVaraiblesOn(IElement element, NamedObjectSave namedObject, ICodeBlock codeBlock)
         {
-            AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType);
+            AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
             // Update June 24, 2012
             // This should happen before
             // setting variables.  Therefore
@@ -2372,7 +2429,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
 
 
-                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType);
+                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
 
                 if (ati != null && ati.IsInstantiatedInAddToManagers)
                 {
@@ -2502,7 +2559,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             else
             {
                 // See if this type has a built-in way to make it manually updated
-                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(nos.SourceClassGenericType);
+                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(nos.SourceClassGenericType, nos);
 
                 if (ati != null && !string.IsNullOrEmpty(ati.MakeManuallyUpdatedMethod))
                 {

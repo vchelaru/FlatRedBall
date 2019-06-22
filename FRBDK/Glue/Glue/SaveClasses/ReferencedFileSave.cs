@@ -231,8 +231,14 @@ namespace FlatRedBall.Glue.SaveClasses
         [Category("Destroy")]
         public bool DestroyOnUnload
         {
-            get { return Properties.GetValue<bool>(nameof(DestroyOnUnload)); }
-            set { Properties.SetValue(nameof(DestroyOnUnload), value); }
+            get
+            {
+                return Properties.GetValue<bool>(nameof(DestroyOnUnload));
+            }
+            set
+            {
+                Properties.SetValue(nameof(DestroyOnUnload), value);
+            }
         }
 
         public string Summary
@@ -475,7 +481,7 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             ProjectsToExcludeFrom = new List<string>();
             AddToManagers = true;
-            DestroyOnUnload = true;
+
             CsvDelimiter = AvailableDelimiters.Comma;
             SourceFileCache = new List<Content.SourceReferencingFile>();
             LoadedAtRuntime = true;

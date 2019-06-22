@@ -348,10 +348,10 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (returnAti == null)
             {
-                returnAti = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(instance.ClassType, isObject:true);
+                returnAti = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(instance.ClassType, instance, isObject:true);
             }
 
-            if (instance.ClassType.Contains("PositionedObjectList"))
+            if (instance.ClassType.StartsWith("PositionedObjectList<"))
             {
                 return null;
             }
@@ -884,66 +884,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         }
 
-#if GLUE
-        public static string GetQualifiedClassType(this NamedObjectSave instance)
-        {
-            if (instance.SourceType == SourceType.FlatRedBallType && !string.IsNullOrEmpty(instance.InstanceType) &&
-                instance.InstanceType.Contains("<T>"))
-            {
-                string genericType = instance.SourceClassGenericType;
 
-                if (genericType == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    // For now we are going to try to qualify this by using the ATIs, but eventually we may want to change the source class generic type to be fully qualified
-                    var ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(genericType, true);
-                    if(ati != null)
-                    {
-                        genericType = ati.QualifiedRuntimeTypeName.QualifiedType;
-                    }
-
-                    string instanceType = instance.InstanceType;
-
-                    if(instanceType == "List<T>")
-                    {
-                        instanceType = "System.Collections.Generic.List<T>";
-                    }
-                    else if (instanceType == "PositionedObjectList<T>")
-                    {
-                        instanceType = "FlatRedBall.Math.PositionedObjectList<T>";
-                    }
-
-                    if (genericType.StartsWith("Entities\\") || genericType.StartsWith("Entities/"))
-                    {
-                        genericType =
-                            ProjectManager.ProjectNamespace + '.' + genericType.Replace('\\', '.');
-                        return instanceType.Replace("<T>", "<" + genericType + ">");
-
-                    }
-                    else
-                    {
-                        if (genericType.Contains("\\"))
-                        {
-                            // The namespace is part of it, so let's remove it
-                            int lastSlash = genericType.LastIndexOf('\\');
-                            genericType = genericType.Substring(lastSlash + 1);
-                        }
-
-
-                        return instanceType.Replace("<T>", "<" + genericType + ">");
-                    }
-                }
-            }
-            else
-            {
-                return instance.InstanceType;
-            }
-
-        }
-#endif
     }
 
 

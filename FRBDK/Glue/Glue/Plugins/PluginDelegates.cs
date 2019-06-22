@@ -54,5 +54,5 @@ namespace FlatRedBall.Glue.Plugins
     public delegate bool TryHandleCopyFileDelegate(string sourceFile, string sourceDirectory, string targetFile);
 
     public delegate bool TryAddContainedObjectsDelegate(string absoluteFile, List<string> availableObjects);
-    public delegate void GetEventTypeAndSignature(NamedObjectSave namedObjectSave, EventResponseSave eventResponseSave, out string type, out string signature);
+    public delegate void GetEventTypeAndSignature(NamedObjectSave namedObjectSave, EventResponseSave eventResponseSave, out string type, out string signatureArgs);
 }

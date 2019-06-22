@@ -25,6 +25,10 @@ namespace FlatRedBall.Glue.Elements
 
         public string QualifiedType;
         public string Platform;
+
+
+        [XmlIgnore]
+        public Func<object, string> PlatformFunc;
     }
     #endregion
 
@@ -77,22 +81,29 @@ namespace FlatRedBall.Glue.Elements
         {
             get
             {
-                if (string.IsNullOrEmpty(QualifiedRuntimeTypeName.QualifiedType))
+                if(QualifiedRuntimeTypeName.PlatformFunc != null)
                 {
-                    return null;
-                }
-                else if (QualifiedRuntimeTypeName.QualifiedType.Contains('.'))
-                {
-                    int lastPeriod = QualifiedRuntimeTypeName.QualifiedType.LastIndexOf('.');
-
-                    int startingIndex = lastPeriod + 1;
-                    int length = QualifiedRuntimeTypeName.QualifiedType.Length - startingIndex;
-
-                    return QualifiedRuntimeTypeName.QualifiedType.Substring(startingIndex, length);
+                    return QualifiedRuntimeTypeName.PlatformFunc(null);
                 }
                 else
                 {
-                    return QualifiedRuntimeTypeName.QualifiedType;
+                    if (string.IsNullOrEmpty(QualifiedRuntimeTypeName.QualifiedType))
+                    {
+                        return null;
+                    }
+                    else if (QualifiedRuntimeTypeName.QualifiedType.Contains('.'))
+                    {
+                        int lastPeriod = QualifiedRuntimeTypeName.QualifiedType.LastIndexOf('.');
+
+                        int startingIndex = lastPeriod + 1;
+                        int length = QualifiedRuntimeTypeName.QualifiedType.Length - startingIndex;
+
+                        return QualifiedRuntimeTypeName.QualifiedType.Substring(startingIndex, length);
+                    }
+                    else
+                    {
+                        return QualifiedRuntimeTypeName.QualifiedType;
+                    }
                 }
             }
         }
@@ -154,6 +165,17 @@ namespace FlatRedBall.Glue.Elements
 
         [XmlIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> GetObjectFromFileFunc;
+
+        /// <summary>
+        /// Func which can be used to perform custom loading of an asset. Parameters are:
+        /// * IElement - The Screen or Entity containing the file
+        /// * NamedObjectSave - the NamedObjectSave associated with the load
+        /// * ReferencedFileSave - the file being loaded
+        /// * string - the content manager in context
+        /// * string - the return value which is the code for loading
+        /// </summary>
+        [XmlIgnore]
+        public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> CustomLoadFunc;
 
         /// <summary>
         /// The generated code to include to add the object to managers.
@@ -244,16 +266,6 @@ namespace FlatRedBall.Glue.Elements
         public string CustomLoadMethod;
 
 
-        /// <summary>
-        /// Func which can be used to perform custom loading of an asset. Parameters are:
-        /// * IElement - The Screen or Entity containing the file
-        /// * NamedObjectSave - the NamedObjectSave associated with the load
-        /// * ReferencedFileSave - the file being loaded
-        /// * string - the content manager in context
-        /// * string - the return value which is the code for loading
-        /// </summary>
-        [XmlIgnore]
-        public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> CustomLoadFunc;
 
 
         public string CustomBuildToolName;
@@ -296,7 +308,7 @@ namespace FlatRedBall.Glue.Elements
             {
                 return 
 
-                    AddToManagersMethod.Count != 0 &&
+                    AddToManagersMethod?.Count > 0 &&
                     !string.IsNullOrEmpty(AddToManagersMethod[0]) &&
                     AddToManagersMethod[0].StartsWith("this =");
             }

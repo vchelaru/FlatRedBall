@@ -190,6 +190,7 @@ namespace FlatRedBall.Glue.SaveClasses
         {
 
             var referencedFileSave = new ReferencedFileSave();
+            referencedFileSave.DestroyOnUnload = true;
 
             if (ati != null)
             {

@@ -11,20 +11,83 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center"
-                  IsChecked="{Binding IsCollisionVisible}">Visible</CheckBox>
-        <GroupBox Header="Include in Collision" Grid.Row="1">
+        <!--<CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center"
+                  IsChecked="{Binding IsCollisionVisible}">Visible</CheckBox>-->
+        <GroupBox Header="Creation Options" Grid.Row="1" IsEnabled="{Binding IsEntireViewEnabled}">
             <StackPanel>
-                <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding IncludeEntireLayer}">Entire Layer</RadioButton>
-                <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding IncludeByType}">Tiles with type</RadioButton>
-                <TextBox Height="20"
-                    Visibility="{Binding TypeTextBoxVisibility}"
-                    Text="{Binding CollisionTileType}" 
-                    Width="150" 
-                    KeyUp="TextBox_KeyUp"
-                    HorizontalAlignment="Left" 
-                         Margin="20,0,0,0"></TextBox>
+                <RadioButton VerticalContentAlignment="Center"
+                             IsChecked="{Binding IsEmptyChecked}">Empty</RadioButton>
+                <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                             IsChecked="{Binding IsFillCompletelyChecked}">Fill Completely</RadioButton>
+                <StackPanel Margin="10, 0, 0, 0" Visibility="{Binding FillDimensionsVisibility}">
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="60">Tile Size:</TextBlock>
+                        <TextBox Width="100" Text="{Binding CollisionTileSize}"></TextBox>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                        <TextBlock Width="40">Left:</TextBlock>
+                        <TextBox Width="100" Text="{Binding CollisionFillLeft}"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="40">Top:</TextBlock>
+                        <TextBox Width="100" Text="{Binding CollisionFillTop}"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                        <TextBlock Width="60">Tiles Wide:</TextBlock>
+                        <TextBox Width="100" Text="{Binding CollisionFillWidth}"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="60">Tiles High:</TextBlock>
+                        <TextBox Width="100" Text="{Binding CollisionFillHeight}"></TextBox>
+                    </StackPanel>
+                </StackPanel>
+                <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                             IsChecked="{Binding IsBorderChecked}">Border Outline</RadioButton>
+                <StackPanel Margin="10, 0, 0, 0" Visibility="{Binding BorderOutlineVisibility}">
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="60">Tile Size:</TextBlock>
+                        <TextBox Width="100" Text="{Binding CollisionTileSize}"></TextBox>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                        <TextBlock Width="40">Left:</TextBlock>
+                        <TextBox Width="100" Text="{Binding CollisionFillLeft}"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="40">Top:</TextBlock>
+                        <TextBox Width="100" Text="{Binding CollisionFillTop}"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                        <TextBlock Width="60">Tiles Wide:</TextBlock>
+                        <TextBox Width="100" Text="{Binding CollisionFillWidth}"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="60">Tiles High:</TextBlock>
+                        <TextBox Width="100" Text="{Binding CollisionFillHeight}"></TextBox>
+                    </StackPanel>
+                </StackPanel>
+
+                <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                             IsChecked="{Binding IsFromPropertiesChecked}">From Property</RadioButton>
+                <StackPanel x:Name="Properties" Margin="10, 0, 0, 0" 
+                            Visibility="{Binding FromPropertiesVisibility}">
+                    <TextBlock>Source TMX File/Object:</TextBlock>
+                    <ComboBox Width="200" HorizontalAlignment="Left"
+                              ItemsSource="{Binding TmxObjectNames}"
+                              SelectedItem="{Binding SourceTmxName}"></ComboBox>
+                    <TextBlock Margin="0,5,0,0">Property:</TextBlock>
+                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionPropertyName}"></TextBox>
+                        
+                </StackPanel>
+                <!--<RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                             IsChecked="{Binding IsFromLayerChecked}">From Layer</RadioButton>
+                <TextBox Margin="10,0,0,0" HorizontalAlignment="Left" Width="100"
+                         Visibility="{Binding FromLayerVisibility}"></TextBox>-->
             </StackPanel>
+
         </GroupBox>
     </Grid>
 </UserControl>

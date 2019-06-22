@@ -110,24 +110,19 @@ namespace FlatRedBall.IO
         {
             get
             {
-#if WINDOWS_8
-                throw new NotImplementedException();
-#else
                 return (System.IO.Directory.GetCurrentDirectory() + "/").Replace("\\", "/");
-
-#endif
 
             }
             set
             {
-#if WINDOWS_8
-                throw new NotImplementedException();
-#else
                 System.IO.Directory.SetCurrentDirectory(value);
-#endif
             }
         }
 
+        /// <summary>
+        /// Whether file paths should be preserved as mixed case. If false 
+        /// all file paths will be made to-lower.
+        /// </summary>
         public static bool PreserveCase
         {
             get;
@@ -143,7 +138,7 @@ namespace FlatRedBall.IO
         {
             get
             {
-#if WINDOWS_8 || UWP
+#if UWP
                 int threadID = Environment.CurrentManagedThreadId;
 #else
                 int threadID = System.Threading.Thread.CurrentThread.ManagedThreadId;

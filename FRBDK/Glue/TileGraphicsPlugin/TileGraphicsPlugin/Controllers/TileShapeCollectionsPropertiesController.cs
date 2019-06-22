@@ -25,33 +25,9 @@ namespace TileGraphicsPlugin.Controllers
             {
                 view = new Views.TileShapeCollectionProperties();
                 viewModel = new ViewModels.TileShapeCollectionPropertiesViewModel();
-                viewModel.PropertyChanged += HandleViewModelPropertyChanged;
                 view.DataContext = viewModel;
             }
             return view;
-        }
-
-        private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if(shouldApplyViewModelChanges)
-            {
-                ApplyViewModelValuesToNamedObject();
-
-                // save
-                GlueCommands.Self.GluxCommands.SaveGluxTask();
-
-                // regenerate
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
-            }
-        }
-
-        private void ApplyViewModelValuesToNamedObject()
-        {
-            var nos = GlueState.Self.CurrentNamedObjectSave;
-
-            nos.Properties.SetValue(nameof(viewModel.IsCollisionVisible), viewModel.IsCollisionVisible);
-            nos.Properties.SetValue(nameof(viewModel.CollisionInclusion), viewModel.CollisionInclusion.ToString());
-            nos.Properties.SetValue(nameof(viewModel.CollisionTileType), viewModel.CollisionTileType);
         }
 
         public bool IsTileShapeCollection(NamedObjectSave namedObject)
@@ -62,34 +38,62 @@ namespace TileGraphicsPlugin.Controllers
             {
                 var ati = namedObject.GetAssetTypeInfo();
                 isTileShapeCollection =
-                            namedObject.SourceType == SourceType.File &&
-                            !string.IsNullOrEmpty(namedObject.SourceName) &&
                             ati == AssetTypeInfoAdder.Self.TileShapeCollectionAssetTypeInfo;
             }
 
             return isTileShapeCollection;
         }
 
-        public void RefreshViewModelTo(NamedObjectSave namedObject)
+        public void RefreshViewModelTo(NamedObjectSave namedObject, IElement element)
         {
+            // Disconnect the view from the view model so that 
+            // changes that happen here dont' have side effects
+            // through the view. For example, if we don't disconnect
+            // the two, then clearing the available TMX objects will set
+            // the selection to null, and even persist it to the Glue object
+            view.DataContext = null;
+
             shouldApplyViewModelChanges = false;
 
-            viewModel.IsCollisionVisible = namedObject.Properties.GetValue<bool>(nameof(viewModel.IsCollisionVisible));
-            string collisionInclusionAsString = namedObject.Properties.GetValue<string>(nameof(viewModel.CollisionInclusion));
+            viewModel.GlueObject = namedObject;
 
-            if(string.IsNullOrEmpty(collisionInclusionAsString))
-            {
-                viewModel.CollisionInclusion = CollisionInclusion.EntireLayer;
-            }
-            else
-            {
-                viewModel.CollisionInclusion = 
-                    (CollisionInclusion)Enum.Parse(typeof(CollisionInclusion), collisionInclusionAsString);
-            }
+            RefreshAvailableTiledObjects(element);
 
-            viewModel.CollisionTileType = namedObject.Properties.GetValue<string>(nameof(viewModel.CollisionTileType));
+            viewModel.UpdateFromGlueObject();
+
+            viewModel.IsEntireViewEnabled = namedObject.DefinedByBase == false;
 
             shouldApplyViewModelChanges = true;
+            view.DataContext = viewModel;
+
+        }
+
+        private void RefreshAvailableTiledObjects(IElement element)
+        {
+            // refresh availble TMXs
+            var referencedFileSaves = element.ReferencedFiles
+                .Where(item =>
+                    item.LoadedAtRuntime &&
+                    item.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TmxAssetTypeInfo);
+
+            var namedObjects = element.AllNamedObjects
+                .Where(item =>
+                    item.IsDisabled == false &&
+                    item.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TmxAssetTypeInfo);
+
+            if (viewModel.TmxObjectNames == null)
+            {
+                viewModel.TmxObjectNames = new System.Collections.ObjectModel.ObservableCollection<string>();
+            }
+            viewModel.TmxObjectNames.Clear();
+            foreach (var rfs in referencedFileSaves)
+            {
+                viewModel.TmxObjectNames.Add(rfs.GetInstanceName());
+            }
+            foreach (var nos in namedObjects)
+            {
+                viewModel.TmxObjectNames.Add(nos.InstanceName);
+            }
         }
     }
 }

@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="OfficialPlugins.CollisionPlugin.Views.CollisionRelationshipView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OfficialPlugins.CollisionPlugin.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="600">
+    <ScrollViewer>
+        <StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <ComboBox  FontSize="26"
+                          SelectedItem="{Binding FirstCollisionName}"
+                          ItemsSource="{Binding FirstCollisionItemSource}"></ComboBox>
+                <TextBlock Grid.Column="1" FontSize="26">vs</TextBlock>
+                <ComboBox FontSize="26" Grid.Column="2"
+                          SelectedItem="{Binding SecondCollisionName}"
+                          ItemsSource="{Binding SecondCollisionItemSource}"></ComboBox>
+
+                
+            </Grid>
+            <TextBlock Background="DarkRed" Foreground="Yellow" FontSize="15"
+                       TextWrapping="WrapWithOverflow"
+                       Visibility="{Binding WarningVisibility}"
+                       Padding="4"
+                       Text="{Binding WarningText}"
+                       >
+            </TextBlock>
+            <GroupBox Header="Collision Physics">
+                <StackPanel>
+                    <RadioButton
+                        IsChecked="{Binding IsNoPhysicsChecked}">No Physics</RadioButton>
+                    <RadioButton
+                        IsChecked="{Binding IsMoveCollisionChecked}">Move Collision (separate overlapping objects)</RadioButton>
+                    <StackPanel Margin="10,0,0,0" 
+                                Visibility="{Binding MoveCollisionVisibility}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Width="80">First Mass</TextBlock>
+                            <TextBox Width="80"
+                                     Text="{Binding FirstCollisionMass}"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Width="80">Second Mass</TextBlock>
+                            <TextBox  Width="80"
+                                     Text="{Binding SecondCollisionMass}"></TextBox>
+                        </StackPanel>
+                    </StackPanel>
+                    <RadioButton
+                        IsChecked="{Binding IsBounceCollisionChecked}">Bounce Collision</RadioButton>
+                    <StackPanel Margin="10,0,0,0"
+                                Visibility="{Binding BounceCollisionVisibility}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Width="80">First Mass</TextBlock>
+                            <TextBox Width="80"
+                                     Text="{Binding FirstCollisionMass}"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Width="80">Second Mass</TextBlock>
+                            <TextBox  Width="80"
+                                     Text="{Binding SecondCollisionMass}"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Width="80">Elasticity</TextBlock>
+                            <TextBox  Width="80"
+                                     Text="{Binding CollisionElasticity}"></TextBox>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+            
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
