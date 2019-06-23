@@ -20,11 +20,5 @@ namespace FlatRedBall.Input
         IPressableInput DefaultJoinInput { get;  }
         IPressableInput DefaultPauseInput { get;  }
         IPressableInput DefaultBackInput { get;  }
-
-
-
-
-
-
     }
 }

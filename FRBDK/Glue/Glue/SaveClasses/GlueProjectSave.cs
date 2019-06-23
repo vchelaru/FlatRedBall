@@ -39,6 +39,7 @@ namespace FlatRedBall.Glue.SaveClasses
         #region Fields
 
 
+
         #region Camera Fields
         // April 2017 - adding replacement for these, eventually should get removed:
         public bool In2D = true;

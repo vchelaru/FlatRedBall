@@ -87,14 +87,23 @@ namespace OfficialPlugins.CollisionPlugin
 
         private void GetEventSignatureAndArgs(NamedObjectSave namedObjectSave, EventResponseSave eventResponseSave, out string type, out string signatureArgs)
         {
-            bool firstThrowaway;
-            bool secondThrowaway;
+            if (namedObjectSave.GetAssetTypeInfo() == AssetTypeInfoManager.Self.CollisionRelationshipAti &&
+                eventResponseSave.EventName == "CollisionOccurred")
+            {
+                bool firstThrowaway;
+                bool secondThrowaway;
 
-            var firstType = AssetTypeInfoManager.GetFirstGenericType(namedObjectSave, out firstThrowaway);
-            var secondType = AssetTypeInfoManager.GetSecondGenericType(namedObjectSave, out secondThrowaway);
+                var firstType = AssetTypeInfoManager.GetFirstGenericType(namedObjectSave, out firstThrowaway);
+                var secondType = AssetTypeInfoManager.GetSecondGenericType(namedObjectSave, out secondThrowaway);
 
-            type = $"System.Action<{firstType}, {secondType}>";
-            signatureArgs = $"{firstType} first, {secondType} second";
+                type = $"System.Action<{firstType}, {secondType}>";
+                signatureArgs = $"{firstType} first, {secondType} second";
+            }
+            else
+            {
+                type = null;
+                signatureArgs = null;
+            }
         }
 
         private void HandleAddEventsForObject(NamedObjectSave namedObject, List<ExposableEvent> listToAddTo)

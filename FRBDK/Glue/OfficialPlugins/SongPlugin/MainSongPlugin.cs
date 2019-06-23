@@ -80,7 +80,7 @@ namespace OfficialPlugins.SongPlugin
                     }
 
                     var fileName = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(rfs, ati); // FlatRedBall.IO.FileManager.RemoveExtension(rfs.Name).ToLowerInvariant().Replace("\\", "/");
-                    if(rfs.Properties.GetValue<bool>(nameof(ReferencedFileSave.DestroyOnUnload)) == false)
+                    if(rfs.DestroyOnUnload == false)
                     {
                         contentManager = "FlatRedBall.FlatRedBallServices.GlobalContentManager";
 

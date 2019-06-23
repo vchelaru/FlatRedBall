@@ -193,7 +193,7 @@ namespace GlueTestProject.Screens
             }
 
             // Give us some time to do instructions and time-based checks
-            if (this.ActivityCallCount == 10)
+            if (this.ActivityCallCount == 11)
             {
                 TestDetachedManualUpdateVelocityVariables();
 
@@ -214,7 +214,7 @@ namespace GlueTestProject.Screens
 
             }
 
-            if (this.PauseAdjustedCurrentTime > .2f)
+            if (this.PauseAdjustedCurrentTime > .4f)
             {
                 // UpdateDependencies is only called when there is a draw, 
                 // and multiple draws may be skipped if fps is low enough

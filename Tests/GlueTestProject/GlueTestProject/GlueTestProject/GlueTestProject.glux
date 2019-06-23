@@ -79,6 +79,10 @@
               <Name>UseContentPipeline</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
+            <PropertySave>
+              <Name>Volume</Name>
+              <ValueAsInt>100</ValueAsInt>
+            </PropertySave>
           </Properties>
           <Name>Screens/GlobalContentScreen/MenuSong.mp3</Name>
           <IsSharedStatic>true</IsSharedStatic>
@@ -629,6 +633,12 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <Name>Screens/CsvScreen/CustomCsvClassLoadedOnlyWhenReferenced.csv</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
@@ -1139,6 +1149,12 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <Name>Screens/FileScreen/EmitterFileLoadedOnlyWhenReferenced.emix</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
@@ -1152,6 +1168,12 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <Name>Screens/FileScreen/SceneFile1.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
@@ -1159,6 +1181,12 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <Name>Screens/FileScreen/SceneFile2.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
@@ -1277,6 +1305,12 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <Name>Screens/FlatRedBallTypeScreen/SceneOption1.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
@@ -1284,6 +1318,12 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <Name>Screens/FlatRedBallTypeScreen/SceneOption2.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
@@ -1897,6 +1937,10 @@
             <PropertySave>
               <Name>UseContentPipeline</Name>
               <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+            <PropertySave>
+              <Name>Volume</Name>
+              <ValueAsInt>100</ValueAsInt>
             </PropertySave>
           </Properties>
           <Name>Screens/GlobalContentScreen/MenuSong.mp3</Name>
@@ -2553,16 +2597,16 @@
       </NamedObjects>
     </ScreenSave>
     <ScreenSave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>IsLoadingScreen</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <Name>Screens\LoadingScreen</Name>
     </ScreenSave>
     <ScreenSave>
@@ -2689,12 +2733,6 @@
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
-          <Properties>
-            <PropertySave>
-              <Name>IsManuallyUpdated</Name>
-              <ValueAsBool>true</ValueAsBool>
-            </PropertySave>
-          </Properties>
           <CustomProperty>
             <Type>float</Type>
             <Member>X</Member>
@@ -2720,6 +2758,12 @@
             <Member>Green</Member>
             <ValueAsFloat>1</ValueAsFloat>
           </CustomProperty>
+          <Properties>
+            <PropertySave>
+              <Name>IsManuallyUpdated</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
           <SourceName />
@@ -2730,17 +2774,17 @@
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>TextureScale</Member>
+            <ValueAsFloat>1</ValueAsFloat>
+          </CustomProperty>
           <Properties>
             <PropertySave>
               <Name>IsManuallyUpdated</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
           <SourceName />
@@ -2974,16 +3018,16 @@
       </NamedObjects>
     </ScreenSave>
     <ScreenSave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>HasAdvancedInterpolations</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves />
@@ -3784,6 +3828,12 @@
       <Name>Screens\TiledLevelScreen</Name>
       <ReferencedFiles>
         <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <Name>Screens/TiledLevelScreen/Levels/Level1.tmx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
@@ -3792,6 +3842,12 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <Name>Screens/TiledLevelScreen/Tilesets/Level1Info.csv</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
@@ -4017,6 +4073,18 @@
               <Name>IsCollisionVisible</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
+            <PropertySave>
+              <Name>CollisionTileSize</Name>
+              <ValueAsFloat>16</ValueAsFloat>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionFillWidth</Name>
+              <ValueAsInt>32</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionFillHeight</Name>
+              <ValueAsInt>1</ValueAsInt>
+            </PropertySave>
           </Properties>
           <SourceType>File</SourceType>
           <SourceFile>Screens/TmxScreen/TmxWithTileShapeCollectionLayers.tmx</SourceFile>
@@ -4193,6 +4261,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -4202,10 +4274,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves>
@@ -4377,6 +4445,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -4386,10 +4458,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -4453,6 +4521,10 @@
       <Is2D>false</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -4462,10 +4534,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -4561,6 +4629,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -4570,10 +4642,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <StateCategoryList>
         <StateSaveCategory>
           <States>
@@ -4787,6 +4855,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -4796,10 +4868,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <StateCategoryList>
         <StateSaveCategory>
           <States>
@@ -5062,6 +5130,10 @@
       <Is2D>false</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -5071,10 +5143,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\BaseEntityWithNoStates</Name>
       <Is2D>true</Is2D>
@@ -5495,6 +5563,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -5504,10 +5576,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -5553,6 +5621,10 @@
       <Is2D>false</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -5562,10 +5634,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -5685,16 +5753,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>ImplementsICollidable</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -5767,16 +5835,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>ImplementsICollidable</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -5815,16 +5883,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>ImplementsICollidable</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -6078,16 +6146,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>ImplementsICollidable</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -6146,16 +6214,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>ImplementsICollidable</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -6225,6 +6293,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -6234,10 +6306,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves>
@@ -6375,17 +6443,17 @@
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>Radius</Member>
+            <ValueAsFloat>16</ValueAsFloat>
+          </CustomProperty>
           <Properties>
             <PropertySave>
               <Name>ConditionalCompilationSymbols</Name>
               <ValueAsString>DONT_INCLUDE_ME</ValueAsString>
             </PropertySave>
           </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>Radius</Member>
-            <ValueAsFloat>16</ValueAsFloat>
-          </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
           <SourceName />
@@ -6409,6 +6477,10 @@
       <Is2D>false</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -6418,10 +6490,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ContainerOfFactoryEntityList</Name>
       <NamedObjects>
@@ -6438,16 +6506,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>ImplementsICollidable</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -6511,16 +6579,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>ImplementsICollidable</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -6613,6 +6681,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -6622,10 +6694,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -6839,6 +6907,10 @@
       <Is2D>false</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -6848,10 +6920,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\CustomContentTypeEntity</Name>
       <NamedObjects>
@@ -6874,6 +6942,12 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <Name>Entities/CustomContentTypeEntity/LoadedOnlyWhenReferencedFile.xml</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
@@ -6890,6 +6964,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -6899,15 +6977,15 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\DelayedInstantiationEntity</Name>
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -6917,10 +6995,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -6997,6 +7071,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -7006,10 +7084,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -7411,6 +7485,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -7420,10 +7498,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <StateCategoryList>
         <StateSaveCategory>
           <States>
@@ -7443,6 +7517,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -7452,10 +7530,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves />
@@ -7492,16 +7566,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>ImplementsICollidable</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -7744,6 +7818,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -7753,10 +7831,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves>
@@ -7882,16 +7956,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>ImplementsIDrawableBatch</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -8099,6 +8173,12 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <Name>Entities/EmitterEntity/EmitterLoadedOnlyWhenReferenced.emix</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
@@ -8109,6 +8189,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -8118,10 +8202,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\EmptyEntity</Name>
       <Is2D>true</Is2D>
@@ -8168,6 +8248,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -8177,10 +8261,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\EntityFolder\EntityInFolder</Name>
       <NamedObjects>
@@ -8212,6 +8292,10 @@
       <Is2D>false</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -8221,10 +8305,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\EntityFolder\NewEntity</Name>
       <Is2D>true</Is2D>
@@ -8360,6 +8440,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -8369,10 +8453,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\EntityForTestPlugin</Name>
       <ReferencedFiles>
@@ -8408,6 +8488,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -8417,10 +8501,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves />
@@ -8697,6 +8777,10 @@
       <Is2D>false</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -8706,10 +8790,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -8778,6 +8858,10 @@
       <Is2D>false</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -8787,10 +8871,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <BaseEntity>Entities\FactoryEntity</BaseEntity>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\FactoryEntityDerived</Name>
@@ -8894,6 +8974,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -8903,10 +8987,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -8996,6 +9076,12 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <Name>Entities/FileReferencingEntity/SceneLoadedOnlyWhenReferenced.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
@@ -9039,6 +9125,10 @@
       <Is2D>false</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -9048,10 +9138,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves>
@@ -9108,6 +9194,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -9117,10 +9207,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -9355,17 +9441,17 @@
       <Name>Entities\GeneratedPartialUpdateEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>TextureScale</Member>
+            <ValueAsFloat>1</ValueAsFloat>
+          </CustomProperty>
           <Properties>
             <PropertySave>
               <Name>IsManuallyUpdated</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteInstance</InstanceName>
@@ -9391,6 +9477,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -9400,10 +9490,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\GlobalContentEntity</Name>
       <ReferencedFiles>
@@ -9896,16 +9982,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>ImplementsICollidable</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -10011,6 +10097,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -10020,10 +10110,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\IncompleteDefinitionEntity</Name>
       <NamedObjects>
@@ -10144,6 +10230,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -10153,10 +10243,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -10186,16 +10272,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>HasAdvancedInterpolations</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves>
@@ -10364,16 +10450,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>HasAdvancedInterpolations</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves>
@@ -10516,6 +10602,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -10525,10 +10615,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -10630,6 +10716,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -10639,10 +10729,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIVisible>true</ImplementsIVisible>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\IWindowContainer</Name>
@@ -10680,6 +10766,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -10689,10 +10779,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <BaseEntity>Entities\IWindowEntity</BaseEntity>
       <ImplementsIVisible>true</ImplementsIVisible>
       <ImplementsIWindow>true</ImplementsIWindow>
@@ -10701,6 +10787,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -10710,10 +10800,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIVisible>true</ImplementsIVisible>
       <ImplementsIWindow>true</ImplementsIWindow>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
@@ -10834,6 +10920,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -10843,10 +10933,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\LayerOwner</Name>
       <NamedObjects>
@@ -10919,6 +11005,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -10928,10 +11018,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ListEntity</Name>
       <NamedObjects>
@@ -10968,17 +11054,17 @@
               <IndependentOfCamera>true</IndependentOfCamera>
             </NamedObjectSave>
             <NamedObjectSave>
+              <CustomProperty>
+                <Type>float</Type>
+                <Member>X</Member>
+                <ValueAsFloat>4</ValueAsFloat>
+              </CustomProperty>
               <Properties>
                 <PropertySave>
                   <Name>ConditionalCompilationSymbols</Name>
                   <ValueAsString>SomeIfDef</ValueAsString>
                 </PropertySave>
               </Properties>
-              <CustomProperty>
-                <Type>float</Type>
-                <Member>X</Member>
-                <ValueAsFloat>4</ValueAsFloat>
-              </CustomProperty>
               <SourceType>FlatRedBallType</SourceType>
               <SourceClassType>Circle</SourceClassType>
               <InstanceName>CircleWithIfDef</InstanceName>
@@ -11032,6 +11118,10 @@
       <Is2D>false</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -11041,10 +11131,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -11080,6 +11166,12 @@
       </NamedObjects>
       <ReferencedFiles>
         <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <Name>Entities/LoadedOnlyWhenReferenced/SceneFile.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
@@ -11102,16 +11194,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>IsManuallyUpdated</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -11206,16 +11298,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>IsManuallyUpdated</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -11254,16 +11346,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>IsManuallyUpdated</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -11302,16 +11394,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>IsManuallyUpdated</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -11350,16 +11442,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>IsManuallyUpdated</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -11398,16 +11490,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>IsManuallyUpdated</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -11445,6 +11537,11 @@
       <Name>Entities\ManuallyUpdatedSpriteIsContainer</Name>
       <NamedObjects>
         <NamedObjectSave>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>TextureScale</Member>
+            <ValueAsFloat>1</ValueAsFloat>
+          </CustomProperty>
           <Properties>
             <PropertySave>
               <Name>IsContainer</Name>
@@ -11455,11 +11552,6 @@
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteInstance</InstanceName>
@@ -11722,6 +11814,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -11731,10 +11827,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\NoInstantiationObjectContainer</Name>
       <NamedObjects>
@@ -11870,6 +11962,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -11879,10 +11975,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\OptionallyAddedEntity</Name>
       <NamedObjects>
@@ -11925,6 +12017,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -11934,10 +12030,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\PausingEntity</Name>
       <NamedObjects>
@@ -11997,6 +12089,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -12006,10 +12102,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -12133,6 +12225,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>ImplementsICollidable</Name>
@@ -12143,10 +12239,6 @@
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -12246,6 +12338,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>ImplementsICollidable</Name>
@@ -12256,10 +12352,6 @@
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -12582,16 +12674,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>ImplementsICollidable</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -12629,17 +12721,17 @@
       <Name>Entities\PooledEntityInheritFromSprite</Name>
       <NamedObjects>
         <NamedObjectSave>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>TextureScale</Member>
+            <ValueAsFloat>1</ValueAsFloat>
+          </CustomProperty>
           <Properties>
             <PropertySave>
               <Name>IsContainer</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceClassType>Sprite</SourceClassType>
           <InstanceName>SpriteInstance</InstanceName>
@@ -12816,6 +12908,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -12825,10 +12921,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -12992,6 +13084,10 @@
       <Is2D>false</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -13005,10 +13101,6 @@
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves>
@@ -13668,6 +13760,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>IsScrollableEntityList</Name>
@@ -13678,10 +13774,6 @@
           <ValueAsString>Entities\PooledDontInheritFromThis</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -13719,16 +13811,16 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>IsScrollableEntityList</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -13912,6 +14004,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -13921,10 +14017,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ShapeEntity</Name>
       <NamedObjects>
@@ -14082,6 +14174,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -14091,10 +14187,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ShapeEntityCreatedByOtherEntities</Name>
       <NamedObjects>
@@ -14286,6 +14378,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -14295,10 +14391,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\SizingEntity</Name>
       <NamedObjects>
@@ -14692,17 +14784,17 @@
       <Name>Entities\SpriteFrameInheritingEntityZBuffered</Name>
       <NamedObjects>
         <NamedObjectSave>
+          <CustomProperty>
+            <Type>float</Type>
+            <Member>PixelSize</Member>
+            <ValueAsFloat>0.5</ValueAsFloat>
+          </CustomProperty>
           <Properties>
             <PropertySave>
               <Name>IsContainer</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>PixelSize</Member>
-            <ValueAsFloat>0.5</ValueAsFloat>
-          </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
           <SourceClassType>SpriteFrame</SourceClassType>
@@ -14757,12 +14849,6 @@
       <Name>Entities\SpriteInheritingEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
-          <Properties>
-            <PropertySave>
-              <Name>IsContainer</Name>
-              <ValueAsBool>true</ValueAsBool>
-            </PropertySave>
-          </Properties>
           <CustomProperty>
             <Type>Texture2D</Type>
             <Member>Texture</Member>
@@ -14773,6 +14859,12 @@
             <Member>TextureScale</Member>
             <ValueAsFloat>1</ValueAsFloat>
           </CustomProperty>
+          <Properties>
+            <PropertySave>
+              <Name>IsContainer</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
           <SourceClassType>Sprite</SourceClassType>
@@ -14809,6 +14901,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -14822,10 +14918,6 @@
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves>
@@ -15211,6 +15303,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -15220,10 +15316,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves />
@@ -15474,6 +15566,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -15483,10 +15579,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves>
@@ -15527,6 +15619,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -15536,10 +15632,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -15800,17 +15892,17 @@
       <Name>Entities\TextInheritingEntity</Name>
       <NamedObjects>
         <NamedObjectSave>
+          <CustomProperty>
+            <Type>string</Type>
+            <Member>DisplayText</Member>
+            <ValueAsString>asdf</ValueAsString>
+          </CustomProperty>
           <Properties>
             <PropertySave>
               <Name>IsContainer</Name>
               <ValueAsBool>true</ValueAsBool>
             </PropertySave>
           </Properties>
-          <CustomProperty>
-            <Type>string</Type>
-            <Member>DisplayText</Member>
-            <ValueAsString>asdf</ValueAsString>
-          </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
           <SourceClassType>Text</SourceClassType>
@@ -15863,6 +15955,12 @@
           <ProjectsToExcludeFrom />
         </ReferencedFileSave>
         <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <Name>Entities/TextureContainer/pipeJuiceBlue.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
@@ -16000,6 +16098,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>ImplementsICollidable</Name>
@@ -16010,10 +16112,6 @@
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <CustomVariables>
         <CustomVariable>
           <Properties>
@@ -16088,6 +16186,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -16097,10 +16199,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves>
@@ -16431,6 +16529,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -16440,10 +16542,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <States>
         <StateSave>
           <InstructionSaves />
@@ -16683,6 +16781,12 @@
       </NamedObjects>
       <ReferencedFiles>
         <ReferencedFileSave>
+          <Properties>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+          </Properties>
           <Name>Entities/VariableEntity/SceneFileForSourceFileSet.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
@@ -16709,6 +16813,10 @@
       <Is2D>true</Is2D>
     </EntitySave>
     <EntitySave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
       <Properties>
         <PropertySave>
           <Name>StateChainCollection</Name>
@@ -16718,10 +16826,6 @@
 &lt;/StateChainCollection&gt;</ValueAsString>
         </PropertySave>
       </Properties>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
       <Name>Entities\ZBufferedEntity</Name>
       <NamedObjects>
@@ -16970,6 +17074,10 @@
       <Properties>
         <PropertySave>
           <Name>UseContentPipeline</Name>
+          <ValueAsBool>true</ValueAsBool>
+        </PropertySave>
+        <PropertySave>
+          <Name>LoadedOnlyWhenReferenced</Name>
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>

@@ -154,6 +154,7 @@ namespace TileGraphicsPlugin.ViewModels
             }
         }
 
+
         public ObservableCollection<string> TmxObjectNames
         {
             get { return Get<ObservableCollection<string>>(); }

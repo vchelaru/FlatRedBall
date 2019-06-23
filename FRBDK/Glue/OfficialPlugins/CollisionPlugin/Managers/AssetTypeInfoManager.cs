@@ -179,17 +179,19 @@ namespace OfficialPlugins.CollisionPlugin.Managers
 
             var firstObject = container.GetNamedObject(firstName);
 
-            isList = firstObject.IsList;
+            isList = firstObject?.IsList == true;
 
-            string firstType;
-
-            if(firstObject.IsList)
+            string firstType = null;
+            if(firstObject != null)
             {
-                firstType = firstObject.SourceClassGenericType?.Replace("\\", ".");
-            }
-            else
-            {
-                firstType = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(firstObject);
+                if(firstObject.IsList)
+                {
+                    firstType = firstObject.SourceClassGenericType?.Replace("\\", ".");
+                }
+                else
+                {
+                    firstType = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(firstObject);
+                }
             }
 
 
@@ -204,16 +206,19 @@ namespace OfficialPlugins.CollisionPlugin.Managers
 
             var secondObject = container.GetNamedObject(secondName);
 
-            isList = secondObject.IsList;
-            string secondType;
-            if(secondObject.IsList)
-            {
-                secondType = secondObject.SourceClassGenericType?.Replace("\\", ".");
-            }
-            else
-            {
-                secondType = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(secondObject);
+            isList = secondObject?.IsList == true;
 
+            string secondType = null;
+            if(secondObject != null)
+            {
+                if(secondObject.IsList)
+                {
+                    secondType = secondObject.SourceClassGenericType?.Replace("\\", ".");
+                }
+                else
+                {
+                    secondType = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(secondObject);
+                }
             }
 
 

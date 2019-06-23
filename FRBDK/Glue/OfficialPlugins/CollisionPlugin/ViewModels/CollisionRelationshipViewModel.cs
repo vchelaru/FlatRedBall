@@ -198,10 +198,12 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
                     var isSecondShapeCollection = secondType == "FlatRedBall.Math.Geometry.ShapeCollection";
 
                     var isFirstCollidable = !string.IsNullOrEmpty(FirstCollisionName) &&
+                        !isFirstList &&
                         !isFirstTileShapeCollection &&
                         !isFirstShapeCollection;
 
                     var isSecondCollidable = !string.IsNullOrEmpty(SecondCollisionName) &&
+                        !isSecondList &&
                         !isSecondTileShapeCollection &&
                         !isSecondShapeCollection;
 

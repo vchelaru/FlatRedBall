@@ -328,25 +328,25 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             AssetTypeInfo ati = instance.GetAssetTypeInfo();
 
 
-            ExcludeMember("InvalidFileNameCharacters");
-            ExcludeMember("ToStringDelegate");
-            ExcludeMember("Properties");
+            ExcludeMember(nameof(ReferencedFileSave.InvalidFileNameCharacters));
+            ExcludeMember(nameof(ReferencedFileSave.ToStringDelegate));
+            ExcludeMember(nameof(ReferencedFileSave.Properties));
 
             ContainerType containerType = instance.GetContainerType();
 
             if (containerType == ContainerType.Entity)
             {
                 // We do this because this is set automatically if the Entity is unique
-                ExcludeMember("IsSharedStatic");
+                ExcludeMember(nameof(ReferencedFileSave.IsSharedStatic));
 
                 // We do this because whether the objects from a file are manually updated or not
                 // should be up to the entity, not the source file.
-                ExcludeMember("IsManuallyUpdated");
+                ExcludeMember(nameof(ReferencedFileSave.IsManuallyUpdated));
             }
 
             if (containerType == ContainerType.Entity || ati == null || ati.QualifiedRuntimeTypeName.QualifiedType != "Microsoft.Xna.Framework.Media.Song")
             {
-                ExcludeMember("DestroyOnUnload");
+                ExcludeMember( nameof(ReferencedFileSave.DestroyOnUnload));
             }
 
             #region Extension-based additions/removals
@@ -354,25 +354,25 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             if (extension != "csv" && !instance.TreatAsCsv)
             {
-                ExcludeMember("CreatesDictionary");
-                ExcludeMember("IsDatabaseForLocalizing");
-                ExcludeMember("UniformRowType");
+                ExcludeMember(nameof(ReferencedFileSave.CreatesDictionary));
+                ExcludeMember(nameof(ReferencedFileSave.IsDatabaseForLocalizing));
+                ExcludeMember(nameof(ReferencedFileSave.UniformRowType));
             }
             else
             {
-                IncludeMember("UniformRowType", typeof(ReferencedFileSave), new AvailablePrimitiveTypeArraysStringConverter());
+                IncludeMember(nameof(ReferencedFileSave.UniformRowType), typeof(ReferencedFileSave), new AvailablePrimitiveTypeArraysStringConverter());
             }
 
             if ((extension != "txt" && extension != "csv") ||
                 (extension == "txt" && instance.TreatAsCsv == false)
                 )
             {
-                ExcludeMember("CsvDelimiter");
+                ExcludeMember(nameof(ReferencedFileSave.CsvDelimiter));
             }
 
             if (extension != "txt")
             {
-                ExcludeMember("TreatAsCsv");
+                ExcludeMember(nameof(ReferencedFileSave.TreatAsCsv));
             }
 
             if (extension == "png")
@@ -400,22 +400,22 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             if (!instance.LoadedAtRuntime)
             {
-                ExcludeMember("IsSharedStatic");
-                ExcludeMember("IsManuallyUpdated");
-                ExcludeMember("LoadedOnlyWhenReferenced");
-                ExcludeMember("HasPublicProperty");
+                ExcludeMember(nameof(ReferencedFileSave.IsSharedStatic));
+                ExcludeMember(nameof(ReferencedFileSave.IsManuallyUpdated));
+                ExcludeMember(nameof(ReferencedFileSave.LoadedOnlyWhenReferenced));
+                ExcludeMember(nameof(ReferencedFileSave.HasPublicProperty));
                 ExcludeMember("InstanceName");
-                ExcludeMember("IncludeDirectoryRelativeToContainer");
+                ExcludeMember(nameof(ReferencedFileSave.IncludeDirectoryRelativeToContainer));
             }
 
             if (ati == null || string.IsNullOrEmpty(ati.MakeManuallyUpdatedMethod))
             {
-                ExcludeMember("IsManuallyUpdated");
+                ExcludeMember(nameof(ReferencedFileSave.IsManuallyUpdated));
             }
 
             if (!instance.GetCanUseContentPipeline())
             {
-                ExcludeMember("UseContentPipeline");
+                ExcludeMember(nameof(ReferencedFileSave.UseContentPipeline));
             }
             if (!instance.UseContentPipeline || ati.QualifiedRuntimeTypeName.QualifiedType != "Microsoft.Xna.Framework.Graphics.Texture2D")
             {
@@ -431,15 +431,15 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             }
             else
             {
-                ExcludeMember("RuntimeType");
+                ExcludeMember(nameof(ReferencedFileSave.RuntimeType));
             }
 
             if (string.IsNullOrEmpty(instance.SourceFile))
             {
-                ExcludeMember("SourceFile");
-                ExcludeMember("BuildTool");
-                ExcludeMember("AdditionalArguments");
-                ExcludeMember("ConditionalCompilationSymbols");
+                ExcludeMember(nameof(ReferencedFileSave.SourceFile));
+                ExcludeMember(nameof(ReferencedFileSave.BuildTool));
+                ExcludeMember(nameof(ReferencedFileSave.AdditionalArguments));
+                ExcludeMember(nameof(ReferencedFileSave.ConditionalCompilationSymbols));
             }
             else
             {

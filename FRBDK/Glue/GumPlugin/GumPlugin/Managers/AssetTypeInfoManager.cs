@@ -109,6 +109,8 @@ namespace GumPlugin.Managers
                     screenAti.CanBeCloned = false;
                     screenAti.HasCursorIsOn = false;
                     screenAti.HasVisibleProperty = false;
+                    screenAti.DestroyMethod = "this.RemoveFromManagers()";
+
                     screenAti.CanIgnorePausing = false;
                     screenAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\")";
                     screenAti.ShouldAttach = false;

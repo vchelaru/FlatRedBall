@@ -175,31 +175,39 @@ namespace TileGraphicsPlugin
             ReferencedFileSave referencedFileSave, string overridingContainerName)
         {
             // CollisionLayer1 = TmxWithTileShapeCollectionLayers.Collisions.First(item => item.Name == "CollisionLayer1");
+            T Get<T>(string name)
+            {
+                return namedObjectSave.Properties.GetValue<T>(name);
+            }
+
+            var creationOptions = Get<CollisionCreationOptions>(
+                nameof(TileShapeCollectionPropertiesViewModel.CollisionCreationOptions));
 
 
+            if(creationOptions == CollisionCreationOptions.FromLayer)
+            {
+                //var tileType = namedObjectSave.Properties.GetValue<string>(
+                //    nameof(ViewModels.TileShapeCollectionPropertiesViewModel.CollisionTileType));
 
-            //if(hasSpecificType)
-            //{
-            //    var tileType = namedObjectSave.Properties.GetValue<string>(
-            //        nameof(ViewModels.TileShapeCollectionPropertiesViewModel.CollisionTileType));
-
-            //    var toReturn = $"{namedObjectSave.FieldName} = new FlatRedBall.TileCollisions.TileShapeCollection();\n";
+                var toReturn = $"{namedObjectSave.FieldName} = new FlatRedBall.TileCollisions.TileShapeCollection();\n";
 
 
-            //    toReturn +=
-            //        "FlatRedBall.TileCollisions.TileShapeCollectionLayeredTileMapExtensions.AddCollisionFrom(\n" +
-            //        $"{namedObjectSave.FieldName},\n" +
-            //        $"{referencedFileSave.GetInstanceName()}.MapLayers.FindByName(\"{namedObjectSave.FieldName}\"),\n" +
-            //        $"{referencedFileSave.GetInstanceName()},\n" +
-            //        $"list => list.Any(item => item.Name == \"Type\" && item.Value as string == \"{tileType}\"));\n";
+                toReturn +=
+                    "FlatRedBall.TileCollisions.TileShapeCollectionLayeredTileMapExtensions.AddCollisionFrom(\n" +
+                    $"{namedObjectSave.FieldName},\n" +
+                    $"{referencedFileSave.GetInstanceName()}.MapLayers.FindByName(\"{namedObjectSave.FieldName}\"),\n" +
+                    $"{referencedFileSave.GetInstanceName()},\n" +
+                    $"list => list.Any(item => item.Name == \"Type\" " +
+                    //$"  && item.Value as string == \"{tileType}\")" +
+                    $");\n";
 
-            //    if(namedObjectSave.Properties.GetValue<bool>(nameof(ViewModels.TileShapeCollectionPropertiesViewModel.IsCollisionVisible)))
-            //    {
-            //        toReturn += $"{namedObjectSave.FieldName}.Visible = true;\n";
-            //    }
+                //if (namedObjectSave.Properties.GetValue<bool>(nameof(ViewModels.TileShapeCollectionPropertiesViewModel.IsCollisionVisible)))
+                //{
+                //    toReturn += $"{namedObjectSave.FieldName}.Visible = true;\n";
+                //}
 
-            //    return toReturn;
-            //}
+                return toReturn;
+            }
             //else
             //{
             //    return $"{namedObjectSave.FieldName} = {referencedFileSave.GetInstanceName()}.Collisions.First(item => item.Name == \"{sourceName}\");";

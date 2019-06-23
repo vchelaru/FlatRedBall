@@ -228,18 +228,17 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         // converted to properties on June 9, 2019
-        [Category("Destroy")]
+        // Update 6/22/2019 - cannot ever convert this
+        // to a property because the default value is true
+        // so there may be old projects that don't set the value
+        // in the XML. 
+        [Category("Destroy"), DefaultValue(true)]
         public bool DestroyOnUnload
         {
-            get
-            {
-                return Properties.GetValue<bool>(nameof(DestroyOnUnload));
-            }
-            set
-            {
-                Properties.SetValue(nameof(DestroyOnUnload), value);
-            }
+            get;
+            set;
         }
+
 
         public string Summary
         {
@@ -479,6 +478,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public ReferencedFileSave()
         {
+            // Even though we have a DefaultValue, must do this:
+            // https://stackoverflow.com/questions/5882164/xml-serialization-and-defaultvalue-related-problem-in-c-sharp
+            DestroyOnUnload = true;
             ProjectsToExcludeFrom = new List<string>();
             AddToManagers = true;
 

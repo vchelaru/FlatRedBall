@@ -164,7 +164,7 @@ namespace FlatRedBall.Screens
                 mCurrentScreen.Destroy();
 
                 // check to see if there is any leftover data
-                CheckAndWarnIfNotEmpty();
+                CheckAndWarnIfNotEmpty(mCurrentScreen);
 
                 // Let's perform a GC here.  
                 GC.Collect();
@@ -414,7 +414,7 @@ namespace FlatRedBall.Screens
         }
 
 
-        public static void CheckAndWarnIfNotEmpty()
+        public static void CheckAndWarnIfNotEmpty(Screen screen = null)
         {
 
             if (WarnIfNotEmptyBetweenScreens)
@@ -682,8 +682,12 @@ namespace FlatRedBall.Screens
 
                 if (GuiManager.Windows.Count != 0)
                 {
-                    messages.Add("The GuiManager has " + GuiManager.Windows.Count + 
-                        " windows. See \"FlatRedBall.Gui.GuiManager.Windows\"");
+                    var message = "The GuiManager has " + GuiManager.Windows.Count +
+                        " windows.\n";
+                    message += $"The first is of type {GuiManager.Windows[0].GetType()} named {GuiManager.Windows[0].Name}\n";
+                    message += "See \"FlatRedBall.Gui.GuiManager.Windows\"";
+
+                    messages.Add(message);
                 }
 
                 #endregion
@@ -691,6 +695,10 @@ namespace FlatRedBall.Screens
                 if (messages.Count != 0)
                 {
                     string errorString = "The Screen that was just unloaded did not clean up after itself:";
+                    if(mCurrentScreen != null)
+                    {
+                        errorString = $"The Screen that was just unloaded ({mCurrentScreen.GetType().Name}) did not clean up after itself:";
+                    }
                     foreach (string s in messages)
                         errorString += "\n" + s;
 

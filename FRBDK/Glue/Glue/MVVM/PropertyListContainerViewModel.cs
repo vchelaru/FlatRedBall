@@ -182,7 +182,20 @@ namespace FlatRedBall.Glue.MVVM
                 //// just in case there's some save/generate running:
                 //TaskManager.Self.Add(() =>
                 //{
+
+                // DestroyOnUnload cannot use
+                // properties, and that is important
+                // enough that we need to support it.
+                // I could use reflection (which could
+                // be slow) or just special case it:
+                if(GlueObject is ReferencedFileSave && modelName == nameof(ReferencedFileSave.DestroyOnUnload))
+                {
+                    ((ReferencedFileSave)GlueObject).DestroyOnUnload = (bool)(object)propertyValue;
+                }
+                else
+                {
                     GlueObject.Properties.SetValue(modelName, propertyValue);
+                }
                 //},
                 NotifyPropertyChanged(modelName);
                 //    "Safely setting property");
@@ -244,7 +257,15 @@ namespace FlatRedBall.Glue.MVVM
 
                 if(handledByVmDefault == false)
                 {
-                    modelValue = GlueObject.Properties.GetValue(modelPropertyName);
+                    if(modelPropertyName == nameof(ReferencedFileSave.DestroyOnUnload) && GlueObject is ReferencedFileSave)
+                    {
+                        // see above to see why we have this special case
+                        modelValue = ((ReferencedFileSave)GlueObject).DestroyOnUnload;
+                    }
+                    else
+                    {
+                        modelValue = GlueObject.Properties.GetValue(modelPropertyName);
+                    }
 
                     if (type == typeof(float))
                     {

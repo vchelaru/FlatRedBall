@@ -60,6 +60,7 @@ namespace TileGraphicsPlugin.CodeGeneration
                         break;
                     case CollisionCreationOptions.FromLayer:
                         // not handled:
+                        GenerateFromLayerCollision(namedObjectSave, codeBlock);
                         break;
 
                     case CollisionCreationOptions.FromProperties:
@@ -67,6 +68,15 @@ namespace TileGraphicsPlugin.CodeGeneration
                         break;
                 }
             }
+
+        }
+
+        private void GenerateFromLayerCollision(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
+        {
+            // handled in the AssetTypeInfo's GetFromFileFunc because that already has access to the referenced file save
+
+            //var tileType = namedObjectSave.Properties.GetValue<string>(
+            //    nameof(ViewModels.TileShapeCollectionPropertiesViewModel.));
 
         }
 
