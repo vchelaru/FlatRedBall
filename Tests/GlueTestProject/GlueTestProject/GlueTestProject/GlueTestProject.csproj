@@ -1069,6 +1069,10 @@
     <Compile Include="GumRuntimes\TextureSettingInStateComponentRuntime.Generated.cs">
       <DependentUpon>TextureSettingInStateComponentRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\TileShapeCollectionScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\TileShapeCollectionScreenGumRuntime.Generated.cs">
+      <DependentUpon>TileShapeCollectionScreenGumRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\UsedToInheritFromTextComponentRuntime.cs" />
     <Compile Include="GumRuntimes\UsedToInheritFromTextComponentRuntime.Generated.cs">
       <DependentUpon>UsedToInheritFromTextComponentRuntime.cs</DependentUpon>
@@ -1292,6 +1296,10 @@
     <Compile Include="Screens\TiledLevelScreen.cs" />
     <Compile Include="Screens\TiledLevelScreen.Generated.cs">
       <DependentUpon>TiledLevelScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\TileShapeCollectionScreen.cs" />
+    <Compile Include="Screens\TileShapeCollectionScreen.Generated.cs">
+      <DependentUpon>TileShapeCollectionScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\TmxScreen.cs" />
     <Compile Include="Screens\TmxScreen.Generated.cs">

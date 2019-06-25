@@ -47,6 +47,10 @@ namespace FlatRedBall.Glue.MVVM
             public string OverridingPropertyName { get; set; }
             public bool IsSynced { get; set; }
 
+            public override string ToString()
+            {
+                return $"IsSynced:{IsSynced}";
+            }
         }
 
         #endregion
@@ -133,7 +137,7 @@ namespace FlatRedBall.Glue.MVVM
         }
 
         // made public for reflection
-        public void SetAndPersist<T>(T propertyValue, [CallerMemberName]string propertyName = null)
+        public void SetAndPersist<T>(T propertyValue, [CallerMemberName]string propertyName = null, bool forcePersist = false)
         {
             if(viewModelProperties.ContainsKey(propertyName) == false)
             {
@@ -144,7 +148,7 @@ namespace FlatRedBall.Glue.MVVM
             // don't notify the property change yet, do it after setting the value on the Glue
             // object in case whoever listens wants to do codegen or other things depending on the
             // property already being set.
-            if (base.SetWithoutNotifying(propertyValue, propertyName) && PersistChanges)
+            if ((base.SetWithoutNotifying(propertyValue, propertyName) && PersistChanges) || forcePersist)
             {
                 if(propertyInfo.Converter != null)
                 {
@@ -250,7 +254,9 @@ namespace FlatRedBall.Glue.MVVM
                     {
                         var method = this.GetType().GetMethod(nameof(SetAndPersist)).MakeGenericMethod(defaultVmValue.GetType());
 
-                        method.Invoke(this, new object[] { defaultVmValue, viewModelPropertyName });
+                        // 3rd parameter forces the persist, because if we're in here, the Glue object does not have this
+                        // property
+                        method.Invoke(this, new object[] { defaultVmValue, viewModelPropertyName, true });
                         handledByVmDefault = true;
                     }
                 }

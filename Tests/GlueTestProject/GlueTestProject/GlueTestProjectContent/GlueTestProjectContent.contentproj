@@ -685,6 +685,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TestScreenUnused</Name>
     </None>
+    <None Include="gumproject\Screens\TileShapeCollectionScreenGum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TileShapeCollectionScreenGum</Name>
+    </None>
     <None Include="GumProject\Standards\Circle.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Circle</Name>
@@ -964,6 +968,18 @@
     <None Include="Screens\TiledLevelScreen\tilesets\platformertiles.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>platformertiles</Name>
+    </None>
+    <None Include="Screens\TileShapeCollectionScreen\Tiles.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Tiles</Name>
+    </None>
+    <None Include="screens\tileshapecollectionscreen\tileset.tsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>tileset</Name>
+    </None>
+    <None Include="Screens\TileShapeCollectionScreen\TmxFile.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TmxFile</Name>
     </None>
     <None Include="Screens\TmxScreen\barontown.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -1583,7 +1583,7 @@
         <string>GLUE</string>
       </Tags>
       <Source>GLUE</Source>
-      <NextScreen>Screens\InputScreen</NextScreen>
+      <NextScreen>Screens\TileShapeCollectionScreen</NextScreen>
       <Name>Screens\FirstScreen</Name>
     </ScreenSave>
     <ScreenSave>
@@ -5229,6 +5229,196 @@
           <SourceClassType>PositionedObjectList&lt;T&gt;</SourceClassType>
           <SourceClassGenericType>Entities\EntityFolder\TiledEntityInFolder</SourceClassGenericType>
           <InstanceName>TiledEntityInFolderList</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+      </NamedObjects>
+    </ScreenSave>
+    <ScreenSave>
+      <Tags>
+        <string>GLUE</string>
+      </Tags>
+      <Source>GLUE</Source>
+      <NextScreen>Screens\InputScreen</NextScreen>
+      <Name>Screens\TileShapeCollectionScreen</Name>
+      <ReferencedFiles>
+        <ReferencedFileSave>
+          <Name>gumproject/Screens/TileShapeCollectionScreenGum.gusx</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>Gum.Wireframe.GraphicalUiElement</RuntimeType>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
+        <ReferencedFileSave>
+          <Name>Screens/TileShapeCollectionScreen/TmxFile.tmx</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
+        <ReferencedFileSave>
+          <Name>Screens/TileShapeCollectionScreen/Tiles.png</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
+          <ProjectsToExcludeFrom />
+        </ReferencedFileSave>
+      </ReferencedFiles>
+      <NamedObjects>
+        <NamedObjectSave>
+          <Properties>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionTileSize</Name>
+              <ValueAsFloat>16</ValueAsFloat>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionFillWidth</Name>
+              <ValueAsInt>32</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionFillHeight</Name>
+              <ValueAsInt>1</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionCreationOptions</Name>
+              <ValueAsInt>0</ValueAsInt>
+            </PropertySave>
+          </Properties>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>TileShapeCollection</SourceClassType>
+          <InstanceName>EmptyTileShapeCollection</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <Properties>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionCreationOptions</Name>
+              <ValueAsInt>1</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionFillWidth</Name>
+              <ValueAsInt>3</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionFillHeight</Name>
+              <ValueAsInt>3</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionTileSize</Name>
+              <ValueAsFloat>16</ValueAsFloat>
+            </PropertySave>
+          </Properties>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>TileShapeCollection</SourceClassType>
+          <InstanceName>FillCompletelyTileShapeCollection</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <Properties>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionCreationOptions</Name>
+              <ValueAsInt>2</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionFillWidth</Name>
+              <ValueAsInt>10</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionFillHeight</Name>
+              <ValueAsInt>10</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionTileSize</Name>
+              <ValueAsFloat>16</ValueAsFloat>
+            </PropertySave>
+          </Properties>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>TileShapeCollection</SourceClassType>
+          <InstanceName>BorderOutlineTileShapeCollection</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <Properties>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionCreationOptions</Name>
+              <ValueAsInt>3</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionFillWidth</Name>
+              <ValueAsInt>32</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionFillHeight</Name>
+              <ValueAsInt>1</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionPropertyName</Name>
+              <ValueAsString>Solid</ValueAsString>
+            </PropertySave>
+            <PropertySave>
+              <Name>SourceTmxName</Name>
+              <ValueAsString>TmxFile</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>TileShapeCollection</SourceClassType>
+          <InstanceName>FromPropertyTileShapeCollection</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <Properties>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionCreationOptions</Name>
+              <ValueAsInt>4</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionTileTypeName</Name>
+              <ValueAsString>CollisionType</ValueAsString>
+            </PropertySave>
+            <PropertySave>
+              <Name>SourceTmxName</Name>
+              <ValueAsString>TmxFile</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>TileShapeCollection</SourceClassType>
+          <InstanceName>FromTypeTileShapeCollection</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
