@@ -66,6 +66,8 @@ namespace GlueTestProject.Screens
 
             TestEntitiesInFolders();
 
+            TestFromPropertyCollision();
+
             // Make the shapes visible, to make sure that they get removed when the screen is destroyed:
             foreach(var shapeCollection in TmxWithShapes.ShapeCollections)
             {
@@ -74,7 +76,10 @@ namespace GlueTestProject.Screens
             }
 		}
 
-
+        private void TestFromPropertyCollision()
+        {
+            WaterTypeCollisionLayer.ShouldNotBe(null);
+        }
 
         private void TestEntitiesInFolders()
         {

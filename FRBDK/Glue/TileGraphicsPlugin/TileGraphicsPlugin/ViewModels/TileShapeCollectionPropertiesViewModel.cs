@@ -18,6 +18,7 @@ namespace TileGraphicsPlugin.ViewModels
         FillCompletely,
         BorderOutline,
         FromProperties,
+        FromType,
         FromLayer
     }
 
@@ -46,7 +47,7 @@ namespace TileGraphicsPlugin.ViewModels
             get { return CollisionCreationOptions == CollisionCreationOptions.Empty; }
             set
             {
-                if(value)
+                if (value)
                 {
                     CollisionCreationOptions = CollisionCreationOptions.Empty;
                 }
@@ -59,7 +60,7 @@ namespace TileGraphicsPlugin.ViewModels
             get { return CollisionCreationOptions == CollisionCreationOptions.FillCompletely; }
             set
             {
-                if(value)
+                if (value)
                 {
                     CollisionCreationOptions = CollisionCreationOptions.FillCompletely;
                 }
@@ -80,10 +81,10 @@ namespace TileGraphicsPlugin.ViewModels
         [DependsOn(nameof(CollisionCreationOptions))]
         public bool IsBorderChecked
         {
-            get{ return CollisionCreationOptions == CollisionCreationOptions.BorderOutline;}
+            get { return CollisionCreationOptions == CollisionCreationOptions.BorderOutline; }
             set
             {
-                if(value)
+                if (value)
                 {
                     CollisionCreationOptions = CollisionCreationOptions.BorderOutline;
                 }
@@ -95,7 +96,7 @@ namespace TileGraphicsPlugin.ViewModels
         {
             get
             {
-                if( CollisionCreationOptions == CollisionCreationOptions.BorderOutline)
+                if (CollisionCreationOptions == CollisionCreationOptions.BorderOutline)
                 {
                     return Visibility.Visible;
                 }
@@ -112,7 +113,7 @@ namespace TileGraphicsPlugin.ViewModels
             get { return CollisionCreationOptions == CollisionCreationOptions.FromProperties; }
             set
             {
-                if(value)
+                if (value)
                 {
                     CollisionCreationOptions = CollisionCreationOptions.FromProperties;
                 }
@@ -127,6 +128,30 @@ namespace TileGraphicsPlugin.ViewModels
                 return CollisionCreationOptions == CollisionCreationOptions.FromProperties ?
                       Visibility.Visible :
                       Visibility.Collapsed;
+            }
+        }
+
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public bool IsFromTypeChecked
+        {
+            get { return CollisionCreationOptions == CollisionCreationOptions.FromType; }
+            set
+            {
+                if (value)
+                {
+                    CollisionCreationOptions = CollisionCreationOptions.FromType;
+                }
+            }
+        }
+
+        [DependsOn(nameof(CollisionCreationOptions))]
+        public Visibility FromTypeVisibility
+        {
+            get
+            {
+                return CollisionCreationOptions == CollisionCreationOptions.FromType ?
+                    Visibility.Visible :
+                    Visibility.Collapsed;
             }
         }
 
@@ -209,6 +234,13 @@ namespace TileGraphicsPlugin.ViewModels
         // for now a single string, eventually a list?
         [SyncedProperty]
         public string CollisionPropertyName
+        {
+            get { return Get<string>(); }
+            set { SetAndPersist(value); }
+        }
+
+        [SyncedProperty]
+        public string CollisionTileTypeName
         {
             get { return Get<string>(); }
             set { SetAndPersist(value); }

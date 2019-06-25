@@ -776,6 +776,12 @@ namespace FlatRedBall.TileCollisions
 
         }
 
+        public static void AddCollisionFromTilesWithType(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap, string type)
+        {
+            tileShapeCollection.AddCollisionFrom(
+                layeredTileMap, (list) => list.Any(item => item.Name == "Type" && (item.Value as string) == type));
+        }
+
         public static void AddMergedCollisionFromTilesWithProperty(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap, string propertyName)
         {
             tileShapeCollection.AddMergedCollisionFrom(

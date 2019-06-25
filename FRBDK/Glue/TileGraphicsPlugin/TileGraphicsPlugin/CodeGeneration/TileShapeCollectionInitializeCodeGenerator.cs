@@ -47,6 +47,16 @@ namespace TileGraphicsPlugin.CodeGeneration
                 var creationOptions = Get<CollisionCreationOptions>(
                     nameof(TileShapeCollectionPropertiesViewModel.CollisionCreationOptions));
 
+                var sourceType = namedObjectSave.SourceType;
+
+                if(sourceType == SourceType.File)
+                {
+                    
+                    codeBlock.Line($"//The NamedObject {namedObjectSave} has a SourceType of {sourceType}, so it may not instantiate " +
+                        $"properly. If you are experiencing a NullReferenceException, consider changing the" +
+                        $"SourceType to {SourceType.FlatRedBallType}");
+                }
+
                 switch(creationOptions)
                 {
                     case CollisionCreationOptions.Empty:
@@ -66,10 +76,14 @@ namespace TileGraphicsPlugin.CodeGeneration
                     case CollisionCreationOptions.FromProperties:
                         GenerateFromProperties(namedObjectSave, codeBlock);
                         break;
+                    case CollisionCreationOptions.FromType:
+                        GenerateFromTileType(namedObjectSave, codeBlock);
+                        break;
                 }
             }
 
         }
+
 
         private void GenerateFromLayerCollision(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
         {
@@ -219,6 +233,25 @@ namespace TileGraphicsPlugin.CodeGeneration
             //    TileShapeCollectionInstance,
             //    map,
             //    "propertyName");
+        }
+
+        private void GenerateFromTileType(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
+        {
+            T Get<T>(string name)
+            {
+                return namedObjectSave.Properties.GetValue<T>(name);
+            }
+
+            var mapName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.SourceTmxName));
+            var typeName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.CollisionTileTypeName));
+
+            if (!string.IsNullOrEmpty(mapName) && !string.IsNullOrEmpty(typeName))
+            {
+                codeBlock.Line("FlatRedBall.TileCollisions.TileShapeCollectionLayeredTileMapExtensions" +
+                    ".AddCollisionFromTilesWithType(" +
+                    $"{namedObjectSave.InstanceName}, {mapName}, \"{typeName}\");");
+            }
+
         }
     }
 }

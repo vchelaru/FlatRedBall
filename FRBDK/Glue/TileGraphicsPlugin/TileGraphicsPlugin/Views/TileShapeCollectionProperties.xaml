@@ -71,6 +71,21 @@
                 </StackPanel>
 
                 <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                             IsChecked="{Binding IsFromTypeChecked}">From Type</RadioButton>
+                <StackPanel x:Name="Types" Margin="10, 0, 0, 0" 
+                            Visibility="{Binding FromTypeVisibility}">
+                    <TextBlock>Source TMX File/Object:</TextBlock>
+                    <ComboBox Width="200" HorizontalAlignment="Left"
+                              ItemsSource="{Binding TmxObjectNames}"
+                              SelectedItem="{Binding SourceTmxName}"></ComboBox>
+                    <TextBlock Margin="0,5,0,0">Property:</TextBlock>
+                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionTileTypeName}"></TextBox>
+
+                </StackPanel>
+
+
+
+                <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                              IsChecked="{Binding IsFromPropertiesChecked}">From Property</RadioButton>
                 <StackPanel x:Name="Properties" Margin="10, 0, 0, 0" 
                             Visibility="{Binding FromPropertiesVisibility}">

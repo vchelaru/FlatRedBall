@@ -88,7 +88,6 @@ namespace FlatRedBall.Glue.SaveClasses
         private List<String> mVariablesToRest = new List<String>();
 
         private string mSourceFile;
-        private SourceType mSourceType;
         private bool mSetByDerived;
         private bool mExposedInDerived;
         private bool mSetByContainer;
@@ -137,13 +136,17 @@ namespace FlatRedBall.Glue.SaveClasses
         /// in the PropertyGridHelper in Glue.
         /// </remarks>
         #endregion
+            // made to use properties on June 23, 2019. Ever want to XML ignore this?
         [CategoryAttribute("Source")]
         public SourceType SourceType
         {
-            get { return mSourceType; }
+            get
+            {
+                return Properties.GetValue<SourceType>(nameof(SourceType));
+            }
             set
             {
-                mSourceType = value;
+                Properties.SetValue(nameof(SourceType), value);
             }
         }
 
