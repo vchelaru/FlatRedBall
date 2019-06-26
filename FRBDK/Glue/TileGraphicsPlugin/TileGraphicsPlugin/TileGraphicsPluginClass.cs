@@ -158,7 +158,9 @@ namespace TileGraphicsPlugin
             // - Added support for objects that are larger than the default tile size (scaled sprites in Tiled)
             // 2.1.4.1 
             // - Fixed copy paste compile error from previous change.
-            get { return new Version(2, 1, 4, 1); }
+            // 2.1.4.2
+            // - Fixed Type not being copied over when specified on object instances
+            get { return new Version(2, 1, 4, 2); }
         }
 
 

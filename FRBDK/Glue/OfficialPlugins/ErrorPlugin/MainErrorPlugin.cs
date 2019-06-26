@@ -41,6 +41,9 @@ namespace OfficialPlugins.ErrorPlugin
 
         public override void StartUp()
         {
+            EditorObjects.IoC.Container.Get<List<IErrorReporter>>()
+                .Add(new ErrorCreateRemoveLogic());
+
             control = new ErrorWindow();
             tab = AddToTab(PluginManager.BottomTab, control, "Errors");
 

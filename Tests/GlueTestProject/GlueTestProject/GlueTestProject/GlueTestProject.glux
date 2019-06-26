@@ -20476,6 +20476,7 @@
       <RequiredProperties />
       <Name>TopDownValues</Name>
       <GenerateCode>true</GenerateCode>
+      <CustomNamespace />
     </CustomClassSave>
   </CustomClasses>
   <TranslatedFiles>

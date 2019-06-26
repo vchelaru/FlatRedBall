@@ -233,6 +233,8 @@ namespace Glue
 
             AddObjectsToIocContainer();
 
+            AddErrorReporters();
+
             InitializationWindow initializationWindow = new InitializationWindow();
 
             // Initialize GlueGui before using it:
@@ -412,6 +414,12 @@ namespace Glue
             }
         }
 
+        private void AddErrorReporters()
+        {
+            EditorObjects.IoC.Container.Get<List<IErrorReporter>>()
+                .Add(new CsvErrorReporter())
+;        }
+
         private void AddObjectsToIocContainer()
         {
             EditorObjects.IoC.Container.Set(new SetVariableLogic());
@@ -428,6 +436,8 @@ namespace Glue
 
             EditorObjects.IoC.Container.Set<IGlueState>(GlueState.Self);
             EditorObjects.IoC.Container.Set<IGlueCommands>(GlueCommands.Self);
+
+            EditorObjects.IoC.Container.Set<List<IErrorReporter>>(new List<IErrorReporter>());
         }
 
         private void LoadProjectConsideringSettingsAndArgs(InitializationWindow initializationWindow)

@@ -140,7 +140,6 @@ namespace FlatRedBall.Glue.Plugins
         }
 
         GlueCommands mGlueCommands = new GlueCommands();
-        GlueState mGlueState = new GlueState();
 
         static StringBuilder mPreInitializeOutput = new StringBuilder();
         static StringBuilder mPreInitializeError = new StringBuilder();
@@ -177,7 +176,7 @@ namespace FlatRedBall.Glue.Plugins
         {
             get
             {
-                return mGlueState;
+                return FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self;
             }
         }
 

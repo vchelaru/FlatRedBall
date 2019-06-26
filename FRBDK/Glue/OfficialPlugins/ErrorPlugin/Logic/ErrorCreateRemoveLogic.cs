@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace OfficialPlugins.ErrorPlugin.Logic
 {
-    public static class ErrorCreateRemoveLogic
+    public class ErrorCreateRemoveLogic : Singleton<ErrorCreateRemoveLogic>, IErrorReporter
     {
         #region Add Errors
 
@@ -239,7 +239,12 @@ namespace OfficialPlugins.ErrorPlugin.Logic
             }
         }
 
+
         #endregion
 
+        public ErrorViewModel[] GetAllErrors()
+        {
+            return GetMissingFileErrorViewModels().ToArray();
+        }
     }
 }

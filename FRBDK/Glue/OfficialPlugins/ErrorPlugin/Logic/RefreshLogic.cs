@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Errors;
+﻿using EditorObjects.IoC;
+using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -18,20 +19,25 @@ namespace OfficialPlugins.ErrorPlugin.Logic
         {
             TaskManager.Self.AddSync(() =>
             {
+                // todo - need to store a list of IErrorReporter's somewhere, and loop through them
+                // here
+                lock (GlueState.ErrorListSyncLock)
+                {
+                    errorListViewModel.Errors.Clear();
+                }
+                var reporters = Container.Get<List<IErrorReporter>>();
+                foreach (var reporter in reporters)
+                {
+                    var errors = reporter.GetAllErrors();
 
-                   lock (GlueState.ErrorListSyncLock)
-                   {
-                       errorListViewModel.Errors.Clear();
-                   }
-                   var missingFiles = ErrorCreateRemoveLogic.GetMissingFileErrorViewModels();
-
-                   foreach (var missingFile in missingFiles)
-                   {
+                    foreach (var error in errors)
+                    {
                        lock (GlueState.ErrorListSyncLock)
                        {
-                           errorListViewModel.Errors.Add(missingFile);
+                           errorListViewModel.Errors.Add(error);
                        }
-                   }
+                    }
+                }
             }
             , "Refresh all errors");
         }

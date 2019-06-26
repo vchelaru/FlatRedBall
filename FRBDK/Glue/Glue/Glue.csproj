@@ -272,6 +272,9 @@
     </Compile>
     <Compile Include="AutomatedGlue\AutoGlue.cs" />
     <Compile Include="AutomatedGlue\GlueGui.cs" />
+    <Compile Include="Errors\CsvAndCustomClassSameName.cs" />
+    <Compile Include="Errors\CsvErrorReporter.cs" />
+    <Compile Include="Errors\IErrorReporter.cs" />
     <Compile Include="MVVM\PropertyListContainerViewModel.cs" />
     <Compile Include="MVVM\ViewModel.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSetupCodeGenerator.cs" />

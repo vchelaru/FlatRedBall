@@ -26,6 +26,7 @@ using FlatRedBall.Glue.Data;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Reflection;
 using GlueSaveClasses;
+using GluePropertyGridClasses.Interfaces;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -371,7 +372,7 @@ namespace FlatRedBall.Glue.IO
                 Section.GetAndStartContextAndTime("Add items");
 
                 SetInitWindowText("Creating project view...");
-
+                
 
                 AddEmptyTreeItems();
 
@@ -500,6 +501,7 @@ namespace FlatRedBall.Glue.IO
                 GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh = false;
             }
         }
+
 
         private void UpdateGlobalContentFileProjectMembership()
         {
