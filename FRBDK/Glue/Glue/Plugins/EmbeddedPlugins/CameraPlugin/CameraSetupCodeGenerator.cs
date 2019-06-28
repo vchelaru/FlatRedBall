@@ -203,7 +203,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     aspectRatioValue = displaySettings.AspectRatioWidth / displaySettings.AspectRatioHeight;
                 }
-                block.Line($"AspectRatio = {aspectRatioValue.ToString().ToLowerInvariant()}m,");
+                block.Line($"AspectRatio = {aspectRatioValue.ToString(CultureInfo.InvariantCulture).ToLowerInvariant()}m,");
             }
 
             block.Line($"IsFullScreen = {displaySettings.RunInFullScreen.ToString().ToLowerInvariant()},");
