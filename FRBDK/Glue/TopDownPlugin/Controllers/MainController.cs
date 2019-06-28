@@ -134,12 +134,12 @@ namespace TopDownPlugin.Controllers
 
         private static void GenerateCsv(EntitySave entity, TopDownEntityViewModel viewModel)
         {
-            TaskManager.Self.AddAsyncTask(
+            TaskManager.Self.Add(
                                 () => CsvGenerator.Self.GenerateFor(entity, viewModel),
                                 "Generating Top Down CSV for " + entity.Name);
 
 
-            TaskManager.Self.AddAsyncTask(
+            TaskManager.Self.Add(
                 () =>
                 {
                     string rfsName = entity.Name.Replace("\\", "/") + "/" + CsvGenerator.RelativeCsvFile;
@@ -148,7 +148,7 @@ namespace TopDownPlugin.Controllers
                     if (!isAlreadyAdded)
                     {
                         GlueCommands.Self.GluxCommands.AddSingleFileTo(
-                            CsvGenerator.Self.CsvFileFor(entity),
+                            CsvGenerator.Self.CsvFileFor(entity).FullPath,
                             CsvGenerator.RelativeCsvFile,
                             "",
                             null,
@@ -178,11 +178,13 @@ namespace TopDownPlugin.Controllers
                     var customClass = GlueState.Self.CurrentGlueProject.CustomClasses
                         .FirstOrDefault(item => item.Name == customClassName);
 
-                    if (customClass != null && customClass.CsvFilesUsingThis.Contains(rfs.Name) == false)
+                    if (rfs != null)
                     {
-                        if (rfs != null)
+                        if (customClass != null && customClass.CsvFilesUsingThis.Contains(rfs.Name) == false)
                         {
                             FlatRedBall. Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
+
+                            GlueCommands.Self.GluxCommands.SaveGlux();
                         }
                     }
                 },
@@ -229,15 +231,15 @@ namespace TopDownPlugin.Controllers
         private static Dictionary<string, TopDownValues> GetCsvValues(EntitySave currentEntitySave)
         {
             var csvValues = new Dictionary<string, TopDownValues>();
-            string absoluteFileName = CsvGenerator.Self.CsvFileFor(currentEntitySave);
+            var filePath = CsvGenerator.Self.CsvFileFor(currentEntitySave);
 
-            bool doesFileExist = System.IO.File.Exists(absoluteFileName);
+            bool doesFileExist = filePath.Exists();
 
             if (doesFileExist)
             {
                 try
                 {
-                    CsvFileManager.CsvDeserializeDictionary<string, TopDownValues>(absoluteFileName, csvValues);
+                    CsvFileManager.CsvDeserializeDictionary<string, TopDownValues>(filePath.FullPath, csvValues);
                 }
                 catch (Exception e)
                 {

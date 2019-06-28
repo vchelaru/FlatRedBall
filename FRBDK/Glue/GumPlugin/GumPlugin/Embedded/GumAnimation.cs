@@ -97,6 +97,14 @@ namespace FlatRedBall.Gum.Animation
             namedActions.Add(name, action);
         }
 
+
+        public void SetInitialState()
+        {
+            var firstInstruction = getInstructionsFunc(this).FirstOrDefault();
+
+            firstInstruction.ExecuteOn(this);
+        }
+
         public void Play(object whatStartedPlayingThis = null)
         {
             WhatStartedPlayingThis = whatStartedPlayingThis;

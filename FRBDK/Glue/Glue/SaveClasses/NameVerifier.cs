@@ -222,7 +222,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     if (existing.Count != 0)
                     {
-                        whyItIsntValid = "There is already a CSV file using the name " + name + ":  " + existing[0].ToString();
+                        whyItIsntValid = "There is already a CSV file using the name " + name + ". This CSV is not using a custom class:  " + existing[0].ToString();
                     }
                 }
             }
