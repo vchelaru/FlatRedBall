@@ -158,6 +158,17 @@ namespace {GlueState.Self.ProjectNamespace}.Entities
                             return TopDownDirection.Down;
                         }}
                     }}
+                    else // absx and absy are equal:
+                    {{
+                        if(x > 0)
+                        {{
+                            return TopDownDirection.Right;
+                        }}
+                        else
+                        {{
+                            return TopDownDirection.Left;
+                        }}
+                    }}
                     break;
                 case PossibleDirections.EightWay:
                     if (x != 0 || y != 0)

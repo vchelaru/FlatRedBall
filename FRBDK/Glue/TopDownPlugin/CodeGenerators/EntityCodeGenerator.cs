@@ -80,7 +80,13 @@ namespace TopDownPlugin.CodeGenerators
             // here on the top-down (yet) since there are no events
             // Update 1 - actually we should prob assign the default movement
             // here if there is one...
+            codeBlock.Line("InitializeInput();");
 
+            var ifBlock = codeBlock.If("TopDownValues?.Count > 0");
+            {
+                ifBlock.Line("mCurrentMovement = TopDownValues.Values.FirstOrDefault();");
+            }
+            codeBlock.Line("PossibleDirections = PossibleDirections.FourWay;");
 
             return codeBlock;
         }
@@ -106,20 +112,16 @@ namespace TopDownPlugin.CodeGenerators
         {
             if (FlatRedBall.Input.InputManager.Xbox360GamePads[0].IsConnected)
             {
-                this.MovementInput =
-                    FlatRedBall.Input.InputManager.Xbox360GamePads[0].LeftStick;
+                InitializeTopDownInput(FlatRedBall.Input.InputManager.Xbox360GamePads[0]);
             }
             else
             {
-                this.MovementInput = FlatRedBall.Input.InputManager.Keyboard.Get2DInput(
-                    Microsoft.Xna.Framework.Input.Keys.Left,
-                    Microsoft.Xna.Framework.Input.Keys.Right,
-                    Microsoft.Xna.Framework.Input.Keys.Up,
-                    Microsoft.Xna.Framework.Input.Keys.Down);
+                InitializeTopDownInput(FlatRedBall.Input.InputManager.Keyboard);
             }
-
+        
             InputEnabled = true;
         }
+        
 
         public void InitializeTopDownInput(FlatRedBall.Input.IInputDevice inputDevice)
         {
@@ -130,6 +132,13 @@ namespace TopDownPlugin.CodeGenerators
 
         private void ApplyMovementInput()
         {
+            ////////early out/////////
+            if(mCurrentMovement == null)
+            {
+                return;
+            }
+            //////end early out
+
             var velocity = this.Velocity;
 
             var desiredVelocity = Microsoft.Xna.Framework.Vector3.Zero;
