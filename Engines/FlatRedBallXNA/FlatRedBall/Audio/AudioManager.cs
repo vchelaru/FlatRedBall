@@ -451,7 +451,7 @@ namespace FlatRedBall.Audio
                 Song songToDispose = CurrentlyPlayingSong;
                 StopSong();
 
-                if (!mIsSongUsingGlobalContent && songToDispose.IsDisposed == false)
+                if (!mIsSongUsingGlobalContent)
                 {
                     songToDispose.Dispose();
                 }
