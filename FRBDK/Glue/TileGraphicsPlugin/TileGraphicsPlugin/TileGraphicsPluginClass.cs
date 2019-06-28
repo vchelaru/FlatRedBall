@@ -160,7 +160,11 @@ namespace TileGraphicsPlugin
             // - Fixed copy paste compile error from previous change.
             // 2.1.4.2
             // - Fixed Type not being copied over when specified on object instances
-            get { return new Version(2, 1, 4, 2); }
+            // 2.2
+            // - Huge changes allowing tile shape collections to be generated through glue plugin.
+            // 2.2.1
+            // - Added support for creating TileNodeNetworks excluding a collection of types
+            get { return new Version(2, 2, 1, 0); }
         }
 
 

@@ -425,15 +425,23 @@ namespace FlatRedBall.AI.Pathfinding
             return closestNode;
         }
 
-        private static float _visibleCoefficient = 15;
+        /// <summary>
+        /// The radius of the shape used to visualize a node when the NodeNetwork is visible.
+        /// </summary>
+        public static float NodeVisualizationRadius
+        {
+            get; set;
+        } = 5;
+
+        [Obsolete("Use NodeVisualizationRadius")]
         public static float VisibleCoefficient 
         {
             get
             {
-                return _visibleCoefficient;
+                return NodeVisualizationRadius;
             }
 
-            set { _visibleCoefficient = value; }
+            set { NodeVisualizationRadius = value; }
         }
 
         #region XML Docs
@@ -453,13 +461,13 @@ namespace FlatRedBall.AI.Pathfinding
         #endregion
         public float GetVisibleNodeRadius(Camera camera, int nodeIndex)
         {
-            return _visibleCoefficient / camera.PixelsPerUnitAt(mNodes[nodeIndex].Z);
+            return NodeVisualizationRadius / camera.PixelsPerUnitAt(mNodes[nodeIndex].Z);
         }
 
 
         public float GetVisibleNodeRadius(Camera camera, PositionedNode positionedNode)
         {
-            return _visibleCoefficient / camera.PixelsPerUnitAt(positionedNode.Z);
+            return NodeVisualizationRadius / camera.PixelsPerUnitAt(positionedNode.Z);
         }
 
         #region XML Docs
@@ -902,12 +910,10 @@ namespace FlatRedBall.AI.Pathfinding
 			return newNode;
 		}
 
-		#region XML Docs
 		/// <summary>
 		/// Updates the visible representation of the NodeNetwork.  This is only needed to be called if the NodeNetwork
 		/// is visible and if any contained PositionedNodes or Links have changed.
 		/// </summary>
-		#endregion
 		public virtual void UpdateShapes()
         {
             Vector3 zeroVector = new Vector3();
@@ -930,11 +936,9 @@ namespace FlatRedBall.AI.Pathfinding
                 #region Create nodes to match how many nodes are in the network
                 while (mNodes.Count > mNodeVisibleRepresentation.Count)
                 {
-                    Polygon newPolygon = Polygon.CreateEquilateral(3, 1, 0);
+                    Polygon newPolygon = Polygon.CreateEquilateral(4, 1, MathHelper.PiOver4);
                     newPolygon.Name = "NodeNetwork Polygon";
-#if FRB_MDX
-                    newPolygon.IsFilled = true;
-#endif
+
                     const bool makeAutomaticallyUpdated = false;
                     ShapeManager.AddToLayer(newPolygon, LayerToDrawOn, makeAutomaticallyUpdated);
                     // This was commented out and I'm not sure why.  With this

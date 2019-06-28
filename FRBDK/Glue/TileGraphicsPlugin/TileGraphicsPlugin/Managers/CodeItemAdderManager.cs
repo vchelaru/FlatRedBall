@@ -18,16 +18,14 @@ namespace TileGraphicsPlugin.Managers
             mTileGraphicsAdder = new CodeBuildItemAdder();
             mTileGraphicsAdder.OutputFolderInProject = "TileGraphics";
             mTileGraphicsAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
-            mTileGraphicsAdder.Add("TileGraphicsPlugin.AnimationChainContainer.cs");
-            // Are we still supporting this?
-            //mItemAdder.Add("TileGraphicsPlugin.CulledMapDrawableBatch.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin.LayeredTileMap.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin.LayeredTileMapAnimation.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin.MapDrawableBatch.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin.Tileset.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin.ReducedTileMapInfo.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin.TileAnimationFrame.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin.TileNodeNetworkCreator.cs");
+            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/AnimationChainContainer.cs");
+            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/LayeredTileMap.cs");
+            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/LayeredTileMapAnimation.cs");
+            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/MapDrawableBatch.cs");
+            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/Tileset.cs");
+            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/ReducedTileMapInfo.cs");
+            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TileAnimationFrame.cs");
+            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TileNodeNetworkCreator.cs");
 
 
 
@@ -51,7 +49,7 @@ namespace TileGraphicsPlugin.Managers
             mTileCollisionAdder = new CodeBuildItemAdder();
             mTileCollisionAdder.OutputFolderInProject = "TileCollisions";
             mTileCollisionAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
-            mTileCollisionAdder.Add("TileGraphicsPlugin.TileShapeCollection.cs");
+            mTileCollisionAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TileShapeCollection.cs");
             mTileCollisionAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/CollidableListVsTileShapeCollectionRelationship.cs");
             mTileCollisionAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/CollidableVsTileShapeCollectionRelationship.cs");
             mTileCollisionAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/CollisionManagerTileShapeCollectionExtensions.cs");
@@ -59,7 +57,7 @@ namespace TileGraphicsPlugin.Managers
             mTileEntityAdder = new CodeBuildItemAdder();
             mTileEntityAdder.OutputFolderInProject = "TileEntities";
             mTileEntityAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
-            mTileEntityAdder.Add("TileGraphicsPlugin.TileEntityInstantiator.cs");
+            mTileEntityAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TileEntityInstantiator.cs");
         }
 
 

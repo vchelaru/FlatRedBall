@@ -89,10 +89,10 @@
       <DependentUpon>TileShapeCollectionProperties.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TileAnimationFrame.cs">
-      <Link>TileAnimationFrame.cs</Link>
+      <Link>EmbeddedCodeFiles\TileAnimationFrame.cs</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\LayeredTileMapAnimation.cs">
-      <Link>LayeredTileMapAnimation.cs</Link>
+      <Link>EmbeddedCodeFiles\LayeredTileMapAnimation.cs</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TiledMapSave.Conversion.cs">
       <Link>EmbeddedCodeFiles\TiledMapSave.Conversion.cs</Link>
@@ -140,7 +140,7 @@
     <Compile Include="Logic\ModifyAddEntityWindowLogic.cs" />
     <Compile Include="Logic\NewEntityCreatedReactionLogic.cs" />
     <Compile Include="Managers\BuildToolSaver.cs" />
-    <EmbeddedResource Include="TileNodeNetworkCreator.cs" />
+    <EmbeddedResource Include="EmbeddedCodeFiles\TileNodeNetworkCreator.cs" />
     <Compile Include="Managers\TiledObjectTypeCreator.cs" />
     <Compile Include="ViewModels\AdditionalEntitiesViewModel.cs" />
     <Compile Include="ViewModels\AddNewLevelViewModel.cs" />
@@ -155,10 +155,10 @@
       <DependentUpon>CommandLineArgumentsView.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\DataTypes\ReducedTileMapInfo.cs">
-      <Link>ReducedTileMapInfo.cs</Link>
+      <Link>EmbeddedCodeFiles\ReducedTileMapInfo.cs</Link>
     </EmbeddedResource>
     <Compile Include="Logic\AssetTypeInfoAdder.cs" />
-    <EmbeddedResource Include="TileEntityInstantiator.cs" />
+    <EmbeddedResource Include="EmbeddedCodeFiles\TileEntityInstantiator.cs" />
     <Compile Include="CodeGeneration\LevelCodeGenerator.cs" />
     <Compile Include="Controllers\AddLevelController.cs" />
     <Compile Include="Managers\BuildToolAssociationManager.cs" />
@@ -167,25 +167,24 @@
     <Compile Include="Managers\FileReferenceManager.cs" />
     <Compile Include="Managers\RightClickManager.cs" />
     <Compile Include="Managers\TileMapInfoManager.cs" />
-    <Compile Include="TileGraphicsPluginCommands.cs" />
     <Compile Include="TileMapInfo.cs" />
     <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\AnimationChainContainer.cs">
-      <Link>AnimationChainContainer.cs</Link>
+      <Link>EmbeddedCodeFiles\AnimationChainContainer.cs</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\LayeredTileMap.cs">
-      <Link>LayeredTileMap.cs</Link>
+      <Link>EmbeddedCodeFiles\LayeredTileMap.cs</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\MapDrawableBatch.cs">
-      <Link>MapDrawableBatch.cs</Link>
+      <Link>EmbeddedCodeFiles\MapDrawableBatch.cs</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\Tileset.cs">
-      <Link>Tileset.cs</Link>
+      <Link>EmbeddedCodeFiles\Tileset.cs</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ControlForAddingCollision.resx">
       <DependentUpon>ControlForAddingCollision.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileCollisions\TileShapeCollection.cs">
-      <Link>TileShapeCollection.cs</Link>
+      <Link>EmbeddedCodeFiles\TileShapeCollection.cs</Link>
     </EmbeddedResource>
     <Compile Include="BuildToolAssociationAdder.cs" />
     <Compile Include="Controllers\EntityCreationController.cs" />
