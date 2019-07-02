@@ -32,7 +32,7 @@ namespace TopDownPlugin.CodeGenerators
         {
             var toReturn =
 $@"
-
+using Microsoft.Xna.Framework;
 
 namespace {GlueState.Self.ProjectNamespace}.Entities
 {{
@@ -71,7 +71,7 @@ namespace {GlueState.Self.ProjectNamespace}.Entities
                 case TopDownDirection.UpLeft: return new Vector3(-diagonalLength, diagonalLength, 0);
                 case TopDownDirection.Up: return Vector3.Up;
                 case TopDownDirection.UpRight: return new Vector3(diagonalLength, diagonalLength, 0);
-                case TopDownDirection.Right: return Vector3.Left;
+                case TopDownDirection.Right: return Vector3.Right;
                 case TopDownDirection.DownRight: return new Vector3(diagonalLength, -diagonalLength, 0);
                 case TopDownDirection.Down: return Vector3.Down;
                 case TopDownDirection.DownLeft: return new Vector3(-diagonalLength, -diagonalLength, 0);
