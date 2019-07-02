@@ -59,6 +59,9 @@ namespace TopDownPlugin
             {
                 // just in case it's not there:
                 EnumFileGenerator.Self.GenerateAndSaveEnumFile();
+                InterfacesFileGenerator.Self.GenerateAndSave();
+                AiCodeGenerator.Self.GenerateAndSave();
+
             }
         }
 

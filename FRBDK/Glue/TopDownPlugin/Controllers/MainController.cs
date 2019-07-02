@@ -101,6 +101,8 @@ namespace TopDownPlugin.Controllers
                     {
                         GlueCommands.Self.GluxCommands.SaveGlux();
                         EnumFileGenerator.Self.GenerateAndSaveEnumFile();
+                        InterfacesFileGenerator.Self.GenerateAndSave();
+                        AiCodeGenerator.Self.GenerateAndSave();
                     },"Saving Glue Project");
             }
         }

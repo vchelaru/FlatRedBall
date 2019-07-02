@@ -32,9 +32,11 @@ namespace TopDownPlugin.CodeGenerators
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// The current movement variables used when applying input.");
             codeBlock.Line("/// </summary>");
-            codeBlock.Property("protected DataTypes.TopDownValues", "CurrentMovement")
+            codeBlock.Property("public DataTypes.TopDownValues", "CurrentMovement")
                 .Get()
                     .Line("return mCurrentMovement;");
+
+            codeBlock.AutoProperty("private FlatRedBall.Input.IInputDevice", "InputDevice");
 
             codeBlock.Line("TopDownDirection mDirectionFacing;");
 
@@ -126,6 +128,7 @@ namespace TopDownPlugin.CodeGenerators
         public void InitializeTopDownInput(FlatRedBall.Input.IInputDevice inputDevice)
         {
             this.MovementInput = inputDevice.Default2DInput;
+            this.InputDevice = inputDevice;
             InputEnabled = true;
         }
 

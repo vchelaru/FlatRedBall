@@ -2371,6 +2371,8 @@ namespace FlatRedBall
             }
         }
 
+        [Obsolete("Use instructions or Call.After methods to remove sprites. This method will go away in future versions. This obsolete message was added" +
+            "June 28, 2019")]
         public static void RemoveSpriteAtTime(Sprite spriteToRemove, double secondsPastCurrentTime)
         {
 
@@ -2381,7 +2383,12 @@ namespace FlatRedBall
 
         }
 
-
+        /// <summary>
+        /// Removes the argument sprite from all SpriteManager lists and all
+        /// layers, but keeps the Sprite attached to its parent objects
+        /// (such as a Glue entity).
+        /// </summary>
+        /// <param name="spriteToRemove">The Sprite to remove</param>
         public static void RemoveSpriteOneWay(Sprite spriteToRemove)
         {
             mOrderedByDistanceFromCameraSprites.Remove(spriteToRemove);
