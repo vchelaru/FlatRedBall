@@ -88,7 +88,7 @@ namespace OfficialPlugins.CollisionPlugin
         private void GetEventSignatureAndArgs(NamedObjectSave namedObjectSave, EventResponseSave eventResponseSave, out string type, out string signatureArgs)
         {
             if (namedObjectSave.GetAssetTypeInfo() == AssetTypeInfoManager.Self.CollisionRelationshipAti &&
-                eventResponseSave.EventName == "CollisionOccurred")
+                eventResponseSave.SourceObjectEvent == "CollisionOccurred")
             {
                 bool firstThrowaway;
                 bool secondThrowaway;
