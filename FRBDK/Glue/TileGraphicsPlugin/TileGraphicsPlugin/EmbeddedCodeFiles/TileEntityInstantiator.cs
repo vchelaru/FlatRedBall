@@ -206,10 +206,15 @@ namespace FlatRedBall.TileEntities
 
                         if (factory == null)
                         {
-                            string message =
-                                $"The factory for entity {entityType} could not be found. To create instances of this entity, " +
-                                "set its 'CreatedByOtherEntities' property to true in Glue.";
-                            throw new Exception(message);
+                            bool isEntity = typesInThisAssembly.Any(item => item.Name.Contains($".Entities.") && item.Name.EndsWith(entityType));
+
+                            if (isEntity)
+                            {
+                                string message =
+                                    $"The factory for entity {entityType} could not be found. To create instances of this entity, " +
+                                    "set its 'CreatedByOtherEntities' property to true in Glue.";
+                                throw new Exception(message);
+                            }
                         }
                         else
                         {
