@@ -134,6 +134,15 @@ namespace TileGraphicsPlugin
 
             });
 
+            toReturn.VariableDefinitions.Add(new VariableDefinition
+            {
+                Name = "Z",
+                Type = "float",
+                DefaultValue = "0",
+                Category = "Position"
+
+            });
+
             toReturn.FriendlyName = "LayeredTileMap (.tmx)";
             toReturn.QualifiedSaveTypeName = "";
             toReturn.Extension = "tmx";
