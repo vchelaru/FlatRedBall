@@ -29,8 +29,8 @@ namespace FlatRedBall.TileGraphics
         #endregion
 
         #region Properties
-        public float? NumberTilesWide { get; private set; }
-        public float? NumberTilesTall { get; private set; }
+        public int? NumberTilesWide { get; private set; }
+        public int? NumberTilesTall { get; private set; }
         public float? WidthPerTile { get; private set; }
         public float? HeightPerTile { get; private set; }
         public Dictionary<string, List<NamedValue>> TileProperties

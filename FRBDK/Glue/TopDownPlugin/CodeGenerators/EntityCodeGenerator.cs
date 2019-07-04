@@ -36,7 +36,9 @@ namespace TopDownPlugin.CodeGenerators
                 .Get()
                     .Line("return mCurrentMovement;");
 
-            codeBlock.AutoProperty("private FlatRedBall.Input.IInputDevice", "InputDevice");
+            codeBlock.Property("public FlatRedBall.Input.IInputDevice", "InputDevice")
+                .Line("get;")
+                .Line("private set;");
 
             codeBlock.Line("TopDownDirection mDirectionFacing;");
 

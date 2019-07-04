@@ -163,8 +163,10 @@ namespace TileGraphicsPlugin
             // 2.2
             // - Huge changes allowing tile shape collections to be generated through glue plugin.
             // 2.2.1
-            // - Added support for creating TileNodeNetworks excluding a collection of types
-            get { return new Version(2, 2, 1, 0); }
+            // - Added support for creating TileNodeNetworks by type
+            // 2.2.2
+            // - Removed exception occurring when a tile has a type, but no matching entity exists
+            get { return new Version(2, 2, 2, 0); }
         }
 
 

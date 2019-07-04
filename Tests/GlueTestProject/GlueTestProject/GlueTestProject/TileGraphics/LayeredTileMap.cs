@@ -112,7 +112,10 @@ namespace FlatRedBall.TileGraphics
         }
 
         /// <summary>
-        /// Returns the width in world units of the entire map.  The map may not visibly extend to this width;
+        /// Returns the width in world units of the entire map.  This is determined
+        /// by multiplying the tile size by the number of tiles specified in Tiled. Since
+        /// maps may have blank areas, this value may not necessarily reflect visible map 
+        /// width.
         /// </summary>
         public float Width
         {
@@ -130,7 +133,10 @@ namespace FlatRedBall.TileGraphics
         }
 
         /// <summary>
-        /// Returns the height in world units of the entire map.  The map may not visibly extend to this height;
+        /// Returns the height in world units of the entire map.  This is determined
+        /// by multiplying the tile size by the number of tiles specified in Tiled. Since
+        /// maps may have blank areas, this value may not necessarily reflect visible map
+        /// height.
         /// </summary>
         public float Height
         {
