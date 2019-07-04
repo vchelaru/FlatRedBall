@@ -1,5 +1,5 @@
 
-
+using Microsoft.Xna.Framework;
 
 namespace GlueTestProject.Entities
 {
@@ -26,6 +26,25 @@ namespace GlueTestProject.Entities
         public static TopDownDirection FromDirection(Microsoft.Xna.Framework.Vector3 direction, PossibleDirections possibleDirections)
         {
             return FromDirection(direction.X, direction.Y, possibleDirections);
+        }
+
+        public static Microsoft.Xna.Framework.Vector3 ToVector(this TopDownDirection direction)
+        {
+            float diagonalLength = (float)System.Math.Cos( MathHelper.PiOver4 );
+
+            switch(direction)
+            {
+                case TopDownDirection.Left: return Vector3.Left;
+                case TopDownDirection.UpLeft: return new Vector3(-diagonalLength, diagonalLength, 0);
+                case TopDownDirection.Up: return Vector3.Up;
+                case TopDownDirection.UpRight: return new Vector3(diagonalLength, diagonalLength, 0);
+                case TopDownDirection.Right: return Vector3.Right;
+                case TopDownDirection.DownRight: return new Vector3(diagonalLength, -diagonalLength, 0);
+                case TopDownDirection.Down: return Vector3.Down;
+                case TopDownDirection.DownLeft: return new Vector3(-diagonalLength, -diagonalLength, 0);
+            }
+
+            return Vector3.Right;
         }
 
         public static TopDownDirection FlipX(this TopDownDirection directionToFlip)
@@ -123,6 +142,17 @@ namespace GlueTestProject.Entities
                         else if (y < 0)
                         {
                             return TopDownDirection.Down;
+                        }
+                    }
+                    else // absx and absy are equal:
+                    {
+                        if(x > 0)
+                        {
+                            return TopDownDirection.Right;
+                        }
+                        else
+                        {
+                            return TopDownDirection.Left;
                         }
                     }
                     break;

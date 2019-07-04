@@ -20472,7 +20472,9 @@
       <GenerateCode>true</GenerateCode>
     </CustomClassSave>
     <CustomClassSave>
-      <CsvFilesUsingThis />
+      <CsvFilesUsingThis>
+        <string>Entities/TopDownPluginEntity/TopDownValues.csv</string>
+      </CsvFilesUsingThis>
       <RequiredProperties />
       <Name>TopDownValues</Name>
       <GenerateCode>true</GenerateCode>

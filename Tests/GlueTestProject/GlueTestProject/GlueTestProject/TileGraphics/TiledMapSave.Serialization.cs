@@ -788,6 +788,12 @@ namespace TMXGlueLib
             set { gid = uint.Parse(value); }
         }
 
+        [XmlAttribute(AttributeName = "type")]
+        public string Type
+        {
+            get; set;
+        }
+
         [XmlIgnore]
         public uint? gid { get; set; }
 

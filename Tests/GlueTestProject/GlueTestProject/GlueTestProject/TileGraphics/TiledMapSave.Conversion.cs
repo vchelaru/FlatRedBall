@@ -94,13 +94,15 @@ namespace TMXGlueLib
                 {
                     foreach (var item in objectLayer.@object)
                     {
+                        if (!string.IsNullOrEmpty(item.Type) && item.properties != null)
+                        {
+                            item.properties.Add(new property { name = "Type", Type = "string", value = item.Type });
+                            item.PropertyDictionary["Type"] = item.Type;
+                        }
+
                         if (item.gid != null)
                         {
                             var tileset = GetTilesetForGid(item.gid.Value);
-
-                            // todo - need to modify the TMX loader to support reading the Type from an object. Right now it works
-                            // if the type is on the tile in the tileset, but not on the object. But...I'm tired. That will have to
-                            // be something I add later.
 
                             if (tileset.TileDictionary.ContainsKey(item.gid.Value - tileset.Firstgid))
                             {

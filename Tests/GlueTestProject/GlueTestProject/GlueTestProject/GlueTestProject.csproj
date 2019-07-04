@@ -1351,6 +1351,8 @@
     <Compile Include="TileGraphics\Tileset.cs" />
     <Compile Include="TileGraphics\TilesetExtensionMethods.cs" />
     <Compile Include="TopDown\Enums.cs" />
+    <Compile Include="TopDown\Interfaces.cs" />
+    <Compile Include="TopDown\TopDownAiInput.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

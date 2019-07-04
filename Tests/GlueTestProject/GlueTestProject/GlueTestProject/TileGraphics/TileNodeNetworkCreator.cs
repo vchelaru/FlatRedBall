@@ -13,23 +13,9 @@ namespace FlatRedBall.AI.Pathfinding
         public static TileNodeNetwork CreateFrom(LayeredTileMap layeredTileMap, DirectionalType directionalType,
             Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate)
         {
-            var numberOfTilesWide =
-                MathFunctions.RoundToInt(layeredTileMap.Width / layeredTileMap.WidthPerTile.Value);
-            var numberOfTilesTall =
-                MathFunctions.RoundToInt(layeredTileMap.Height / layeredTileMap.HeightPerTile.Value);
+            TileNodeNetwork nodeNetwork = CreateTileNodeNetwork(layeredTileMap, directionalType);
 
-            var tileWidth = layeredTileMap.WidthPerTile.Value;
-
-            var dimensionHalf = tileWidth / 2.0f;
-
-            TileNodeNetwork nodeNetwork = new TileNodeNetwork(
-                0 + dimensionHalf,
-                -layeredTileMap.Height + tileWidth / 2.0f,
-                tileWidth,
-                numberOfTilesWide,
-                numberOfTilesTall,
-                directionalType);
-
+            var dimensionHalf = layeredTileMap.WidthPerTile.Value / 2.0f;
 
             var properties = layeredTileMap.TileProperties;
 
@@ -65,6 +51,56 @@ namespace FlatRedBall.AI.Pathfinding
             }
 
             nodeNetwork.Visible = true;
+
+            return nodeNetwork;
+        }
+
+        public static TileNodeNetwork CreateFromTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType,
+            ICollection<string> types)
+        {
+
+            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate = (list) =>
+            {
+                var toReturn = false;
+
+                foreach (var namedValue in list)
+                {
+                    if (namedValue.Name == "Type")
+                    {
+                        var valueAsString = namedValue.Value as string;
+
+                        if (!string.IsNullOrEmpty(valueAsString) && types.Contains(valueAsString))
+                        {
+                            toReturn = true;
+                            break;
+                        }
+                    }
+                }
+
+                return toReturn;
+            };
+            return CreateFrom(layeredTileMap, directionalType, predicate);
+        }
+
+
+        private static TileNodeNetwork CreateTileNodeNetwork(LayeredTileMap layeredTileMap, DirectionalType directionalType)
+        {
+            var numberOfTilesWide =
+                MathFunctions.RoundToInt(layeredTileMap.Width / layeredTileMap.WidthPerTile.Value);
+            var numberOfTilesTall =
+                MathFunctions.RoundToInt(layeredTileMap.Height / layeredTileMap.HeightPerTile.Value);
+
+            var tileWidth = layeredTileMap.WidthPerTile.Value;
+
+            var dimensionHalf = tileWidth / 2.0f;
+
+            TileNodeNetwork nodeNetwork = new TileNodeNetwork(
+                0 + dimensionHalf,
+                -layeredTileMap.Height + tileWidth / 2.0f,
+                tileWidth,
+                numberOfTilesWide,
+                numberOfTilesTall,
+                directionalType);
 
             return nodeNetwork;
         }
