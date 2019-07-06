@@ -31,6 +31,10 @@ namespace FlatRedBall.Glue.Controls.AddVariable
 
                 return (string)ListBox.SelectedValue;
             }
+            set
+            {
+                ListBox.SelectedValue = value;
+            }
         }
 
         public CreateNewVariableControl()

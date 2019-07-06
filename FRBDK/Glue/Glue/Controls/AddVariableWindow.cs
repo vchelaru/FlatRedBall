@@ -204,6 +204,8 @@ namespace FlatRedBall.Glue.Controls
             createNewVariableControl1.DataContext = createNewVariableViewModel;
             createNewVariableViewModel.PropertyChanged += HandleCreateNewVariablePropertyChanged;
             FillNewVariableTypes();
+
+            createNewVariableControl1.SelectedType = createNewVariableViewModel.AvailableVariableTypes.FirstOrDefault();
         }
 
         private void HandleCreateNewVariablePropertyChanged(object sender, PropertyChangedEventArgs e)
