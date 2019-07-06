@@ -231,28 +231,36 @@ namespace FlatRedBall
             get { return mLayersReadOnly; }
         }
 
-
+        /// <summary>
+        /// The Minimum camera X (center). This is applied prior to rendering and will override attachment.
+        /// </summary>
         public float MinimumX
         {
             get { return mMinimumX; }
             set { mMinimumX = value; }
         }
         
-
+        /// <summary>
+        /// The Minimum camera Y (center). This is applied prior to rendering and will override attachment.
+        /// </summary>
         public float MinimumY
         {
             get { return mMinimumY; }
             set { mMinimumY = value; }
         }
 
-
+        /// <summary>
+        /// The maximum Camera X (center). This is applied prior to rendering and will override attachment.
+        /// </summary>
         public float MaximumX
         {
             get { return mMaximumX; }
             set { mMaximumX = value; }
         }
 
-
+        /// <summary>
+        /// The maximum Camera Y (center). This is applied prior to rendering and will override attachment.
+        /// </summary>
         public float MaximumY
         {
             get { return mMaximumY; }
