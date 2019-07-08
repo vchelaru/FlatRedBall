@@ -26,8 +26,9 @@ namespace TopDownPlugin
         // 1.3 - Added ability to get direction from velocity
         //     - Added ability to invert direction and mirror direction
         // 1.4 - Added InitializeTopDownInput which takes an IInputDevice
+        // 1.4.1 - Added TopDownDirection.ToString
         public override Version Version => 
-            new Version(1, 4);
+            new Version(1, 4, 1);
 
         MainEntityView control;
         PluginTab pluginTab;

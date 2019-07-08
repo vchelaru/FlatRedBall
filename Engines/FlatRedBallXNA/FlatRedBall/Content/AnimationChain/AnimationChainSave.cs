@@ -92,7 +92,7 @@ namespace FlatRedBall.Content.AnimationChain
         {
             if (!string.IsNullOrEmpty(ParentFile))
             {
-#if !WINDOWS_8 && !UWP && !DESKTOP_GL
+#if !WINDOWS_8 && !UWP && !DESKTOP_GL && !STANDARD
                 FlatRedBall.Graphics.Animation.AnimationChain animationChain =
                     FlatRedBall.Graphics.Animation.AnimationChain.FromGif(
                         ParentFile, contentManagerName);

@@ -5,10 +5,8 @@ using System.Reflection;
 using FlatRedBall.Utilities;
 using System.Globalization;
 using FlatRedBall.IO;
-#if FRB_XNA
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-#endif
 
 namespace FlatRedBall.Instructions.Reflection
 {

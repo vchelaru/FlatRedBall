@@ -2378,7 +2378,6 @@ namespace FlatRedBall.Math.Geometry
         #endregion
 
         #region IMouseOver Implementation
-#if FRB_XNA
         public bool IsMouseOver(Cursor cursor)
         {
             return cursor.IsOn3D(this);
@@ -2388,7 +2387,6 @@ namespace FlatRedBall.Math.Geometry
         {
             return cursor.IsOn3D(this, layer);
         }
-#endif
         #endregion
 
         #region IVisible implementation

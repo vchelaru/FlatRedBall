@@ -230,7 +230,7 @@ namespace FlatRedBall.IO
             {
 #if IOS
 				return "./";
-#elif FRB_RAW || DESKTOP_GL
+#elif FRB_RAW || DESKTOP_GL || STANDARD
                 return System.IO.Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ) + "/";
 
 #else
@@ -246,7 +246,6 @@ namespace FlatRedBall.IO
             get { return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\"; }
         }
 
-#region XML Docs
         /// <summary>
         /// Gets the path to the user specific application data directory.
         /// </summary>
@@ -255,7 +254,6 @@ namespace FlatRedBall.IO
         /// whether the user will have the needed permissions to write to the directory where the 
         /// executable lives.</remarks>
         /// <example>C:\Documents and Settings\&lt;username&gt;\Application Data</example> 
-#endregion
         public static string UserApplicationData
         {
             get { return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\"; }
@@ -1467,7 +1465,7 @@ namespace FlatRedBall.IO
 
             BinaryWriter writer = null;
             bool handled = false;
-#if MONOGAME && !DESKTOP_GL
+#if MONOGAME && !DESKTOP_GL && !STANDARD
 
 
             SaveGarbageIsolatedStorage(garbageBytes, fileName);
@@ -1539,7 +1537,7 @@ namespace FlatRedBall.IO
 
             StreamWriter writer = null;
 
-#if MONOGAME && !DESKTOP_GL
+#if MONOGAME && !DESKTOP_GL && !STANDARD
 
 
             if (!fileName.Contains(IsolatedStoragePrefix))

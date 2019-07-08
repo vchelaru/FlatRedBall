@@ -1846,7 +1846,7 @@ namespace FlatRedBall.Graphics
         #endregion
 
         #region IMouseOver Implementation
-#if FRB_XNA
+
         public bool IsMouseOver(Cursor cursor)
         {
             return cursor.IsOn3D(this);
@@ -1856,7 +1856,7 @@ namespace FlatRedBall.Graphics
         {
             return cursor.IsOn3D(this, layer);
         }
-#endif
+
         #endregion
 
 

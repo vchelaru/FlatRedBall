@@ -8,10 +8,6 @@ using System.Reflection;
 using FlatRedBall.IO;
 using FlatRedBall.Instructions;
 
-#if !MONOGAME
-using Microsoft.Xna.Framework.GamerServices;
-#endif
-
 namespace FlatRedBall.Audio
 {
     #region SoundEffectPlayingBehavior

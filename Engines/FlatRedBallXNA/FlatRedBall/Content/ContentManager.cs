@@ -31,7 +31,7 @@ using Microsoft.Xna.Framework.Audio;
 #endif
 
 
-#if !MONODROID && !MONOGAME
+#if !MONOGAME
 using Image = System.Drawing.Image;
 using FlatRedBall.IO.Gif;
 using FlatRedBall.IO; // For Image
@@ -659,7 +659,7 @@ namespace FlatRedBall.Content
 
 					if (assetName.EndsWith("gif"))
 					{
-#if WINDOWS_8 || UWP || DESKTOP_GL
+#if WINDOWS_8 || UWP || DESKTOP_GL || STANDARD
                         throw new NotImplementedException();
 #else
 						AnimationChainList acl = new AnimationChainList();
