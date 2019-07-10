@@ -177,20 +177,25 @@ namespace OfficialPlugins.CollisionPlugin.Managers
 
             var container = collisionRelationship.GetContainer();
 
-            var firstObject = container.GetNamedObject(firstName);
-
-            isList = firstObject?.IsList == true;
-
             string firstType = null;
-            if(firstObject != null)
+            isList = false;
+
+            if(container != null)
             {
-                if(firstObject.IsList)
+                var firstObject = container.GetNamedObject(firstName);
+
+                isList = firstObject?.IsList == true;
+
+                if(firstObject != null)
                 {
-                    firstType = firstObject.SourceClassGenericType?.Replace("\\", ".");
-                }
-                else
-                {
-                    firstType = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(firstObject);
+                    if(firstObject.IsList)
+                    {
+                        firstType = firstObject.SourceClassGenericType?.Replace("\\", ".");
+                    }
+                    else
+                    {
+                        firstType = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(firstObject);
+                    }
                 }
             }
 
@@ -204,23 +209,27 @@ namespace OfficialPlugins.CollisionPlugin.Managers
 
             var container = collisionRelationship.GetContainer();
 
-            var secondObject = container.GetNamedObject(secondName);
-
-            isList = secondObject?.IsList == true;
-
             string secondType = null;
-            if(secondObject != null)
+            isList = false;
+
+            if(container != null)
             {
-                if(secondObject.IsList)
+                var secondObject = container.GetNamedObject(secondName);
+
+                isList = secondObject?.IsList == true;
+
+                if(secondObject != null)
                 {
-                    secondType = secondObject.SourceClassGenericType?.Replace("\\", ".");
-                }
-                else
-                {
-                    secondType = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(secondObject);
+                    if(secondObject.IsList)
+                    {
+                        secondType = secondObject.SourceClassGenericType?.Replace("\\", ".");
+                    }
+                    else
+                    {
+                        secondType = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(secondObject);
+                    }
                 }
             }
-
 
             return secondType;
         }

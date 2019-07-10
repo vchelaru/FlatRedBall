@@ -109,6 +109,24 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        public static void SetValuePersistIfDefault(this List<PropertySave> propertySaveList, string nameToSearchFor, object value)
+        {
+            var existingProperty = propertySaveList.FirstOrDefault(item => item.Name == nameToSearchFor);
+            if (existingProperty != null)
+            {
+
+                existingProperty.Value = value;
+            }
+            else
+            {
+                // If we got here then that means there isn't already something in place for this
+                PropertySave newPropertySave = new PropertySave();
+                newPropertySave.Name = nameToSearchFor;
+                newPropertySave.Value = value;
+                propertySaveList.Add(newPropertySave);
+            }
+        }
+
         static bool IsValueDefault(object value)
         {
             if(value is bool)

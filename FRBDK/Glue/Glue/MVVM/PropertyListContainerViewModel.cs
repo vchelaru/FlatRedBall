@@ -198,7 +198,8 @@ namespace FlatRedBall.Glue.MVVM
                 }
                 else
                 {
-                    GlueObject.Properties.SetValue(modelName, propertyValue);
+                    // The default for the type may not match the default value on the view model, so force-set the underlying by calling PersistIfDefault
+                    GlueObject.Properties.SetValuePersistIfDefault(modelName, propertyValue);
                 }
                 //},
                 NotifyPropertyChanged(modelName);

@@ -926,6 +926,17 @@ namespace FlatRedBall.Math.Collision
 
         public override bool DoCollisions()
         {
+#if DEBUG
+            if(firstList == null)
+            {
+                throw new NullReferenceException("The first list is null. This needs to be set");
+            }
+            if(secondList == null)
+            {
+                throw new NullReferenceException("The second list is null. This needs to be set");
+            }
+#endif
+
             bool collisionOccurred = false;
             if (skippedFrames < FrameSkip)
             {
