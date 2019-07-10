@@ -303,10 +303,37 @@ namespace FlatRedBall.TileEntities
                         propertyType = TryGetPropertyType(entityType, propertyName);
                     }
 
-                    valueToSet = SetValueAccordingToType(valueToSet, propertyName, propertyType, entityType);
+                    valueToSet = ConvertValueAccordingToType(valueToSet, propertyName, propertyType, entityType);
                     try
                     {
-                        lateBinder.SetValue(entity, propertyName, valueToSet);
+                        switch(propertyName)
+                        {
+                            case "X":
+                                if(valueToSet is float)
+                                {
+                                    entity.X += (float)valueToSet;
+                                }
+                                else if(valueToSet is int)
+                                {
+                                    entity.X += (int)valueToSet;
+                                }
+                                break;
+                            case "Y":
+                                if (valueToSet is float)
+                                {
+                                    entity.Y += (float)valueToSet;
+                                }
+                                else if (valueToSet is int)
+                                {
+                                    entity.Y += (int)valueToSet;
+                                }
+                                break;
+                            default:
+                                lateBinder.SetValue(entity, propertyName, valueToSet);
+                                break;
+                        }
+
+
                     }
                     catch (InvalidCastException e)
                     {
@@ -386,7 +413,7 @@ namespace FlatRedBall.TileEntities
         }
 
 
-        private static object SetValueAccordingToType(object valueToSet, string valueName, string valueType, Type entityType)
+        private static object ConvertValueAccordingToType(object valueToSet, string valueName, string valueType, Type entityType)
         {
             if (valueType == "bool")
             {

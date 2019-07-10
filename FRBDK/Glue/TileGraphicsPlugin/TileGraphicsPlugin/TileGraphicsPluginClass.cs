@@ -166,7 +166,9 @@ namespace TileGraphicsPlugin
             // - Added support for creating TileNodeNetworks by type
             // 2.2.2
             // - Removed exception occurring when a tile has a type, but no matching entity exists
-            get { return new Version(2, 2, 2, 0); }
+            // 2.3.0
+            // - X and Y now apply offsets to created entities, allowing entities to be centered around different points on a tile
+            get { return new Version(2, 3, 0, 0); }
         }
 
 
