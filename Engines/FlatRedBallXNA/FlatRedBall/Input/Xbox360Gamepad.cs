@@ -578,10 +578,6 @@ namespace FlatRedBall.Input
         /// <returns>true if the button is pressed, otherwise false</returns>
         public bool ButtonPushed(Button button)
         {
-#if SILVERLIGHT
-            return false;
-#else
-
             if (InputManager.mIgnorePushesThisFrame || mButtonsIgnoredForThisFrame[(int)button] || InputManager.CurrentFrameInputSuspended)
                 return false;
 
@@ -698,7 +694,6 @@ namespace FlatRedBall.Input
             }
 
             return returnValue;
-#endif
         }
 
 
