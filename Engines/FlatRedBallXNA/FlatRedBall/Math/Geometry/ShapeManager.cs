@@ -1594,12 +1594,10 @@ namespace FlatRedBall.Math.Geometry
             polygonToRemove.RemoveSelfFromListsBelongingTo();
         }
 
-        #region XML Docs
         /// <summary>
         /// Removes the argument Line from the ShapeManager and any 2-way PositionedObjectLists it belongs to.
         /// </summary>
         /// <param name="lineToRemove">The Line to remove.  Should not be null.</param>
-        #endregion
         static public void Remove(Line lineToRemove)
         {
 #if DEBUG
@@ -1617,12 +1615,10 @@ namespace FlatRedBall.Math.Geometry
             circleToRemove.Visible = false;
         }
 
-        #region XML Docs
         /// <summary>
         /// Removes the argument Polygon from the ShapeManager.
         /// </summary>
         /// <param name="polygonToRemove">The Polygon to remove.  Should not be null.</param>
-        #endregion
         static public void RemoveOneWay(Polygon polygonToRemove)
         {
 #if DEBUG
@@ -1632,12 +1628,10 @@ namespace FlatRedBall.Math.Geometry
             polygonToRemove.Visible = false;
         }
 
-        #region XML Docs
         /// <summary>
         /// Removes the argument AxisAlignedRectangle from the ShapeManager.
         /// </summary>
         /// <param name="axisAlignedRectangleToRemove">The AxisAlignedRectangle to remove.  Cannot be null.</param>
-        #endregion
         static public void RemoveOneWay(AxisAlignedRectangle axisAlignedRectangleToRemove)
         {
 #if DEBUG
@@ -1646,6 +1640,16 @@ namespace FlatRedBall.Math.Geometry
             mAutomaticallyUpdated.Remove(axisAlignedRectangleToRemove);
             axisAlignedRectangleToRemove.Visible = false;
         }
+
+        public static void RemoveOneWay(Line lineToRemove)
+        {
+#if DEBUG
+            ThrowExceptionIfNotPrimaryThread();
+#endif
+            mAutomaticallyUpdated.Remove(lineToRemove);
+            lineToRemove.Visible = false;
+        }
+
 
         #region XML Docs
         /// <summary>
