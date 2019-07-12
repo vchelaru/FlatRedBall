@@ -352,13 +352,15 @@ namespace FlatRedBall.Math.Geometry
                 rectangle.Position.X + rectangle.ScaleX,
                 rectangle.Position.Y - rectangle.ScaleY);
 
+            Point tempPoint;
             // Test if any of the edges intersect the segment
             // (this will short-circuit on the first true test)
-            if (a.Intersects(new Segment(tl, tr), out mLastCollisionPoint) ||
-                a.Intersects(new Segment(tl, bl), out mLastCollisionPoint) ||
-                a.Intersects(new Segment(bl, br), out mLastCollisionPoint) ||
-                a.Intersects(new Segment(tr, br), out mLastCollisionPoint))
+            if (a.Intersects(new Segment(tl, tr), out tempPoint) ||
+                a.Intersects(new Segment(tl, bl), out tempPoint) ||
+                a.Intersects(new Segment(bl, br), out tempPoint) ||
+                a.Intersects(new Segment(tr, br), out tempPoint))
             {
+                mLastCollisionPoint = tempPoint;
                 return true;
             }
 

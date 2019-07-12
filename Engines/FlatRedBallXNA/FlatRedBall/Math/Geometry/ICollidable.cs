@@ -76,6 +76,21 @@ namespace FlatRedBall.Math.Geometry
             return thisInstance.Collision.CollideAgainstBounce(other, thisMass, otherMass, elasticity);
         }
 
+        public static bool CollideAgainst(this ICollidable thisInstance, Line other)
+        {
+            return thisInstance.Collision.CollideAgainst(other);
+        }
+
+        public static bool CollideAgainstMove(this ICollidable thisInstance, Line other, float thisMass, float otherMass)
+        {
+            return thisInstance.Collision.CollideAgainstMove(other, thisMass, otherMass);
+        }
+
+        public static bool CollideAgainstBounce(this ICollidable thisInstance, Line other, float thisMass, float otherMass, float elasticity)
+        {
+            return thisInstance.Collision.CollideAgainstBounce(other, thisMass, otherMass, elasticity);
+        }
+
         public static bool CollideAgainst(this ICollidable thisInstance, ShapeCollection other)
         {
             return thisInstance.Collision.CollideAgainst(other);

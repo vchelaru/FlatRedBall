@@ -19,6 +19,7 @@ namespace FlatRedBall.Math.Collision
         public Func<FirstCollidableT, Circle> firstSubCollisionCircle;
         public Func<FirstCollidableT, AxisAlignedRectangle> firstSubCollisionRectangle;
         public Func<FirstCollidableT, Polygon> firstSubCollisionPolygon;
+        public Func<FirstCollidableT, Line> firstSubCollisionLine;
         public Func<FirstCollidableT, ICollidable> firstSubCollisionCollidable;
 
         public CollidableVsTileShapeCollectionData(TileShapeCollection tileShapeCollection)
@@ -46,6 +47,11 @@ namespace FlatRedBall.Math.Collision
             {
                 var polygon = firstSubCollisionPolygon(singleObject);
                 return this.tileShapeCollection.CollideAgainst(polygon);
+            }
+            else if (firstSubCollisionLine != null)
+            {
+                var line = firstSubCollisionLine(singleObject);
+                return this.tileShapeCollection.CollideAgainst(line);
             }
             else if (firstSubCollisionCollidable != null)
             {
@@ -75,6 +81,11 @@ namespace FlatRedBall.Math.Collision
                 var polygon = firstSubCollisionPolygon(singleObject);
                 return this.tileShapeCollection.CollideAgainstSolid(polygon);
             }
+            else if (firstSubCollisionLine != null)
+            {
+                var line = firstSubCollisionLine(singleObject);
+                return this.tileShapeCollection.CollideAgainstSolid(line);
+            }
             else if (firstSubCollisionCollidable != null)
             {
                 var collidable = firstSubCollisionCollidable(singleObject);
@@ -103,6 +114,12 @@ namespace FlatRedBall.Math.Collision
                 var polygon = firstSubCollisionPolygon(singleObject);
                 return this.tileShapeCollection.CollideAgainstBounce(polygon, bounceElasticity);
             }
+            else if (firstSubCollisionLine != null)
+            {
+                //var line = firstSubCollisionLine(singleObject);
+                //return this.tileShapeCollection.CollideAgainstBounce(line, bounceElasticity);
+                return false; // not implemented
+            }
             else if (firstSubCollisionCollidable != null)
             {
                 var collidable = firstSubCollisionCollidable(singleObject);
@@ -124,6 +141,7 @@ namespace FlatRedBall.Math.Collision
         public void SetFirstSubCollision(Func<FirstCollidableT, Circle> subCollisionFunc) { data.firstSubCollisionCircle = subCollisionFunc; }
         public void SetFirstSubCollision(Func<FirstCollidableT, AxisAlignedRectangle> subCollisionFunc) { data.firstSubCollisionRectangle = subCollisionFunc; }
         public void SetFirstSubCollision(Func<FirstCollidableT, Polygon> subCollisionFunc) { data.firstSubCollisionPolygon = subCollisionFunc; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, Line> subCollisionFunc) { data.firstSubCollisionLine = subCollisionFunc; }
         public void SetFirstSubCollision(Func<FirstCollidableT, ICollidable> subCollisionFunc) { data.firstSubCollisionCollidable = subCollisionFunc; }
 
         public Action<FirstCollidableT, TileShapeCollection> CollisionOccurred;

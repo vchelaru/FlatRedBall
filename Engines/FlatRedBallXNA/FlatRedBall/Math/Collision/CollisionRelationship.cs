@@ -112,11 +112,13 @@ namespace FlatRedBall.Math.Collision
         protected Func<FirstCollidableT, Circle> firstSubCollisionCircle;
         protected Func<FirstCollidableT, AxisAlignedRectangle> firstSubCollisionRectangle;
         protected Func<FirstCollidableT, Polygon> firstSubCollisionPolygon;
+        protected Func<FirstCollidableT, Line> firstSubCollisionLine;
         protected Func<FirstCollidableT, ICollidable> firstSubCollisionCollidable;
 
         protected Func<SecondCollidableT, Circle> secondSubCollisionCircle;
         protected Func<SecondCollidableT, AxisAlignedRectangle> secondSubCollisionRectangle;
         protected Func<SecondCollidableT, Polygon> secondSubCollisionPolygon;
+        protected Func<SecondCollidableT, Line> secondSubCollisionLine;
         protected Func<SecondCollidableT, ICollidable> secondSubCollisionCollidable;
 
 
@@ -129,11 +131,15 @@ namespace FlatRedBall.Math.Collision
         public void SetFirstSubCollision(Func<FirstCollidableT, Circle> subCollisionFunc) { firstSubCollisionCircle = subCollisionFunc; }
         public void SetFirstSubCollision(Func<FirstCollidableT, AxisAlignedRectangle> subCollisionFunc) { firstSubCollisionRectangle = subCollisionFunc; }
         public void SetFirstSubCollision(Func<FirstCollidableT, Polygon> subCollisionFunc) { firstSubCollisionPolygon = subCollisionFunc; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, Line> subCollisionFunc) { firstSubCollisionLine = subCollisionFunc; }
         public void SetFirstSubCollision(Func<FirstCollidableT, ICollidable> subCollisionFunc) { firstSubCollisionCollidable = subCollisionFunc; }
 
         public void SetSecondSubCollision(Func<SecondCollidableT, Circle> subCollisionFunc) { secondSubCollisionCircle = subCollisionFunc; }
         public void SetSecondSubCollision(Func<SecondCollidableT, AxisAlignedRectangle> subCollisionFunc) { secondSubCollisionRectangle = subCollisionFunc; }
         public void SetSecondSubCollision(Func<SecondCollidableT, Polygon> subCollisionFunc) { secondSubCollisionPolygon = subCollisionFunc; }
+        // todo - I added line for the first because it was needed in the June 2019 monthly. One day I may add the 2nd here, but for now
+        // I'm going to just add the first
+        //public void SetSecondSubCollision(Func<SecondCollidableT, Line> subCollisionLine) { secondSubCollisionLine = subCollisionFunc; }
         public void SetSecondSubCollision(Func<SecondCollidableT, ICollidable> subCollisionFunc) { secondSubCollisionCollidable = subCollisionFunc; }
 
         #endregion
@@ -233,6 +239,30 @@ namespace FlatRedBall.Math.Collision
                 else
                 {
                     return second.CollideAgainst(firstSubCollisionPolygon(first));
+                }
+            }
+            else if(firstSubCollisionLine != null)
+            {
+                if (secondSubCollisionCircle != null)
+                {
+                    return firstSubCollisionLine(first).CollideAgainst(secondSubCollisionCircle(second));
+                }
+                else if (secondSubCollisionRectangle != null)
+                {
+                    return firstSubCollisionLine(first).CollideAgainst(secondSubCollisionRectangle(second));
+                }
+                else if (secondSubCollisionPolygon != null)
+                {
+                    return firstSubCollisionLine(first).CollideAgainst(secondSubCollisionPolygon(second));
+                }
+                else if (secondSubCollisionCollidable != null)
+                {
+                    // invert it since ICollidable has to be the one calling it
+                    return secondSubCollisionCollidable(second).CollideAgainst(firstSubCollisionLine(first));
+                }
+                else
+                {
+                    return second.CollideAgainst(firstSubCollisionLine(first));
                 }
             }
             else if (firstSubCollisionCollidable != null)
@@ -360,6 +390,30 @@ namespace FlatRedBall.Math.Collision
                     return second.CollideAgainstMove(firstSubCollisionPolygon(first), moveSecondMass, moveFirstMass);
                 }
             }
+            else if (firstSubCollisionLine != null)
+            {
+                if (secondSubCollisionCircle != null)
+                {
+                    return firstSubCollisionLine(first).CollideAgainstMove(secondSubCollisionCircle(second), moveFirstMass, moveSecondMass);
+                }
+                else if (secondSubCollisionRectangle != null)
+                {
+                    return firstSubCollisionLine(first).CollideAgainstMove(secondSubCollisionRectangle(second), moveFirstMass, moveSecondMass);
+                }
+                else if (secondSubCollisionPolygon != null)
+                {
+                    return firstSubCollisionLine(first).CollideAgainstMove(secondSubCollisionPolygon(second), moveFirstMass, moveSecondMass);
+                }
+                else if (secondSubCollisionCollidable != null)
+                {
+                    // invert it since ICollidable has to be the one calling it
+                    return secondSubCollisionCollidable(second).CollideAgainstMove(firstSubCollisionLine(first), moveSecondMass, moveFirstMass);
+                }
+                else
+                {
+                    return second.CollideAgainstMove(firstSubCollisionLine(first), moveSecondMass, moveFirstMass);
+                }
+            }
             else if (firstSubCollisionCollidable != null)
             {
                 if (secondSubCollisionCircle != null)
@@ -483,6 +537,30 @@ namespace FlatRedBall.Math.Collision
                 else
                 {
                     return second.CollideAgainstBounce(firstSubCollisionPolygon(first), moveSecondMass, moveFirstMass, bounceElasticity);
+                }
+            }
+            else if (firstSubCollisionLine != null)
+            {
+                if (secondSubCollisionCircle != null)
+                {
+                    return firstSubCollisionLine(first).CollideAgainstBounce(secondSubCollisionCircle(second), moveFirstMass, moveSecondMass, bounceElasticity);
+                }
+                else if (secondSubCollisionRectangle != null)
+                {
+                    return firstSubCollisionLine(first).CollideAgainstBounce(secondSubCollisionRectangle(second), moveFirstMass, moveSecondMass, bounceElasticity);
+                }
+                else if (secondSubCollisionPolygon != null)
+                {
+                    return firstSubCollisionLine(first).CollideAgainstBounce(secondSubCollisionPolygon(second), moveFirstMass, moveSecondMass, bounceElasticity);
+                }
+                else if (secondSubCollisionCollidable != null)
+                {
+                    // invert it since ICollidable has to be the one calling it
+                    return secondSubCollisionCollidable(second).CollideAgainstBounce(firstSubCollisionLine(first), moveSecondMass, moveFirstMass, bounceElasticity);
+                }
+                else
+                {
+                    return second.CollideAgainstBounce(firstSubCollisionLine(first), moveSecondMass, moveFirstMass, bounceElasticity);
                 }
             }
             else if (firstSubCollisionCollidable != null)
