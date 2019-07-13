@@ -14,7 +14,7 @@ namespace FlatRedBall.Math.Collision
         where FirstCollidableT : PositionedObject, ICollidable
     {
         TileShapeCollection tileShapeCollection;
-        public TileShapeCollection TileShapeCollection {  get { return tileShapeCollection; } }
+        public TileShapeCollection TileShapeCollection { get { return tileShapeCollection; } }
 
         public Func<FirstCollidableT, Circle> firstSubCollisionCircle;
         public Func<FirstCollidableT, AxisAlignedRectangle> firstSubCollisionRectangle;
@@ -31,7 +31,7 @@ namespace FlatRedBall.Math.Collision
             this.tileShapeCollection = tileShapeCollection;
         }
 
-        public bool CollideAgainstConsiderSubCollisionEventOnly(FirstCollidableT singleObject)
+        public bool CollideAgainstConsiderSubCollisionEventOnly(FirstCollidableT singleObject, CollisionLimit collisionLimit)
         {
             if (firstSubCollisionCircle != null)
             {
@@ -51,7 +51,14 @@ namespace FlatRedBall.Math.Collision
             else if (firstSubCollisionLine != null)
             {
                 var line = firstSubCollisionLine(singleObject);
-                return this.tileShapeCollection.CollideAgainst(line);
+                if (collisionLimit == CollisionLimit.Closest)
+                {
+                    return DoFirstCollisionLineVsShapeCollection(line, tileShapeCollection);
+                }
+                else
+                {
+                    return this.tileShapeCollection.CollideAgainst(line);
+                }
             }
             else if (firstSubCollisionCollidable != null)
             {
@@ -130,6 +137,233 @@ namespace FlatRedBall.Math.Collision
                 return this.tileShapeCollection.CollideAgainstBounce(singleObject, bounceElasticity);
             }
         }
+
+        private bool DoFirstCollisionLineVsShapeCollection(Line line, TileShapeCollection tileShapeCollection)
+        {
+            line.LastCollisionPoint = new Point(double.NaN, double.NaN);
+
+            Segment a = line.AsSegment();
+
+            if (tileShapeCollection.SortAxis == Axis.X)
+            {
+                var leftmost = (float)System.Math.Min(line.AbsolutePoint1.X, line.AbsolutePoint2.X);
+                var rightmost = (float)System.Math.Max(line.AbsolutePoint1.X, line.AbsolutePoint2.X);
+
+                float clampedPosition = line.Position.X;
+
+                bool isPositionOnEnd = false;
+                if (clampedPosition <= leftmost)
+                {
+                    clampedPosition = leftmost;
+                    isPositionOnEnd = true;
+                }
+                else if (clampedPosition >= rightmost)
+                {
+                    clampedPosition = rightmost;
+                    isPositionOnEnd = true;
+                }
+
+                // only support rectangles for now (maybe forever)
+                var rectangles = tileShapeCollection.Rectangles;
+
+                var firstIndex = rectangles.GetFirstAfter(leftmost - tileShapeCollection.GridSize, Axis.X, 0, rectangles.Count);
+                var lastIndex = rectangles.GetFirstAfter(rightmost + tileShapeCollection.GridSize, Axis.X, firstIndex, rectangles.Count);
+
+                if (isPositionOnEnd)
+                {
+                    FlatRedBall.Math.Geometry.AxisAlignedRectangle collidedRectangle = null;
+                    Point? intersectionPoint = null;
+                    if (clampedPosition < rightmost)
+                    {
+
+                        // start at the beginning of the list, go up
+                        for (int i = firstIndex; i < lastIndex; i++)
+                        {
+                            var rectangle = tileShapeCollection.Rectangles[i];
+
+                            if (collidedRectangle != null)
+                            {
+                                if (rectangle.X > collidedRectangle.X)
+                                {
+                                    break;
+                                }
+
+                                if (rectangle.Y > collidedRectangle.Y && collidedRectangle.Y > line.Position.Y)
+                                {
+                                    break;
+                                }
+                                if (rectangle.Y < collidedRectangle.Y && collidedRectangle.Y < line.Position.Y)
+                                {
+                                    break;
+                                }
+                            }
+
+
+                            Point tl = new Point(
+                                rectangle.Position.X - rectangle.ScaleX,
+                                rectangle.Position.Y + rectangle.ScaleY);
+                            Point tr = new Point(
+                                rectangle.Position.X + rectangle.ScaleX,
+                                rectangle.Position.Y + rectangle.ScaleY);
+                            Point bl = new Point(
+                                rectangle.Position.X - rectangle.ScaleX,
+                                rectangle.Position.Y - rectangle.ScaleY);
+                            Point br = new Point(
+                                rectangle.Position.X + rectangle.ScaleX,
+                                rectangle.Position.Y - rectangle.ScaleY);
+
+                            Point tempPoint;
+
+                            // left gets priority
+                            // left
+                            var intersects = a.Intersects(new Segment(tl, bl), out tempPoint);
+
+                            if (rectangle.Y > line.Y)
+                            {
+                                // bottom gets priority over top
+                                if (!intersects)
+                                {
+                                    // bottom
+                                    intersects = a.Intersects(new Segment(bl, br), out tempPoint);
+                                }
+                                if (!intersects)
+                                {
+                                    // top
+                                    intersects = a.Intersects(new Segment(tl, tr), out tempPoint);
+                                }
+                            }
+                            else
+                            {
+                                // top gets priority over top
+                                if (!intersects)
+                                {
+                                    // top
+                                    intersects = a.Intersects(new Segment(tl, tr), out tempPoint);
+                                }
+                                if (!intersects)
+                                {
+                                    // bottom
+                                    intersects = a.Intersects(new Segment(bl, br), out tempPoint);
+                                }
+                            }
+                            if (!intersects)
+                            {
+                                // right
+                                intersects = a.Intersects(new Segment(tr, br), out tempPoint);
+                            }
+
+                            if (intersects)
+                            {
+                                intersectionPoint = tempPoint;
+                                collidedRectangle = rectangle;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // start at the end of the list, go down
+                        for (int i = lastIndex - 1; i >= firstIndex; i--)
+                        {
+                            var rectangle = tileShapeCollection.Rectangles[i];
+
+                            if (collidedRectangle != null)
+                            {
+                                if (rectangle.X < collidedRectangle.X)
+                                {
+                                    break;
+                                }
+
+                                if (rectangle.Y > collidedRectangle.Y && collidedRectangle.Y > line.Position.Y)
+                                {
+                                    break;
+                                }
+                                if (rectangle.Y < collidedRectangle.Y && collidedRectangle.Y < line.Position.Y)
+                                {
+                                    break;
+                                }
+                            }
+
+
+
+                            Point tl = new Point(
+                                rectangle.Position.X - rectangle.ScaleX,
+                                rectangle.Position.Y + rectangle.ScaleY);
+                            Point tr = new Point(
+                                rectangle.Position.X + rectangle.ScaleX,
+                                rectangle.Position.Y + rectangle.ScaleY);
+                            Point bl = new Point(
+                                rectangle.Position.X - rectangle.ScaleX,
+                                rectangle.Position.Y - rectangle.ScaleY);
+                            Point br = new Point(
+                                rectangle.Position.X + rectangle.ScaleX,
+                                rectangle.Position.Y - rectangle.ScaleY);
+
+                            Point tempPoint;
+
+                            // right gets priority
+                            // right
+                            var intersects = a.Intersects(new Segment(tr, br), out tempPoint);
+
+                            if (rectangle.Y > line.Y)
+                            {
+                                // bottom gets priority over top
+                                if (!intersects)
+                                {
+                                    // bottom
+                                    intersects = a.Intersects(new Segment(bl, br), out tempPoint);
+                                }
+                                if (!intersects)
+                                {
+                                    // top
+                                    intersects = a.Intersects(new Segment(tl, tr), out tempPoint);
+                                }
+                            }
+                            else
+                            {
+                                // top gets priority over top
+                                if (!intersects)
+                                {
+                                    // top
+                                    intersects = a.Intersects(new Segment(tl, tr), out tempPoint);
+                                }
+                                if (!intersects)
+                                {
+                                    // bottom
+                                    intersects = a.Intersects(new Segment(bl, br), out tempPoint);
+                                }
+                            }
+                            if (!intersects)
+                            {
+                                // left
+                                intersects = a.Intersects(new Segment(tl, bl), out tempPoint);
+                            }
+
+                            if (intersects)
+                            {
+                                intersectionPoint = tempPoint;
+                                collidedRectangle = rectangle;
+                            }
+                        }
+                    }
+
+                    if (collidedRectangle != null)
+                    {
+                        line.LastCollisionPoint = intersectionPoint ?? new Point(double.NaN, double.NaN);
+
+                    }
+                    return collidedRectangle != null;
+                }
+                else
+                {
+                    throw new NotImplementedException("Complain to Vic about this!");
+                }
+            }
+            else if (tileShapeCollection.SortAxis == Axis.Y)
+            {
+                throw new NotImplementedException("Bug Vic to do Y. Currently just X is done");
+            }
+            return false;
+        }
     }
 
 
@@ -181,7 +415,7 @@ namespace FlatRedBall.Math.Collision
                     // todo - tile shape collections need to report their deep collision, they don't currently:
                     if (CollisionType == CollisionType.EventOnlyCollision)
                     {
-                        didCollide = data.CollideAgainstConsiderSubCollisionEventOnly(singleObject);
+                        didCollide = data.CollideAgainstConsiderSubCollisionEventOnly(singleObject, CollisionLimit);
                     }
                     else if (CollisionType == CollisionType.MoveCollision)
                     {
@@ -196,7 +430,7 @@ namespace FlatRedBall.Math.Collision
                         throw new NotImplementedException();
                     }
 
-                    if(didCollide)
+                    if (didCollide)
                     {
                         CollisionOccurred?.Invoke(singleObject, data.TileShapeCollection);
 

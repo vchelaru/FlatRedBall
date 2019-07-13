@@ -168,7 +168,9 @@ namespace TileGraphicsPlugin
             // - Removed exception occurring when a tile has a type, but no matching entity exists
             // 2.3.0
             // - X and Y now apply offsets to created entities, allowing entities to be centered around different points on a tile
-            get { return new Version(2, 3, 0, 0); }
+            // 2.4.0
+            // - Added line vs TileShapeCollection relationships, including support for closest collision for (really efficient) ray casting
+            get { return new Version(2, 4, 0, 0); }
         }
 
 

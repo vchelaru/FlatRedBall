@@ -115,6 +115,7 @@ namespace FlatRedBall.Math.Geometry
         public Point LastCollisionPoint
         {
             get { return mLastCollisionPoint; }
+            set { mLastCollisionPoint = value; }
         }
 
         #region Visibility Properties
