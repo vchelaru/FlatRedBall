@@ -94,6 +94,7 @@ namespace OfficialPlugins.CollisionPlugin
                         $"{firstCollidable}, {secondCollidable});");
 
                 }
+                codeBlock.Line($"{instanceName}.Name = \"{instanceName}\";");
                 switch(collisionType)
                 {
                     case CollisionType.NoPhysics:

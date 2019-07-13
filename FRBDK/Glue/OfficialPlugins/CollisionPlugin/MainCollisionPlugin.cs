@@ -32,7 +32,11 @@ namespace OfficialPlugins.CollisionPlugin
 
         public override string FriendlyName => "Collision Plugin";
 
-        public override Version Version => new Version(1, 0);
+        // 1.0
+        //  - Initial release
+        // 1.1
+        //  - CollisionRelationships now have their Name set
+        public override Version Version => new Version(1, 1);
 
         #endregion
 
