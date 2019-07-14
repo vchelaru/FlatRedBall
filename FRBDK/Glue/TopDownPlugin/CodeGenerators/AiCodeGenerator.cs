@@ -54,6 +54,11 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
             get; set;
         }} = true;
 
+        public bool IsActive
+        {{
+            get; set;
+        }} = true;
+
         public event Action<T> TargetReached;
 
         #region Internal Classes
@@ -116,7 +121,7 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
         {{
             values2DInput.X = 0;
             values2DInput.Y = 0;
-            if(Target != null && Owner?.CurrentMovement != null)
+            if(Target != null && Owner?.CurrentMovement != null && IsActive)
             {{
                 var targetX = Target.Value.X;
                 var targetY = Target.Value.Y;

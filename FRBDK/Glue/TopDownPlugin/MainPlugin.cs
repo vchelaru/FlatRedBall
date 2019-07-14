@@ -27,6 +27,7 @@ namespace TopDownPlugin
         //     - Added ability to invert direction and mirror direction
         // 1.4 - Added InitializeTopDownInput which takes an IInputDevice
         // 1.4.1 - Added TopDownDirection.ToString
+        // 1.5 - Added TopDownAiInput.IsActive which can disabled AI input if set to false
         public override Version Version => 
             new Version(1, 4, 1);
 
