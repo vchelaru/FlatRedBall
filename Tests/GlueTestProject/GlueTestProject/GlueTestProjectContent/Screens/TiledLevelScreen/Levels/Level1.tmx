@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="32" height="21" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#4688ba" nextobjectid="13">
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="32" height="21" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#4688ba" nextlayerid="5" nextobjectid="13">
  <tileset firstgid="1" name="PlatformerTiles" tilewidth="16" tileheight="16" tilecount="512" columns="32">
   <image source="../Tilesets/PlatformerTiles.png" width="512" height="256"/>
   <tile id="0">
@@ -31,17 +31,17 @@
    </properties>
   </tile>
  </tileset>
- <layer name="BackgroundLayer1" width="32" height="21">
+ <layer id="1" name="BackgroundLayer1" width="32" height="21">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAC+3Q2wmDQBBAUZuIppD4KEQTC/HVhjEaG4naiMZyvPnza8mCy4LMhfOzAzOwjiNJkiRJx3SBCw9XC/d9BAgRWbif4I4H0t17jScavAzez1GgRGXoxk0xa9Hhjf6PXb9/0f2TWDH7YMCISWOnTpliNmPBF6uh+2dpAy0h/NOACgAA
   </data>
  </layer>
- <layer name="GameplayLayer" width="32" height="21">
+ <layer id="2" name="GameplayLayer" width="32" height="21">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAC+2TUQqDMBBEJ0KxB7F+eAuh/56i98hfe5P2mJ01qQ0lbtMgEUoWHkbBnUxmMwEYAIvCdScPMu2kfyW3HfWr/+q/+k/XNwY48XkkPdy69e859av/kRwijJln9y/5Mwv7ykG4kM59V2sr/7m5lJ5/OacuoHT+vD44U+eTUvrUEK82wqwvMxPS4j1HKfO0VsZhNf3GnQU0pIdk6Od7ydHvT+5AmO98D3rve/iin4L0WMswwrLvZkN9pYfaU/v3CXt1TteACgAA
   </data>
  </layer>
- <objectgroup name="EntityObjectLayer">
+ <objectgroup id="3" name="EntityObjectLayer">
   <object id="1" name="InObjectLayer1" gid="257" x="272" y="64" width="16" height="16">
    <properties>
     <property name="EntityToCreate" value="CreatedByTiled"/>
@@ -55,7 +55,7 @@
     <property name="EntityToCreate" value="CollidableShapesFromTmx"/>
    </properties>
   </object>
-  <object id="7" name="RectType" type="EntityToCreate" x="179" y="2" width="40" height="42"/>
+  <object id="7" name="RectType" x="179" y="2" width="40" height="42"/>
   <object id="8" name="CircleEntityToCreate" x="135" y="50" width="37" height="37">
    <properties>
     <property name="EntityToCreate" value="CollidableShapesFromTmx"/>
@@ -80,7 +80,7 @@
    </properties>
   </object>
  </objectgroup>
- <layer name="ForegroundLayer" width="32" height="21">
+ <layer id="4" name="ForegroundLayer" width="32" height="21">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAC2NgGAWjYBSMglEwCkYBvYAyEKsMtCNGwSgYYAAAQyFEJYAKAAA=
   </data>

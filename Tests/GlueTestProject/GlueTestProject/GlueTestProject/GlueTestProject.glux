@@ -8001,6 +8001,64 @@
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
+        <NamedObjectSave>
+          <Properties>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
+            </PropertySave>
+          </Properties>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile />
+          <SourceName />
+          <SourceClassType>ShapeCollection</SourceClassType>
+          <InstanceName>InternalShapeCollection</InstanceName>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <ContainedObjects>
+            <NamedObjectSave>
+              <CustomProperty>
+                <Member>Points</Member>
+                <ValueAsListOfVector2>
+                  <Vector2>
+                    <X>-16</X>
+                    <Y>16</Y>
+                  </Vector2>
+                  <Vector2>
+                    <X>16</X>
+                    <Y>16</Y>
+                  </Vector2>
+                  <Vector2>
+                    <X>16</X>
+                    <Y>-16</Y>
+                  </Vector2>
+                  <Vector2>
+                    <X>-16</X>
+                    <Y>-16</Y>
+                  </Vector2>
+                  <Vector2>
+                    <X>-16</X>
+                    <Y>16</Y>
+                  </Vector2>
+                </ValueAsListOfVector2>
+              </CustomProperty>
+              <Properties>
+                <PropertySave>
+                  <Name>SourceType</Name>
+                  <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
+                </PropertySave>
+              </Properties>
+              <SourceType>FlatRedBallType</SourceType>
+              <SourceClassType>Polygon</SourceClassType>
+              <InstanceName>PolygonInShapeCollectionShouldBeInICollidableToo</InstanceName>
+              <HasPublicProperty>true</HasPublicProperty>
+              <AttachToContainer>true</AttachToContainer>
+              <GenerateTimedEmit>true</GenerateTimedEmit>
+              <IndependentOfCamera>true</IndependentOfCamera>
+            </NamedObjectSave>
+          </ContainedObjects>
+          <IndependentOfCamera>true</IndependentOfCamera>
+        </NamedObjectSave>
       </NamedObjects>
       <Is2D>true</Is2D>
     </EntitySave>

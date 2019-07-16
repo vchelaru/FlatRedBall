@@ -45,7 +45,14 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
             {
                 codeBlock.Line("mGeneratedCollision = new FlatRedBall.Math.Geometry.ShapeCollection();");
 
-                foreach (var item in element.NamedObjects.Where(item=>item.IncludeInICollidable && !item.IsDisabled))
+                // July 16 2019
+                // This used to only
+                // check top-level objects,
+                // but shapes can exist in manually-
+                // created ShapeCollections. Those shapes
+                // should be added to the generated collision 
+                // object too, so using AllNamedObjects instead
+                foreach (var item in element.AllNamedObjects.Where(item=>item.IncludeInICollidable && !item.IsDisabled))
                 {
                     string addCall = item.GetAddToShapeCollection();
 

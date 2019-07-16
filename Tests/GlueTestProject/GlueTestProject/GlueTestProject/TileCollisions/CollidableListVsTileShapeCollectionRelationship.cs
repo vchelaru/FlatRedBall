@@ -17,6 +17,7 @@ namespace FlatRedBall.Math.Collision
         public void SetFirstSubCollision(Func<FirstCollidableT, Circle> subCollisionFunc) { data.firstSubCollisionCircle = subCollisionFunc; }
         public void SetFirstSubCollision(Func<FirstCollidableT, AxisAlignedRectangle> subCollisionFunc) { data.firstSubCollisionRectangle = subCollisionFunc; }
         public void SetFirstSubCollision(Func<FirstCollidableT, Polygon> subCollisionFunc) { data.firstSubCollisionPolygon = subCollisionFunc; }
+        public void SetFirstSubCollision(Func<FirstCollidableT, Line> subCollisionFunc) { data.firstSubCollisionLine = subCollisionFunc; }
         public void SetFirstSubCollision(Func<FirstCollidableT, ICollidable> subCollisionFunc) { data.firstSubCollisionCollidable = subCollisionFunc; }
 
         public Action<FirstCollidableT, TileShapeCollection> CollisionOccurred;
@@ -41,43 +42,57 @@ namespace FlatRedBall.Math.Collision
             }
             else
             {
-                if (CollisionLimit == CollisionLimit.Closest || CollisionLimit == CollisionLimit.First)
+                bool isSupported = CollisionLimit == CollisionLimit.All;
+
+                if (CollisionLimit == CollisionLimit.First)
                 {
                     string message = $"{nameof(CollidableVsTileShapeCollectionRelationship<FirstCollidableT>)} does not implement CollisionLimit {CollisionLimit}";
                     throw new NotImplementedException();
                 }
-                else
+
+                if (CollisionLimit == CollisionLimit.Closest)
                 {
-                    skippedFrames = 0;
-
-                    for(int i = list.Count - 1 ; i > -1; i--)
+                    // we actually only support closest if it's a line subcollision. Otherwise throw an exception
+                    if (data.firstSubCollisionLine != null)
                     {
-                        var singleObject = list[i];
+                        // it's okay
+                    }
+                    else
+                    {
+                        string message = $"{nameof(CollidableVsTileShapeCollectionRelationship<FirstCollidableT>)} does not implement CollisionLimit {CollisionLimit}";
+                        throw new NotImplementedException();
+                    }
+                }
 
-                        var didCollide = false;
-                        // todo - tile shape collections need to report their deep collision, they don't currently:
-                        if (CollisionType == CollisionType.EventOnlyCollision)
-                        {
-                            didCollide = data.CollideAgainstConsiderSubCollisionEventOnly(singleObject);
-                        }
-                        else if (CollisionType == CollisionType.MoveCollision)
-                        {
-                            didCollide = data.CollideAgainstConsiderSubCollisionMove(singleObject);
-                        }
-                        else if (CollisionType == CollisionType.BounceCollision)
-                        {
-                            didCollide = data.CollideAgainstConsiderSubCollisionBounce(singleObject, bounceElasticity);
-                        }
-                        else
-                        {
-                            throw new NotImplementedException();
-                        }
+                skippedFrames = 0;
 
-                        if (didCollide)
-                        {
-                            didCollisionOccur = true;
-                            CollisionOccurred?.Invoke(singleObject, data.TileShapeCollection);
-                        }
+                for (int i = list.Count - 1; i > -1; i--)
+                {
+                    var singleObject = list[i];
+
+                    var didCollide = false;
+                    // todo - tile shape collections need to report their deep collision, they don't currently:
+                    if (CollisionType == CollisionType.EventOnlyCollision)
+                    {
+                        didCollide = data.CollideAgainstConsiderSubCollisionEventOnly(singleObject, CollisionLimit);
+                    }
+                    else if (CollisionType == CollisionType.MoveCollision)
+                    {
+                        didCollide = data.CollideAgainstConsiderSubCollisionMove(singleObject);
+                    }
+                    else if (CollisionType == CollisionType.BounceCollision)
+                    {
+                        didCollide = data.CollideAgainstConsiderSubCollisionBounce(singleObject, bounceElasticity);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+
+                    if (didCollide)
+                    {
+                        didCollisionOccur = true;
+                        CollisionOccurred?.Invoke(singleObject, data.TileShapeCollection);
                     }
                 }
             }

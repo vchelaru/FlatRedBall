@@ -15,6 +15,7 @@ using FlatRedBall.Math.Splines;
 using BitmapFont = FlatRedBall.Graphics.BitmapFont;
 using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
+using GlueTestProject.TestFramework;
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -37,6 +38,14 @@ namespace GlueTestProject.Entities
             {
                 throw new Exception("ICollidable objects are colliding with each other.  They shouldn't");
             }
+
+            this.Collision.Polygons.Contains(this.PolygonInShapeCollectionShouldBeInICollidableToo)
+                .ShouldBe(true,
+                    "because polygons inside of other shape collections should still show up in the main ICollidable shape collection");
+
+            this.Collision.Circles.Contains(this.Circle1)
+                .ShouldBe(true,
+                    "because circles in a list should still be considered part of the ICollidable. The list may be used for organization");
 		}
 
 		private void CustomActivity()

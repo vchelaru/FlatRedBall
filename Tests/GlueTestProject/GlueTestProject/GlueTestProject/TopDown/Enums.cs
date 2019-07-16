@@ -174,11 +174,32 @@ namespace GlueTestProject.Entities
 
             throw new System.Exception();
         }
+
+        public static string ToFriendlyString(this TopDownDirection direction)
+        {
+            switch(direction)
+            {
+                case TopDownDirection.Down:
+                    return nameof(TopDownDirection.Down);
+                case TopDownDirection.DownLeft:
+                    return nameof(TopDownDirection.DownLeft);
+                case TopDownDirection.DownRight:
+                    return nameof(TopDownDirection.DownRight);
+                case TopDownDirection.Left:
+                    return nameof(TopDownDirection.Left);
+                case TopDownDirection.Right:
+                    return nameof(TopDownDirection.Right);
+                case TopDownDirection.Up:
+                    return nameof(TopDownDirection.Up);
+                case TopDownDirection.UpLeft:
+                    return nameof(TopDownDirection.UpLeft);
+                case TopDownDirection.UpRight:
+                    return nameof(TopDownDirection.UpRight);
+            }
+        
+            return nameof(TopDownDirection.Down);
+        }
     }
-
-
-
-
 
     public enum PossibleDirections
     {
