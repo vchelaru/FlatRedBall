@@ -132,8 +132,11 @@ namespace TopDownPlugin.CodeGenerators
             this.MovementInput = inputDevice.Default2DInput;
             this.InputDevice = inputDevice;
             InputEnabled = true;
+
+            CustomInitializeTopDownInput();
         }
 
+        partial void CustomInitializeTopDownInput();
 
         private void ApplyMovementInput()
         {

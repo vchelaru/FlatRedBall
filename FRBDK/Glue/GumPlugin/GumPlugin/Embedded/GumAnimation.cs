@@ -100,9 +100,16 @@ namespace FlatRedBall.Gum.Animation
 
         public void SetInitialState()
         {
-            var firstInstruction = getInstructionsFunc(this).FirstOrDefault();
+            global::FlatRedBall.Instructions.Instruction lastInstruction = null;
 
-            firstInstruction.ExecuteOn(this);
+            foreach(var instruction in getInstructionsFunc(this))
+            {
+                if(lastInstruction == null || lastInstruction.TimeToExecute == instruction.TimeToExecute)
+                {
+                    instruction.ExecuteOn(this);
+                    lastInstruction = instruction;
+                }
+            }
         }
 
         public void Play(object whatStartedPlayingThis = null)
@@ -115,25 +122,48 @@ namespace FlatRedBall.Gum.Animation
                 {
                     var action = namedActions[namedEvent.Name];
 
-                    var instruction = new DelegateInstruction(action);
-                    instruction.TimeToExecute = TimeManager.CurrentTime + namedEvent.Time;
-                    instruction.Target = this;
-                    InstructionManager.Instructions.Add(instruction);
+
+                    if(namedEvent.Time == 0)
+                    {
+                        action.Invoke();
+                    }
+                    else
+                    {
+                        var instruction = new DelegateInstruction(action);
+                        instruction.Target = this;
+                        instruction.TimeToExecute = TimeManager.CurrentTime + namedEvent.Time;
+                        InstructionManager.Instructions.Add(instruction);
+                    }
                 }
             }
 
             foreach (var instruction in getInstructionsFunc(this))
             {
-                InstructionManager.Instructions.Add(instruction);
+                if(instruction.TimeToExecute == TimeManager.CurrentTime)
+                {
+                    instruction.ExecuteOn(this);
+                }
+                else
+                {
+                    InstructionManager.Instructions.Add(instruction);
+                }
             }
 
             {
-                Action endReachedAction = () => EndReached?.Invoke();
-                var endInstruction = new DelegateInstruction(endReachedAction);
-                endInstruction.TimeToExecute = TimeManager.CurrentTime + this.Length;
-                endInstruction.Target = this;
-                InstructionManager.Instructions.Add(endInstruction);
+                if(this.Length == 0)
+                {
+                    EndReached?.Invoke();
+                }
+                else
+                {
+                    Action endReachedAction = () => EndReached?.Invoke();
+                    var endInstruction = new DelegateInstruction(endReachedAction);
+                    endInstruction.TimeToExecute = TimeManager.CurrentTime + this.Length;
+                    endInstruction.Target = this;
+                    InstructionManager.Instructions.Add(endInstruction);
+                }
             }
+
         }
 
         public bool IsPlaying()

@@ -3,13 +3,44 @@ using System.Collections.Generic;
 
 namespace FlatRedBall.Input
 {
+    /// <summary>
+    /// Provides a common interface for input devices which can return values on the X and Y axis, such as an analog stick.
+    /// </summary>
 	public interface I2DInput
 	{
+        /// <summary>
+        /// The X value of the input device, typically between 0 and 1.
+        /// </summary>
+        /// <example>
+        /// // Assuming inputDevice is an I2DInput instance
+        /// this.XVelocity = inputDevice.X * this.MaxSpeed;
+        /// </example>
 		float X { get; }
-		float Y { get; }
+
+        /// <summary>
+        /// The Y value of the input device, typically between 0 and 1.
+        /// </summary>
+        /// <example>
+        /// // Assuming inputDevice is an I2DInput instance
+        /// this.YVelocity = inputDevice.Y * this.MaxSpeed;
+        /// </example>
+        float Y { get; }
+
+        /// <summary>
+        /// The rate of change of the input device on the X axis. This measures how fast the user is changing the device. For example,
+        /// it can be used to tell how fast the user's thumb is moving on an analog stick.
+        /// </summary>
 		float XVelocity { get; }
+
+        /// <summary>
+        /// The rate of change of the input device on the Y axis. This measures how fast the user is changing the device. For example,
+        /// it can be used to tell how fast the user's thumb is moving on an analog stick.
+        /// </summary>
 		float YVelocity { get; }
 
+        /// <summary>
+        /// The distance from (0,0) of the input device. It can be used to detect if any input is being applied on this input device.
+        /// </summary>
 		float Magnitude { get; }
 	}
 

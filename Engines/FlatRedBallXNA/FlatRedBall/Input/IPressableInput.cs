@@ -3,17 +3,25 @@ using System.Collections.Generic;
 
 namespace FlatRedBall.Input
 {
+    /// <summary>
+    /// Provides a common interface for input devices which can have a down/not down state, such as a game pad or mouse button.
+    /// </summary>
 	public interface IPressableInput
 	{
         /// <summary>
         /// Returns whether the input is down (such as if a key is held or a mouse button is down)
         /// </summary>
 		bool IsDown { get; }
+
         /// <summary>
         /// Returns whether the input was pressed this frame (not down last frame, is down this frame)
         /// </summary>
 		bool WasJustPressed { get; }
-		bool WasJustReleased { get; }
+
+        /// <summary>
+        /// Returns whether the input was released this frame(down last frame, not down this frame)
+        /// </summary>
+        bool WasJustReleased { get; }
 	}
 
     public class DelegateBasedPressableInput : IPressableInput

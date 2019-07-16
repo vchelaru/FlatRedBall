@@ -38,6 +38,10 @@ namespace FlatRedBall.Math.Collision
         protected float moveSecondMass;
         protected float bounceElasticity;
 
+        /// <summary>
+        /// Whether a collision occurred this frame. This is set when the collision performs its collision logic in DoCollisions, which
+        /// may get called automatically, or may get called manually if IsActive is set to false.
+        /// </summary>
         public bool CollidedThisFrame { get; protected set; }
 
         public int DeepCollisionsThisFrame { get; set; }
@@ -102,6 +106,12 @@ namespace FlatRedBall.Math.Collision
 
         #endregion
 
+        /// <summary>
+        /// Performs the collision logic and returns whether a collision has occurred. This method
+        /// does not need to be called if the CollisionRelationship is part of the CollisionManager
+        /// and if its IsActive is set to true (both of which are the most common setup).
+        /// </summary>
+        /// <returns>Whether collisions occurred this frame.</returns>
         public abstract bool DoCollisions();
     }
 

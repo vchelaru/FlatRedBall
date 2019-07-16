@@ -28,8 +28,10 @@ namespace TopDownPlugin
         // 1.4 - Added InitializeTopDownInput which takes an IInputDevice
         // 1.4.1 - Added TopDownDirection.ToString
         // 1.5 - Added TopDownAiInput.IsActive which can disabled AI input if set to false
+        // 1.6 - InitializeTopDownInput now calls a partial method allowing custom code to
+        //       add its own logic.
         public override Version Version => 
-            new Version(1, 4, 1);
+            new Version(1, 6, 0);
 
         MainEntityView control;
         PluginTab pluginTab;
