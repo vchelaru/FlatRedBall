@@ -5,8 +5,11 @@ using System.Reflection;
 using FlatRedBall.Utilities;
 using System.Globalization;
 using FlatRedBall.IO;
+
+#if !FRB_RAW
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+#endif
 
 namespace FlatRedBall.Instructions.Reflection
 {
@@ -59,7 +62,7 @@ namespace FlatRedBall.Instructions.Reflection
             Type typeToConvertTo = value.GetType();
 
             // Do the conversion
-            #region Convert To String
+#region Convert To String
 
             if (typeToConvertTo == typeof(bool))
             {
@@ -91,7 +94,7 @@ namespace FlatRedBall.Instructions.Reflection
                 return (string)value;
             }
 
-            #if !FRB_RAW
+#if !FRB_RAW
             if (typeToConvertTo == typeof(Texture2D))
             {
                 return ((Texture2D)value).Name;
@@ -161,7 +164,7 @@ namespace FlatRedBall.Instructions.Reflection
                     ConvertTypeToString(v.Z) + "," +
                     ConvertTypeToString(v.W);
             }
-            #endif
+#endif
 #if UWP
             if (typeToConvertTo.IsEnum())
 #else
@@ -287,7 +290,7 @@ namespace FlatRedBall.Instructions.Reflection
                         value = value.Replace(",", "");
                     }
 
-                    #region uint
+#region uint
 #if FRB_XNA
                     if (desiredType == typeof(uint).FullName)
                     {
@@ -389,10 +392,10 @@ namespace FlatRedBall.Instructions.Reflection
                     return double.Parse(value, CultureInfo.InvariantCulture);
                 }
 
-                #endregion
+#endregion
 
 
-                #region Decimal
+#region Decimal
 
                 else if(desiredType == typeof(decimal).FullName)
                 {
@@ -404,12 +407,12 @@ namespace FlatRedBall.Instructions.Reflection
                     return decimal.Parse(value, CultureInfo.InvariantCulture);
                 }
 
-                #endregion
+#endregion
 
 
 #if !FRB_RAW
 
-                #region Texture2D
+#region Texture2D
 
                 else if (desiredType == typeof(Texture2D).FullName)
                 {
