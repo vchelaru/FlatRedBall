@@ -179,6 +179,20 @@ namespace TileGraphicsPlugin.ViewModels
             }
         }
 
+        [SyncedProperty]
+        public string CollisionLayerName
+        {
+            get { return Get<string>();}
+            set { SetAndPersist(value); }
+        }
+
+        [SyncedProperty]
+        public string CollisionLayerTileType
+        {
+            get { return Get<string>(); }
+            set { SetAndPersist(value); }
+        }
+
 
         public ObservableCollection<string> TmxObjectNames
         {

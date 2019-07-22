@@ -62,9 +62,15 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static bool GetIsVariableState(this CustomVariable customVariable, IElement containingElement = null)
         {
+
+            if(customVariable.Type == null)
+            {
+                throw new NullReferenceException(
+                    $"The custom variable with name {customVariable.Name} has a Type that is null. This is not allowed");
+            }
             bool returnValue = false;
 
-            if (customVariable != null && customVariable.DefinedByBase)
+            if (customVariable.DefinedByBase)
             {
                 // If this is DefinedByBase, it may represent a variable that is tunneling, but it
                 // doesn't know it - we have to get the variable from the base to know for sure.

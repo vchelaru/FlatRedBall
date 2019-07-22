@@ -170,7 +170,11 @@ namespace TileGraphicsPlugin
             // - X and Y now apply offsets to created entities, allowing entities to be centered around different points on a tile
             // 2.4.0
             // - Added line vs TileShapeCollection relationships, including support for closest collision for (really efficient) ray casting
-            get { return new Version(2, 4, 0, 0); }
+            // 2.4.0.1
+            // - Fixed tab text
+            // 2.5.0.0
+            // - TileShapeCollections will now depend on the type
+            get { return new Version(2, 5, 0, 0); }
         }
 
 
@@ -466,7 +470,7 @@ namespace TileGraphicsPlugin
                 {
                     var view = TileShapeCollectionsPropertiesController.Self.GetView();
 
-                    collisionTab = base.CreateTab(view, "Collision Properties");
+                    collisionTab = base.CreateTab(view, "TileShapeCollection Properties");
                 }
 
                 TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(treeNode?.Tag as NamedObjectSave,

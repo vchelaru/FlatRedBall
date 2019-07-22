@@ -2,22 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-#if FRB_MDX
-using Microsoft.DirectX;
-using Microsoft.DirectX.DirectInput;
-#else
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
-#endif
 
 using FlatRedBall;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 
-#if !SILVERLIGHT
 using FlatRedBall.Graphics;
-#endif
 
 namespace FlatRedBall.Input
 {

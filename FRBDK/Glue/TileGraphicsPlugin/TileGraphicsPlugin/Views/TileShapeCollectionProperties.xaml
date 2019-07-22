@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TileGraphicsPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="300">
+             d:DesignHeight="600" d:DesignWidth="300">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -101,8 +101,16 @@
                 
                 <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                              IsChecked="{Binding IsFromLayerChecked}">From Layer</RadioButton>
-                <TextBox Margin="10,0,0,0" HorizontalAlignment="Left" Width="100"
-                         Visibility="{Binding FromLayerVisibility}"></TextBox>
+                <StackPanel Margin="10,0,0,0" Visibility="{Binding FromLayerVisibility}">
+                    <TextBlock>Source TMX File/Object:</TextBlock>
+                    <ComboBox Width="200" HorizontalAlignment="Left"
+                              ItemsSource="{Binding TmxObjectNames}"
+                              SelectedItem="{Binding SourceTmxName}"></ComboBox>
+                    <TextBlock Margin="0,5,0,0">Layer:</TextBlock>
+                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionLayerName}"></TextBox>
+                    <TextBlock Margin="0,5,0,0">With property</TextBlock>
+                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionLayerTileType}"></TextBox> 
+                </StackPanel>
             </StackPanel>
 
         </GroupBox>

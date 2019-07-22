@@ -87,6 +87,26 @@ namespace TileGraphicsPlugin.CodeGeneration
 
         private void GenerateFromLayerCollision(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
         {
+            T Get<T>(string name)
+            {
+                return namedObjectSave.Properties.GetValue<T>(name);
+            }
+
+            var instanceName = namedObjectSave.FieldName;
+            var mapName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.SourceTmxName));
+            var layerName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.CollisionLayerName));
+            var typeNameInLayer = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.CollisionLayerTileType));
+
+            var effectiveName = layerName;
+            if(!string.IsNullOrEmpty(typeNameInLayer))
+            {
+                effectiveName += "_" + typeNameInLayer;
+            }
+
+            // assign itself if there's nothing in the 
+            codeBlock.Line($"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{effectiveName}\")" +
+                $" ?? {instanceName};");
+
             // handled in the AssetTypeInfo's GetFromFileFunc because that already has access to the referenced file save
 
             //var tileType = namedObjectSave.Properties.GetValue<string>(
