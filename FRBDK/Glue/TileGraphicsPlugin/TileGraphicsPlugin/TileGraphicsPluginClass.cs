@@ -180,7 +180,9 @@ namespace TileGraphicsPlugin
             // 2.5.2.0
             // - Added TileShapeCollection extension method AddMergedCollisionFromTilesWithType
             // - Added IsMerged checkbox to collisions from type
-            get { return new Version(2, 5, 2, 0); }
+            // 2.5.3.0
+            // - TileShapeCollection.Setcolor now sets polygons and rectangles.
+            get { return new Version(2, 5, 3, 0); }
         }
 
 

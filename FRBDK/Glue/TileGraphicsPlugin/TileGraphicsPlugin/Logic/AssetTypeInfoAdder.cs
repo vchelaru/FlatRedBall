@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using TileGraphicsPlugin.CodeGeneration;
 using TileGraphicsPlugin.ViewModels;
 
 namespace TileGraphicsPlugin
@@ -174,10 +175,15 @@ namespace TileGraphicsPlugin
             toReturn.FindByNameSyntax = $"Collisions.First(item => item.Name == \"OBJECTNAME\");";
 
             toReturn.GetObjectFromFileFunc = GetObjectFromFileFunc;
-
             toReturn.VariableDefinitions.Add(new VariableDefinition() { Name = "Visible", DefaultValue = "false", Type = "bool" });
-
+            toReturn.ConstructorFunc = GenerateConstructionFunc;
             return toReturn;
+        }
+
+        private string GenerateConstructionFunc(IElement parentElement, NamedObjectSave namedObject, ReferencedFileSave referencedFile)
+        {
+            return TileShapeCollectionInitializeCodeGenerator.GenerateConstructorFor(namedObject);
+            
         }
 
         private string GetObjectFromFileFunc(IElement element, NamedObjectSave namedObjectSave, 

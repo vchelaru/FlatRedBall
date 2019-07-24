@@ -601,6 +601,11 @@ namespace FlatRedBall.TileCollisions
             {
                 rectangle.Color = color;
             }
+            foreach (var polygon in this.Polygons)
+            {
+                polygon.Color = color;
+            }
+
         }
 
         public void RefreshAllRepositionDirections()

@@ -28,6 +28,44 @@ namespace TileGraphicsPlugin.CodeGeneration
             return codeBlock;
         }
 
+        public static string GenerateConstructorFor(NamedObjectSave namedObjectSave)
+        {
+            T Get<T>(string name)
+            {
+                return namedObjectSave.Properties.GetValue<T>(name);
+            }
+
+            var creationOptions = Get<CollisionCreationOptions>(
+                nameof(TileShapeCollectionPropertiesViewModel.CollisionCreationOptions));
+
+            bool comesFromLayer = creationOptions == CollisionCreationOptions.FromLayer;
+
+            if(comesFromLayer)
+            {
+                var instanceName = namedObjectSave.FieldName;
+                var mapName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.SourceTmxName));
+                var layerName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.CollisionLayerName));
+                var typeNameInLayer = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.CollisionLayerTileType));
+
+                var effectiveName = layerName;
+                if (!string.IsNullOrEmpty(typeNameInLayer))
+                {
+                    effectiveName += "_" + typeNameInLayer;
+                }
+
+                // assign itself if there's nothing in the 
+                return $"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{effectiveName}\")" +
+                    $" ?? new FlatRedBall.TileCollisions.TileShapeCollection();";
+
+            }
+            else
+            {
+                return $"{namedObjectSave.FieldName} = new FlatRedBall.TileCollisions.TileShapeCollection();";
+
+            }
+
+        }
+
         private void GenerateCodeFor(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
         {
             if(namedObjectSave.DefinedByBase == false)
@@ -95,28 +133,28 @@ namespace TileGraphicsPlugin.CodeGeneration
 
         }
 
-
         private void GenerateFromLayerCollision(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
         {
-            T Get<T>(string name)
-            {
-                return namedObjectSave.Properties.GetValue<T>(name);
-            }
+            // Handled in the constructor call above
+            //T Get<T>(string name)
+            //{
+            //    return namedObjectSave.Properties.GetValue<T>(name);
+            //}
 
-            var instanceName = namedObjectSave.FieldName;
-            var mapName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.SourceTmxName));
-            var layerName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.CollisionLayerName));
-            var typeNameInLayer = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.CollisionLayerTileType));
+            //var instanceName = namedObjectSave.FieldName;
+            //var mapName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.SourceTmxName));
+            //var layerName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.CollisionLayerName));
+            //var typeNameInLayer = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.CollisionLayerTileType));
 
-            var effectiveName = layerName;
-            if(!string.IsNullOrEmpty(typeNameInLayer))
-            {
-                effectiveName += "_" + typeNameInLayer;
-            }
+            //var effectiveName = layerName;
+            //if(!string.IsNullOrEmpty(typeNameInLayer))
+            //{
+            //    effectiveName += "_" + typeNameInLayer;
+            //}
 
-            // assign itself if there's nothing in the 
-            codeBlock.Line($"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{effectiveName}\")" +
-                $" ?? {instanceName};");
+            //// assign itself if there's nothing in the 
+            //codeBlock.Line($"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{effectiveName}\")" +
+            //    $" ?? {instanceName};");
 
             // handled in the AssetTypeInfo's GetFromFileFunc because that already has access to the referenced file save
 
