@@ -193,6 +193,12 @@ namespace TileGraphicsPlugin.ViewModels
             set { SetAndPersist(value); }
         }
 
+        [SyncedProperty]
+        public bool IsCollisionMerged
+        {
+            get { return Get<bool>(); }
+            set { SetAndPersist(value); }
+        }
 
         public ObservableCollection<string> TmxObjectNames
         {

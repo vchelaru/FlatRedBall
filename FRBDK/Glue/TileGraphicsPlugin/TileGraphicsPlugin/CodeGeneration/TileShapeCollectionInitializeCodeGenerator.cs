@@ -57,6 +57,17 @@ namespace TileGraphicsPlugin.CodeGeneration
                         $"SourceType to {SourceType.FlatRedBallType}");
                 }
 
+                var isVisible = namedObjectSave.GetCustomVariable("Visible")?.ValueAsBool == true;
+
+                if(!isVisible)
+                {
+                    codeBlock.Line("// normally we wait to set variables until after the object is created, but in this case if the");
+                    codeBlock.Line("// TileShapeCollection doesn't have its Visible set before creating the tiles, it can result in");
+                    codeBlock.Line("// really bad performance issues, as shapes will be made visible, then invisible. Really bad perf!");
+                    codeBlock.Line($"{namedObjectSave.InstanceName}.Visible = false;");
+
+                }
+
                 switch(creationOptions)
                 {
                     case CollisionCreationOptions.Empty:
@@ -264,11 +275,16 @@ namespace TileGraphicsPlugin.CodeGeneration
 
             var mapName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.SourceTmxName));
             var typeName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.CollisionTileTypeName));
-
+            var isMerged = Get<bool>(nameof(TileShapeCollectionPropertiesViewModel.IsCollisionMerged));
             if (!string.IsNullOrEmpty(mapName) && !string.IsNullOrEmpty(typeName))
             {
+                string method = "AddCollisionFromTilesWithType";
+                if(isMerged)
+                {
+                    method = "AddMergedCollisionFromTilesWithType";
+                }
                 codeBlock.Line("FlatRedBall.TileCollisions.TileShapeCollectionLayeredTileMapExtensions" +
-                    ".AddCollisionFromTilesWithType(" +
+                    $".{method}(" +
                     $"{namedObjectSave.InstanceName}, {mapName}, \"{typeName}\");");
             }
 

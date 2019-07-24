@@ -174,7 +174,13 @@ namespace TileGraphicsPlugin
             // - Fixed tab text
             // 2.5.0.0
             // - TileShapeCollections will now depend on the type
-            get { return new Version(2, 5, 0, 0); }
+            // 2.5.1.0
+            // - TileShapeCollections now set their visibility prior to creation, speeding up the creation of
+            //   large tipe shape collections.
+            // 2.5.2.0
+            // - Added TileShapeCollection extension method AddMergedCollisionFromTilesWithType
+            // - Added IsMerged checkbox to collisions from type
+            get { return new Version(2, 5, 2, 0); }
         }
 
 
