@@ -182,7 +182,10 @@ namespace TileGraphicsPlugin
             // - Added IsMerged checkbox to collisions from type
             // 2.5.3.0
             // - TileShapeCollection.Setcolor now sets polygons and rectangles.
-            get { return new Version(2, 5, 3, 0); }
+            // 2.5.4.0
+            // - TileShapeCollections from layes are assigned directly on constructor instead
+            //   of after. This allows relationships to use these collision relationships.
+            get { return new Version(2, 5, 4, 0); }
         }
 
 

@@ -28,6 +28,7 @@ namespace TopDownPlugin.CodeGenerators
 
 
             codeBlock.Line("DataTypes.TopDownValues mCurrentMovement;");
+            codeBlock.Line("public float TopDownSpeedMultiplier { get; set; } = 1;");
 
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// The current movement variables used when applying input.");
@@ -154,7 +155,7 @@ namespace TopDownPlugin.CodeGenerators
             if(InputEnabled)
             {
                 desiredVelocity = new Microsoft.Xna.Framework.Vector3(MovementInput.X, MovementInput.Y, velocity.Z) * 
-                    mCurrentMovement.MaxSpeed;
+                    mCurrentMovement.MaxSpeed * TopDownSpeedMultiplier;
             }
 
             var difference = desiredVelocity - velocity;
@@ -206,7 +207,7 @@ namespace TopDownPlugin.CodeGenerators
                 }
                 else
                 {
-                    var accelerationMagnitude = mCurrentMovement.MaxSpeed / secondsToTake;
+                    var accelerationMagnitude = TopDownSpeedMultiplier * mCurrentMovement.MaxSpeed / secondsToTake;
                 
                     var nonNormalizedDifference = difference;
                 

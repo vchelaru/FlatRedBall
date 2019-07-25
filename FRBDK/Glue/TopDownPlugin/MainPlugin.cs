@@ -30,8 +30,9 @@ namespace TopDownPlugin
         // 1.5 - Added TopDownAiInput.IsActive which can disabled AI input if set to false
         // 1.6 - InitializeTopDownInput now calls a partial method allowing custom code to
         //       add its own logic.
+        // 1.7 - Added TopDownSpeedMultiplier allowing speed to be multiplied easily based on terrain or power-ups
         public override Version Version => 
-            new Version(1, 6, 0);
+            new Version(1, 7, 0);
 
         MainEntityView control;
         PluginTab pluginTab;
