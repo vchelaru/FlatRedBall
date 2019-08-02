@@ -106,46 +106,6 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
-        public string GetCustomCodeTemplateCode(ElementSave element)
-        {
-            // Example:
-            /*
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace DesktopGlForms.GumRuntimes.DefaultForms
-{
-    public partial class ButtonRuntime
-    {
-        partial void CustomInitialize()
-        {
-
-        }
-    }
-}
-
-             */
-
-
-            ICodeBlock codeBlock = new CodeBlockBase(null);
-            var toReturn = codeBlock;
-            codeBlock.Line("using System;");
-            codeBlock.Line("using System.Collections.Generic;");
-            codeBlock.Line("using System.Linq;");
-            codeBlock.Line();
-            codeBlock = codeBlock.Namespace(GetFullRuntimeNamespaceFor(element));
-            {
-                string runtimeClassName = GetUnqualifiedRuntimeTypeFor(element);
-
-                codeBlock = codeBlock.Class("public partial", runtimeClassName);
-                {
-                    codeBlock = codeBlock.Function("partial void", "CustomInitialize");
-                }
-            }
-            return toReturn.ToString();
-        }
-
         private void GenerateScreenAndComponentCodeFor(ElementSave elementSave, ICodeBlock codeBlock)
         {
             if(elementSave == null)
@@ -206,13 +166,13 @@ namespace DesktopGlForms.GumRuntimes.DefaultForms
             return currentBlock;
         }
 
-        public static string GetQualifiedRuntimeTypeFor(ElementSave elementSave)
+        public string GetQualifiedRuntimeTypeFor(ElementSave elementSave)
         {
             return GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementSave) + 
                 "." + GetUnqualifiedRuntimeTypeFor(elementSave);
         }
 
-        public static string GetUnqualifiedRuntimeTypeFor(ElementSave elementSave)
+        public string GetUnqualifiedRuntimeTypeFor(ElementSave elementSave)
         {
             if(elementSave == null)
             {
@@ -263,7 +223,7 @@ namespace DesktopGlForms.GumRuntimes.DefaultForms
 
         #region Generate Properties
 
-        public static string GetQualifiedRuntimeTypeFor(InstanceSave instance)
+        public string GetQualifiedRuntimeTypeFor(InstanceSave instance)
         {
             var element = ObjectFinder.Self.GetElementSave(instance);
             if(element == null)
@@ -520,7 +480,7 @@ namespace DesktopGlForms.GumRuntimes.DefaultForms
                             // Use the actual instance name rather than MemberNameInCode here, because it may differ
                             // if there's invalid member characters like dashes
                             $" = this.GetGraphicalUiElementByName(\"{instance.Name}\") as " + 
-                            GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(instance) + ";");
+                            GetQualifiedRuntimeTypeFor(instance) + ";");
                         
                         foreach (var eventSave in elementSave.Events.Where(item =>
                             item.GetSourceObject() == instance.Name && !string.IsNullOrEmpty(item.ExposedAsName)))

@@ -4,14 +4,7 @@ using System.Text;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Math;
 using FlatRedBall.Graphics;
-#if FRB_MDX
-using System.Drawing;
-using FlatRedBall.Graphics;
-#elif XNA4
 using Color = Microsoft.Xna.Framework.Color;
-#elif FRB_XNA
-using Color = Microsoft.Xna.Framework.Graphics.Color;
-#endif
 
 namespace EditorObjects
 {

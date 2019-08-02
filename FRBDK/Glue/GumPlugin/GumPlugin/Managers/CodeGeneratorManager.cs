@@ -278,7 +278,6 @@ namespace GumPlugin.Managers
             string generatedCode = mGueDerivingClassCodeGenerator.GenerateCodeFor(element);
 
             FilePath generatedSaveLocation = directoryToSave + element.Name + "Runtime.Generated.cs";
-            string customCodeSaveLocation = directoryToSave + element.Name + "Runtime.cs";
 
             if (savingBehavior == CodeGenerationSavingBehavior.AlwaysSave)
             {
@@ -298,6 +297,8 @@ namespace GumPlugin.Managers
                     resultToReturn.DidSaveGenerated = existingText != generatedCode;
                 }
             }
+
+            string customCodeSaveLocation = directoryToSave + element.Name + "Runtime.cs";
             // If it doesn't exist, overwrite it. If it does exist, don't overwrite it - we might lose
             // custom code.
             if (!System.IO.File.Exists(customCodeSaveLocation) && 
@@ -326,7 +327,7 @@ namespace GumPlugin.Managers
 
             if(resultToReturn.DidSaveCustom)
             {
-                var customCode = mGueDerivingClassCodeGenerator.GetCustomCodeTemplateCode(element);
+                var customCode = CustomCodeGenerator.Self.GetCustomCodeTemplateCode(element);
 
                 GlueCommands.Self.TryMultipleTimes(() =>
                     System.IO.File.WriteAllText(customCodeSaveLocation, customCode));

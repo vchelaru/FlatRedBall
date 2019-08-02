@@ -7,15 +7,7 @@ using FlatRedBall;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 
-#if XNA4
 using Color = Microsoft.Xna.Framework.Color;
-
-#elif FRB_XNA
-using Color = Microsoft.Xna.Framework.Graphics.Color;
-#else
-
-using Color = System.Drawing.Color;
-#endif
 
 namespace EditorObjects
 {

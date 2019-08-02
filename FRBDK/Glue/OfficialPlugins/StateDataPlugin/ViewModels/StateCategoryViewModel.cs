@@ -134,7 +134,9 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
         private void RefreshExcludedAndIncludedVariables()
         {
             var allVariableNames = Element.CustomVariables
-                .Select(item => item.Name).ToList();
+                .Where(item => item.IsShared == false)
+                .Select(item => item.Name)
+                .ToList();
 
             var excludedVariables = category.ExcludedVariables;
             var includedVariables = allVariableNames.Except(excludedVariables);

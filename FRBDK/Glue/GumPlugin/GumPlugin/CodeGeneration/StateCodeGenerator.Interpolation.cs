@@ -225,7 +225,8 @@ namespace GumPlugin.CodeGeneration
                                 StateSaveCategory stateSaveCategory;
                                 if (variableSave.IsState(element, out categoryContainer, out stateSaveCategory, recursive:false))
                                 {
-                                    var qualifiedCategoryContainerRuntimeName = GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(categoryContainer);
+                                    var qualifiedCategoryContainerRuntimeName = 
+                                        GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(categoryContainer);
                                     type = qualifiedCategoryContainerRuntimeName + ".VariableState";
                                     string defaultValue = "Default";
                                     if (stateSaveCategory != null)

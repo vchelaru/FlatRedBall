@@ -107,6 +107,7 @@
       <Link>Embedded\LibraryFiles\RenderingLibrary\LinePolygon.cs</Link>
     </EmbeddedResource>
     <Compile Include="CodeGeneration\BehaviorCodeGenerator.cs" />
+    <Compile Include="CodeGeneration\CustomCodeGenerator.cs" />
     <Compile Include="CodeGeneration\EventCodeGenerator.cs" />
     <Compile Include="CodeGeneration\GlobalContentCodeGenerator.cs" />
     <Compile Include="CodeGeneration\GumLayerAssociationCodeGenerator.cs" />

@@ -145,7 +145,7 @@ namespace GumPlugin.CodeGeneration
             }
             //////////////END EARLY OUT///////////
 
-            string runtimeClassName = GueDerivingClassCodeGenerator.GetUnqualifiedRuntimeTypeFor(standardElementSave);
+            string runtimeClassName = GueDerivingClassCodeGenerator.Self.GetUnqualifiedRuntimeTypeFor(standardElementSave);
 
             // This needs to be public because it can be exposed as public in a public class
             //ICodeBlock currentBlock = codeBlock.Class("partial", runtimeClassName, " : Gum.Wireframe.GraphicalUiElement");

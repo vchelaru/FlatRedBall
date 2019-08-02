@@ -22,9 +22,11 @@ namespace OfficialPlugins.StateDataPlugin
 
         public override string FriendlyName { get { return "State Data Plugin"; } }
 
+        // 0.1.0 - Initial creation
+        // 0.2.0 - Fixed static variables showing up when they shouldn't
         public override Version Version
         {
-            get { return new Version(0, 1, 0); }
+            get { return new Version(0, 2, 0); }
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
@@ -73,7 +75,11 @@ namespace OfficialPlugins.StateDataPlugin
 
             var viewModel = new StateCategoryViewModel(currentStateSaveCategory, GlueState.Self.CurrentElement);
 
-            foreach(var variable in GlueState.Self.CurrentElement.CustomVariables)
+            var variablesToConsider = GlueState.Self.CurrentElement.CustomVariables
+                .Where(item => item.IsShared == false)
+                .ToList() ;
+
+            foreach (var variable in variablesToConsider)
             {
                 viewModel.Columns.Add(variable.Name);
             }

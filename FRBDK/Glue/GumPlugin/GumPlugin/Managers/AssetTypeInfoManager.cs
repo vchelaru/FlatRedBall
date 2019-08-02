@@ -375,14 +375,15 @@ namespace GumPlugin.Managers
 
             newAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
             {
-                QualifiedType = GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(element)
+                QualifiedType = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element)
             };
 
 
             if (element is ComponentSave)
             {
                 newAti.Extension = GumProjectSave.ComponentExtension;
-                newAti.CustomLoadMethod = ComponentAti.CustomLoadMethod + " as " + GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(element);
+                newAti.CustomLoadMethod = ComponentAti.CustomLoadMethod + " as " + 
+                    GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
             }
             string unqualifiedName = element.Name + "Runtime";
             newAti.FriendlyName = unqualifiedName;

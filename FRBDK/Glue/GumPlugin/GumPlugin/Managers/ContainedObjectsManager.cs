@@ -73,7 +73,8 @@ namespace GumPlugin.Managers
                 // but in the meantime, I'm going to revert back to using the "this" syntax so that
                 // Screens can be casted appropriately:
                 //availableObjects.Add("Entire File (" + element.Name + "Runtime" + ")");
-                availableObjects.Add("this (" + GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(element) + ")");
+                availableObjects.Add("this (" + 
+                    GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element) + ")");
 
 
                 foreach (var instance in element.Instances)
@@ -84,7 +85,7 @@ namespace GumPlugin.Managers
 
                     if (GueDerivingClassCodeGenerator.Self.ShouldGenerateRuntimeFor(elementSave))
                     {
-                        gueType = GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(instance);
+                        gueType = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(instance);
                     }
                     else
                     {

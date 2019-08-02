@@ -137,7 +137,8 @@ namespace GumPlugin.CodeGeneration
             {
                 var qualifiedControlType = "FlatRedBall.Forms.Controls." + fulfillment.ControlType;
 
-                var gumRuntimeType = GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(fulfillment.Element);
+                var gumRuntimeType = 
+                    GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(fulfillment.Element);
 
                 var line =
                     $"FlatRedBall.Forms.Controls.FrameworkElement.DefaultFormsComponents[typeof({qualifiedControlType})] = typeof({gumRuntimeType});";
@@ -189,7 +190,7 @@ namespace GumPlugin.CodeGeneration
                 "GumRuntime.ElementSaveExtensions.RegisterGueInstantiationType(\"" +
                 elementNameString +
                 "\", typeof(" +
-                GueDerivingClassCodeGenerator.GetQualifiedRuntimeTypeFor(element) +
+                GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element) +
                 "));");
         }
     }

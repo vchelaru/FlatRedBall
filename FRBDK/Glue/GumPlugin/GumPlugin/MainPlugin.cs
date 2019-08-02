@@ -261,7 +261,9 @@ namespace GumPlugin
             // - Fixed compile error generated if state begins with a number like "1st". Now it prefixes an underscore
             // 2.0.7
             // - Fixed adding Gum objects to Layers not working now that Screens no longer inherit from GumIdb
-            get { return new Version(2, 0, 7, 0); }
+            // 2.0.8
+            // - Custom code for screns is no longer indented one tab
+            get { return new Version(2, 0, 8, 0); }
         }
 
         #endregion
