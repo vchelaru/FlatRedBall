@@ -123,17 +123,13 @@ namespace FlatRedBall.Glue.Managers
 
                     string contentDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
 
-                    List<string> referencedFiles = null;
+                    List<FilePath> referencedFiles = null;
 
                     try
                     {
-                        referencedFiles = GlueCommands.Self.FileCommands.GetAllReferencedFileNames();
-
-                        // to make debugging a little easier:
-                        referencedFiles = referencedFiles
-                            .Select(item => item.ToLower().Replace('\\', '/'))
+                        referencedFiles = GlueCommands.Self.FileCommands.GetAllReferencedFilePaths()
                             .Distinct()
-                            .OrderBy(item => item)
+                            .OrderBy(item => item.FullPath)
                             .ToList();
                     }
                     catch
@@ -154,9 +150,17 @@ namespace FlatRedBall.Glue.Managers
 
                     if (referencedFiles != null)
                     {
-                        foreach (var evaluatedItem in ProjectManager.ProjectBase.ContentProject.EvaluatedItems)
+                        var project = ProjectManager.ProjectBase;
+
+                        // Added this here to make it easier to debug. This isn't necessary for function, as
+                        // internally it does a IsContent check
+                        var contentItems = project.ContentProject.EvaluatedItems
+                            .Where(item => ProjectManager.IsContent(item.UnevaluatedInclude.ToLower().Replace(@"\", @"/")))
+                            .ToList();
+
+                        foreach (var evaluatedItem in contentItems)
                         {
-                            AddIfUnreferenced(evaluatedItem, ProjectManager.ProjectBase, referencedFiles, mUnreferencedFiles);
+                            AddIfUnreferenced(evaluatedItem, project, referencedFiles, mUnreferencedFiles);
                         }
 
                         Application.DoEvents();
@@ -188,7 +192,7 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        static bool GetIfIsUnreferenced(ProjectItem item, ProjectBase project, List<string> referencedFiles, out string nameToInclude)
+        static bool GetIfIsUnreferenced(ProjectItem item, ProjectBase project, List<FilePath> referencedFiles, out string nameToInclude)
         {
             bool isUnreferenced = false;
 
@@ -200,33 +204,23 @@ namespace FlatRedBall.Glue.Managers
             nameToInclude = item.UnevaluatedInclude;
 
             // no extensions are unsupported.  What do we do with the content pipeline?
-            if (!string.IsNullOrEmpty(FileManager.GetExtension(itemName)))
+            if (!string.IsNullOrEmpty(FileManager.GetExtension(itemName)) && ProjectManager.IsContent(itemName) &&
+                // If the project includes a reference to something like System.XML, then that reference
+                // will have an UnevaluatedInclude of "System.XML" which will be treated as an XML file.
+                // Therefore, ignore items with a Reference item type:
+                item.ItemType != "Reference")
             {
-
-                bool isContent = ProjectManager.IsContent(itemName);
-
-                string absoluteFile =
+                FilePath filePath =
                     FileManager.RemoveDotDotSlash(FileManager.GetDirectory(project.ContentProject.FullFileName) + nameToInclude);
 
-                // the referencedFiles list is the list of files that are referenced relative to the main content project, but the project
-                // may not be the content project. We want to get the name relative to the main content project before checking.
-                if(isContent && project.ContentProject != GlueState.Self.CurrentMainContentProject)
-                {
-                    itemName = FileManager.MakeRelative(itemName, FileManager.GetDirectory(GlueState.Self.CurrentMainContentProject.FullFileName));
-                }
-
-                isUnreferenced = isContent &&
-                    // Vic asks: This code would only consider a file unreferenced if it exists. Why?
-                    // If a file doesn't exist but it's referenced by a VS project and it's not needed, shouldn't
-                    // we consider it unreferenced?
-                    //File.Exists(absoluteFile) &&
+                isUnreferenced = 
                     !referencedFiles.Contains(itemName);
 
             }
             return isUnreferenced;
         }
 
-        private static void AddIfUnreferenced(ProjectItem item, ProjectBase project, List<string> referencedFiles, List<ProjectSpecificFile> unreferencedFiles)
+        private static void AddIfUnreferenced(ProjectItem item, ProjectBase project, List<FilePath> referencedFiles, List<ProjectSpecificFile> unreferencedFiles)
         {
             string nameToInclude;
             bool isUnreferenced = GetIfIsUnreferenced(item, project, referencedFiles, out nameToInclude);

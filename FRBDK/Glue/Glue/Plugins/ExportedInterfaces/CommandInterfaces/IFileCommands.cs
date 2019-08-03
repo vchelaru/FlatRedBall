@@ -22,6 +22,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         IEnumerable<string> GetAllFilesNeededOnDisk();
 
         List<string> GetAllReferencedFileNames();
+        List<FilePath> GetAllReferencedFilePaths();
 
         List<string> GetAllReferencedFileNames(TopLevelOrRecursive topLevelOrRecursive);
 

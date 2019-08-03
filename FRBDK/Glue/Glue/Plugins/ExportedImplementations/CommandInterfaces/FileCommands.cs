@@ -118,6 +118,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return GetAllReferencedFileNames(TopLevelOrRecursive.Recursive);
         }
 
+        public List<FilePath> GetAllReferencedFilePaths()
+        {
+            List<string> allFiles = new List<string>();
+
+            var allRfses = GetAllRfses();
+
+            FillAllFilesWithFilesInList(allFiles, allRfses, TopLevelOrRecursive.Recursive, ProjectOrDisk.Project);
+
+            return allFiles.Select(item => new FilePath(item)).ToList();
+        }
+
         public List<string> GetAllReferencedFileNames(TopLevelOrRecursive topLevelOrRecursive)
         {
             List<string> allFiles = new List<string>();
@@ -199,7 +210,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             foreach(var rfs in referencedFileList)
             {
-                allFiles.Add(rfs.Name);
+                
+                allFiles.Add(GlueCommands.GetAbsoluteFileName(rfs));
 
                 AddFilesReferenced(rfs.Name, allFiles, topLevelOrRecursive, projectOrFile);
 
