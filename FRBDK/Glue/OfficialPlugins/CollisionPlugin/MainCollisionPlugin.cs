@@ -86,7 +86,74 @@ namespace OfficialPlugins.CollisionPlugin
             this.ReactToItemSelectHandler += HandleTreeViewItemSelected;
 
             this.AddEventsForObject += HandleAddEventsForObject;
+
             this.GetEventSignatureArgs += GetEventSignatureAndArgs;
+
+            this.ReactToChangedPropertyHandler += HandlePropertyChanged;
+        }
+
+        private void HandlePropertyChanged(string changedMember, object oldValue)
+        {
+            var element = GlueState.Self.CurrentElement;
+            var namedObject = GlueState.Self.CurrentNamedObjectSave;
+
+            if(changedMember == nameof(NamedObjectSave.InstanceName) && namedObject != null)
+            {
+                var collisionRelationshipAti = AssetTypeInfoManager.Self.CollisionRelationshipAti;
+                var allNamedObjects = element.AllNamedObjects.ToArray();
+                var collisionRelationships = allNamedObjects
+                    .Where(item =>
+                    {
+                        TryFixSourceClassType(item);
+                        return item.GetAssetTypeInfo() == collisionRelationshipAti;
+                    })
+                    .ToArray();
+                    
+
+                var oldName = (string)oldValue;
+                bool changedAny = false;
+                var newName = namedObject.InstanceName;
+
+                string GetFirstCollision(NamedObjectSave nos)
+                {
+                    return nos.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.FirstCollisionName));
+                }
+
+                string GetSecondCollision(NamedObjectSave nos)
+                {
+                    return nos.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.SecondCollisionName));
+                }
+
+                var withFirst = collisionRelationships
+                    .Where(item => GetFirstCollision(item) == oldName)
+                    .ToArray();
+
+                foreach (var item in withFirst)
+                {
+                    item.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstCollisionName), newName);
+                    changedAny = true;
+                    GlueCommands.Self.PrintOutput($"Renaming {item.FieldName}.{oldName} to {item.FieldName}.{newName}");
+                    TryFixSourceClassType(item);
+                }
+
+                var withSecond = collisionRelationships
+                    .Where(item => GetSecondCollision(item) == oldName)
+                    .ToArray();
+
+                foreach (var item in withSecond)
+                {
+                    item.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionName), newName);
+                    changedAny = true;
+                    GlueCommands.Self.PrintOutput($"Renaming {item.FieldName}.{oldName} to {item.FieldName}.{newName}");
+                    TryFixSourceClassType(item);
+                }
+
+                if (changedAny)
+                {
+                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                }
+            }
         }
 
         private void GetEventSignatureAndArgs(NamedObjectSave namedObjectSave, EventResponseSave eventResponseSave, out string type, out string signatureArgs)

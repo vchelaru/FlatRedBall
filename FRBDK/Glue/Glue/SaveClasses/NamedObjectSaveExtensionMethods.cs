@@ -587,6 +587,7 @@ namespace FlatRedBall.Glue.SaveClasses
             return false;
         }
 
+        [Obsolete("This is confusingly named SetPropertyValue. You probably want to do thisObject.Properties.SetValue")]
         public static InstructionSave SetPropertyValue(this NamedObjectSave instance, string propertyName, object valueToSet)
         {
             InstructionSave instruction = instance.GetInstructionFromMember(propertyName);

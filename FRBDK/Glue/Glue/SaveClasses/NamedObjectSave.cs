@@ -929,6 +929,7 @@ namespace FlatRedBall.Glue.SaveClasses
             return null;
         }
 
+        [Obsolete("This confusingly is named GetProperties, but it actually searches the Instructions (variables) on the object. You might want to use thisObject.Properties.GetValue instead")]
         public object GetPropertyValue(string propertyName)
         {
             InstructionSave instruction = GetInstructionFromMember(propertyName);

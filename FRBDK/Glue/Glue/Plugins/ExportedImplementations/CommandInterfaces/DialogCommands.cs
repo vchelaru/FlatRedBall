@@ -527,8 +527,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         }
                         else
                         {
-
-                            string textToAssign = typeSelectControl.SourceClassType + "Instance";
+                            var classType = typeSelectControl.SourceClassType;
+                            if(classType?.Contains(".") == true)
+                            {
+                                // un-qualify if it's something like "FlatRedBall.Sprite"
+                                var lastIndex = classType.LastIndexOf(".");
+                                classType = classType.Substring(lastIndex + 1);
+                            }
+                            string textToAssign = classType + "Instance";
                             if (textToAssign.Contains("/") || textToAssign.Contains("\\"))
                             {
                                 textToAssign = FileManager.RemovePath(textToAssign);

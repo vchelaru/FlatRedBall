@@ -12,6 +12,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void GenerateCurrentElementCode();
 
+        /// <summary>
+        /// Generates the current element's code, using
+        /// TaskExecutionPreference.AddOrMoveToEnd
+        /// </summary>
         void GenerateCurrentElementCodeTask();
 
         void GenerateElementCode(IElement element);

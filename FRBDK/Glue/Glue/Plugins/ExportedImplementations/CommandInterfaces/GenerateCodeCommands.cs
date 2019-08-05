@@ -44,7 +44,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     CodeWriter.GenerateCode(element);
                 }
-            }, "Generating element");
+            }, $"Generating element {element}", TaskExecutionPreference.AddOrMoveToEnd);
         }
 
         public void GenerateCurrentElementCode()
