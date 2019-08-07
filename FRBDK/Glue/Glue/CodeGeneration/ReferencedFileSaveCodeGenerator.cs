@@ -61,7 +61,6 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock,  SaveClasses.IElement element)
         {
             #region Get the ContentManager variable to use
@@ -114,9 +113,14 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock,  SaveClasses.IElement element)
+        public static void GenerateAddToManagersStatic(ICodeBlock codeBlock,  SaveClasses.IElement element)
         {
-            return codeBlock;
+            for (int i = 0; i < element.ReferencedFiles.Count; i++)
+            {
+                PerformancePluginCodeGenerator.GenerateStart("Adding file " + element.ReferencedFiles[i].GetInstanceName());
+                codeBlock.InsertBlock(ReferencedFileSaveCodeGenerator.GetAddToManagersForReferencedFile(element, element.ReferencedFiles[i]));
+                PerformancePluginCodeGenerator.GenerateEnd();
+            }
         }
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock,  SaveClasses.IElement element)
@@ -157,6 +161,35 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             GenerateGetMember(codeBlock, element);
             return codeBlock;
+        }
+
+        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, IElement element)
+        {
+            foreach(var referencedFile in element.ReferencedFiles)
+            {
+                bool shouldAddToManagers = GetIfShouldAddToManagers(element, referencedFile);
+
+                if(shouldAddToManagers)
+                {
+                    // should also remove:
+                    var ati = referencedFile.GetAssetTypeInfo();
+
+                    if(!string.IsNullOrEmpty(ati.DestroyMethod))
+                    {
+                        var lineToAdd = ati.DestroyMethod.Replace("this",
+                            referencedFile.GetInstanceName());
+                        if(lineToAdd.EndsWith(";") == false)
+                        {
+                            lineToAdd += ";";
+                        }
+                        AddIfConditionalSymbolIfNecesssary(codeBlock, referencedFile);
+
+                        codeBlock.Line(lineToAdd);
+
+                        AddEndIfIfNecessary(codeBlock, referencedFile);
+                    }
+                }
+            }
         }
 
         private static void GenerateGetMember(ICodeBlock codeBlock, SaveClasses.IElement element)

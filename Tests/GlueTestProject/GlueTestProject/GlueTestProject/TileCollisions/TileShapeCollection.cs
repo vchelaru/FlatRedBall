@@ -601,6 +601,11 @@ namespace FlatRedBall.TileCollisions
             {
                 rectangle.Color = color;
             }
+            foreach (var polygon in this.Polygons)
+            {
+                polygon.Color = color;
+            }
+
         }
 
         public void RefreshAllRepositionDirections()
@@ -773,7 +778,12 @@ namespace FlatRedBall.TileCollisions
         {
             tileShapeCollection.AddCollisionFrom(
                 layeredTileMap, (list) => list.Any(item => item.Name == propertyName));
+        }
 
+        public static void AddMergedCollisionFromTilesWithProperty(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap, string propertyName)
+        {
+            tileShapeCollection.AddMergedCollisionFrom(
+                layeredTileMap, (list) => list.Any(item => item.Name == propertyName));
         }
 
         public static void AddCollisionFromTilesWithType(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap, string type)
@@ -782,11 +792,10 @@ namespace FlatRedBall.TileCollisions
                 layeredTileMap, (list) => list.Any(item => item.Name == "Type" && (item.Value as string) == type));
         }
 
-        public static void AddMergedCollisionFromTilesWithProperty(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap, string propertyName)
+        public static void AddMergedCollisionFromTilesWithType(this TileShapeCollection tileShapeCollection, LayeredTileMap layeredTileMap, string type)
         {
             tileShapeCollection.AddMergedCollisionFrom(
-                layeredTileMap, (list) => list.Any(item => item.Name == propertyName));
-
+                layeredTileMap, (list) => list.Any(item => item.Name == "Type" && (item.Value as string) == type));
         }
 
         private static void ApplyMerging(TileShapeCollection tileShapeCollection, float dimension, Dictionary<int, List<int>> rectangleIndexes)

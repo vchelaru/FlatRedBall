@@ -918,20 +918,12 @@ namespace FlatRedBallAddOns.Entities
             PerformancePluginCodeGenerator.GenerateStart(saveObject, currentBlock, addFilesToManagers);
 
 
-            #region Add all ReferencedFileSaves
-
             // Add referenced files before adding objects because the objects
             // may be aliases for the files (if using Entire File) and may add them
             // to layers.
-            for (int i = 0; i < saveObject.ReferencedFiles.Count; i++)
-            {
+            ReferencedFileSaveCodeGenerator.GenerateAddToManagersStatic(
+                currentBlock, saveObject);
 
-                PerformancePluginCodeGenerator.GenerateStart("Adding file " + saveObject.ReferencedFiles[i].GetInstanceName());
-                currentBlock.InsertBlock(ReferencedFileSaveCodeGenerator.GetAddToManagersForReferencedFile(saveObject, saveObject.ReferencedFiles[i]));
-                PerformancePluginCodeGenerator.GenerateEnd();
-            }
-
-            #endregion
             PerformancePluginCodeGenerator.GenerateEnd(saveObject, currentBlock, addFilesToManagers);
             PerformancePluginCodeGenerator.GenerateStart("Create layer instances");
 
@@ -1260,6 +1252,7 @@ namespace FlatRedBallAddOns.Entities
             bool isScreen = saveObject is ScreenSave;
             var currentBlock = codeBlock;
 
+
             foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators
                 // eventually split these up:
                 .Where(item => item.CodeLocation == CodeLocation.BeforeStandardGenerated))
@@ -1269,7 +1262,6 @@ namespace FlatRedBallAddOns.Entities
 
             #region Call base.Destroy if it has a derived object
 
-            // The Screen template already includes a call to base.Destroy
             if ( saveObject.InheritsFromEntity() || saveObject is ScreenSave )
             {
                 currentBlock.Line("base.Destroy();");

@@ -66,10 +66,11 @@ namespace NewProjectCreator.Managers
                     }
                 }
             }
-            catch
+            catch (Exception e)
             {
                 succeeded = false;
-                MessageBox.Show("The local .zip file could not be unzipped.  Deleting this file.  Attempt to create the project again to re-download it.");
+                MessageBox.Show("The local .zip file could not be unzipped.  Deleting this file.  Attempt to create the project again to re-download it." +
+                    $"\nAdditional info:\n\n{e.ToString()}");
                 File.Delete(zipToUnpack);
             }
 

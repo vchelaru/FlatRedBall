@@ -5654,10 +5654,34 @@
             </PropertySave>
             <PropertySave>
               <Name>SourceType</Name>
-              <ValueAsObject xsi:type="SourceType">File</ValueAsObject>
+              <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionCreationOptions</Name>
+              <ValueAsInt>5</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionTileSize</Name>
+              <ValueAsFloat>16</ValueAsFloat>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionFillWidth</Name>
+              <ValueAsInt>32</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionFillHeight</Name>
+              <ValueAsInt>1</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>SourceTmxName</Name>
+              <ValueAsString>TmxWithTileShapeCollectionLayers</ValueAsString>
+            </PropertySave>
+            <PropertySave>
+              <Name>CollisionLayerName</Name>
+              <ValueAsString>CollisionLayer1</ValueAsString>
             </PropertySave>
           </Properties>
-          <SourceType>File</SourceType>
+          <SourceType>FlatRedBallType</SourceType>
           <SourceFile>Screens/TmxScreen/TmxWithTileShapeCollectionLayers.tmx</SourceFile>
           <SourceName>CollisionLayer1 (FlatRedBall.TileCollisions.TileShapeCollection)</SourceName>
           <InstanceName>CollisionLayer1</InstanceName>
