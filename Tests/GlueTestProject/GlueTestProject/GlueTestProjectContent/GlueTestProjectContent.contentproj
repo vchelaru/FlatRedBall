@@ -545,6 +545,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>usercontrol</Name>
     </None>
+    <None Include="gumproject\components\folder with space\componentinfolderwithspace.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>componentinfolderwithspace</Name>
+    </None>
     <None Include="gumproject\components\folder1\folderedentity1.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>folderedentity1</Name>

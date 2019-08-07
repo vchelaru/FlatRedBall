@@ -199,7 +199,9 @@ namespace GumPlugin.CodeGeneration
             if (!string.IsNullOrEmpty(subNamespace))
             {
                 subNamespace = '.' + subNamespace;
+                subNamespace = subNamespace.Replace(" ", "_");
             }
+
 
             var fullNamespace = GueRuntimeNamespace + subNamespace;
 

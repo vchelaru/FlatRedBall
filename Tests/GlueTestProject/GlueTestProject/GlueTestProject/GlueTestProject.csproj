@@ -977,6 +977,10 @@
     <Compile Include="GumRuntimes\DerivedScreenGumRuntime.Generated.cs">
       <DependentUpon>DerivedScreenGumRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\Folder With Space\ComponentInFolderWithSpaceRuntime.cs" />
+    <Compile Include="GumRuntimes\Folder With Space\ComponentInFolderWithSpaceRuntime.Generated.cs">
+      <DependentUpon>ComponentInFolderWithSpaceRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\Folder1\FolderedEntity1Runtime.cs" />
     <Compile Include="GumRuntimes\Folder1\FolderedEntity1Runtime.Generated.cs">
       <DependentUpon>FolderedEntity1Runtime.cs</DependentUpon>

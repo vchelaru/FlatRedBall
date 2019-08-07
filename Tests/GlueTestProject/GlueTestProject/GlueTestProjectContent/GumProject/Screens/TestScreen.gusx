@@ -215,6 +215,30 @@
     </Variable>
     <Variable>
       <Type>float</Type>
+      <Name>ComponentInFolderWithSpaceInstance.Height</Name>
+      <Value xsi:type="xsd:float">26</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ComponentInFolderWithSpaceInstance.Width</Name>
+      <Value xsi:type="xsd:float">37</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ComponentInFolderWithSpaceInstance.X</Name>
+      <Value xsi:type="xsd:float">177</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ComponentInFolderWithSpaceInstance.Y</Name>
+      <Value xsi:type="xsd:float">-15</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
       <Name>ComponentWithCustomInitializeInstance.X</Name>
       <Value xsi:type="xsd:float">581</Value>
       <SetsValue>true</SetsValue>
@@ -1046,6 +1070,11 @@
   <Instance>
     <Name>ColoredComponentWithColoredStatesInstance</Name>
     <BaseType>ColoredComponentWithColoredStates</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>ComponentInFolderWithSpaceInstance</Name>
+    <BaseType>Folder With Space/ComponentInFolderWithSpace</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
 </ScreenSave>

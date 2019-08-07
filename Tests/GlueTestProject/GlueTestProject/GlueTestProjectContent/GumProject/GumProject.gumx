@@ -141,6 +141,10 @@
     <ElementType>Component</ElementType>
   </ComponentReference>
   <ComponentReference>
+    <Name>Folder With Space/ComponentInFolderWithSpace</Name>
+    <ElementType>Component</ElementType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>Folder1/FolderedEntity1</Name>
     <ElementType>Component</ElementType>
   </ComponentReference>
