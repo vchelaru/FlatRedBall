@@ -27,12 +27,12 @@ namespace GumPlugin.Managers
         {
             var component = FileManager.XmlDeserialize<ComponentSave>(filePath.Standardized);
 
-            AddComponent(component);
+            AddComponentToGumProject(component);
 
             component.Initialize(StandardElementsManager.Self.GetDefaultStateFor("Component"));
         }
 
-        internal void AddComponent(ComponentSave gumComponent)
+        internal void AddComponentToGumProject(ComponentSave gumComponent)
         {
             AppState.Self.GumProjectSave.Components.Add(gumComponent);
             var elementReference = new ElementReference
@@ -46,7 +46,7 @@ namespace GumPlugin.Managers
 
         }
 
-        internal void AddScreen(ScreenSave gumScreen)
+        internal void AddScreenToGumProject(ScreenSave gumScreen)
         {
             AppState.Self.GumProjectSave.Screens.Add(gumScreen);
             var elementReference = new ElementReference

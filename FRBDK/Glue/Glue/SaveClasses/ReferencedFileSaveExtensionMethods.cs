@@ -267,8 +267,17 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (!string.IsNullOrEmpty(instance.RuntimeType))
             {
-                return AvailableAssetTypes.Self.GetAssetTypeFromExtensionAndQualifiedRuntime(
+                // try finding one based on extension and type. If that doesn't exist, then just look at type
+
+                var found = AvailableAssetTypes.Self.GetAssetTypeFromExtensionAndQualifiedRuntime(
                     extension, instance.RuntimeType);
+
+                if(found == null)
+                {
+                    found = AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => item.QualifiedRuntimeTypeName.QualifiedType == instance.RuntimeType);
+                }
+
+                return found;
             }
             else
             {

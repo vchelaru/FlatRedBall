@@ -427,7 +427,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             bool shouldShowRuntimeType = instance.LoadedAtRuntime;
             if (shouldShowRuntimeType)
             {
-                IncludeMember("RuntimeType", typeof(ReferencedFileSave), new AvailableRuntimeTypeForExtensionConverter() { Extension = extension });
+                IncludeMember("RuntimeType", typeof(ReferencedFileSave), new AvailableRuntimeTypeConverter() { ReferencedFileSave = instance });
             }
             else
             {

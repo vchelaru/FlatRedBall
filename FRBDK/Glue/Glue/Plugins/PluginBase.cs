@@ -206,6 +206,8 @@ namespace FlatRedBall.Glue.Plugins
         /// </summary>
         public Func<List<Type>> GetUsedTypes { get; protected set; }
 
+        public Func<ReferencedFileSave, List<AssetTypeInfo>> GetAvailableAssetTypes { get; protected set; }
+
         #endregion
 
         #region Methods

@@ -293,29 +293,6 @@ namespace GumPlugin
 
         }
 
-        private void CreateToolbar()
-        {
-            gumToolbar = new GumToolbar();
-            gumToolbar.GumButtonClicked += HandleToolbarButtonClick;
-            base.AddToToolBar(gumToolbar, "Standard");
-        }
-
-        private void HandleToolbarButtonClick(object sender, EventArgs e)
-        {
-            var alreadyHasGumProject = AppState.Self.GumProjectSave != null;
-
-            if(alreadyHasGumProject == false)
-            {
-                HandleAddNewGumProject(null, null);
-            }
-            else
-            {
-                // open the Gum file:
-                var fileName = AppState.Self.GumProjectSave.FullFileName;
-                System.Diagnostics.Process.Start(fileName);
-            }
-        }
-
         private void AssignEvents()
         {
             this.ReactToLoadedGlux += HandleGluxLoad;
@@ -347,6 +324,51 @@ namespace GumPlugin
             this.GetEventSignatureArgs += HandleGetEventSignatureArgs;
 
             this.GetUsedTypes = HandleGetUsedTypes;
+
+            this.GetAvailableAssetTypes = HandleGetAvailableAssetTypes;
+        }
+
+        private void CreateToolbar()
+        {
+            gumToolbar = new GumToolbar();
+            gumToolbar.GumButtonClicked += HandleToolbarButtonClick;
+            base.AddToToolBar(gumToolbar, "Standard");
+        }
+
+        private void HandleToolbarButtonClick(object sender, EventArgs e)
+        {
+            var alreadyHasGumProject = AppState.Self.GumProjectSave != null;
+
+            if(alreadyHasGumProject == false)
+            {
+                HandleAddNewGumProject(null, null);
+            }
+            else
+            {
+                // open the Gum file:
+                var fileName = AppState.Self.GumProjectSave.FullFileName;
+                System.Diagnostics.Process.Start(fileName);
+            }
+        }
+
+        private List<AssetTypeInfo> HandleGetAvailableAssetTypes(ReferencedFileSave referencedFileSave)
+        {
+            var element = CodeGeneratorManager.GetElementFrom(referencedFileSave);
+
+            if(element != null)
+            {
+
+                var foundItem = AssetTypeInfoManager.Self.AssetTypesForThisProject
+                    .Where(item => item.QualifiedRuntimeTypeName.QualifiedType ==
+                        GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element));
+
+                if(foundItem.Any())
+                {
+                    return foundItem.ToList();
+                }
+            }
+
+            return null;
         }
 
         private List<Type> HandleGetUsedTypes()
@@ -369,7 +391,7 @@ namespace GumPlugin
 
         private void HandleNewScreen(FlatRedBall.Glue.SaveClasses.ScreenSave newScreen)
         {
-            bool createGumScreen = propertiesManager.GetAutoCreateGumScreens();
+            bool createGumScreen = propertiesManager.GetShouldAutoCreateGumScreens();
 
             if(createGumScreen && AppState.Self.GumProjectSave != null)
             {
@@ -384,7 +406,7 @@ namespace GumPlugin
 
                     string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
-                    AppCommands.Self.AddScreen(gumScreen);
+                    AppCommands.Self.AddScreenToGumProject(gumScreen);
 
                     AppCommands.Self.SaveGumx(saveAllElements: false);
 

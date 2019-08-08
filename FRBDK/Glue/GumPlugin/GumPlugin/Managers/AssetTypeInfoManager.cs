@@ -337,6 +337,7 @@ namespace GumPlugin.Managers
         {
             var list = GetAtisForDerivedGues();
 
+            AssetTypesForThisProject.Clear();
             AssetTypesForThisProject.AddRange(list);
 
             foreach (var item in list)
@@ -384,9 +385,24 @@ namespace GumPlugin.Managers
                 newAti.CustomLoadMethod = ComponentAti.CustomLoadMethod + " as " + 
                     GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
             }
+            if(element is Gum.DataTypes.ScreenSave)
+            {
+                var qualifiedName = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
+
+                newAti.CustomLoadMethod = "FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();" +
+                    $"{{THIS}} = ({qualifiedName})GumRuntime.ElementSaveExtensions.CreateGueForElement( " +
+                        "Gum.Managers.ObjectFinder.Self.GetScreen(" +
+                            "FlatRedBall.IO.FileManager.RemoveExtension(FlatRedBall.IO.FileManager.RemovePath(\"{FILE_NAME}\"))), true)";
+
+                newAti.AddToManagersFunc = null;
+                newAti.AddToManagersMethod.Clear();
+                newAti.AddToManagersMethod.AddRange(screenAti.AddToManagersMethod);
+            }
             string unqualifiedName = element.Name + "Runtime";
             newAti.FriendlyName = unqualifiedName;
             newAti.ConstructorFunc = GetGumElementConstructorFunct;
+
+
 
             newAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\") as " +
                 newAti.QualifiedRuntimeTypeName.QualifiedType;

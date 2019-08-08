@@ -150,7 +150,14 @@ namespace GumPlugin.Managers
             }
         }
 
-        private ElementSave GetElementFromFile(FilePath file)
+        public static ElementSave GetElementFrom(ReferencedFileSave rfs)
+        {
+            FilePath filePath = GlueCommands.Self.GetAbsoluteFileName(rfs);
+
+            return GetElementFromFile(filePath);
+        }
+
+        private static ElementSave GetElementFromFile(FilePath file)
         {
             var extension = file.Extension;
 

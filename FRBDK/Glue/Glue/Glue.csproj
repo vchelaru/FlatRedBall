@@ -704,7 +704,7 @@
     <Compile Include="FormHelpers\StringConverters\AvailableNamedObjectsAndFiles.cs" />
     <Compile Include="FormHelpers\StringConverters\AvailablePrimitiveTypeArraysStringConverter.cs" />
     <Compile Include="FormHelpers\StringConverters\AvailablePrimitiveTypeStringConverter.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableRuntimeTypeForExtensionConverter.cs" />
+    <Compile Include="FormHelpers\StringConverters\AvailableRuntimeTypeConverter.cs" />
     <Compile Include="FormHelpers\StringConverters\AvailableScreenTypeConverter.cs" />
     <Compile Include="FormHelpers\StringConverters\AvailableSpreadsheetValueTypeConverter.cs" />
     <Compile Include="FormHelpers\StringConverters\AvailableStates.cs" />

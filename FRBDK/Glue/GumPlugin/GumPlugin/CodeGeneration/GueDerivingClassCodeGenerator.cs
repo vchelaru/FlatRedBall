@@ -631,7 +631,7 @@ namespace GumPlugin.CodeGeneration
         {
             var stringBuilder = new StringBuilder();
 
-            var namedObjectName = namedObjectSave.FieldName;
+            var namedObjectName = namedObjectSave?.FieldName ?? referencedFileSave.GetInstanceName();
             string layerCode = "null";
             if(!string.IsNullOrEmpty(layerName))
             {
@@ -642,7 +642,7 @@ namespace GumPlugin.CodeGeneration
                 stringBuilder.AppendLine( "{");
                 stringBuilder.AppendLine( $"{namedObjectName}.AddToManagers(RenderingLibrary.SystemManagers.Default, {layerCode});");
 
-                var shouldGenerateWrapper = namedObjectSave.AttachToContainer;
+                var shouldGenerateWrapper = namedObjectSave?.AttachToContainer == true;
 
                 if(shouldGenerateWrapper)
                 {

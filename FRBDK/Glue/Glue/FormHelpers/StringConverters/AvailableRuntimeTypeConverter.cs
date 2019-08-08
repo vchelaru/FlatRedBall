@@ -4,15 +4,18 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue.FormHelpers.StringConverters
 {
-    class AvailableRuntimeTypeForExtensionConverter  : TypeConverter
+    class AvailableRuntimeTypeConverter : TypeConverter
     {
-        public string Extension
+        string Extension => FlatRedBall.IO.FileManager.GetExtension(ReferencedFileSave.Name);
+
+        public ReferencedFileSave ReferencedFileSave
         {
-            get;
-            set;
+            get; set;
         }
 
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
@@ -36,6 +39,12 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
                     toReturn.Add(ati.QualifiedRuntimeTypeName.QualifiedType);
                 }
             }
+
+            var additionalAssetTypeNames = PluginManager
+                .GetAvailableAssetTypes(ReferencedFileSave)
+                .Select(item => item.QualifiedRuntimeTypeName.QualifiedType);
+
+            toReturn.AddRange(additionalAssetTypeNames);
 
             return new StandardValuesCollection(toReturn);
         }

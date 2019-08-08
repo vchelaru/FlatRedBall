@@ -18,7 +18,7 @@ namespace GumPlugin.Managers
 
         public bool IsReactingToProperyChanges { get; internal set; } = true;
 
-        public bool GetAutoCreateGumScreens()
+        public bool GetShouldAutoCreateGumScreens()
         {
             var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
             if (gumRfs != null)

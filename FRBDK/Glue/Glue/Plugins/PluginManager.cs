@@ -102,37 +102,16 @@ namespace FlatRedBall.Glue.Plugins
 
         private static MenuStrip mMenuStrip;
 
-        private static TabControl mTopTab;
-        private static TabControl mLeftTab;
-        private static TabControl mBottomTab;
-        private static TabControl mRightTab;
-        private static TabControl mCenterTab;
-
 
         // not sure who should provide access to these tabs, but
         // we want to make it easier to get access to them instead
         // of having to explicitly define plugin types tied to certain
         // sides:
-        public static TabControl TopTab
-        {
-            get { return mTopTab; }
-        }
-        public static TabControl LeftTab
-        {
-            get { return mLeftTab; }
-        }
-        public static TabControl BottomTab
-        {
-            get { return mBottomTab; }
-        }
-        public static TabControl RightTab
-        {
-            get { return mRightTab; }
-        }
-        public static TabControl CenterTab
-        {
-            get { return mCenterTab; }
-        }
+        public static TabControl TopTab { get; private set; }
+        public static TabControl LeftTab { get; private set; }
+        public static TabControl BottomTab { get; private set; }
+        public static TabControl RightTab { get; private set; }
+        public static TabControl CenterTab { get; private set; }
         public static System.Windows.Controls.ToolBarTray ToolBarTray
         {
             get;
@@ -182,7 +161,8 @@ namespace FlatRedBall.Glue.Plugins
 
         #endregion
 
-        #region Methods
+        #region Constructor/Initialize
+
 
         public PluginManager(bool global)
             : base(global)
@@ -478,39 +458,6 @@ namespace FlatRedBall.Glue.Plugins
             return dirInfo;
         }
 
-        private static void UninstallPlugins()
-        {
-            if (File.Exists(UninstallPluginWindow.UninstallPluginFile))
-            {
-                string line;
-                // Read the file and display it line by line.
-                var file = new StreamReader(UninstallPluginWindow.UninstallPluginFile);
-                while ((line = file.ReadLine()) != null)
-                {
-                    try
-                    {
-                        Directory.Delete(line, true);
-                        EditorObjects.IoC.Container.Get<IGlueCommands>().PrintOutput($"Uninstalled plugin at {line}");
-                    }
-                    catch (Exception e)
-                    {
-                        // Tolerate this
-                        // do nothing (for now)
-                    }
-                }
-
-                file.Close();
-
-                try
-                {
-                    File.Delete(UninstallPluginWindow.UninstallPluginFile);
-                }
-                catch (Exception e)
-                {
-                    // Tolerate this, don't crash Glue
-                }
-            }
-        }
 
         private static void CopyIntalledPluginsToRunnableLocation()
         {
@@ -560,6 +507,44 @@ namespace FlatRedBall.Glue.Plugins
                 pluginDirectories.AddRange(Directory.GetDirectories(FileManager.GetDirectory(ProjectManager.GlueProjectFileName) + "Plugins"));
             }
         }
+
+        #endregion
+
+        private static void UninstallPlugins()
+        {
+            if (File.Exists(UninstallPluginWindow.UninstallPluginFile))
+            {
+                string line;
+                // Read the file and display it line by line.
+                var file = new StreamReader(UninstallPluginWindow.UninstallPluginFile);
+                while ((line = file.ReadLine()) != null)
+                {
+                    try
+                    {
+                        Directory.Delete(line, true);
+                        EditorObjects.IoC.Container.Get<IGlueCommands>().PrintOutput($"Uninstalled plugin at {line}");
+                    }
+                    catch (Exception e)
+                    {
+                        // Tolerate this
+                        // do nothing (for now)
+                    }
+                }
+
+                file.Close();
+
+                try
+                {
+                    File.Delete(UninstallPluginWindow.UninstallPluginFile);
+                }
+                catch (Exception e)
+                {
+                    // Tolerate this, don't crash Glue
+                }
+            }
+        }
+
+        #region Methods
 
         internal static void AddNewFileOptions(NewFileWindow newFileWindow)
         {
@@ -659,6 +644,19 @@ namespace FlatRedBall.Glue.Plugins
             return createdFile;
         }
 
+        internal static List<AssetTypeInfo> GetAvailableAssetTypes(ReferencedFileSave referencedFileSave)
+        {
+            List<AssetTypeInfo> listToReturn = new List<AssetTypeInfo>();
+            CallMethodOnPlugin(plugin =>
+            {
+                listToReturn.AddRange( plugin.GetAvailableAssetTypes(referencedFileSave));
+            },
+            nameof(GetAvailableAssetTypes),
+            plugin => plugin.GetAvailableAssetTypes != null);
+
+            return listToReturn;
+        }
+
         internal static void HandleFileReadError(FilePath filePath, GeneralResponse response)
         {
             CallMethodOnPluginNotUiThread(
@@ -716,11 +714,11 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void SetTabs(TabControl top, TabControl bottom, TabControl left, TabControl right, TabControl center, ToolbarControl toolbar)
         {
-            mTopTab = top;
-            mLeftTab = left;
-            mRightTab = right;
-            mBottomTab = bottom;
-            mCenterTab = center;
+            TopTab = top;
+            LeftTab = left;
+            RightTab = right;
+            BottomTab = bottom;
+            CenterTab = center;
 
             ToolBarTray = toolbar.ToolBarTray;
         }
@@ -1070,24 +1068,22 @@ namespace FlatRedBall.Glue.Plugins
         {
             CallMethodOnPlugin((plugin) =>
             {
-                if (plugin.ReactToEntityRemoved != null)
-                {
-                    plugin.ReactToEntityRemoved(entity, filesToRemove);
-                }
+                plugin.ReactToEntityRemoved(entity, filesToRemove);
             },
-            nameof(ReactToEntityRemoved));
+            nameof(ReactToEntityRemoved),
+            (plugin) => plugin.ReactToEntityRemoved != null);
         }
 
         internal static void ReactToScreenRemoved(ScreenSave screenSave, List<string> filesToRemove)
         {
             CallMethodOnPlugin((plugin) =>
             {
-                if (plugin.ReactToScreenRemoved != null)
-                {
-                    plugin.ReactToScreenRemoved(screenSave, filesToRemove);
-                }
+                
+                plugin.ReactToScreenRemoved(screenSave, filesToRemove);
+                
             },
-            nameof(ReactToScreenRemoved));
+            nameof(ReactToScreenRemoved),
+            plugin => plugin.ReactToScreenRemoved != null);
             
         }
 
@@ -1135,24 +1131,20 @@ namespace FlatRedBall.Glue.Plugins
         {
             CallMethodOnPlugin((plugin) =>
             {
-                if (plugin.ReactToNewScreenCreated != null)
-                {
-                    plugin.ReactToNewScreenCreated(screen);
-                }
+                plugin.ReactToNewScreenCreated(screen);
             },
-            nameof(ReactToNewScreenCreated));
+            nameof(ReactToNewScreenCreated),
+            plugin => plugin.ReactToNewScreenCreated != null);
         }
 
         internal static void ReactToNewEntityCreated(EntitySave entitySave, AddEntityWindow window)
         {
             CallMethodOnPlugin((plugin) =>
             {
-                if(plugin.ReactToNewEntityCreated != null)
-                {
-                    plugin.ReactToNewEntityCreated(entitySave, window);
-                }
+                plugin.ReactToNewEntityCreated(entitySave, window);
             },
-            nameof(ReactToNewEntityCreated));
+            nameof(ReactToNewEntityCreated),
+            plugin => plugin.ReactToNewScreenCreated != null);
         }
 
         internal static bool OpenSolution(string solutionName)
@@ -1719,10 +1711,9 @@ namespace FlatRedBall.Glue.Plugins
                     var container = pluginManager.mPluginContainers[plugin];
                     if (container.IsEnabled)
                     {
-                        PluginBase plugin1 = plugin;
                         PluginCommand(() =>
                         {
-                            plugin1.ReactToVariableRemoved(removedVariable);
+                            plugin.ReactToVariableRemoved(removedVariable);
                         }, container, "Failed in ReactToVariableRemoved");
                     }
                 }
@@ -1951,22 +1942,22 @@ namespace FlatRedBall.Glue.Plugins
                 // Reinitialize the plugin interfaces
                 var plugin = pluginToReenable as PluginBase;
                 if (plugin.InitializeBottomTabHandler != null)
-                    plugin.InitializeBottomTabHandler(mBottomTab);
+                    plugin.InitializeBottomTabHandler(BottomTab);
 
                 if (plugin.InitializeCenterTabHandler != null)
-                    plugin.InitializeCenterTabHandler(mCenterTab);
+                    plugin.InitializeCenterTabHandler(CenterTab);
 
                 if (plugin.InitializeLeftTabHandler != null)
-                    plugin.InitializeLeftTabHandler(mLeftTab);
+                    plugin.InitializeLeftTabHandler(LeftTab);
 
                 if (plugin.InitializeMenuHandler != null)
                     plugin.InitializeMenuHandler(mMenuStrip);
 
                 if (plugin.InitializeRightTabHandler != null)
-                    plugin.InitializeRightTabHandler(mRightTab);
+                    plugin.InitializeRightTabHandler(RightTab);
 
                 if (plugin.InitializeTopTabHandler != null)
-                    plugin.InitializeTopTabHandler(mTopTab);
+                    plugin.InitializeTopTabHandler(TopTab);
             }
 
             if (pluginToReenable is IMenuStripPlugin)
@@ -1976,27 +1967,27 @@ namespace FlatRedBall.Glue.Plugins
 
             if (pluginToReenable is ITopTab)
             {
-                ((ITopTab)pluginToReenable).InitializeTab(mTopTab);
+                ((ITopTab)pluginToReenable).InitializeTab(TopTab);
             }
 
             if (pluginToReenable is ILeftTab)
             {
-                ((ILeftTab)pluginToReenable).InitializeTab(mLeftTab);
+                ((ILeftTab)pluginToReenable).InitializeTab(LeftTab);
             }
 
             if (pluginToReenable is IBottomTab)
             {
-                ((IBottomTab)pluginToReenable).InitializeTab(mBottomTab);
+                ((IBottomTab)pluginToReenable).InitializeTab(BottomTab);
             }
 
             if (pluginToReenable is IRightTab)
             {
-                ((IRightTab)pluginToReenable).InitializeTab(mRightTab);
+                ((IRightTab)pluginToReenable).InitializeTab(RightTab);
             }
 
             if (pluginToReenable is ICenterTab)
             {
-                ((ICenterTab)pluginToReenable).InitializeTab(mCenterTab);
+                ((ICenterTab)pluginToReenable).InitializeTab(CenterTab);
             }
         }
 
@@ -2031,27 +2022,22 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void AdjustDisplayedScreen(ScreenSave screenSave, ScreenSavePropertyGridDisplayer screenSaveDisplayer)
         {
-            CallMethodOnPlugin(
-                delegate(PluginBase plugin)
-                {
-                    if (plugin.AdjustDisplayedScreen != null)
-                    {
-                        plugin.AdjustDisplayedScreen(screenSave, screenSaveDisplayer);
-                    }
-                },
-                "AdjustDisplayedScreen");
+            CallMethodOnPlugin(plugin =>
+            {
+                plugin.AdjustDisplayedScreen(screenSave, screenSaveDisplayer);
+            },
+            nameof(AdjustDisplayedScreen),
+            plugin => plugin.AdjustDisplayedScreen != null);
         }
 
         internal static void ModifyAddEntityWindow(AddEntityWindow addEntityWindow)
         {
             CallMethodOnPlugin((plugin) =>
             {
-                if(plugin.ModifyAddEntityWindow != null)
-                {
-                    plugin.ModifyAddEntityWindow(addEntityWindow);
-                }
+                plugin.ModifyAddEntityWindow(addEntityWindow);
             },
-            nameof(ModifyAddEntityWindow));
+            nameof(ModifyAddEntityWindow),
+            plugin => plugin.ModifyAddEntityWindow != null);
         }
 
         internal static void AdjustDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer entitySaveDisplayer)
@@ -2059,10 +2045,10 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 delegate(PluginBase plugin)
                 {
-                    if (plugin.AdjustDisplayedEntity != null)
-                        plugin.AdjustDisplayedEntity(entitySave, entitySaveDisplayer);
+                    plugin.AdjustDisplayedEntity(entitySave, entitySaveDisplayer);
                 },
-                "AdjustDisplayedEntity");
+                nameof(AdjustDisplayedEntity),
+                plugin => plugin.AdjustDisplayedEntity != null);
         }
 
         internal static void AdjustDisplayedNamedObject(NamedObjectSave namedObject, NamedObjectPropertyGridDisplayer displayer)
@@ -2070,10 +2056,10 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 delegate(PluginBase plugin)
                 {
-                    if (plugin.AdjustDisplayedNamedObject != null)
-                        plugin.AdjustDisplayedNamedObject(namedObject, displayer);
+                    plugin.AdjustDisplayedNamedObject(namedObject, displayer);
                 },
-                "AdjustDisplayedNamedObject");
+                nameof(AdjustDisplayedNamedObject),
+                plugin => plugin.AdjustDisplayedNamedObject != null);
         }
 
         internal static void AdjustDisplayedCustomVariable(CustomVariable customVariable, CustomVariablePropertyGridDisplayer displayer)
@@ -2081,10 +2067,10 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 delegate(PluginBase plugin)
                 {
-                    if (plugin.AdjustDisplayedCustomVariable != null)
-                        plugin.AdjustDisplayedCustomVariable(customVariable, displayer);
+                    plugin.AdjustDisplayedCustomVariable(customVariable, displayer);
                 },
-                "AdjustDisplayedNamedObject");
+                nameof(AdjustDisplayedCustomVariable),
+                plugin => plugin.AdjustDisplayedCustomVariable != null);
         }
 
         internal static void AdjustDisplayedReferencedFile(ReferencedFileSave referencedFileSave, ReferencedFileSavePropertyGridDisplayer displayer)
@@ -2092,10 +2078,10 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 delegate(PluginBase plugin)
                 {
-                    if (plugin.AdjustDisplayedReferencedFile != null)
-                        plugin.AdjustDisplayedReferencedFile(referencedFileSave, displayer);
+                    plugin.AdjustDisplayedReferencedFile(referencedFileSave, displayer);
                 },
-                "AdjustDisplayedNamedObject");
+                nameof(AdjustDisplayedReferencedFile),
+                plugin => plugin.AdjustDisplayedReferencedFile != null);
         }
 
         static void CallMethodOnPluginNotUiThread(Action<PluginBase> methodToCall, string methodName)
@@ -2120,20 +2106,28 @@ namespace FlatRedBall.Glue.Plugins
             
         }
 
-        static void CallMethodOnPlugin(Action<PluginBase> methodToCall, string methodName)
+        static void CallMethodOnPlugin(Action<PluginBase> methodToCall, string methodName, Predicate<PluginBase> predicate)
         {
             foreach (PluginManager manager in mInstances)
             {
-                foreach (var plugin in manager.PluginContainers.Keys.Where(plugin => plugin is PluginBase))
+                var plugins = manager.PluginContainers.Keys.Where(plugin => plugin is PluginBase)
+                    .Select(item => item as PluginBase);
+                if(predicate != null)
+                {
+                    plugins = plugins.Where(item => predicate(item));
+                }
+
+                var pluginArray = plugins.ToArray();
+
+                foreach (var plugin in pluginArray)
                 {
                     PluginContainer container = manager.PluginContainers[plugin];
 
                     if (container.IsEnabled)
                     {
-                        IPlugin plugin1 = plugin;
                         PluginCommand(() =>
                             {
-                                methodToCall(plugin1 as PluginBase);
+                                methodToCall(plugin);
                             },container, "Failed in " + methodName);
                     }
                 }
@@ -2548,12 +2542,12 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 delegate(PluginBase plugin)
                 {
-                    if (plugin.ReactToLoadedSyncedProject != null)
-                        plugin.ReactToLoadedSyncedProject(projectBase);
+                    plugin.ReactToLoadedSyncedProject(projectBase);
                 },
-                "ReactToSyncedProjectLoad");
+                nameof(ReactToSyncedProjectLoad),
+                plugin => plugin.ReactToLoadedSyncedProject != null);
 
-            ResumeRelativeDirectory("ReactToSyncedProjectLoad");
+            ResumeRelativeDirectory(nameof(ReactToSyncedProjectLoad));
         }
 
         public static TypeConverter GetTypeConverter(IElement container, NamedObjectSave instance, TypedMemberBase typedMember)
@@ -2565,18 +2559,17 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 delegate (PluginBase plugin)
                 {
-                    if (plugin.GetTypeConverter != null)
+                    var foundValue = plugin.GetTypeConverter(container, instance, typedMember);
+                    if (foundValue != null)
                     {
-                        var foundValue = plugin.GetTypeConverter(container, instance, typedMember);
-                        if (foundValue != null)
-                        {
-                            toReturn = foundValue;
-                        }
+                        toReturn = foundValue;
                     }
+                    
                 },
-                "GetTypeConverter");
+                nameof(GetTypeConverter),
+                plugin => plugin.GetTypeConverter != null);
 
-            ResumeRelativeDirectory("GetTypeConverter");
+            ResumeRelativeDirectory(nameof(GetTypeConverter));
 
             return toReturn;
         }
@@ -2589,19 +2582,17 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 delegate (PluginBase plugin)
                 {
-                    if (plugin.GetEventSignatureArgs != null)
+                    string tempFoundType;
+                    string tempFoundArgs;
+                    plugin.GetEventSignatureArgs(namedObjectSave, eventResponseSave, out tempFoundType, out tempFoundArgs);
+                    if (tempFoundType != null)
                     {
-                        string tempFoundType;
-                        string tempFoundArgs;
-                        plugin.GetEventSignatureArgs(namedObjectSave, eventResponseSave, out tempFoundType, out tempFoundArgs);
-                        if (tempFoundType != null)
-                        {
-                            foundType = tempFoundType;
-                            foundArgs = tempFoundArgs;
-                        }
+                        foundType = tempFoundType;
+                        foundArgs = tempFoundArgs;
                     }
                 },
-                "GetEventSignatureArgs");
+                nameof(GetEventSignatureArgs),
+                plugin => plugin.GetEventSignatureArgs != null);
 
             type = foundType;
             args = foundArgs;
@@ -2616,14 +2607,12 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 delegate (PluginBase plugin)
                 {
-                    if (plugin.WriteInstanceVariableAssignment != null)
-                    {
-                        plugin.WriteInstanceVariableAssignment(namedObject, codeBlock, instructionSave);
-                    }
+                    plugin.WriteInstanceVariableAssignment(namedObject, codeBlock, instructionSave);   
                 },
-                "WriteInstanceVariableAssignment");
+                nameof(WriteInstanceVariableAssignment),
+                plugin => plugin.WriteInstanceVariableAssignment != null);
 
-            ResumeRelativeDirectory("GetTypeConverter");
+            ResumeRelativeDirectory(nameof(WriteInstanceVariableAssignment));
         }
 
         internal static void AddEventsForObject(NamedObjectSave namedObjectSave, List<ExposableEvent> listToFill)
