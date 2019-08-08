@@ -9,6 +9,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Gum.DataTypes;
 using System.Windows.Forms;
 using FlatRedBall.IO;
+using GumPlugin.CodeGeneration;
 
 namespace GumPlugin.Managers
 {
@@ -122,8 +123,24 @@ namespace GumPlugin.Managers
             {
                 bool cancelled = false;
 
-                FlatRedBall.Glue.FormHelpers.RightClickHelper.AddSingleFile(
+                var newRfs = FlatRedBall.Glue.FormHelpers.RightClickHelper.AddSingleFile(
                     fullFileName, ref cancelled);
+
+                // prior to doing any codegen, need to refresh the project specific ATIs:
+                AssetTypeInfoManager.Self.RefreshProjectSpecificAtis();
+
+
+                var element = CodeGeneratorManager.GetElementFrom(newRfs);
+
+                if(element != null)
+                {
+                    newRfs.RuntimeType =
+                        GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
+
+                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+
+                }
             }
             else
             {

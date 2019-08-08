@@ -333,7 +333,7 @@ namespace GumPlugin.Managers
             }
         }
 
-        public void AddProjectSpecificAtis()
+        public void RefreshProjectSpecificAtis()
         {
             var list = GetAtisForDerivedGues();
 

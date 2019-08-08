@@ -314,7 +314,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 PluginManager.ReactToNewFile(toReturn);
                 GluxCommands.Self.SaveGlux();
-                TaskManager.Self.AddSync(GluxCommands.Self.ProjectCommands.SaveProjects, "Saving projects after adding file");
+                TaskManager.Self.Add(GluxCommands.Self.ProjectCommands.SaveProjects, "Saving projects after adding file");
 
             }
 

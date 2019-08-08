@@ -569,7 +569,7 @@ namespace GumPlugin
                     GumProjectManager.Self.ReloadProject();
 
                     // Something could have changed - more components could have been added
-                    AssetTypeInfoManager.Self.AddProjectSpecificAtis();
+                    AssetTypeInfoManager.Self.RefreshProjectSpecificAtis();
 
                     if (extension == GumProjectSave.ProjectExtension)
                     {
@@ -647,7 +647,7 @@ namespace GumPlugin
             propertiesManager.UpdateUseAtlases();
 
             // These are needed for code gen
-            AssetTypeInfoManager.Self.AddProjectSpecificAtis();
+            AssetTypeInfoManager.Self.RefreshProjectSpecificAtis();
 
             EventsManager.Self.RefreshEvents();
         }
