@@ -149,21 +149,53 @@ namespace GumPlugin.CodeGeneration
 
             // This needs to be public because it can be exposed as public in a public class
             //ICodeBlock currentBlock = codeBlock.Class("partial", runtimeClassName, " : Gum.Wireframe.GraphicalUiElement");
-            ICodeBlock currentBlock = codeBlock.Class("public partial", runtimeClassName, " : Gum.Wireframe.GraphicalUiElement");
+            ICodeBlock classBodyBlock = codeBlock.Class("public partial", runtimeClassName, " : Gum.Wireframe.GraphicalUiElement");
 
-            GueDerivingClassCodeGenerator.Self.GenerateConstructor(standardElementSave, currentBlock, runtimeClassName);
+            GueDerivingClassCodeGenerator.Self.GenerateConstructor(standardElementSave, classBodyBlock, runtimeClassName);
 
-            string containedGraphicalObjectName = CreateContainedObjectMembers(currentBlock, standardElementSave);
+            string containedGraphicalObjectName = CreateContainedObjectMembers(classBodyBlock, standardElementSave);
 
-            GenerateStates(standardElementSave, currentBlock);
+            GenerateStates(standardElementSave, classBodyBlock);
 
-            GenerateVariableProperties(standardElementSave, currentBlock, containedGraphicalObjectName);
+            GenerateVariableProperties(standardElementSave, classBodyBlock, containedGraphicalObjectName);
 
-            GenerateAssignDefaultState(standardElementSave, currentBlock);
+            GenerateAssignDefaultState(standardElementSave, classBodyBlock);
+
+            if(standardElementSave.Name == "Container")
+            {
+                GenerateGenericContainerCode(codeBlock);
+            }
 
             return true;
         }
 
+        private void GenerateGenericContainerCode(ICodeBlock codeBlock)
+        {
+            codeBlock.Line(@"
+    public class ContainerRuntime<T> : ContainerRuntime where T : Gum.Wireframe.GraphicalUiElement
+    {
+        public new System.Collections.Generic.IEnumerable<T> Children
+        {
+            get
+            {
+                foreach(T item in base.Children)
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        public ContainerRuntime(bool fullInstantiation = true, bool tryCreateFormsObject = true) : base(fullInstantiation, tryCreateFormsObject)
+        {
+        }
+
+        public void AddChild(T newChild)
+        {
+            base.Children.Add(newChild);
+        }
+    }
+");
+        }
 
         private void GenerateAssignDefaultState(ElementSave elementSave, ICodeBlock currentBlock)
         {

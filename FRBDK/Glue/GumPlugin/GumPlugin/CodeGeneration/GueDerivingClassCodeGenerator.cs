@@ -183,12 +183,18 @@ namespace GumPlugin.CodeGeneration
 
         public string GetFullRuntimeNamespaceFor(ElementSave elementSave)
         {
+            string elementName = elementSave.Name;
+            var isStandardElement = elementSave is StandardElementSave;
 
+            return GetFullRuntimeNamespaceFor(isStandardElement, elementName);
+        }
+
+        private string GetFullRuntimeNamespaceFor(bool isStandardElement, string elementName)
+        {
             string subNamespace = null;
-
-            if ((elementSave is Gum.DataTypes.ScreenSave || elementSave is Gum.DataTypes.ComponentSave) && (elementSave.Name.Contains('/')))
+            if (isStandardElement == false && (elementName.Contains('/')))
             {
-                subNamespace = elementSave.Name.Substring(0, elementSave.Name.LastIndexOf('/')).Replace('/', '.');
+                subNamespace = elementName.Substring(0, elementName.LastIndexOf('/')).Replace('/', '.');
             }
             else // if(elementSave is StandardElementSave)
             {
@@ -225,7 +231,7 @@ namespace GumPlugin.CodeGeneration
 
         #region Generate Properties
 
-        public string GetQualifiedRuntimeTypeFor(InstanceSave instance)
+        public string GetQualifiedRuntimeTypeFor(InstanceSave instance, ElementSave container)
         {
             var element = ObjectFinder.Self.GetElementSave(instance);
             if(element == null)
@@ -234,7 +240,26 @@ namespace GumPlugin.CodeGeneration
             }
             else
             {
-                return GetQualifiedRuntimeTypeFor(element);
+                var qualifiedRuntimeType = GetQualifiedRuntimeTypeFor(element);
+
+                var isContainer = element is StandardElementSave && element.Name == "Container";
+
+                if(isContainer)
+                {
+                    var variable = instance.Name + ".Contained Type";
+                    var genericType = (string)container.DefaultState.GetValueRecursive(variable);
+
+                    if(!string.IsNullOrEmpty(genericType))
+                    {
+                        var qualifiedGenericType = GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(false, genericType) +
+                            "." + 
+                            FlatRedBall.IO.FileManager.RemovePath(genericType) + "Runtime";
+
+                        qualifiedRuntimeType += $"<{qualifiedGenericType}>";
+                    }
+                }
+
+                return qualifiedRuntimeType;
             }
         }
 
@@ -262,7 +287,7 @@ namespace GumPlugin.CodeGeneration
             }
             foreach (var instance in elementSave.Instances)
             {
-                string type = GetQualifiedRuntimeTypeFor(instance);
+                string type = GetQualifiedRuntimeTypeFor(instance, elementSave);
 
                 if (GetIfInstanceReferencesValidComponent(instance))
                 {
@@ -482,7 +507,7 @@ namespace GumPlugin.CodeGeneration
                             // Use the actual instance name rather than MemberNameInCode here, because it may differ
                             // if there's invalid member characters like dashes
                             $" = this.GetGraphicalUiElementByName(\"{instance.Name}\") as " + 
-                            GetQualifiedRuntimeTypeFor(instance) + ";");
+                            GetQualifiedRuntimeTypeFor(instance, elementSave) + ";");
                         
                         foreach (var eventSave in elementSave.Events.Where(item =>
                             item.GetSourceObject() == instance.Name && !string.IsNullOrEmpty(item.ExposedAsName)))

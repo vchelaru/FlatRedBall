@@ -186,12 +186,27 @@ namespace GumPlugin.CodeGeneration
         {
             string elementNameString = element.Name.Replace("\\", "\\\\") ;
 
+            var qualifiedName = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
+
             codeBlock.Line(
                 "GumRuntime.ElementSaveExtensions.RegisterGueInstantiationType(\"" +
                 elementNameString +
                 "\", typeof(" +
-                GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element) +
+                qualifiedName +
                 "));");
+
+            var needsGeneric = element is StandardElementSave && element.Name == "Container";
+
+            if(needsGeneric)
+            {
+                codeBlock.Line(
+                    "GumRuntime.ElementSaveExtensions.RegisterGueInstantiationType(\"" +
+                    elementNameString + "<T>" +
+                    "\", typeof(" +
+                    qualifiedName + "<>" +
+                    "));");
+            }
+
         }
     }
 }

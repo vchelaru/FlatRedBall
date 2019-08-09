@@ -329,6 +329,18 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>Gum.Managers.ChildrenLayout</Type>
+      <Name>NineSliceButtonInstance.Children Layout</Name>
+      <Value xsi:type="xsd:int">1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>NineSliceButtonInstance.Parent</Name>
+      <Value xsi:type="xsd:string">StronglyTypedContainerInstance</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>string</Type>
       <Name>NineSliceButtonInstance1.State</Name>
       <Value xsi:type="xsd:string">Disabled</Value>
@@ -374,6 +386,24 @@
       <Type>float</Type>
       <Name>NineSliceButtonInstance3.Y</Name>
       <Value xsi:type="xsd:float">230</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>NineSliceButtonInstance4.Parent</Name>
+      <Value xsi:type="xsd:string">StronglyTypedContainerInstance</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceButtonInstance4.X</Name>
+      <Value xsi:type="xsd:float">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceButtonInstance4.Y</Name>
+      <Value xsi:type="xsd:float">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -644,6 +674,30 @@
       <Type>float</Type>
       <Name>StateComponentInstance.Y</Name>
       <Value xsi:type="xsd:float">338</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>Gum.Managers.ChildrenLayout</Type>
+      <Name>StronglyTypedContainerInstance.Children Layout</Name>
+      <Value xsi:type="xsd:int">1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>StronglyTypedContainerInstance.Contained Type</Name>
+      <Value xsi:type="xsd:string">NineSliceButton</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StronglyTypedContainerInstance.X</Name>
+      <Value xsi:type="xsd:float">-140</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StronglyTypedContainerInstance.Y</Name>
+      <Value xsi:type="xsd:float">52</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -1075,6 +1129,21 @@
   <Instance>
     <Name>ComponentInFolderWithSpaceInstance</Name>
     <BaseType>Folder With Space/ComponentInFolderWithSpace</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>StronglyTypedContainerInstance</Name>
+    <BaseType>Container</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>NineSliceButtonInstance</Name>
+    <BaseType>NineSliceButton</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>NineSliceButtonInstance4</Name>
+    <BaseType>NineSliceButton</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
 </ScreenSave>

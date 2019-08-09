@@ -90,6 +90,19 @@ namespace GlueTestProject.Screens
             TestHeightDependsOnChildrenWithCenteredChildren();
 
             TestTextWidth();
+
+            TestStronglyTypedGenericContainers();
+        }
+
+        private void TestStronglyTypedGenericContainers()
+        {
+            var stronglyTypedContainer = EntireGumScreen.StronglyTypedContainerInstance;
+
+            stronglyTypedContainer.ShouldNotBe(null, "because generic typed lists should be propery instantiated");
+
+            var isRightGenericType = stronglyTypedContainer.GetType() == typeof(ContainerRuntime<NineSliceButtonRuntime>);
+
+            isRightGenericType.ShouldBe(true, "because the type of the container is NineSliceButton");
         }
 
         private void TestHeightDependsOnChildrenWithCenteredChildren()
