@@ -58,15 +58,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         {
             PluginManager.ReceiveError(output);
         }
-
-        public void AddError(ErrorViewModel errorViewModel)
-        {
-            lock(GlueState.ErrorListSyncLock)
-            {
-                GlueState.Self.ErrorList.Errors.Add(errorViewModel);
-            }
-        }
-
+        
         public void DoOnUiThread(Action action)
         {
             MainGlueWindow.Self.Invoke(action);

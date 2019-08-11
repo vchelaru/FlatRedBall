@@ -31,8 +31,9 @@ namespace TopDownPlugin
         // 1.6 - InitializeTopDownInput now calls a partial method allowing custom code to
         //       add its own logic.
         // 1.7 - Added TopDownSpeedMultiplier allowing speed to be multiplied easily based on terrain or power-ups
+        // 1.7.1 - Will ask the user if plugin should be a required plugin when marking an entity as top-down
         public override Version Version => 
-            new Version(1, 7, 0);
+            new Version(1, 7, 1);
 
         MainEntityView control;
         PluginTab pluginTab;
@@ -45,6 +46,8 @@ namespace TopDownPlugin
 
         public override void StartUp()
         {
+            MainController.Self.MainPlugin = this;
+
             base.RegisterCodeGenerator(new EntityCodeGenerator());
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToItemSelectHandler += HandleItemSelected;

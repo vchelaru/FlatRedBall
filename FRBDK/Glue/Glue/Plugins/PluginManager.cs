@@ -187,6 +187,8 @@ namespace FlatRedBall.Glue.Plugins
 
         protected override void StartAllPlugins(List<string> pluginsToIgnore = null)
         {
+
+
             var allPlugins = new List<IEnumerable<IPlugin>>
             {
                 TreeViewPlugins, PropertyGridRightClickPlugins,
@@ -211,6 +213,8 @@ namespace FlatRedBall.Glue.Plugins
                 if(container.FailureException != null)
                 {
                     PluginManager.ReceiveError(container.FailureException.ToString());
+
+
                 }
             }
 
@@ -252,6 +256,9 @@ namespace FlatRedBall.Glue.Plugins
             {
                 CopyIntalledPluginsToRunnableLocation();
                 UninstallPlugins();
+
+                EditorObjects.IoC.Container.Get<List<IErrorReporter>>()
+                    .Add(new PluginErrors.PluginErrorReporter());
             }
 
             if (mGlobalInstance == null)

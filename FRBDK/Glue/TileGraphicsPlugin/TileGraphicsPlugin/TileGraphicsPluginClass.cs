@@ -185,7 +185,9 @@ namespace TileGraphicsPlugin
             // 2.5.4.0
             // - TileShapeCollections from layes are assigned directly on constructor instead
             //   of after. This allows relationships to use these collision relationships.
-            get { return new Version(2, 5, 4, 0); }
+            // 2.5.5.0
+            // - Tiled plugin makes itself required when adding a TMX
+            get { return new Version(2, 5, 5, 0); }
         }
 
 
@@ -352,7 +354,28 @@ namespace TileGraphicsPlugin
             };
 
             this.ModifyAddEntityWindow += ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;
+
             this.ReactToNewEntityCreated += NewEntityCreatedReactionLogic.ReactToNewEntityCreated;
+
+            this.ReactToNewFileHandler = ReactToNewFile;
+        }
+
+        private void ReactToNewFile(ReferencedFileSave newFile)
+        {
+            var isTmx = FileManager.GetExtension(newFile.Name) == "tmx";
+
+            if(isTmx)
+            {
+                var isRequired = GlueCommands.GluxCommands.GetPluginRequirement(this);
+
+                if(!isRequired)
+                {
+                    GlueCommands.GluxCommands.SetPluginRequirement(this, true);
+                    GlueCommands.PrintOutput("Added Tiled Plugin as a required plugin because TMX's are used");
+                    GlueCommands.GluxCommands.SaveGluxTask();
+
+                }
+            }
         }
 
         private static void SaveTemplateTmx()
@@ -392,8 +415,6 @@ namespace TileGraphicsPlugin
             // or don't shut down and return false
             return true;
         }
-
-
 
         private bool HandleTryAddContainedObjects(string absoluteFile, List<string> availableObjects)
         {

@@ -16,6 +16,7 @@ using System.Collections.ObjectModel;
 
 namespace FlatRedBall.ManagedSpriteGroups
 {
+    [Obsolete("Use Tiled - it's way more efficient and powerful")]
     public class SpriteGrid : INameable, IEquatable<SpriteGrid>
     {
         #region Enums

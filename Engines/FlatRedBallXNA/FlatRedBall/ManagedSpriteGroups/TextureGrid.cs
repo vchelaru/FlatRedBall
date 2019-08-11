@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
-#if FRB_XNA
 using Microsoft.Xna.Framework.Graphics;
-#endif
 
 namespace FlatRedBall.ManagedSpriteGroups
 {
@@ -835,9 +832,6 @@ namespace FlatRedBall.ManagedSpriteGroups
         }
 
         #endregion
-
-
-
 
         internal void ChopOffBottom()
         {

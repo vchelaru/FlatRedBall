@@ -1,4 +1,6 @@
 ﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Gum.DataTypes;
 using GumPlugin.CodeGeneration;
@@ -14,7 +16,7 @@ namespace GumPlugin.Managers
         public bool HandleTryAddContainedObjects(string absoluteFile, List<string> availableObjects)
         {
             string extension = FileManager.GetExtension(absoluteFile);
-            bool toReturn = extension == GumProjectSave.ComponentExtension ||
+            bool isEitherScreenOrComponent = extension == GumProjectSave.ComponentExtension ||
                 extension == GumProjectSave.ScreenExtension;
 
             // We don't want the "Entire File" option
@@ -45,7 +47,7 @@ namespace GumPlugin.Managers
 
             }
 
-            if (toReturn)
+            if (isEitherScreenOrComponent)
             {
 
                 ElementSave element = null;
@@ -59,7 +61,7 @@ namespace GumPlugin.Managers
                 else
                 {
                     element =
-                        FileManager.XmlDeserialize<ScreenSave>(absoluteFile);
+                        FileManager.XmlDeserialize<Gum.DataTypes.ScreenSave>(absoluteFile);
                 }
 
                 // Victor Chelaru, November 1, 2015
@@ -73,8 +75,18 @@ namespace GumPlugin.Managers
                 // but in the meantime, I'm going to revert back to using the "this" syntax so that
                 // Screens can be casted appropriately:
                 //availableObjects.Add("Entire File (" + element.Name + "Runtime" + ")");
-                availableObjects.Add("this (" + 
-                    GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element) + ")");
+                // only add this if it's an IDB:
+                var rfsAti = GlueState.Self.CurrentReferencedFileSave?.GetAssetTypeInfo();
+                if ( rfsAti == AssetTypeInfoManager.Self.ScreenIdbAti)
+                {
+                    availableObjects.Add("this (" + 
+                        GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element) + ")");
+                }
+                else if(rfsAti != null)
+                {
+                    availableObjects.Add(
+                        $"Entire File ({rfsAti.RuntimeTypeName})");
+                }
 
 
                 foreach (var instance in element.Instances)
@@ -99,7 +111,7 @@ namespace GumPlugin.Managers
 
 
 
-            return toReturn;
+            return isEitherScreenOrComponent;
         }
     }
 }

@@ -26,11 +26,12 @@ namespace TopDownPlugin.Controllers
 
         bool ignoresPropertyChanges = false;
 
+        public PluginBase MainPlugin { get; set; }
+
         #endregion
 
         public MainController()
         {
-
         }
 
         public MainEntityView GetControl()
@@ -62,6 +63,17 @@ namespace TopDownPlugin.Controllers
 
             DetermineWhatToGenerate(e.PropertyName, viewModel,
                 out shouldGenerateCsv, out shouldGenerateEntity, out shouldAddTopDownVariables);
+
+            if(e.PropertyName == nameof(TopDownEntityViewModel.IsTopDown))
+            {
+                if(viewModel.IsTopDown &&
+                    GlueCommands.Self.GluxCommands.GetPluginRequirement(MainPlugin) == false)
+                {
+                    GlueCommands.Self.GluxCommands.SetPluginRequirement(MainPlugin, true);
+                    GlueCommands.Self.PrintOutput("Added Top Down Plugin as a required plugin because the entity was marked as a top down entity");
+                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                }
+            }
 
             if (shouldGenerateCsv)
             {

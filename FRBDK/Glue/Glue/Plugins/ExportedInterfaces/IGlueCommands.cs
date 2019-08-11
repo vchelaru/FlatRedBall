@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+﻿using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using System;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces

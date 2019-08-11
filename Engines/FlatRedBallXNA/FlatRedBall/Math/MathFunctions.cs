@@ -787,16 +787,7 @@ namespace FlatRedBall.Math
                 Vector3.Dot(matrix.Up, matrix.Forward) < epsilon;
         }
 
-        /// <summary>
-        /// Returnes the length squared of the 2D distance. In other words, the Z component is ignored.
-        /// </summary>
-        /// <param name="vectorToMeasure">The vector to </param>
-        /// <returns>The length squared, ignoring Z.</returns>
-        public static float LengthSquared2D(this Vector3 vectorToMeasure)
-        {
-            return (vectorToMeasure.X * vectorToMeasure.X) +
-                (vectorToMeasure.Y * vectorToMeasure.Y);
-        }
+
 
         public static Vector3 Reflect(Vector3 vectorToReflect, Vector3 surfaceToReflectOn)
         {

@@ -86,6 +86,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Debugging\AutomaticDebuggingBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debugging\CrossPlatform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debugging\Debugger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\Vector2ExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\Vector3ExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Feedback\VibrateMotor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FlatRedBallServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationChain.cs" />

@@ -942,6 +942,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        public bool GetPluginRequirement(Interfaces.IPlugin plugin)
+        {
+            var name = plugin.FriendlyName;
+
+            var requiredPlugins = GlueState.Self.CurrentGlueProject.PluginData.RequiredPlugins;
+
+            var isRequired = requiredPlugins.Any(item => item.Name == name);
+
+            return isRequired;
+        }
+
         public bool SetPluginRequirement(Interfaces.IPlugin plugin, bool requiredByProject)
         {
             var name = plugin.FriendlyName;

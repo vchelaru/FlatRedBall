@@ -48,7 +48,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         NamedObjectSave AddNewNamedObjectTo(ViewModels.AddObjectViewModel addObjectViewModel, IElement element, NamedObjectSave namedObject);
 
         bool SetPluginRequirement(Interfaces.IPlugin plugin, bool requiredByProject);
-
+        bool GetPluginRequirement(Interfaces.IPlugin plugin);
 #endif
 
         bool MoveEntityToDirectory(EntitySave entitySave, string newRelativeDirectory);

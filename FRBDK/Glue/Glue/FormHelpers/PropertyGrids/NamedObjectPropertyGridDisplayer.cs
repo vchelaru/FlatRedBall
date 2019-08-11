@@ -532,7 +532,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
                 if (shouldIncludeSourceName)
                 {
-                    IncludeMember(nameof(NamedObjectSave.SourceName), typeof(NamedObjectSave), new AvailableNameablesStringConverter(instance));
+                    IncludeMember(nameof(NamedObjectSave.SourceName), typeof(NamedObjectSave), new AvailableNameablesStringConverter(instance, null));
                 }
                 else
                 {

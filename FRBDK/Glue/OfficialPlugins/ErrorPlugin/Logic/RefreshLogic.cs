@@ -46,10 +46,10 @@ namespace OfficialPlugins.ErrorPlugin.Logic
         {
             TaskManager.Self.AddSync(() =>
             {
-                    // Add new errors:
-                    ErrorCreateRemoveLogic.AddNewErrorsForChangedFile(filePath, errorListViewModel);
+                // Add new errors:
+                ErrorCreateRemoveLogic.AddNewErrorsForChangedFile(filePath, errorListViewModel);
 
-                    ErrorCreateRemoveLogic.RemoveFixedErrorsForChangedFile(filePath, errorListViewModel);
+                ErrorCreateRemoveLogic.RemoveFixedErrorsForChangedFile(filePath, errorListViewModel);
 
             }, $"Handle file change {filePath}");
         }

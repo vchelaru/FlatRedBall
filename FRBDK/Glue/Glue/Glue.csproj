@@ -749,6 +749,8 @@
     <Compile Include="Plugins\ExportedImplementations\States\Clipboard.cs" />
     <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\IFileCommands.cs" />
     <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\ISelectCommands.cs" />
+    <Compile Include="Plugins\PluginErrors\PluginError.cs" />
+    <Compile Include="Plugins\PluginErrors\PluginErrorReporter.cs" />
     <Compile Include="Tasks\GlueTask.cs" />
     <Compile Include="Tasks\TaskManager.cs" />
     <Compile Include="Plugins\EmbeddedPlugins\UnreferencedFiles\UnreferencedFilesManager.cs" />

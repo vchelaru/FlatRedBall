@@ -6,8 +6,6 @@ using System.Text;
 using System.Threading;
 using FlatRedBall.IO;
 
-
-
 namespace FlatRedBall
 {
     #region Enums
@@ -37,6 +35,9 @@ namespace FlatRedBall
 
     #endregion
     
+    /// <summary>
+    /// Class providing timing information for the current frame, absolute time since the game has started running, and for the current screen.
+    /// </summary>
     public static class TimeManager
     {
         #region Fields
@@ -49,8 +50,14 @@ namespace FlatRedBall
         /// The amount of time in seconds since the game started running. 
         /// This value is updated once-per-frame so it will 
         /// always be the same value until the next frame is called.
+        /// This value does not consider pausing. To consider pausing, see CurrentScreenTime.
         /// </summary>
+        /// <remarks>
+        /// This value can be used to uniquely identify a frame.
+        /// </remarks>
         public static double CurrentTime;
+
+
         static double mLastCurrentTime;
 
         static double mTimeFactor = 1.0f;
@@ -96,6 +103,7 @@ namespace FlatRedBall
         /// <summary>
         /// The number of seconds (usually a fraction of a second) since
         /// the last frame.  This value can be used for time-based movement.
+        /// This value is changed once per frame, and will remain constant within each frame.
         /// </summary>
         public static float SecondDifference
         {
@@ -145,6 +153,23 @@ namespace FlatRedBall
 			set { mMaxFrameTime = value; }
 		}
 
+        /// <summary>
+        /// Returns the amount of time since the current screen started. This value does not 
+        /// advance when the screen is paused.
+        /// </summary>
+        /// <remarks>
+        /// This value is the same as 
+        /// Screens.ScreenManager.CurrentScreen.PauseAdjustedCurrentTime
+        /// </remarks>
+        public static double CurrentScreenTime
+        {
+            get
+            {
+                return Screens.ScreenManager.CurrentScreen.PauseAdjustedCurrentTime;
+            }
+        }
+
+
         // This was made a Field for performance reasons
         //public static double CurrentTime
         //{
@@ -175,6 +200,8 @@ namespace FlatRedBall
         {
             get; set;
         }
+
+
 
         #endregion
 
@@ -521,6 +548,18 @@ namespace FlatRedBall
         public static double SecondsSince(double absoluteTime)
         {
             return CurrentTime - absoluteTime;
+        }
+
+        /// <summary>
+        /// Returns the number of seconds that have passed since the arugment value. The
+        /// return value will not increase when the screen is paused, so it can be used to 
+        /// determine how much game time has passed for event swhich should occur on a timer.
+        /// </summary>
+        /// <param name="time">The time value, probably obtained earlier by calling CurrentScreenTime</param>
+        /// <returns>The number of unpaused seconds that have passed since the argument time.</returns>
+        public static double CurrentScreenSecondsSince(double time)
+        {
+            return Screens.ScreenManager.CurrentScreen.PauseAdjustedSecondsSince(time);
         }
 
         #region XML Docs

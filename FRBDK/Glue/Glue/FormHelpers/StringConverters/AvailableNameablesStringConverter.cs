@@ -21,6 +21,13 @@ namespace FlatRedBall.Glue.FormHelpers
             set;
         }
 
+        public ReferencedFileSave ReferencedFileSave
+        {
+            get;
+            set;
+
+        }
+
         public override bool GetStandardValuesSupported(
                        ITypeDescriptorContext context)
         {
@@ -33,10 +40,11 @@ namespace FlatRedBall.Glue.FormHelpers
             return true;
         }
 
-        public AvailableNameablesStringConverter(NamedObjectSave namedObjectSave)
+        public AvailableNameablesStringConverter(NamedObjectSave namedObjectSave, ReferencedFileSave referencedFileSave)
             : base()
         {
             NamedObjectSave = namedObjectSave;
+            this.ReferencedFileSave = referencedFileSave;
         }
 
 
@@ -69,7 +77,16 @@ namespace FlatRedBall.Glue.FormHelpers
 
             var fileExtension = FileManager.GetExtension(relativeFile);
 
-            foreach (AssetTypeInfo ati in AvailableAssetTypes.Self.AllAssetTypes.Where(ati => ati.Extension == fileExtension))
+            var matchingAtis = AvailableAssetTypes.Self.AllAssetTypes
+                .Where(ati => ati.Extension == fileExtension )
+                .ToList();
+
+            //if(referencedFile?.GetAssetTypeInfo().CanBeObject == true)
+            //{
+
+            //}
+
+            foreach (AssetTypeInfo ati in matchingAtis)
             {
                 listOfObjectsToReturn.Add("Entire File (" + ati.RuntimeTypeName + ")");
 

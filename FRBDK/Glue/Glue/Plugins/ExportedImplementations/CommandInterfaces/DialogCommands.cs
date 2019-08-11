@@ -145,6 +145,21 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
                 {
                     AddEntityWindow window = new Controls.AddEntityWindow();
+                    window.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+
+                    double width = window.Width;
+                    if(double.IsNaN(width))
+                    {
+                        width = 0;
+                    }
+                    double height = window.Height;
+                    if(double.IsNaN(height))
+                    {
+                        height = 0;
+                    }
+
+                    window.Left = MainGlueWindow.MousePosition.X - width / 2;
+                    window.Top = MainGlueWindow.MousePosition.Y - height / 2;
 
                     PluginManager.ModifyAddEntityWindow(window);
 
