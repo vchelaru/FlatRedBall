@@ -220,7 +220,7 @@ namespace OfficialPlugins.VariableDisplay
             instanceMember.DisplayName = $"Object in {fileName}:";
 
             // todo: get the type converter from the file
-            var typeConverter = new AvailableNameablesStringConverter(instance);
+            var typeConverter = new AvailableNameablesStringConverter(instance, null);
             instanceMember.TypeConverter = typeConverter;
 
             instanceMember.CustomGetTypeEvent += (throwaway) => typeof(string);

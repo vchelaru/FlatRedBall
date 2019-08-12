@@ -4,8 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.CollisionPlugin.Views"
+             xmlns:VM="clr-namespace:OfficialPlugins.CollisionPlugin.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600">
+    <UserControl.DataContext>
+        <VM:CollisionRelationshipViewModel/>
+    </UserControl.DataContext>
     <ScrollViewer>
         <StackPanel>
             <Grid>
@@ -14,6 +18,11 @@
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
 
                 <ComboBox  FontSize="26"
                           SelectedItem="{Binding FirstCollisionName}"
@@ -23,6 +32,20 @@
                           SelectedItem="{Binding SecondCollisionName}"
                           ItemsSource="{Binding SecondCollisionItemSource}"></ComboBox>
 
+                <TextBlock Margin="0,5,0,0" Grid.Row="1" Grid.ColumnSpan="3">Subcollision:</TextBlock>
+
+                <ComboBox Grid.Row="2"
+                          IsEnabled="{Binding FirstSubCollisionEnabled}"
+                          SelectedItem="{Binding FirstSubCollisionSelectedItem}"
+                          ItemsSource="{Binding FirstSubCollisionItemsSource}"
+                          ></ComboBox>
+                <ComboBox Grid.Row="2" Grid.Column="2"
+                          IsEnabled="{Binding SecondSubCollisionEnabled}"
+                          SelectedItem="{Binding SecondSubCollisionSelectedItem}"
+                          ItemsSource="{Binding SecondSubCollisionItemsSource}"
+                          
+                          ></ComboBox>
+                
                 
             </Grid>
             <TextBlock Background="DarkRed" Foreground="Yellow" FontSize="15"

@@ -49,7 +49,6 @@ namespace FlatRedBall
 
         string mParentBone;
 
-        #region XML Docs
         /// <summary>
         /// The absolute world position of the instance.
         /// </summary>
@@ -57,10 +56,8 @@ namespace FlatRedBall
         /// This mirrors the X, Y, and Z properties.  This value essentially becomes
         /// read-only if this object has a Parent.
         /// </remarks>
-        #endregion
         public Vector3 Position;
 
-        #region XML Docs
         /// <summary>
         /// The position of the object relative to its Parent in its Parent's coordinate space.
         /// </summary>
@@ -69,10 +66,8 @@ namespace FlatRedBall
         /// instance has a Parent.  These values have no impact if the instance does not
         /// have a Parent.
         /// </remarks>
-        #endregion
         public Vector3 RelativePosition;
 
-        #region XML Docs
         /// <summary>
         /// The absolute world velocity of the instance measured in units per second.
         /// </summary>
@@ -80,20 +75,16 @@ namespace FlatRedBall
         /// This mirrors the XVelocity, YVelocity, and ZVelocity properties.  This value is essentially
         /// invalid if this instance has a Parent.
         /// </remarks>
-        #endregion
         public Vector3 Velocity;
 
-        #region XML Docs
         /// <summary>
         /// The velocity of the object relative to its Parent in its Parent's cooridnate space.
         /// </summary>
         /// <remarks>
         /// This value modifies the RelativePosition field even if the object does not have a Parent.
         /// </remarks>
-        #endregion
         public Vector3 RelativeVelocity;
 
-        #region XML Docs
         /// <summary>
         /// The absolute world acceleration of the instance measured in units per second per second.
         /// </summary>
@@ -107,35 +98,28 @@ namespace FlatRedBall
         /// rapidly.
         /// </para>
         /// </remarks>
-        #endregion
         public Vector3 Acceleration;
 
-        #region XML Docs
         /// <summary>
         /// The acceleration of the object relative to its Parent in its Parent's coordinate space.
         /// </summary>
         /// <remarks>
         /// This value modifies the RelativeVelocity field even if the object does not have a Parent.
         /// </remarks>
-        #endregion
         public Vector3 RelativeAcceleration;
 
         bool mKeepTrackOfReal;
 
-        #region XML Docs
         /// <summary>
         /// The actual velocity of the object from the last frame to this frame.  This value is only valid
         /// if the KeepTrackOfReal property has been true for over one frame.
         /// </summary>
-        #endregion
         public Vector3 RealVelocity;
 
-        #region XML Docs
         /// <summary>
         /// The actualy acceleration of the object from the last frame to this frame.  This value is only valid
         /// if the KeepTrackOfReal property has been set to true for over two frames.
         /// </summary>
-        #endregion
         public Vector3 RealAcceleration;
 
         #region XML Docs
@@ -505,7 +489,7 @@ namespace FlatRedBall
         }
 
         /// <summary>
-        /// Gets and sets the rate of change of the RelativeX property in units per second.
+        /// Gets and sets the rate of change of the RelativeX property in units per second. 
         /// </summary>
         public float RelativeXVelocity
         {

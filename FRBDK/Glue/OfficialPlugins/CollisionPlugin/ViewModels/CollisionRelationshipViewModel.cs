@@ -25,6 +25,8 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
     public class CollisionRelationshipViewModel :
         PropertyListContainerViewModel
     {
+        public const string EntireObject = "<Entire Object>";
+
         [SyncedProperty]
         public string FirstCollisionName
         {
@@ -39,7 +41,6 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             set { SetAndPersist(value); }
         }
 
-
         public ObservableCollection<string> FirstCollisionItemSource
         {
             get { return Get<ObservableCollection<string>>(); }
@@ -51,6 +52,47 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             get { return Get<ObservableCollection<string>>(); }
             set { Set(value); }
         }
+
+        public bool FirstSubCollisionEnabled
+        {
+            get { return Get<bool>(); }
+            set { Set(value); }
+        }
+
+        [SyncedProperty]
+        public string FirstSubCollisionSelectedItem
+        {
+            get { return Get<string>(); }
+            set { SetAndPersist(value); }
+        }
+
+        public ObservableCollection<string> FirstSubCollisionItemsSource
+        {
+            get { return Get<ObservableCollection<string>>(); }
+            set { Set(value); }
+        }
+
+
+        public bool SecondSubCollisionEnabled
+        {
+            get { return Get<bool>(); }
+            set { Set(value); }
+        }
+
+        [SyncedProperty]
+        public string SecondSubCollisionSelectedItem
+        {
+            get { return Get<string>(); }
+            set { SetAndPersist(value); }
+        }
+
+        public ObservableCollection<string> SecondSubCollisionItemsSource
+        {
+            get { return Get<ObservableCollection<string>>(); }
+            set { Set(value); }
+        }
+
+
 
 
         [SyncedProperty]
@@ -236,18 +278,11 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         {
             FirstCollisionItemSource = new ObservableCollection<string>();
             SecondCollisionItemSource = new ObservableCollection<string>();
+
+            FirstSubCollisionItemsSource = new ObservableCollection<string>();
+            SecondSubCollisionItemsSource = new ObservableCollection<string>();
         }
 
-        //protected override void OnSetAndPersist<T>(T propertyValue, string propertyName = null)
-        //{
-        //    switch(propertyName)
-        //    {
-        //        case nameof(FirstCollisionName):
-        //        case nameof(SecondCollisionName):
 
-        //            break;
-        //    }
-
-        //}
     }
 }

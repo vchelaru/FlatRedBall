@@ -306,6 +306,8 @@ namespace FlatRedBall.Glue.Plugins
 
             string installPath = null;
             //Validate install path
+
+            var glueState = ExportedImplementations.GlueState.Self;
             switch (installationType)
             {
                 case InstallationType.ForUser:
@@ -317,7 +319,7 @@ namespace FlatRedBall.Glue.Plugins
 
                     break;
                 case InstallationType.ForCurrentProject:
-                    if (ProjectManager.GlueProjectFileName == null)
+                    if (glueState.CurrentGlueProject == null)
                     {
                         MessageBox.Show(@"Can not select For Current Project because no project is currently open.");
                         succeeded = false;
@@ -325,9 +327,9 @@ namespace FlatRedBall.Glue.Plugins
 
                     if (succeeded)
                     {
-                        Directory.CreateDirectory(FileManager.GetDirectory(ProjectManager.GlueProjectFileName) + "Plugins");
+                        Directory.CreateDirectory(glueState.CurrentGlueProjectDirectory + "Plugins");
 
-                        installPath = FileManager.GetDirectory(ProjectManager.GlueProjectFileName) + "Plugins";
+                        installPath = glueState.CurrentGlueProjectDirectory + "Plugins";
                     }
                     break;
                 default:
@@ -1151,7 +1153,7 @@ namespace FlatRedBall.Glue.Plugins
                 plugin.ReactToNewEntityCreated(entitySave, window);
             },
             nameof(ReactToNewEntityCreated),
-            plugin => plugin.ReactToNewScreenCreated != null);
+            plugin => plugin.ReactToNewEntityCreated != null);
         }
 
         internal static bool OpenSolution(string solutionName)

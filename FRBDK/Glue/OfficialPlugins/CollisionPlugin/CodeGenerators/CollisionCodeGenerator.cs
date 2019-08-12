@@ -18,12 +18,12 @@ namespace OfficialPlugins.CollisionPlugin
         {
             var collisionAti = AssetTypeInfoManager.Self.CollisionRelationshipAti;
 
-            var collisionRelationships = element.AllNamedObjects
-                .Where(item => item.GetAssetTypeInfo() == collisionAti &&
-                    item.IsDisabled == false &&
-                    item.DefinedByBase == false &&
-                    item.SetByDerived == false)
-                .ToArray();
+            //var collisionRelationships = element.AllNamedObjects
+            //    .Where(item => item.GetAssetTypeInfo() == collisionAti &&
+            //        item.IsDisabled == false &&
+            //        item.DefinedByBase == false &&
+            //        item.SetByDerived == false)
+            //    .ToArray();
 
             //foreach (var namedObject in collisionRelationships)
             //{
@@ -57,6 +57,12 @@ namespace OfficialPlugins.CollisionPlugin
             var elasticity = namedObject.Properties.GetValue<float>(
                 nameof(CollisionRelationshipViewModel.CollisionElasticity))
                 .ToString(CultureInfo.InvariantCulture) + "f";
+
+            var firstSubCollision = namedObject.Properties.GetValue<string>(
+                nameof(CollisionRelationshipViewModel.FirstSubCollisionSelectedItem));
+
+            var secondSubCollision = namedObject.Properties.GetValue<string>(
+                nameof(CollisionRelationshipViewModel.SecondSubCollisionSelectedItem));
 
             var instanceName = namedObject.InstanceName;
 
@@ -92,9 +98,23 @@ namespace OfficialPlugins.CollisionPlugin
                 {
                     codeBlock.Line($"{instanceName} = FlatRedBall.Math.Collision.CollisionManager.Self.CreateRelationship(" +
                         $"{firstCollidable}, {secondCollidable});");
-
                 }
+
+                if(!string.IsNullOrEmpty(firstSubCollision) && 
+                    firstSubCollision != CollisionRelationshipViewModel.EntireObject)
+                {
+                    codeBlock.Line($"{instanceName}.SetFirstSubCollision(item => item.{firstSubCollision});");
+                }
+                if(!string.IsNullOrEmpty(secondSubCollision) && 
+                    secondSubCollision != CollisionRelationshipViewModel.EntireObject)
+                {
+                    codeBlock.Line($"{instanceName}.SetSecondSubCollision(item => item.{secondSubCollision});");
+                }
+
                 codeBlock.Line($"{instanceName}.Name = \"{instanceName}\";");
+
+
+
                 switch(collisionType)
                 {
                     case CollisionType.NoPhysics:

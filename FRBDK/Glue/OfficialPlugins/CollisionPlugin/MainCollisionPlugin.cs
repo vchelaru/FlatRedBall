@@ -7,6 +7,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.SaveClasses;
+using OfficialPlugins.CollisionPlugin.Controllers;
 using OfficialPlugins.CollisionPlugin.Managers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
 using OfficialPlugins.CollisionPlugin.Views;
@@ -51,7 +52,7 @@ namespace OfficialPlugins.CollisionPlugin
 
         public override void StartUp()
         {
-            CreateViewModel();
+            viewModel = CollisionRelationshipViewModelController.CreateViewModel();
 
             var collisionCodeGenerator = new CollisionCodeGenerator();
 
@@ -63,24 +64,6 @@ namespace OfficialPlugins.CollisionPlugin
             AssignEvents();
         }
 
-        private void CreateViewModel()
-        {
-            viewModel = new CollisionRelationshipViewModel();
-            viewModel.PropertyChanged += HandleViewModelPropertyChanged;
-        }
-
-        private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch(e.PropertyName)
-            {
-                case nameof(viewModel.FirstCollisionName):
-                case nameof(viewModel.SecondCollisionName):
-                    var nos = viewModel.GlueObject as NamedObjectSave;
-                    TryFixSourceClassType(nos);
-                    break;
-            }
-        }
-
         private void AssignEvents()
         {
             this.ReactToItemSelectHandler += HandleTreeViewItemSelected;
@@ -89,71 +72,7 @@ namespace OfficialPlugins.CollisionPlugin
 
             this.GetEventSignatureArgs += GetEventSignatureAndArgs;
 
-            this.ReactToChangedPropertyHandler += HandlePropertyChanged;
-        }
-
-        private void HandlePropertyChanged(string changedMember, object oldValue)
-        {
-            var element = GlueState.Self.CurrentElement;
-            var namedObject = GlueState.Self.CurrentNamedObjectSave;
-
-            if(changedMember == nameof(NamedObjectSave.InstanceName) && namedObject != null)
-            {
-                var collisionRelationshipAti = AssetTypeInfoManager.Self.CollisionRelationshipAti;
-                var allNamedObjects = element.AllNamedObjects.ToArray();
-                var collisionRelationships = allNamedObjects
-                    .Where(item =>
-                    {
-                        TryFixSourceClassType(item);
-                        return item.GetAssetTypeInfo() == collisionRelationshipAti;
-                    })
-                    .ToArray();
-                    
-
-                var oldName = (string)oldValue;
-                bool changedAny = false;
-                var newName = namedObject.InstanceName;
-
-                string GetFirstCollision(NamedObjectSave nos)
-                {
-                    return nos.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.FirstCollisionName));
-                }
-
-                string GetSecondCollision(NamedObjectSave nos)
-                {
-                    return nos.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.SecondCollisionName));
-                }
-
-                var withFirst = collisionRelationships
-                    .Where(item => GetFirstCollision(item) == oldName)
-                    .ToArray();
-
-                foreach (var item in withFirst)
-                {
-                    item.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstCollisionName), newName);
-                    changedAny = true;
-                    GlueCommands.Self.PrintOutput($"Renaming {item.FieldName}.{oldName} to {item.FieldName}.{newName}");
-                    TryFixSourceClassType(item);
-                }
-
-                var withSecond = collisionRelationships
-                    .Where(item => GetSecondCollision(item) == oldName)
-                    .ToArray();
-
-                foreach (var item in withSecond)
-                {
-                    item.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionName), newName);
-                    changedAny = true;
-                    GlueCommands.Self.PrintOutput($"Renaming {item.FieldName}.{oldName} to {item.FieldName}.{newName}");
-                    TryFixSourceClassType(item);
-                }
-
-                if (changedAny)
-                {
-                    GlueCommands.Self.GluxCommands.SaveGluxTask();
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
-                }
-            }
+            this.ReactToChangedPropertyHandler += CollisionRelationshipViewModelController.HandleGlueObjectPropertyChanged;
         }
 
         private void GetEventSignatureAndArgs(NamedObjectSave namedObjectSave, EventResponseSave eventResponseSave, out string type, out string signatureArgs)
@@ -195,7 +114,7 @@ namespace OfficialPlugins.CollisionPlugin
 
             if(selectedNos != null)
             {
-                TryFixSourceClassType(selectedNos);
+                CollisionRelationshipViewModelController.TryFixSourceClassType(selectedNos);
             }
 
             if(selectedNos?.GetAssetTypeInfo() == AssetTypeInfoManager.Self.CollisionRelationshipAti)
@@ -226,28 +145,6 @@ namespace OfficialPlugins.CollisionPlugin
 
         }
 
-        private void TryFixSourceClassType(NamedObjectSave selectedNos)
-        {
-            
-            if(selectedNos.SourceClassType == "CollisionRelationship" ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.CollisionRelationship") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.PositionedObjectVsPositionedObjectRelationship") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.PositionedObjectVsListRelationship") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.ListVsPositionedObjectRelationship") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.PositionedObjectVsShapeCollection") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.ListVsShapeCollectionRelationship") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.ListVsListRelationship") == true ||
-
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.CollidableListVsTileShapeCollectionRelationship") == true ||
-                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.CollidableVsTileShapeCollectionRelationship") == true ||
-
-                selectedNos.SourceClassType?.StartsWith("CollisionRelationship<") == true)
-            {
-                selectedNos.SourceClassType = AssetTypeInfoManager.Self.CollisionRelationshipAti
-                    .QualifiedRuntimeTypeName.PlatformFunc(selectedNos);
-            }
-        }
-
         private void RefreshViewModelTo(NamedObjectSave selectedNos)
         {
             // show UId
@@ -259,77 +156,18 @@ namespace OfficialPlugins.CollisionPlugin
 
             viewModel.GlueObject = selectedNos;
 
-            RefreshAvailableCollisionObjects(GlueState.Self.CurrentElement);
+            CollisionRelationshipViewModelController
+                .RefreshAvailableCollisionObjects(GlueState.Self.CurrentElement, viewModel);
+
+            CollisionRelationshipViewModelController
+                .RefreshSubcollisionObjects(GlueState.Self.CurrentElement, viewModel);
 
             viewModel.UpdateFromGlueObject();
 
-            if (control     != null)
+            if (control != null)
             {
                 control.DataContext = viewModel;
             }
-        }
-
-        private void RefreshAvailableCollisionObjects(IElement element)
-        {
-
-            viewModel.FirstCollisionItemSource.Clear();
-            viewModel.SecondCollisionItemSource.Clear();
-
-            var namedObjects = element.AllNamedObjects.ToArray();
-
-            List<string> names = new List<string>();
-
-            // consider:
-            // 1. Individual ICollidables
-            // 2. Lists of ICollidables
-            // 3. TileShapeCollections
-            // 4. ShapeCollections
-
-            foreach(var nos in namedObjects)
-            {
-                var nosElement = nos.GetReferencedElement();
-                var nosAti = nos.GetAssetTypeInfo();
-
-                var entity = nosElement as EntitySave;
-
-                var shouldConsider = false;
-
-                if(entity?.ImplementsICollidable == true)
-                {
-                    shouldConsider = true;
-                }
-
-                if(!shouldConsider)
-                {
-                    // See if it's a list of ICollidables
-                    shouldConsider = nos != null && 
-                        nos.SourceType == SourceType.FlatRedBallType &&
-                        nos.SourceClassType == "PositionedObjectList<T>" &&
-                        !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
-                        ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType)?.ImplementsICollidable == true;
-                }
-
-                if(!shouldConsider)
-                {
-                    shouldConsider = nosAti?.QualifiedRuntimeTypeName.QualifiedType ==
-                        "FlatRedBall.TileCollisions.TileShapeCollection";
-                }
-
-                if(!shouldConsider)
-                {
-                    shouldConsider = nosAti?.QualifiedRuntimeTypeName.QualifiedType ==
-                        "FlatRedBall.Math.Geometry.ShapeCollection";
-                }
-
-                if(shouldConsider)
-                {
-                    //names.Add(nos.InstanceName);
-                    viewModel.FirstCollisionItemSource.Add(nos.InstanceName);
-                    viewModel.SecondCollisionItemSource.Add(nos.InstanceName);
-
-                }
-            }
-
         }
     }
 }

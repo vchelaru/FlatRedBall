@@ -280,7 +280,7 @@ namespace FlatRedBall.Instructions
             return mRotationMembers.Contains(rotationMember);
         }
 
-        #region Move and Relative Move
+        #region Move 
 
         public static void MoveThrough<T>(FlatRedBall.PositionedObject positionedObject, IList<T> list, float velocity) where T : IPositionable
         {

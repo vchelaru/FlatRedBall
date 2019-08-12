@@ -152,6 +152,7 @@
     </Compile>
     <Compile Include="CodeGenerationPlugin\MainPlugin.cs" />
     <Compile Include="CollisionPlugin\CodeGenerators\CollisionCodeGenerator.cs" />
+    <Compile Include="CollisionPlugin\Controllers\CollisionRelationshipViewModelController.cs" />
     <Compile Include="CollisionPlugin\MainCollisionPlugin.cs" />
     <Compile Include="CollisionPlugin\Managers\AssetTypeInfoManager.cs" />
     <Compile Include="CollisionPlugin\ViewModels\CollisionRelationshipViewModel.cs" />

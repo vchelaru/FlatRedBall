@@ -5,20 +5,10 @@ using System.Reflection;
 
 namespace FlatRedBall.Instructions
 {
-    #region XML Docs
     /// <summary>
     /// Instruction which calls a Static class' method.
     /// </summary>
-    /// <remarks>
-    /// This class must be used instead of 
-    /// FlatRedBall.Instructions.MethodInstruction
-    /// because MethodInstruction takes a reference
-    /// to an instance of the object containing the method
-    /// to call.  If the object is a static class then the
-    /// compiler will complain about static objects being used
-    /// as arguments to methods.
-    /// </remarks>
-    #endregion
+    [Obsolete("Use DelegateInstruction or Call on IInstructibles")]
     public class StaticMethodInstruction : Instruction
     {
         #region Fields
