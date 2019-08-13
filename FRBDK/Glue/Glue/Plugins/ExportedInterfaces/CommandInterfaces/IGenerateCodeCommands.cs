@@ -19,6 +19,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void GenerateCurrentElementCodeTask();
 
         void GenerateElementCode(IElement element);
+        void GenerateElementCodeTask(IElement element);
 
         void GenerateGlobalContentCode();
 

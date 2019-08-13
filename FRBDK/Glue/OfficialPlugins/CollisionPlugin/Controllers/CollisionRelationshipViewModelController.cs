@@ -96,18 +96,21 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
         static EntitySave GetEntitySaveReferencedBy(NamedObjectSave nos)
         {
-            if (nos.SourceType == SourceType.Entity)
+            if (nos != null)
             {
-                return ObjectFinder.Self.GetEntitySave(nos.SourceClassType);
-            }
+                if (nos.SourceType == SourceType.Entity)
+                {
+                    return ObjectFinder.Self.GetEntitySave(nos.SourceClassType);
+                }
 
-            // if it's a list, make sure it's a list of collidables:
-            if (nos.IsList && !string.IsNullOrEmpty(nos.SourceClassGenericType))
-            {
-                var sourceClassGenericType = nos.SourceClassGenericType;
+                // if it's a list, make sure it's a list of collidables:
+                if (nos.IsList && !string.IsNullOrEmpty(nos.SourceClassGenericType))
+                {
+                    var sourceClassGenericType = nos.SourceClassGenericType;
 
-                var entitySave = ObjectFinder.Self.GetEntitySave(sourceClassGenericType);
-                return entitySave;
+                    var entitySave = ObjectFinder.Self.GetEntitySave(sourceClassGenericType);
+                    return entitySave;
+                }
             }
             return null;
         }
@@ -207,60 +210,156 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             if (changedMember == nameof(NamedObjectSave.InstanceName) && namedObject != null)
             {
-                var collisionRelationshipAti = AssetTypeInfoManager.Self.CollisionRelationshipAti;
-                var allNamedObjects = element.AllNamedObjects.ToArray();
-                var collisionRelationships = allNamedObjects
-                    .Where(item =>
+                UpdateCollisionRelationshipsInThisElement(element, oldValue);
+
+                UpdateOtherObjectsIfChangedObjectIsShapeInCollidable(element, (string)oldValue);
+            }
+        }
+
+        private static void UpdateOtherObjectsIfChangedObjectIsShapeInCollidable(IElement element, string oldName)
+        {
+            var asEntitySave = element as EntitySave;
+
+            if(asEntitySave != null && asEntitySave.ImplementsICollidable)
+            {
+                var namedObject = GlueState.Self.CurrentNamedObjectSave;
+                string newName = namedObject.InstanceName;
+
+                if(IsShape(namedObject))
+                {
+                    // a shape was renamed. This could change the name of another collision relationship
+                    var collisionRelationshipAti = AssetTypeInfoManager.Self.CollisionRelationshipAti;
+
+                    foreach(var container in GlueState.Self.CurrentGlueProject.AllElements())
                     {
-                        TryFixSourceClassType(item);
-                        return item.GetAssetTypeInfo() == collisionRelationshipAti;
-                    })
-                    .ToArray();
+                        var collisionRelationships = container.AllNamedObjects
+                            .Where(item =>
+                            {
+                                TryFixSourceClassType(item);
+                                return item.GetAssetTypeInfo() == collisionRelationshipAti;
+                            })
+                            .ToArray();
+
+                        foreach(var relationship in collisionRelationships)
+                        {
+                            var shouldRename = relationship
+                                .Properties
+                                .GetValue<bool>(nameof(CollisionRelationshipViewModel.IsAutoNameEnabled));
+                            if(shouldRename)
+                            {
+                                string firstNosName = relationship
+                                    .Properties
+                                    .GetValue<string>(nameof(CollisionRelationshipViewModel.FirstCollisionName));
+
+                                string secondNosName = relationship
+                                    .Properties
+                                    .GetValue<string>(nameof(CollisionRelationshipViewModel.SecondCollisionName));
+
+                                var firstNos = container.GetNamedObjectRecursively(firstNosName);
+                                var secondNos = container.GetNamedObjectRecursively(secondNosName);
+
+                                var firstElement = GetEntitySaveReferencedBy(firstNos);
+                                var secondElement = GetEntitySaveReferencedBy(secondNos);
+
+                                var firstSubCollision = relationship
+                                    .Properties
+                                    .GetValue<string>(nameof(CollisionRelationshipViewModel.FirstSubCollisionSelectedItem));
+
+                                var secondSubCollision = relationship
+                                    .Properties
+                                    .GetValue<string>(nameof(CollisionRelationshipViewModel.SecondSubCollisionSelectedItem));
 
 
-                var oldName = (string)oldValue;
-                bool changedAny = false;
-                var newName = namedObject.InstanceName;
+                                var shouldApplyAutoName = false;
+                                if (firstElement == element && firstSubCollision == oldName)
+                                {
+                                    relationship.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstSubCollisionSelectedItem), newName);
+                                    shouldApplyAutoName = true;
+                                }
+                                if (secondElement == element && secondSubCollision == oldName)
+                                {
+                                    relationship.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondSubCollisionSelectedItem), newName);
+                                    shouldApplyAutoName = true;
+                                }
 
-                string GetFirstCollision(NamedObjectSave nos)
-                {
-                    return nos.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.FirstCollisionName));
+                                if(shouldApplyAutoName)
+                                { 
+                                    // we could test if it should be renamed but...why not just do a rename. We can be lazy here.
+                                    // If there is no change in the name, it won't re-save or regenerate:
+                                    TryApplyAutoName(container, relationship);
+                                }
+
+                            }
+
+
+                        }
+                    }
+
+
+
                 }
+            }
+        }
 
-                string GetSecondCollision(NamedObjectSave nos)
+        private static void UpdateCollisionRelationshipsInThisElement(IElement element, object oldValue)
+        {
+            var namedObject = GlueState.Self.CurrentNamedObjectSave;
+
+            var collisionRelationshipAti = AssetTypeInfoManager.Self.CollisionRelationshipAti;
+            var allNamedObjects = element.AllNamedObjects.ToArray();
+            var collisionRelationships = allNamedObjects
+                .Where(item =>
                 {
-                    return nos.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.SecondCollisionName));
-                }
-
-                var withFirst = collisionRelationships
-                    .Where(item => GetFirstCollision(item) == oldName)
-                    .ToArray();
-
-                foreach (var item in withFirst)
-                {
-                    item.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstCollisionName), newName);
-                    changedAny = true;
-                    GlueCommands.Self.PrintOutput($"Renaming {item.FieldName}.{oldName} to {item.FieldName}.{newName}");
                     TryFixSourceClassType(item);
-                }
+                    return item.GetAssetTypeInfo() == collisionRelationshipAti;
+                })
+                .ToArray();
 
-                var withSecond = collisionRelationships
-                    .Where(item => GetSecondCollision(item) == oldName)
-                    .ToArray();
 
-                foreach (var item in withSecond)
-                {
-                    item.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionName), newName);
-                    changedAny = true;
-                    GlueCommands.Self.PrintOutput($"Renaming {item.FieldName}.{oldName} to {item.FieldName}.{newName}");
-                    TryFixSourceClassType(item);
-                }
+            var oldName = (string)oldValue;
+            bool changedAny = false;
+            var newName = namedObject.InstanceName;
 
-                if (changedAny)
-                {
-                    GlueCommands.Self.GluxCommands.SaveGluxTask();
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
-                }
+            string GetFirstCollision(NamedObjectSave nos)
+            {
+                return nos.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.FirstCollisionName));
+            }
+
+            string GetSecondCollision(NamedObjectSave nos)
+            {
+                return nos.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.SecondCollisionName));
+            }
+
+            var withFirst = collisionRelationships
+                .Where(item => GetFirstCollision(item) == oldName)
+                .ToArray();
+
+            foreach (var item in withFirst)
+            {
+                item.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstCollisionName), newName);
+                changedAny = true;
+                GlueCommands.Self.PrintOutput($"Renaming {item.FieldName}.{oldName} to {item.FieldName}.{newName}");
+                TryFixSourceClassType(item);
+                TryApplyAutoName(element, item);
+            }
+
+            var withSecond = collisionRelationships
+                .Where(item => GetSecondCollision(item) == oldName)
+                .ToArray();
+
+            foreach (var item in withSecond)
+            {
+                item.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionName), newName);
+                changedAny = true;
+                GlueCommands.Self.PrintOutput($"Renaming {item.FieldName}.{oldName} to {item.FieldName}.{newName}");
+                TryFixSourceClassType(item);
+                TryApplyAutoName(element, item);
+            }
+
+            if (changedAny)
+            {
+                GlueCommands.Self.GluxCommands.SaveGluxTask();
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
             }
         }
 
@@ -289,6 +388,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
         private static void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var viewModel = sender as CollisionRelationshipViewModel;
+            var namedObject = GlueState.Self.CurrentNamedObjectSave;
+
             var element = GlueState.Self.CurrentElement;
             switch (e.PropertyName)
             {
@@ -298,9 +399,59 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                     CollisionRelationshipViewModelController.TryFixSourceClassType(nos);
 
                     RefreshSubcollisionObjects(element, viewModel);
+
+                    TryApplyAutoName(element, namedObject);
+                    break;
+                case nameof(viewModel.FirstSubCollisionSelectedItem):
+                    TryApplyAutoName(element, namedObject);
+
+                    break;
+                case nameof(viewModel.SecondSubCollisionSelectedItem):
+                    TryApplyAutoName(element, namedObject);
+
+                    break;
+                case nameof(viewModel.IsAutoNameEnabled):
+                    TryApplyAutoName(element, namedObject);
                     break;
             }
         }
 
+        private static void TryApplyAutoName(IElement element, NamedObjectSave namedObject)
+        {
+            var isAutoNameEnabled = namedObject.Properties.GetValue<bool>(nameof(CollisionRelationshipViewModel.IsAutoNameEnabled));
+            if(isAutoNameEnabled)
+            {
+                var desiredName = GetAutoName(namedObject);
+
+                if (desiredName != namedObject.InstanceName)
+                {
+                    namedObject.InstanceName = desiredName;
+
+                    GlueCommands.Self.RefreshCommands.RefreshUi(element);
+                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                }
+            }
+        }
+
+        private static string GetAutoName(NamedObjectSave namedObject)
+        {
+
+            var firstName = namedObject.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.FirstCollisionName));
+            var firstSub = namedObject.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.FirstSubCollisionSelectedItem));
+            if(firstSub == CollisionRelationshipViewModel.EntireObject)
+            {
+                firstSub = null;
+            }
+
+            var secondName = namedObject.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.SecondCollisionName));
+            var secondSub = namedObject.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.SecondSubCollisionSelectedItem));
+            if(secondSub == CollisionRelationshipViewModel.EntireObject)
+            {
+                secondSub = null;
+            }
+
+            return $"{firstName}{firstSub}Vs{secondName}{secondSub}";
+        }
     }
 }

@@ -270,7 +270,8 @@ namespace OfficialPlugins.VariableDisplay
             var instanceMember = new DataGridItem();
             instanceMember.DisplayName = "Name";
             instanceMember.UnmodifiedVariableName = "Name";
-            // This won't actually be the old value after one change, but it's as good as we can get
+
+            // this gets updated in the CustomSetEvent below
             string oldValue = instance.InstanceName;
 
             instanceMember.CustomSetEvent += (throwaway, value) =>
@@ -296,6 +297,8 @@ namespace OfficialPlugins.VariableDisplay
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+                oldValue = (string)value;
             };
             instanceMember.CustomGetEvent += (throwaway) =>
                 {

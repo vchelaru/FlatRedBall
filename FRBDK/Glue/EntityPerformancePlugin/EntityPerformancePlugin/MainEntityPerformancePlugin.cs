@@ -362,7 +362,7 @@ namespace EntityPerformancePlugin
             var selectedTreeNode = GlueState.Self.CurrentTreeNode;
             saveOnViewModelChanges = false;
             {
-                if (GlueState.Self.CurrentEntitySave != null)
+                if (GlueState.Self.CurrentEntitySave != null && mainControl != null)
                 {
                     var entitySave = GlueState.Self.CurrentEntitySave;
 

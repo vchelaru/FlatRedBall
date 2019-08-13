@@ -62,6 +62,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             CodeGeneratorIElement.GenerateElementAndDerivedCode(element);
         }
 
+        public void GenerateElementCodeTask(IElement element)
+        {
+            string taskName = nameof(GenerateElementCodeTask) + " " + element.ToString();
+
+            TaskManager.Self.Add(() => CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
+                taskName,
+                TaskExecutionPreference.AddOrMoveToEnd);
+        }
+
         public void GenerateGlobalContentCode()
         {
             GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();

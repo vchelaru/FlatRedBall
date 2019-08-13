@@ -16,7 +16,7 @@ namespace OfficialPlugins.CollisionPlugin
     {
         public override ICodeBlock GenerateInitializeLate(ICodeBlock codeBlock, IElement element)
         {
-            var collisionAti = AssetTypeInfoManager.Self.CollisionRelationshipAti;
+            //var collisionAti = AssetTypeInfoManager.Self.CollisionRelationshipAti;
 
             //var collisionRelationships = element.AllNamedObjects
             //    .Where(item => item.GetAssetTypeInfo() == collisionAti &&

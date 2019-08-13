@@ -214,6 +214,13 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             }
         }
 
+        [SyncedProperty]
+        public bool IsAutoNameEnabled
+        {
+            get => Get<bool>();
+            set => SetAndPersist(value);
+        }
+
         [DependsOn(nameof(GlueObject))]
         [DependsOn(nameof(FirstCollisionName))]
         [DependsOn(nameof(SecondCollisionName))]

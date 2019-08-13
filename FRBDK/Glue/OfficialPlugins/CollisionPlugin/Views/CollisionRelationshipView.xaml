@@ -55,7 +55,12 @@
                        Text="{Binding WarningText}"
                        >
             </TextBlock>
-            <GroupBox Header="Collision Physics">
+            <CheckBox VerticalContentAlignment="Center"
+                      IsChecked="{Binding IsAutoNameEnabled}"
+                      Margin="0,8,0,0"
+                      >Auto-name Relationship</CheckBox>
+
+            <GroupBox Header="Collision Physics" Margin="0,8,0,0">
                 <StackPanel>
                     <RadioButton
                         IsChecked="{Binding IsNoPhysicsChecked}">No Physics</RadioButton>
