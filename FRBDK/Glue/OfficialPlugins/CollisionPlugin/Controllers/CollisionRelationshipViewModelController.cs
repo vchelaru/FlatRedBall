@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Utilities;
 using OfficialPlugins.CollisionPlugin.Managers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
 using System;
@@ -40,39 +41,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             foreach (var nos in namedObjects)
             {
-                var nosElement = nos.GetReferencedElement();
-                var nosAti = nos.GetAssetTypeInfo();
-
-                var entity = nosElement as EntitySave;
-
-                var shouldConsider = false;
-
-                if (entity?.ImplementsICollidable == true)
-                {
-                    shouldConsider = true;
-                }
-
-                if (!shouldConsider)
-                {
-                    // See if it's a list of ICollidables
-                    shouldConsider = nos != null &&
-                        nos.SourceType == SourceType.FlatRedBallType &&
-                        nos.SourceClassType == "PositionedObjectList<T>" &&
-                        !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
-                        ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType)?.ImplementsICollidable == true;
-                }
-
-                if (!shouldConsider)
-                {
-                    shouldConsider = nosAti?.QualifiedRuntimeTypeName.QualifiedType ==
-                        "FlatRedBall.TileCollisions.TileShapeCollection";
-                }
-
-                if (!shouldConsider)
-                {
-                    shouldConsider = nosAti?.QualifiedRuntimeTypeName.QualifiedType ==
-                        "FlatRedBall.Math.Geometry.ShapeCollection";
-                }
+                bool shouldConsider = GetIfCanBeReferencedByRelationship(nos);
 
                 if (shouldConsider)
                 {
@@ -82,6 +51,49 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                 }
             }
+        }
+
+        public static bool GetIfCanBeReferencedByRelationship(NamedObjectSave nos)
+        {
+            if(nos == null)
+            {
+                throw new ArgumentNullException(nameof(nos));
+            }
+            var nosElement = nos.GetReferencedElement();
+            var nosAti = nos.GetAssetTypeInfo();
+
+            var entity = nosElement as EntitySave;
+
+            var shouldConsider = false;
+
+            if (entity?.ImplementsICollidable == true)
+            {
+                shouldConsider = true;
+            }
+
+            if (!shouldConsider)
+            {
+                // See if it's a list of ICollidables
+                shouldConsider = nos != null &&
+                    nos.SourceType == SourceType.FlatRedBallType &&
+                    nos.SourceClassType == "PositionedObjectList<T>" &&
+                    !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
+                    ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType)?.ImplementsICollidable == true;
+            }
+
+            if (!shouldConsider)
+            {
+                shouldConsider = nosAti?.QualifiedRuntimeTypeName.QualifiedType ==
+                    "FlatRedBall.TileCollisions.TileShapeCollection";
+            }
+
+            if (!shouldConsider)
+            {
+                shouldConsider = nosAti?.QualifiedRuntimeTypeName.QualifiedType ==
+                    "FlatRedBall.Math.Geometry.ShapeCollection";
+            }
+
+            return shouldConsider;
         }
 
         static bool CanHaveSubCollisions(NamedObjectSave nos)
@@ -94,7 +106,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             return false;
         }
 
-        static EntitySave GetEntitySaveReferencedBy(NamedObjectSave nos)
+        public static EntitySave GetEntitySaveReferencedBy(NamedObjectSave nos)
         {
             if (nos != null)
             {
@@ -416,12 +428,32 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        private static void TryApplyAutoName(IElement element, NamedObjectSave namedObject)
+        public static void TryApplyAutoName(IElement element, NamedObjectSave namedObject)
         {
             var isAutoNameEnabled = namedObject.Properties.GetValue<bool>(nameof(CollisionRelationshipViewModel.IsAutoNameEnabled));
             if(isAutoNameEnabled)
             {
                 var desiredName = GetAutoName(namedObject);
+
+                bool nameExists = false;
+                do
+                {
+                    nameExists = element.AllNamedObjects
+                        .Any(item => item != namedObject &&
+                                     item.InstanceName == desiredName);
+
+                    if(nameExists)
+                    {
+                        if(StringFunctions.HasNumberAtEnd(desiredName))
+                        {
+                            desiredName = StringFunctions.IncrementNumberAtEnd(desiredName);
+                        }
+                        else
+                        {
+                            desiredName = desiredName + "2";
+                        }
+                    }
+                } while (nameExists);
 
                 if (desiredName != namedObject.InstanceName)
                 {
@@ -434,18 +466,22 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        private static string GetAutoName(NamedObjectSave namedObject)
+        public static string GetAutoName(NamedObjectSave namedObject)
         {
 
-            var firstName = namedObject.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.FirstCollisionName));
-            var firstSub = namedObject.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.FirstSubCollisionSelectedItem));
+            var firstName = namedObject.Properties.GetValue<string>(
+                nameof(CollisionRelationshipViewModel.FirstCollisionName));
+            var firstSub = namedObject.Properties.GetValue<string>(nameof(
+                CollisionRelationshipViewModel.FirstSubCollisionSelectedItem));
             if(firstSub == CollisionRelationshipViewModel.EntireObject)
             {
                 firstSub = null;
             }
 
-            var secondName = namedObject.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.SecondCollisionName));
-            var secondSub = namedObject.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.SecondSubCollisionSelectedItem));
+            var secondName = namedObject.Properties.GetValue<string>(nameof(
+                CollisionRelationshipViewModel.SecondCollisionName));
+            var secondSub = namedObject.Properties.GetValue<string>(nameof(
+                CollisionRelationshipViewModel.SecondSubCollisionSelectedItem));
             if(secondSub == CollisionRelationshipViewModel.EntireObject)
             {
                 secondSub = null;

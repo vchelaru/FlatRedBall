@@ -104,6 +104,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 if (isValid)
                 {
                     newNamedObject = GlueCommands.Self.GluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                    GlueState.Self.CurrentNamedObjectSave = newNamedObject;
                 }
                 else
                 {

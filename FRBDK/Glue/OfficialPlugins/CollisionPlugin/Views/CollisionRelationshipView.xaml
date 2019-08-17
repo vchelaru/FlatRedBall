@@ -7,9 +7,6 @@
              xmlns:VM="clr-namespace:OfficialPlugins.CollisionPlugin.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600">
-    <UserControl.DataContext>
-        <VM:CollisionRelationshipViewModel/>
-    </UserControl.DataContext>
     <ScrollViewer>
         <StackPanel>
             <Grid>

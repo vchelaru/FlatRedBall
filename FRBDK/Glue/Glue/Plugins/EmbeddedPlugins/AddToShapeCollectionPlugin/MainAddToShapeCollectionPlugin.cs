@@ -109,6 +109,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
                     viewModel.SourceClassType = sourceClassType;
 
                     toReturn = GlueCommands.Self.GluxCommands.AddNewNamedObjectToSelectedElement(viewModel);
+
+                    GlueState.Self.CurrentNamedObjectSave = toReturn;
+
                 }
             }
 

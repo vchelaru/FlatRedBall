@@ -27,9 +27,13 @@ namespace OfficialPlugins.CollisionPlugin
     {
         #region Fields/Properties
 
-        CollisionRelationshipViewModel viewModel;
-        CollisionRelationshipView control;
-        PluginTab pluginTab;
+        CollisionRelationshipViewModel relationshipViewModel;
+        CollisionRelationshipView relationshipControl;
+        PluginTab relationshipPluginTab;
+
+        CollidableNamedObjectRelationshipDisplay collidableDisplay;
+        CollidableNamedObjectRelationshipViewModel collidableViewModel;
+        PluginTab collidableTab;
 
         public override string FriendlyName => "Collision Plugin";
 
@@ -52,7 +56,10 @@ namespace OfficialPlugins.CollisionPlugin
 
         public override void StartUp()
         {
-            viewModel = CollisionRelationshipViewModelController.CreateViewModel();
+            relationshipViewModel = CollisionRelationshipViewModelController.CreateViewModel();
+
+            collidableViewModel = new CollidableNamedObjectRelationshipViewModel();
+            CollidableNamedObjectController.RegisterViewModel(collidableViewModel);
 
             var collisionCodeGenerator = new CollisionCodeGenerator();
 
@@ -109,15 +116,22 @@ namespace OfficialPlugins.CollisionPlugin
         {
             var selectedNos = GlueState.Self.CurrentNamedObjectSave;
 
+            var element = GlueState.Self.CurrentElement;
 
-            var shouldShowControl = false;
-
-            if(selectedNos != null)
+            if (selectedNos != null)
             {
                 CollisionRelationshipViewModelController.TryFixSourceClassType(selectedNos);
             }
 
-            if(selectedNos?.GetAssetTypeInfo() == AssetTypeInfoManager.Self.CollisionRelationshipAti)
+            TryHandleSelectedCollisionRelationship(selectedNos);
+
+            TryHandleSelectedCollidable(element, selectedNos);
+        }
+
+        private void TryHandleSelectedCollisionRelationship(NamedObjectSave selectedNos)
+        {
+            var shouldShowControl = false;
+            if (selectedNos?.GetAssetTypeInfo() == AssetTypeInfoManager.Self.CollisionRelationshipAti)
             {
                 RefreshViewModelTo(selectedNos);
 
@@ -126,48 +140,88 @@ namespace OfficialPlugins.CollisionPlugin
 
             if (shouldShowControl)
             {
-                if(control == null)
+                if (relationshipControl == null)
                 {
-                    control = new CollisionRelationshipView();
-                    pluginTab = this.CreateTab(control, "Collision");
-                    this.ShowTab(pluginTab, TabLocation.Center);
-                    control.DataContext = viewModel;
+                    relationshipControl = new CollisionRelationshipView();
+                    relationshipPluginTab = this.CreateTab(relationshipControl, "Collision");
+                    this.ShowTab(relationshipPluginTab, TabLocation.Center);
+                    relationshipControl.DataContext = relationshipViewModel;
                 }
                 else
                 {
-                    this.ShowTab(pluginTab);
+                    this.ShowTab(relationshipPluginTab);
                 }
             }
             else
             {
-                this.RemoveTab(pluginTab);
+                this.RemoveTab(relationshipPluginTab);
             }
+        }
 
+        private void TryHandleSelectedCollidable(IElement element, NamedObjectSave selectedNos)
+        {
+            var shouldShowControl = selectedNos != null &&
+                CollisionRelationshipViewModelController
+                .GetIfCanBeReferencedByRelationship(selectedNos);
+
+            if(shouldShowControl)
+            {
+                RefreshCollidableViewModelTo(element, selectedNos);
+
+                if (collidableDisplay == null)
+                {
+                    collidableDisplay = new CollidableNamedObjectRelationshipDisplay();
+                    collidableTab = this.CreateTab(collidableDisplay, "Collision");
+                    this.ShowTab(collidableTab, TabLocation.Center);
+                    collidableDisplay.DataContext = collidableViewModel;
+                }
+                else
+                {
+                    this.ShowTab(collidableTab);
+                }
+
+                // not sure why this is required:
+                collidableDisplay.DataContext = null;
+                collidableDisplay.DataContext = collidableViewModel;
+            }
+            else
+            {
+                this.RemoveTab(collidableTab);
+            }
         }
 
         private void RefreshViewModelTo(NamedObjectSave selectedNos)
         {
             // show UId
 
-            if (control != null)
+            if (relationshipControl != null)
             {
-                control.DataContext = null;
+                relationshipControl.DataContext = null;
             }
 
-            viewModel.GlueObject = selectedNos;
+            relationshipViewModel.GlueObject = selectedNos;
 
             CollisionRelationshipViewModelController
-                .RefreshAvailableCollisionObjects(GlueState.Self.CurrentElement, viewModel);
+                .RefreshAvailableCollisionObjects(GlueState.Self.CurrentElement, relationshipViewModel);
 
             CollisionRelationshipViewModelController
-                .RefreshSubcollisionObjects(GlueState.Self.CurrentElement, viewModel);
+                .RefreshSubcollisionObjects(GlueState.Self.CurrentElement, relationshipViewModel);
 
-            viewModel.UpdateFromGlueObject();
+            relationshipViewModel.UpdateFromGlueObject();
 
-            if (control != null)
+            if (relationshipControl != null)
             {
-                control.DataContext = viewModel;
+                relationshipControl.DataContext = relationshipViewModel;
             }
+
+
+
+
+        }
+
+        private void RefreshCollidableViewModelTo(IElement element, NamedObjectSave selectedNos)
+        {
+            CollidableNamedObjectController.RefreshViewModelTo(element, selectedNos, collidableViewModel);
         }
     }
 }

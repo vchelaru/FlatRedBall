@@ -466,7 +466,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public NamedObjectSave AddNewNamedObjectTo(AddObjectViewModel addObjectViewModel, IElement element, NamedObjectSave namedObject)
         {
-
+            if(element == null)
+            {
+                throw new ArgumentNullException(nameof(element));
+            }
             MembershipInfo membershipInfo = NamedObjectSaveExtensionMethodsGlue.GetMemberMembershipInfo(addObjectViewModel.ObjectName);
 
             var newNos = NamedObjectSaveExtensionMethodsGlue.AddNewNamedObjectTo(addObjectViewModel.ObjectName,
@@ -519,9 +522,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             PropertyGridHelper.UpdateNamedObjectDisplay();
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
 
-            // it may already be selected, so force select it
-            MainGlueWindow.Self.ElementTreeView.SelectedNode = null;
-            MainGlueWindow.Self.ElementTreeView.SelectedNode = GlueState.Self.Find.NamedObjectTreeNode(newNos);
+
             GluxCommands.Self.SaveGlux();
 
             return newNos;

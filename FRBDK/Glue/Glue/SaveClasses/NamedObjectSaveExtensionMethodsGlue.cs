@@ -120,8 +120,6 @@ namespace FlatRedBall.Glue.SaveClasses
             element.NamedObjects.Add(newNamedObject);
             GlueCommands.Self.RefreshCommands.RefreshUi(element);
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-
-            GlueState.Self.CurrentNamedObjectSave = newNamedObject;
         }
 
     }

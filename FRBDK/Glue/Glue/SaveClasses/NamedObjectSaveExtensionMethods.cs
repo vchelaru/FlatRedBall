@@ -457,6 +457,10 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static IElement GetReferencedElement(this NamedObjectSave instance)
         {
+            if(instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
             if (string.IsNullOrEmpty(instance.SourceClassType))
             {
                 return null;
