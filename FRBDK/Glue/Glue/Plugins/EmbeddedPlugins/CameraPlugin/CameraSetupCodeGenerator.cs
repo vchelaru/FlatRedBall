@@ -209,6 +209,12 @@ namespace FlatRedBall.Glue.CodeGeneration
             block.Line($"IsFullScreen = {displaySettings.RunInFullScreen.ToString().ToLowerInvariant()},");
             block.Line($"AllowWidowResizing = {displaySettings.AllowWindowResizing.ToString().ToLowerInvariant()},");
             block.Line($"ResizeBehavior = ResizeBehavior.{displaySettings.ResizeBehavior},");
+
+            if(GetIfHasGumProject())
+            {
+                block.Line($"ResizeBehaviorGum = ResizeBehavior.{displaySettings.ResizeBehaviorGum},");
+            }
+
             block.Line($"DominantInternalCoordinates = WidthOrHeight.{displaySettings.DominantInternalCoordinates},");
             classContents.Line(";");
         }
@@ -225,6 +231,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             classBlock.AutoProperty("public bool", "AllowWidowResizing");
             classBlock.AutoProperty("public bool", "IsFullScreen");
             classBlock.AutoProperty("public ResizeBehavior", "ResizeBehavior");
+            classBlock.AutoProperty("public ResizeBehavior", "ResizeBehaviorGum");
             classBlock.AutoProperty("public WidthOrHeight", "DominantInternalCoordinates");
 
 
@@ -285,8 +292,29 @@ namespace FlatRedBall.Glue.CodeGeneration
                 functionBlock.If("Data.Is2D && Data.ResizeBehavior == ResizeBehavior.IncreaseVisibleArea")
                     .Line("FlatRedBall.Camera.Main.OrthogonalHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / (Data.Scale/ 100.0f);")
                     .Line("FlatRedBall.Camera.Main.FixAspectRatioYConstant();");
+
+                bool hasGumProject = GetIfHasGumProject();
+
+                if (hasGumProject)
+                {
+                    var gumIfBlock = functionBlock.If("Data.ResizeBehaviorGum == ResizeBehavior.IncreaseVisibleArea");
+
+                    gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / (Data.Scale / 100.0f);");
+                    gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = FlatRedBall.Camera.Main.DestinationRectangle.Width / (Data.Scale / 100.0f);");
+                    gumIfBlock.Line("global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = Data.Scale/100.0f;");
+
+                    var gumElseBlock = gumIfBlock.End().Else();
+
+                    gumElseBlock.Line("var zoom = (Data.Scale / 100.0f) * FlatRedBall.Camera.Main.DestinationRectangle.Height / (float)Data.ResolutionHeight;");
+                    gumElseBlock.Line("global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;");
+                    gumElseBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = Data.ResolutionHeight;");
+                    gumElseBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = Data.ResolutionWidth;");
+
+                }
             }
         }
+
+
 
         private static void GenerateSetupCameraMethodNew(bool generateDisplayCode, ICodeBlock classContents)
         {
@@ -439,7 +467,16 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-#region Old Code
+        private static bool GetIfHasGumProject()
+        {
+            var gumProject = GlueState.Self.CurrentGlueProject
+                .GetAllReferencedFiles()
+                .FirstOrDefault(item => FlatRedBall.IO.FileManager.GetExtension(item.Name) == "gumx");
+            var hasGumProject = gumProject != null;
+            return hasGumProject;
+        }
+
+        #region Old Code
         private static string GetDisplaySetupOld(ICodeBlock classContents)
         {
             string fileContents = Resources.Resource1.CameraSetupTemplate;

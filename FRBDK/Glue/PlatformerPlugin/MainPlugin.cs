@@ -55,7 +55,8 @@ namespace FlatRedBall.PlatformerPlugin
                 // 1.4.0 - If the user is holding the down vertical input, in the air, and the movement
                 //         values allow falling through clouds, cloud collision will not be tested.
                 // 1.5   - Added InitializePlatformerInput which takes an IInputDevice
-                return new Version(1, 5, 0);
+                // 1.5.1 - Fixed bug where duplicate entries could get added to the CSV
+                return new Version(1, 5, 1);
             }
         }
 
@@ -102,7 +103,15 @@ namespace FlatRedBall.PlatformerPlugin
                 {
                     this.ShowTab(pluginTab);
                 }
-                MainController.Self.UpdateTo(GlueState.Self.CurrentEntitySave);
+
+                var entity = GlueState.Self.CurrentEntitySave;
+
+                var isPlatformer = entity.Properties.GetValue<bool>("IsPlatformer");
+                if(isPlatformer)
+                {
+                    MainController.Self.UpdateTo(GlueState.Self.CurrentEntitySave);
+                }
+
             }
             else
             {

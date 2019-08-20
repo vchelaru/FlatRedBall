@@ -220,7 +220,12 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
 
         public PlatformerValuesViewModel Clone()
         {
-            return (PlatformerValuesViewModel)this.MemberwiseClone();
+            //return (PlatformerValuesViewModel)this.MemberwiseClone();
+
+            string serialized = null;
+            FlatRedBall.IO.FileManager.XmlSerialize(this, out serialized);
+
+            return FlatRedBall.IO.FileManager.XmlDeserializeFromString<PlatformerValuesViewModel>(serialized);
         }
 
         #endregion

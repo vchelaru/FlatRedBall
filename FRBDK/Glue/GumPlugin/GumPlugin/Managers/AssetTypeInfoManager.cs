@@ -286,9 +286,10 @@ namespace GumPlugin.Managers
                 }
             }
 
-            toReturn +=
-                        "FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (not, used) => { FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera(); };"
-                        ;
+            // As of August 19, 2019 Glue handles this in the camera code, so this isn't needed anymore
+            //toReturn +=
+            //            "FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (not, used) => { FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera(); };"
+            //            ;
 
             var gumxRfs = GumProjectManager.Self.GetRfsForGumProject();
 
