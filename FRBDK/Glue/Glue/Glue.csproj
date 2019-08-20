@@ -840,6 +840,7 @@
     </Compile>
     <Compile Include="Plugins\EmbeddedPlugins\UnreferencedFiles\UnreferencedFilesViewModel.cs" />
     <Compile Include="Utilities\IEnumerableExtensionMethods.cs" />
+    <Compile Include="Utilities\LinqToVisualTree.cs" />
     <Compile Include="ViewModels\AddExistingFileViewModel.cs" />
     <Compile Include="ViewModels\AddObjectViewModel.cs" />
     <Compile Include="ViewModels\CustomClassViewModel.cs" />

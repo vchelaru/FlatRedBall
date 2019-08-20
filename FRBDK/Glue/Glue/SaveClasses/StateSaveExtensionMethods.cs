@@ -11,8 +11,22 @@ namespace FlatRedBall.Glue.SaveClasses
 {
     public static class StateSaveExtensionMethods
     {
+        public static void RemoveVariable(this StateSave stateSave, string variableName)
+        {
+            var found = stateSave.InstructionSaves.FirstOrDefault(item => item.Member == variableName);
+
+            if(found != null)
+            {
+                stateSave.InstructionSaves.Remove(found);
+            }
+        }
+
         public static void SetValue(this StateSave stateSave, string variableName, object valueToSet)
         {
+            if(stateSave == null)
+            {
+                throw new ArgumentNullException(nameof(stateSave));
+            }
 #if GLUE
             if (variableName.Contains(" set in "))
             {

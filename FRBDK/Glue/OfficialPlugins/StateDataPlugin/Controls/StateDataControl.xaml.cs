@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LinqToVisualTree;
 
 namespace OfficialPlugins.StateDataPlugin.Controls
 {
@@ -29,11 +30,89 @@ namespace OfficialPlugins.StateDataPlugin.Controls
             return $"{Path} on {ViewModel?.BackingData?.Name}";
         }
     }
+
+    // from:
+    // https://stackoverflow.com/questions/5471405/create-datatemplate-in-code-behind
+    /// <summary>
+    /// Class that helps the creation of control and data templates by using delegates.
+    /// </summary>
+    public static class TemplateGenerator
+    {
+        private sealed class _TemplateGeneratorControl :
+          ContentControl
+        {
+            internal static readonly DependencyProperty FactoryProperty = DependencyProperty.Register("Factory", typeof(Func<object>), typeof(_TemplateGeneratorControl), new PropertyMetadata(null, _FactoryChanged));
+
+            private static void _FactoryChanged(DependencyObject instance, DependencyPropertyChangedEventArgs args)
+            {
+                var control = (_TemplateGeneratorControl)instance;
+                var factory = (Func<object>)args.NewValue;
+                control.Content = factory();
+            }
+        }
+
+        /// <summary>
+        /// Creates a data-template that uses the given delegate to create new instances.
+        /// </summary>
+        public static DataTemplate CreateDataTemplate(Func<object> factory)
+        {
+            if (factory == null)
+                throw new ArgumentNullException("factory");
+
+            var frameworkElementFactory = new FrameworkElementFactory(typeof(_TemplateGeneratorControl));
+            frameworkElementFactory.SetValue(_TemplateGeneratorControl.FactoryProperty, factory);
+
+            var dataTemplate = new DataTemplate(typeof(DependencyObject));
+            dataTemplate.VisualTree = frameworkElementFactory;
+            return dataTemplate;
+        }
+
+        /// <summary>
+        /// Creates a control-template that uses the given delegate to create new instances.
+        /// </summary>
+        public static ControlTemplate CreateControlTemplate(Type controlType, Func<object> factory)
+        {
+            if (controlType == null)
+                throw new ArgumentNullException("controlType");
+
+            if (factory == null)
+                throw new ArgumentNullException("factory");
+
+            var frameworkElementFactory = new FrameworkElementFactory(typeof(_TemplateGeneratorControl));
+            frameworkElementFactory.SetValue(_TemplateGeneratorControl.FactoryProperty, factory);
+
+            var controlTemplate = new ControlTemplate(controlType);
+            controlTemplate.VisualTree = frameworkElementFactory;
+            return controlTemplate;
+        }
+    }
+
     /// <summary>
     /// Interaction logic for StateDataControl.xaml
     /// </summary>
     public partial class StateDataControl : UserControl
     {
+        int? CurrentRowIndex
+        {
+            get
+            {
+                var selectedItem = DataGridInstance.CurrentItem;
+                if(selectedItem != null)
+                {
+                    return ViewModel.States.IndexOf(selectedItem as StateViewModel);
+                }
+                return null;
+            }
+        }
+
+        int? CurrentColumnIndex
+        {
+            get
+            {
+                return DataGridInstance.CurrentColumn?.DisplayIndex;
+            }
+        }
+
         StateCategoryViewModel ViewModel
         {
             get
@@ -51,7 +130,62 @@ namespace OfficialPlugins.StateDataPlugin.Controls
             //nameColumn.Header = "Name";
             
             //DataGridInstance.Columns.Add(nameColumn);
+            DataGridInstance.PreparingCellForEdit += HandleCellEdit;
+            DataGridInstance.CurrentCellChanged += HandleCurrentCellChanged;
+        }
 
+        private void HandleCurrentCellChanged(object sender, EventArgs e)
+        {
+            var selectedItem = DataGridInstance.CurrentItem;
+
+            if(selectedItem != null)
+            {
+                var currentColumnIndex = CurrentColumnIndex;
+                var currentRowIndex = CurrentRowIndex;
+
+                if (currentColumnIndex > -1 && currentRowIndex > -1 && currentColumnIndex != null)
+                {
+                    FocusTextBoxAt(currentColumnIndex, currentRowIndex);
+                }
+
+            }
+            //var rowIndex = DataGridInstance.SelectedIndex;
+            //var state = ViewModel.States[rowIndex];
+            //var value = DataGridInstance.SelectedValue;
+            //var path = DataGridInstance.SelectedValuePath;
+
+            //var textBox = DataGridInstance.Descendants<TextBox>()
+            //    .OfType<TextBox>()
+            //    .ToArray();
+            //var cell = DataGridInstance.CurrentItem;
+
+
+            //var foundTextBox = textBox.FirstOrDefault(item => item.DataContext == cell);
+
+            //int m = 3;
+        }
+
+        private bool FocusTextBoxAt(int? currentColumnIndex, int? currentRowIndex)
+        {
+            var currentRow = DataGridInstance.Descendants<DataGridRow>()
+                                    .OfType<DataGridRow>().ToList()[currentRowIndex.Value];
+
+
+            var childrenOfChildren = currentRow.Descendants<DataGridCell>()
+                .OfType<DataGridCell>().ToArray()[currentColumnIndex.Value];
+
+            var textBox = childrenOfChildren.Descendants<TextBox>()
+                .OfType<TextBox>()
+                .ToArray();
+
+            var focused = false;
+            if (textBox.Length > 0)
+            {
+                textBox[0].Focus();
+                focused = true;
+            }
+
+            return focused;
         }
 
         private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -85,6 +219,11 @@ namespace OfficialPlugins.StateDataPlugin.Controls
             }
         }
 
+        private void HandleCellEdit(object sender, DataGridPreparingCellForEditEventArgs e)
+        {
+            int m = 3;
+        }
+
         private void AddColumnForVariableAtIndex(int i, CustomVariable variable)
         {
             var viewModelColumn = ViewModel.Columns[i];
@@ -102,7 +241,7 @@ namespace OfficialPlugins.StateDataPlugin.Controls
 
                 var comboBoxColumn = new DataGridComboBoxColumn();
                 comboBoxColumn.ItemsSource = converter.GetStandardValues();
-                comboBoxColumn.SelectedItemBinding = new Binding($"Variables[{i}]")
+                comboBoxColumn.SelectedItemBinding = new Binding($"Variables[{i}].UiValue")
                 {
                     UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
                 };
@@ -115,7 +254,7 @@ namespace OfficialPlugins.StateDataPlugin.Controls
                 var comboBoxColumn = new DataGridComboBoxColumn();
                 // capitalize true/false so they ToString properly
                 comboBoxColumn.ItemsSource = new object[] { "", true, false };
-                comboBoxColumn.SelectedItemBinding = new Binding($"Variables[{i}]")
+                comboBoxColumn.SelectedItemBinding = new Binding($"Variables[{i}].UiValue")
                 {
                     UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
                 };
@@ -123,18 +262,73 @@ namespace OfficialPlugins.StateDataPlugin.Controls
             }
             else
             {
-                var textColumn = new DataGridTextColumn();
-                textColumn.Binding = new Binding($"Variables[{i}]")
+                var templateColumn = new DataGridTemplateColumn();
+                templateColumn.CellTemplate = TemplateGenerator.CreateDataTemplate(() =>
                 {
-                    UpdateSourceTrigger = UpdateSourceTrigger.LostFocus
-                };
-                column = textColumn;
+                    var textBox = new TextBox();
+
+                    //textBox.SetBinding(TextBox.TextProperty, $"Variables[{i}]");
+                    {
+                        Binding myBinding = new Binding();
+                        //myBinding.Source = ViewModel;
+                        myBinding.Path = new PropertyPath($"Variables[{i}].UiValue");
+                        myBinding.Mode = BindingMode.TwoWay;
+                        myBinding.UpdateSourceTrigger = UpdateSourceTrigger.LostFocus;
+                        BindingOperations.SetBinding(textBox, TextBox.TextProperty, myBinding);
+                    }
+
+                    textBox.SetBinding(TextBox.ForegroundProperty, 
+                        $"Variables[{i}].{nameof(StateVariableViewModel.TextColor)}");
+
+                    textBox.BorderThickness = new Thickness(0);
+                    textBox.BorderBrush = Brushes.Transparent;
+
+                    textBox.LostFocus += (not, used) =>
+                    {
+                        var textBoxDataContext = textBox.DataContext;
+                        ((StateViewModel)textBoxDataContext).Variables[i].IsFocused = false;
+
+                        //(textBox.DataContext as StateVariableViewModel).IsFocused = false;
+                        //HandleTextBoxLostFocus(textBox, i);
+                    };
+
+                    textBox.GotFocus += (not, used) =>
+                    {
+                        var textBoxDataContext = textBox.DataContext;
+                        (( StateViewModel)textBoxDataContext).Variables[i].IsFocused = true;
+
+                        textBox.SelectAll();
+                    };
+
+                    return textBox;
+                });
+
+                
+
+                column = templateColumn;
+                //var textColumn = new DataGridTextColumn();
+                //textColumn.Binding = new Binding($"Variables[{i}]")
+                //{
+                    //UpdateSourceTrigger = UpdateSourceTrigger.LostFocus,
+                //};
+                
+                //column = textColumn;
             }
 
 
 
             column.Header = viewModelColumn;
             DataGridInstance.Columns.Add(column);
+        }
+
+        private void HandleTextBoxLostFocus(TextBox textBox, int index)
+        {
+            //var value = ViewModel.States[ViewModel.SelectedIndex].Variables[index];
+
+            //ViewModel.ApplyViewModelVariableToStateAtIndex(
+            //    value, index, ViewModel.States[ViewModel.SelectedIndex]);
+
+            //int m = 3;
         }
 
         private void DataGridInstance_KeyDown(object sender, KeyEventArgs e)
@@ -156,12 +350,15 @@ namespace OfficialPlugins.StateDataPlugin.Controls
                     var column = cell.Column;
 
                     var bindingPath = GetColumnBindingPath(column);
-
-                    pathsToDelete.Add(new StateVmPath
+                    if(!string.IsNullOrEmpty(bindingPath))
                     {
-                        ViewModel = rowVm,
-                        Path = bindingPath
-                    });
+                        pathsToDelete.Add(new StateVmPath
+                        {
+                            ViewModel = rowVm,
+                            Path = bindingPath
+                        });
+
+                    }
 
                 }
 
@@ -169,9 +366,42 @@ namespace OfficialPlugins.StateDataPlugin.Controls
                 foreach(var path in pathsToDelete)
                 {
                     DeleteValue(path.ViewModel, path.Path);
+
                 }
 
                 e.Handled = true;
+            }
+            else if(e.Key == Key.Tab)
+            {
+                var shift = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+
+                var currentRowIndex = CurrentRowIndex;
+                var currentColumnIndex = CurrentColumnIndex;
+                if(shift && currentRowIndex != null && currentColumnIndex > 0)
+                {
+                    var focusedTextBox =  FocusTextBoxAt(currentColumnIndex-1, currentRowIndex);
+                    e.Handled = focusedTextBox;
+                }
+            }
+            else if(e.Key == Key.Up)
+            {
+                var currentRowIndex = CurrentRowIndex;
+                var currentColumnIndex = CurrentColumnIndex;
+                if (currentRowIndex > 0 && currentColumnIndex != null)
+                {
+                    var focusedTextBox = FocusTextBoxAt(currentColumnIndex, currentRowIndex - 1);
+                    e.Handled = focusedTextBox;
+                }
+            }
+            else if (e.Key == Key.Down)
+            {
+                var currentRowIndex = CurrentRowIndex;
+                var currentColumnIndex = CurrentColumnIndex;
+                if (currentRowIndex < ViewModel.States.Count -1 && currentColumnIndex != null)
+                {
+                    var focusedTextBox = FocusTextBoxAt(currentColumnIndex, currentRowIndex + 1);
+                    e.Handled = focusedTextBox;
+                }
             }
         }
 
@@ -190,7 +420,7 @@ namespace OfficialPlugins.StateDataPlugin.Controls
 
                 var number = int.Parse(numberString);
 
-                rowVm.Variables[number] = null;
+                rowVm.Variables[number].Value = null;
             }
         }
 
@@ -209,8 +439,13 @@ namespace OfficialPlugins.StateDataPlugin.Controls
             {
                 binding = ((DataGridTextColumn)column).Binding as Binding;
             }
+            else if(column is DataGridTemplateColumn)
+            {
+                // doesn't exist:
+                //binding = ((DataGridTemplateColumn)column).Binding as Binding;
+            }
 
-            return binding.Path.Path;
+            return binding?.Path?.Path;
         }
 
         private void ExcludeButtonClick(object sender, RoutedEventArgs e)

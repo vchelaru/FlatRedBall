@@ -96,6 +96,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
         }
 
 
+
         #endregion
 
         #region Initialize
@@ -113,6 +114,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             foreach (var state in category.States)
             {
                 var stateViewModel = new StateViewModel(state, category, element);
+                stateViewModel.ValueChanged += HandleStateViewModelValueChanged;
                 AssignEventsOn(stateViewModel);
                 States.Add(stateViewModel);
             }
@@ -182,9 +184,12 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
         {
             // add the blank one:
             var blankRowViewModel = new StateViewModel(null, category, element);
+            blankRowViewModel.ValueChanged += HandleStateViewModelValueChanged;
+
             AssignEventsOn(blankRowViewModel);
             States.Add(blankRowViewModel);
         }
+
 
         #endregion
 
@@ -198,7 +203,8 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
                 if(stateSave != null)
                 {
-                    ApplyViewModelVariableToStateAtIndex(e.NewItems[0], index, stateSave);
+                    var variableViewModel = e.NewItems[0] as StateVariableViewModel;
+                    ApplyViewModelVariableToStateAtIndex(variableViewModel.Value, index, stateSave);
 
                     GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
                     GlueCommands.Self.GluxCommands.SaveGluxTask();
@@ -207,7 +213,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             }
         }
 
-        private void ApplyViewModelVariableToStateAtIndex(object value, int index, StateViewModel stateViewModel)
+        public void ApplyViewModelVariableToStateAtIndex(object value, int index, StateViewModel stateViewModel)
         {
             if (index >= 0 && index < Element.CustomVariables.Count)
             {
@@ -220,35 +226,61 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     var variable = Element.CustomVariables[index];
 
                     // need to cast the type, because newItems[0] will be a string
+                    ApplyValueToModel(value, stateViewModel, stateSave, variable);
 
+                }
 
-                    if(value == null || value as string == String.Empty)
+            }
+        }
+
+        private void HandleStateViewModelValueChanged(StateViewModel stateViewModel, StateVariableViewModel stateVariableViewModel)
+        {
+            var value = stateVariableViewModel.Value;
+            var element = GlueState.Self.CurrentElement;
+            var customVariable = element.GetCustomVariable(stateVariableViewModel.VariableName);
+            ApplyValueToModel(value, stateViewModel, stateViewModel.BackingData, customVariable);
+        }
+
+        public void ApplyValueToModel(object value, StateViewModel stateViewModel, StateSave stateSave, CustomVariable variable)
+        {
+            if (value == null || value as string == String.Empty)
+            {
+
+                var existingInstruction = stateSave?.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
+
+                if (existingInstruction != null)
+                {
+                    stateSave.InstructionSaves.Remove(existingInstruction);
+                }
+
+                CheckForStateRemoval(stateViewModel);
+            }
+            else
+            {
+                try
+                {
+                    var convertedValue = Convert(value, variable);
+                    // This could have converted incorrectly.
+                    if(convertedValue != null)
                     {
-                        var existingInstruction = stateSave.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
+                        stateSave.SetValue(variable.Name, convertedValue);
+                    }
+                    else
+                    {
+                        var existingInstruction = stateSave?.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
 
-                        if(existingInstruction != null)
+                        if (existingInstruction != null)
                         {
                             stateSave.InstructionSaves.Remove(existingInstruction);
                         }
 
-                        CheckForStateRemoval(stateViewModel);
                     }
-                    else
-                    {
-                        try
-                        {
-                            var convertedValue = Convert(value, variable);
-                            stateSave.SetValue(variable.Name, convertedValue);
-                        }
-                        catch(Exception e)
-                        {
-                            GlueCommands.Self.PrintError(
-                                $"Could not assign variable {variable.Name} ({variable.Type}) to \"{value}\":\n{e.ToString()}");
-                        }
-                    }
-
                 }
-
+                catch (Exception e)
+                {
+                    GlueCommands.Self.PrintError(
+                        $"Could not assign variable {variable.Name} ({variable.Type}) to \"{value}\":\n{e.ToString()}");
+                }
             }
         }
 
@@ -260,22 +292,29 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 return null;
             }
 
-            switch(variable.Type)
+            try
             {
-                case "float":
-                    return System.Convert.ToSingle(whatToConvert.ToString(), CultureInfo.InvariantCulture);
-                case "int":
-                    return System.Convert.ToInt32(whatToConvert.ToString());
-                case "bool":
-                    return System.Convert.ToBoolean(whatToConvert.ToString());
-                case "long":
-                    return System.Convert.ToInt64(whatToConvert.ToString());
-                case "double":
-                    return System.Convert.ToDouble(whatToConvert.ToString(), CultureInfo.InvariantCulture);
-                case "byte":
-                    return System.Convert.ToByte(whatToConvert.ToString());
-                default:
-                    return whatToConvert;
+                switch(variable.Type)
+                {
+                    case "float":
+                        return System.Convert.ToSingle(whatToConvert.ToString(), CultureInfo.InvariantCulture);
+                    case "int":
+                        return System.Convert.ToInt32(whatToConvert.ToString());
+                    case "bool":
+                        return System.Convert.ToBoolean(whatToConvert.ToString());
+                    case "long":
+                        return System.Convert.ToInt64(whatToConvert.ToString());
+                    case "double":
+                        return System.Convert.ToDouble(whatToConvert.ToString(), CultureInfo.InvariantCulture);
+                    case "byte":
+                        return System.Convert.ToByte(whatToConvert.ToString());
+                    default:
+                        return whatToConvert;
+                }
+            }
+            catch
+            {
+                return null;
             }
         }
 
@@ -374,8 +413,8 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             if(!isLast)
             {
                 var isEmpty = selectedState.Variables.All(item =>
-                    item == null ||
-                    (item is string && string.IsNullOrEmpty(item as string)));
+                    item.Value == null ||
+                    (item.Value is string && string.IsNullOrEmpty(item.Value as string)));
 
 
 
@@ -413,7 +452,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
         {
             for (int i = 0; i < selectedViewModel.Variables.Count; i++)
             {
-                ApplyViewModelVariableToStateAtIndex(selectedViewModel.Variables[i], i, selectedViewModel);
+                ApplyViewModelVariableToStateAtIndex(selectedViewModel.Variables[i].Value, i, selectedViewModel);
             }
         }
 

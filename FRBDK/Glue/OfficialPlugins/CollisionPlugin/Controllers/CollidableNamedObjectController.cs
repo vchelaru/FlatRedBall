@@ -41,7 +41,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             var isSingleEntity = thisNamedObject.IsList == false && thisNamedObject.SourceType == SourceType.Entity;
             var isTileShapeCollection = thisNamedObject.SourceClassType ==
-                "FlatRedBall.TileCollisions.TileShapeCollection";
+                "FlatRedBall.TileCollisions.TileShapeCollection" ||
+                thisNamedObject.SourceClassType == "TileShapeCollection";
             List<NamedObjectSave> collidables;
             
             if(isTileShapeCollection)

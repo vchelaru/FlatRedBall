@@ -1,14 +1,115 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace OfficialPlugins.StateDataPlugin.ViewModels
 {
+    class StateVariableViewModel : ViewModel
+    {
+        public object Value
+        {
+            get { return Get<object>(); }
+            set { Set(value); }
+        }
+
+        public object DefaultValue
+        {
+            get { return Get<object>(); }
+            set { Set(value); }
+        }
+
+        public bool HasState
+        {
+            get { return Get<bool>(); }
+            set { Set(value); }
+        }
+
+        [DependsOn(nameof(Value))]
+        [DependsOn(nameof(DefaultValue))]
+        [DependsOn(nameof(HasState))]
+        [DependsOn(nameof(IsFocused))]
+        public object UiValue
+        {
+            get
+            {
+                if(Value != null)
+                {
+                    return Value;
+                }
+                else if(HasState && IsFocused == false)
+                {
+                    return DefaultValue;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                if(value is string && string.IsNullOrEmpty(value as string))
+                {
+                    Value = null;
+                }
+                else
+                {
+                    Value = value;
+                }
+            }
+        }
+
+        [DependsOn(nameof(Value))]
+        [DependsOn(nameof(DefaultValue))]
+        public bool IsDefaultValue
+        {
+            get
+            {
+                return Value == null && DefaultValue != null;
+            }
+        }
+
+        static Brush GreenBrush;
+
+        [DependsOn(nameof(IsDefaultValue))]
+        [DependsOn(nameof(IsFocused))]
+        public Brush TextColor
+        {
+            get
+            {
+                if(IsDefaultValue && IsFocused == false)
+                {
+                    if(GreenBrush == null)
+                    {
+                        GreenBrush =
+                            new SolidColorBrush(Color.FromRgb(0, 200, 0));
+                    }
+
+                    return GreenBrush;
+                }
+                else
+                {
+                    return Brushes.Black;
+                }
+            }
+        }
+
+        public string VariableName { get; set; }
+
+        public bool IsFocused
+        {
+            get { return Get<bool>(); }
+            set { Set(value); }
+        }
+    }
+
     class StateViewModel : ViewModel
     {
         IElement element;
@@ -43,9 +144,9 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             }
         }
 
-        public ObservableCollection<object> Variables
+        public ObservableCollection<StateVariableViewModel> Variables
         {
-            get { return Get<ObservableCollection<object>>(); }
+            get { return Get<ObservableCollection<StateVariableViewModel>>(); }
             set { Set(value); }
         }
 
@@ -55,6 +156,8 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             set { Set(value); }
         }
 
+        public event Action<StateViewModel, StateVariableViewModel> ValueChanged;
+
         public StateViewModel(StateSave state, StateSaveCategory category, IElement element)
         {
             this.category = category;
@@ -62,7 +165,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
             BackingData = state;
 
-            Variables = new ObservableCollection<object>();
+            Variables = new ObservableCollection<StateVariableViewModel>();
             Name = state?.Name;
 
             for(int i = 0; i < element.CustomVariables.Count; i++)
@@ -73,9 +176,37 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 var instruction = 
                     state?.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
 
-                this.Variables.Add(instruction?.Value);
+                var viewModel = new StateVariableViewModel();
+                viewModel.VariableName = variable.Name;
+                viewModel.Value = instruction?.Value;
+                viewModel.DefaultValue = element.GetCustomVariable(variable.Name)?.DefaultValue;
+                viewModel.PropertyChanged += HandleStateVariablePropertyChanged;
+                viewModel.HasState = state != null;
+                this.Variables.Add(viewModel);
             }
 
+        }
+
+        private void HandleStateVariablePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            // if the view model is null, the view model may not be instantiated yet
+            ValueChanged?.Invoke(this, sender as StateVariableViewModel);
+            var viewModel = sender as StateVariableViewModel;
+            switch(e.PropertyName)
+            {
+                case nameof(StateVariableViewModel.Value):
+                    if(viewModel.Value == null)
+                    {
+                        BackingData.RemoveVariable(viewModel.VariableName);
+                    }
+                    else
+                    {
+                        BackingData.SetValue(viewModel.VariableName, viewModel.Value);
+                    }
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                    GlueCommands.Self.GluxCommands.SaveGluxTask();
+                    break;
+            }
         }
 
         public override string ToString()
