@@ -11,18 +11,57 @@ using TileGraphicsPlugin.ViewModels;
 
 namespace TileGraphicsPlugin.CodeGeneration
 {
-    class TileShapeCollectionInitializeCodeGenerator : ElementComponentCodeGenerator
+    class TileShapeCollectionCodeGenerator : ElementComponentCodeGenerator
     {
         public override ICodeBlock GenerateInitializeLate(ICodeBlock codeBlock, IElement element)
         {
-            var tileShapeCollections = element
-                .AllNamedObjects
-                .Where(item => item.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TileShapeCollectionAssetTypeInfo)
-                .ToArray();
+            NamedObjectSave[] tileShapeCollections = GetAllNamedObjectsInElement(element);
 
             foreach (var tileShapeCollection in tileShapeCollections)
             {
                 GenerateCodeFor(tileShapeCollection, codeBlock);
+            }
+
+            return codeBlock;
+        }
+
+        private static NamedObjectSave[] GetAllNamedObjectsInElement(IElement element)
+        {
+            return element
+                .AllNamedObjects
+                .Where(item => item.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TileShapeCollectionAssetTypeInfo)
+                .ToArray();
+        }
+
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        {
+            NamedObjectSave[] tileShapeCollections = GetAllNamedObjectsInElement(element);
+
+
+
+            foreach (var shapeCollection in tileShapeCollections)
+            {
+                T Get<T>(string name)
+                {
+                    return shapeCollection.Properties.GetValue<T>(name);
+                }
+
+                var creationOptions = Get<CollisionCreationOptions>(
+                    nameof(TileShapeCollectionPropertiesViewModel.CollisionCreationOptions));
+
+                var variable = shapeCollection.GetCustomVariable("Visible");
+
+                bool filledInHere = creationOptions == CollisionCreationOptions.BorderOutline ||
+                    creationOptions == CollisionCreationOptions.FillCompletely ||
+                    creationOptions == CollisionCreationOptions.Empty;
+
+                if (variable != null && variable.Value is bool && ((bool)variable.Value) == true && 
+                    filledInHere)
+                {
+                    //codeBlock.Line($"{shapeCollection.FieldName}.Visible = true;");
+                    codeBlock.Line($"{shapeCollection.FieldName}.AddToLayer(null);");
+                }
+
             }
 
             return codeBlock;

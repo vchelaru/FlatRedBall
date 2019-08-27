@@ -2,26 +2,23 @@
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.IO.Csv;
+using RacingPlugin.DataGenerators;
+using RacingPlugin.ViewModels;
+using RacingPlugin.Views;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TopDownPlugin.CodeGenerators;
-using TopDownPlugin.DataGenerators;
-using TopDownPlugin.Models;
-using TopDownPlugin.ViewModels;
-using TopDownPlugin.Views;
 
-namespace TopDownPlugin.Controllers
+namespace RacingPlugin.Controllers
 {
     public class MainController : Singleton<MainController>
     {
         #region Fields
 
-        TopDownEntityViewModel viewModel;
+        RacingEntityViewModel viewModel;
         MainEntityView mainControl;
 
         bool ignoresPropertyChanges = false;
@@ -32,13 +29,14 @@ namespace TopDownPlugin.Controllers
 
         public MainController()
         {
+
         }
 
         public MainEntityView GetControl()
         {
-            if (mainControl == null)
+            if(mainControl == null)
             {
-                viewModel = new TopDownEntityViewModel();
+                viewModel = new RacingEntityViewModel();
                 viewModel.PropertyChanged += HandleViewModelPropertyChange;
                 mainControl = new MainEntityView();
 
@@ -50,27 +48,28 @@ namespace TopDownPlugin.Controllers
 
         private void HandleViewModelPropertyChange(object sender, PropertyChangedEventArgs e)
         {
-            /////////// early out ///////////
-            if (ignoresPropertyChanges)
+            ///////////// early out ////////////
+            if(ignoresPropertyChanges)
             {
                 return;
             }
-            ///////////// end early out ///////////
+            ///////////end early out/////////////
 
             var entity = GlueState.Self.CurrentEntitySave;
-            var viewModel = sender as TopDownEntityViewModel;
-            bool shouldGenerateCsv, shouldGenerateEntity, shouldAddTopDownVariables;
+            var viewModel = sender as RacingEntityViewModel;
+
+            bool shouldGenerateCsv, shouldGenerateEntity, shouldAddRacingVariables;
 
             DetermineWhatToGenerate(e.PropertyName, viewModel,
-                out shouldGenerateCsv, out shouldGenerateEntity, out shouldAddTopDownVariables);
+                out shouldGenerateCsv, out shouldGenerateEntity, out shouldAddRacingVariables);
 
-            if(e.PropertyName == nameof(TopDownEntityViewModel.IsTopDown))
+            if (e.PropertyName == nameof(RacingEntityViewModel.IsRacingEntity))
             {
-                if(viewModel.IsTopDown &&
+                if (viewModel.IsRacingEntity &&
                     GlueCommands.Self.GluxCommands.GetPluginRequirement(MainPlugin) == false)
                 {
                     GlueCommands.Self.GluxCommands.SetPluginRequirement(MainPlugin, true);
-                    GlueCommands.Self.PrintOutput("Added Top Down Plugin as a required plugin because the entity was marked as a top down entity");
+                    GlueCommands.Self.PrintOutput("Added Racing Plugin as a required plugin because the entity was marked as a racing entity");
                     GlueCommands.Self.GluxCommands.SaveGluxTask();
                 }
             }
@@ -80,9 +79,9 @@ namespace TopDownPlugin.Controllers
                 GenerateCsv(entity, viewModel);
             }
 
-            if (shouldAddTopDownVariables)
+            if (shouldAddRacingVariables)
             {
-                AddTopDownVariables(entity);
+                AddRacingVariables(entity);
             }
 
             if (shouldGenerateEntity)
@@ -92,7 +91,8 @@ namespace TopDownPlugin.Controllers
                     "Generating " + entity.Name);
             }
 
-            if (shouldAddTopDownVariables)
+
+            if (shouldAddRacingVariables)
             {
                 TaskManager.Self.AddSync(() =>
                 {
@@ -102,23 +102,30 @@ namespace TopDownPlugin.Controllers
                         GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
                     });
 
-                }, "Refreshing UI after top down plugin values changed");
+                }, "Refreshing UI after racing plugin values changed");
             }
 
-            if (shouldGenerateCsv || shouldGenerateEntity || shouldAddTopDownVariables)
+            if (shouldGenerateCsv || shouldGenerateEntity || shouldAddRacingVariables)
             {
                 TaskManager.Self.AddAsyncTask(
                     () =>
                     {
                         GlueCommands.Self.GluxCommands.SaveGlux();
-                        EnumFileGenerator.Self.GenerateAndSaveEnumFile();
-                        InterfacesFileGenerator.Self.GenerateAndSave();
-                        AiCodeGenerator.Self.GenerateAndSave();
-                    },"Saving Glue Project");
+
+                        // This plugin doesn't need enums like TopDown plugin
+                        //EnumFileGenerator.Self.GenerateAndSaveEnumFile();
+
+                        // not sure if this needs any interfaces
+                        //InterfacesFileGenerator.Self.GenerateAndSave();
+
+                        // AI...eventually...
+                        //AiCodeGenerator.Self.GenerateAndSave();
+                    }, "Saving Glue Project");
             }
+
         }
 
-        private void DetermineWhatToGenerate(string propertyName, TopDownEntityViewModel viewModel, out bool shouldGenerateCsv, out bool shouldGenerateEntity, out bool shouldAddTopDownVariables)
+        private void DetermineWhatToGenerate(string propertyName, RacingEntityViewModel viewModel, out bool shouldGenerateCsv, out bool shouldGenerateEntity, out bool shouldAddTopDownVariables)
         {
             var entity = GlueState.Self.CurrentEntitySave;
             shouldGenerateCsv = false;
@@ -128,29 +135,27 @@ namespace TopDownPlugin.Controllers
             {
                 switch (propertyName)
                 {
-                    case nameof(TopDownEntityViewModel.IsTopDown):
-                        entity.Properties.SetValue(propertyName, viewModel.IsTopDown);
+                    case nameof(RacingEntityViewModel.IsRacingEntity):
                         // Don't generate a CSV if it's not a top down
-                        shouldGenerateCsv = viewModel.IsTopDown;
-                        shouldAddTopDownVariables = viewModel.IsTopDown;
+                        shouldGenerateCsv = viewModel.IsRacingEntity;
+                        shouldAddTopDownVariables = viewModel.IsRacingEntity;
                         shouldGenerateEntity = true;
                         break;
-                    case nameof(TopDownEntityViewModel.TopDownValues):
-                        shouldGenerateCsv = true;
-                        // I don't think we need this...yet
-                        shouldGenerateEntity = false;
-                        shouldAddTopDownVariables = false;
-                        break;
+                    //case nameof(TopDownEntityViewModel.TopDownValues):
+                    //    shouldGenerateCsv = true;
+                    //    // I don't think we need this...yet
+                    //    shouldGenerateEntity = false;
+                    //    shouldAddTopDownVariables = false;
+                    //    break;
                 }
             }
         }
 
-        private static void GenerateCsv(EntitySave entity, TopDownEntityViewModel viewModel)
+        private static void GenerateCsv(EntitySave entity, RacingEntityViewModel viewModel)
         {
             TaskManager.Self.Add(
-                                () => CsvGenerator.Self.GenerateFor(entity, viewModel),
-                                "Generating Top Down CSV for " + entity.Name);
-
+                    () => CsvGenerator.Self.GenerateFor(entity, viewModel),
+                    "Generating Racing CSV for " + entity.Name);
 
             TaskManager.Self.Add(() =>
             {
@@ -180,7 +185,7 @@ namespace TopDownPlugin.Controllers
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
                 }
 
-                const string customClassName = "TopDownValues";
+                const string customClassName = "RacingEntityValues";
                 if (GlueState.Self.CurrentGlueProject.CustomClasses.Any(item => item.Name == customClassName) == false)
                 {
                     CustomClassSave throwaway;
@@ -194,72 +199,40 @@ namespace TopDownPlugin.Controllers
                 {
                     if (customClass != null && customClass.CsvFilesUsingThis.Contains(rfs.Name) == false)
                     {
-                        FlatRedBall. Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
+                        FlatRedBall.Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
 
                         GlueCommands.Self.GluxCommands.SaveGlux();
                     }
                 }
             },
-            "Adding csv to top down entity"
-            );
+            "Adding csv to racing entity");
         }
 
-        private void AddTopDownVariables(EntitySave entity)
+        private void AddRacingVariables(EntitySave entity)
         {
-            // We don't make any variables because currently there's no concept of
-            // different movement types that the plugin can switch between, the way
-            // the platformer switches between ground/air/double-jump
+            const string variableName = "CarData";
+
+            var alreadyHasVariable = entity.CustomVariables.Any(
+                item => item.Name == variableName);
+
+            if(!alreadyHasVariable)
+            {
+                var newVariable = new CustomVariable();
+                newVariable.Type = GlueState.Self.ProjectNamespace + ".DataTypes.RacingEntityValues";
+                newVariable.Name = variableName;
+                newVariable.CreatesEvent = false;
+                entity.CustomVariables.Add(newVariable);
+            }
         }
 
         internal void UpdateTo(EntitySave currentEntitySave)
         {
             ignoresPropertyChanges = true;
 
-            viewModel.IsTopDown = currentEntitySave.Properties.GetValue<bool>(nameof(viewModel.IsTopDown));
-
-            var csvValues = GetCsvValues(currentEntitySave);
-
-            viewModel.TopDownValues.Clear();
-
-            foreach(var value in csvValues.Values)
-            {
-                var topDownValuesViewModel = new TopDownValuesViewModel();
-
-                topDownValuesViewModel.PropertyChanged += HandleTopDownValuesChanged;
-
-                topDownValuesViewModel.SetFrom(value);
-
-                viewModel.TopDownValues.Add(topDownValuesViewModel);
-            }
+            viewModel.GlueObject = currentEntitySave;
+            viewModel.UpdateFromGlueObject();
 
             ignoresPropertyChanges = false;
-        }
-
-        private void HandleTopDownValuesChanged(object sender, PropertyChangedEventArgs e)
-        {
-
-        }
-
-        private static Dictionary<string, TopDownValues> GetCsvValues(EntitySave currentEntitySave)
-        {
-            var csvValues = new Dictionary<string, TopDownValues>();
-            var filePath = CsvGenerator.Self.CsvFileFor(currentEntitySave);
-
-            bool doesFileExist = filePath.Exists();
-
-            if (doesFileExist)
-            {
-                try
-                {
-                    CsvFileManager.CsvDeserializeDictionary<string, TopDownValues>(filePath.FullPath, csvValues);
-                }
-                catch (Exception e)
-                {
-                    PluginManager.ReceiveError("Error trying to load top down csv:\n" + e.ToString());
-                }
-            }
-
-            return csvValues;
         }
 
     }

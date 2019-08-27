@@ -402,7 +402,7 @@ namespace TileGraphicsPlugin
 
             this.RegisterCodeGenerator(new TmxCodeGenerator());
 
-            this.RegisterCodeGenerator(new TileShapeCollectionInitializeCodeGenerator());
+            this.RegisterCodeGenerator(new TileShapeCollectionCodeGenerator());
         }
 
         #endregion

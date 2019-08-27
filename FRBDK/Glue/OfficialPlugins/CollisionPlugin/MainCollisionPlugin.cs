@@ -84,6 +84,11 @@ namespace OfficialPlugins.CollisionPlugin
 
         private void GetEventSignatureAndArgs(NamedObjectSave namedObjectSave, EventResponseSave eventResponseSave, out string type, out string signatureArgs)
         {
+            if(namedObjectSave == null)
+            {
+                throw new ArgumentNullException(nameof(namedObjectSave));
+            }
+
             if (namedObjectSave.GetAssetTypeInfo() == AssetTypeInfoManager.Self.CollisionRelationshipAti &&
                 eventResponseSave.SourceObjectEvent == "CollisionOccurred")
             {

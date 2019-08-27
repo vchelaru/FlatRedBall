@@ -140,7 +140,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             newNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.IsAutoNameEnabled), true);
 
-            bool needToInvert = selectedNamedObject.SourceType != SourceType.Entity;
+            bool needToInvert = selectedNamedObject.SourceType != SourceType.Entity &&
+                selectedNamedObject.IsList == false;
 
             if(needToInvert)
             {

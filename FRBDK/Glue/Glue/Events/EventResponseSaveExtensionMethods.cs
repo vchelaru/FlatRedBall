@@ -45,10 +45,13 @@ namespace FlatRedBall.Glue.Events
                 {
                     NamedObjectSave nos = container.GetNamedObjectRecursively(instance.SourceObject);
 #if GLUE
-                    string type;
-                    string args;
+                    string type = null;
+                    string args = null;
 
-                    FlatRedBall.Glue.Plugins.PluginManager.GetEventSignatureArgs(nos, instance, out type, out args);
+                    if(nos != null)
+                    {
+                        FlatRedBall.Glue.Plugins.PluginManager.GetEventSignatureArgs(nos, instance, out type, out args);
+                    }
                     if(type != null)
                     {
                         toReturn = new EventSave();

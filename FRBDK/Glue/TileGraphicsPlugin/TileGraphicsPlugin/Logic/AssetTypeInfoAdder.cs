@@ -182,7 +182,7 @@ namespace TileGraphicsPlugin
 
         private string GenerateConstructionFunc(IElement parentElement, NamedObjectSave namedObject, ReferencedFileSave referencedFile)
         {
-            return TileShapeCollectionInitializeCodeGenerator.GenerateConstructorFor(namedObject);
+            return TileShapeCollectionCodeGenerator.GenerateConstructorFor(namedObject);
             
         }
 
