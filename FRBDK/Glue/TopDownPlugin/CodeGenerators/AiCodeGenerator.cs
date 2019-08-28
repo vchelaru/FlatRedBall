@@ -95,6 +95,7 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
         public virtual I1DInput DefaultVerticalInput => throw new NotImplementedException();
 
         public virtual IPressableInput DefaultPrimaryActionInput => throw new NotImplementedException();
+        public virtual IPressableInput DefaultSecondaryActionInput => throw new NotImplementedException();
 
         public virtual IPressableInput DefaultConfirmInput => throw new NotImplementedException();
 
