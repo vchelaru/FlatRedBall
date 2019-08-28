@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using RacingPlugin.CodeGenerators;
 using RacingPlugin.DataGenerators;
 using RacingPlugin.ViewModels;
 using RacingPlugin.Views;
@@ -82,6 +83,8 @@ namespace RacingPlugin.Controllers
             if (shouldAddRacingVariables)
             {
                 AddRacingVariables(entity);
+
+                TaskManager.Self.AddSync(AddCollisionHistoryFile, "Adding CollisionHistory.cs");
             }
 
             if (shouldGenerateEntity)
@@ -123,6 +126,18 @@ namespace RacingPlugin.Controllers
                     }, "Saving Glue Project");
             }
 
+        }
+
+        private void AddCollisionHistoryFile()
+        {
+            var filePath = CollisionHistoryCodeGenerator.Self.GetFilePath();
+            GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(filePath);
+
+            var contents = CollisionHistoryCodeGenerator.Self.GetFileContents();
+            GlueCommands.Self.TryMultipleTimes(() =>
+            {
+                System.IO.File.WriteAllText(filePath.FullPath, contents);
+            });
         }
 
         private void DetermineWhatToGenerate(string propertyName, RacingEntityViewModel viewModel, out bool shouldGenerateCsv, out bool shouldGenerateEntity, out bool shouldAddTopDownVariables)

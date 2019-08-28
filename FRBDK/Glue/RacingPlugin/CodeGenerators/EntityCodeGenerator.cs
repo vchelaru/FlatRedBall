@@ -26,7 +26,7 @@ namespace RacingPlugin.CodeGenerators
 
             codeBlock.Line("float lateralToForwardTransferRatio;");
             codeBlock.Line("float currentTurnRate;");
-            codeBlock.Line("bool IsAllowedToDrive;");
+            codeBlock.Line("bool IsAllowedToDrive = true;");
             codeBlock.Line("bool wasMovingForwardAtStartOfCollisionRecording;");
 
             codeBlock.Line("CollisionHistory collisionHistory = new CollisionHistory();");
@@ -57,6 +57,8 @@ namespace RacingPlugin.CodeGenerators
             codeBlock.AutoProperty("private FlatRedBall.Input.IPressableInput", "Brake");
             codeBlock.AutoProperty("private FlatRedBall.Input.I1DInput", "SteeringInput");
 
+            codeBlock.Line("public FlatRedBall.Input.IInputDevice InputDevice { get; private set; }");
+
             codeBlock.Property("public float", "CurrentForwardSpeed")
                 .Get()
                     .Line("return Microsoft.Xna.Framework.Vector3.Dot(this.Velocity, this.Forward);");
@@ -64,6 +66,8 @@ namespace RacingPlugin.CodeGenerators
             codeBlock.Property("public float", "CurrentLateralSpeed")
                 .Get()
                     .Line("return Microsoft.Xna.Framework.Vector3.Dot(this.Velocity, this.Right);");
+
+            GenerateInitializeInput(codeBlock);
 
             GenerateLateralSpeedAdjustmentActivityMethod(codeBlock);
 
@@ -82,6 +86,50 @@ namespace RacingPlugin.CodeGenerators
             get; set;
         } = true;
              */
+        }
+
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        {
+            /////////////////Early Out//////////////////
+            if (GetIfIsRacingEntity(element) == false)
+            {
+                return codeBlock;
+            }
+            ///////////////End Early Out///////////////////
+
+            codeBlock.Line("InitializeRacingInput();");
+
+            return codeBlock;
+        }
+
+        private void GenerateInitializeInput(ICodeBlock codeBlock)
+        {
+            codeBlock.Line(@"
+
+        protected virtual void InitializeRacingInput()
+        {
+            if (FlatRedBall.Input.InputManager.Xbox360GamePads[0].IsConnected)
+            {
+                InitializeRacingInput(FlatRedBall.Input.InputManager.Xbox360GamePads[0]);
+            }
+            else
+            {
+                InitializeRacingInput(FlatRedBall.Input.InputManager.Keyboard);
+            }
+        }
+
+        public void InitializeRacingInput(FlatRedBall.Input.IInputDevice inputDevice)
+        {
+            this.SteeringInput = inputDevice.DefaultHorizontalInput;
+            this.Gas = inputDevice.DefaultPrimaryActionInput;
+            this.Brake = inputDevice.DefaultSecondaryActionInput;
+            this.InputDevice = inputDevice;
+
+            CustomInitializeTopDownInput();
+        }
+
+        partial void CustomInitializeTopDownInput();
+");
         }
 
         private void GenerateBeforeAfterCollisionLogic(ICodeBlock codeBlock)

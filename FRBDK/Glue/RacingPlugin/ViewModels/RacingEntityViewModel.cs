@@ -9,6 +9,7 @@ namespace RacingPlugin.ViewModels
 {
     public class RacingEntityViewModel : PropertyListContainerViewModel
     {
+        [SyncedProperty]
         public bool IsRacingEntity
         {
             get => Get<bool>();
