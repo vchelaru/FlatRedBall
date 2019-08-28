@@ -1265,6 +1265,16 @@ namespace FlatRedBall.Input
                 return this.GetButton(Button.A);
             }
         }
+
+        IPressableInput IInputDevice.DefaultSecondaryActionInput
+        {
+            get
+            {
+                return this.GetButton(Button.B);
+            }
+        }
+
+
         IPressableInput IInputDevice.DefaultConfirmInput
         {
             get

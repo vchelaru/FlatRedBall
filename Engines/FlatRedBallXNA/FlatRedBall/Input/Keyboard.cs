@@ -738,6 +738,15 @@ namespace FlatRedBall.Input
                 return this.GetKey(Keys.Space);
             }
         }
+
+        IPressableInput IInputDevice.DefaultSecondaryActionInput
+        {
+            get
+            {
+                return this.GetKey(Keys.LeftShift);
+            }
+        }
+
         IPressableInput IInputDevice.DefaultConfirmInput
         {
             get

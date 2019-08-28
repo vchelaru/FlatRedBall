@@ -16,6 +16,7 @@ namespace FlatRedBall.Input
         I1DInput DefaultHorizontalInput { get; }
         I1DInput DefaultVerticalInput { get; }
         IPressableInput DefaultPrimaryActionInput { get; }
+        IPressableInput DefaultSecondaryActionInput { get; }
         IPressableInput DefaultConfirmInput { get; }
         IPressableInput DefaultJoinInput { get;  }
         IPressableInput DefaultPauseInput { get;  }
