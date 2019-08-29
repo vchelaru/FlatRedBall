@@ -236,7 +236,9 @@ namespace RacingPlugin.Controllers
                 newVariable.Type = GlueState.Self.ProjectNamespace + ".DataTypes.RacingEntityValues";
                 newVariable.Name = variableName;
                 newVariable.CreatesEvent = false;
+                newVariable.DefaultValue = "DefaultValues in RacingEntityValues.csv";
                 entity.CustomVariables.Add(newVariable);
+
             }
         }
 
