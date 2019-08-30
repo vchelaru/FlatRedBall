@@ -167,7 +167,7 @@ namespace FlatRedBall.Glue.Controls
             // to set up the Camera in Glue.
             bool whetherToCall = true;
 
-            CameraSetupCodeGenerator.AddCameraSetupCall(ProjectManager.GameClassFileName, whetherToCall);
+            CameraSetupCodeGenerator.GenerateCallInGame1(ProjectManager.GameClassFileName, whetherToCall);
 
             GluxCommands.Self.SaveGlux();
 			ProjectManager.SaveProjects();

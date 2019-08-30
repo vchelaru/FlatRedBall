@@ -15,7 +15,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 {
     internal class CameraSetupCodeGenerator
     {
-        public static void AddCameraSetupCall(string gameFileName, bool whetherToCall)
+        public static void GenerateCallInGame1(string gameFileName, bool whetherToCall)
         {
             string contents = null;
             if (!string.IsNullOrEmpty(gameFileName))
@@ -127,7 +127,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             var namespaceContents = fileCode.Namespace(ProjectManager.ProjectNamespace);
 
-            GenerateCameraSetupData(namespaceContents);
+            GenerateCameraSetupDataClass(namespaceContents);
 
             GenerateResizeBehaviorEnum(namespaceContents);
 
@@ -137,7 +137,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             classContents.Line("static Microsoft.Xna.Framework.GraphicsDeviceManager graphicsDeviceManager;");
 
-            GenerateStaticCameraSetupData(classContents);
+            GenerateStaticCameraSetupDefaults(classContents);
 
             GenerateResetMethodNew(displaySettings.GenerateDisplayCode, classContents);
 
@@ -183,7 +183,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             enumBlock.Line("Height");
         }
 
-        private static void GenerateStaticCameraSetupData(ICodeBlock classContents)
+        private static void GenerateStaticCameraSetupDefaults(ICodeBlock classContents)
         {
             classContents.Line("public static CameraSetupData Data = new CameraSetupData");
             var block = classContents.Block();
@@ -219,7 +219,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             classContents.Line(";");
         }
 
-        private static void GenerateCameraSetupData(CodeBlockNamespace namespaceContents)
+        private static void GenerateCameraSetupDataClass(CodeBlockNamespace namespaceContents)
         {
             var classBlock = namespaceContents.Class("public", "CameraSetupData");
 
@@ -453,12 +453,14 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     resetMethod.If("cameraToReset == null")
                         .Line("cameraToReset = FlatRedBall.Camera.Main;");
-
+                    
                     resetMethod.Line($"cameraToReset.Orthogonal = Data.Is2D;");
                     var ifStatement = resetMethod.If("Data.Is2D")
                         .Line($"cameraToReset.OrthogonalHeight = Data.ResolutionHeight;")
                         .Line($"cameraToReset.OrthogonalWidth = Data.ResolutionWidth;")
-                        .Line($"cameraToReset.FixAspectRatioYConstant();");
+                        .Line($"cameraToReset.FixAspectRatioYConstant();")
+                    .End().Else()
+                        .Line("cameraToReset.UsePixelCoordinates3D(0);");
 
                     ifStatement = resetMethod.If("Data.AspectRatio != null")
                         .Line(

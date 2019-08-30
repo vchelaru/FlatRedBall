@@ -110,7 +110,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             CameraSetupCodeGenerator.UpdateOrAddCameraSetup();
 
-            CameraSetupCodeGenerator.AddCameraSetupCall(ProjectManager.GameClassFileName, true);
+            CameraSetupCodeGenerator.GenerateCallInGame1(ProjectManager.GameClassFileName, true);
 
             //Parallel.For(0, layer.data[0].tiles.Count, (count) =>
             GlueCommands.PrintOutput("Starting to generate all Screens");

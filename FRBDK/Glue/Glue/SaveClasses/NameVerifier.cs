@@ -670,21 +670,21 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             CheckForCommonImproperNames(variableName, ref whyItIsntValid);
 
+            string screenOrEntity = "";
+
+            if (containingElement is ScreenSave)
+            {
+                screenOrEntity = "Screen";
+            }
+            else
+            {
+                screenOrEntity = "Entity";
+            }
+
             if(string.IsNullOrEmpty(whyItIsntValid))
             {
                 if (containingElement.CustomVariables.Any(item=> item.Name == variableName && item != customVariable))
                 {
-                    string screenOrEntity = "";
-
-                    if (containingElement is ScreenSave)
-                    {
-                        screenOrEntity = "Screen";
-                    }
-                    else
-                    {
-                        screenOrEntity = "Entity";
-                    }
-
                     whyItIsntValid += "This " + screenOrEntity + " already has a variable named " + variableName;
                 }
             }
@@ -713,18 +713,16 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 if (containingElement.GetNamedObjectRecursively(variableName) != null)
                 {
-                    string screenOrEntity = "";
-
-                    if (containingElement is ScreenSave)
-                    {
-                        screenOrEntity = "Screen";
-                    }
-                    else
-                    {
-                        screenOrEntity = "Entity";
-                    }
                     whyItIsntValid = "This " + screenOrEntity + 
                         " has an object named " + variableName + " so you must choose a different variable name";
+                }
+            }
+
+            if(string.IsNullOrEmpty(whyItIsntValid))
+            {
+                if(variableName == containingElement.GetStrippedName())
+                {
+                    whyItIsntValid = $"The variable name {variableName} cannot be the same as its {screenOrEntity}";
                 }
             }
 
