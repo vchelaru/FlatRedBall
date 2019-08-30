@@ -122,11 +122,11 @@
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(SolutionDir)"..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\ md "$(SolutionDir)"..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\
 
-copy "$(ProjectDir)bin\x86\debug\TiledPlugin.dll" "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\TiledPlugin.dll"
-echo "$(ProjectDir)bin\x86\debug\TiledPlugin.dll" to "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\TiledPlugin.dll"
+copy "$(TargetDir)\TiledPlugin.dll" "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\TiledPlugin.dll"
+echo "$(TargetDir)\TiledPlugin.dll" to "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\TiledPlugin.dll"
 
-copy "$(ProjectDir)bin\x86\debug\TMXGlueLib.dll" "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\TMXGlueLib.dll"
-echo "$(ProjectDir)bin\x86\debug\TMXGlueLib.dll" to "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\TMXGlueLib.dll"
+copy "$(TargetDir)\TMXGlueLib.dll" "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\TMXGlueLib.dll"
+echo "$(TargetDir)\TMXGlueLib.dll" to "$(SolutionDir)..\..\Glue\Glue\bin\Debug\Plugins\GlueView\Plugins\TiledPlugin\TMXGlueLib.dll"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>
