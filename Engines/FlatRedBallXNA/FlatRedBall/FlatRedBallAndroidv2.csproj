@@ -42,7 +42,7 @@
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <AndroidSupportedAbis>armeabi;armeabi-v7a;x86</AndroidSupportedAbis>
+    <AndroidSupportedAbis>x86;x86_64;arm64-v8a</AndroidSupportedAbis>
     <DebugType>full</DebugType>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
