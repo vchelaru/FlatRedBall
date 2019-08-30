@@ -19,7 +19,7 @@ namespace FlatRedBall.Glue.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resource1 {
@@ -170,9 +170,7 @@ namespace FlatRedBall.Glue.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #region Usings
-        ///
-        ///using System;
+        ///   Looks up a localized string similar to using System;
         ///using System.Collections.Generic;
         ///using System.Text;
         ///using FlatRedBall;
@@ -181,14 +179,14 @@ namespace FlatRedBall.Glue.Resources {
         ///using FlatRedBall.AI.Pathfinding;
         ///using FlatRedBall.Graphics.Animation;
         ///using FlatRedBall.Graphics.Particle;
-        ///
         ///using FlatRedBall.Math.Geometry;
-        ///using FlatRedBall.Math.Splines;
-        ///using BitmapFont = FlatRedBall.Graphics.BitmapFont;
-        ///using Cursor = FlatRedBall.Gui.Cursor;
-        ///using GuiManager = FlatRedBall.Gui.GuiManager;
         ///
-        ///#if FRB_XNA || SILVER [rest of string was truncated]&quot;;.
+        ///namespace FlatRedBallAddOns.Entities
+        ///{
+        ///    public partial class GlueEntityTemplate
+        ///    {
+        ///        /// &lt;summary&gt;
+        ///        /// Initialization logic which is execute only one time for this Entity (unless the Entity  [rest of string was truncated]&quot;;.
         /// </summary>
         public static string GlueEntityTemplate {
             get {
@@ -197,27 +195,9 @@ namespace FlatRedBall.Glue.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #if ANDROID || IOS
-        ///#define REQUIRES_PRIMARY_THREAD_LOADING
-        ///#endif
+        ///   Looks up a localized string similar to // Generated AddToManagers
         ///
-        ///using Color = Microsoft.Xna.Framework.Color;
-        ///
-        ///namespace FlatRedBallAddOns.Entities
-        ///{
-        ///	public partial class GlueEntityTemplate
-        ///	{
-        ///        // This is made static so that static lazy-loaded content can access it.
-        ///        public static string ContentManagerName
-        ///        {
-        ///            get;
-        ///            set;
-        ///        }
-        ///
-        ///		// Generated Fields
-        ///
-        ///        public GlueEntityTemplate()
-        ///            : this(FlatRedBall.Screens.ScreenManager. [rest of string was truncated]&quot;;.
+        ///.
         /// </summary>
         public static string GlueEntityTemplate_Generated {
             get {
@@ -226,27 +206,34 @@ namespace FlatRedBall.Glue.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #region Usings
-        ///
-        ///using System;
+        ///   Looks up a localized string similar to using System;
         ///using System.Collections.Generic;
         ///using System.Text;
+        ///using System.Linq;
+        ///
         ///using FlatRedBall;
         ///using FlatRedBall.Input;
         ///using FlatRedBall.Instructions;
         ///using FlatRedBall.AI.Pathfinding;
         ///using FlatRedBall.Graphics.Animation;
         ///using FlatRedBall.Graphics.Particle;
-        ///
         ///using FlatRedBall.Math.Geometry;
-        ///using FlatRedBall.Math.Splines;
-        ///
-        ///using Cursor = FlatRedBall.Gui.Cursor;
-        ///using GuiManager = FlatRedBall.Gui.GuiManager;
         ///using FlatRedBall.Localization;
         ///
-        ///#if FRB_XNA || SILVERLIGHT
-        ///using Keys  [rest of string was truncated]&quot;;.
+        ///
+        ///
+        ///namespace FlatRedBallAddOns.Screens
+        ///{
+        ///    public partial class ScreenTemplate
+        ///    {
+        ///
+        ///        void CustomInitialize()
+        ///        {
+        ///
+        ///
+        ///        }
+        ///
+        ///      [rest of string was truncated]&quot;;.
         /// </summary>
         public static string GlueScreenTemplate {
             get {
@@ -255,35 +242,8 @@ namespace FlatRedBall.Glue.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #if ANDROID || IOS
-        ///#define REQUIRES_PRIMARY_THREAD_LOADING
-        ///#endif
-        ///
-        ///using Color = Microsoft.Xna.Framework.Color;
-        ///
-        ///// Generated Usings
-        ///
-        ///namespace FlatRedBallAddOns.Screens
-        ///{
-        ///	public partial class ScreenTemplate
-        ///	{
-        ///		// Generated Fields
-        ///
-        ///		public ScreenTemplate()
-        ///			: base(&quot;ScreenTemplate&quot;)
-        ///		{
-        ///		}
-        ///
-        ///        public override void Initialize(bool addToManagers)
-        ///        {
-        ///			// Generated Initialize
-        ///
-        ///        }
-        ///        
-        ///// Generated AddToManagers
-        ///
-        ///
-        ///		public override void Activity(bool fir [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to // Generated AddToManagers
+        ///.
         /// </summary>
         public static string GlueScreenTemplate_Generated {
             get {
@@ -303,6 +263,9 @@ namespace FlatRedBall.Glue.Resources {
         ///    {
         ///        object CreateNew();
         ///        object CreateNew(FlatRedBall.Graphics.Layer layer);
+        ///
+        ///        void Initialize(string contentManager);
+        ///        void ClearListsToAddTo();
         ///    }
         ///}
         ///.
