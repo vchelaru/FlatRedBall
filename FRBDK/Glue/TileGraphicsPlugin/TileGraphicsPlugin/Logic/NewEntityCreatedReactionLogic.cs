@@ -68,9 +68,11 @@ namespace TileGraphicsPlugin.Logic
         {
             var hasTmx = GetIfScreenHasTmxDirectly(screen);
 
-            var doBaseScreensHaveTmx = GetIfBaseScreensHaveTmx(screen);
+            //var doBaseScreensHaveTmx = GetIfBaseScreensHaveTmx(screen);
 
-            return hasTmx == true && !doBaseScreensHaveTmx;
+            var isDerived = string.IsNullOrEmpty(screen.BaseScreen) == false;
+
+            return hasTmx == true && !isDerived;
         }
 
         private static bool GetIfBaseScreensHaveTmx(ScreenSave screen)

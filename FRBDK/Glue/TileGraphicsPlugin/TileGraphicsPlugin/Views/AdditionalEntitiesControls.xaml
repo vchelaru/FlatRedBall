@@ -22,7 +22,7 @@
                       IsChecked="{Binding IncludeListsInScreens}">
                 <TextBlock>
                     <AccessText TextWrapping="Wrap"
-                        Text="Include lists in all screens with .tmx files"/>
+                        Text="Include lists in all base level screens (screens with Tiled maps)"/>
                 </TextBlock>
                 
             </CheckBox>
