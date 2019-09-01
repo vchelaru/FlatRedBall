@@ -263,7 +263,9 @@ namespace GumPlugin
             // - Fixed adding Gum objects to Layers not working now that Screens no longer inherit from GumIdb
             // 2.0.8
             // - Custom code for screns is no longer indented one tab
-            get { return new Version(2, 0, 8, 0); }
+            // 2.1
+            // - Removed resolution setup for specific screens because the new Glue does it automatically
+            get { return new Version(2, 1, 0, 0); }
         }
 
         #endregion

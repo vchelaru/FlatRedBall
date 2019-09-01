@@ -15,6 +15,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 {
     internal class CameraSetupCodeGenerator
     {
+        #region Game1 Related code
+
         public static void GenerateCallInGame1(string gameFileName, bool whetherToCall)
         {
             string contents = null;
@@ -78,6 +80,8 @@ namespace FlatRedBall.Glue.CodeGeneration
                     FileManager.SaveText(contents, FileManager.RelativeDirectory + gameFileName), 5);
             }
         }
+
+        #endregion
 
         public static void UpdateOrAddCameraSetup()
         {
@@ -147,9 +151,123 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             GenerateHandleResize(classContents);
 
+            if(GetIfHasGumProject())
+            {
+                GenerateSetGumResolutionValues(classContents);
+            }
+
             GenerateSetAspectRatio(classContents);
 
+            GenerateKeepWindowOnTopCode(classContents);
+
             return fileCode.ToString();
+        }
+
+        private static void GenerateSetGumResolutionValues(ICodeBlock codeblock)
+        {
+            var functionBlock = codeblock.Function("private static void", "SetGumValues", "");
+            var gumIfBlock = functionBlock.If("Data.ResizeBehaviorGum == ResizeBehavior.IncreaseVisibleArea");
+
+            //gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / (Data.Scale / 100.0f);");
+            //gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = FlatRedBall.Camera.Main.DestinationRectangle.Width / (Data.Scale / 100.0f);");
+            gumIfBlock.Line("global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = Data.Scale/100.0f;");
+            gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = Gum.Managers.ObjectFinder.Self.GumProjectSave.DefaultCanvasWidth;");
+            gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = Gum.Managers.ObjectFinder.Self.GumProjectSave.DefaultCanvasHeight; ");
+
+            var gumElseBlock = gumIfBlock.End().Else();
+
+            gumElseBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = Data.ResolutionWidth;");
+            gumElseBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = Data.ResolutionHeight;");
+            var gumAspectRatio = gumElseBlock.If("Data.AspectRatio != null")
+                .Line(@"
+
+                    var resolutionAspectRatio = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth / (decimal)FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight;
+                    int destinationRectangleWidth;
+                    int destinationRectangleHeight;
+                    int x = 0;
+                    int y = 0;
+                    if (Data.AspectRatio.Value > resolutionAspectRatio)
+                    {
+                        destinationRectangleWidth = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth;
+                        destinationRectangleHeight = FlatRedBall.Math.MathFunctions.RoundToInt(destinationRectangleWidth / (float)Data.AspectRatio.Value);
+                    }
+                    else
+                    {
+                        destinationRectangleHeight = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight;
+                        destinationRectangleWidth = FlatRedBall.Math.MathFunctions.RoundToInt(destinationRectangleHeight * (float)Data.AspectRatio.Value);
+                    }
+
+                    var canvasHeight = Gum.Wireframe.GraphicalUiElement.CanvasHeight;
+                    var zoom = (float)destinationRectangleHeight / (float)Gum.Wireframe.GraphicalUiElement.CanvasHeight;
+                    global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;
+")
+                .End().Else()
+                .Line(@"
+                    var graphicsHeight = Gum.Wireframe.GraphicalUiElement.CanvasHeight;
+                    var windowHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height;
+                    var zoom = windowHeight / (float)graphicsHeight;
+                    global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;
+                    ");
+
+
+        }
+
+        private static void GenerateKeepWindowOnTopCode(ICodeBlock codeBlock)
+        {
+            codeBlock.Line(@"
+#if WINDOWS
+            internal static readonly System.IntPtr HWND_TOPMOST = new System.IntPtr(-1);
+            internal static readonly System.IntPtr HWND_NOTOPMOST = new System.IntPtr(-2);
+            internal static readonly System.IntPtr HWND_TOP = new System.IntPtr(0);
+            internal static readonly System.IntPtr HWND_BOTTOM = new System.IntPtr(1);
+    
+            [System.Flags]
+            internal enum SetWindowPosFlags : uint
+            {
+                IgnoreMove = 0x0002,
+                IgnoreResize = 0x0001,
+            }
+    
+            [System.Runtime.InteropServices.DllImport(""user32.dll"", SetLastError = true)]
+            internal static extern bool SetWindowPos(System.IntPtr hWnd, System.IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
+
+        public static void SetWindowAlwaysOnTop()
+        {
+            var hWnd = FlatRedBall.FlatRedBallServices.Game.Window.Handle;
+            SetWindowPos(
+                hWnd,
+                HWND_TOPMOST,
+                0, 0,
+                0, 0, //FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBallServices.GraphicsOptions.ResolutionHeight,
+                SetWindowPosFlags.IgnoreMove | SetWindowPosFlags.IgnoreResize
+            );
+        }
+
+        public static void UnsetWindowAlwaysOnTop()
+        {
+            var hWnd = FlatRedBall.FlatRedBallServices.Game.Window.Handle;
+
+            SetWindowPos(
+                hWnd,
+                HWND_NOTOPMOST,
+                0, 0,
+                0, 0, //FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBallServices.GraphicsOptions.ResolutionHeight,
+                SetWindowPosFlags.IgnoreMove | SetWindowPosFlags.IgnoreResize
+            );
+        }
+#else
+        public static void SetWindowAlwaysOnTop()
+            {
+                // not supported on this platform, do nothing
+            }
+
+            public static void UnsetWindowAlwaysOnTop()
+            {
+                // not supported on this platform, do nothings
+            }
+
+#endif
+");
         }
 
         static List<string> excludedProperties = new List<string>
@@ -297,19 +415,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if (hasGumProject)
                 {
-                    var gumIfBlock = functionBlock.If("Data.ResizeBehaviorGum == ResizeBehavior.IncreaseVisibleArea");
-
-                    gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / (Data.Scale / 100.0f);");
-                    gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = FlatRedBall.Camera.Main.DestinationRectangle.Width / (Data.Scale / 100.0f);");
-                    gumIfBlock.Line("global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = Data.Scale/100.0f;");
-
-                    var gumElseBlock = gumIfBlock.End().Else();
-
-                    gumElseBlock.Line("var zoom = (Data.Scale / 100.0f) * FlatRedBall.Camera.Main.DestinationRectangle.Height / (float)Data.ResolutionHeight;");
-                    gumElseBlock.Line("global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;");
-                    gumElseBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = Data.ResolutionHeight;");
-                    gumElseBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = Data.ResolutionWidth;");
-
+                    functionBlock.Line("SetGumValues();");
                 }
             }
         }
@@ -329,6 +435,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                 methodContents.Line("ResetWindow();");
                 methodContents.Line("ResetCamera(cameraToSetUp);");
 
+                if(GetIfHasGumProject())
+                {
+                    methodContents.Line("SetGumValues();");
+                }
 
                 methodContents.Line(
                     $"FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += HandleResolutionChange;");

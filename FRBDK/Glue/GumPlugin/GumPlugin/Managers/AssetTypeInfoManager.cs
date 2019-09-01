@@ -390,7 +390,9 @@ namespace GumPlugin.Managers
             {
                 var qualifiedName = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
 
-                newAti.CustomLoadMethod = "FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();" +
+                newAti.CustomLoadMethod = 
+                    // Now the camera setup code handles this, so we don't have to:
+                    //"FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();" +
                     $"{{THIS}} = ({qualifiedName})GumRuntime.ElementSaveExtensions.CreateGueForElement( " +
                         "Gum.Managers.ObjectFinder.Self.GetScreen(" +
                             "FlatRedBall.IO.FileManager.RemoveExtension(FlatRedBall.IO.FileManager.RemovePath(\"{FILE_NAME}\"))), true)";
@@ -398,6 +400,8 @@ namespace GumPlugin.Managers
                 newAti.AddToManagersFunc = null;
                 newAti.AddToManagersMethod.Clear();
                 newAti.AddToManagersMethod.AddRange(screenAti.AddToManagersMethod);
+
+                newAti.DestroyMethod = screenAti.DestroyMethod;
             }
             string unqualifiedName = element.Name + "Runtime";
             newAti.FriendlyName = unqualifiedName;

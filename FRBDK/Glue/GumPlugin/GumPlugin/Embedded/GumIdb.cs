@@ -151,8 +151,14 @@ namespace FlatRedBall.Gum
                 // FlatRedBall uses premult alpha.
                 RenderingLibrary.Graphics.Renderer.NormalBlendState = Microsoft.Xna.Framework.Graphics.BlendState.AlphaBlend;
 
+                // August 31 - I don't know if we should do this:
                 UpdateDisplayToMainFrbCamera();
-
+                // or this:
+                // GraphicalUiElement.CanvasWidth = ObjectFinder.Self.GumProjectSave.DefaultCanvasWidth;
+                // GraphicalUiElement.CanvasHeight = ObjectFinder.Self.GumProjectSave.DefaultCanvasHeight;
+                // UpdatedisplayToMainFrbCamera is more convenient but it's lets "accurate", as the canvas
+                // width/height values is how the UI was designed in the tool.
+                // For now we'll have Glue override these values, but we may eventually change it.
 
                 var idb = new GumIdb();
                 // We don't want the UI to be at Z=0 because it will render 
@@ -564,7 +570,7 @@ namespace FlatRedBall.Gum
         }
 #endregion
 
-#region RenderingLibrary.Graphics.IVisible
+        #region RenderingLibrary.Graphics.IVisible
 
         public bool AbsoluteVisible
         {
