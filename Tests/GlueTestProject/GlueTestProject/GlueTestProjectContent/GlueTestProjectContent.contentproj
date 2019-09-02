@@ -7,7 +7,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
     <OutputPath>bin\$(Platform)\$(Configuration)</OutputPath>
     <ContentRootDirectory>Content</ContentRootDirectory>
@@ -22,9 +22,7 @@
     <RootNamespace>FrbXna4Test1Content</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FlatRedBall.Content">
-      <HintPath>..\GlueTestProject\Libraries\Xna4Pc\FlatRedBall.Content.dll</HintPath>
-    </Reference>
+    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.EffectImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
       <Private>False</Private>
     </Reference>
@@ -45,6 +43,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall.Content\FlatRedBall.ContentXna4.csproj">
+      <Project>{4fb06662-233d-445b-838f-1f81599f2ce9}</Project>
+      <Name>FlatRedBall.ContentXna4</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
       <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
       <Name>FlatRedBallXna4</Name>

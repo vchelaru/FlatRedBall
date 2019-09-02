@@ -488,6 +488,7 @@ namespace FlatRedBall.Glue.Managers
 
             NamedObjectSave newNamedObject = CreateNewNamedObjectInElement(elementToCreateIn, entitySaveMoved);
             newTreeNode = GlueState.Self.Find.NamedObjectTreeNode(newNamedObject);
+            GlueState.Self.CurrentNamedObjectSave = newNamedObject;
 
             return newTreeNode;
         }

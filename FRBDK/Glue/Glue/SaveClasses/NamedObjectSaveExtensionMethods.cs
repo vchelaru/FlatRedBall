@@ -70,42 +70,6 @@ namespace FlatRedBall.Glue.SaveClasses
                 );
 
 
-
-                //// Are there any new members?
-                //int desiredIndexOfInstruction = 0;
-
-                //for (int i = 0; i < instance.TypedMembers.Count; i++)
-                //{
-                //    string member = instance.TypedMembers[i].MemberName;
-
-                //    var instruction = instance.GetInstructionFromMember(member);
-                //    if (instruction == null)
-                //    {
-                //        // Victor Chelaru November 26, 2012
-                //        // Why do we create instructions for all values?  This bloats the .glux and makes for
-                //        // a TON of conflicts.
-                //        //instance.AddNewGenericInstructionFor(member, instance.TypedMembers[i].MemberType);
-                //    }
-                //    else
-                //    {
-                //        int indexOfInstruction = instance.InstructionSaves.IndexOf(instruction);
-                //        if (indexOfInstruction != desiredIndexOfInstruction)
-                //        {
-                //            instance.InstructionSaves.Remove(instruction);
-                //            if (desiredIndexOfInstruction >= instance.InstructionSaves.Count)
-                //            {
-                //                instance.InstructionSaves.Add(instruction);
-                //            }
-                //            else
-                //            {
-                //                instance.InstructionSaves.Insert(desiredIndexOfInstruction, instruction);
-                //            }
-                //        }
-                //        desiredIndexOfInstruction++;
-
-                //    }
-                //}
-
                 #region Note about removing variables - why we don't do it anymore.
                 // October 3, 2011
                 // Victor Chelaru

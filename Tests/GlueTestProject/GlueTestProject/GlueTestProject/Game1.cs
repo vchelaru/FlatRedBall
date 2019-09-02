@@ -39,9 +39,9 @@ namespace GlueTestProject
         protected override void Initialize()
         {
             FlatRedBallServices.InitializeFlatRedBall(this, graphics);
-			CameraSetup.SetupCamera(SpriteManager.Camera, graphics);
             CustomPreGlobalContentInitialize();
 			GlobalContent.Initialize();
+			CameraSetup.SetupCamera(SpriteManager.Camera, graphics);
 
             LocalizationManager.CurrentLanguage = 1;
 

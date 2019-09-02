@@ -344,8 +344,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
             treeNode.CodeFile = entitySave.Name + ".cs";
 
-
-
             Section.EndContextAndTime();
             Section.GetAndStartContextAndTime("Add node");
 
@@ -420,19 +418,9 @@ namespace FlatRedBall.Glue.FormHelpers
                 SortEntities();
 
                 Section.EndContextAndTime();
-                Section.GetAndStartContextAndTime("Tag");
+
                 treeNode.EntitySave = entitySave;
 
-                //UpdateNodeToListIndex(entitySave);
-
-                Section.EndContextAndTime();
-                Section.GetAndStartContextAndTime("Generate code");
-                if (generateCode && !string.IsNullOrEmpty(treeNode.GeneratedCodeFile))
-                {
-                    CodeWriter.GenerateCode(entitySave);
-                }
-
-                Section.EndContextAndTime();
             }
             return treeNode;
         }
@@ -442,39 +430,23 @@ namespace FlatRedBall.Glue.FormHelpers
         public static BaseElementTreeNode AddScreen(ScreenSave screenSave)
         {
             string screenFileName = screenSave.Name + ".cs";
-            
-
             string screenFileWithoutExtension = FileManager.RemoveExtension(screenFileName);
 
             var screenTreeNode = new ScreenTreeNode(FileManager.RemovePath(screenFileWithoutExtension));
-
-
-
             screenTreeNode.CodeFile = screenFileName;
+
             mScreenNode.Nodes.Add(screenTreeNode);
 
             string generatedFile = screenFileWithoutExtension + ".Generated.cs";
-
-            bool doesFileExist = FileManager.FileExists(generatedFile);
-
-            if (!doesFileExist)
-            {
-                CodeWriter.CreateAndAddGeneratedFile(screenSave);
-            }
-
             screenTreeNode.GeneratedCodeFile = generatedFile;
 
             screenTreeNode.SaveObject = screenSave;
 
             int desiredIndex = ProjectManager.GlueProjectSave.Screens.IndexOf(screenSave);
-
-            mScreenNode.Nodes.Remove(screenTreeNode);
-            mScreenNode.Nodes.Insert(desiredIndex, screenTreeNode);
-
-
-            if (!string.IsNullOrEmpty(screenTreeNode.GeneratedCodeFile))
+            if(desiredIndex < mScreenNode.Nodes.Count && mScreenNode.Nodes[desiredIndex] != mScreenNode)
             {
-                CodeWriter.GenerateCode(screenSave);
+                mScreenNode.Nodes.Remove(screenTreeNode);
+                mScreenNode.Nodes.Insert(desiredIndex, screenTreeNode);
             }
 
             return screenTreeNode;

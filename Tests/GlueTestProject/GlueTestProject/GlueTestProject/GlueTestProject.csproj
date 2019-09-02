@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GlueTestProject</RootNamespace>
     <AssemblyName>GlueTestProject</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
@@ -74,6 +74,7 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
     </Reference>
@@ -134,7 +135,6 @@
     <Compile Include="DataTypes\HugeCsv.Generated.cs" />
     <Compile Include="DataTypes\ListCsv.Generated.cs" />
     <Compile Include="DataTypes\LoadedAtRuntimeFalseCsv.Generated.cs" />
-    <Compile Include="DataTypes\LocalizationDatabase.Generated.cs" />
     <Compile Include="DataTypes\MovementValues.Generated.cs" />
     <Compile Include="DataTypes\PlatformerValues.Generated.cs" />
     <Compile Include="DataTypes\Resources.Generated.cs" />
@@ -1361,14 +1361,9 @@
   <ItemGroup>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
-    <Content Include="Libraries\Xna4Pc\FlatRedBall.Content.dll" />
     <None Include="app.config" />
     <None Include="redball.BMP">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Libraries\Xna4Pc\FlatRedBall.dll" />
-    <None Include="Libraries\Xna4Pc\FlatRedBall.XML">
-      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>

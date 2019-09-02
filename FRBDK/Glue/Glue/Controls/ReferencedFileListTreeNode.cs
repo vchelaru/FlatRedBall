@@ -127,13 +127,7 @@ namespace FlatRedBall.Glue.Controls
                     nodeForFile.Tag = referencedFiles[i];
                     
 
-                    if (FileManager.FileExists(fullFile))
-                    {
-                        var file = referencedFiles[i];
-                        // todo - eventually this shouldn't even be here, but for now we're going to put it on a task so it doesn't stomp on other code making changes to the project:
-                        Managers.TaskManager.Self.AddSync(() => GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(file), $"Refreshing file {file}");
-                    }
-                    else
+                    if (!FileManager.FileExists(fullFile))
                     {
                         nodeForFile.ForeColor = ElementViewWindow.MissingObjectColor;
                     }

@@ -404,16 +404,36 @@ namespace FlatRedBall.Glue.IO
                 GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh = true;
 
                 Section.EndContextAndTime();
+
                 Section.GetAndStartContextAndTime("Screens");
-
                 SetInitWindowText("Creating tree nodes...");
-
                 CreateScreenTreeNodes();
                 Section.EndContextAndTime();
-                Section.GetAndStartContextAndTime("Entities");
 
+                Section.GetAndStartContextAndTime("Entities");
                 CreateEntityTreeNodes();
                 Section.EndContextAndTime();
+
+                foreach(var rfs in ObjectFinder.Self.GetAllReferencedFiles())
+                {
+                    Managers.TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs), 
+                        $"Refreshing file {rfs.ToString()}",
+                        TaskExecutionPreference.AddOrMoveToEnd);
+                }
+
+                foreach(var element in ObjectFinder.Self.GlueProject.Screens)
+                {
+                    element.UpdateCustomProperties();
+                    CheckForMissingCustomFile(element);
+
+                }
+                foreach (var entity in ObjectFinder.Self.GlueProject.Entities)
+                {
+                    entity.UpdateCustomProperties();
+                    entity.UpdateFromBaseType();
+                    CheckForMissingCustomFile(entity);
+                }
+
                 Section.GetAndStartContextAndTime("SortEntities");
 
 
@@ -608,106 +628,12 @@ namespace FlatRedBall.Glue.IO
 
         private void CreateEntityTreeNodes()
         {
-            //ProjectManager.GlueProjectSave.Entities[78].NamedObjects[9].UpdateCustomProperties();
-
-
-            // Let's make this faster.
-            //foreach (EntitySave entity in ProjectManager.GlueProjectSave.Entities)
-            // Actually, the contained functions may show popups, and if 2 simultaneous popups
-            // are shown, one can cancel the other out and this can cause Glue to freeze. This means
-            // we can't parallel foreah it
-            //Parallel.ForEach(ProjectManager.GlueProjectSave.Entities, (entity) =>
-            foreach (EntitySave entity in ProjectManager.GlueProjectSave.Entities)
-                {
-                    entity.UpdateCustomProperties();
-                    entity.UpdateFromBaseType();
-                }
-
             for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
             {
                 EntitySave entitySave = ProjectManager.GlueProjectSave.Entities[i];
-                // This is so fast that we no longer need to show the
-                // user details - and not doing it will make things even faster
-                //SetInitWindowText("Creating Entity: " + entitySave.Name);
 
                 EntityTreeNode entityTreeNode = GlueState.Self.Find.EntityTreeNode(entitySave.Name);
-
-                #region If there is no EntityTreeNode
-
-                if (entityTreeNode == null)
-                {
-                    // See if the file exists
-                    string fileToSearchFor = FileManager.RelativeDirectory + entitySave.Name + ".cs";
-
-                    if (System.IO.File.Exists(fileToSearchFor))
-                    {
-                        // If we got here that means there's probably not a build item for this file
-                        MessageBox.Show("The Glue project has the following Entity:\n" + entitySave.Name + "\n" +
-                            "but this file is not part of Visual Studio.  This file may have been removed manually or " +
-                            "there may have been some saving error.  You should close Glue, manually add this and the Generated file " +
-                            "to Visual Studio, then restart Glue.");
-                        MainGlueWindow.Self.HasErrorOccurred = true;
-                    }
-                    else
-                    {
-                        MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
-
-                        mbmb.MessageText = "Could not find the file name\n\n" + fileToSearchFor + "\n\nwhich is used by the entity\n\n" + entitySave.Name + "\n\n" +
-                            "What would you like to do?";
-
-
-                        mbmb.AddButton("Create a new custom code file", DialogResult.Yes);
-                        mbmb.AddButton("Delete this Entity", DialogResult.No);
-                        mbmb.AddButton("Do nothing.  The Entity will not show up in Glue until this problem is fixed.", DialogResult.Cancel);
-
-                        DialogResult result = mbmb.ShowDialog(MainGlueWindow.Self);
-
-                        switch (result)
-                        {
-                            case DialogResult.Yes:
-                                if (entityTreeNode == null)
-                                {
-                                    entityTreeNode = ElementViewWindow.AddEntity(entitySave);
-                                }
-
-                                CodeWriter.GenerateAndAddElementCustomCode(entitySave);
-
-                                //entityTreeNode.GenerateCode(ProjectManager.EntityTemplateCode);
-
-                                break;
-                            case DialogResult.No:
-                                ProjectManager.GlueProjectSave.Entities.RemoveAt(i);
-                                i--;
-                                continue;
-
-                            //break;
-                            case DialogResult.Cancel:
-                                // do nothing
-                                continue;
-
-                            //break;
-                        }
-
-                        System.Windows.Forms.MessageBox.Show("Could not create the EntitySave for " + entitySave.Name +
-                            " because the following file doesn't exist\n\n" + fileToSearchFor);
-                    }
-                    //mGlueProjectSave.Entities.RemoveAt(i);
-                    //i--;
-                }
-
-                #endregion
-
-
-                entityTreeNode.EntitySave = entitySave;
-
-                CheckForMissingCustomFile(entityTreeNode);
-
-
                 entityTreeNode.UpdateReferencedTreeNodes();
-
-                // moved above
-                //entityTreeNode.EntitySave.UpdateCustomProperties();
-                //entityTreeNode.EntitySave.UpdateFromBaseType();
             }
         }
 
@@ -716,54 +642,14 @@ namespace FlatRedBall.Glue.IO
             for (int i = 0; i < ProjectManager.GlueProjectSave.Screens.Count; i++)
             {
                 ScreenSave screenSave = ProjectManager.GlueProjectSave.Screens[i];
-                // This is so fast now that we don't even need to show the user
-                // what's going on
-                //SetInitWindowText("Creating Screens: " + screenSave.Name);
 
                 ScreenTreeNode screenTreeNode = GlueState.Self.Find.ScreenTreeNode(ProjectManager.GlueProjectSave.Screens[i].Name);
-
-                #region If there is no screenTreeNode
-
-                if (screenTreeNode == null)
-                {
-                    // See if the file exists
-                    string fileToSearchFor = FileManager.RelativeDirectory + screenSave.Name + ".cs";
-
-                    if (System.IO.File.Exists(fileToSearchFor))
-                    {
-                        // If we got here that means there's probably not a build item for this file
-                        MessageBox.Show("The Glue project has the following Screen:\n" + screenSave.Name + "\n" +
-                            "but this file is not part of Visual Studio.  This file may have been removed manually or " +
-                            "there may have been some saving error.  You should close Glue, manually add this and the Generated file " +
-                            "to Visual Studio, then restart Glue.");
-                        MainGlueWindow.Self.HasErrorOccurred = true;
-                    }
-                    else
-                    {
-                        System.Windows.Forms.MessageBox.Show("Could not create the ScreenSave for " + screenSave.Name);
-                    }
-
-
-                    //mGlueProjectSave.Screens.RemoveAt(i);
-                    //i--;
-                    continue;
-                }
-
-                #endregion
-
-                screenTreeNode.SaveObject = ProjectManager.GlueProjectSave.Screens[i];
-
-                CheckForMissingCustomFile(screenTreeNode);
-
-
                 if (ProjectManager.GlueProjectSave.Screens[i].IsRequiredAtStartup)
                 {
                     screenTreeNode.BackColor = ElementViewWindow.RequiredScreenColor;
                 }
 
                 screenTreeNode.UpdateReferencedTreeNodes();
-
-                screenTreeNode.SaveObject.UpdateCustomProperties();
             }
         }
 
@@ -1032,38 +918,32 @@ namespace FlatRedBall.Glue.IO
             return hasMadeChanges;
         }
 
-        private void CheckForMissingCustomFile(BaseElementTreeNode baseElementTreeNode)
+        private void CheckForMissingCustomFile(IElement element)
         {
-            if (baseElementTreeNode != null)
+            string fileToSearchFor = FileManager.RelativeDirectory + element.Name + ".cs";
+
+            if (!System.IO.File.Exists(fileToSearchFor))
             {
-                IElement element = baseElementTreeNode.SaveObject;
+                MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                mbmb.MessageText = "The following file is missing\n\n" + fileToSearchFor + 
+                    "\n\nwhich is used by\n\n" + element.ToString() + "\n\nWhat would you like to do?";
+                mbmb.AddButton("Re-create an empty custom code file", DialogResult.OK);
+                mbmb.AddButton("Ignore this problem", DialogResult.Cancel);
 
-                string fileToSearchFor = FileManager.RelativeDirectory + element.Name + ".cs";
+                DialogResult result = mbmb.ShowDialog(MainGlueWindow.Self);
 
-                if (!System.IO.File.Exists(fileToSearchFor))
+                switch (result)
                 {
-                    MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
-                    mbmb.MessageText = "The following file is missing\n\n" + fileToSearchFor + 
-                        "\n\nwhich is used by\n\n" + element.ToString() + "\n\nWhat would you like to do?";
-                    mbmb.AddButton("Re-create an empty custom code file", DialogResult.OK);
-                    mbmb.AddButton("Ignore this problem", DialogResult.Cancel);
+                    case DialogResult.OK:
 
-                    DialogResult result = mbmb.ShowDialog(MainGlueWindow.Self);
+                        CodeWriter.GenerateAndAddElementCustomCode(element);
 
-                    switch (result)
-                    {
-                        case DialogResult.OK:
+                        break;
+                    case DialogResult.Cancel:
+                        // Ignore, do nothing
+                        break;
 
-                            CodeWriter.GenerateAndAddElementCustomCode(element);
-
-                            break;
-                        case DialogResult.Cancel:
-                            // Ignore, do nothing
-                            break;
-
-                    }
                 }
-
             }
         }
 

@@ -264,8 +264,7 @@ namespace FlatRedBall.Glue.IO
             {
                 if (project == ProjectManager.ProjectBase)
                 {
-
-                    TaskManager.Self.OnUiThread(()=>ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName));
+                    TaskManager.Self.OnUiThread(()=> GlueCommands.Self.LoadProject(ProjectManager.ProjectBase.FullFileName));
                 }
                 else
                 {

@@ -20462,7 +20462,9 @@
     <LoadAsynchronously>false</LoadAsynchronously>
     <RecordLockContention>false</RecordLockContention>
   </GlobalContentSettingsSave>
-  <SyncedProjects />
+  <SyncedProjects>
+    <string>../../TestProjectDesktopGl/TestProjectDesktopGl/TestProjectDesktopGl.csproj</string>
+  </SyncedProjects>
   <StartUpScreen>Screens\FirstScreen</StartUpScreen>
   <ResolutionPresets />
   <PerformanceSettingsSave>
