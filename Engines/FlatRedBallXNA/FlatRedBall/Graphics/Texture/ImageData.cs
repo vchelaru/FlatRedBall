@@ -661,7 +661,6 @@ namespace FlatRedBall.Graphics.Texture
 
         internal static Microsoft.Xna.Framework.Graphics.Texture2D ToTexture2D(Color[] pixelData, int textureWidth, int textureHeight, bool generateMipmaps, GraphicsDevice graphicsDevice)
         {
-#if FRB_XNA
             // Justin Johnson - May 18, 2012 - Added XNA support for mipmap creation on generated textures
             int mipLevelWidth;
             int mipLevelHeight;
@@ -672,22 +671,8 @@ namespace FlatRedBall.Graphics.Texture
             int sourceYCoordinate;
             int sourcePixelIndex;
             Color[] mipLevelData;
-#if XNA4
+
             Texture2D texture = new Texture2D(graphicsDevice, textureWidth, textureHeight, generateMipmaps, SurfaceFormat.Color);
-#else
-            // Victor Chelaru
-            // May 22, 2011
-            // Not sure what the
-            // additional arguments
-            // should be here, but the
-            // code wasn't compiling with
-            // the code as written for XNA4.
-            // So I removed soem of the args to
-            // make it compile - we probably don't 
-            // care as much for XNA 3.1 since 4.0 is 
-            // the newest.
-            Texture2D texture = new Texture2D(graphicsDevice, textureWidth, textureHeight);
-#endif
             // creates texture for each mipmap level (level count defined automatically)
             if (generateMipmaps)
             {
@@ -724,11 +709,7 @@ namespace FlatRedBall.Graphics.Texture
                         textureWidth = mipLevelWidth;
                         textureHeight = mipLevelHeight;
                     }
-#if (XNA4) || WINDOWS_8
                     texture.SetData<Color>(i, null, mipLevelData, 0, mipLevelData.Length);
-#else
-                    texture.SetData<Color>(i, null, mipLevelData, 0, mipLevelData.Length, SetDataOptions.Discard);
-#endif
                 }
             }
             else
@@ -736,60 +717,6 @@ namespace FlatRedBall.Graphics.Texture
                 texture.SetData<Color>(pixelData);
             }
 
-#elif FRB_MDX
-            // Justin Johnson - May 18, 2012 - I did not change this at all when I updated this method
-            if (textureHeight > FlatRedBallServices.GraphicsDevice.DeviceCaps.MaxTextureHeight ||
-                textureWidth > FlatRedBallServices.GraphicsDevice.DeviceCaps.MaxTextureWidth)
-            {
-                throw new InvalidOperationException("The resolution of the to-be-created Texture2D " +
-                    "is too large.  The desired resolution is " + textureWidth + " by " + textureHeight + "." +
-                    "The largest supported resolution is " +
-                    FlatRedBallServices.GraphicsDevice.DeviceCaps.MaxTextureWidth + " by " +
-                    FlatRedBallServices.GraphicsDevice.DeviceCaps.MaxTextureHeight + ".");
-            }
-
-            Microsoft.Xna.Framework.Graphics.Texture2D texture = new Microsoft.Xna.Framework.Graphics.Texture2D();
-            texture.texture = new Microsoft.DirectX.Direct3D.Texture(
-                FlatRedBallServices.GraphicsDevice,
-                textureWidth,
-                textureHeight,
-                0,
-                0,
-                Microsoft.DirectX.Direct3D.Format.A8R8G8B8,
-                Microsoft.DirectX.Direct3D.Pool.Managed);
-
-
-            texture.Width = textureWidth;
-            texture.Height = textureHeight;
-
-
-            uint[,] textureData = (uint[,])texture.texture.LockRectangle(
-                typeof(uint),
-                0,
-                Microsoft.DirectX.Direct3D.LockFlags.None,
-                textureWidth, textureHeight);
-
-
-            int pixelY = 0;
-            for (int pixelX = 0; pixelX < textureWidth; pixelX++)
-            {
-                for (pixelY = 0; pixelY < textureHeight; pixelY++)
-                {
-                    // Vic says:  I used to have the mData line say:
-                    // mData[pixelY * width + pixelX]... but that didn't
-                    // work I inverted it and it works fine now.  Not sure 
-                    // why, but this works so oh well.
-                    textureData[pixelX, pixelY] = (uint)
-                        pixelData[pixelX * textureHeight + pixelY].ToArgb();
-                }
-            }
-
-            texture.texture.UnlockRectangle(0);
-#else
-            // Justin Johnson - May 18, 2012 - not sure if any other devices support mipmapping and to what level. Fall back to no mipmaps
-            Texture2D texture = new Texture2D(FlatRedBallServices.GraphicsDevice, textureWidth, textureHeight);
-            texture.SetData<Color>(pixelData);
-#endif
             return texture;
         }
 

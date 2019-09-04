@@ -32,13 +32,10 @@ namespace FlatRedBall.Content.Instructions
         [XmlElement("ValueAsDouble", typeof(double))]
         [XmlElement("ValueAsByte", typeof(byte))]
         [XmlElement("ValueAsObject", typeof(object))]
-#if FRB_XNA
         [XmlElement("ValueAsVector2", typeof(Vector2))]
         [XmlElement("ValueAsVector3", typeof(Vector3))]
         [XmlElement("ValueAsListOfVector2", typeof(List<Vector2>))]
         [XmlElement("ValueAsListOfVector3", typeof(List<Vector3>))]
-        
-#endif
 
         // Referencing a List of Points causes load errors
         // in Glue becaus there's ambiguity between System.Drawing.Point
@@ -125,14 +122,12 @@ namespace FlatRedBall.Content.Instructions
             get { return null;}// throw new Exception("This is only so the Serializer functions.  Use the Value field."); }
         }
 
-#if FRB_XNA
         [XmlIgnore]
         public Vector3 ValueAsVector3
         {
             get { return new Vector3(); }
             set { Value = value; }
         }
-#endif
 
         [XmlIgnore]
         public List<FlatRedBall.Math.Geometry.Point> ValueAsListOfPoints

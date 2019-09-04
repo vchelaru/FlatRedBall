@@ -11,14 +11,7 @@ using FlatRedBall.Content.Scene;
 
 using FlatRedBall.IO;
 using FlatRedBall.Content.AnimationChain;
-#if FRB_MDX
-
-
-
-#elif FRB_XNA
 using Microsoft.Xna.Framework.Graphics;
-
-#endif
 
 
 namespace FlatRedBall.Content.SpriteGrid

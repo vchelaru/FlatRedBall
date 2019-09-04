@@ -98,12 +98,8 @@ namespace FlatRedBall
         //internal int mTargetHeight;
 
         public Color BackgroundColor =
-#if FRB_MDX
-            Color.FromArgb(0, 0, 0, 0);
-#else
-            //Color.Black;
             new Color(0,0,0,0);
-#endif
+
         SplitScreenViewport splitScreenViewport;
         bool mUsesSplitScreenViewport = false;
 
@@ -155,14 +151,10 @@ namespace FlatRedBall
             get { return mProjection; }// GetProjectionMatrix(); }
         }
 
-#if FRB_XNA
         public BoundingFrustum BoundingFrustum
         {
             get { return mBoundingFrustum; }
         }
-#endif
-
-
 
         public CameraCullMode CameraCullMode
         {
@@ -355,9 +347,9 @@ namespace FlatRedBall
             ShouldRestrictViewportToResolution = true;
 
             ClearsDepthBuffer = true;
-#if !FRB_MDX
+
             mContentManager = contentManagerName;
-#endif
+
             DrawsToScreen = true;
 
             ClearMinimumsAndMaximums();
@@ -374,11 +366,9 @@ namespace FlatRedBall
 
             mAspectRatio = width / (float)height;
 
-#if FRB_XNA
             // Be sure to instantiate the frustum before setting the FieldOfView
             // since setting the FieldOfView sets the frustum:
             mBoundingFrustum = new BoundingFrustum(Matrix.Identity);
-#endif
 
             // use the Property rather than base value so that the mXEdge and mYEdge are set
             FieldOfView = (float)System.Math.PI / 4.0f;
@@ -1028,19 +1018,6 @@ namespace FlatRedBall
 			this.mNearClipPlane = cameraToSetTo.mNearClipPlane;
             this.mFarClipPlane = cameraToSetTo.mFarClipPlane;
 		}
-
-//#if FRB_XNA
-//        public void LookAt(Vector3 forward, Vector3 right)
-//        {
-//            Matrix newRotationMatrix = Matrix.Identity;
-
-//            newRotationMatrix.Forward = Vector3.Normalize(forward);
-//            newRotationMatrix.Up = Vector3.Normalize(Vector3.Cross(right, forward));
-//            newRotationMatrix.Right = Vector3.Normalize(right);
-
-//            RotationMatrix = newRotationMatrix;
-//        }
-//#endif
 
         public void SetLookAtRotationMatrix(Vector3 LookAtPoint)
         {

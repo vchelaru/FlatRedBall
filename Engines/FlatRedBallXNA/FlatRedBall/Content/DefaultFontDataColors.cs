@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-#if XNA3
-    using Color = Microsoft.Xna.Framework.Graphics.Color;
-#else
-	using Color = Microsoft.Xna.Framework.Color;
-#endif
+using Color = Microsoft.Xna.Framework.Color;
 namespace FlatRedBall.Content
 {
     static class DefaultFontDataColors

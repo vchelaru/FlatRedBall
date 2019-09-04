@@ -484,7 +484,7 @@ namespace FlatRedBall
 
             }
         }
-#if XNA4  && !MONODROID
+#if !MONODROID
         public static void InitializeCommandLine()
         {
             InitializeCommandLine(null);
@@ -796,26 +796,6 @@ namespace FlatRedBall
 
             var fontPattern = DefaultFontDataColors.GetFontPattern();
             TextManager.DefaultFont = new BitmapFont(fontTexture, fontPattern);
-
-#elif WINDOWS_8
-            Assembly assembly = typeof(Sprite).GetTypeInfo().Assembly;
-            
-            using (Stream stream = assembly.GetManifestResourceStream("FlatRedBallW8.Assets.defaultText.png"))
-            {
-                fontTexture = Texture2D.FromStream(graphics.GraphicsDevice, stream);
-                fontTexture.Name = "Default Font Texture";
-            }
-
-            string fontPattern = null;
-
-            using (Stream stream = assembly.GetManifestResourceStream("FlatRedBallW8.Assets.defaultFont.txt"))
-            using (System.IO.StreamReader sr = new StreamReader(stream))
-            {
-                fontPattern = sr.ReadToEnd();
-            }
-
-            TextManager.DefaultFont = new BitmapFont(fontTexture, fontPattern);
-
 
 #elif !MONOGAME
             mResourceContentManager = new Microsoft.Xna.Framework.Content.ResourceContentManager(
@@ -1271,19 +1251,14 @@ namespace FlatRedBall
             //Go through and clean up any referances that may be holding on to resources
             GuiManager.mLastWindowWithFocus = null;
 
-#if !FRB_MDX
             SpriteManager.ClearParticleTextures();
-#endif
 
-#if XNA4
             lock (mContentManagers)
             {
                 Content.ContentLoaders.TextureContentLoader.ClearPremultipliedAlphaImageData();
             }
-#endif
         }
 
-#if !FRB_MDX
         public static void OnDeviceLost()
         {
             // Vic says - I don't think we need this anymore.
@@ -1353,7 +1328,6 @@ namespace FlatRedBall
 
             TextManager.RefreshBitmapFontTextures();
         }
-#endif
 
         #endregion
 

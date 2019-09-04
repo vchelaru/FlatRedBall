@@ -6,14 +6,8 @@ using Microsoft.Xna.Framework.Graphics;
 using FlatRedBall.Math;
 using FlatRedBall.Graphics.Texture;
 using FlatRedBall.Content;
-#if FRB_XNA
 using Vector3 = Microsoft.Xna.Framework.Vector3;
-#endif
-
-
-#if XNA4
 using Color = Microsoft.Xna.Framework.Color;
-#endif
 
 using Microsoft.Xna.Framework;
 
@@ -448,11 +442,7 @@ namespace FlatRedBall.AI.LineOfSight
         public void MakeAllHidden()
         {
             Color shadedColor = 
-#if XNA4
 				Color.FromNonPremultiplied(FogColor.R, FogColor.G, FogColor.B, FogShade);
-#else
-				new Color(FogColor, FogShade);
-#endif
             int y;
             for (int x = 0; x < mNumberOfXTiles; x++)
             {
@@ -697,11 +687,7 @@ namespace FlatRedBall.AI.LineOfSight
         {
             int x, fogX, fogY;
             Color revealedColor = 
-#if XNA4
                 Color.FromNonPremultiplied(127, 127, 127, 255);
-#else
-                new Color(127, 127, 127, 255);
-#endif
             for (int y = y0; y < y1; y++)
             {
                 for (x = x0; x < x1; x++)
@@ -872,11 +858,7 @@ namespace FlatRedBall.AI.LineOfSight
             if (FogResolution > 0)
             {
                 Color ShadedColor = 
-#if XNA4
                     Color.FromNonPremultiplied(FogShade, FogShade, FogShade, 255);
-#else
-					new Color(FogShade, FogShade, FogShade, 255);
-#endif
                 byte shadedValue;
                 float invertedFogFactor = 1.0f / mFogFactor;
 
@@ -947,13 +929,8 @@ namespace FlatRedBall.AI.LineOfSight
                                             }
                                             if (x >= 0 && x < gridToPlace.NumberOfXTiles && y >= 0 && y < gridToPlace.NumberOfYTiles)
                                                 shadedValue = CalculateFogColorByDistance(fogXIndex + (fogX * invertedFogFactor), fogYIndex + (fogY * invertedFogFactor), shadedValue);
-#if XNA4
                                             color = Color.FromNonPremultiplied(FogColor.R, FogColor.G, FogColor.B, shadedValue);
                                             //color = Color.FromNonPremultiplied(shadedValue, shadedValue, shadedValue, 255);
-#else
-											color = FogColor;
-											color.A = shadedValue;
-#endif
                                             mFogGradiantData.SetPixel(fogX, fogY, color);
                                         }
                                     }
@@ -989,12 +966,7 @@ namespace FlatRedBall.AI.LineOfSight
                                         shadedValue = FogShade;
                                     }
                                     shadedValue =  CalculateFogColorByDistance(xTile + (fogX * invertedFogFactor), yTile + (fogY * invertedFogFactor), shadedValue);
-#if XNA4
                                     color = Color.FromNonPremultiplied(FogColor.R, FogColor.G, FogColor.B, shadedValue);
-#else
-									color = FogColor;
-									color.A = shadedValue;
-#endif
                                     mFogGradiantData.SetPixel(fogX, fogY, color);
                                 }
                             }
@@ -1173,13 +1145,8 @@ namespace FlatRedBall.AI.LineOfSight
                                     shadedValue = localGrid.CalculateFogColorByDistance(x + (fogX * invertedFogFactor), y + (fogY * invertedFogFactor), shadedColor.R, viewer);
                                 else if (shadedColor.R > FogShade)
                                     shadedValue = FogShade;
-#if XNA4
                                 //shadedColor = Color.FromNonPremultiplied(FogColor.R, FogColor.G, FogColor.B, shadedValue);
                                 shadedColor = Color.FromNonPremultiplied(shadedValue, shadedValue, shadedValue, 255);
-#else
-								shadedColor = FogColor;
-								shadedColor.A = shadedValue;
-#endif
                                 localGrid.mFogImageData.SetPixel(x * mFogFactor + fogX, y * mFogFactor + fogY, shadedColor);
                             }
                         }

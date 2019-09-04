@@ -76,7 +76,7 @@ namespace FlatRedBall.Content
 
         public static Dictionary<string, string> FileAliases { get; private set; } = new Dictionary<string, string>();
 		
-#if FRB_XNA && !WINDOWS_PHONE && !MONOGAME
+#if FRB_XNA && !MONOGAME
 		internal Effect mFirstEffect = null;
 		internal EffectCache mFirstEffectCache = null;
 #endif
@@ -459,7 +459,7 @@ namespace FlatRedBall.Content
 			}
 #endif
 
-#if XNA4 && !MONOGAME
+#if !MONOGAME
 			if (!FileManager.IsRelative(assetName))
 			{
 				assetName = FileManager.MakeRelative(
@@ -992,35 +992,10 @@ namespace FlatRedBall.Content
 
 		private T AdjustNewAsset<T>(T asset, string assetName)
 		{
-#if FRB_XNA
-
 			if (asset is Microsoft.Xna.Framework.Graphics.Texture)
 			{
 				(asset as Microsoft.Xna.Framework.Graphics.Texture).Name = assetName;
 			}
-
-#if WINDOWS_PHONE || WINDOWS_8 || MONOGAME
-			// do nothing???
-#else
-
-			else if (mFirstEffect == null && asset is Effect)
-			{
-				lock (Renderer.GraphicsDevice)
-				{
-					mFirstEffect = asset as Effect;
-					mFirstEffectCache = new EffectCache(mFirstEffect, true);
-				}
-			}
-#endif
-#elif SILVERLIGHT
-
-			if (asset is Texture2D)
-			{
-				(asset as Texture2D).Name = assetName;
-			}
-
-#endif
-
 			if (asset is FlatRedBall.Scene)
 			{
 				return (T)(object)((asset as FlatRedBall.Scene).Clone());

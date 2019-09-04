@@ -1,11 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;MONOGAME; NO_CODE_EMIT; STANDARD</DefineConstants>
+    <DefineConstants>TRACE;MONOGAME; NO_CODE_EMIT; STANDARD; FRB_XNA; XNA4; DESKTOP_GL</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;MONOGAME; NO_CODE_EMIT; STANDARD; FRB_XNA; XNA4; DESKTOP_GL</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

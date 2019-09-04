@@ -27,17 +27,7 @@ using FlatRedBall.Graphics.Lighting;
 #endif
 
 
-#if FRB_MDX
-using Texture2D = FlatRedBall.Texture2D;
-using FlatRedBall.Content.Model;
-using FlatRedBall.Graphics.Model;
-
-
-#elif FRB_XNA || SILVERLIGHT
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
-
-
-#endif
 
 namespace FlatRedBall.Content
 {

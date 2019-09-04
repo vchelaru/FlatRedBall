@@ -5,13 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using System.Runtime.Serialization;
-#if FRB_MDX
-
-#elif FRB_XNA
 using Microsoft.Xna.Framework.Graphics;
-#elif SILVERLIGHT
-
-#endif
 
 using System.Xml;
 using System.Xml.Serialization;

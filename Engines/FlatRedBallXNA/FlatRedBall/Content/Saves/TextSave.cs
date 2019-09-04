@@ -85,23 +85,6 @@ namespace FlatRedBall.Content.Saves
                 }
             }
 
-#if FRB_MDX
-            //spriteSave.Fade = 255 - spriteToCreateSaveFrom.Alpha;
-            //spriteSave.FadeRate = -spriteToCreateSaveFrom.AlphaRate;
-
-            textSave.Red = text.Red;
-            textSave.Green = text.Green;
-            textSave.Blue = text.Blue;
-
-
-
-            //spriteSave.TintRedRate = spriteToCreateSaveFrom.RedRate;
-            //spriteSave.TintGreenRate = spriteToCreateSaveFrom.GreenRate;
-            //spriteSave.TintBlueRate = spriteToCreateSaveFrom.BlueRate;
-
-            textSave.ColorOperation =
-                GraphicalEnumerations.TranslateColorOperation(text.ColorOperation);
-#elif FRB_XNA
             //spriteSave.Fade = (1 - spriteToCreateSaveFrom.Alpha) * 255.0f;
             //spriteSave.FadeRate = -spriteToCreateSaveFrom.AlphaRate * 255.0f;
 
@@ -116,10 +99,6 @@ namespace FlatRedBall.Content.Saves
             textSave.ColorOperation =
                 GraphicalEnumerations.ColorOperationToFlatRedBallMdxString(text.ColorOperation);
             
-#endif
-
-
-
             return textSave;
         }
 
@@ -198,9 +177,6 @@ namespace FlatRedBall.Content.Saves
             }
 #endif
 
-#if FRB_XNA
-            //valueToDivideBy = 255;
-#endif
 
             //sprite.Alpha = (255 - Fade) / valueToDivideBy;
             //sprite.AlphaRate = -FadeRate / valueToDivideBy;

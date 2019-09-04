@@ -913,11 +913,7 @@ namespace FlatRedBall.Graphics
             {
                 if (camera.ClearsDepthBuffer)
                 {
-#if XNA4
                     Color colorToClearTo = Color.Transparent;
-#else
-                    Color colorToClearTo = Color.TransparentBlack;
-#endif
 
                     mGraphics.GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer,
                        colorToClearTo, 1, 0);
@@ -1514,12 +1510,6 @@ namespace FlatRedBall.Graphics
             #region 3D Shapes - these are different because we just render using FlatRedBall's built-in models in wireframe
 
             // Set up wireframe drawing
-#if XNA4
-            //throw new NotImplementedException();
-            // TODO:  Set up the fill mode here
-#else
-            //GraphicsDevice.RenderState.FillMode = FillMode.WireFrame;
-#endif
             //camera.SetDeviceViewAndProjection(mWireframeEffect, false);
 
             // Draw spheres
@@ -1559,13 +1549,8 @@ namespace FlatRedBall.Graphics
             //    }
             //}
 
-#if XNA4
             //throw new NotImplementedException();
             // TODO:  Turn off wireframe here
-#else
-            // End wireframe drawing
-            //GraphicsDevice.RenderState.FillMode = FillMode.Solid;
-#endif
             #endregion
 
             //throw new NotImplementedException();

@@ -5,11 +5,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
-#if FRB_MDX
-using Texture2D = FlatRedBall.Texture2D;
-#elif FRB_XNA || SILVERLIGHT
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
-#endif
 
 //TODO: the AnimationChain namespace in the content assembly should probably be renamed to avoid this naming conflict
 using Anim = FlatRedBall.Graphics.Animation;

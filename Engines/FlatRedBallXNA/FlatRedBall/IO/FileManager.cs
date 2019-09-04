@@ -66,12 +66,6 @@ namespace FlatRedBall.IO
 
         static bool mHasUserFolderBeenInitialized = false;
 
-#if XBOX360
-
-        static StorageDevice mStorageDevice = null;
-        static StorageContainer mLastStorageContainer = null;
-#endif
-
 #if FRB_RAW || DESKTOP_GL
         public static string DefaultRelativeDirectory = 
             System.IO.Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ) + "/";
