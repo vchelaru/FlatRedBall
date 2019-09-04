@@ -36,6 +36,19 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         #region Properties
 
+        public override ProjectBase CodeProject
+        {
+            get
+            {
+                return base.CodeProject;
+            }
+
+            set
+            {
+                // do nothing
+            }
+        }
+
         public override IEnumerable<ProjectItem> EvaluatedItems
         {
             get 
@@ -796,8 +809,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
 #endregion
     }
-
-
 
     public sealed class UnicodeStringWriter : System.IO.StringWriter
     {

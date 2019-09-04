@@ -53,7 +53,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public virtual bool ContentCopiedToOutput { get { return true; } }
 
 
-        public ProjectBase ContentProject
+        public virtual ProjectBase ContentProject
+        {
+            get;
+            set;
+        }
+
+        public virtual ProjectBase CodeProject
         {
             get;
             set;
