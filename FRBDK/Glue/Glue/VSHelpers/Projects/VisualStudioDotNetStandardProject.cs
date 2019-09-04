@@ -19,7 +19,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public override ProjectBase ContentProject
         {
             get => StandardProject;
-            set => throw new NotImplementedException();
+            set { }// do nothing
         }
 
         public override List<string> LibraryDlls => new List<string>
@@ -33,9 +33,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override string PrecompilerDirective => "Standard";
 
-        public VisualStudioDotNetStandardProject(Project project) : base(project)
+        public VisualStudioDotNetStandardProject(Project project, Project standardProject) : base(project)
         {
-
+            StandardProject = new ClassLibraryProject(standardProject);
         }
     }
 }

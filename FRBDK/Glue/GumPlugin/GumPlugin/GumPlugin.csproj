@@ -545,6 +545,7 @@
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\PasswordBox.gucx" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Embedded\EmbeddedObjectGumProject\GumProject.gumx" />
     <EmbeddedResource Include="Embedded\EmptyProject\Standards\Polygon.gutx" />
   </ItemGroup>

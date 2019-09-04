@@ -123,6 +123,9 @@
     <Content Include="Libraries\XnaPc\Glue.exe" />
     <Content Include="Libraries\XnaPc\GlueSaveClasses.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>IF NOT EXIST "%25AppData%25\FRBDK\Plugins\StateInterpolation\" MD "%25AppData%25\FRBDK\Plugins\StateInterpolation\"

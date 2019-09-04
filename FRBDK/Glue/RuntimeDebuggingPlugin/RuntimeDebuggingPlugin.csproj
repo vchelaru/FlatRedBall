@@ -88,7 +88,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Embedded\Content\SpriteSheet.png" />
   </ItemGroup>

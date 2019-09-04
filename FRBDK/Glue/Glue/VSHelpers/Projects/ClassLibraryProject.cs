@@ -35,7 +35,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public ClassLibraryProject(Project project) : base(project)
         {
-
+            ContentProject = this;
+            CodeProject = this;
         }
 
         public ProjectItem AddCodeBuildItem(string fileName, bool addAsLink, string fileRelativeToThis)

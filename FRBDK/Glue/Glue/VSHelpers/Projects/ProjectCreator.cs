@@ -4,6 +4,7 @@ using FlatRedBall.IO;
 using Microsoft.Build.Evaluation;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.Collections.Generic;
+using FlatRedBall.Glue.IO;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -184,43 +185,58 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             // include FRB_XNA in them
 
             ProjectBase toReturn = null;
+            message = null;
 
-            List<PreprocessorAndFunc> loadCalls = new List<PreprocessorAndFunc>();
+            var projectFilePath = new FilePath(coreVisualStudioProject.ProjectFileLocation.File);
+            var possibleStandardFile = new FilePath(projectFilePath.GetDirectoryContainingThis().GetDirectoryContainingThis() + "/GameStandard/GameStandard.csproj");
 
-            loadCalls.Add(new PreprocessorAndFunc("ANDROID", () => new AndroidProject(coreVisualStudioProject)));
-            loadCalls.Add(new PreprocessorAndFunc("IOS", () => new IosMonogameProject(coreVisualStudioProject)));
-            loadCalls.Add(new PreprocessorAndFunc("UWP", () => new UwpProject(coreVisualStudioProject)));
-            loadCalls.Add(new PreprocessorAndFunc("DESKTOP_GL", () => new DesktopGlProject(coreVisualStudioProject)));
-            // Do XNA_4 last, since every 
-            // other project type has this 
-            // preprocessor type, so every project
-            // type would return true here
-            loadCalls.Add(new PreprocessorAndFunc("XNA4", () => new Xna4Project(coreVisualStudioProject)));
-
-
-            foreach (var call in loadCalls)
+            if(possibleStandardFile.Exists())
             {
-                if(preProcessorConstants.Contains(call.Preprocessor))
+                var standardProject = new Project(possibleStandardFile.FullPath, null, null, new ProjectCollection());
+
+                toReturn = new VisualStudioDotNetStandardProject(coreVisualStudioProject, standardProject);
+            }
+            else
+            {
+                List<PreprocessorAndFunc> loadCalls = new List<PreprocessorAndFunc>();
+
+                loadCalls.Add(new PreprocessorAndFunc("ANDROID", () => new AndroidProject(coreVisualStudioProject)));
+                loadCalls.Add(new PreprocessorAndFunc("IOS", () => new IosMonogameProject(coreVisualStudioProject)));
+                loadCalls.Add(new PreprocessorAndFunc("UWP", () => new UwpProject(coreVisualStudioProject)));
+                loadCalls.Add(new PreprocessorAndFunc("DESKTOP_GL", () => new DesktopGlProject(coreVisualStudioProject)));
+                // Do XNA_4 last, since every 
+                // other project type has this 
+                // preprocessor type, so every project
+                // type would return true here
+                loadCalls.Add(new PreprocessorAndFunc("XNA4", () => new Xna4Project(coreVisualStudioProject)));
+                // handled above, because it requires 2 projects to construct:
+                //loadCalls.Add(new PreprocessorAndFunc("Standard", () => new VisualStudioDotNetStandardProject(coreVisualStudioProject)));
+
+
+                foreach (var call in loadCalls)
                 {
-                    toReturn = call.Func();
-                    break;
+                    if(preProcessorConstants.Contains(call.Preprocessor))
+                    {
+                        toReturn = call.Func();
+                        break;
+                    }
+                }
+                message = null;
+                if(toReturn == null)
+                {
+                    message = $"Could not determine project type from preprocessor directives." +
+                        $"\nThe project beign loaded has the folowing preprocessor directives\"{preProcessorConstants}\"" +
+                        $"\nThe following are preprocessor directives to determine project type:";
+
+                    foreach(var preprocessor in loadCalls)
+                    {
+                        message += "\n" + preprocessor.Preprocessor;
+                    }
                 }
             }
 
     
 
-            message = null;
-            if(toReturn == null)
-            {
-                message = $"Could not determine project type from preprocessor directives." +
-                    $"\nThe project beign loaded has the folowing preprocessor directives\"{preProcessorConstants}\"" +
-                    $"\nThe following are preprocessor directives to determine project type:";
-
-                foreach(var preprocessor in loadCalls)
-                {
-                    message += "\n" + preprocessor.Preprocessor;
-                }
-            }
 
             return toReturn;
         }

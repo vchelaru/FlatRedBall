@@ -417,6 +417,9 @@
   <ItemGroup>
     <Resource Include="ErrorPlugin\Icons\Refresh.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(SolutionDir)Glue\bin\Debug\Plugins\" md "$(SolutionDir)Glue\bin\Debug\Plugins\"

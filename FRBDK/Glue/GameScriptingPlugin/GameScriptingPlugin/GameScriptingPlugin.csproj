@@ -127,6 +127,9 @@
     <Content Include="Libraries\XnaPc\Glue.exe" />
     <Content Include="Libraries\XnaPc\GlueSaveClasses.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>IF NOT EXIST %25appdata%25\FRBDK\plugins\GameScriptingPlugin\ MD %25appdata%25\FRBDK\plugins\GameScriptingPlugin\

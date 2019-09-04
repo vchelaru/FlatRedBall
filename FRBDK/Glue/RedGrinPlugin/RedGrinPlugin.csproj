@@ -95,7 +95,9 @@
       <Name>Glue</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <ItemGroup>
     <Page Include="Views\MainEntityView.xaml">
       <SubType>Designer</SubType>
