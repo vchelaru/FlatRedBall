@@ -428,9 +428,10 @@ namespace FlatRedBall.Glue.SaveClasses
             string fileName = element.Name + ".cs";
 
             string absoluteCodeFile = FileManager.RelativeDirectory + fileName;
+
             if (ProjectManager.ProjectBase.GetItem(absoluteCodeFile) == null)
             {
-                ProjectManager.ProjectBase.AddCodeBuildItem(absoluteCodeFile);
+                ProjectManager.ProjectBase.CodeProject.AddCodeBuildItem(absoluteCodeFile);
             }
         }
 

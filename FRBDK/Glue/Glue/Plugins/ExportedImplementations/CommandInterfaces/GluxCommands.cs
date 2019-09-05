@@ -599,9 +599,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             string absoluteCodeFile = FileManager.MakeAbsolute(relativeCodeFile);
             bool succeeded = true;
-            string targetFile = directory + FileManager.RemovePath(absoluteCodeFile);
+            FilePath targetFile = directory + FileManager.RemovePath(absoluteCodeFile);
 
-            if (File.Exists(targetFile))
+            if (targetFile.Exists())
             {
                 System.Windows.Forms.MessageBox.Show(
                     "Can't move the the file " + absoluteCodeFile + " because the following file exists in the target location: " + targetFile);
@@ -610,10 +610,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (succeeded)
             {
-                File.Move(absoluteCodeFile, targetFile);
+                File.Move(absoluteCodeFile, targetFile.FullPath);
 
                 ProjectManager.RemoveItemFromAllProjects(relativeCodeFile, false);
-                ProjectManager.ProjectBase.AddCodeBuildItem(targetFile);
+
+                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(targetFile, save: false);
             }
             return succeeded;
         }

@@ -383,14 +383,9 @@ namespace FlatRedBall.Glue.IO
             var project = GlueState.Self.CurrentMainProject;
             foreach (var relativeCodeFile in codeFiles)
             {
-                var codeFile = directory + relativeCodeFile;
-                bool isAlreadyAdded = project.IsFilePartOfProject(codeFile);
+                var codeFilePath = new FilePath(directory + relativeCodeFile);
 
-                if(!isAlreadyAdded)
-                {
-                    project.AddCodeBuildItem(codeFile);
-
-                }
+                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(codeFilePath, false);
             }
 
 

@@ -60,7 +60,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
                     bool shouldCopy = item.ItemType == "Compile" && 
                         FlatRedBall.IO.FileManager.GetExtension(item.UnevaluatedInclude) == "cs" &&
                         // Make sure we don't already have the file there:
-                        to.IsFilePartOfProject(item.UnevaluatedInclude, BuildItemMembershipType.Any) == false;
+                        to.CodeProject.IsFilePartOfProject(item.UnevaluatedInclude, BuildItemMembershipType.Any) == false;
 
 
 
@@ -69,6 +69,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
 
                         var fullFileName = from.MakeAbsolute(item.UnevaluatedInclude);
 
+                        // this is a class lib, no need to add to its codeproject
                         to.AddCodeBuildItem(fullFileName, true, fileRelativeToThis: item.UnevaluatedInclude);
                         PluginManager.ReceiveOutput($"Added {item.UnevaluatedInclude} to {ToFile}");
                         referencesCopied++;

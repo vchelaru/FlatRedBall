@@ -2049,7 +2049,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     project.ClearPendingTranslations();
 
-                    project.AddCodeBuildItem(EditorLogic.CurrentTreeNode.Text);
+                    project.CodeProject.AddCodeBuildItem(EditorLogic.CurrentTreeNode.Text);
 
                     project.PerformPendingTranslations();
                 }

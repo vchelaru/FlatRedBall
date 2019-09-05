@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using Microsoft.Build.Evaluation;
 using System.Collections.Generic;
 
 
@@ -31,6 +32,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// </summary>
         /// <param name="filePath">The file path to save.</param>
         void CreateAndAddCodeFile(FilePath filePath);
+        ProjectItem CreateAndAddCodeFile(FilePath filePath, bool save);
+
 
         void AddContentFileToProject(string absoluteFileName, bool saveProjects = true);
 

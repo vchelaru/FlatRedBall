@@ -44,15 +44,16 @@ namespace FlatRedBall.Glue.Parsing
 
 
 
-            string absoluteFileName = FileManager.RelativeDirectory + "GlobalContent.Generated.cs";
+            var absoluteFileName = 
+                new FilePath(FileManager.RelativeDirectory + "GlobalContent.Generated.cs");
 
             bool failedSaving = false;
             try
             {
 
-                FileWatchManager.IgnoreNextChangeOnFile(absoluteFileName);
+                FileWatchManager.IgnoreNextChangeOnFile(absoluteFileName.FullPath);
                 GlueCommands.Self.TryMultipleTimes(() => 
-                    FileManager.SaveText(classContent.ToString(), absoluteFileName));
+                    FileManager.SaveText(classContent.ToString(), absoluteFileName.FullPath));
             }
             catch
             {
@@ -65,11 +66,7 @@ namespace FlatRedBall.Glue.Parsing
 
             }
 
-            if (ProjectManager.ProjectBase.GetItem(absoluteFileName) == null)
-            {
-                ProjectManager.ProjectBase.AddCodeBuildItem(absoluteFileName);
-
-            }
+            GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(absoluteFileName, false);
 
             try
             {

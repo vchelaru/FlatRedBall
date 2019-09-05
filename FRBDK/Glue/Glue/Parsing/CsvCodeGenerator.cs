@@ -14,6 +14,8 @@ using System.Windows.Forms;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue
 {
@@ -240,7 +242,7 @@ namespace FlatRedBall.Glue
                 succeeded = CreateConstsForCsvEntries(rfs, members, untypedMembers, codeBlock);
             }
 
-            string absoluteFileName = null;
+            FilePath absoluteFileName = null;
 
             if (succeeded)
             {
@@ -258,19 +260,9 @@ namespace FlatRedBall.Glue
                     absoluteFileName = Plugins.ExportedImplementations.GlueState.Self.CurrentGlueProjectDirectory + "DataTypes/" + className + ".Generated.cs";
                 }
 
-                CodeWriter.SaveFileContents(codeContent.ToString(), absoluteFileName, true);
+                CodeWriter.SaveFileContents(codeContent.ToString(), absoluteFileName.FullPath, true);
 
-
-
-                #region Add the code item for the generated .cs file if it's not already part of the project
-
-                if (ProjectManager.ProjectBase.GetItem(absoluteFileName) == null)
-                {
-                    ProjectManager.ProjectBase.AddCodeBuildItem(absoluteFileName);
-                }
-
-                #endregion
-
+                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(absoluteFileName, save:false);
             }
 
             if (succeeded)

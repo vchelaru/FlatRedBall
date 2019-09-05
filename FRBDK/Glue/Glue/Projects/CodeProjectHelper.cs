@@ -19,7 +19,7 @@ namespace FlatRedBall.Glue.Projects
 
             if (existingItem == null)
             {
-                var item = ProjectManager.ProjectBase.AddCodeBuildItem(generatedFileName);
+                var item = GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(generatedFileName, save: false);
                 string withoutPath = FileManager.RemovePath(generatedFileName);
 
                 int firstPeriod = withoutPath.IndexOf('.');
@@ -111,7 +111,7 @@ namespace FlatRedBall.Glue.Projects
             if (fileToAddAbsolute.EndsWith(".cs"))
             {
                 // This should be a code item
-                project.AddCodeBuildItem(relativeFileName);
+                project.CodeProject.AddCodeBuildItem(relativeFileName);
 
                 wasAdded = true;
             }

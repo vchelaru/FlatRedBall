@@ -64,7 +64,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             #region Create the Screen code (not the generated version)
 
 
-            var item = ProjectManager.ProjectBase.AddCodeBuildItem(fileName);
+            var fullNonGeneratedFileName = FileManager.RelativeDirectory + fileName;
+            GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fullNonGeneratedFileName, save:false);
 
 
             string projectNamespace = ProjectManager.ProjectNamespace;
@@ -78,7 +79,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             string modifiedTemplate = stringBuilder.ToString();
 
-            string fullNonGeneratedFileName = FileManager.RelativeDirectory + fileName;
 
             if (FileManager.FileExists(fullNonGeneratedFileName))
             {
@@ -182,14 +182,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var glueProject = GlueState.Self.CurrentGlueProject;
 
             glueProject.Entities.Add(entitySave);
-            glueProject.Entities.SortByName();
 
+            glueProject.Entities.SortByName();
 
             #region Create the Entity (not the generated version)
 
-            var vsProjectBase = GlueState.Self.CurrentMainProject;
-
-            var item = vsProjectBase.AddCodeBuildItem(fileName);
+            var newItem = GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fileName, false);
 
             string projectNamespace = GlueState.Self.ProjectNamespace;
 
@@ -214,7 +212,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             string nonGeneratedFileName = FileManager.RelativeDirectory + fileName;
 
-            if (FileManager.FileExists(nonGeneratedFileName))
+            if (newItem == null)
             {
                 if (!suppressAlreadyExistingFileMessage)
                 {
@@ -229,24 +227,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             #region Create <EntityName>.Generated.cs
 
-
-
             string generatedFileName = FileManager.MakeRelative(directory).Replace("/", "\\") + entitySave.ClassName + ".Generated.cs";
-
 
             ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(generatedFileName, true);
 
             #endregion
 
-
-
             ElementViewWindow.AddEntity(entitySave);
 
             ProjectManager.SaveProjects();
 
-
             GluxCommands.Self.SaveGlux();
-
         }
 
         [Obsolete("This function does way too much. Moving this to GluxCommands")]

@@ -15,6 +15,7 @@ using EditorObjects.Parsing;
 using FlatRedBall.Glue.Errors;
 using System.Linq;
 using FlatRedBall.Glue.IO;
+using Microsoft.Build.Evaluation;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -348,6 +349,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void CreateAndAddCodeFile(FilePath filePath)
         {
+            CreateAndAddCodeFile(filePath, save: true);
+        }
+
+        public ProjectItem CreateAndAddCodeFile(FilePath filePath, bool save)
+        {
             var directory = filePath.GetDirectoryContainingThis();
 
             System.IO.Directory.CreateDirectory(directory.FullPath);
@@ -358,14 +364,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 System.IO.File.WriteAllText(filePath.FullPath, "");
             }
 
-            var mainProject = GlueState.Self.CurrentMainProject;
-            if (mainProject.IsFilePartOfProject(filePath.FullPath) == false)
-            {
-                mainProject.AddCodeBuildItem(filePath.FullPath);
+            ProjectItem added = null;
 
-                GlueCommands.Self.TryMultipleTimes(mainProject.Save, 5);
-                // do we need to project sync?
+            var mainProject = GlueState.Self.CurrentMainProject;
+
+            if(mainProject?.CodeProject == null)
+            {
+                throw new NullReferenceException("Main Project");
             }
+
+            if (mainProject.CodeProject.IsFilePartOfProject(filePath.FullPath) == false)
+            {
+                added = mainProject.CodeProject.AddCodeBuildItem(filePath.FullPath);
+
+                if(save)
+                {
+                    GlueCommands.Self.TryMultipleTimes(mainProject.Save, 5);
+                }
+            }
+
+            return added;
         }
 
         public void CopyToBuildFolder(ReferencedFileSave rfs)
