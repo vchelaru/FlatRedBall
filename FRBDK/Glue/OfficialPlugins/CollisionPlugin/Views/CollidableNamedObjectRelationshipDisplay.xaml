@@ -20,15 +20,17 @@
 
         <Separator Margin="0,2,0,2" Grid.Row="1" VerticalAlignment="Bottom"></Separator>
 
-        <ItemsControl ItemsSource="{Binding NamedObjectPairs}" Grid.Row="2">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <local:NamedObjectPairRelationshipsCell 
-                        HorizontalAlignment="Stretch" >
+        <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding NamedObjectPairs}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local:NamedObjectPairRelationshipsCell 
+                            HorizontalAlignment="Stretch" >
                         
-                    </local:NamedObjectPairRelationshipsCell>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                        </local:NamedObjectPairRelationshipsCell>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </UserControl>
