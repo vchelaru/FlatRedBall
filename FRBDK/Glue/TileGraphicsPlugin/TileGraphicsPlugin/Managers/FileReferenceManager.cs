@@ -89,7 +89,7 @@ namespace TileGraphicsPlugin.Managers
 
             var directory = FileManager.GetDirectory(tsxFile.Standardized);
 
-            if (external != null && external.Images.Length != 0)
+            if (external?.Images != null && external.Images.Length != 0)
             {
                 var image = external.Images[0];
 

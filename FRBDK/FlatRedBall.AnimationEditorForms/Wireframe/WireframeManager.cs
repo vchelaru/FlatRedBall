@@ -832,7 +832,7 @@ namespace FlatRedBall.AnimationEditorForms
             WireframeEditControlsViewModel?.AvailableTextures.Clear();
 
 
-            if(SelectedState.Self.AnimationChainListSave != null)
+            if(SelectedState.Self.AnimationChainListSave?.FileName != null)
             {
                 string folder = FlatRedBall.IO.FileManager.GetDirectory(SelectedState.Self.AnimationChainListSave.FileName);
                 var animationsSelectedFirst = SelectedState.Self.AnimationChainListSave.AnimationChains

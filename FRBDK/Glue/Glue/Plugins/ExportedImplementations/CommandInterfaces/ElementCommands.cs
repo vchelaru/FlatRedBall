@@ -65,7 +65,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
             var fullNonGeneratedFileName = FileManager.RelativeDirectory + fileName;
-            GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fullNonGeneratedFileName, save:false);
+            var addedScreen = 
+                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fullNonGeneratedFileName, save:false);
 
 
             string projectNamespace = ProjectManager.ProjectNamespace;
@@ -80,7 +81,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             string modifiedTemplate = stringBuilder.ToString();
 
 
-            if (FileManager.FileExists(fullNonGeneratedFileName))
+            if (addedScreen == null)
             {
                 if (!suppressAlreadyExistingFileMessage)
                 {
