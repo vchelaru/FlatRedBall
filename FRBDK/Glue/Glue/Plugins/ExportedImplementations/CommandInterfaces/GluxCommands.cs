@@ -239,13 +239,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            if (!failed)
+            if (!failed && isBuiltFile)
             {
-                if (isBuiltFile)
-                {
-                    errorMessage = buildToolAssociation.PerformBuildOn(fileName, targetFile, extraCommandLineArguments, PluginManager.ReceiveOutput, PluginManager.ReceiveError);
-                    failed = true;
-                }
+                errorMessage = buildToolAssociation.PerformBuildOn(fileName, targetFile, extraCommandLineArguments, PluginManager.ReceiveOutput, PluginManager.ReceiveError);
+                failed = true;
             }
 
             if (!failed)
@@ -311,9 +308,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
                 }
-
+                TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(toReturn), $"Updating file membership for file {toReturn}");
                 PluginManager.ReactToNewFile(toReturn);
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveGluxTask();
                 TaskManager.Self.Add(GluxCommands.Self.ProjectCommands.SaveProjects, "Saving projects after adding file");
 
             }

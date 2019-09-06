@@ -29,10 +29,10 @@ namespace FlatRedBall.Glue.Managers
 
             var result = window.ShowDialog();
 
-            var element = GlueState.Self.CurrentElement;
-            string directoryOfTreeNode = EditorLogic.CurrentTreeNode.GetRelativePath();
             if(result == true)
             {
+                var element = GlueState.Self.CurrentElement;
+                string directoryOfTreeNode = EditorLogic.CurrentTreeNode.GetRelativePath();
                 bool userCancelled = false;
 
                 foreach(var file in viewModel.Files)
