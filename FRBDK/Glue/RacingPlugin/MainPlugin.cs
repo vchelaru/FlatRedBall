@@ -20,19 +20,20 @@ namespace RacingPlugin
     [Export(typeof(PluginBase))]
     public class MainPlugin : PluginBase
     {
+        #region Fields/Properties
+
         public override string FriendlyName => "Racing Plugin";
 
+        // 1.0.1 - Whenever the project is loaded the collision history file is generated if it's not there
         public override Version Version =>
-            new Version(1, 0, 0);
+            new Version(1, 0, 1);
 
         // view here
         MainEntityView control;
+
         PluginTab pluginTab;
 
-        public override bool ShutDown(PluginShutDownReason shutDownReason)
-        {
-            return true;
-        }
+        #endregion
 
         public override void StartUp()
         {
@@ -41,6 +42,11 @@ namespace RacingPlugin
             base.RegisterCodeGenerator(new EntityCodeGenerator());
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToItemSelectHandler += HandleItemSelected;
+        }
+
+        public override bool ShutDown(PluginShutDownReason shutDownReason)
+        {
+            return true;
         }
 
         private void HandleGluxLoaded()
@@ -55,6 +61,7 @@ namespace RacingPlugin
 
             if (anyTopDownEntities)
             {
+                MainController.Self.AddCollisionHistoryFile();
                 // just in case it's not there:
                 //EnumFileGenerator.Self.GenerateAndSaveEnumFile();
                 //InterfacesFileGenerator.Self.GenerateAndSave();
