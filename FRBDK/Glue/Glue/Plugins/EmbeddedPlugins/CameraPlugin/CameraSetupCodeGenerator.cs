@@ -63,7 +63,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // We gotta find where to put the start call.  This should be after 
                     // FlatRedBallServices.InitializeFlatRedBall
 
-                    int index = CodeParser.GetIndexAfterFlatRedBallInitialize(contents);
+                    int index = CodeParser.GetIndexBeforeBaseInitialize(contents);
 
                     if(index == -1)
                     {

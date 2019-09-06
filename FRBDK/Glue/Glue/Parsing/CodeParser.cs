@@ -183,7 +183,12 @@ namespace FlatRedBall.Glue.Parsing
         }
 
 
+        public static int GetIndexBeforeBaseInitialize(string contents)
+        {
+            int index = contents.IndexOf("ScreenManager.Start(");
 
+            return index;
+        }
 
         public static int GetIndexAfterFlatRedBallInitialize(string contents)
         {
