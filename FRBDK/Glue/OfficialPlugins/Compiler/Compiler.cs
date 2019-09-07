@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
@@ -14,8 +15,10 @@ namespace OfficialPlugins.Compiler
 {
     class Compiler
     {
-        List<string> AvailableLocations = new List<string>
+        List<FilePath> AvailableLocations = new List<FilePath>
         {
+            @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe",
+            @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\amd64\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe",
             @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe",
             @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe",
@@ -23,8 +26,8 @@ namespace OfficialPlugins.Compiler
 
         };
         
-        string msBuildLocation;
-        string MsBuildLocation
+        FilePath msBuildLocation;
+        FilePath MsBuildLocation
         {
             get
             {
@@ -32,7 +35,7 @@ namespace OfficialPlugins.Compiler
                 {
                     foreach(var item in AvailableLocations)
                     {
-                        if(System.IO.File.Exists(item))
+                        if(item.Exists())
                         {
                             msBuildLocation = item;
                             break;
@@ -115,7 +118,7 @@ namespace OfficialPlugins.Compiler
                     "/nologo " +
                     "/verbosity:minimal";
 
-                Process process = CreateProcess("\"" + MsBuildLocation + "\"", arguments);
+                Process process = CreateProcess("\"" + MsBuildLocation.FullPath + "\"", arguments);
 
                 printOutput("Build started at " + DateTime.Now.ToLongTimeString());
                 // This is noisy and technical. Reducing output window verbosity
@@ -149,7 +152,7 @@ namespace OfficialPlugins.Compiler
             return succeeded;
         }
 
-        private static string RunProcess(Action<string> printOutput, Action<string> printError, string executable, Process process)
+        private static string RunProcess(Action<string> printOutput, Action<string> printError, FilePath executable, Process process)
         {
             string errorString = "";
             process.Start();
@@ -178,7 +181,7 @@ namespace OfficialPlugins.Compiler
             {
                 if (hasUserTerminatedProcess)
                 {
-                    errorString = "The process\n\n" + executable + "\n\nhas been terminated";
+                    errorString = "The process\n\n" + executable.FullPath + "\n\nhas been terminated";
                 }
                 else
                 {

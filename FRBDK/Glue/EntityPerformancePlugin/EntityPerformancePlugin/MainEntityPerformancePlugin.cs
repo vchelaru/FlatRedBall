@@ -300,7 +300,7 @@ namespace EntityPerformancePlugin
             model.EntityManagementValueList.RemoveAll(item => item.Name == viewModel.EntityName);
             model.EntityManagementValueList.Add(currentEntityViewModel);
 
-            var serialized = JsonConvert.SerializeObject(model);
+            var serialized = JsonConvert.SerializeObject(model, Formatting.Indented);
 
             // remove it if it exists:
 
