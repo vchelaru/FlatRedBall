@@ -166,7 +166,6 @@ namespace RacingPlugin.CodeGenerators
             if (IsAllowedToDrive)
             {
                 const float steeringDeadzone = .05f;
-                const float minSpeedForMaxTurn = 30;
                                
                 float turningValue = -SteeringInput.Value;
 
@@ -216,7 +215,7 @@ namespace RacingPlugin.CodeGenerators
 
                 this.RotationZVelocity = currentTurnRate;
 
-                bool shouldReduceTurningFromSpeed = this.CurrentForwardSpeed < minSpeedForMaxTurn;
+                bool shouldReduceTurningFromSpeed = this.CurrentForwardSpeed < CarData.MinSpeedForMaxTurnRate;
 
                 if (shouldReduceTurningFromSpeed)
                 {
@@ -224,24 +223,39 @@ namespace RacingPlugin.CodeGenerators
                     // However, when a car smashes into a wall, it's really disruptive to have the car go into reverse steering.
                     // therefore, we'll use a CollisionHistory instance to tell us if we should:
                     float ratio = 1;
-                    if (CurrentForwardSpeed > 0)
+                    
+                    if (CurrentForwardSpeed > 0 && CarData.MinSpeedForMaxTurnRate > 0)
                     {
-                        ratio = CurrentForwardSpeed / minSpeedForMaxTurn;
+                        ratio = CurrentForwardSpeed / CarData.MinSpeedForMaxTurnRate;
                     }
                     else // moving backwards
                     {
                         bool shouldSteerLikeMovingForward = collisionHistory.GetIfShouldApplyForwardTurningControls();
                         if (shouldSteerLikeMovingForward)
                         {
-                            ratio = Math.Abs(CurrentForwardSpeed) / minSpeedForMaxTurn;
+                            if (CarData.MinSpeedForMaxTurnRate > 0)
+                            {
+                                ratio = Math.Abs(CurrentForwardSpeed) / CarData.MinSpeedForMaxTurnRate;
+                            }
+                            else
+                            {
+                                ratio = 1;
+                            }
                         }
                         else
                         {
-                            ratio = CurrentForwardSpeed / minSpeedForMaxTurn;
+                            if (CarData.MinSpeedForMaxTurnRate > 0)
+                            {
+                                ratio = CurrentForwardSpeed / CarData.MinSpeedForMaxTurnRate;
+                            }
+                            else
+                            {
+                                ratio = -1;
+                            }
+
                         }
                     }
-
-
+                    
                     this.RotationZVelocity *= ratio;
                 }
             }
@@ -255,6 +269,7 @@ namespace RacingPlugin.CodeGenerators
             method.Line(@"
             if (IsAllowedToDrive)
             {
+                const float epsilon = 0.001f;
                 if (Brake.IsDown)
                 {
                     float forwardSpeed = CurrentForwardSpeed;
@@ -268,7 +283,6 @@ namespace RacingPlugin.CodeGenerators
                     }
 
                     // re-get the forward speed since brakes may have adjusted it:
-                    const float epsilon = 0.001f;
                     forwardSpeed = CurrentForwardSpeed;
                     if (forwardSpeed < epsilon)
                     {
@@ -320,6 +334,12 @@ namespace RacingPlugin.CodeGenerators
                 if (CurrentForwardSpeed > CarData.EffectiveMaxSpeed)
                 {
                     Velocity -= Forward * TimeManager.SecondDifference * CarData.FastSlowDown;
+                }
+
+                // Zero-ing out the velocity when it's really small can help address jittering
+                if (System.Math.Abs(Velocity.X) < epsilon && System.Math.Abs(Velocity.Y) < epsilon && System.Math.Abs(Velocity.Z) < epsilon)
+                {
+                    Velocity = Microsoft.Xna.Framework.Vector3.Zero;
                 }
             }
 ");

@@ -25,5 +25,6 @@ namespace RacingPlugin.Models
         public float Stability = 350;
         public float NoGasExtraStability = 100;
         public float NoTurnExtraStability = 100;
+        public float MinSpeedForMaxTurnRate = 30;
     }
 }
