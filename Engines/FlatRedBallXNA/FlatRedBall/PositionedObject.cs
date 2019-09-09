@@ -900,7 +900,7 @@ namespace FlatRedBall
                     mRotationMatrix.M42 != 0 ||
                     mRotationMatrix.M43 != 0)
                 {
-                    throw new ArgumentException("The translation on the matrix is not 0.  It is " + value.Translation);
+                     throw new ArgumentException("The translation on the matrix is not 0.  It is " + value.Translation);
 
                 }
 
@@ -1089,7 +1089,16 @@ namespace FlatRedBall
         public float RotationZVelocity
         {
             get { return mRotationZVelocity; }
-            set { mRotationZVelocity = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNegativeInfinity(value))
+                {
+                    throw new Exception("Invalid RotationZVelocity value");
+                }
+#endif
+                mRotationZVelocity = value;
+            }
         }
 
         #region XML Docs

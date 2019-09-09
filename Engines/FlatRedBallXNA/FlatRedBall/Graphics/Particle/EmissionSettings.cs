@@ -207,7 +207,16 @@ namespace FlatRedBall.Graphics.Particle
         public float RotationZVelocity
         {
             get { return mRotationZVelocity; }
-            set { mRotationZVelocity = value; }
+            set
+            {
+#if DEBUG
+                if(float.IsInfinity(value) || float.IsNegativeInfinity(value))
+                {
+                    throw new Exception("Invalid RotationZVelocity value");
+                }
+#endif
+                mRotationZVelocity = value;
+            }
         }
 
         public float RotationXRange
