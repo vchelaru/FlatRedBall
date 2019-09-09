@@ -25,8 +25,9 @@ namespace RacingPlugin
         public override string FriendlyName => "Racing Plugin";
 
         // 1.0.1 - Whenever the project is loaded the collision history file is generated if it's not there
+        // 1.1 - Gas is now a I1DInput instead of pressable
         public override Version Version =>
-            new Version(1, 0, 1);
+            new Version(1, 1, 0);
 
         // view here
         MainEntityView control;

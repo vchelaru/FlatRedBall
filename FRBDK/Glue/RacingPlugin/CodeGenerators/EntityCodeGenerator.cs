@@ -34,7 +34,7 @@ namespace RacingPlugin.CodeGenerators
             var property = codeBlock.Property("public float", "EffectiveStability");
             var get = property.Get();
             get.Line("var toReturn = CarData.Stability;");
-            var ifBlock = get.If("!Gas.IsDown")
+            var ifBlock = get.If("Gas.Value == 0")
                 .Line("toReturn += CarData.NoGasExtraStability;");
             ifBlock = get.If("currentTurnRate == 0")
                 .Line("toReturn += CarData.NoTurnExtraStability;");
@@ -53,7 +53,7 @@ namespace RacingPlugin.CodeGenerators
                 .Get()
                     .Line("return RotationMatrix.Left;");
 
-            codeBlock.AutoProperty("private FlatRedBall.Input.IPressableInput", "Gas");
+            codeBlock.AutoProperty("private FlatRedBall.Input.I1DInput", "Gas");
             codeBlock.AutoProperty("private FlatRedBall.Input.IPressableInput", "Brake");
             codeBlock.AutoProperty("private FlatRedBall.Input.I1DInput", "SteeringInput");
 
@@ -121,7 +121,7 @@ namespace RacingPlugin.CodeGenerators
         public void InitializeRacingInput(FlatRedBall.Input.IInputDevice inputDevice)
         {
             this.SteeringInput = inputDevice.DefaultHorizontalInput;
-            this.Gas = inputDevice.DefaultPrimaryActionInput;
+            this.Gas = FlatRedBall.Input.IPressableInputExtensions.To1DInput(inputDevice.DefaultPrimaryActionInput);
             this.Brake = inputDevice.DefaultSecondaryActionInput;
             this.InputDevice = inputDevice;
 
@@ -283,7 +283,7 @@ namespace RacingPlugin.CodeGenerators
 
                     }
                 }
-                else if (Gas.IsDown)
+                else if (Gas.Value > 0)
                 {
                     // This allows cars to actually travel faster than their max 
                     // (like through boosts or being bumped) without allowing cars to keep accelerating past max speed.

@@ -53,8 +53,17 @@ namespace FlatRedBall.Input
         }
     }
 
+    /// <summary>
+    /// Class including extension methods on the IPressableInput interface.
+    /// </summary>
     public static class IPressableInputExtensions
     {
+        /// <summary>
+        /// Allows making a single PressableInput (of type MultiplePressableInputs) for inputs that combine more than one IPressableInput instance.
+        /// </summary>
+        /// <param name="thisInput">The calling IPressableInput</param>
+        /// <param name="input">The second IPressableInput to add when creating a MultiplePressableInputs</param>
+        /// <returns>The resulting IPressableInput which contains the caller and the argument input.</returns>
         public static MultiplePressableInputs Or(this IPressableInput thisInput, IPressableInput input)
         {
             MultiplePressableInputs toReturn;
@@ -73,6 +82,20 @@ namespace FlatRedBall.Input
             return toReturn;
         }
 
+        /// <summary>
+        /// Creates a new I2DInput from the calling IPressableInput which returns a Value of 0 if not pressed, and 1 if pressed.
+        /// </summary>
+        /// <param name="thisInput">The IpressableInput to use as a 1DInput</param>
+        /// <returns>The resulting I1DInput.</returns>
+        public static I1DInput To1DInput(this IPressableInput thisInput)
+        {
+            var toReturn = new DelegateBased1DInput(
+                () => thisInput.IsDown ? 1 : 0,
+                () => 0
+                );
+
+            return toReturn;
+        }
     }
 
     /// <summary>
