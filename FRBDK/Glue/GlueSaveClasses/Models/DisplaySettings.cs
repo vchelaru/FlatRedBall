@@ -37,8 +37,8 @@ namespace FlatRedBall.Glue.SaveClasses
         public bool RunInFullScreen { get; set; }
         public bool AllowWindowResizing { get; set; }
 
-        public int Scale { get; set; }
-
+        public int Scale { get; set; } = 100;
+        public int ScaleGum { get; set; } = 100;
         public ResizeBehavior ResizeBehavior { get; set; }
         public ResizeBehavior ResizeBehaviorGum { get; set; }
         public WidthOrHeight DominantInternalCoordinates { get; set; } = WidthOrHeight.Height;

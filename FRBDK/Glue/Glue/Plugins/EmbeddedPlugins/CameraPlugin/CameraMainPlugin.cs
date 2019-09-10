@@ -103,6 +103,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
             settings.RunInFullScreen = false;
             settings.Scale = 100;
+            settings.ScaleGum = 100;
             settings.SupportLandscape = true;
             settings.SupportPortrait = false;
 

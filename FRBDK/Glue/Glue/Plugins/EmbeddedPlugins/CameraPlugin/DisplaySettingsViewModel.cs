@@ -92,19 +92,22 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             set { base.ChangeAndNotify(ref runInFullScreen, value);  }
         }
 
-
-        bool allowWindowResizing;
         public bool AllowWindowResizing
         {
-            get { return allowWindowResizing; }
-            set { base.ChangeAndNotify(ref allowWindowResizing, value); }
+            get => Get<bool>();
+            set => Set(value);
         }
 
-        int scale;
         public int Scale
         {
-            get { return scale; }
-            set { base.ChangeAndNotify(ref scale, value); }
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int ScaleGum
+        {
+            get => Get<int>();
+            set => Set(value);
         }
 
         public ResizeBehavior ResizeBehavior
@@ -217,13 +220,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         }
 
         [DependsOn(nameof(ResolutionWidth))]
-        public string KeepResolutionWidthConstantMessage
-        {
-            get
-            {
-                return $"Keep game coordinates width at {ResolutionWidth}";
-            }
-        }
+        public string KeepResolutionWidthConstantMessage => $"Keep game coordinates width at {ResolutionWidth}";
 
         [DependsOn(nameof(Is2D))]
         public Visibility OnResizeUiVisibility
@@ -245,6 +242,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                 else return Visibility.Collapsed;
             }
         }
+
+        [DependsOn(nameof(HasGumProject))]
+        public Visibility GumScaleVisibility => HasGumProject ? Visibility.Visible : Visibility.Collapsed;
 
         public bool HasGumProject
         {
@@ -318,6 +318,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             this.AllowWindowResizing = displaySettings.AllowWindowResizing;
 
             this.Scale = displaySettings.Scale;
+            this.ScaleGum = displaySettings.ScaleGum;
 
             this.ResizeBehavior = displaySettings.ResizeBehavior;
             this.ResizeGumBehavior = displaySettings.ResizeBehaviorGum;
@@ -352,6 +353,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             toReturn.AllowWindowResizing = this.AllowWindowResizing;
 
             toReturn.Scale = this.Scale;
+            toReturn.ScaleGum = this.ScaleGum;
 
             toReturn.ResizeBehavior = this.ResizeBehavior;
             toReturn.ResizeBehaviorGum = this.ResizeGumBehavior;

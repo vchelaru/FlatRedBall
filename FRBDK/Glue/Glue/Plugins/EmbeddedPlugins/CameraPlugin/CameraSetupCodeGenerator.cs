@@ -309,6 +309,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             var displaySettings = GlueState.Self.CurrentGlueProject.DisplaySettings;
 
             block.Line($"Scale = {(displaySettings.Scale ).ToString(CultureInfo.InvariantCulture)}f,");
+
             block.Line($"ResolutionWidth = {displaySettings.ResolutionWidth},");
             block.Line($"ResolutionHeight = {displaySettings.ResolutionHeight},");
             block.Line($"Is2D = {displaySettings.Is2D.ToString().ToLowerInvariant()},");
@@ -330,6 +331,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if(GetIfHasGumProject())
             {
+                block.Line($"ScaleGum = {(displaySettings.ScaleGum ).ToString(CultureInfo.InvariantCulture)}f,");
                 block.Line($"ResizeBehaviorGum = ResizeBehavior.{displaySettings.ResizeBehaviorGum},");
             }
 
@@ -342,6 +344,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             var classBlock = namespaceContents.Class("public", "CameraSetupData");
 
             classBlock.AutoProperty("public float", "Scale");
+            classBlock.AutoProperty("public float", "ScaleGum");
             classBlock.AutoProperty("public bool", "Is2D");
             classBlock.AutoProperty("public int", "ResolutionWidth");
             classBlock.AutoProperty("public int", "ResolutionHeight");

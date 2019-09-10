@@ -53,6 +53,13 @@
                             <TextBox Width="40" Height="18" Text="{Binding Scale}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"></TextBox>
                             <Label>%</Label>
                         </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding GumScaleVisibility}">
+                            <Label>Scale (Gum)</Label>
+                            <TextBox Width="40" Height="18" Text="{Binding ScaleGum}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"></TextBox>
+                            <Label>%</Label>
+                        </StackPanel>
+                        
                         <GroupBox Header="On Resize:" Visibility="{Binding OnResizeUiVisibility}">
                             <StackPanel>
                                 <RadioButton GroupName="1" 
