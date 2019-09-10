@@ -41,17 +41,49 @@ namespace RacingPlugin.CodeGenerators
 
             get.Line("return toReturn;");
 
+            codeBlock.AutoProperty("public RacingDirection", "ForwardDirection");
+
             codeBlock.Property("public Microsoft.Xna.Framework.Vector3", "Forward")
                 .Get()
-                    .Line("return RotationMatrix.Up;");
+                    .Switch("ForwardDirection")
+                        .CaseNoBreak("RacingDirection.Up")
+                            .Line("return RotationMatrix.Up;").End()
+                        .CaseNoBreak("RacingDirection.Right")
+                            .Line("return RotationMatrix.Right;").End()
+                        .CaseNoBreak("RacingDirection.Down")
+                            .Line("return RotationMatrix.Down;").End()
+                        .CaseNoBreak("RacingDirection.Left")
+                            .Line("return RotationMatrix.Left;").End()
+                        .Default()
+                            .Line("return RotationMatrix.Up;").End();
 
             codeBlock.Property("public Microsoft.Xna.Framework.Vector3", "Right")
                 .Get()
-                    .Line("return RotationMatrix.Right;");
+                    .Switch("ForwardDirection")
+                        .CaseNoBreak("RacingDirection.Up")
+                            .Line("return RotationMatrix.Right;").End()
+                        .CaseNoBreak("RacingDirection.Right")
+                            .Line("return RotationMatrix.Down;").End()
+                        .CaseNoBreak("RacingDirection.Down")
+                            .Line("return RotationMatrix.Left;").End()
+                        .CaseNoBreak("RacingDirection.Left")
+                            .Line("return RotationMatrix.Up;")
+                        .Default()
+                            .Line("return RotationMatrix.Right;").End();
 
             codeBlock.Property("public Microsoft.Xna.Framework.Vector3", "Left")
                 .Get()
-                    .Line("return RotationMatrix.Left;");
+                    .Switch("ForwardDirection")
+                        .CaseNoBreak("RacingDirection.Up")
+                            .Line("return RotationMatrix.Left;").End()
+                        .CaseNoBreak("RacingDirection.Right")
+                            .Line("return RotationMatrix.Up;").End()
+                        .CaseNoBreak("RacingDirection.Down")
+                            .Line("return RotationMatrix.Right;").End()
+                        .CaseNoBreak("RacingDirection.Left")
+                            .Line("return RotationMatrix.Down;")
+                        .Default()
+                            .Line("return RotationMatrix.Left;").End();
 
             codeBlock.AutoProperty("private FlatRedBall.Input.I1DInput", "Gas");
             codeBlock.AutoProperty("private FlatRedBall.Input.IPressableInput", "Brake");

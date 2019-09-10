@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="CodeGenerators\CollisionHistoryCodeGenerator.cs" />
     <Compile Include="CodeGenerators\EntityCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\EnumFileGenerator.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="DataGenerators\CsvGenerator.cs" />
     <Compile Include="MainPlugin.cs" />

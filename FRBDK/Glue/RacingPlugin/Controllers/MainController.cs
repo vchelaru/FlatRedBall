@@ -115,8 +115,7 @@ namespace RacingPlugin.Controllers
                     {
                         GlueCommands.Self.GluxCommands.SaveGlux();
 
-                        // This plugin doesn't need enums like TopDown plugin
-                        //EnumFileGenerator.Self.GenerateAndSaveEnumFile();
+                        EnumFileGenerator.Self.GenerateAndSaveEnumFile();
 
                         // not sure if this needs any interfaces
                         //InterfacesFileGenerator.Self.GenerateAndSave();
