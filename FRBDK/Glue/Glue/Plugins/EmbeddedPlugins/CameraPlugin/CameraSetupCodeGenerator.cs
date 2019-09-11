@@ -176,8 +176,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             var gumElseBlock = gumIfBlock.End().Else();
 
-            gumElseBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = Data.ResolutionWidth;");
-            gumElseBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = Data.ResolutionHeight;");
+            gumElseBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = Data.ResolutionWidth / (Data.ScaleGum/100.0f);");
+            gumElseBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = Data.ResolutionHeight / (Data.ScaleGum/100.0f);");
             var gumAspectRatio = gumElseBlock.If("Data.AspectRatio != null")
                 .Line(@"
 
