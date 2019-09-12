@@ -66,7 +66,8 @@ namespace FlatRedBall.Glue.Parsing
 
             }
 
-            GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(absoluteFileName, false);
+            GlueCommands.Self.TryMultipleTimes(() =>
+                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(absoluteFileName, false));
 
             try
             {
