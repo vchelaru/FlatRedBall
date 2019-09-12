@@ -66,26 +66,26 @@ using FlatRedBall.Localization;
 
 namespace FlatRedBallAddOns.Screens
 {
-	public partial class ScreenTemplate
-	{
+    public partial class ScreenTemplate
+    {
 
-		void CustomInitialize()
-		{
-
-
-		}
-
-		void CustomActivity(bool firstTimeCalled)
-		{
+        void CustomInitialize()
+        {
 
 
-		}
+        }
 
-		void CustomDestroy()
-		{
+        void CustomActivity(bool firstTimeCalled)
+        {
 
 
-		}
+        }
+
+        void CustomDestroy()
+        {
+
+
+        }
 
         static void CustomLoadStaticContent(string contentManagerName)
         {
@@ -93,7 +93,7 @@ namespace FlatRedBallAddOns.Screens
 
         }
 
-	}
+    }
 }
 ";
 
@@ -111,37 +111,37 @@ using FlatRedBall.Math.Geometry;
 
 namespace FlatRedBallAddOns.Entities
 {
-	public partial class GlueEntityTemplate
-	{
+    public partial class GlueEntityTemplate
+    {
         /// <summary>
         /// Initialization logic which is execute only one time for this Entity (unless the Entity is pooled).
         /// This method is called when the Entity is added to managers. Entities which are instantiated but not
         /// added to managers will not have this method called.
         /// </summary>
-		private void CustomInitialize()
-		{
+        private void CustomInitialize()
+        {
 
 
-		}
+        }
 
-		private void CustomActivity()
-		{
-
-
-		}
-
-		private void CustomDestroy()
-		{
+        private void CustomActivity()
+        {
 
 
-		}
+        }
+
+        private void CustomDestroy()
+        {
+
+
+        }
 
         private static void CustomLoadStaticContent(string contentManagerName)
         {
 
 
         }
-	}
+    }
 }
 ";
 
@@ -1496,11 +1496,11 @@ namespace FlatRedBallAddOns.Entities
 
             if (whetherToCall)
             {
-                lineToReplaceWith = "\t\t\t" + lineToReplaceWith;
+                lineToReplaceWith = "            " + lineToReplaceWith;
             }
             else
             {
-                lineToReplaceWith = "\t\t\t\\" + lineToReplaceWith;
+                lineToReplaceWith = "            \\" + lineToReplaceWith;
             }
 
             if (contents.Contains("GlobalContent.Initialize"))
@@ -1743,12 +1743,12 @@ namespace FlatRedBallAddOns.Entities
 
                 startUpScreen = ProjectManager.ProjectNamespace + "." + startUpScreen.Replace("\\", ".");
                 string lineThatStartsEverything = string.Format(
-                    "\t\t\tFlatRedBall.Screens.ScreenManager.Start(typeof({0}));",
+                    "            FlatRedBall.Screens.ScreenManager.Start(typeof({0}));",
                     startUpScreen);
 
                 if (isEmpty)
                 {
-                    lineThatStartsEverything = "\t\t\t//FlatRedBall.Screens.ScreenManager.Start(typeof(YourScreenClass));";
+                    lineThatStartsEverything = "            //FlatRedBall.Screens.ScreenManager.Start(typeof(YourScreenClass));";
                 }
 
                 #endregion
