@@ -187,9 +187,10 @@ namespace TileGraphicsPlugin
             //   of after. This allows relationships to use these collision relationships.
             // 2.5.5.0
             // - Tiled plugin makes itself required when adding a TMX
-            get { return new Version(2, 5, 5, 0); }
+            // 2.6.0
+            // - Polygons on tiles can now be rotated and flipped just like the tiles.
+            get { return new Version(2, 6, 0, 0); }
         }
-
 
         [Import("GlueProjectSave")]
         public GlueProjectSave GlueProjectSave

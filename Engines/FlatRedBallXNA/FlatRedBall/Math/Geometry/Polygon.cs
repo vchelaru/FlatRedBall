@@ -100,7 +100,12 @@ namespace FlatRedBall.Math.Geometry
             get { return mVisible; }
             set
             {
-                if (value != mVisible)
+                // This is here for efficiency; however,
+                // shape visibility itself is somewhat inefficient.
+                // Having this here breaks Glue gencode which sets visibility
+                // once when shape visibility response is off, then once again
+                // with it on. 
+                //if (value != mVisible)
                 {
                     mVisible = value;
                     ShapeManager.NotifyOfVisibilityChange(this);
@@ -173,7 +178,6 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
         }
-
 
         internal VertexPositionColor[] Vertices
         {
@@ -1502,12 +1506,25 @@ namespace FlatRedBall.Math.Geometry
 
         #endregion
 
-
+        /// <summary>
+        /// Modifies the internal points list to flip horizontally. All X values will be multiplied by -1.
+        /// </summary>
         public void FlipRelativePointsHorizontally()
         {
             for (int i = 0; i < mPoints.Length; i++)
             {
                 mPoints[i].X = -mPoints[i].X;
+            }
+        }
+
+        /// <summary>
+        /// Modifies the internal points list to flip vertically. All Y values will be multiplied by -1;
+        /// </summary>
+        public void FlipRelativePointsVertically()
+        {
+            for (int i = 0; i < mPoints.Length; i++)
+            {
+                mPoints[i].Y = -mPoints[i].Y;
             }
         }
 
