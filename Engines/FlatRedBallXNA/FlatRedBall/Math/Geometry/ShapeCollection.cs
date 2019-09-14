@@ -33,13 +33,13 @@ namespace FlatRedBall.Math.Geometry
 		internal PositionedObjectList<Capsule2D> mCapsule2Ds = new PositionedObjectList<Capsule2D>();
         // if you add here, add below too!
 
-		internal float mMaxAxisAlignedRectanglesRadius;
-		internal float mMaxCirclesRadius;
-		internal float mMaxPolygonsRadius;
-		internal float mMaxLinesRadius;
-		internal float mMaxSpheresRadius;
-		internal float mMaxAxisAlignedCubesRadius;
-		internal float mMaxCapsule2DsRadius;
+		internal protected float mMaxAxisAlignedRectanglesRadius;
+		internal protected float mMaxCirclesRadius;
+		internal protected float mMaxPolygonsRadius;
+		internal protected float mMaxLinesRadius;
+		internal protected float mMaxSpheresRadius;
+		internal protected float mMaxAxisAlignedCubesRadius;
+		internal protected float mMaxCapsule2DsRadius;
 
 		internal bool mSuppressLastCollisionClear;
 
@@ -219,6 +219,12 @@ namespace FlatRedBall.Math.Geometry
         {
             get { return mMaxAxisAlignedRectanglesRadius; }
             set { mMaxAxisAlignedRectanglesRadius = value; }
+        }
+
+        public float MaxPolygonRadius
+        {
+            get => mMaxPolygonsRadius;
+            set => mMaxPolygonsRadius = value;
         }
 
         #endregion

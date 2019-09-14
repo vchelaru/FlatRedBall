@@ -58,6 +58,7 @@ namespace FlatRedBall.TileCollisions
 
                 mGridSize = value;
                 mShapes.MaxAxisAlignedRectanglesScale = mGridSize;
+                mShapes.MaxPolygonRadius = mGridSize;
             }
         }
 
