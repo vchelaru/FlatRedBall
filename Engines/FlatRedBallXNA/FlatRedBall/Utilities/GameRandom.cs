@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 
@@ -29,6 +30,36 @@ namespace FlatRedBall.Utilities
         }
 
         /// <summary>
+        /// Returns multiple instances from an argument list, guaranteeing
+        /// no duplicates.
+        /// </summary>
+        /// <typeparam name="T">The type of the list.</typeparam>
+        /// <param name="list">The list to pull from"</param>
+        /// <param name="numberToReturn">The number of unique items to return, which must be less than the size of the argument list</param>
+        /// <returns>A resulting collection of size numberToReturn</returns>
+        public ICollection<T> MultipleIn<T>(IList<T> list, int numberToReturn)
+        {
+#if DEBUG
+            if(numberToReturn > list.Count)
+            {
+                throw new ArgumentException(
+                    $"Cannot return {numberToReturn} because the list only has {list.Count} elements");
+            }
+#endif
+            var remaining = list.ToList();
+            List<T> toReturn = new List<T>();
+            for(int i = 0; i < remaining.Count; i++)
+            {
+                var newIndex = Next(list.Count);
+
+                toReturn.Add(remaining[newIndex]);
+                remaining.RemoveAt(newIndex);
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
         /// Returns a random number within the specified range (inclusive).
         /// </summary>
         /// <param name="lowerBound">The inclusive lower bound.</param>
@@ -47,7 +78,6 @@ namespace FlatRedBall.Utilities
         /// </summary>
         /// <returns>A random angle in degrees.</returns>
         public float AngleDegrees() => (float)NextDouble() * 360;
-
 
         /// <summary>
         /// Returns a 2-dimensional vector in a random direction with length within
