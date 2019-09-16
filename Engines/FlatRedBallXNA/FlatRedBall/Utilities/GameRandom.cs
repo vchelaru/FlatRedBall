@@ -37,7 +37,7 @@ namespace FlatRedBall.Utilities
         /// <param name="list">The list to pull from"</param>
         /// <param name="numberToReturn">The number of unique items to return, which must be less than the size of the argument list</param>
         /// <returns>A resulting collection of size numberToReturn</returns>
-        public ICollection<T> MultipleIn<T>(IList<T> list, int numberToReturn)
+        public IList<T> MultipleIn<T>(IList<T> list, int numberToReturn)
         {
 #if DEBUG
             if(numberToReturn > list.Count)
@@ -50,8 +50,7 @@ namespace FlatRedBall.Utilities
             List<T> toReturn = new List<T>();
             for(int i = 0; i < remaining.Count; i++)
             {
-                var newIndex = Next(list.Count);
-
+                var newIndex = Next(remaining.Count);
                 toReturn.Add(remaining[newIndex]);
                 remaining.RemoveAt(newIndex);
             }
