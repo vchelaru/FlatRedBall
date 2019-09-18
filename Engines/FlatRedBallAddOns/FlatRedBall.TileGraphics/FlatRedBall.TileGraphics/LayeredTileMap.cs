@@ -672,6 +672,7 @@ namespace FlatRedBall.TileGraphics
                                 collectionName += "_" + tilesetObject.Type;
                             }
                             var collection = GetOrAddTileShapeCollection(collectionName, collisionDictionary);
+                            collection.GridSize = tileDimension;
                             rectangle.Z = z;
                             if (sortOnY)
                             {
@@ -702,6 +703,7 @@ namespace FlatRedBall.TileGraphics
                                 collectionName += "_" + tilesetObject.Type;
                             }
                             var collection = GetOrAddTileShapeCollection(collectionName, collisionDictionary);
+                            collection.GridSize = tileDimension;
 
                             // For tile polygons we want them to be centered on the tile.
                             // To do this, we shift all points by its position:

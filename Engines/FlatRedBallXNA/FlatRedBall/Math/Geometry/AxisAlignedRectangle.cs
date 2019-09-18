@@ -161,7 +161,8 @@ namespace FlatRedBall.Math.Geometry
             get { return mVisible; }
             set
             {
-                if (value != mVisible)
+                // This if statement messes up tile map visibility in Glue
+                //if (value != mVisible)
                 {
                     mVisible = value;
                     ShapeManager.NotifyOfVisibilityChange(this);

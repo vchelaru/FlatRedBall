@@ -799,6 +799,52 @@ namespace FlatRedBall.TileCollisions
                 layeredTileMap, (list) => list.Any(item => item.Name == "Type" && (item.Value as string) == type));
         }
 
+        public static void MergeRectangles(this TileShapeCollection tileShapeCollection)
+        {
+            var dimension = tileShapeCollection.GridSize;
+            Dictionary<int, List<int>> rectangleIndexes = new Dictionary<int, List<int>>();
+
+            for (int i = 0; i < tileShapeCollection.Rectangles.Count; i++)
+            {
+                var rectaangle = tileShapeCollection.Rectangles[i];
+
+                var centerX = rectaangle.Position.X;
+                var centerY = rectaangle.Position.Y;
+
+                int key;
+                int value;
+
+                if (tileShapeCollection.SortAxis == Axis.X)
+                {
+                    key = (int)(centerX / dimension);
+                    value = (int)(centerY / dimension);
+                }
+                else if (tileShapeCollection.SortAxis == Axis.Y)
+                {
+                    key = (int)(centerY / dimension);
+                    value = (int)(centerX / dimension);
+                }
+                else
+                {
+                    throw new NotImplementedException("Cannot add tile collision on z-sorted shape collections");
+                }
+
+                List<int> listToAddTo = null;
+                if (rectangleIndexes.ContainsKey(key) == false)
+                {
+                    listToAddTo = new List<int>();
+                    rectangleIndexes.Add(key, listToAddTo);
+                }
+                else
+                {
+                    listToAddTo = rectangleIndexes[key];
+                }
+                listToAddTo.Add(value);
+            }
+
+            ApplyMerging(tileShapeCollection, dimension, rectangleIndexes);
+        }
+
         private static void ApplyMerging(TileShapeCollection tileShapeCollection, float dimension, Dictionary<int, List<int>> rectangleIndexes)
         {
             foreach (var kvp in rectangleIndexes.OrderBy(item => item.Key))
