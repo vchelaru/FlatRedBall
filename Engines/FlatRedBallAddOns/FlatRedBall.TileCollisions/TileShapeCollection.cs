@@ -801,59 +801,70 @@ namespace FlatRedBall.TileCollisions
 
         public static void MergeRectangles(this TileShapeCollection tileShapeCollection)
         {
-            var dimension = tileShapeCollection.GridSize;
-            Dictionary<int, List<int>> rectangleIndexes = new Dictionary<int, List<int>>();
-
-            for (int i = 0; i < tileShapeCollection.Rectangles.Count; i++)
+            if (tileShapeCollection.Rectangles.Count > 1)
             {
-                var rectangle = tileShapeCollection.Rectangles[i];
+                var z = tileShapeCollection.Rectangles[0].Z;
 
-                var centerX = rectangle.Position.X;
-                var centerY = rectangle.Position.Y;
+                var dimension = tileShapeCollection.GridSize;
+                Dictionary<int, List<int>> rectangleIndexes = new Dictionary<int, List<int>>();
 
-                int key;
-                int value;
 
-                if (tileShapeCollection.SortAxis == Axis.X)
+
+                for (int i = 0; i < tileShapeCollection.Rectangles.Count; i++)
                 {
-                    key = (int)(centerX / dimension);
-                    value = (int)(centerY / dimension);
-                }
-                else if (tileShapeCollection.SortAxis == Axis.Y)
-                {
-                    key = (int)(centerY / dimension);
-                    value = (int)(centerX / dimension);
-                }
-                else
-                {
-                    throw new NotImplementedException("Cannot add tile collision on z-sorted shape collections");
+                    var rectangle = tileShapeCollection.Rectangles[i];
+
+                    var centerX = rectangle.Position.X;
+                    var centerY = rectangle.Position.Y;
+
+                    int key;
+                    int value;
+
+                    if (tileShapeCollection.SortAxis == Axis.X)
+                    {
+                        key = (int)(centerX / dimension);
+                        value = (int)(centerY / dimension);
+                    }
+                    else if (tileShapeCollection.SortAxis == Axis.Y)
+                    {
+                        key = (int)(centerY / dimension);
+                        value = (int)(centerX / dimension);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException("Cannot add tile collision on z-sorted shape collections");
+                    }
+
+                    List<int> listToAddTo = null;
+                    if (rectangleIndexes.ContainsKey(key) == false)
+                    {
+                        listToAddTo = new List<int>();
+                        rectangleIndexes.Add(key, listToAddTo);
+                    }
+                    else
+                    {
+                        listToAddTo = rectangleIndexes[key];
+                    }
+
+                    listToAddTo.Add(value);
+
+                    if (rectangle.Visible)
+                    {
+                        rectangle.Visible = false;
+                    }
                 }
 
-                List<int> listToAddTo = null;
-                if (rectangleIndexes.ContainsKey(key) == false)
-                {
-                    listToAddTo = new List<int>();
-                    rectangleIndexes.Add(key, listToAddTo);
-                }
-                else
-                {
-                    listToAddTo = rectangleIndexes[key];
-                }
+                tileShapeCollection.Rectangles.Clear();
 
-                listToAddTo.Add(value);
+                ApplyMerging(tileShapeCollection, dimension, rectangleIndexes, z);
 
-                if (rectangle.Visible)
-                {
-                    rectangle.Visible = false;
-                }
+
             }
-
-            tileShapeCollection.Rectangles.Clear();
-
-            ApplyMerging(tileShapeCollection, dimension, rectangleIndexes);
         }
 
-        private static void ApplyMerging(TileShapeCollection tileShapeCollection, float dimension, Dictionary<int, List<int>> rectangleIndexes)
+
+        private static void ApplyMerging(TileShapeCollection tileShapeCollection, float dimension,
+            Dictionary<int, List<int>> rectangleIndexes, float z = 0)
         {
             foreach (var kvp in rectangleIndexes.OrderBy(item => item.Key))
             {
@@ -866,8 +877,8 @@ namespace FlatRedBall.TileCollisions
                 {
                     if (rectanglePositionList[i] != expectedValue)
                     {
-                        CloseRectangle(tileShapeCollection, kvp.Key, dimension, firstValue, currentValue);
-
+                        var innerRect = CloseRectangle(tileShapeCollection, kvp.Key, dimension, firstValue, currentValue);
+                        innerRect.Z = z;
                         firstValue = rectanglePositionList[i];
                         currentValue = firstValue;
                     }
@@ -879,7 +890,8 @@ namespace FlatRedBall.TileCollisions
                     expectedValue = currentValue + 1;
                 }
 
-                CloseRectangle(tileShapeCollection, kvp.Key, dimension, firstValue, currentValue);
+                var outerRect = CloseRectangle(tileShapeCollection, kvp.Key, dimension, firstValue, currentValue);
+                outerRect.Z = z;
             }
         }
 
@@ -944,7 +956,7 @@ namespace FlatRedBall.TileCollisions
             }
         }
 
-        private static void CloseRectangle(TileShapeCollection tileShapeCollection, int keyIndex, float dimension, int firstValue, int currentValue)
+        private static AxisAlignedRectangle CloseRectangle(TileShapeCollection tileShapeCollection, int keyIndex, float dimension, int firstValue, int currentValue)
         {
             float x = 0;
             float y = 0;
@@ -974,10 +986,10 @@ namespace FlatRedBall.TileCollisions
                 width = (currentValue - firstValue + 1) * dimension;
             }
 
-            AddRectangleStrip(tileShapeCollection, x, y, width, height);
+            return AddRectangleStrip(tileShapeCollection, x, y, width, height);
         }
 
-        private static void AddRectangleStrip(TileShapeCollection tileShapeCollection, float x, float y, float width, float height)
+        private static AxisAlignedRectangle AddRectangleStrip(TileShapeCollection tileShapeCollection, float x, float y, float width, float height)
         {
             AxisAlignedRectangle rectangle = new AxisAlignedRectangle();
             rectangle.X = x;
@@ -991,6 +1003,8 @@ namespace FlatRedBall.TileCollisions
             }
 
             tileShapeCollection.Rectangles.Add(rectangle);
+
+            return rectangle;
         }
 
         static void AddCollisionFrom(this TileShapeCollection tileShapeCollection,
