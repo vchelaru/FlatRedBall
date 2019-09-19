@@ -806,10 +806,10 @@ namespace FlatRedBall.TileCollisions
 
             for (int i = 0; i < tileShapeCollection.Rectangles.Count; i++)
             {
-                var rectaangle = tileShapeCollection.Rectangles[i];
+                var rectangle = tileShapeCollection.Rectangles[i];
 
-                var centerX = rectaangle.Position.X;
-                var centerY = rectaangle.Position.Y;
+                var centerX = rectangle.Position.X;
+                var centerY = rectangle.Position.Y;
 
                 int key;
                 int value;
