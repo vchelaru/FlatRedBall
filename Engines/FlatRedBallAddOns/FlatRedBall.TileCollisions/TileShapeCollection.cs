@@ -839,8 +839,16 @@ namespace FlatRedBall.TileCollisions
                 {
                     listToAddTo = rectangleIndexes[key];
                 }
+
                 listToAddTo.Add(value);
+
+                if (rectangle.Visible)
+                {
+                    rectangle.Visible = false;
+                }
             }
+
+            tileShapeCollection.Rectangles.Clear();
 
             ApplyMerging(tileShapeCollection, dimension, rectangleIndexes);
         }
