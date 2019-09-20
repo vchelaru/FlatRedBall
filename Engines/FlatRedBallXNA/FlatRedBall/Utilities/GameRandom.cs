@@ -6,8 +6,23 @@ using Microsoft.Xna.Framework;
 
 namespace FlatRedBall.Utilities
 {
+    /// <summary>
+    /// Class deriving from Random providing additional random methods commonly used in games. Typically this is accessed
+    /// through FlatRedBallServices.Random, but can also be instantiated manually.
+    /// </summary>
     public class GameRandom : Random
     {
+        /// <summary>
+        /// Instantiates a new GameRandom creating a 
+        /// </summary>
+        public GameRandom() : base() { }
+
+        /// <summary>
+        /// Instantiates a new instance of the GameRandom class using the specified seed.
+        /// </summary>
+        /// <param name="seed">The seed used to initialize the random sequence of numbers.</param>
+        public GameRandom(int seed) : base(seed) { }
+
         /// <summary>
         /// Returns a random element in a list.
         /// </summary>

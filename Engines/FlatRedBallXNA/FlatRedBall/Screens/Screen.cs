@@ -1,9 +1,6 @@
 #if ANDROID || IOS
 #define REQUIRES_PRIMARY_THREAD_LOADING
 #endif
-
-#region Using
-
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -16,11 +13,6 @@ using FlatRedBall.Utilities;
 using System.Threading;
 using FlatRedBall.Input;
 using FlatRedBall.IO;
-
-
-#endregion
-
-// Test
 
 namespace FlatRedBall.Screens
 {
@@ -35,6 +27,9 @@ namespace FlatRedBall.Screens
 
     #endregion
 
+    /// <summary>
+    /// Base class for screens typically defined through Glue.
+    /// </summary>
     public class Screen : IInstructable
     {
         #region Fields
@@ -72,10 +67,11 @@ namespace FlatRedBall.Screens
         /// </summary>
         protected static List<string> RestartVariables { get; private set; } = new List<string>();
 
-#if !FRB_MDX
         Action ActivatingAction;
         Action DeactivatingAction;
-#endif
+
+        
+        static List<Type> cachedDerivedScreenTypes;
 
         #endregion
 
@@ -133,7 +129,6 @@ namespace FlatRedBall.Screens
             get { return TimeManager.CurrentTime - mAccumulatedPausedTime; }
         }
 
-
         public Action ScreenDestroy { get; set; }
 
         public int ActivityCallCount
@@ -147,7 +142,6 @@ namespace FlatRedBall.Screens
             get { return mContentManagerName; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets whether the activity is finished for a particular screen.
         /// </summary>
@@ -155,7 +149,6 @@ namespace FlatRedBall.Screens
         /// If activity is finished, then the ScreenManager or parent
         /// screen (if the screen is a popup) knows to destroy the screen
         /// and loads the NextScreen class.</remarks>
-        #endregion
         public bool IsActivityFinished
         {
             get { return mIsActivityFinished; }
@@ -214,6 +207,8 @@ namespace FlatRedBall.Screens
             internal set;
         }
 
+
+
         #endregion
 
         #region Methods
@@ -251,7 +246,6 @@ namespace FlatRedBall.Screens
             this.PreActivate();// for generated code to override, to reload the statestack
             this.OnActivate(PlatformServices.State);// for user created code
         }
-
 
         private void OnDeactivating()
         {
@@ -298,7 +292,6 @@ namespace FlatRedBall.Screens
         }
 
         Type asyncScreenTypeToLoad = null;
-
 
 		public void StartAsyncLoad(Type type, Action afterLoaded = null)
         {
@@ -388,7 +381,6 @@ namespace FlatRedBall.Screens
 
         }
 
-
         public virtual void AddToManagers()
         {	
 			// We want to start the timer when we actually add to managers - this is when the activity for the Screen starts
@@ -396,14 +388,12 @@ namespace FlatRedBall.Screens
             mTimeScreenWasCreated = TimeManager.CurrentTime;
         }
 
-
         public virtual void Destroy()
         {
 
-#if !FRB_MDX
 		    StateManager.Current.Activating -= ActivatingAction;
             StateManager.Current.Deactivating -= DeactivatingAction;
-#endif			
+
             if (mLastLoadedScene != null)
             {
                 mLastLoadedScene.Clear();
@@ -481,21 +471,6 @@ namespace FlatRedBall.Screens
             return PauseAdjustedCurrentTime - time;
         }
 
-        /// <summary>Tells the screen that we are done and wish to move to the
-        /// the screen with the matching (fully qualified) name.
-        /// </summary>
-        /// <param>Fully Qualified Type of the screen to move to</param>
-        public void MoveToScreen(string screenClass)
-        {
-            IsActivityFinished = true;
-            NextScreen = screenClass;
-        }
-		
-        public void MoveToScreen(Type screenType)
-        {
-            IsActivityFinished = true;
-            NextScreen = screenType.FullName;
-        }
 
         public void RestartScreen(bool reloadContent, bool applyRestartVariables = true)
         {
@@ -615,6 +590,27 @@ namespace FlatRedBall.Screens
             }
         }
 
+
+        #endregion
+
+        #region Screen Navigation Methods
+
+        /// <summary>Tells the screen that we are done and wish to move to the
+        /// the screen with the matching (fully qualified) name.
+        /// </summary>
+        /// <param>Fully Qualified Type of the screen to move to</param>
+        public void MoveToScreen(string screenClass)
+        {
+            IsActivityFinished = true;
+            NextScreen = screenClass;
+        }
+		
+        public void MoveToScreen(Type screenType)
+        {
+            IsActivityFinished = true;
+            NextScreen = screenType.FullName;
+        }
+        
         #endregion
 
         #region Protected Methods
