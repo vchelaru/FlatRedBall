@@ -25,6 +25,7 @@ namespace OfficialPlugins.Compiler
         public event EventHandler BuildClicked;
         public event EventHandler BuildContentClicked;
         public event EventHandler RunClicked;
+        public event EventHandler TestItClicked;
 
         public MainControl()
         {
@@ -52,6 +53,10 @@ namespace OfficialPlugins.Compiler
             RunClicked?.Invoke(this, null);
         }
 
+        private void HandleTestItClicked(object sender, RoutedEventArgs e)
+        {
+            TestItClicked?.Invoke(this, null);
+        }
 
         public void PrintOutput(string text)
         {

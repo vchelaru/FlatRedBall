@@ -2371,8 +2371,6 @@ namespace FlatRedBall
             }
         }
 
-        [Obsolete("Use instructions or Call.After methods to remove sprites. This method will go away in future versions. This obsolete message was added" +
-            "June 28, 2019")]
         public static void RemoveSpriteAtTime(Sprite spriteToRemove, double secondsPastCurrentTime)
         {
 

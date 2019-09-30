@@ -172,6 +172,7 @@
     <Compile Include="CollisionPlugin\Views\RelationshipListCell.xaml.cs">
       <DependentUpon>RelationshipListCell.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Compiler\CommandSending\CommandSender.cs" />
     <Compile Include="Compiler\Compiler.cs" />
     <Compile Include="Compiler\MainControl.xaml.cs">
       <DependentUpon>MainControl.xaml</DependentUpon>
@@ -419,6 +420,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Compiler\build.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

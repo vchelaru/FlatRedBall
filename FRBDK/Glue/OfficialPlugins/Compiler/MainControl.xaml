@@ -8,36 +8,38 @@
              d:DesignHeight="300" d:DesignWidth="500">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="44"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBox Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto" 
+        <WrapPanel Orientation="Horizontal">
+            
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="3">
+                <Button Click="HandleCompileClick">
+                    <Image Source="build.png"></Image>
+                </Button>
+            
+                <Button Grid.Column="1" Margin="3,0,0,0" Click="HandleRunClick">
+                    <Image Source="play.png"></Image>
+                </Button>
+                <TextBox Grid.Column="2" Margin="3,0,0,0" Width="150" Text="{Binding Configuration}"></TextBox>
+            </StackPanel>
+            <StackPanel Margin="3" Orientation="Horizontal" Visibility="{Binding CompileContentButtonVisibility}">
+                <Button Click="HandleBuildContentClick" Content="Build Content"></Button>
+
+                <CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center"
+                          IsChecked="{Binding AutoBuildContent}">
+                    <TextBlock Text="Auto-build on content change"/>
+                </CheckBox>
+            
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button Click="HandleTestItClicked">Test it</Button>
+            </StackPanel>
+        </WrapPanel>
+
+        <TextBox Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Auto" 
                  ScrollViewer.HorizontalScrollBarVisibility="Auto" 
                  x:Name="TextBox" TextWrapping="Wrap"> </TextBox>
-
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-            </Grid.RowDefinitions>
-            
-            <Button Click="HandleCompileClick" Content="Build All"></Button>
-            <Button Grid.Row="1" Click="HandleBuildContentClick" Content="Build Content" Visibility="{Binding CompileContentButtonVisibility}"></Button>
-
-            <CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center"  Visibility="{Binding CompileContentButtonVisibility}"
-                      Grid.Row="1" Grid.Column="1" IsChecked="{Binding AutoBuildContent}">
-                <TextBlock Text="Auto-build on content change"/>
-            </CheckBox>
-            
-            <Button Grid.Column="2" Click="HandleRunClick">Run</Button>
-            <TextBox Grid.Column="3" Text="{Binding Configuration}"></TextBox>
-        </Grid>
     </Grid>
 </UserControl>

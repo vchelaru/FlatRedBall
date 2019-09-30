@@ -191,7 +191,7 @@ namespace TileGraphicsPlugin
             // - Polygons on tiles can now be rotated and flipped just like the tiles.
             // 2.7.0
             // - Added TileShapeCollection.MergeRectangles
-            get { return new Version(2, 7, 0, 0); }
+            get { return new Version(2, 7, 0, 1); }
         }
 
         [Import("GlueProjectSave")]

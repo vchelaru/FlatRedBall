@@ -6,6 +6,12 @@ namespace Microsoft.Xna.Framework
 {
     public static class Vector2ExtensionMethods
     {
+        public static Vector2 FromAngle(float angle)
+        {
+            return new Vector2((float)Math.Cos(angle),
+                (float)Math.Sin(angle));
+        }
+
         public static float? Angle(this Vector2 vector)
         {
             if (vector.X == 0 && vector.Y == 0)

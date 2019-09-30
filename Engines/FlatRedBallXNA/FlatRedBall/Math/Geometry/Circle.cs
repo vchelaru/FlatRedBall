@@ -104,9 +104,6 @@ namespace FlatRedBall.Math.Geometry
         {
             Radius = 1;
             Color = Color.White;
-#if SILVERLIGHT
-            FillColor = new Color(0, 0, 0, 0);
-#endif
         }
 
         #endregion

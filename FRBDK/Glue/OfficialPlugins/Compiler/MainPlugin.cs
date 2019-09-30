@@ -189,6 +189,11 @@ namespace OfficialPlugins.Compiler
                 }
 
             };
+
+            control.TestItClicked += (not, used) =>
+            {
+                CommandSending.CommandSender.SendCommand();
+            };
         }
 
         private static bool GetIfHasErrors()
