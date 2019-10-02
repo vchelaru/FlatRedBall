@@ -101,6 +101,8 @@ namespace FlatRedBall
             new Color(0,0,0,0);
 
         SplitScreenViewport splitScreenViewport;
+        public SplitScreenViewport CurrentSplitScreenViewport => splitScreenViewport;
+
         bool mUsesSplitScreenViewport = false;
 
         #endregion

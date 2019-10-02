@@ -165,7 +165,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static void GenerateSetGumResolutionValues(ICodeBlock codeblock)
         {
-            var functionBlock = codeblock.Function("private static void", "SetGumValues", "");
+            var functionBlock = codeblock.Function("public static void", "ResetGumResolutionValues", "");
             var gumIfBlock = functionBlock.If("Data.ResizeBehaviorGum == ResizeBehavior.IncreaseVisibleArea");
 
             //gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / (Data.Scale / 100.0f);");
@@ -387,17 +387,71 @@ namespace FlatRedBall.Glue.CodeGeneration
                     elseBlock.Line("x = (FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth - destinationRectangleWidth) / 2;");
                 }
 
-                functionBlock.Line("FlatRedBall.Camera.Main.DestinationRectangle = new Microsoft.Xna.Framework.Rectangle(x, y, destinationRectangleWidth, destinationRectangleHeight);");
+                var foreachBlock = functionBlock.ForEach("var camera in FlatRedBall.SpriteManager.Cameras");
+                {
 
-                ifBlock = functionBlock.If("dominantInternalCoordinates == WidthOrHeight.Height");
-                {
-                    ifBlock.Line("FlatRedBall.Camera.Main.OrthogonalHeight = desiredHeight;");
-                    ifBlock.Line("FlatRedBall.Camera.Main.FixAspectRatioYConstant();");
-                }
-                elseBlock = ifBlock.End().Else();
-                {
-                    elseBlock.Line("FlatRedBall.Camera.Main.OrthogonalWidth = desiredWidth;");
-                    elseBlock.Line("FlatRedBall.Camera.Main.FixAspectRatioXConstant();");
+                    foreachBlock.Line("int currentX = x;");
+                    foreachBlock.Line("int currentY = y;");
+                    foreachBlock.Line("int currentWidth = destinationRectangleWidth;");
+                    foreachBlock.Line("int currentHeight = destinationRectangleHeight;");
+
+                    var switchBlock = foreachBlock.Switch("camera.CurrentSplitScreenViewport");
+                    {
+                        var caseBlock = switchBlock.Case("Camera.SplitScreenViewport.TopLeft")
+                            .Line("currentWidth /= 2;")
+                            .Line("currentHeight /= 2;");
+
+                        caseBlock = switchBlock.Case("Camera.SplitScreenViewport.TopRight")
+                            .Line("currentX = x + destinationRectangleWidth / 2;")
+                            .Line("currentWidth /= 2;")
+                            .Line("currentHeight /= 2;");
+
+
+                        caseBlock = switchBlock.Case("Camera.SplitScreenViewport.BottomLeft")
+                            .Line("currentY = y + destinationRectangleHeight / 2;")
+                            .Line("currentWidth /= 2;")
+                            .Line("currentHeight /= 2;");
+
+
+                        caseBlock = switchBlock.Case("Camera.SplitScreenViewport.BottomRight")
+                            .Line("currentX = x + destinationRectangleWidth / 2;")
+                            .Line("currentY = y + destinationRectangleHeight / 2;")
+                            .Line("currentWidth /= 2;")
+                            .Line("currentHeight /= 2;");
+
+
+                        caseBlock = switchBlock.Case("Camera.SplitScreenViewport.TopHalf")
+                            .Line("currentHeight /= 2;");
+
+
+                        caseBlock = switchBlock.Case("Camera.SplitScreenViewport.BottomHalf")
+                            .Line("currentY = y + destinationRectangleHeight / 2;")
+                            .Line("currentHeight /= 2;");
+
+
+                        caseBlock = switchBlock.Case("Camera.SplitScreenViewport.LeftHalf")
+                            .Line("currentWidth /= 2;");
+
+                        caseBlock = switchBlock.Case("Camera.SplitScreenViewport.RightHalf")
+                            .Line("currentX = x + destinationRectangleWidth / 2;")
+                            .Line("currentWidth /= 2;");
+
+                    }
+
+
+                    foreachBlock.Line("camera.DestinationRectangle = new Microsoft.Xna.Framework.Rectangle(currentX, currentY, currentWidth, currentHeight);");
+
+                    ifBlock = foreachBlock.If("dominantInternalCoordinates == WidthOrHeight.Height");
+                    {
+                        ifBlock.Line("camera.OrthogonalHeight = desiredHeight;");
+                        ifBlock.Line("camera.FixAspectRatioYConstant();");
+                    }
+                    elseBlock = ifBlock.End().Else();
+                    {
+                        elseBlock.Line("camera.OrthogonalWidth = desiredWidth;");
+                        elseBlock.Line("camera.FixAspectRatioXConstant();");
+                    }
+
                 }
             }
         }
@@ -418,7 +472,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if (hasGumProject)
                 {
-                    functionBlock.Line("SetGumValues();");
+                    functionBlock.Line("ResetGumResolutionValues();");
                 }
             }
         }
@@ -440,7 +494,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if(GetIfHasGumProject())
                 {
-                    methodContents.Line("SetGumValues();");
+                    methodContents.Line("ResetGumResolutionValues();");
                 }
 
                 methodContents.Line(
