@@ -519,7 +519,7 @@ namespace FlatRedBall.Graphics
 
             SizeOrOrientationChanged?.Invoke(this, null);
 #endif
-        }
+        }   
 
         public void SetResolution(int width, int height, bool isFullscreen)
         {

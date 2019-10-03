@@ -63,7 +63,7 @@ namespace FlatRedBall.Utilities
 #endif
             var remaining = list.ToList();
             List<T> toReturn = new List<T>();
-            for(int i = 0; i < remaining.Count; i++)
+            for(int i = 0; i < numberToReturn; i++)
             {
                 var newIndex = Next(remaining.Count);
                 toReturn.Add(remaining[newIndex]);
