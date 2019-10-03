@@ -839,7 +839,10 @@ namespace FlatRedBall
                 float horizontalPercentage = (screenX - destinationLeft) / (float)destinationWidth;
 
                 float orthogonalWidthToUse = cameraToUse.OrthogonalWidth;
-                if (lcs.Orthogonal && !cameraToUse.Orthogonal)
+
+                var useLayerOrtho = lcs.Orthogonal && !cameraToUse.Orthogonal;
+
+                if (useLayerOrtho)
                 {
                     orthogonalWidthToUse = lcs.OrthogonalWidth;
                 }
@@ -868,7 +871,10 @@ namespace FlatRedBall
                 }
                 layerMultiplier /= cameraMultiplier;
 
-                orthogonalWidthToUse *= layerMultiplier;
+                if(!useLayerOrtho)
+                {
+                    orthogonalWidthToUse *= layerMultiplier;
+                }
 
                 // I think we want to use the Camera's orthogonalWidth if it's orthogonal
                 //return GetWorldXGivenHorizontalPercentage(zPosition, cameraToUse, lcs.Orthogonal, lcs.OrthogonalWidth, horizontalPercentage);
@@ -936,7 +942,13 @@ namespace FlatRedBall
                 //return WorldYAt(zPosition, cameraToUse, lcs.Orthogonal, lcs.OrthogonalHeight);
                 // If we have a 2D layer ona 3D camera, then we shouldn't use the Camera's orthogonal values
                 float orthogonalHeightToUse = cameraToUse.OrthogonalHeight;
-                if (lcs.Orthogonal && !cameraToUse.Orthogonal)
+
+                // multiplier is used if the orghogonal height of the layer doesn't match the orthogonal height of the 
+                // camera. But if we're going to pass the ortho height of the layer, then the multiplier should be 1
+
+                var usedLayerOrtho = lcs.Orthogonal && !cameraToUse.Orthogonal;
+
+                if (usedLayerOrtho)
                 {
                     orthogonalHeightToUse = lcs.OrthogonalHeight;
                 }
@@ -962,8 +974,10 @@ namespace FlatRedBall
                 }
                 layerMultiplier /= cameraMultiplier;
 
-
-                orthogonalHeightToUse *= layerMultiplier;
+                if(!usedLayerOrtho)
+                {
+                    orthogonalHeightToUse *= layerMultiplier;
+                }
 
                 return WorldYAt(screenY, zPosition, lcs.Orthogonal, orthogonalHeightToUse);
             }
