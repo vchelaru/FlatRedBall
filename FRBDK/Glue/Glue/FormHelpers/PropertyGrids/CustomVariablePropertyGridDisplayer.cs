@@ -154,7 +154,11 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
         private void ChangeType(object sender, MemberChangeArgs args)
         {
-            ((CustomVariable)args.Owner).Type = args.Value as string;
+            var customVariable =
+                (CustomVariable)args.Owner;
+
+            customVariable.Type = args.Value as string;
+
         }
 
         private void DefaultValueIncludeActivity(CustomVariable instance)

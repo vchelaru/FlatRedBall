@@ -153,7 +153,112 @@ namespace FlatRedBall.Glue.SetVariable
             #region Type
             else if (changedMember == nameof(CustomVariable.Type))
             {
-                customVariable.SetDefaultValueAccordingToType(customVariable.Type);
+                var currentValue = customVariable.DefaultValue;
+                var oldType = (string)oldValue;
+
+                bool wasAbleToConvert = false;
+
+                if(currentValue != null)
+                {
+                    if (oldType == "int")
+                    {
+                        var valueAsInt = (int)currentValue;
+
+                        switch (customVariable.Type)
+                        {
+                            case "float":
+                                customVariable.DefaultValue = (float)valueAsInt;
+                                wasAbleToConvert = true;
+                                break;
+                            case "double":
+                                customVariable.DefaultValue = (double)valueAsInt;
+                                wasAbleToConvert = true;
+                                break;
+                            case "string":
+                                customVariable.DefaultValue = valueAsInt.ToString();
+                                wasAbleToConvert = true;
+                                break;
+                        }
+                    }
+                    else if (oldType == "float")
+                    {
+                        var valueAsFloat = (float)currentValue;
+
+                        switch (customVariable.Type)
+                        {
+                            case "int":
+                                customVariable.DefaultValue = (int)valueAsFloat;
+                                wasAbleToConvert = true;
+                                break;
+                            case "double":
+                                customVariable.DefaultValue = (double)valueAsFloat;
+                                wasAbleToConvert = true;
+                                break;
+                            case "string":
+                                customVariable.DefaultValue = valueAsFloat.ToString();
+                                wasAbleToConvert = true;
+                                break;
+                        }
+                    }
+                    else if (oldType == "double")
+                    {
+                        var valueAsDouble = (double)currentValue;
+
+                        switch (customVariable.Type)
+                        {
+                            case "int":
+                                customVariable.DefaultValue = (int)valueAsDouble;
+                                wasAbleToConvert = true;
+                                break;
+                            case "float":
+                                customVariable.DefaultValue = (float)valueAsDouble;
+                                wasAbleToConvert = true;
+                                break;
+                            case "string":
+                                customVariable.DefaultValue = valueAsDouble.ToString();
+                                wasAbleToConvert = true;
+                                break;
+                        }
+                    }
+                    else if (oldType == "string")
+                    {
+                        var valueAsString = (string)currentValue;
+
+                        switch (customVariable.Type)
+                        {
+                            case "int":
+                                {
+                                    if (int.TryParse(valueAsString, out int result))
+                                    {
+                                        customVariable.DefaultValue = result;
+                                    }
+                                }
+                                break;
+                            case "float":
+                                {
+                                    if (float.TryParse(valueAsString, out float result))
+                                    {
+                                        customVariable.DefaultValue = result;
+                                    }
+                                }
+                                break;
+                            case "double":
+                                {
+                                    if (double.TryParse(valueAsString, out double result))
+                                    {
+                                        customVariable.DefaultValue = result;
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                }
+
+                if(wasAbleToConvert == false)
+                {
+                    customVariable.SetDefaultValueAccordingToType(customVariable.Type);
+                }
+
 
                 // If the type changed, the Property Grid needs to be re-made so that the new
                 // grid will have the right type for the DefaultValue cell:
