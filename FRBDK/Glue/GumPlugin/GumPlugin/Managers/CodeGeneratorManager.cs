@@ -226,6 +226,9 @@ namespace GumPlugin.Managers
 
                 var elements = AppState.Self.AllLoadedElements.ToList();
 
+                var errors = new List<string>();
+                var obj = new object();
+
                 // This can greatly improve speed, just don't put async calls in here or it won't block 
                 Parallel.ForEach(elements, (element) =>
                 {
@@ -236,7 +239,10 @@ namespace GumPlugin.Managers
                     }
                     catch(Exception e)
                     {
-                        GlueCommands.Self.PrintError(e.ToString());
+                        lock (obj)
+                        {
+                            errors.Add(e.ToString());
+                        }
                     }
 
                     if (generationResult.DidSaveGenerated)
@@ -254,6 +260,11 @@ namespace GumPlugin.Managers
                             FlatRedBall.Glue.ProjectManager.ProjectBase, location);
                     }
                 });
+
+                foreach(var err in errors)
+                {
+                    GlueCommands.Self.PrintError(err);
+                }
 
                 if (wasAnythingAdded)
                 {
