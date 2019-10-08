@@ -48,8 +48,11 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
     {
         #region Fields
 
-        float xBeforeSnapping;
-        float yBeforeSnapping;
+        float cursorScreenXPushed;
+        float cursorScreenYPushed;
+        FloatRectangle rectangleCoordinatesOnPush;
+
+
 
         SystemManagers managers;
 
@@ -67,6 +70,12 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
 
         bool mVisible = true;
 
+        /// <summary>
+        /// Whether to raise EndRegionChanged when a mouse is released (clicked).
+        /// This is set to true whenever a drag event occurs, and it's set to false
+        /// whenever the mouse is released.
+        /// </summary>
+        bool shouldRaiseEndRegionChanged;
         #endregion
 
         #region Properties
@@ -266,6 +275,8 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
 
         #endregion
 
+        #region Events
+
         /// <summary>
         /// Event raised whenever the region changes. This can happen through keyboard input, or through mouse dragging.
         /// Note that this event will be raised frequently when dragging the mouse, so it should not be used to auto-save
@@ -275,12 +286,8 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
         public event EventHandler EndRegionChanged;
         public event EventHandler Pushed;
 
-        /// <summary>
-        /// Whether to raise EndRegionChanged when a mouse is released (clicked).
-        /// This is set to true whenever a drag event occurs, and it's set to false
-        /// whenever the mouse is released.
-        /// </summary>
-        bool shouldRaiseEndRegionChanged;
+        #endregion
+
 
         #region Methods
 
@@ -503,12 +510,15 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
 
         private float RoundIfNecessary(float value)
         {
-            if(SnappingGridSize != null)
-            {
-                var toReturn = MathFunctions.RoundFloat(value, SnappingGridSize.Value);
-                return toReturn;
-            }
-            else if (RoundToUnitCoordinates)
+            // This function is rounding, not snapping. Also, we don't want
+            // to snap on the getters which uses this.
+            //if(SnappingGridSize != null)
+            //{
+            //    var toReturn = MathFunctions.RoundFloat(value, SnappingGridSize.Value);
+            //    return toReturn;
+            //}
+            //else 
+            if (RoundToUnitCoordinates)
             {
                 return MathFunctions.RoundToInt(value);
             }
@@ -543,28 +553,42 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
 
         private void DragActivity(Cursor cursor)
         {
+            var currentCursorScreenX = cursor.X;
+            var currentCursorScreenY = cursor.Y;
+
             if (cursor.PrimaryDown && 
                 (cursor.XChange != 0 || cursor.YChange != 0) &&
                 mSideGrabbed != ResizeSide.None)
             {
+                var changeSincePushX = currentCursorScreenX - cursorScreenXPushed;
+                var changeSincePushY = currentCursorScreenY - cursorScreenYPushed;
+
                 RecordOldValues();
 
-                float widthMultiplier = 0;
-                float heightMultiplier = 0;
-                float xMultiplier = 0;
-                float yMultiplier = 0;
-
-                GetMultipliersFromSideGrabbed(ref widthMultiplier, ref heightMultiplier, ref xMultiplier, ref yMultiplier);
+                GetMultipliersFromSideGrabbed(out float widthMultiplier, 
+                    out float heightMultiplier, 
+                    out float xMultiplier, 
+                    out float yMultiplier);
 
                 xMultiplier /= managers.Renderer.Camera.Zoom;
                 yMultiplier /= managers.Renderer.Camera.Zoom;
                 widthMultiplier /= managers.Renderer.Camera.Zoom;
                 heightMultiplier /= managers.Renderer.Camera.Zoom;
 
-                this.Left = mCoordinates.X + xMultiplier * cursor.XChange;
-                this.Top = mCoordinates.Y + yMultiplier * cursor.YChange;
-                this.Width = mCoordinates.Width + widthMultiplier * cursor.XChange;
-                this.Height = mCoordinates.Height + heightMultiplier * cursor.YChange;
+                
+                this.Left = rectangleCoordinatesOnPush.X + xMultiplier * changeSincePushX;
+                this.Top = rectangleCoordinatesOnPush.Y + yMultiplier * changeSincePushY;
+                this.Width = rectangleCoordinatesOnPush.Width + widthMultiplier * changeSincePushX;
+                this.Height = rectangleCoordinatesOnPush.Height + heightMultiplier * changeSincePushY;
+
+                if (SnappingGridSize != null)
+                {
+                    //MathFunctions.RoundFloat(value, SnappingGridSize.Value);
+                    this.Left = MathFunctions.RoundFloat(this.Left, SnappingGridSize.Value);
+                    this.Top = MathFunctions.RoundFloat(this.Top, SnappingGridSize.Value);
+                    this.Width = MathFunctions.RoundFloat(this.Width, SnappingGridSize.Value);
+                    this.Height = MathFunctions.RoundFloat(this.Height, SnappingGridSize.Value);
+                }
 
                 RegionChanged?.Invoke(this, null);
                 shouldRaiseEndRegionChanged = true;
@@ -572,8 +596,13 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
             }
         }
 
-        private void GetMultipliersFromSideGrabbed(ref float widthMultiplier, ref float heightMultiplier, ref float xMultiplier, ref float yMultiplier)
+        private void GetMultipliersFromSideGrabbed(out float widthMultiplier, out float heightMultiplier, out float xMultiplier, out float yMultiplier)
         {
+            widthMultiplier = 0;
+            heightMultiplier = 0;
+            xMultiplier = 0;
+            yMultiplier = 0;
+
             if (mSideGrabbed != ResizeSide.None)
             {
                 switch (mSideGrabbed)
@@ -629,6 +658,11 @@ namespace FlatRedBall.SpecializedXnaControls.RegionSelection
         {
             if (cursor.PrimaryPush)
             {
+                cursorScreenXPushed = cursor.X;
+                cursorScreenYPushed = cursor.Y;
+
+                rectangleCoordinatesOnPush = mCoordinates;
+
                 float worldX = cursor.GetWorldX(managers);
                 float worldY = cursor.GetWorldY(managers);
 
