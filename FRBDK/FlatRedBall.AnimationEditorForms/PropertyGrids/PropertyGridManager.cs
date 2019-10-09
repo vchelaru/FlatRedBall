@@ -52,8 +52,12 @@ namespace FlatRedBall.AnimationEditorForms
 
         #endregion
 
+        #region Events
+
         public event EventHandler AnimationChainChange;
         public event EventHandler AnimationFrameChange;
+
+        #endregion
 
         public PropertyGridManager()
         {

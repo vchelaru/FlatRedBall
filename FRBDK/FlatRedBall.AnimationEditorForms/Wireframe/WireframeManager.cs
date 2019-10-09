@@ -23,6 +23,7 @@ using FlatRedBall.AnimationEditorForms.Preview;
 using FlatRedBall.AnimationEditorForms.ViewModels;
 using System.ComponentModel;
 using ToolsUtilities;
+using FileManager = ToolsUtilities.FileManager;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -336,13 +337,9 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void UpdateToSavedCameraPosition()
         {
-            string fileName = null;
-
-            fileName = WireframeEditControlsViewModel.SelectedTextureFilePath?.Standardized;
-
-            if (CameraPositionsForTexture.ContainsKey(fileName))
+            if (WireframeEditControlsViewModel.SelectedTextureFilePath != null && CameraPositionsForTexture.ContainsKey(WireframeEditControlsViewModel.SelectedTextureFilePath))
             {
-                var vector3 = CameraPositionsForTexture[fileName];
+                var vector3 = CameraPositionsForTexture[WireframeEditControlsViewModel.SelectedTextureFilePath];
 
                 mManagers.Renderer.Camera.Position = new Vector2(vector3.X, vector3.Y);
             }
@@ -444,9 +441,27 @@ namespace FlatRedBall.AnimationEditorForms
 
                     RecordCameraPosition();
                     
+                    // update the texture before updating the frame (and calling refresh)
                     UpdateToSelectedAnimationTextureFile(WireframeEditControlsViewModel.SelectedTextureFilePath);
 
                     UpdateToSavedCameraPosition();
+
+                    if(SelectedState.Self.SelectedFrame != null && WireframeEditControlsViewModel.SelectedTextureFilePath != null)
+                    {
+                        var achxFolder = FileManager.GetDirectory(SelectedState.Self.SelectedChain.Name);
+                        achxFolder = FileManager.GetDirectory(ProjectManager.Self.FileName);
+
+                        string relativeFileName = FileManager.MakeRelative(WireframeEditControlsViewModel.SelectedTextureFilePath.FullPath, achxFolder);
+
+                        SelectedState.Self.SelectedFrame.TextureName = relativeFileName;
+
+                        AnimationFrameChange?.Invoke(this, null);
+
+                        PropertyGridManager.Self.Refresh();
+
+                        RefreshAll();
+                    }
+
 
                     break;
                 case nameof(WireframeEditControlsViewModel.IsMagicWandSelected):
@@ -676,10 +691,7 @@ namespace FlatRedBall.AnimationEditorForms
             //{
             //    AnimationChainChange(this, null); b
             //}
-            if (AnimationFrameChange != null)
-            {
-                AnimationFrameChange(this, null);
-            }
+            AnimationFrameChange?.Invoke(this, null);
         }
         
         public void RefreshAll()
@@ -784,9 +796,7 @@ namespace FlatRedBall.AnimationEditorForms
 
                 ShowSpriteOutlineForTexture(Texture);
                 UpdateLineGridToTexture(Texture);
-
                 
-
                 string folder = null;
                 bool doAnyFramesUseThisTexture = false;
 
@@ -798,12 +808,9 @@ namespace FlatRedBall.AnimationEditorForms
                         SelectedState.Self.SelectedChain.Frames.Any(item => new ToolsUtilities.FilePath(folder + item.TextureName) == selectedFilePath);
                 }
 
-
-
                 if (doAnyFramesUseThisTexture && texture != null)
                 {
                     UpdateSelectorsToAnimation(skipPushed, texture);
-
                 }
                 else
                 {
@@ -841,6 +848,7 @@ namespace FlatRedBall.AnimationEditorForms
                 var frames = animationsSelectedFirst.SelectMany(item => item.Frames);
 
                 var filePaths = frames
+                    .Where(item => !string.IsNullOrEmpty(item.TextureName))
                     .Select(item => new ToolsUtilities.FilePath(folder + item.TextureName))
                     .Distinct()
                     .ToList();

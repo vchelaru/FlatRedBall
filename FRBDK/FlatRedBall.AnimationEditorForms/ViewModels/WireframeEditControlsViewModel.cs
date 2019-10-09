@@ -13,7 +13,7 @@ namespace FlatRedBall.AnimationEditorForms.ViewModels
     {
         public FilePath SelectedTextureFilePath
         {
-            get { return Get<FilePath>(); }
+            get => Get<FilePath>();
             set
             {
                 LastSelectedTexturePath = SelectedTextureFilePath;
@@ -23,37 +23,29 @@ namespace FlatRedBall.AnimationEditorForms.ViewModels
 
         public FilePath LastSelectedTexturePath
         {
-            get { return Get<FilePath>(); }
-            set { Set(value); }
+            get => Get<FilePath>();
+            set => Set(value); 
         }
 
         public bool IsMagicWandSelected
         {
-            get { return Get<bool>(); }
-            set
-            {
-                Set(value);
-            }
+            get => Get<bool>();
+            set => Set(value);
         }
 
         public bool IsSnapToGridChecked
         {
-            get { return Get<bool>(); }
-            set { Set(value); }
+            get => Get<bool>(); 
+            set => Set(value);
         }
 
         [DependsOn(nameof(IsSnapToGridChecked))]
-        public bool IsGridSizeBoxEnabled
-        {
-            get
-            {
-                return IsSnapToGridChecked;
-            }
-        }
+        public bool IsGridSizeBoxEnabled => IsSnapToGridChecked;
+
         public int GridSize
         {
-            get { return Get<int>(); }
-            set { Set(value); }
+            get => Get<int>();
+            set => Set(value); 
         }
 
         public ObservableCollection<FilePath> AvailableTextures
