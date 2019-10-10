@@ -49,7 +49,7 @@ namespace OfficialPlugins.MonoGameContent
 
                 foreach (var fileToBeBuilt in filesToBeBuilt)
                 {
-                    TryHandleReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline);
+                    UpdateFileMembershipAndBuildReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline);
                 }
             }
 
@@ -67,7 +67,7 @@ namespace OfficialPlugins.MonoGameContent
         }
 
 
-        public void TryHandleReferencedFile(ProjectBase project, ReferencedFileSave referencedFile, bool forcePngsToContentPipeline)
+        public void UpdateFileMembershipAndBuildReferencedFile(ProjectBase project, ReferencedFileSave referencedFile, bool forcePngsToContentPipeline)
         {
             bool isBuilt = IsBuiltByContentPipeline(referencedFile, forcePngsToContentPipeline);
 
@@ -288,7 +288,7 @@ namespace OfficialPlugins.MonoGameContent
 
         }
 
-        public void TryAddXnbReferencesAndBuild(string fullFileName, ProjectBase project, bool saveProjectAfterAdd)
+        public void TryAddXnbReferencesAndBuild(string fullFileName, ProjectBase project, bool saveProjectAfterAdd, bool rebuild = false)
         {
             var contentDirectory = GlueState.ContentDirectory;
 
@@ -305,18 +305,15 @@ namespace OfficialPlugins.MonoGameContent
             // and make it much faster
             if (contentItem != null)
             {
-
-
-                TaskManager.Self.AddSync(
-                () =>
+                TaskManager.Self.Add(() =>
                 {
                     // If the user closes the project while the startup is happening, just skip the task - no need to build
                     if (GlueState.CurrentGlueProject != null)
                     {
 
-                        if (contentItem.GetIfNeedsBuild(destinationDirectory))
+                        if (contentItem.GetIfNeedsBuild(destinationDirectory) || rebuild)
                         {
-                            PerformBuild(contentItem);
+                            PerformBuild(contentItem, rebuild);
                         }
 
                         string relativeToAddNoExtension =
@@ -339,12 +336,12 @@ namespace OfficialPlugins.MonoGameContent
             }
         }
 
-        private static void PerformBuild(ContentItem contentItem)
+        private static void PerformBuild(ContentItem contentItem, bool rebuild = false)
         {
             string contentDirectory = GlueState.ContentDirectory;
             string workingDirectory = contentDirectory;
 
-            string commandLine = contentItem.GenerateCommandLine();
+            string commandLine = contentItem.GenerateCommandLine(rebuild);
             var process = new Process();
 
             process.StartInfo.Arguments = commandLine;
@@ -403,7 +400,7 @@ namespace OfficialPlugins.MonoGameContent
         }
 
 
-        private static bool IsBuiltByContentPipeline(ReferencedFileSave file, bool forcePngsToContentPipeline)
+        public static bool IsBuiltByContentPipeline(ReferencedFileSave file, bool forcePngsToContentPipeline)
         {
             return IsBuiltByContentPipeline(file.Name, file.UseContentPipeline, forcePngsToContentPipeline);
         }
