@@ -214,7 +214,7 @@ namespace TileGraphicsPlugin
                     $"{referencedFileSave.GetInstanceName()},\n" +
                     $"list => list.Any(item => item.Name == \"Type\" " +
                     //$"  && item.Value as string == \"{tileType}\")" +
-                    $");\n";
+                    $"));\n";
 
                 //if (namedObjectSave.Properties.GetValue<bool>(nameof(ViewModels.TileShapeCollectionPropertiesViewModel.IsCollisionVisible)))
                 //{

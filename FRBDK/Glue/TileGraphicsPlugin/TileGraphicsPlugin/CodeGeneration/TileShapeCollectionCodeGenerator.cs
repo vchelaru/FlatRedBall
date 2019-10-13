@@ -141,7 +141,10 @@ namespace TileGraphicsPlugin.CodeGeneration
                     codeBlock.Line("// normally we wait to set variables until after the object is created, but in this case if the");
                     codeBlock.Line("// TileShapeCollection doesn't have its Visible set before creating the tiles, it can result in");
                     codeBlock.Line("// really bad performance issues, as shapes will be made visible, then invisible. Really bad perf!");
-                    codeBlock.Line($"{namedObjectSave.InstanceName}.Visible = false;");
+                    var ifBlock = codeBlock.If($"{namedObjectSave.InstanceName} != null");
+                    {
+                        ifBlock.Line($"{namedObjectSave.InstanceName}.Visible = false;");
+                    }
 
                 }
 
