@@ -36,13 +36,13 @@ namespace GumPlugin.Managers
 
                 shouldShowRegenerateCodeMenu =
                     extension == GumProjectSave.ComponentExtension ||
-                    extension == GumProjectSave.ComponentExtension ||
-                    extension == GumProjectSave.ComponentExtension ||
-                    extension == GumProjectSave.ComponentExtension;
+                    extension == GumProjectSave.ProjectExtension ||
+                    extension == GumProjectSave.ScreenExtension ||
+                    extension == GumProjectSave.StandardExtension;
 
             }
 
-            if(file != null )
+            if(file != null && shouldShowRegenerateCodeMenu)
             {
 
                 var newMenu = new ToolStripMenuItem("Regenerate Gum Code");

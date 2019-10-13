@@ -108,7 +108,7 @@ namespace OfficialPlugins.MonoGameContent
 
         #endregion
 
-        public string GenerateCommandLine()
+        public string GenerateCommandLine(bool rebuild = false)
         {
             var stringBuilder = new StringBuilder();
             stringBuilder.Append($"/outputDir:\"{OutputDirectory}\" /intermediateDir:\"{IntermediateDirectory}\" /platform:{Platform} /importer:{Importer} /processor:{Processor} ");
@@ -126,8 +126,15 @@ namespace OfficialPlugins.MonoGameContent
                 buildArgument = buildArgument.ToLowerInvariant();
             }
 
-            stringBuilder.Append($"/build:\"{buildArgument}\" /incremental");
-
+            stringBuilder.Append($"/build:\"{buildArgument}\"");
+            if(rebuild == false)
+            {
+                stringBuilder.Append(" /incremental");
+            }
+            else
+            {
+                stringBuilder.Append(" /rebuild ");
+            }
             return stringBuilder.ToString();
         }
 

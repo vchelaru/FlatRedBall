@@ -351,7 +351,8 @@ namespace AnimationEditorPlugin
                     .Select(item => new ToolsUtilities.FilePath(GlueCommands.GetAbsoluteFileName(item)))
                     .Where(item => item.Extension == "png")
                     .Distinct()
-                    .Except(viewModel.AvailableTextures);
+                    .Except(viewModel.AvailableTextures)
+                    .ToArray();
 
                 foreach (var file in pngFiles)
                 {

@@ -388,9 +388,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void CopyToBuildFolder(ReferencedFileSave rfs)
         {
-            string source = ProjectManager.ContentDirectory + rfs.Name;
+            string source = GlueState.Self.ContentDirectory + rfs.Name;
 
-            CopyToBuildFolder(rfs);
+            CopyToBuildFolder(rfs.Name);
         }
 
         public void CopyToBuildFolder(string absoluteSource)

@@ -15,6 +15,9 @@ using OfficialPlugins.ContentPipelinePlugin;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using EditorObjects.IoC;
+using System.Windows.Forms;
+using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace OfficialPlugins.MonoGameContent
 {
@@ -51,7 +54,9 @@ namespace OfficialPlugins.MonoGameContent
                 //  - Output is now shown in the output window, including as errors if it's an error.
                 // 1.3.0
                 //  - If a file changes, the plugin will attempt to rebuild it - even if it's not a RFS
-                return new Version(1, 2, 0);
+                // 1.4.0
+                //  - Added right-click option to rebuild a file using the content pipeline
+                return new Version(1, 4, 0);
             }
         }
 
@@ -118,9 +123,28 @@ namespace OfficialPlugins.MonoGameContent
             this.ReactToReferencedFileChangedValueHandler += HandleReferencedFileValueChanged;
             this.ReactToFileRemoved += HandleFileRemoved;
             this.GetIfUsesContentPipeline += HandleGetIfUsesContentPipeline;
+            this.ReactToTreeViewRightClickHandler += HandleTreeViewRightClick;
         }
+
         #endregion
 
+        private void HandleTreeViewRightClick(TreeNode rightClickedTreeNode, ContextMenuStrip menuToModify)
+        {
+            if(rightClickedTreeNode.IsReferencedFile())
+            {
+                var rfs = rightClickedTreeNode.Tag as ReferencedFileSave;
+                var forcePngsToPipeline = controller.Settings.UseContentPipelineOnAllPngs;
+                if (BuildLogic.IsBuiltByContentPipeline(rfs, forcePngsToPipeline))
+                {
+                    menuToModify.Items.Add("Rebuild Content Pipeline File").Click += (not, used) =>
+                    {
+                        var fullFileName = GlueCommands.Self.GetAbsoluteFileName(rfs);
+                        BuildLogic.Self.TryAddXnbReferencesAndBuild(fullFileName, GlueState.CurrentMainProject, false, rebuild:true);
+                    };
+                }
+
+            }
+        }
 
         private void HandleFileRemoved(IElement container, ReferencedFileSave file)
         {
@@ -184,11 +208,11 @@ namespace OfficialPlugins.MonoGameContent
 
         private void HandleRfsChange(ReferencedFileSave rfs)
         {
-            BuildLogic.Self.TryHandleReferencedFile(GlueState.CurrentMainProject, rfs, viewModel.UseContentPipelineOnPngs);
+            BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(GlueState.CurrentMainProject, rfs, viewModel.UseContentPipelineOnPngs);
 
             foreach (var syncedProject in GlueState.SyncedProjects)
             {
-                BuildLogic.Self.TryHandleReferencedFile(syncedProject, rfs, viewModel.UseContentPipelineOnPngs);
+                BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(syncedProject, rfs, viewModel.UseContentPipelineOnPngs);
             }
         }
 
@@ -197,13 +221,13 @@ namespace OfficialPlugins.MonoGameContent
 
             if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( GlueState.CurrentMainProject ))
             {
-                BuildLogic.Self.TryHandleReferencedFile(GlueState.CurrentMainProject, newFile, viewModel.UseContentPipelineOnPngs);
+                BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(GlueState.CurrentMainProject, newFile, viewModel.UseContentPipelineOnPngs);
             }
             foreach(var project in GlueState.SyncedProjects)
             {
                 if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( project ))
                 {
-                    BuildLogic.Self.TryHandleReferencedFile(project, newFile, viewModel.UseContentPipelineOnPngs);
+                    BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(project, newFile, viewModel.UseContentPipelineOnPngs);
                 }
             }
         }

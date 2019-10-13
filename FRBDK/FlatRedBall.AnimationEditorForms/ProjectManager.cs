@@ -87,9 +87,6 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
-        
-
-
         internal void LoadTileMapInformation(string fileName)
         {
             TileMapInformationList infoList = FileManager.XmlDeserialize<TileMapInformationList>(fileName);
