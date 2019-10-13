@@ -212,7 +212,8 @@ namespace TileGraphicsPlugin
                     $"{namedObjectSave.FieldName},\n" +
                     $"{referencedFileSave.GetInstanceName()}.MapLayers.FindByName(\"{namedObjectSave.FieldName}\"),\n" +
                     $"{referencedFileSave.GetInstanceName()},\n" +
-                    $"list => list.Any(item => item.Name == \"Type\" " +
+                    $"list => list.Any(" +
+                    //$"item => item.Name == \"Type\" " +
                     //$"  && item.Value as string == \"{tileType}\")" +
                     $"));\n";
 
