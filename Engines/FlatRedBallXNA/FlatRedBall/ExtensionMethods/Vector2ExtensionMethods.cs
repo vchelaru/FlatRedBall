@@ -33,5 +33,18 @@ namespace Microsoft.Xna.Framework
 
             return toReturn;
         }
+
+        public static Vector2 Normalized(this Vector2 vector)
+        {
+            if(vector.X != 0 || vector.Y != 0)
+            {
+                vector.Normalize();
+                return vector;
+            }
+            else
+            {
+                throw new InvalidOperationException("This vector is of length 0, so it cannot be normalized");
+            }
+        }
     }
 }
