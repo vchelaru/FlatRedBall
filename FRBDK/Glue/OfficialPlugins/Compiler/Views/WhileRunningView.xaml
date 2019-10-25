@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="OfficialPlugins.Compiler.Views.WhileRunningView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OfficialPlugins.Compiler.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="20" d:DesignWidth="800">
+    <StackPanel Orientation="Horizontal">
+
+        <Button Margin="0,0,6,0" MinWidth="22" 
+                Visibility="{Binding PauseButtonVisibility}"
+                Click="HandlePauseClicked"
+            >
+            <Image Source="../icons/pause.png"></Image>
+            <Button.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Pause Game</TextBlock>
+                        <TextBlock>Calls the built-in FlatRedball Pause function</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </Button.ToolTip>
+
+        </Button>
+        <Button Margin="0,0,6,0" MinWidth="22"
+                Visibility="{Binding UnpauseButtonVisibility}"
+                Click="HandleUnpauseClicked"
+
+            >
+            <Image Source="../icons/Unpause.png"></Image>
+            <Button.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Unpause Game</TextBlock>
+                        <TextBlock>Unpauses the game</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </Button.ToolTip>
+        </Button>
+        <Button Margin="0,0,6,0" Click="HandleStopClicked">
+            <Image Source="../icons/stop.png"></Image>
+            <Button.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Stop Game</TextBlock>
+                        <TextBlock>Kills the currentyly-running game process</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </Button.ToolTip>
+        </Button>
+        <Button Margin="0,0,6,0" Click="HandleRestartGameClicked">
+            <Image Source="../icons/RestartGame.png"></Image>
+            <Button.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Restart Game</TextBlock>
+                        <TextBlock>Kills, builds, and runs the game</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </Button.ToolTip>
+        </Button>
+        <Button Margin="0,0,6,0" Click="HandleRestartScreenClicked">
+            <Image Source="../icons/RestartScreen.png"></Image>
+            <Button.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Restart Screen</TextBlock>
+                        <TextBlock>Restarts the current screen, reloading all non-global content</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </Button.ToolTip>
+        </Button>
+    </StackPanel>
+</UserControl>

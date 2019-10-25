@@ -10,6 +10,7 @@ using OfficialPlugins.Compiler.ViewModels;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Managers;
 using System.Windows;
+using OfficialPlugins.Compiler.CodeGeneration;
 
 namespace OfficialPlugins.Compiler
 {
@@ -64,7 +65,12 @@ namespace OfficialPlugins.Compiler
 
             compiler = new Compiler();
             runner = new Runner();
+            runner.IsRunningChanged += HandleIsRunningChanged;
+        }
 
+        private void HandleIsRunningChanged(object sender, EventArgs e)
+        {
+            viewModel.IsRunning = runner.IsRunning;
         }
 
         private void HandleGluxUnloaded()
@@ -74,19 +80,26 @@ namespace OfficialPlugins.Compiler
 
         private void HandleGluxLoaded()
         {
-            bool shouldShow = false;
+            UpdateCompileContentVisibility();
+
+            TaskManager.Self.Add(MainCodeGenerator.GenerateAll, "Generate Glue Control Code");
+        }
+
+        private void UpdateCompileContentVisibility()
+        {
+            bool shouldShowCompileContentButton = false;
 
             if (GlueState.Self.CurrentMainProject != null)
             {
-                shouldShow = GlueState.Self.CurrentMainProject != GlueState.Self.CurrentMainContentProject;
+                shouldShowCompileContentButton = GlueState.Self.CurrentMainProject != GlueState.Self.CurrentMainContentProject;
 
-                if(!shouldShow)
+                if (!shouldShowCompileContentButton)
                 {
-                    foreach(var mainSyncedProject in GlueState.Self.SyncedProjects)
+                    foreach (var mainSyncedProject in GlueState.Self.SyncedProjects)
                     {
-                        if(mainSyncedProject != mainSyncedProject.ContentProject)
+                        if (mainSyncedProject != mainSyncedProject.ContentProject)
                         {
-                            shouldShow = true;
+                            shouldShowCompileContentButton = true;
                             break;
                         }
                     }
@@ -94,7 +107,7 @@ namespace OfficialPlugins.Compiler
 
             }
 
-            if(shouldShow)
+            if (shouldShowCompileContentButton)
             {
                 viewModel.CompileContentButtonVisibility = Visibility.Visible;
             }
@@ -122,36 +135,38 @@ namespace OfficialPlugins.Compiler
         private void CreateToolbar()
         {
             var toolbar = new RunnerToolbar();
-            toolbar.RunClicked += delegate
+            toolbar.RunClicked += HandleToolbarRunClicked;
+            base.AddToToolBar(toolbar, "Standard");
+        }
+
+        private void HandleToolbarRunClicked(object sender, EventArgs e)
+        {
+            PluginManager.ReceiveOutput("Building Project. See \"Build\" tab for more information...");
+            Compile((succeeded) =>
             {
-                PluginManager.ReceiveOutput("Building Project. See \"Build\" tab for more information...");
-                Compile((succeeded) =>
+                if (succeeded)
                 {
-                    if (succeeded)
+                    bool hasErrors = GetIfHasErrors();
+                    if (hasErrors)
                     {
-                        bool hasErrors = GetIfHasErrors();
-                        if (hasErrors)
-                        {
-                            var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
+                        var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
 
-                            GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, runner.Run);
-                        }
-                        else
-                        {
-                            PluginManager.ReceiveOutput("Building succeeded. Running project...");
-
-                            runner.Run();
-                        }
+                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, runner.Run);
                     }
                     else
                     {
-                        PluginManager.ReceiveError("Building failed. See \"Build\" tab for more information.");
+                        PluginManager.ReceiveOutput("Building succeeded. Running project...");
 
-
+                        runner.Run();
                     }
-                });
-            };
-            base.AddToToolBar(toolbar, "Standard");
+                }
+                else
+                {
+                    PluginManager.ReceiveError("Building failed. See \"Build\" tab for more information.");
+
+
+                }
+            });
         }
 
         private void CreateControl()
@@ -163,10 +178,38 @@ namespace OfficialPlugins.Compiler
 
             base.AddToTab(
                 PluginManager.BottomTab, control, "Build");
+            AssignControlEvents();
+        }
 
+        private void AssignControlEvents()
+        {
             control.BuildClicked += delegate
             {
                 Compile();
+            };
+
+            control.StopClicked += (not, used) =>
+            {
+                runner.Stop();
+            };
+
+            control.RestartGameClicked += (not, used) =>
+            {
+                viewModel.IsPaused = false;
+                runner.Stop();
+                Compile((succeeded) =>
+                {
+                    if (succeeded)
+                    {
+                        runner.Run();
+                    }
+                });
+            };
+
+            control.RestartScreenClicked += (not, used) =>
+            {
+                viewModel.IsPaused = false;
+                CommandSending.CommandSender.SendCommand("RestartScreen\n");
             };
 
             control.BuildContentClicked += delegate
@@ -176,23 +219,33 @@ namespace OfficialPlugins.Compiler
 
             control.RunClicked += delegate
             {
-                bool hasErrors = GetIfHasErrors();
-                if (hasErrors)
+                Compile((succeeded) =>
                 {
-                    var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
+                    if (succeeded)
+                    {
+                        runner.Run();
+                    }
+                    else
+                    {
+                        var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
 
-                    GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, runner.Run);
-                }
-                else
-                {
-                    runner.Run();
-                }
-
+                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, runner.Run);
+                    }
+                });
             };
 
-            control.TestItClicked += (not, used) =>
+            control.PauseClicked += (not, used) =>
             {
-                CommandSending.CommandSender.SendCommand();
+                viewModel.IsPaused = true;
+                CommandSending.CommandSender.SendCommand("TogglePause\n");
+                
+            };
+
+            control.UnpauseClicked += (not, used) =>
+            {
+                viewModel.IsPaused = false;
+                CommandSending.CommandSender.SendCommand("TogglePause\n");
+
             };
         }
 

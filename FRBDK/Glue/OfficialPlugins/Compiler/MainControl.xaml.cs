@@ -25,7 +25,13 @@ namespace OfficialPlugins.Compiler
         public event EventHandler BuildClicked;
         public event EventHandler BuildContentClicked;
         public event EventHandler RunClicked;
-        public event EventHandler TestItClicked;
+        public event EventHandler StopClicked;
+        public event EventHandler RestartGameClicked;
+        public event EventHandler RestartScreenClicked;
+        public event EventHandler PauseClicked;
+        public event EventHandler UnpauseClicked;
+
+        
 
         public MainControl()
         {
@@ -35,27 +41,22 @@ namespace OfficialPlugins.Compiler
 
         }
 
-        private void HandleCompileClick(object sender, RoutedEventArgs e)
+        private void HandleCompileClick(object sender, EventArgs e)
         {
             TextBox.Clear();
             BuildClicked?.Invoke(this, null);
         }
 
-        private void HandleBuildContentClick(object sender, RoutedEventArgs e)
+        private void HandleBuildContentClick(object sender, EventArgs e)
         {
 
             TextBox.Clear();
             BuildContentClicked?.Invoke(this, null);
         }
 
-        private void HandleRunClick(object sender, RoutedEventArgs e)
+        private void HandleRunClick(object sender, EventArgs e)
         {
             RunClicked?.Invoke(this, null);
-        }
-
-        private void HandleTestItClicked(object sender, RoutedEventArgs e)
-        {
-            TestItClicked?.Invoke(this, null);
         }
 
         public void PrintOutput(string text)
@@ -71,6 +72,31 @@ namespace OfficialPlugins.Compiler
                     TextBox.ScrollToEnd();
                 });
             }
+        }
+
+        private void WhileRunningView_StopClicked(object sender, EventArgs e)
+        {
+            StopClicked?.Invoke(this, null);
+        }
+
+        private void WhileRunningView_RestartGameClicked(object sender, EventArgs e)
+        {
+            RestartGameClicked?.Invoke(this, null);
+        }
+
+        private void WhileRunningView_RestartScreenClicked(object sender, EventArgs e)
+        {
+            RestartScreenClicked?.Invoke(this, null);
+        }
+
+        private void WhileRunningView_PauseClicked(object sender, EventArgs e)
+        {
+            PauseClicked?.Invoke(this, null);
+        }
+
+        private void WhileRunningView_UnpauseClicked(object sender, EventArgs e)
+        {
+            UnpauseClicked?.Invoke(this, null);
         }
     }
 }

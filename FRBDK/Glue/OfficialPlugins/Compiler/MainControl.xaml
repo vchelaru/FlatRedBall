@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.Compiler"
+             xmlns:views="clr-namespace:OfficialPlugins.Compiler.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="500">
     <Grid>
@@ -13,17 +14,22 @@
         </Grid.RowDefinitions>
 
         <WrapPanel Orientation="Horizontal">
-            
-            <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="3">
-                <Button Click="HandleCompileClick">
-                    <Image Source="build.png"></Image>
-                </Button>
-            
-                <Button Grid.Column="1" Margin="3,0,0,0" Click="HandleRunClick">
-                    <Image Source="play.png"></Image>
-                </Button>
-                <TextBox Grid.Column="2" Margin="3,0,0,0" Width="150" Text="{Binding Configuration}"></TextBox>
-            </StackPanel>
+
+            <views:WhileStoppedView
+                Visibility="{Binding WhileStoppedViewVisibility}"
+                BuildClicked="HandleCompileClick"
+                BuildContentClicked="HandleBuildContentClick"
+                RunClicked="HandleRunClick"
+                >
+            </views:WhileStoppedView>
+            <views:WhileRunningView  Height="25"
+                Visibility="{Binding WhileRunningViewVisibility}"
+                StopClicked="WhileRunningView_StopClicked"
+                RestartGameClicked="WhileRunningView_RestartGameClicked"
+                RestartScreenClicked="WhileRunningView_RestartScreenClicked"
+                PauseClicked="WhileRunningView_PauseClicked"
+                UnpauseClicked="WhileRunningView_UnpauseClicked"
+                ></views:WhileRunningView>
             <StackPanel Margin="3" Orientation="Horizontal" Visibility="{Binding CompileContentButtonVisibility}">
                 <Button Click="HandleBuildContentClick" Content="Build Content"></Button>
 
@@ -32,9 +38,6 @@
                     <TextBlock Text="Auto-build on content change"/>
                 </CheckBox>
             
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Button Click="HandleTestItClicked">Test it</Button>
             </StackPanel>
         </WrapPanel>
 
