@@ -57,6 +57,16 @@
                       Margin="0,8,0,0"
                       >Auto-name Relationship</CheckBox>
 
+            <CheckBox VerticalContentAlignment="Center"
+                      IsChecked="{Binding IsCollisionActive}"
+                      Margin="0,8,0,0">Is Collision Active</CheckBox>
+            <TextBlock TextWrapping="WrapWithOverflow"
+                       Visibility="{Binding InactiveMessageVisibility}"
+                       Padding="4"
+                       Margin="15,0,0,0"
+                       Text="Inactive collisions will not automatically raise events and perform physics, but can be called manually in code"
+                       />
+
             <GroupBox Header="Collision Physics" Margin="0,8,0,0">
                 <StackPanel>
                     <RadioButton

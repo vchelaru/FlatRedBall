@@ -39,9 +39,17 @@ namespace OfficialPlugins.CollisionPlugin
             var firstCollidable = namedObject.Properties.GetValue<string>(
                 nameof(CollisionRelationshipViewModel.FirstCollisionName));
 
-
             var secondCollidable = namedObject.Properties.GetValue<string>(
                 nameof(CollisionRelationshipViewModel.SecondCollisionName));
+
+            //////////////Early Out/////////////////////
+            if (string.IsNullOrEmpty(firstCollidable) || string.IsNullOrEmpty(secondCollidable))
+            {
+                return;
+            }
+
+
+            ///////////End Early Out///////////////////
 
             var collisionType = namedObject.Properties.GetValue<CollisionType>(
                 nameof(CollisionRelationshipViewModel.CollisionType));
@@ -64,6 +72,9 @@ namespace OfficialPlugins.CollisionPlugin
             var secondSubCollision = namedObject.Properties.GetValue<string>(
                 nameof(CollisionRelationshipViewModel.SecondSubCollisionSelectedItem));
 
+            var isCollisionActive = namedObject.Properties.GetValue<bool>(
+                nameof(CollisionRelationshipViewModel.IsCollisionActive));
+
             var instanceName = namedObject.InstanceName;
 
             bool isFirstList;
@@ -78,59 +89,61 @@ namespace OfficialPlugins.CollisionPlugin
             var isFirstShapeCollection = firstType == "FlatRedBall.Math.Geometry.ShapeCollection";
             var isSecondShapeCollection = secondType == "FlatRedBall.Math.Geometry.ShapeCollection";
 
-            if (!string.IsNullOrEmpty(firstCollidable) && !string.IsNullOrEmpty(secondCollidable))
+            if(isSecondTileShapeCollection)
             {
-                if(isSecondTileShapeCollection)
-                {
-                    // same method used for both list and non-list
-                    codeBlock.Line($"{instanceName} = " +
-                        $"FlatRedBall.Math.Collision.CollisionManagerTileShapeCollectionExtensions.CreateTileRelationship(" +
-                        $"FlatRedBall.Math.Collision.CollisionManager.Self, " +
-                        $"{firstCollidable}, {secondCollidable});");
+                // same method used for both list and non-list
+                codeBlock.Line($"{instanceName} = " +
+                    $"FlatRedBall.Math.Collision.CollisionManagerTileShapeCollectionExtensions.CreateTileRelationship(" +
+                    $"FlatRedBall.Math.Collision.CollisionManager.Self, " +
+                    $"{firstCollidable}, {secondCollidable});");
 
-                }
-                //else if(isSecondShapeCollection)
-                //{
-                //    codeBlock.Line($"{instanceName} = FlatRedBall.Math.Collision.CollisionManager.Self.CreateRelationship(" +
-                //        $"{firstCollidable});");
-                //}
-                else
-                {
-                    codeBlock.Line($"{instanceName} = FlatRedBall.Math.Collision.CollisionManager.Self.CreateRelationship(" +
-                        $"{firstCollidable}, {secondCollidable});");
-                }
+            }
+            //else if(isSecondShapeCollection)
+            //{
+            //    codeBlock.Line($"{instanceName} = FlatRedBall.Math.Collision.CollisionManager.Self.CreateRelationship(" +
+            //        $"{firstCollidable});");
+            //}
+            else
+            {
+                codeBlock.Line($"{instanceName} = FlatRedBall.Math.Collision.CollisionManager.Self.CreateRelationship(" +
+                    $"{firstCollidable}, {secondCollidable});");
+            }
 
-                if(!string.IsNullOrEmpty(firstSubCollision) && 
-                    firstSubCollision != CollisionRelationshipViewModel.EntireObject)
-                {
-                    codeBlock.Line($"{instanceName}.SetFirstSubCollision(item => item.{firstSubCollision});");
-                }
-                if(!string.IsNullOrEmpty(secondSubCollision) && 
-                    secondSubCollision != CollisionRelationshipViewModel.EntireObject)
-                {
-                    codeBlock.Line($"{instanceName}.SetSecondSubCollision(item => item.{secondSubCollision});");
-                }
+            if(!string.IsNullOrEmpty(firstSubCollision) && 
+                firstSubCollision != CollisionRelationshipViewModel.EntireObject)
+            {
+                codeBlock.Line($"{instanceName}.SetFirstSubCollision(item => item.{firstSubCollision});");
+            }
+            if(!string.IsNullOrEmpty(secondSubCollision) && 
+                secondSubCollision != CollisionRelationshipViewModel.EntireObject)
+            {
+                codeBlock.Line($"{instanceName}.SetSecondSubCollision(item => item.{secondSubCollision});");
+            }
 
-                codeBlock.Line($"{instanceName}.Name = \"{instanceName}\";");
+            codeBlock.Line($"{instanceName}.Name = \"{instanceName}\";");
 
 
 
-                switch(collisionType)
-                {
-                    case CollisionType.NoPhysics:
-                        // don't do anything
-                        break;
-                    case CollisionType.MoveCollision:
+            switch(collisionType)
+            {
+                case CollisionType.NoPhysics:
+                    // don't do anything
+                    break;
+                case CollisionType.MoveCollision:
 
-                        codeBlock.Line($"{instanceName}.SetMoveCollision({firstMass}, {secondMass});");
-                        break;
-                    case CollisionType.BounceCollision:
-                        //var relationship = new FlatRedBall.Math.Collision.CollisionRelationship();
-                        //relationship.SetBounceCollision(firstMass, secondMass, elasticity);
-                        codeBlock.Line($"{instanceName}.SetBounceCollision({firstMass}, {secondMass}, {elasticity});");
-                        break;
-                }
+                    codeBlock.Line($"{instanceName}.SetMoveCollision({firstMass}, {secondMass});");
+                    break;
+                case CollisionType.BounceCollision:
+                    //var relationship = new FlatRedBall.Math.Collision.CollisionRelationship();
+                    //relationship.SetBounceCollision(firstMass, secondMass, elasticity);
+                    codeBlock.Line($"{instanceName}.SetBounceCollision({firstMass}, {secondMass}, {elasticity});");
+                    break;
+            }
 
+            if(!isCollisionActive)
+            {
+                codeBlock.Line(
+                    $"{instanceName}.{nameof(FlatRedBall.Math.Collision.CollisionRelationship.IsActive)} = false;");
             }
         }
 

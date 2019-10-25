@@ -41,7 +41,9 @@ namespace OfficialPlugins.CollisionPlugin
         //  - Initial release
         // 1.1
         //  - CollisionRelationships now have their Name set
-        public override Version Version => new Version(1, 1);
+        // 1.2
+        //  - Added ability to mark a collision as inactive
+        public override Version Version => new Version(1, 2);
 
         #endregion
 

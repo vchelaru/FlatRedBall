@@ -221,6 +221,19 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             set => SetAndPersist(value);
         }
 
+
+        [SyncedProperty]
+        [DefaultValue(true)]
+        public bool IsCollisionActive
+        {
+            get => Get<bool>();
+            set => SetAndPersist(value);
+        }
+
+        [DependsOn(nameof(IsCollisionActive))]
+        public Visibility InactiveMessageVisibility => IsCollisionActive ?
+            Visibility.Collapsed : Visibility.Visible;
+
         [DependsOn(nameof(GlueObject))]
         [DependsOn(nameof(FirstCollisionName))]
         [DependsOn(nameof(SecondCollisionName))]
