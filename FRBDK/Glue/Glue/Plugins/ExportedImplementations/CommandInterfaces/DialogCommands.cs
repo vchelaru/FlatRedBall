@@ -212,6 +212,42 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        public void ShowAddNewScreenDialog()
+        {
+            // AddScreen, add screen, addnewscreen, add new screen
+            if (ProjectManager.GlueProjectSave == null)
+            {
+                System.Windows.Forms.MessageBox.Show("You need to create or load a project first.");
+            }
+            else
+            {
+                if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
+                {
+                    TextInputWindow tiw = new TextInputWindow();
+
+                    tiw.Message = "Enter a name for the new Screen";
+                    tiw.Text = "New Screen";
+
+                    if (tiw.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
+                    {
+                        string whyItIsntValid;
+
+                        if (!NameVerifier.IsScreenNameValid(tiw.Result, null, out whyItIsntValid))
+                        {
+                            MessageBox.Show(whyItIsntValid);
+                        }
+                        else
+                        {
+                            var screen =
+                                GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(tiw.Result);
+
+                            GlueState.Self.CurrentElement = screen;
+                        }
+                    }
+                }
+            }
+        }
+
         private static void HandleAddVariableOk(AddVariableWindow addVariableWindow)
         {
             string resultName = addVariableWindow.ResultName;

@@ -124,6 +124,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 ElementViewWindow.StartUpScreen = screenTreeNode;
             }
 
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(screenSave);
+
             PluginManager.ReactToNewScreenCreated(screenSave);
 
 
@@ -235,6 +237,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             #endregion
 
             ElementViewWindow.AddEntity(entitySave);
+
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(entitySave);
 
             ProjectManager.SaveProjects();
 

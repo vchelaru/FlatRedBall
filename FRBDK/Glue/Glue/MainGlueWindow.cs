@@ -561,8 +561,7 @@ namespace Glue
 
         private void addScreenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RightClickHelper.AddScreenToolStripClick();
-
+            GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog();
         }
 
         private void addFileToolStripMenuItem_Click(object sender, EventArgs e)
