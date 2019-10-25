@@ -90,6 +90,15 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                         " also look at a new FlatRedBall Android project to see what this looks like.";
                     result.ShouldTryToLoadProject = false;
                 }
+                else if (exceptionMessage.Contains("Xamarin.Android.CSharp.targets"))
+                {
+                    message = @"Error loading this Android project. Please verify that you have correctly installed the requirements to build Android projects. Opening:
+https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/windows";
+                    locationToOpen = "https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/windows";
+                    result.ShouldTryToLoadProject = false;
+                    shouldThrowException = false;
+                }
+
                 else
                 {
                     message = $"Could not load the project {fileName}\n" +
