@@ -55,7 +55,7 @@ namespace FlatRedBallUwpTemplate
             FlatRedBallServices.InitializeFlatRedBall(this, graphics);
 
 
-            Type startScreenType = typeof(Shiprekt.Screens.GameScreen);
+            Type startScreenType = null;
 
             var commandLineArgs = Environment.GetCommandLineArgs();
             if (commandLineArgs.Length > 0)
