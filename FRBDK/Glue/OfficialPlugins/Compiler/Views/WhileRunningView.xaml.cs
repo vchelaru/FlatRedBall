@@ -22,6 +22,7 @@ namespace OfficialPlugins.Compiler.Views
     {
         public event EventHandler StopClicked;
         public event EventHandler RestartGameClicked;
+        public event EventHandler RestartGameCurrentScreenClicked;
         public event EventHandler RestartScreenClicked;
         public event EventHandler PauseClicked;
         public event EventHandler UnpauseClicked;
@@ -39,6 +40,11 @@ namespace OfficialPlugins.Compiler.Views
         private void HandleRestartGameClicked(object sender, RoutedEventArgs e)
         {
             RestartGameClicked?.Invoke(this, null);
+        }
+
+        private void HandleRestartGameCurrentScreenClicked(object sender, RoutedEventArgs e)
+        {
+            RestartGameCurrentScreenClicked?.Invoke(this, null);
         }
 
         private void HandleRestartScreenClicked(object sender, RoutedEventArgs e)

@@ -254,10 +254,7 @@ namespace FlatRedBall.Glue
                 }
                 else
                 {
-
-                    CodeWriter.RefreshStartupScreenCode();
-
-
+                    GlueCommands.Self.GenerateCodeCommands.GenerateStartupScreenCode();
                 }
             }
         }

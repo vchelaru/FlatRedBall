@@ -60,6 +60,20 @@
                 </ToolTip>
             </Button.ToolTip>
         </Button>
+
+        <Button Margin="0,0,6,0" Click="HandleRestartGameCurrentScreenClicked">
+            <Image Source="../icons/RestartGameOnCurrentScreen.png"></Image>
+            <Button.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Restart Game on Current Screen</TextBlock>
+                        <TextBlock>Kills, builds, and runs the game - restarts the current screen</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </Button.ToolTip>
+        </Button>
+
+
         <Button Margin="0,0,6,0" Click="HandleRestartScreenClicked">
             <Image Source="../icons/RestartScreen.png"></Image>
             <Button.ToolTip>

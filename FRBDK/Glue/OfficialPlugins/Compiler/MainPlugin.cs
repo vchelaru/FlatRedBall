@@ -11,6 +11,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Managers;
 using System.Windows;
 using OfficialPlugins.Compiler.CodeGeneration;
+using System.Net.Sockets;
 
 namespace OfficialPlugins.Compiler
 {
@@ -151,7 +152,7 @@ namespace OfficialPlugins.Compiler
                     {
                         var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
 
-                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, runner.Run);
+                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, () => runner.Run());
                     }
                     else
                     {
@@ -206,10 +207,50 @@ namespace OfficialPlugins.Compiler
                 });
             };
 
-            control.RestartScreenClicked += (not, used) =>
+            control.RestartGameCurrentScreenClicked += async (not, used) =>
+            {
+                string screenName = null;
+
+                try
+                {
+                    await CommandSending.CommandSender.SendCommand("GetCurrentScreen");
+                }
+                catch(SocketException)
+                {
+                    // do nothing, may not have been able to communicate, just output
+                    control.PrintOutput("Could not get the game's screen, restarting game from startup screen");
+                }
+                viewModel.IsPaused = false;
+                runner.Stop();
+                Compile(async (succeeded) =>
+                {
+                    if (succeeded)
+                    {
+                        await runner.Run(screenName);
+                    }
+                });
+            };
+
+            control.RestartScreenClicked += async (not, used) =>
             {
                 viewModel.IsPaused = false;
-                CommandSending.CommandSender.SendCommand("RestartScreen\n");
+                try
+                {
+                    control.PrintOutput("Sending command: RestartScreen");
+                    var response = await CommandSending.CommandSender.SendCommand("RestartScreen");
+                    if(response == "true")
+                    {
+                        control.PrintOutput($"Succeeded");
+                    }
+                    else
+                    {
+                        control.PrintOutput($"Response: {response}");
+                    }
+                }
+                catch (Exception e)
+                {
+                    control.PrintOutput("Failed to restart screen:\n" + e.ToString());
+                }
             };
 
             control.BuildContentClicked += delegate
@@ -229,7 +270,7 @@ namespace OfficialPlugins.Compiler
                     {
                         var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
 
-                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, runner.Run);
+                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, () => runner.Run());
                     }
                 });
             };
@@ -237,14 +278,14 @@ namespace OfficialPlugins.Compiler
             control.PauseClicked += (not, used) =>
             {
                 viewModel.IsPaused = true;
-                CommandSending.CommandSender.SendCommand("TogglePause\n");
+                CommandSending.CommandSender.SendCommand("TogglePause");
                 
             };
 
             control.UnpauseClicked += (not, used) =>
             {
                 viewModel.IsPaused = false;
-                CommandSending.CommandSender.SendCommand("TogglePause\n");
+                CommandSending.CommandSender.SendCommand("TogglePause");
 
             };
         }

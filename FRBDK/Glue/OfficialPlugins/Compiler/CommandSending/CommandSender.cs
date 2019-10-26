@@ -12,9 +12,12 @@ namespace OfficialPlugins.Compiler.CommandSending
 
     public static class CommandSender
     {
-        public static async void SendCommand(string text)
+        public static async Task<string> SendCommand(string text)
         {
-
+            if(text.EndsWith("\n") == false)
+            {
+                text += "\n";
+            }
             TcpClient client = new TcpClient();
             client.Connect("localhost", 8021);
 
@@ -25,20 +28,25 @@ namespace OfficialPlugins.Compiler.CommandSending
             byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(text);
             stm.Write(messageAsBytes, 0, messageAsBytes.Length);
 
+
             // give the server time to finish what it's doing:
-            await Task.Delay(100000);
+            await Task.Delay(1 * 40);
+            return ReadFromClient(client, stm);
+
+        }
+
+        private static string ReadFromClient(TcpClient client, Stream stm)
+        {
 
             //// Read response from server.
             byte[] buffer = new byte[1024];
             int bytesRead = stm.Read(buffer, 0, buffer.Length);
             var response = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-            Console.WriteLine("Response String: " + response);
 
             client.Close();
 
+            return response;
             //Console.ReadLine();
-
-
         }
     }
 }

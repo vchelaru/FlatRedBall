@@ -353,6 +353,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Compiler\Logic\" />
     <Folder Include="GlueView\" />
   </ItemGroup>
   <ItemGroup>
@@ -454,6 +455,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Compiler\Icons\Unpause.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Compiler\Icons\RestartGameOnCurrentScreen.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -10,4 +10,5 @@ For any project that requires a specific version of VS, we'll make it 15.0 (whic
 
 The reason for this is because I need to pick *a* version of VS to be tied to.
 
-As an alternative, I could also have the new project creator try to adjust the ToolsVersion but...I don't think I'll bother yet. I'll count this document as progress and up everything to 15.0.
+As an alternative, I could also have the new project creator try to adjust the ToolsVersion but...I don't think I'll bother yet. 
+I'll count this document as progress and up everything to 15.0.

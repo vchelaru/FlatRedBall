@@ -85,7 +85,7 @@ namespace OfficialPlugins.Compiler
             }
         }
 
-        internal async void Run()
+        internal async Task Run(string runArguments = null)
         {
             foundAlreadyRunningProcess = false;
             var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
@@ -99,7 +99,7 @@ namespace OfficialPlugins.Compiler
                 ProcessStartInfo startInfo = new ProcessStartInfo();
                 startInfo.FileName = exeLocation;
                 startInfo.WorkingDirectory = FileManager.GetDirectory(exeLocation);
-
+                startInfo.Arguments = runArguments;
                 runningGameProcess = System.Diagnostics.Process.Start(startInfo);
 
                 runningGameProcess.EnableRaisingEvents = true;
@@ -172,10 +172,22 @@ namespace OfficialPlugins.Compiler
         internal void Stop()
         {
             var process = runningGameProcess;
-            IntPtr id = process.MainWindowHandle;
+            IntPtr id = IntPtr.Zero;
 
-            Runner.GetWindowRect(id, out WindowRectangle windowRect);
-            lastWindowRectangle = windowRect;
+            try
+            {
+                id = process.MainWindowHandle;
+            }
+            catch
+            {
+                // process could be dead
+            }
+
+            if(id != null)
+            {
+                Runner.GetWindowRect(id, out WindowRectangle windowRect);
+                lastWindowRectangle = windowRect;
+            }
 
             if (process != null)
             {

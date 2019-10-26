@@ -205,6 +205,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             CsvCodeGenerator.GenerateAllCustomClasses(GlueState.CurrentGlueProject);
         }
 
+        public void GenerateStartupScreenCode()
+        {
+            CodeWriter.RefreshStartupScreenCode();
+        }
 
     }
 }

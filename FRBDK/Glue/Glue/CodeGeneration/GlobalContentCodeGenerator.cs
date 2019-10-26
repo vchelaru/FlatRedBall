@@ -437,8 +437,10 @@ namespace FlatRedBall.Glue.Parsing
         {
             var extension = FileManager.GetExtension(item.Name);
             var assetTypeInfo = item.GetAssetTypeInfo();
-            return item.IsCsvOrTreatedAsCsv || 
-                assetTypeInfo?.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Graphics.Animation.AnimationChainList";
+            var qualifiedType = assetTypeInfo?.QualifiedRuntimeTypeName.QualifiedType;
+            return item.IsCsvOrTreatedAsCsv ||
+                qualifiedType == "FlatRedBall.Graphics.Animation.AnimationChainList" ||
+                qualifiedType == "Microsoft.Xna.Framework.Graphics.Texture2D";
         }
 
         #endregion

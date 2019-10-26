@@ -31,5 +31,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void GenerateCustomClassesCode();
 
+        void GenerateStartupScreenCode();
+
     }
 }

@@ -846,7 +846,7 @@ namespace FlatRedBall.Content
 
 		public void UnloadAsset<T>(T assetToUnload)
 		{
-#region Remove from non-disposables if the non-disposables containes the assetToUnload
+            #region Remove from non-disposables if the non-disposables containes the assetToUnload
 			if (this.mNonDisposableDictionary.ContainsValue(assetToUnload))
 			{
 				string assetName = "";
@@ -863,10 +863,10 @@ namespace FlatRedBall.Content
 				mNonDisposableDictionary.Remove(assetName);
 
 			}
-#endregion
+            #endregion
 
-#region If it's an IDisposable, then remove it from the disposable dictionary
-			if (assetToUnload is IDisposable)
+            #region If it's an IDisposable, then remove it from the disposable dictionary
+            if (assetToUnload is IDisposable)
 			{
 				IDisposable asDisposable = assetToUnload as IDisposable;
 
@@ -890,12 +890,12 @@ namespace FlatRedBall.Content
 				else
 				{
 					throw new ArgumentException("The content manager " + mName + " does not contain the argument " +
-						"assetToUnload.  Check the " +
+						"assetToUnload, of the file has been loaded from XNB and cannot be unloaded without disposing the content manager.  Check the " +
 						"contentManagerName and verify that it is a contentManager that has loaded this asset.  Assets which have been " +
 						"loaded from the project must be loaded by unloading an entire Content Manager");
 				}
 			}
-#endregion
+            #endregion
 		}
 
 		public new void Unload()

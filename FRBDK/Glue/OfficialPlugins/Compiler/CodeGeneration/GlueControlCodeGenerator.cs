@@ -53,17 +53,32 @@ namespace " + GlueState.Self.ProjectNamespace + @"
 
             while (isRunning)
             {
-                //Console.WriteLine($""Waiting for connection at { DateTime.Now}"");
-                TcpClient client = listener.AcceptTcpClient();
-                //Console.WriteLine($""Client connected at {DateTime.Now}"");
-                HandleClient(client);
+                try
+                {
+                    TcpClient client = listener.AcceptTcpClient();
+                    HandleClient(client);
 
-                client.Close();
+                    client.Close();
+                }
+                catch(System.Exception e)
+                {
+                    if(isRunning)
+                    {
+                        throw e;
+                    }
+                }
             }
 
             isRunning = false;
 
             listener.Stop();
+        }
+
+        public void Kill()
+        {
+            isRunning = false;
+            listener.Stop();
+
         }
 
         private void HandleClient(TcpClient client)
@@ -75,38 +90,56 @@ namespace " + GlueState.Self.ProjectNamespace + @"
                 stringBuilder.AppendLine(reader.ReadLine());
             }
 
-            ProcessMessage(stringBuilder.ToString()?.Trim());
-
-            byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(""true"");
+            var response = ProcessMessage(stringBuilder.ToString()?.Trim());
+            if(response == null)
+            {
+                response = ""true"";
+            }
+            byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(response);
             client.GetStream().Write(messageAsBytes, 0, messageAsBytes.Length);
 
         }
 
-        private void ProcessMessage(string message)
+        private string ProcessMessage(string message)
         {
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
-
-            switch (message)
+            bool handledImmediately = false;
+            switch(message)
             {
-                case ""RestartScreen"":
-                    screen.RestartScreen(true);
-                    break;
-                case ""TogglePause"":
+                case ""GetCurrentScreen"":
+                    handledImmediately = true;
+                    return screen.GetType().FullName;
+            }
 
-                    if (screen.IsPaused)
+            if(!handledImmediately)
+            {
+                FlatRedBall.Instructions.InstructionManager.AddSafe(() =>
+                {
+                    switch (message)
                     {
-                        screen.UnpauseThisScreen();
-                    }
-                    else
-                    {
-                        screen.PauseThisScreen();
-                    }
+                        case ""RestartScreen"":
+                            screen.RestartScreen(true);
+                            break;
+                        case ""TogglePause"":
 
-                    break;
+                            if (screen.IsPaused)
+                            {
+                                screen.UnpauseThisScreen();
+                            }
+                            else
+                            {
+                                screen.PauseThisScreen();
+                            }
+
+                            break;
+                    }
+                });
+            }
+
+            return ""true"";
         }
     }
-}
 }
 ";
             return toReturn;

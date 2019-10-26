@@ -2488,7 +2488,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 }
 
-                CodeWriter.RefreshStartupScreenCode();
+                GlueCommands.Self.GenerateCodeCommands.GenerateStartupScreenCode();
 
                 GluxCommands.Self.SaveGlux();
             }

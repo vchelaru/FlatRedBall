@@ -54,7 +54,30 @@ namespace FlatRedBallDesktopGlTemplate
         
             FlatRedBallServices.InitializeFlatRedBall(this, graphics);
 
-            //ScreenManager.Start(typeof(SomeScreen).FullName);
+
+            Type startScreenType = typeof(Shiprekt.Screens.GameScreen);
+
+            var commandLineArgs = Environment.GetCommandLineArgs();
+            if (commandLineArgs.Length > 0)
+            {
+                var thisAssembly = this.GetType().Assembly;
+                // see if any of these are screens:
+                foreach (var item in commandLineArgs)
+                {
+                    var type = thisAssembly.GetType(item);
+
+                    if (type != null)
+                    {
+                        startScreenType = type;
+                        break;
+                    }
+                }
+            }
+
+            if (startScreenType != null)
+            {
+                FlatRedBall.Screens.ScreenManager.Start(startScreenType);
+            }
 
             base.Initialize();
         }

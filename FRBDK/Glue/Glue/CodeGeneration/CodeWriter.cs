@@ -1698,21 +1698,13 @@ namespace FlatRedBallAddOns.Entities
                     requiredScreen = screenSave;
                     break;
                 }
-
             }
 
-            if (requiredScreen != null)
-            {
-                CodeWriter.SetStartUpScreen(
-                    ProjectManager.GameClassFileName,
-                    requiredScreen.Name);
-            }
-            else
-            {
-                CodeWriter.SetStartUpScreen(
-                    ProjectManager.GameClassFileName,
-                    ProjectManager.StartUpScreen);
-            }
+            var screenName = requiredScreen?.Name ?? ProjectManager.StartUpScreen;
+
+            CodeWriter.SetStartUpScreen(
+                ProjectManager.GameClassFileName,
+                screenName);
         }
 
         private static void SetStartUpScreen(string gameFileName, string startUpScreen)
@@ -1753,7 +1745,14 @@ namespace FlatRedBallAddOns.Entities
 
                 #endregion
 
-                if (contents.Contains("ScreenManager.Start"))
+                if(contents.Contains("Type startScreenType = "))
+                {
+                    var line = $"            Type startScreenType = typeof({startUpScreen});";
+                    // new projects (as of October 25 2019) use this multi-line approach
+                    StringFunctions.ReplaceLine(ref contents, "Type startScreenType = ", line);
+
+                }
+                else if (contents.Contains("ScreenManager.Start"))
                 {
                     StringFunctions.ReplaceLine(ref contents, "ScreenManager.Start", lineThatStartsEverything);
                 }

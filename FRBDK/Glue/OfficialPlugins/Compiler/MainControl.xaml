@@ -26,6 +26,7 @@
                 Visibility="{Binding WhileRunningViewVisibility}"
                 StopClicked="WhileRunningView_StopClicked"
                 RestartGameClicked="WhileRunningView_RestartGameClicked"
+                RestartGameCurrentScreenClicked ="WhileRunningView_RestartGameCurrentScreenClicked"
                 RestartScreenClicked="WhileRunningView_RestartScreenClicked"
                 PauseClicked="WhileRunningView_PauseClicked"
                 UnpauseClicked="WhileRunningView_UnpauseClicked"
