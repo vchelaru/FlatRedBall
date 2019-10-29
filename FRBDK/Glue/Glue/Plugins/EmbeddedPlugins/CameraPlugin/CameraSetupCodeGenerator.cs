@@ -30,7 +30,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             if(!string.IsNullOrEmpty(contents))
             { 
 
-                string whatToLookFor = "CameraSetup.SetupCamera(SpriteManager.Camera, graphics";
+                string whatToLookFor =     "CameraSetup.SetupCamera(SpriteManager.Camera, graphics";
 
                 string lineToReplaceWith = "CameraSetup.SetupCamera(SpriteManager.Camera, graphics);";
 
@@ -63,7 +63,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // We gotta find where to put the start call.  This should be after 
                     // FlatRedBallServices.InitializeFlatRedBall
 
-                    int index = CodeParser.GetIndexBeforeBaseInitialize(contents);
+                    int index = CodeParser.GetIndexAfterBaseInitialize(contents);
 
                     if(index == -1)
                     {

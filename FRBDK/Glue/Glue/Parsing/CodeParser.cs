@@ -183,9 +183,16 @@ namespace FlatRedBall.Glue.Parsing
         }
 
 
-        public static int GetIndexBeforeBaseInitialize(string contents)
+        public static int GetIndexAfterBaseInitialize(string contents)
         {
-            int index = contents.IndexOf("ScreenManager.Start(");
+            // As of October 28, 2019
+            // new templates have this:
+            int index = contents.IndexOf("Type startScreenType = null;");
+
+            if(index == -1)
+            {
+                index = contents.IndexOf("ScreenManager.Start(");
+            }
 
             return index;
         }
