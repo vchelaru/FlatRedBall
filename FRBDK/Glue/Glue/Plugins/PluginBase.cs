@@ -102,8 +102,9 @@ namespace FlatRedBall.Glue.Plugins
         public ReactToChangedPropertyDelegate ReactToChangedPropertyHandler { get; protected set; }
         public ReactToFileChangeDelegate ReactToFileChangeHandler { get; protected set; }
         public ReactToFileChangeDelegate ReactToBuiltFileChangeHandler { get; protected set; }
+        public Action<FilePath> ReactToCodeFileChange { get; protected set; }
         public ReactToItemSelectDelegate ReactToItemSelectHandler { get; protected set; }
-        public ReactToNamedObjectChangedValueDelegate ReactToNamedObjectChangedValueHandler { get; protected set; }
+        public ReactToNamedObjectChangedValueDelegate ReactToNamedObjectChangedValue { get; protected set; }
         public ReactToNewFileDelegate ReactToNewFileHandler { get; protected set; }
         public ReactToNewObjectDelegate ReactToNewObjectHandler { get; protected set; }
 

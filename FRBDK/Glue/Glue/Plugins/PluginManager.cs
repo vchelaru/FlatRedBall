@@ -1412,6 +1412,16 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+        internal static void ReactToChangedCodeFile(FilePath filePath)
+        {
+            CallMethodOnPlugin(plugin =>
+            {
+                plugin.ReactToCodeFileChange(filePath);
+            },
+            nameof(ReactToChangedCodeFile),
+            plugin => plugin.ReactToCodeFileChange != null);
+        }
+
         internal static void ReactToChangedFile(string fileName)
         {
 
@@ -1748,7 +1758,7 @@ namespace FlatRedBall.Glue.Plugins
                 }
 
                 // Execute the new style plugins
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToNamedObjectChangedValueHandler != null);
+                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToNamedObjectChangedValue != null);
                 foreach (var plugin in plugins)
                 {
                     var container = pluginManager.mPluginContainers[plugin];
@@ -1757,7 +1767,7 @@ namespace FlatRedBall.Glue.Plugins
                         PluginBase plugin1 = plugin;
                         PluginCommand(() =>
                             {
-                                plugin1.ReactToNamedObjectChangedValueHandler(changedMember, oldValue);
+                                plugin1.ReactToNamedObjectChangedValue(changedMember, oldValue);
                             },container, "Failed in ReactToNamedObjectChangedValue");
                     }
                 }
@@ -2026,7 +2036,6 @@ namespace FlatRedBall.Glue.Plugins
         public static void HitBreakpoint()
         {
             System.Diagnostics.Debugger.Break();
-
         }
 
         internal static void AdjustDisplayedScreen(ScreenSave screenSave, ScreenSavePropertyGridDisplayer screenSaveDisplayer)

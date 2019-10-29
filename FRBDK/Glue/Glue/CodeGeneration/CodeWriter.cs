@@ -1483,14 +1483,16 @@ namespace FlatRedBallAddOns.Entities
 
         }
 
-        public static void InitializeStaticData(string gameFileName, bool whetherToCall)
+        public static void InitializeStaticData(string relativeGameFileName, bool whetherToCall)
         {
-            if (string.IsNullOrEmpty(gameFileName))
+            if (string.IsNullOrEmpty(relativeGameFileName))
             {
                 return;
             }
+            var gameFilePath = new FilePath(ProjectManager.ProjectBase.Directory + relativeGameFileName);
 
-            string contents = FileManager.FromFileText(ProjectManager.ProjectBase.Directory + gameFileName);
+            string contents = FileManager.FromFileText(gameFilePath.FullPath);
+            var contentsBeforeChange = contents;
 
             string lineToReplaceWith = "GlobalContent.Initialize();";
 
@@ -1522,47 +1524,28 @@ namespace FlatRedBallAddOns.Entities
                 contents = contents.Insert(index, lineToReplaceWith + Environment.NewLine);
             }
 
-            
-
-            int numberOfTries = 0;
-            int maxTries = 5;
-            Exception lastException = null ;
-            string fileName = FileManager.RelativeDirectory + gameFileName;
-
-            if (new FileInfo(fileName).IsReadOnly)
+            if(contents != contentsBeforeChange)
             {
-                GlueGui.ShowMessageBox("The file\n\n" + fileName + "\n\nis read-only, so Glue can't generate code");
-            }
-            else
-            {
-
-                FileWatchManager.IgnoreNextChangeOnFile(fileName);
-                while (numberOfTries < maxTries)
+                if (new FileInfo(gameFilePath.FullPath).IsReadOnly)
                 {
-                    try
-                    {
-                        FileManager.SaveText(contents, fileName);
-                        break;
-                    }
-                    catch (Exception e)
-                    {
-                        lastException = e;
-                        numberOfTries++;
-                    }
+                    GlueGui.ShowMessageBox("The file\n\n" + gameFilePath + "\n\nis read-only, so Glue can't generate code");
                 }
-
-                if (numberOfTries == maxTries)
+                else
                 {
+                    FileWatchManager.IgnoreNextChangeOnFile(gameFilePath.Standardized);
                     try
                     {
-                        FileManager.SaveText(contents, FileManager.RelativeDirectory + gameFileName + ".Backup");
-                        throw lastException;
+                        GlueCommands.Self.TryMultipleTimes(() =>
+                        {
+                            FileManager.SaveText(contents, gameFilePath.FullPath);
+                        });
                     }
-                    catch
+                    catch(Exception e)
                     {
-                        throw lastException;
+                        // If we failed, save a backup
+                        FileManager.SaveText(contents, gameFilePath.FullPath + ".Backup");
+                        throw e;
                     }
-
                 }
             }
         }

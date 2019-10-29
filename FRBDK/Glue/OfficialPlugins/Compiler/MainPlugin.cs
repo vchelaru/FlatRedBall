@@ -12,6 +12,7 @@ using FlatRedBall.Glue.Managers;
 using System.Windows;
 using OfficialPlugins.Compiler.CodeGeneration;
 using System.Net.Sockets;
+using OfficialPlugins.Compiler.Managers;
 
 namespace OfficialPlugins.Compiler
 {
@@ -60,13 +61,29 @@ namespace OfficialPlugins.Compiler
 
             CreateToolbar();
 
+            RefreshManager.Self.InitializeEvents(this.control.PrintOutput, this.control.PrintOutput);
+
+            AssignEvents();
+
+            compiler = Compiler.Self;
+            runner = Runner.Self;
+            runner.IsRunningChanged += HandleIsRunningChanged;
+        }
+
+        private void AssignEvents()
+        {
             this.ReactToFileChangeHandler += HandleFileChanged;
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
 
-            compiler = new Compiler();
-            runner = new Runner();
-            runner.IsRunningChanged += HandleIsRunningChanged;
+            this.ReactToFileChangeHandler += (fileName) => 
+                RefreshManager.Self.HandleFileChanged(new FlatRedBall.Glue.IO.FilePath(fileName));
+            this.ReactToCodeFileChange += RefreshManager.Self.HandleFileChanged;
+            this.ReactToNewEntityCreated += RefreshManager.Self.HandleNewEntityCreated;
+            this.ReactToNewScreenCreated += RefreshManager.Self.HandleNewScreenCreated;
+            this.ReactToNewObjectHandler += RefreshManager.Self.HandleNewObjectCreated;
+            this.ReactToElementVariableChange += RefreshManager.Self.HandleVariableChanged;
+            this.ReactToNamedObjectChangedValue += RefreshManager.Self.HandleNamedObjectValueChanged;
         }
 
         private void HandleIsRunningChanged(object sender, EventArgs e)
@@ -140,34 +157,33 @@ namespace OfficialPlugins.Compiler
             base.AddToToolBar(toolbar, "Standard");
         }
 
-        private void HandleToolbarRunClicked(object sender, EventArgs e)
+        private async void HandleToolbarRunClicked(object sender, EventArgs e)
         {
             PluginManager.ReceiveOutput("Building Project. See \"Build\" tab for more information...");
-            Compile((succeeded) =>
+            var succeeded = await Compile();
+
+            if (succeeded)
             {
-                if (succeeded)
+                bool hasErrors = GetIfHasErrors();
+                if (hasErrors)
                 {
-                    bool hasErrors = GetIfHasErrors();
-                    if (hasErrors)
-                    {
-                        var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
+                    var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
 
-                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, () => runner.Run());
-                    }
-                    else
-                    {
-                        PluginManager.ReceiveOutput("Building succeeded. Running project...");
-
-                        runner.Run();
-                    }
+                    GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run());
                 }
                 else
                 {
-                    PluginManager.ReceiveError("Building failed. See \"Build\" tab for more information.");
+                    PluginManager.ReceiveOutput("Building succeeded. Running project...");
 
-
+                    await runner.Run();
                 }
-            });
+            }
+            else
+            {
+                PluginManager.ReceiveError("Building failed. See \"Build\" tab for more information.");
+
+
+            }
         }
 
         private void CreateControl()
@@ -184,9 +200,9 @@ namespace OfficialPlugins.Compiler
 
         private void AssignControlEvents()
         {
-            control.BuildClicked += delegate
+            control.BuildClicked += async (not, used) =>
             {
-                Compile();
+                await Compile();
             };
 
             control.StopClicked += (not, used) =>
@@ -194,17 +210,18 @@ namespace OfficialPlugins.Compiler
                 runner.Stop();
             };
 
-            control.RestartGameClicked += (not, used) =>
+            control.RestartGameClicked += async (not, used) =>
             {
                 viewModel.IsPaused = false;
                 runner.Stop();
-                Compile((succeeded) =>
+                var succeeded = await Compile();
+                if (succeeded)
                 {
                     if (succeeded)
                     {
-                        runner.Run();
+                        await runner.Run();
                     }
-                });
+                }
             };
 
             control.RestartGameCurrentScreenClicked += async (not, used) =>
@@ -213,7 +230,7 @@ namespace OfficialPlugins.Compiler
 
                 try
                 {
-                    await CommandSending.CommandSender.SendCommand("GetCurrentScreen");
+                    screenName = await CommandSending.CommandSender.SendCommand("GetCurrentScreen");
                 }
                 catch(SocketException)
                 {
@@ -222,13 +239,15 @@ namespace OfficialPlugins.Compiler
                 }
                 viewModel.IsPaused = false;
                 runner.Stop();
-                Compile(async (succeeded) =>
+                var succeeded = await Compile();
+
+                if (succeeded)
                 {
                     if (succeeded)
                     {
                         await runner.Run(screenName);
                     }
-                });
+                }
             };
 
             control.RestartScreenClicked += async (not, used) =>
@@ -258,21 +277,22 @@ namespace OfficialPlugins.Compiler
                 BuildContent(OutputSuccessOrFailure);
             };
 
-            control.RunClicked += delegate
+            control.RunClicked += async (not, used) =>
             {
-                Compile((succeeded) =>
+                var succeeded = await Compile();
+                if (succeeded) 
                 {
                     if (succeeded)
                     {
-                        runner.Run();
+                        await runner.Run();
                     }
                     else
                     {
                         var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
 
-                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, () => runner.Run());
+                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run());
                     }
-                });
+                }
             };
 
             control.PauseClicked += (not, used) =>
@@ -317,9 +337,12 @@ namespace OfficialPlugins.Compiler
             compiler.BuildContent(control.PrintOutput, control.PrintOutput, afterCompile, viewModel.Configuration);
         }
 
-        private void Compile(Action<bool> afterCompile = null)
+        private Task<bool> Compile()
         {
-            compiler.Compile(control.PrintOutput, control.PrintOutput, afterCompile, viewModel.Configuration);
+            return compiler.Compile(
+                control.PrintOutput, 
+                control.PrintOutput, 
+                viewModel.Configuration);
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace OfficialPlugins.Compiler
 {
-    class Compiler
+    class Compiler : Singleton<Compiler>
     {
         List<FilePath> AvailableLocations = new List<FilePath>
         {
@@ -47,7 +47,7 @@ namespace OfficialPlugins.Compiler
             }
         }
 
-        internal void Compile(Action<string> printOutput, Action<string> printError, Action<bool> afterBuilt = null, 
+        internal async Task<bool> Compile(Action<string> printOutput, Action<string> printError,  
             string configuration = "Debug")
         {
             var shouldCompile = true;
@@ -62,18 +62,73 @@ namespace OfficialPlugins.Compiler
             //do we actually want to do this ?
             if(shouldCompile)
             {
+                bool succeeded = true;
 
-               TaskManager.Self.AddAsyncTask(() =>
+                var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
+
+
+                if (MsBuildLocation != null)
                 {
-                    var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
+                    string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
 
-                    bool succeeded = RunMsBuildOnProject(printOutput, printError, configuration, projectFileName);
+                    // For info on parameters:
+                    // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
+                    // \m uses multiple cores
+                    string arguments = $"\"{projectFileName}\" " +
+                        $"/p:Configuration=\"{configuration}\" " +
+                        $"/p:XNAContentPipelineTargetPlatform=\"Windows\" " +
+                        $"/p:XNAContentPipelineTargetProfile=\"HiDef\" " +
+                        $"/p:OutDir=\"{outputDirectory}\" " +
+                        "/m " +
+                        "/nologo " +
+                        "/verbosity:minimal";
 
-                    afterBuilt?.Invoke(succeeded);
-                },
-                "Building project");
+                    Process process = CreateProcess("\"" + MsBuildLocation.FullPath + "\"", arguments);
 
+                    printOutput("Build started at " + DateTime.Now.ToLongTimeString());
+                    // This is noisy and technical. Reducing output window verbosity
+                    //printOutput(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
+
+                    StringBuilder outputStringBuilder = new StringBuilder();
+                    StringBuilder errorStringBuilder = new StringBuilder();
+                    var errorString = await Task.Run( () => RunProcess(outputStringBuilder, errorStringBuilder, MsBuildLocation, process));
+
+                    if(outputStringBuilder.Length > 0)
+                    {
+                        printOutput(outputStringBuilder.ToString());
+                    }
+
+                    if(errorStringBuilder.Length > 0)
+                    {
+                        printError(errorStringBuilder.ToString());
+                    }
+
+                    if (!string.IsNullOrEmpty(errorString))
+                    {
+                        printError(errorString);
+                        succeeded = false;
+                    }
+                    else
+                    {
+                        printOutput($"Build succeeded at {DateTime.Now.ToLongTimeString()}");
+                    }
+                }
+                else
+                {
+                    string cantFindMsBuildMessage =
+                        $"Could not find msbuild.exe. Looked in the following locations:";
+
+                    foreach (var item in AvailableLocations)
+                    {
+                        cantFindMsBuildMessage += $"\n{item}";
+                    }
+
+                    printError(cantFindMsBuildMessage);
+                    succeeded = false;
+                }
+                return succeeded;
             }
+            return false;
         }
 
         private string GetMissingFrameworkMessage()
@@ -124,8 +179,20 @@ namespace OfficialPlugins.Compiler
                 // This is noisy and technical. Reducing output window verbosity
                 //printOutput(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
 
+                StringBuilder outputStringBuilder = new StringBuilder();
+                StringBuilder errorStringBuilder = new StringBuilder();
+                var errorString = RunProcess(outputStringBuilder, errorStringBuilder, MsBuildLocation, process);
 
-                var errorString = RunProcess(printOutput, printError, MsBuildLocation, process);
+                if (outputStringBuilder.Length > 0)
+                {
+                    printOutput(outputStringBuilder.ToString());
+                }
+
+                if (errorStringBuilder.Length > 0)
+                {
+                    printError(errorStringBuilder.ToString());
+                }
+
                 if (!string.IsNullOrEmpty(errorString))
                 {
                     printError(errorString);
@@ -152,7 +219,7 @@ namespace OfficialPlugins.Compiler
             return succeeded;
         }
 
-        private static string RunProcess(Action<string> printOutput, Action<string> printError, FilePath executable, Process process)
+        private static string RunProcess(StringBuilder printOutput, StringBuilder printError, FilePath executable, Process process)
         {
             string errorString = "";
             process.Start();
@@ -172,7 +239,7 @@ namespace OfficialPlugins.Compiler
                     if(!string.IsNullOrEmpty(line))
                     {
 
-                        printOutput(line);
+                        printOutput.AppendLine(line);
                     }
                 }
             }
@@ -196,7 +263,7 @@ namespace OfficialPlugins.Compiler
                 {
                     if (printOutput != null)
                     {
-                        printOutput(str);
+                        printOutput.AppendLine(str);
                     }
                 }
 
@@ -204,7 +271,7 @@ namespace OfficialPlugins.Compiler
                 {
                     if (printError != null)
                     {
-                        printError(str);
+                        printError.AppendLine(str);
                     }
                     errorString += str + "\n";
                 }

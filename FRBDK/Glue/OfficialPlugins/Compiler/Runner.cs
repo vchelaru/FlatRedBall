@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace OfficialPlugins.Compiler
 {
-    class Runner
+    class Runner : Singleton<Runner>
     {
         #region Fields/Properties
 
@@ -25,6 +26,8 @@ namespace OfficialPlugins.Compiler
         WindowRectangle? lastWindowRectangle;
 
         System.Windows.Forms.Timer timer;
+
+        public bool DidRunnerStartProcess => IsRunning && foundAlreadyRunningProcess == false;
 
         #endregion
 
@@ -142,8 +145,6 @@ namespace OfficialPlugins.Compiler
             //IntPtr id = process.MainWindowHandle;
             //Runner.MoveWindow(process.MainWindowHandle, 0, 0, 500, 500, true);
             //Runner.GetWindowRect(id, out RECT windowRect);
-
-            int m = 3;
 
             if(foundAlreadyRunningProcess)
             {

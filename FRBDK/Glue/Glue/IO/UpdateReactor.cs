@@ -481,6 +481,8 @@ namespace FlatRedBall.Glue.IO
                     {
                         var treeNode = GlueState.Self.Find.ElementTreeNode(element);
 
+                        // Oct 27, 2019
+                        // vic says - I don't think we need this anymore do we? What purpose does it serve?
                         treeNode?.UpdateReferencedTreeNodes();
 
                         if (element == EditorLogic.CurrentElement && EditorLogic.CurrentEventResponseSave != null &&
@@ -491,6 +493,8 @@ namespace FlatRedBall.Glue.IO
                         }
 
                     }
+
+                    PluginManager.ReactToChangedCodeFile(new FilePath(absoluteName));
                 }
             }
         }
