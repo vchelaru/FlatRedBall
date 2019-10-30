@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue.Parsing
 {

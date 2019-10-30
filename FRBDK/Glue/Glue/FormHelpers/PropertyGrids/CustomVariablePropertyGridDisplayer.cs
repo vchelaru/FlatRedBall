@@ -44,19 +44,14 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             bool shouldIncludeOverridingPropertyType = true;
             bool shouldIncludeTypeConverter = true;
 
-            ExcludeMember("Properties");
-            ExcludeMember("FulfillsRequirement");
+            ExcludeMember(nameof(CustomVariable.Properties));
+            ExcludeMember(nameof(CustomVariable.FulfillsRequirement));
 
             DefaultValueIncludeActivity(instance);
 
             if (string.IsNullOrEmpty(instance.SourceObject))
             {
                 shouldIncludeSourceObjectProperty = false;
-            }
-
-            if (!instance.CreatesEvent)
-            {
-                ExcludeMember("FireEventBeforeOrAfterSet");
             }
 
             if (string.IsNullOrEmpty(instance.OverridingPropertyType))
@@ -76,56 +71,40 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             }
 
-            // Vic says - these have been moved to the tree view instead of being embedded in the property grid
-
-            //for (int i = 0; i < CustomVariables.Count; i++)
-            //{
-            //    pdc = PropertyDescriptorHelper.AddProperty(
-            //        pdc,
-            //        CustomVariables[i].Name,
-            //        Type.GetType(AssetTypeInfo.QualifyBaseType(CustomVariables[i].Type)));
-            //}
-
-            //if (ContainerType == ContainerType.Entity)
-            {
-                //				pdc = PropertyDescriptorHelper.RemoveProperty(pdc, "IsSharedStatic");
-            }
-
-
             if (shouldIncludeSourceObject)
             {
-                IncludeMember("SourceObject", typeof(CustomVariable), new AvailableNamedObjectsAndFiles(CurrentElement));
+                IncludeMember(nameof(CustomVariable.SourceObject), typeof(CustomVariable), new AvailableNamedObjectsAndFiles(CurrentElement));
             }
             else
             {
-                ExcludeMember("SourceObject");
+                ExcludeMember(nameof(CustomVariable.SourceObject));
             }
 
             if (shouldIncludeSourceObjectProperty)
             {
-                IncludeMember("SourceObjectProperty", typeof(CustomVariable), new AvailableExposedNamedObjectVariables(instance, CurrentElement));
+                IncludeMember(nameof(CustomVariable.SourceObjectProperty), typeof(CustomVariable), new AvailableExposedNamedObjectVariables(instance, CurrentElement));
             }
             else
             {
-                ExcludeMember("SourceObjectProperty");
+                ExcludeMember(nameof(CustomVariable.SourceObjectProperty));
             }
 
             if (shouldIncludeOverridingPropertyType)
             {
-                IncludeMember("OverridingPropertyType", typeof(CustomVariable), new AvailablePrimitiveTypeStringConverter());
+                IncludeMember(nameof(CustomVariable.OverridingPropertyType), typeof(CustomVariable), new AvailablePrimitiveTypeStringConverter());
             }
             else
             {
-                ExcludeMember("OverridingPropertyType");
+                ExcludeMember(nameof(CustomVariable.OverridingPropertyType));
             }
 
             if (shouldIncludeTypeConverter)
             {
-                IncludeMember("TypeConverter", typeof(CustomVariable), new AvailableCustomVariableTypeConverters());
+                IncludeMember(nameof(CustomVariable.TypeConverter), typeof(CustomVariable), new AvailableCustomVariableTypeConverters());
             }
             else
             {
-                ExcludeMember("TypeConverter");
+                ExcludeMember(nameof(CustomVariable.TypeConverter));
             }
 
         }

@@ -1,4 +1,6 @@
-﻿namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
+﻿using FlatRedBall.Glue.SaveClasses;
+
+namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 {
     public class CodeBlockProperty : CodeBlockBase
     {
@@ -105,11 +107,7 @@
         }
 
         internal static ICodeBlock AutoProperty(this ICodeBlock pCodeBlock, string pName,
-            bool Public = false,
-            bool Private = false,
-            bool Protected = false,
-            bool Internal = false,
-            bool ProtectedInternal = false,
+            Scope scope = Scope.Public,
             bool Static = false,
             bool Override = false,
             bool Virtual = false,
@@ -117,11 +115,11 @@
         {
             return pCodeBlock.AutoProperty(
                 StringHelper.Modifiers(
-                Public: Public,
-                Private: Private,
-                Protected: Protected,
-                Internal: Internal,
-                ProtectedInternal: ProtectedInternal,
+                Public: scope == Scope.Public,
+                Private: scope == Scope.Private,
+                Protected: scope == Scope.Protected,
+                Internal: scope == Scope.Internal,
+                ProtectedInternal: false,
                 Static: Static,
                 Override: Override,
                 Virtual: Virtual,

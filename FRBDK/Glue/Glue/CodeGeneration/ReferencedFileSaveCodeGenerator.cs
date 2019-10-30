@@ -423,12 +423,11 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 if (element == null)
                 {
+                    var scope = referencedFile.HasPublicProperty ? Scope.Public : Scope.Protected;
                     // Global Content will always have the content as properties.  This is so that you can switch between
                     // async and sync loading and not have to change reflection code
-                    codeBlock.AutoProperty(variableName, 
-                                           Public: referencedFile.HasPublicProperty,
-                                            // Should be protected so derived classes can access this
-                                            Protected: !referencedFile.HasPublicProperty,
+                    codeBlock.AutoProperty(variableName,
+                                           scope,
 
                                            Static: referencedFile.IsSharedStatic, 
                                            Type: typeName);

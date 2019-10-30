@@ -1,23 +1,48 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProjectDesktopGl", "TestProjectDesktopGl\TestProjectDesktopGl.csproj", "{F210B09E-7638-477D-9FBB-426338CE44D0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallDesktopGL", "..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallDesktopGL.csproj", "{10BDA06C-7269-4CCE-AE2A-D445F414520A}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
+		..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{10bda06c-7269-4cce-ae2a-d445f414520a}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
+		DebugWindows|Any CPU = DebugWindows|Any CPU
 		DebugWindows|x86 = DebugWindows|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F210B09E-7638-477D-9FBB-426338CE44D0}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{F210B09E-7638-477D-9FBB-426338CE44D0}.Debug|x86.ActiveCfg = Debug|x86
 		{F210B09E-7638-477D-9FBB-426338CE44D0}.Debug|x86.Build.0 = Debug|x86
+		{F210B09E-7638-477D-9FBB-426338CE44D0}.DebugWindows|Any CPU.ActiveCfg = DebugWindows|x86
 		{F210B09E-7638-477D-9FBB-426338CE44D0}.DebugWindows|x86.ActiveCfg = DebugWindows|x86
 		{F210B09E-7638-477D-9FBB-426338CE44D0}.DebugWindows|x86.Build.0 = DebugWindows|x86
+		{F210B09E-7638-477D-9FBB-426338CE44D0}.Release|Any CPU.ActiveCfg = Release|x86
 		{F210B09E-7638-477D-9FBB-426338CE44D0}.Release|x86.ActiveCfg = Release|x86
 		{F210B09E-7638-477D-9FBB-426338CE44D0}.Release|x86.Build.0 = Release|x86
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.Debug|x86.Build.0 = Debug|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.DebugWindows|Any CPU.ActiveCfg = Debug|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.DebugWindows|Any CPU.Build.0 = Debug|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.DebugWindows|x86.ActiveCfg = Debug|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.DebugWindows|x86.Build.0 = Debug|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.Release|x86.ActiveCfg = Release|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

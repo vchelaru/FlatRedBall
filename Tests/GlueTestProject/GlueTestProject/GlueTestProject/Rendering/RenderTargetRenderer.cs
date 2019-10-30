@@ -70,8 +70,10 @@ namespace FlatRedBall.Graphics
             mHeight = camera.DestinationRectangle.Top + camera.DestinationRectangle.Height;
 
             var device = FlatRedBallServices.GraphicsDevice;
-            mRenderTarget = new RenderTarget2D(device, mWidth, mHeight,
-                generateMipMaps, device.DisplayMode.Format, DepthFormat.Depth24);
+            mRenderTarget = new RenderTarget2D(device, mWidth, mHeight);
+            // Monogame does not like these extra parameters. They cause some kind of "imbalance the stack" exception
+            //,
+              //  generateMipMaps, device.DisplayMode.Format, DepthFormat.Depth24);
 
             this.Camera = camera;
         }

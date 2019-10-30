@@ -4,21 +4,10 @@ using System.Linq;
 using System.Text;
 using FlatRedBall.Utilities;
 using System.Reflection;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue.Parsing
 {
-    #region Enums
-
-    public enum Scope
-    {
-        Public,
-        Private,
-        Protected,
-        Internal
-    }
-
-    #endregion
-
     public class ParsedClass
     {
         #region Fields

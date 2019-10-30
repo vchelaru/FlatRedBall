@@ -281,12 +281,10 @@ namespace FlatRedBall.Graphics.Texture
             }
         }
 
-#if !FRB_MDX
         public void CopyFrom(Texture2D texture2D)
         {
             texture2D.GetData<Color>(mData, 0, texture2D.Width * texture2D.Height);
         }
-#endif
 
         public void CopyTo(ImageData destination, int xOffset, int yOffset)
         {

@@ -40,7 +40,7 @@ namespace GlueTestProject
         {
             FlatRedBallServices.InitializeFlatRedBall(this, graphics);
             CustomPreGlobalContentInitialize();
-			GlobalContent.Initialize();
+            GlobalContent.Initialize();
 			CameraSetup.SetupCamera(SpriteManager.Camera, graphics);
 
             LocalizationManager.CurrentLanguage = 1;
@@ -49,7 +49,7 @@ namespace GlueTestProject
 
             ReducedTileMapInfo.FastCreateFromTmx = true;
 
-			FlatRedBall.Screens.ScreenManager.Start(typeof(GlueTestProject.Screens.FirstScreen));
+            FlatRedBall.Screens.ScreenManager.Start(typeof(GlueTestProject.Screens.FirstScreen));
 
             base.Initialize();
         }

@@ -653,6 +653,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             string memberType = GetMemberTypeFor(customVariable, element);
 
+            string scopeValue = customVariable.Scope.ToString().ToLower();
+
             if (needsToBeProperty)
             {
                 // If the variable
@@ -671,26 +673,33 @@ namespace FlatRedBall.Glue.CodeGeneration
                         variableToAssignInProperty = "m" + customVariable.Name;
 
                         // First we make the field that will get set here:
-                        codeBlock.Line(StringHelper.Modifiers(Public: false, Static: customVariable.IsShared, Type: memberType, Name: variableToAssignInProperty) + variableAssignment + ";");
+                        var line = 
+                            // field is always private:
+                            //scopeValue + " " + 
+                            "private " + 
+                            StringHelper.Modifiers(Static: customVariable.IsShared, Type: memberType, Name: variableToAssignInProperty) + variableAssignment + ";";
+                        codeBlock.Line(line);
                     }
 
                     string propertyHeader = null;
 
+                    var scopeString = customVariable.Scope.ToString().ToLower();
+
                     if (isExposing)
                     {
-                        propertyHeader = "public new " + memberType + " " + customVariable.Name;
+                        propertyHeader = $"{scopeValue} new {memberType} {customVariable.Name}";
                     }
                     else if (customVariable.DefinedByBase)
                     {
-                        propertyHeader = "public override " + memberType + " " + customVariable.Name;
+                        propertyHeader = $"{scopeValue} override {memberType} {customVariable.Name}";
                     }
                     else if (customVariable.SetByDerived)
                     {
-                        propertyHeader = "public virtual " + memberType + " " + customVariable.Name;
+                        propertyHeader = $"{scopeValue} virtual {memberType} {customVariable.Name}";
                     }
                     else
                     {
-                        propertyHeader = "public " + memberType + " " + customVariable.Name;
+                        propertyHeader = $"{scopeValue} {memberType} {customVariable.Name}";
                     }
 
                     ICodeBlock set = codeBlock.Property(propertyHeader, Static:customVariable.IsShared)
@@ -720,7 +729,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     // Static vars can't be virtual
                     bool isVirtual = !customVariable.IsShared;
-                    codeBlock.AutoProperty(customVariable.Name, Public: true, Virtual: isVirtual, Static: customVariable.IsShared, Type: memberType);
+                    codeBlock.AutoProperty(customVariable.Name, customVariable.Scope, Virtual: isVirtual, Static: customVariable.IsShared, Type: memberType);
                 }
             }
             else
@@ -728,8 +737,8 @@ namespace FlatRedBall.Glue.CodeGeneration
                 if (!customVariable.GetIsVariableState())
                 {
 
-                    var line =
-                        StringHelper.Modifiers(Public: true, Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name) + variableAssignment + ";";
+                    var line = customVariable.Scope.ToString().ToLower() + " " + StringHelper.Modifiers(Static: customVariable.IsShared, 
+                        Type: memberType, Name: customVariable.Name) + variableAssignment + ";";
                     codeBlock.Line(line);
 
 
@@ -743,7 +752,10 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     if(isStateDefinedInOtherEntity)
                     {
-                        codeBlock.Line(StringHelper.Modifiers(Public: true, Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name) + ";");
+                        var line = customVariable.Scope.ToString().ToLower() + " " + 
+                            StringHelper.Modifiers(Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name) + ";";
+
+                        codeBlock.Line(line);
 
                     }
 
@@ -755,12 +767,17 @@ namespace FlatRedBall.Glue.CodeGeneration
                         // state variable for a
                         // disabled object, we still
                         // want to generate something:
-                        codeBlock.Line(StringHelper.Modifiers(Public: true, Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name)
-                            // No assignment for now.  Do we eventually want this?  The reason
-                            // this even exists is to satisfy a variable that may be needed by other
-                            // code which would point to a disabled object.
-                            //+ variableAssignment 
-                            + ";");
+                        var line = scopeValue.ToString().ToLower() + " " +
+                            StringHelper.Modifiers(Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name)
+                            + ";";
+
+
+
+                        // No assignment for now.  Do we eventually want this?  The reason
+                        // this even exists is to satisfy a variable that may be needed by other
+                        // code which would point to a disabled object.
+                        //+ variableAssignment 
+                        codeBlock.Line(line);
                         
                     }
                 }

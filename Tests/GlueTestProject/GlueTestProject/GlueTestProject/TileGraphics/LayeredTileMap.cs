@@ -672,6 +672,7 @@ namespace FlatRedBall.TileGraphics
                                 collectionName += "_" + tilesetObject.Type;
                             }
                             var collection = GetOrAddTileShapeCollection(collectionName, collisionDictionary);
+                            collection.GridSize = tileDimension;
                             rectangle.Z = z;
                             if (sortOnY)
                             {
@@ -702,6 +703,7 @@ namespace FlatRedBall.TileGraphics
                                 collectionName += "_" + tilesetObject.Type;
                             }
                             var collection = GetOrAddTileShapeCollection(collectionName, collisionDictionary);
+                            collection.GridSize = tileDimension;
 
                             // For tile polygons we want them to be centered on the tile.
                             // To do this, we shift all points by its position:
@@ -723,8 +725,14 @@ namespace FlatRedBall.TileGraphics
                                 {
                                     for (int x = 0; x < layer.width; x++)
                                     {
-                                        AddPolygonCloneAtXY(layer, tileDimension, polygon, tiles, tilesetTileGid, x, y, collection);
+                                        var i = y * layer.width + x;
 
+                                        if ((tiles[i] & 0x0fffffff) == tilesetTileGid)
+                                        {
+                                            var cloned = AddPolygonCloneAtXY(layer, tileDimension, polygon, tiles, tilesetTileGid, i, collection);
+
+                                            ApplyFlip(tiles[i], cloned);
+                                        }
                                     }
                                 }
                             }
@@ -734,7 +742,14 @@ namespace FlatRedBall.TileGraphics
                                 {
                                     for (int y = 0; y < layer.height; y++)
                                     {
-                                        AddPolygonCloneAtXY(layer, tileDimension, polygon, tiles, tilesetTileGid, x, y, collection);
+                                        var i = y * layer.width + x;
+
+                                        if ((tiles[i] & 0x0fffffff) == tilesetTileGid)
+                                        {
+                                            var cloned = AddPolygonCloneAtXY(layer, tileDimension, polygon, tiles, tilesetTileGid, i, collection);
+
+                                            ApplyFlip(tiles[i], cloned);
+                                        }
                                     }
                                 }
                             }
@@ -750,24 +765,50 @@ namespace FlatRedBall.TileGraphics
 
         }
 
-        private static void AddPolygonCloneAtXY(MapLayer layer, float tileDimension, Polygon polygon, List<uint> tiles, long tilesetTileGid, int x, int y,
+        private static void ApplyFlip(uint idWithFlip, Polygon cloned)
+        {
+            TiledMapSave.GetFlipBoolsFromGid(idWithFlip,
+                out bool flipHorizontally,
+                out bool flipVertically,
+                out bool flipDiagonally);
+
+            if (flipDiagonally)
+            {
+                for (int i = 0; i < cloned.Points.Count; i++)
+                {
+                    Point point = cloned.Points[i];
+
+                    var tempY = point.Y;
+                    point.Y = -point.X;
+                    point.X = -tempY;
+
+                    cloned.SetPoint(i, point);
+                }
+            }
+            if (flipHorizontally)
+            {
+                cloned.FlipRelativePointsHorizontally();
+            }
+            if (flipVertically)
+            {
+                cloned.FlipRelativePointsVertically();
+            }
+        }
+
+        private static Polygon AddPolygonCloneAtXY(MapLayer layer, float tileDimension, Polygon polygon, List<uint> tiles, long tilesetTileGid, int index,
             TileCollisions.TileShapeCollection collectionForThisName)
         {
-            var i = y * layer.width + x;
+            int xIndex = index % layer.width;
+            // intentional int division
+            int yIndex = index / layer.width;
 
-            if (tiles[i] == tilesetTileGid)
-            {
-                int xIndex = i % layer.width;
-                // intentional int division
-                int yIndex = i / layer.width;
+            var cloned = polygon.Clone();
 
-                var cloned = polygon.Clone();
+            cloned.X = (xIndex + .5f) * tileDimension;
+            cloned.Y = -(yIndex + .5f) * tileDimension;
 
-                cloned.X = (xIndex + .5f) * tileDimension;
-                cloned.Y = -(yIndex + .5f) * tileDimension;
-
-                collectionForThisName.Polygons.Add(cloned);
-            }
+            collectionForThisName.Polygons.Add(cloned);
+            return cloned;
         }
 
         private static void AddRectangleCloneAtXY(MapLayer layer, float tileDimension, AxisAlignedRectangle rectangle, List<uint> tiles, long tilesetTileGid, int x, int y,

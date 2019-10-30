@@ -1397,6 +1397,9 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GlobalContent.Generated.cs">
       <Link>GlobalContent.Generated.cs</Link>
     </Compile>
+    <Compile Include="..\..\gluetestproject\gluetestproject\GlueControl\GlueControlManager.Generated.cs">
+      <Link>GlueControl\GlueControlManager.Generated.cs</Link>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\AlignmentObjectRuntime.cs">
       <Link>GumRuntimes\AlignmentObjectRuntime.cs</Link>
     </Compile>
@@ -1702,6 +1705,13 @@
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\RectangleRuntime.Generated.cs">
       <Link>GumRuntimes\RectangleRuntime.Generated.cs</Link>
+    </Compile>
+    <Compile Include="..\..\gluetestproject\gluetestproject\GumRuntimes\RenderTargetScreenGumRuntime.cs">
+      <Link>GumRuntimes\RenderTargetScreenGumRuntime.cs</Link>
+    </Compile>
+    <Compile Include="..\..\gluetestproject\gluetestproject\GumRuntimes\RenderTargetScreenGumRuntime.Generated.cs">
+      <Link>GumRuntimes\RenderTargetScreenGumRuntime.Generated.cs</Link>
+      <DependentUpon>RenderTargetScreenGumRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\GumRuntimes\SameNameComponentRuntime.cs">
       <Link>GumRuntimes\SameNameComponentRuntime.cs</Link>
@@ -2115,6 +2125,13 @@
       <Link>Screens\PositioningScreen.Generated.cs</Link>
       <DependentUpon>PositioningScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="..\..\gluetestproject\gluetestproject\Screens\RenderTargetScreen.cs">
+      <Link>Screens\RenderTargetScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\gluetestproject\gluetestproject\Screens\RenderTargetScreen.Generated.cs">
+      <Link>Screens\RenderTargetScreen.Generated.cs</Link>
+      <DependentUpon>RenderTargetScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\Screens\RepeatingScreen.cs">
       <Link>Screens\RepeatingScreen.cs</Link>
     </Compile>
@@ -2332,10 +2349,6 @@
     <Reference Include="FlatRedBall.Forms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\DesktopGl\Debug\FlatRedBall.Forms.dll</HintPath>
-    </Reference>
-    <Reference Include="FlatRedBallDesktopGL, Version=2016.3.17.461, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\DesktopGl\Debug\FlatRedBallDesktopGL.dll</HintPath>
     </Reference>
     <Reference Include="GumCoreXnaPc, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -3219,6 +3232,11 @@
       <Name>InputScreenGum</Name>
       <Link>content\gumproject\screens\inputscreengum.gusx</Link>
     </None>
+    <None Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\screens\rendertargetscreengum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>rendertargetscreengum</Name>
+      <Link>content\gumproject\screens\rendertargetscreengum.gusx</Link>
+    </None>
     <None Include="..\..\gluetestproject\gluetestprojectcontent\gumproject\screens\screenloadedasgraphicaluielement.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>screenloadedasgraphicaluielement</Name>
@@ -3768,7 +3786,12 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallDesktopGL.csproj">
+      <Project>{10bda06c-7269-4cce-ae2a-d445f414520a}</Project>
+      <Name>FlatRedBallDesktopGL</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

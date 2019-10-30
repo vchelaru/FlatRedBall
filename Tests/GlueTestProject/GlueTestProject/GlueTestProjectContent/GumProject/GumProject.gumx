@@ -29,6 +29,10 @@
     <ElementType>Screen</ElementType>
   </ScreenReference>
   <ScreenReference>
+    <Name>RenderTargetScreenGum</Name>
+    <ElementType>Screen</ElementType>
+  </ScreenReference>
+  <ScreenReference>
     <Name>ScreenLoadedAsGraphicalUiElement</Name>
     <ElementType>Screen</ElementType>
   </ScreenReference>

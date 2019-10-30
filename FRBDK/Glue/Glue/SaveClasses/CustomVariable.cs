@@ -37,6 +37,14 @@ namespace FlatRedBall.Glue.SaveClasses
     }
 
 
+    public enum Scope
+    {
+        Public,
+        Private,
+        Protected,
+        Internal
+    }
+
     #endregion
 
     #region Delegates
@@ -196,34 +204,6 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
-        // Update November 27, 2011
-        // We don't use this anymore.
-        // Variables that expose events
-        // expose both a before and after
-        // automatically.  This is a pattern
-        // that was created for IVisible and it
-        // works well.
-        //[XmlIgnore]
-        //[CategoryAttribute("Event")]
-        //public BeforeOrAfter FireEventBeforeOrAfterSet
-        //{
-        //    get
-        //    {
-        //        if (Properties.ContainsValue("FireEventBeforeOrAfterSet"))
-        //        {
-        //            return (BeforeOrAfter)Properties.GetValue("FireEventBeforeOrAfterSet");
-        //        }
-        //        else
-        //        {
-        //            return BeforeOrAfter.Before;
-        //        }
-        //    }
-        //    set
-        //    {
-        //        Properties.SetValue("FireEventBeforeOrAfterSet", value);
-        //    }
-        //}
-
         [XmlIgnore]
         public bool HasAccompanyingVelocityProperty
         {
@@ -298,6 +278,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [XmlIgnore]
+        [CategoryAttribute("Access")]
         public bool CreatesProperty
         {
             get
@@ -309,6 +290,17 @@ namespace FlatRedBall.Glue.SaveClasses
                 Properties.SetValue("CreatesProperties", value);
             }
         }
+
+        [XmlIgnore]
+        [CategoryAttribute("Access")]
+        public Scope Scope
+        {
+            get => Properties.GetValue<Scope>(nameof(Scope));
+            set => Properties.SetValue(nameof(Scope), value);
+        }
+
+        //[XmlIgnore]
+        //public Scope
 
         #endregion
 

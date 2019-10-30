@@ -74,7 +74,6 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
     </Reference>
@@ -858,6 +857,7 @@
       <DependentUpon>Game1.cs</DependentUpon>
     </Compile>
     <Compile Include="GlobalContent.Generated.cs" />
+    <Compile Include="GlueControl\GlueControlManager.Generated.cs" />
     <Compile Include="GumRuntimes\AlignmentObjectRuntime.cs" />
     <Compile Include="GumRuntimes\AlignmentObjectRuntime.Generated.cs">
       <DependentUpon>AlignmentObjectRuntime.cs</DependentUpon>
@@ -1020,6 +1020,8 @@
     </Compile>
     <Compile Include="GumRuntimes\PolygonRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\RectangleRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\RenderTargetScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\RenderTargetScreenGumRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\SameNameComponentRuntime.cs" />
     <Compile Include="GumRuntimes\SameNameComponentRuntime.Generated.cs">
       <DependentUpon>SameNameComponentRuntime.cs</DependentUpon>
@@ -1256,6 +1258,10 @@
     <Compile Include="Screens\PositioningScreen.cs" />
     <Compile Include="Screens\PositioningScreen.Generated.cs">
       <DependentUpon>PositioningScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\RenderTargetScreen.cs" />
+    <Compile Include="Screens\RenderTargetScreen.Generated.cs">
+      <DependentUpon>RenderTargetScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\RepeatingScreen.cs" />
     <Compile Include="Screens\RepeatingScreen.Generated.cs">
