@@ -288,6 +288,7 @@ namespace FlatRedBall.Glue.SaveClasses
             set
             {
                 Properties.SetValue("CreatesProperties", value);
+
             }
         }
 

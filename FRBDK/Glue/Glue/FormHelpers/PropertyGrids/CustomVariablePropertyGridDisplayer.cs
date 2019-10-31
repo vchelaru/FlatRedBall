@@ -43,6 +43,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             bool shouldIncludeSourceObjectProperty = true;
             bool shouldIncludeOverridingPropertyType = true;
             bool shouldIncludeTypeConverter = true;
+            bool shouldIncludeScope = instance.DefinedByBase == false;
 
             ExcludeMember(nameof(CustomVariable.Properties));
             ExcludeMember(nameof(CustomVariable.FulfillsRequirement));
@@ -105,6 +106,11 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             else
             {
                 ExcludeMember(nameof(CustomVariable.TypeConverter));
+            }
+
+            if(shouldIncludeScope == false)
+            {
+                ExcludeMember(nameof(CustomVariable.Scope));
             }
 
         }

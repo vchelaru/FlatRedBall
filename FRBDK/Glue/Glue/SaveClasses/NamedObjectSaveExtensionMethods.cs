@@ -111,7 +111,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        private static void UpdateTypedMembers(NamedObjectSave instance)
+        private static void UpdateTypedMembers(this NamedObjectSave instance)
         {
             if (instance.SourceType == SourceType.Entity)
             {

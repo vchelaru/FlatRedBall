@@ -18,7 +18,6 @@ namespace FlatRedBall.Glue.SetVariable
 
         public void ReactToCustomVariableChangedValue(string changedMember, CustomVariable customVariable, object oldValue)
         {
-
             #region Name
 
             if (changedMember == nameof(CustomVariable.Name))
@@ -55,6 +54,15 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 HandleIsSharedVariableSet(customVariable, oldValue);
             }
+            #endregion
+
+            #region Scope
+
+            else if(changedMember == nameof(CustomVariable.Scope))
+            {
+                HandleScopeSet(customVariable, oldValue);
+            }
+
             #endregion
 
             #region SouceObjectProperty
@@ -395,7 +403,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
             else
             {
-                IElement element = EditorLogic.CurrentElement;
+                IElement element = GlueState.Self.CurrentElement;
 
                 List<IElement> elementsToGenerate = new List<IElement>();
                 List<IElement> elementsToSearchForTunneledVariablesIn = new List<IElement>();
@@ -484,5 +492,36 @@ namespace FlatRedBall.Glue.SetVariable
             }
         }
 
+        private void HandleScopeSet(CustomVariable customVariable, object oldValue)
+        {
+            var owner = GlueState.Self.CurrentElement;
+
+            var newScope = customVariable.Scope;
+
+            SetDerivedElementVariables(owner, customVariable.Name, newScope);
+
+        }
+
+        private void SetDerivedElementVariables(IElement owner, string name, Scope newScope)
+        {
+            var instancesThatUseThis = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(owner);
+            foreach (var instance in instancesThatUseThis)
+            {
+                instance.UpdateCustomProperties();
+            }
+
+            var elementsThatDerive = ObjectFinder.Self.GetAllElementsThatInheritFrom(owner);
+
+            foreach(var derivedElement in elementsThatDerive)
+            {
+                var customVariable = derivedElement.CustomVariables.Find(item => item.Name == name);
+                if(customVariable != null)
+                {
+                    customVariable.Scope = newScope;
+                }
+
+                SetDerivedElementVariables(derivedElement, name, newScope);
+            }
+        }
     }
 }

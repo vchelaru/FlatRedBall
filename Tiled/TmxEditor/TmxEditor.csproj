@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{02D8D83A-96C7-4D2E-953C-9433C3817412}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TmxEditor</RootNamespace>
+    <AssemblyName>TmxEditor</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ContentLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Gum\ContentLibrary\bin\Debug\ContentLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="FlatRedBall.PropertyGrid, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\FlatRedBall\FlatRedBall.PropertyGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="InputLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Gum\InputLibrary\bin\Debug\InputLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="XnaAndWinforms, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Gum\XnaAndWinforms\bin\Debug\XnaAndWinforms.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppState.cs" />
+    <Compile Include="Behaviors\InputBindingsManager.cs" />
+    <Compile Include="CommandsAndState\ApplicationEvents.cs" />
+    <Compile Include="Controllers\LayersController.cs" />
+    <Compile Include="Controllers\ScrollBarControlLogic.cs" />
+    <Compile Include="Controllers\Singleton.cs" />
+    <Compile Include="Controllers\TilesetController.ListBox.cs" />
+    <Compile Include="Controllers\TilesetController.PropertyGrid.cs" />
+    <Compile Include="Controllers\TilesetController.XnaDisplay.cs" />
+    <Compile Include="Events\TileMapChangeEventArgs.cs" />
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GraphicalDisplay\CameraPanningLogic.cs" />
+    <Compile Include="GraphicalDisplay\Tilesets\TilePropertyHighlight.cs" />
+    <Compile Include="Controllers\TilesetController.cs" />
+    <Compile Include="Managers\CopyPasteManager.cs" />
+    <Compile Include="Managers\ResizeFixer.cs" />
+    <Compile Include="Managers\SharedTilesetManager.cs" />
+    <Compile Include="PropertyGridDisplayers\DisplayerExtensionMethods.cs" />
+    <Compile Include="PropertyGridDisplayers\MapLayerDisplayer.cs" />
+    <Compile Include="PropertyGridDisplayers\TilesetTileDisplayer.cs" />
+    <Compile Include="ProvidedContext.cs" />
+    <Compile Include="TimeManager.cs" />
+    <Compile Include="TmxEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TmxEditorControl.Designer.cs">
+      <DependentUpon>TmxEditorControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ToolComponent.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ProjectManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ToolComponentManager.cs" />
+    <Compile Include="UI\NewPropertyWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\NewPropertyWindow.Designer.cs">
+      <DependentUpon>NewPropertyWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\TilesetWindow.xaml.cs">
+      <DependentUpon>TilesetWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\TsxSelectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\TsxSelectionForm.Designer.cs">
+      <DependentUpon>TsxSelectionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\TilesetViewModel.cs" />
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="TmxEditorControl.resx">
+      <DependentUpon>TmxEditorControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\NewPropertyWindow.resx">
+      <DependentUpon>NewPropertyWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\TsxSelectionForm.resx">
+      <DependentUpon>TsxSelectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
+      <Project>{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}</Project>
+      <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\FlatRedBall\FRBDK\FlatRedBall.SpecializedXnaControls\FlatRedBall.SpecializedXnaControls.csproj">
+      <Project>{8c80ba7b-1cba-4579-9382-d9dc6c365070}</Project>
+      <Name>FlatRedBall.SpecializedXnaControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\FlatRedBall\FRBDK\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
+      <Project>{e1d670b6-ad42-4b84-aff8-d568097be03d}</Project>
+      <Name>EditorObjectsXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\FlatRedBall\FRBDK\Glue\GlueSaveClasses\GlueSaveClasses.csproj">
+      <Project>{545FF183-4D9D-4121-9A04-1D354B0B0DBA}</Project>
+      <Name>GlueSaveClasses</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Gum\RenderingLibrary\RenderingLibrary.csproj">
+      <Project>{a86ee399-7c93-42e1-80ed-ca4cbf4ca573}</Project>
+      <Name>RenderingLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Gum\ToolsUtilities\ToolsUtilities.csproj">
+      <Project>{b941a93f-6093-4dc6-ad11-91a058b6c2cc}</Project>
+      <Name>ToolsUtilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TMXGlueLib\TMXGlueLib.csproj">
+      <Project>{8600173A-6281-45E1-8076-54366E42CBDE}</Project>
+      <Name>TMXGlueLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libraries\FlatRedBall\FlatRedBall.PropertyGrid.dll" />
+    <Content Include="Libraries\FlatRedBall\FlatRedBall.PropertyGrid.pdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="UI\TilesetWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

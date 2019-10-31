@@ -1021,7 +1021,9 @@
     <Compile Include="GumRuntimes\PolygonRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\RectangleRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\RenderTargetScreenGumRuntime.cs" />
-    <Compile Include="GumRuntimes\RenderTargetScreenGumRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\RenderTargetScreenGumRuntime.Generated.cs">
+      <DependentUpon>RenderTargetScreenGumRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\SameNameComponentRuntime.cs" />
     <Compile Include="GumRuntimes\SameNameComponentRuntime.Generated.cs">
       <DependentUpon>SameNameComponentRuntime.cs</DependentUpon>

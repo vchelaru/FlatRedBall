@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ShapeCollectionSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <AxisAlignedRectangleSaves />
+  <AxisAlignedCubeSaves />
+  <PolygonSaves>
+    <PolygonSave>
+      <X>352</X>
+      <Y>-1818</Y>
+      <Z>0</Z>
+      <RotationZ>0</RotationZ>
+      <Points>
+        <Point>
+          <X>16</X>
+          <Y>-16</Y>
+        </Point>
+        <Point>
+          <X>409</X>
+          <Y>-6</Y>
+        </Point>
+        <Point>
+          <X>384</X>
+          <Y>-150</Y>
+        </Point>
+        <Point>
+          <X>29</X>
+          <Y>-138</Y>
+        </Point>
+        <Point>
+          <X>16</X>
+          <Y>-16</Y>
+        </Point>
+      </Points>
+      <Alpha>1</Alpha>
+      <Red>1</Red>
+      <Green>1</Green>
+      <Blue>1</Blue>
+    </PolygonSave>
+  </PolygonSaves>
+  <CircleSaves />
+  <SphereSaves />
+</ShapeCollectionSave>

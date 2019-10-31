@@ -1,0 +1,4 @@
+Name (required),Visiblebehavior,Test
+EnvironmentBackground,"Ignore","test"
+EnvironmentObjects,"Skip",
+SpawnObjects,"Match",

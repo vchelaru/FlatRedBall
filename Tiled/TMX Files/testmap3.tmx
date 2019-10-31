@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0" orientation="orthogonal" width="25" height="25" tilewidth="64" tileheight="64">
+  <tileset tileheight="64" spacing="0" margin="0" tilewidth="64" firstgid="1" name="EnvironmentTiles">
+    <image source="EnvironmentTiles.png" width="128" height="128" />
+    <tile id="0">
+      <properties>
+        <property name="name" value="SkyBG" />
+      </properties>
+    </tile>
+    <tile id="1">
+      <properties>
+        <property name="name" value="Dirt" />
+      </properties>
+    </tile>
+    <tile id="2">
+      <properties>
+        <property name="name" value="EarthBG" />
+      </properties>
+    </tile>
+    <tile id="3">
+      <properties>
+        <property name="name" value="StoneBlock" />
+      </properties>
+    </tile>
+  </tileset>
+  <tileset tileheight="64" spacing="0" margin="0" tilewidth="64" firstgid="5" name="SpawnTools">
+    <image source="SpawnTools.png" width="128" height="128" />
+    <tile id="0">
+      <properties>
+        <property name="name" value="EnemySpawn" />
+      </properties>
+    </tile>
+    <tile id="1">
+      <properties>
+        <property name="name" value="EnemyDespawn" />
+      </properties>
+    </tile>
+  </tileset>
+  <layer name="EnvironmentBackground" width="25" height="25" visible="1">
+    <properties>
+      <property name="test" value="test" />
+    </properties>
+    <data>
+      <length>625</length>
+    </data>
+  </layer>
+  <layer name="EnvironmentObjects" width="25" height="25" visible="0">
+    <properties />
+    <data>
+      <length>625</length>
+    </data>
+  </layer>
+  <layer name="SpawnObjects" width="25" height="25" visible="1">
+    <properties />
+    <data>
+      <length>625</length>
+    </data>
+  </layer>
+</map>

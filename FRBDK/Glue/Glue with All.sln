@@ -97,9 +97,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBall.AnimationEditor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiledPlugin", "TileGraphicsPlugin\TileGraphicsPlugin\TiledPlugin.csproj", "{A93AACD3-14E7-4926-98F0-531B9B34BE47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TmxEditor", "..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TmxEditor\TmxEditor.csproj", "{02D8D83A-96C7-4D2E-953C-9433C3817412}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TmxEditor", "..\..\Tiled\TmxEditor\TmxEditor.csproj", "{02D8D83A-96C7-4D2E-953C-9433C3817412}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMXGlueLib", "..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TMXGlueLib.csproj", "{8600173A-6281-45E1-8076-54366E42CBDE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMXGlueLib", "..\..\Tiled\TMXGlueLib\TMXGlueLib.csproj", "{8600173A-6281-45E1-8076-54366E42CBDE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Platformer", "Platformer", "{A8948B69-E4D0-454E-B4AE-1C5788867D43}"
 EndProject

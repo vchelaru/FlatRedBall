@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="25" height="25" tilewidth="64" tileheight="64">
+ <tileset firstgid="1" source="EnvironmentTiles.tsx"/>
+ <tileset firstgid="5" source="SpawnTools.tsx"/>
+ <layer name="EnvironmentTiles" width="25" height="25">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIJRAANMo3gUj+JRPEQwAIz/Alk=
+  </data>
+ </layer>
+ <layer name="BackgroundTiles" width="25" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztw4EFAAAMA7CW/X/z2BcjIU1SVe+oPrk//AX2
+  </data>
+ </layer>
+ <layer name="SpawnTiles" width="25" height="25">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIKhAdhobD4rjc0fBaNgFIwCagIAP8AADA==
+  </data>
+ </layer>
+</map>

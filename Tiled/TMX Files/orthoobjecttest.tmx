@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="2" height="3" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="tmw_desert_spacing" tilewidth="32" tileheight="32" spacing="1" margin="1">
+  <image source="../../../../../../../../Program Files (x86)/Tiled/examples/tmw_desert_spacing.png" width="265" height="199"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="2" height="3">
+  <data>
+   <tile gid="1"/>
+   <tile gid="3"/>
+   <tile gid="9"/>
+   <tile gid="11"/>
+   <tile gid="17"/>
+   <tile gid="19"/>
+  </data>
+ </layer>
+ <objectgroup name="Objects" width="2" height="3">
+  <object x="0" y="0" width="64" height="32"/>
+  <object x="9" y="45">
+   <polygon points="0,0 42,0 23,23"/>
+  </object>
+  <object x="6" y="66">
+   <polyline points="0,0 7,19 42,19 52,-1"/>
+  </object>
+  <object x="8" y="13" width="14" height="12"/>
+  <object x="38" y="14" width="17" height="12"/>
+ </objectgroup>
+</map>

@@ -359,24 +359,24 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             List<TypedMemberBase> typedMembers = new List<TypedMemberBase>();
 
-            for (int i = 0; i < instance.CustomVariables.Count; i++)
+            foreach(var customVariable in instance.CustomVariables)
             {
-                CustomVariable customVariable = instance.CustomVariables[i];
-
-                string type = customVariable.Type;
-
-                if (!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+                if(customVariable.Scope == Scope.Public || customVariable.Scope == Scope.Internal)
                 {
-                    type = customVariable.OverridingPropertyType;
+                    string type = customVariable.Type;
+
+                    if (!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+                    {
+                        type = customVariable.OverridingPropertyType;
+                    }
+
+                    TypedMemberBase typedMemberBase =
+                        AssetTypeInfoExtensionMethods.GetTypedMemberBase(
+                        type,
+                        customVariable.Name);
+
+                    typedMembers.Add(typedMemberBase);
                 }
-
-                TypedMemberBase typedMemberBase =
-                    AssetTypeInfoExtensionMethods.GetTypedMemberBase(
-                    type,
-                    customVariable.Name);
-
-                typedMembers.Add(typedMemberBase);
-
             }
 
             // Add any variables that are set by container
