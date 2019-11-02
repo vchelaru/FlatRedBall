@@ -44,6 +44,7 @@ using FlatRedBall.Glue.UnreferencedFiles;
 using FlatRedBall.Glue.Controls.ProjectSync;
 using System.Linq;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using System.Threading.Tasks;
 
 //using EnvDTE;
 
@@ -150,7 +151,7 @@ namespace Glue
 
         }
 
-        private void loadProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void loadProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
             {
@@ -185,16 +186,16 @@ namespace Glue
                         projectFileName = FileManager.GetDirectory(solutionName) + projectFileName;
                     }
 
-                    LoadProject(projectFileName, null);
+                    await GlueCommands.Self.LoadProjectAsync(projectFileName);
 
                     SaveSettings();
                 }
             }
         }
 
-        public void LoadProject(string projectFileName, InitializationWindow initializationWindow)
+        public async Task LoadProject(string projectFileName, InitializationWindow initializationWindow)
         {
-            ProjectLoader.Self.LoadProject(projectFileName, initializationWindow);
+            await ProjectLoader.Self.LoadProject(projectFileName, initializationWindow);
         }
 
         private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -739,7 +740,7 @@ namespace Glue
             GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog();
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        private async void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             ProjectManager.WantsToClose = true;
             EditorData.GlueLayoutSettings.LeftPanelSplitterPosition = leftPanelContainer.SplitterDistance;
@@ -749,7 +750,7 @@ namespace Glue
             EditorData.GlueLayoutSettings.Maximized = this.WindowState == FormWindowState.Maximized;
             EditorData.GlueLayoutSettings.SaveSettings();
 
-            TaskManager.Self.WaitForAllTasksFinished(pumpEvents:true);
+            await TaskManager.Self.WaitForAllTasksFinished();
 
             PluginManager.ReactToGlueClose();
             CloseProject(true, true);

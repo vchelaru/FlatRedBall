@@ -64,7 +64,7 @@ namespace FlatRedBall.Glue.IO
         #endregion
 
         
-        public void LoadProject(string projectFileName, InitializationWindow initializationWindow = null)
+        public async Task LoadProject(string projectFileName, InitializationWindow initializationWindow = null)
         {
             TimeManager.Initialize();
             var topSection = Section.GetAndStartContextAndTime("All");
@@ -83,7 +83,7 @@ namespace FlatRedBall.Glue.IO
             // close the project before turning off task processing...
             ClosePreviousProject(projectFileName);
 
-            TaskManager.Self.WaitForAllTasksFinished(pumpEvents:true);
+            await TaskManager.Self.WaitForAllTasksFinished();
 
             // turn off task processing while this is loading, so that no background tasks are running while plugins are starting up.
             // Do this *after* closing previous project, because closing previous project waits for all tasks to finish.
@@ -131,6 +131,8 @@ namespace FlatRedBall.Glue.IO
                 if (!FileManager.FileExists(glueProjectFile))
                 {
                     ProjectManager.GlueProjectSave = new GlueProjectSave();
+
+                    ProjectManager.GlueProjectSave.FileVersion = GlueProjectSave.LatestVersion;
 
                     GlueCommands.Self.PrintOutput($"Trying to load {glueProjectFile}, but could not find it, so" +
                         $"creating a new .glux file");
@@ -192,7 +194,7 @@ namespace FlatRedBall.Glue.IO
 
                 if (shouldSaveGlux)
                 {
-                    GluxCommands.Self.SaveGlux();
+                    GluxCommands.Self.SaveGluxTask();
                 }
 
                 TaskManager.Self.AddSync(() =>

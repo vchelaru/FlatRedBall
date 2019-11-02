@@ -4,6 +4,11 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 {
     public class CodeBlockBaseNoIndent : CodeBlockBase
     {
+        public CodeBlockBaseNoIndent()
+            : base(null)
+        {
+        }
+
         public CodeBlockBaseNoIndent(ICodeBlock pParent)
             : base(pParent)
         {

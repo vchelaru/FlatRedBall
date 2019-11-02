@@ -107,7 +107,7 @@ namespace FlatRedBall.Glue.Projects
             }
         }
 
-        public static void CreateNewProject()
+        public async static void CreateNewProject()
         {
 
             // Run the new project creator
@@ -130,7 +130,7 @@ namespace FlatRedBall.Glue.Projects
 
             if (!String.IsNullOrEmpty(createdProject))
             {
-                GlueCommands.Self.LoadProject(createdProject);
+                await GlueCommands.Self.LoadProjectAsync(createdProject);
             }
         }
 

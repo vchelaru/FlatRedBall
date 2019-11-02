@@ -274,6 +274,8 @@
     </Compile>
     <Compile Include="AutomatedGlue\AutoGlue.cs" />
     <Compile Include="AutomatedGlue\GlueGui.cs" />
+    <Compile Include="CodeGeneration\Game1\Game1CodeGenerator.cs" />
+    <Compile Include="CodeGeneration\Game1\Game1CodeGeneratorManager.cs" />
     <Compile Include="Errors\CsvAndCustomClassSameName.cs" />
     <Compile Include="Errors\CsvErrorReporter.cs" />
     <Compile Include="Errors\IErrorReporter.cs" />

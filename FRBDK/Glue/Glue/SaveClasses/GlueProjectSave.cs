@@ -36,8 +36,20 @@ namespace FlatRedBall.Glue.SaveClasses
 
     public class GlueProjectSave
     {
-        #region Fields
+        #region Fields / Properties
 
+        // Version 0/1 didn't exist
+
+
+        // Version 2 introduces a partial game class
+        public enum GluxVersions
+        {
+            PreVersion = 1,
+            AddedGeneratedGame1 = 2
+        }
+        public const int LatestVersion = 2;
+
+        public int FileVersion { get; set; }
 
 
         #region Camera Fields
@@ -57,13 +69,11 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #endregion
 
-
         public GluxPluginData PluginData
         {
             get;
             set;
         } = new GluxPluginData();
-
 
         public List<PropertySave> Properties = new List<PropertySave>();
         public bool ShouldSerializeProperties()
@@ -111,11 +121,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
         public string CustomGameClass;
-
-
-        #endregion
-
-        #region Properties
 
         // This is a new class added in early 2017 to give more control over cameras.
         // But we don't want to automatically update all projects to this.

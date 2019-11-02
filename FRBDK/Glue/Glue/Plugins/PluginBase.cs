@@ -19,6 +19,7 @@ using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.CodeGeneration.Game1;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -40,6 +41,13 @@ namespace FlatRedBall.Glue.Plugins
             get;
             set;
         } = new List<ElementComponentCodeGenerator>();
+
+
+        List<Game1CodeGenerator> GameCodeGenerators
+        {
+            get;
+            set;
+        } = new List<Game1CodeGenerator>();
 
         #region Properties
 
@@ -64,8 +72,6 @@ namespace FlatRedBall.Glue.Plugins
 
 
         #endregion
-
-
 
         #region Delegates
 
@@ -213,15 +219,15 @@ namespace FlatRedBall.Glue.Plugins
 
         #region Methods
 
-
         public abstract void StartUp();
-        public abstract bool ShutDown(PluginShutDownReason shutDownReason);
 
+        public abstract bool ShutDown(PluginShutDownReason shutDownReason);
 
         protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, EventHandler eventHandler, string container)
         {
             return AddMenuItemTo(whatToAdd, eventHandler, container, -1);
         }
+
         protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, EventHandler eventHandler, string container, int preferredIndex)
         {
             ToolStripMenuItem menuItem = new ToolStripMenuItem(whatToAdd, null, eventHandler);
@@ -442,9 +448,20 @@ namespace FlatRedBall.Glue.Plugins
             CodeWriter.CodeGenerators.Add(codeGenerator);
         }
 
+        public void RegisterCodeGenerator(Game1CodeGenerator gameCodeGenerator)
+        {
+            GameCodeGenerators.Add(gameCodeGenerator);
+
+            Game1CodeGeneratorManager.Generators.Add(gameCodeGenerator);
+        }
+
         public void UnregisterAllCodeGenerators()
         {
             CodeWriter.CodeGenerators.RemoveAll(item => CodeGenerators.Contains(item));
+            Game1CodeGeneratorManager.Generators.RemoveAll(item => GameCodeGenerators.Contains(item));
+
+            CodeGenerators.Clear();
+            GameCodeGenerators.Clear();
         }
 
         #endregion

@@ -11,6 +11,7 @@ using FlatRedBall.Glue.Elements;
 using Glue;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -181,7 +182,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 foreach (IElement element in containers)
                 {
-                    CodeGeneratorIElement.GenerateElement(element);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 }
             }
 

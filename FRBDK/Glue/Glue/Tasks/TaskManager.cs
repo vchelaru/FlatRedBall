@@ -188,17 +188,11 @@ namespace FlatRedBall.Glue.Managers
         }
 
 
-        public void WaitForAllTasksFinished(bool pumpEvents)
+        public async Task WaitForAllTasksFinished()
         {
             while (!AreAllAsyncTasksDone)
             {
-                System.Threading.Thread.Sleep(50);
-#if GLUE
-                if(pumpEvents)
-                {
-                    System.Windows.Forms.Application.DoEvents();
-                }
-#endif
+                await Task.Delay(500);
             }
         }
 

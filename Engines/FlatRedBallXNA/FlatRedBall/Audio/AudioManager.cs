@@ -230,13 +230,11 @@ namespace FlatRedBall.Audio
         /// <param name="pan">Volume, ranging from -1.0f (full left) to 1.0f (full right). 0.0f is centered </param>
         public static void Play(SoundEffect soundEffect, float volume, float pitch = 0, float pan = 0)
         {
-#if DEBUG
-#if !SILVERLIGHT && !MONOGAME
+#if DEBUG && !MONOGAME
             if (soundEffect.IsDisposed)
             {
                 throw new ArgumentException("Argument SoundEffect is disposed");
             }
-#endif
 #endif
 
             if (AreSoundEffectsEnabled)

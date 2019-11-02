@@ -12,6 +12,7 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Utilities;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Factories
 {
@@ -210,11 +211,11 @@ namespace FlatRedBall.Glue.Factories
                 StringFunctions.RemoveDuplicates(nos.VariablesToReset);
             }
 
-            CodeWriter.GenerateCode(entitySave);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
 
             foreach(var element in entitySave.GetAllBaseEntities())
             {
-                CodeWriter.GenerateCode(element);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
             }
 
             GluxCommands.Self.SaveGlux();

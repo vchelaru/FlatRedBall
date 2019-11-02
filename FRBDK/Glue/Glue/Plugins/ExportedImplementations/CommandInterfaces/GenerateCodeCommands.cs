@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using EditorObjects.IoC;
+using FlatRedBall.Glue.CodeGeneration.Game1;
+using FlatRedBall.Glue.IO;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -42,7 +44,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (element != null)
                 {
-                    CodeWriter.GenerateCode(element);
+                    CodeWriter.
+                    GenerateCode(element);
                 }
             }, $"Generating element {element}", TaskExecutionPreference.AddOrMoveToEnd);
         }
@@ -196,6 +199,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             CsvCodeGenerator.GenerateAllCustomClasses(glueProject);
 
+            if(glueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AddedGeneratedGame1)
+            {
+                GlueCommands.GenerateCodeCommands.GenerateGame1();
+            }
+
             GlueCommands.PrintOutput("Done with all generation");
 
         }
@@ -210,5 +218,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             CodeWriter.RefreshStartupScreenCode();
         }
 
+        public void GenerateGame1()
+        {
+            var code = Game1CodeGeneratorManager.GetGame1GeneratedContents();
+
+            FilePath filePath = GlueState.CurrentGlueProjectDirectory + "Game1.Generated.cs";
+
+            GlueCommands.TryMultipleTimes(() =>
+            {
+                System.IO.File.WriteAllText(filePath.FullPath, code);
+
+                GlueCommands.ProjectCommands.CreateAndAddCodeFile(filePath);
+            },
+            5);
+        }
     }
 }

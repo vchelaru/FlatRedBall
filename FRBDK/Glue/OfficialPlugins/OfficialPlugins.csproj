@@ -172,6 +172,7 @@
     <Compile Include="CollisionPlugin\Views\RelationshipListCell.xaml.cs">
       <DependentUpon>RelationshipListCell.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Compiler\CodeGeneration\Game1GlueControlGenerator.cs" />
     <Compile Include="Compiler\CodeGeneration\GlueControlCodeGenerator.cs" />
     <Compile Include="Compiler\CodeGeneration\MainCodeGenerator.cs" />
     <Compile Include="Compiler\CommandSending\CommandSender.cs" />

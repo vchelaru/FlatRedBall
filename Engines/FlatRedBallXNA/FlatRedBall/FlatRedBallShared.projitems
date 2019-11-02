@@ -25,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\InstanceMember.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Audio\AudioManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Audio\SoundEffectPlayInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audio\SoundGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Camera.Common.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\AI\Pathfinding\LinkSave.cs" />

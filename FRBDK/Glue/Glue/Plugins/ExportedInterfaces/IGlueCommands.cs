@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using System;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 {
@@ -27,6 +28,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         string GetAbsoluteFileName(SaveClasses.ReferencedFileSave rfs);
         string GetAbsoluteFileName(string relativeFileName, bool isContent);
         void LoadProject(string fileName);
+        Task LoadProjectAsync(string fileName);
 
 #if GLUE
         ExportedImplementations.CommandInterfaces.GlueViewCommands GlueViewCommands { get; }

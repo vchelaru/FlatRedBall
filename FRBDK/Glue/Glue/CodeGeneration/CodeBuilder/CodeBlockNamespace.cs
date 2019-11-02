@@ -7,6 +7,7 @@
             PreCodeLines.Add(new CodeLine("namespace " + (string.IsNullOrEmpty(value) ? "" : value)));
             PreCodeLines.Add(new CodeLine("{"));
             PostCodeLines.Add(new CodeLine("}"));
+            this.TabCount = 0;
         }
     }
 

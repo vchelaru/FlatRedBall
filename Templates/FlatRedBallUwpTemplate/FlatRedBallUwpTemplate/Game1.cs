@@ -18,6 +18,10 @@ namespace FlatRedBallUwpTemplate
     {
         GraphicsDeviceManager graphics;
 
+        partial void GeneratedInitialize();
+        partial void GeneratedUpdate(Microsoft.Xna.Framework.GameTime gameTime);
+        partial void GeneratedDraw(Microsoft.Xna.Framework.GameTime gameTime);
+
         public Game1() : base()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -79,6 +83,8 @@ namespace FlatRedBallUwpTemplate
                 FlatRedBall.Screens.ScreenManager.Start(startScreenType);
             }
 
+            GeneratedInitialize();
+
             base.Initialize();
         }
 
@@ -89,12 +95,16 @@ namespace FlatRedBallUwpTemplate
 
             FlatRedBall.Screens.ScreenManager.Activity();
 
+            GeneratedDraw(gameTime);
+
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             FlatRedBallServices.Draw();
+
+            GeneratedDraw(gameTime);
 
             base.Draw(gameTime);
         }

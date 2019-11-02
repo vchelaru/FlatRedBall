@@ -5,6 +5,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using Glue;
 using System;
 using FlatRedBall.Glue.Errors;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
@@ -70,9 +71,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             Process.GetCurrentProcess().Kill();
         }
 
-        public void LoadProject(string fileName)
+        public async void LoadProject(string fileName)
         {
-            IO.ProjectLoader.Self.LoadProject(fileName);
+            await IO.ProjectLoader.Self.LoadProject(fileName);
+        }
+
+        public async Task LoadProjectAsync(string fileName)
+        {
+            await IO.ProjectLoader.Self.LoadProject(fileName);
         }
 
         /// <summary>
