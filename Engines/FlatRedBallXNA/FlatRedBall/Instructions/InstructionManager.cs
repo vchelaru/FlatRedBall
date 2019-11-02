@@ -649,15 +649,31 @@ namespace FlatRedBall.Instructions
             {
                 instruction = mInstructions[0];
 
+                // Nov 2, 2019
+                // An instruction 
+                // may pause the game, 
+                // which would then take 
+                // this instruction and put
+                // it on the to-execute list 
+                // of instructions. But since 
+                // it's already executing we don't
+                // want that to happen, so going to 
+                // remove it before executing. This is
+                // different from how the engine used to
+                // work prior to this date, so hopefully this
+                // doesn't introduce any weird behaviors
+
+                if (instruction.CycleTime == 0)
+                    mInstructions.Remove(instruction);
+
+
                 instruction.Execute();
 
                 // The instruction may have cleared the InstructionList, so we need to test if it did.
                 if (mInstructions.Count < 1)
                     continue;
 
-                if (instruction.CycleTime == 0)
-                    mInstructions.Remove(instruction);
-                else
+                if (instruction.CycleTime != 0)
                 {
                     instruction.TimeToExecute += instruction.CycleTime;
                     mInstructions.InsertionSortAscendingTimeToExecute();
