@@ -80,6 +80,9 @@
     <Compile Include="Views\MainEntityView.xaml.cs">
       <DependentUpon>MainEntityView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TopDownValuesView.xaml.cs">
+      <DependentUpon>TopDownValuesView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
@@ -105,6 +108,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\MainEntityView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TopDownValuesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
