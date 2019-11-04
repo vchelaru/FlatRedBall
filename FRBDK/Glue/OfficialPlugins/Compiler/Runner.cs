@@ -31,7 +31,7 @@ namespace OfficialPlugins.Compiler
 
         #endregion
 
-        #region DLL Import 
+        #region DLL Import for GetWindowRect/MoveWindow
 
         [DllImport("user32.dll", SetLastError = true)]
         internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
@@ -65,30 +65,44 @@ namespace OfficialPlugins.Compiler
 
             if(process == null)
             {
-                // find a process for game
-                var processes = Process.GetProcesses()
-                    .OrderBy(item => item.ProcessName)
-                    .ToArray();
+                Process found = TryFindGameProcess();
 
-                var projectName = GlueState.Self.CurrentMainProject?.Name;
-
-                var found = processes
-                    .FirstOrDefault(item => item.ProcessName.ToLowerInvariant() == projectName);
-
-                if(found != null)
+                if (found != null)
                 {
                     foundAlreadyRunningProcess = true;
                     runningGameProcess = found;
 
-                    runningGameProcess.EnableRaisingEvents = true;
-                    runningGameProcess.Exited += HandleProcessExit;
+                    try
+                    {
+                        runningGameProcess.EnableRaisingEvents = true;
+                        runningGameProcess.Exited += HandleProcessExit;
 
-                    IsRunningChanged?.Invoke(this, null);
+                        IsRunningChanged?.Invoke(this, null);
+
+                    }
+                    catch(InvalidOperationException)
+                    {
+                        // do nothing, the game just stopped running
+                    }
                 }
             }
         }
 
-        internal async Task Run(string runArguments = null)
+        private static Process TryFindGameProcess()
+        {
+            // find a process for game
+            var processes = Process.GetProcesses()
+                .OrderBy(item => item.ProcessName)
+                .ToArray();
+
+            var projectName = GlueState.Self.CurrentMainProject?.Name;
+
+            var found = processes
+                .FirstOrDefault(item => item.ProcessName.ToLowerInvariant() == projectName);
+            return found;
+        }
+
+        internal async Task Run(bool preventFocus, string runArguments = null)
         {
             foundAlreadyRunningProcess = false;
             var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
@@ -99,23 +113,31 @@ namespace OfficialPlugins.Compiler
 
             if(System.IO.File.Exists(exeLocation))
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo();
-                startInfo.FileName = exeLocation;
-                startInfo.WorkingDirectory = FileManager.GetDirectory(exeLocation);
-                startInfo.Arguments = runArguments;
-                runningGameProcess = System.Diagnostics.Process.Start(startInfo);
+                StartProcess(preventFocus, runArguments, exeLocation);
+
+                await Task.Delay(200);
+
+                runningGameProcess = TryFindGameProcess();
+                if(runningGameProcess == null)
+                {
+                    // didn't find it, so let's wait a little and try again:
+
+                    await Task.Delay(500);
+
+                    runningGameProcess = TryFindGameProcess();
+                }
 
                 runningGameProcess.EnableRaisingEvents = true;
                 runningGameProcess.Exited += HandleProcessExit;
 
-                if(lastWindowRectangle != null)
+                if (lastWindowRectangle != null)
                 {
                     int numberOfTimesToTry = 30;
-                    for(int i = 0; i < numberOfTimesToTry; i++)
+                    for (int i = 0; i < numberOfTimesToTry; i++)
                     {
                         IntPtr id = runningGameProcess.MainWindowHandle;
 
-                        if(id == IntPtr.Zero)
+                        if (id == IntPtr.Zero)
                         {
                             await Task.Delay(250);
                             continue;
@@ -137,6 +159,117 @@ namespace OfficialPlugins.Compiler
                 });
             }
         }
+
+        private static void StartProcess(bool preventFocus, string runArguments, string exeLocation)
+        {
+            // from here:
+            // https://stackoverflow.com/questions/12586957/how-do-i-open-a-process-so-that-it-doesnt-have-focus
+            if(preventFocus)
+            {
+                RestartGamePreventFocus(runArguments, exeLocation);
+            }
+            else
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.FileName = exeLocation;
+                startInfo.WorkingDirectory = FileManager.GetDirectory(exeLocation);
+                startInfo.Arguments = runArguments;
+                System.Diagnostics.Process.Start(startInfo);
+            }
+        }
+
+        #region Restart Game, Prevent Focus
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct STARTUPINFO
+        {
+            public Int32 cb;
+            public string lpReserved;
+            public string lpDesktop;
+            public string lpTitle;
+            public Int32 dwX;
+            public Int32 dwY;
+            public Int32 dwXSize;
+            public Int32 dwYSize;
+            public Int32 dwXCountChars;
+            public Int32 dwYCountChars;
+            public Int32 dwFillAttribute;
+            public Int32 dwFlags;
+            public Int16 wShowWindow;
+            public Int16 cbReserved2;
+            public IntPtr lpReserved2;
+            public IntPtr hStdInput;
+            public IntPtr hStdOutput;
+            public IntPtr hStdError;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct PROCESS_INFORMATION
+        {
+            public IntPtr hProcess;
+            public IntPtr hThread;
+            public int dwProcessId;
+            public int dwThreadId;
+        }
+
+        [DllImport("kernel32.dll")]
+        static extern bool CreateProcess(
+            string lpApplicationName,
+            string lpCommandLine,
+            IntPtr lpProcessAttributes,
+            IntPtr lpThreadAttributes,
+            bool bInheritHandles,
+            uint dwCreationFlags,
+            IntPtr lpEnvironment,
+            string lpCurrentDirectory,
+            [In] ref STARTUPINFO lpStartupInfo,
+            out PROCESS_INFORMATION lpProcessInformation
+        );
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool CloseHandle(IntPtr hObject);
+
+        const int STARTF_USESHOWWINDOW = 1;
+        const int SW_SHOWNOACTIVATE = 4;
+        const int SW_SHOWMINNOACTIVE = 7;
+
+
+        private static void StartProcessNoActivate(string cmdLine)
+        {
+            STARTUPINFO si = new STARTUPINFO();
+            si.cb = Marshal.SizeOf(si);
+
+
+            // Set si.wShowWindow to SW_SHOWNOACTIVATE to show the window normally but without stealing focus
+            // and SW_SHOWMINNOACTIVE to start the app minimised, again without stealing focus.
+            si.dwFlags = STARTF_USESHOWWINDOW;
+            si.wShowWindow = SW_SHOWNOACTIVATE;
+
+            PROCESS_INFORMATION pi = new PROCESS_INFORMATION();
+
+            CreateProcess(null, cmdLine, IntPtr.Zero, IntPtr.Zero, true,
+                0, IntPtr.Zero, null, ref si, out pi);
+
+            CloseHandle(pi.hProcess);
+            CloseHandle(pi.hThread);
+        }
+
+
+
+        private static void RestartGamePreventFocus(string runArguments, string exeLocation)
+        {
+            if(!string.IsNullOrWhiteSpace(runArguments))
+            {
+                StartProcessNoActivate(exeLocation + " " + runArguments);
+            }
+            else
+            {
+                StartProcessNoActivate(exeLocation);
+            }
+        }
+
+        #endregion
 
         private void HandleProcessExit(object sender, EventArgs e)
         {

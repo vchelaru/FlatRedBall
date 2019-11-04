@@ -81,7 +81,8 @@
             </Button.ToolTip>
         </Button>
 
-        <Button Margin="0,0,6,0" Click="HandleRestartGameCurrentScreenClicked">
+        <Button Margin="0,0,6,0" Click="HandleRestartGameCurrentScreenClicked"
+                Visibility="{Binding GlueControlDependentVisibility}">
             <Image Source="../icons/RestartGameOnCurrentScreen.png"></Image>
             <Button.ToolTip>
                 <ToolTip>
@@ -94,7 +95,8 @@
         </Button>
 
 
-        <Button Margin="0,0,6,0" Click="HandleRestartScreenClicked">
+        <Button Margin="0,0,6,0" Click="HandleRestartScreenClicked"
+                Visibility="{Binding GlueControlDependentVisibility}">
             <Image Source="../icons/RestartScreen.png"></Image>
             <Button.ToolTip>
                 <ToolTip>
@@ -105,5 +107,13 @@
                 </ToolTip>
             </Button.ToolTip>
         </Button>
+
+        <CheckBox Margin="8,0,8,0" 
+                  IsChecked="{Binding IsRebuildAndRestartEnabled}"
+                  Visibility="{Binding RebuildRestartCheckBoxVisiblity}"
+                  VerticalAlignment="Center" 
+                  VerticalContentAlignment="Center">
+            Rebuild/Restart Game on File Change
+        </CheckBox>
     </StackPanel>
 </UserControl>

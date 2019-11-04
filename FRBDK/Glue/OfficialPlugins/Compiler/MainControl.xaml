@@ -32,7 +32,9 @@
                 PauseClicked="WhileRunningView_PauseClicked"
                 UnpauseClicked="WhileRunningView_UnpauseClicked"
                 ></views:WhileRunningView>
-            <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsGenerateGlueControlManagerInGame1Checked}">
+            <CheckBox VerticalContentAlignment="Center" 
+                      IsChecked="{Binding IsGenerateGlueControlManagerInGame1Checked}"
+                      Visibility="{Binding GlueControlDependentVisibility}">
                 Generate GlueControlManager in Game1
             </CheckBox>
             <StackPanel Margin="7,0,0,0" Orientation="Horizontal" Visibility="{Binding PortUiVisibility}">

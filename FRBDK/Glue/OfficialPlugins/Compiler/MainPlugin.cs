@@ -18,6 +18,7 @@ using System.ComponentModel;
 using FlatRedBall.Glue.IO;
 using Newtonsoft.Json;
 using OfficialPlugins.Compiler.Models;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace OfficialPlugins.Compiler
 {
@@ -105,6 +106,7 @@ namespace OfficialPlugins.Compiler
         private void HandleIsRunningChanged(object sender, EventArgs e)
         {
             viewModel.IsRunning = runner.IsRunning;
+            viewModel.DidRunnerStartProcess = runner.DidRunnerStartProcess;
         }
 
         private void HandleGluxUnloaded()
@@ -143,6 +145,9 @@ namespace OfficialPlugins.Compiler
             ignoreViewModelChanges = true;
             viewModel.SetFrom(model);
             ignoreViewModelChanges = false;
+
+            viewModel.IsGluxVersionNewEnoughForGlueControlGeneration = 
+                GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AddedGeneratedGame1;
             game1GlueControlGenerator.PortNumber = model.PortNumber;
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode;
             RefreshManager.Self.PortNumber = model.PortNumber;
@@ -216,13 +221,13 @@ namespace OfficialPlugins.Compiler
                 {
                     var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
 
-                    GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run());
+                    GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run(preventFocus:false));
                 }
                 else
                 {
                     PluginManager.ReceiveOutput("Building succeeded. Running project...");
 
-                    await runner.Run();
+                    await runner.Run(preventFocus: false);
                 }
             }
             else
@@ -237,6 +242,7 @@ namespace OfficialPlugins.Compiler
         {
             viewModel = new CompilerViewModel();
             viewModel.Configuration = "Debug";
+            viewModel.IsRebuildAndRestartEnabled = true;
 
             viewModel.PropertyChanged += HandleMainViewModelPropertyChanged;
 
@@ -288,6 +294,9 @@ namespace OfficialPlugins.Compiler
                     var command = $"SetSpeed:{viewModel.CurrentGameSpeed.Substring(0, viewModel.CurrentGameSpeed.Length-1)}";
                     await DoCommandSendingLogic(command);
                     break;
+                case nameof(CompilerViewModel.EffectiveIsRebuildAndRestartEnabled):
+                    RefreshManager.Self.IsRebuildAndRestartEnabled = viewModel.EffectiveIsRebuildAndRestartEnabled;
+                    break;
             }
         }
 
@@ -312,7 +321,7 @@ namespace OfficialPlugins.Compiler
                 {
                     if (succeeded)
                     {
-                        await runner.Run();
+                        await runner.Run(preventFocus:false);
                     }
                 }
             };
@@ -338,7 +347,7 @@ namespace OfficialPlugins.Compiler
                 {
                     if (succeeded)
                     {
-                        await runner.Run(screenName);
+                        await runner.Run(preventFocus:false, screenName);
                     }
                 }
             };
@@ -368,13 +377,13 @@ namespace OfficialPlugins.Compiler
                 {
                     if (succeeded)
                     {
-                        await runner.Run();
+                        await runner.Run(preventFocus:false);
                     }
                     else
                     {
                         var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
 
-                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run());
+                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run(preventFocus: false));
                     }
                 }
             };

@@ -17,6 +17,8 @@ namespace OfficialPlugins.Compiler.Managers
         Action<string> printOutput;
         Action<string> printError;
 
+        public bool IsRebuildAndRestartEnabled { get; set; }
+
         public int PortNumber { get; set; }
 
         public void InitializeEvents(Action<string> printOutput, Action<string> printError)
@@ -27,7 +29,9 @@ namespace OfficialPlugins.Compiler.Managers
 
         public void HandleFileChanged(FilePath fileName)
         {
-            var shouldReactToFileChange = GetIfShouldReactToFileChange(fileName);
+            var shouldReactToFileChange = 
+                IsRebuildAndRestartEnabled &&
+                GetIfShouldReactToFileChange(fileName);
 
             if(shouldReactToFileChange)
             {
@@ -52,7 +56,10 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal void HandleNewEntityCreated(EntitySave arg1, AddEntityWindow arg2)
         {
-            StopAndRestartTask();
+            if(IsRebuildAndRestartEnabled)
+            {
+                StopAndRestartTask();
+            }
         }
 
         internal void HandleNewScreenCreated(ScreenSave obj)
@@ -64,17 +71,26 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal void HandleNewObjectCreated(NamedObjectSave newNamedObject)
         {
-            StopAndRestartTask();
+            if (IsRebuildAndRestartEnabled)
+            {
+                StopAndRestartTask();
+            }
         }
 
         internal void HandleVariableChanged(IElement arg1, CustomVariable arg2)
         {
-            StopAndRestartTask();
+            if (IsRebuildAndRestartEnabled)
+            {
+                StopAndRestartTask();
+            }
         }
 
         internal void HandleNamedObjectValueChanged(string changedMember, object oldValue)
         {
-            StopAndRestartTask();
+            if (IsRebuildAndRestartEnabled)
+            {
+                StopAndRestartTask();
+            }
         }
 
         private void StopAndRestartTask()
@@ -122,7 +138,7 @@ namespace OfficialPlugins.Compiler.Managers
 
                 if(succeeded)
                 {
-                    runner.Run().Wait();
+                    runner.Run(preventFocus:true).Wait();
                 }
             }
 

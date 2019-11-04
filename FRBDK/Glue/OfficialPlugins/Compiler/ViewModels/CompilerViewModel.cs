@@ -11,8 +11,13 @@ namespace OfficialPlugins.Compiler.ViewModels
 {
     public class CompilerViewModel : ViewModel
     {
-
         public bool AutoBuildContent { get; set; }
+
+        public bool IsGluxVersionNewEnoughForGlueControlGeneration
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
         public bool IsRunning
         {
@@ -42,12 +47,41 @@ namespace OfficialPlugins.Compiler.ViewModels
             set => Set(value);
         }
 
-        [DependsOn(nameof(IsPaused))]
-        public Visibility PauseButtonVisibility => IsPaused ?
-            Visibility.Collapsed : Visibility.Visible;
+        [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
+        public Visibility GlueControlDependentVisibility => IsGluxVersionNewEnoughForGlueControlGeneration ?
+            Visibility.Visible : Visibility.Collapsed;
 
         [DependsOn(nameof(IsPaused))]
-        public Visibility UnpauseButtonVisibility => IsPaused ?
+        [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
+        public Visibility PauseButtonVisibility => IsPaused || !IsGluxVersionNewEnoughForGlueControlGeneration ?
+            Visibility.Collapsed : Visibility.Visible;
+
+        public bool IsRebuildAndRestartEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool DidRunnerStartProcess
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsRebuildAndRestartEnabled))]
+        [DependsOn(nameof(DidRunnerStartProcess))]
+        public bool EffectiveIsRebuildAndRestartEnabled =>
+            IsRebuildAndRestartEnabled &&
+            DidRunnerStartProcess;
+
+        [DependsOn(nameof(DidRunnerStartProcess))]
+        [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
+        public Visibility RebuildRestartCheckBoxVisiblity => DidRunnerStartProcess && IsGluxVersionNewEnoughForGlueControlGeneration ?
+            Visibility.Visible : Visibility.Collapsed;
+
+        [DependsOn(nameof(IsPaused))]
+        [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
+        public Visibility UnpauseButtonVisibility => IsPaused && IsGluxVersionNewEnoughForGlueControlGeneration ?
             Visibility.Visible : Visibility.Collapsed;
 
         public bool IsGenerateGlueControlManagerInGame1Checked
@@ -57,7 +91,8 @@ namespace OfficialPlugins.Compiler.ViewModels
         }
 
         [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
-        public Visibility PortUiVisibility => IsGenerateGlueControlManagerInGame1Checked ?
+        [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
+        public Visibility PortUiVisibility => IsGenerateGlueControlManagerInGame1Checked && IsGluxVersionNewEnoughForGlueControlGeneration ?
             Visibility.Visible : Visibility.Collapsed;
 
         public int PortNumber
