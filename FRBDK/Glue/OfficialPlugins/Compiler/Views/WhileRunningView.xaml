@@ -23,10 +23,15 @@
             </Button.ToolTip>
 
         </Button>
+        <StackPanel Orientation="Horizontal" Margin="8,0,8,0" Visibility="{Binding PauseButtonVisibility}">
+            <Image Source="/OfficialPlugins;component/Compiler/Icons/SlowMotion.png"></Image>
+            <ComboBox Width="70" ItemsSource="{Binding GameSpeedList}" 
+                      HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                      SelectedItem="{Binding CurrentGameSpeed}"></ComboBox>
+        </StackPanel>
         <Button Margin="0,0,6,0" MinWidth="22"
                 Visibility="{Binding UnpauseButtonVisibility}"
                 Click="HandleUnpauseClicked"
-
             >
             <Image Source="../icons/Unpause.png"></Image>
             <Button.ToolTip>
@@ -38,13 +43,28 @@
                 </ToolTip>
             </Button.ToolTip>
         </Button>
+
+        <Button Margin="0,0,6,0" MinWidth="22"
+                Visibility="{Binding UnpauseButtonVisibility}"
+                Click="HandleAdvanceOneFrameClicked"
+        >
+            <Image Source="../icons/AdvanceOneFrame.png"></Image>
+            <Button.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Advance One Frame</TextBlock>
+                        <TextBlock>Unpauses the game for one frame, then pauses it again</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </Button.ToolTip>
+        </Button>
         <Button Margin="0,0,6,0" Click="HandleStopClicked">
             <Image Source="../icons/stop.png"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
                         <TextBlock FontWeight="Bold">Stop Game</TextBlock>
-                        <TextBlock>Kills the currentyly-running game process</TextBlock>
+                        <TextBlock>Kills the currently-running game process</TextBlock>
                     </StackPanel>
                 </ToolTip>
             </Button.ToolTip>

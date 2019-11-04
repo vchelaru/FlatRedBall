@@ -12,14 +12,14 @@ namespace OfficialPlugins.Compiler.CommandSending
 
     public static class CommandSender
     {
-        public static async Task<string> SendCommand(string text)
+        public static async Task<string> SendCommand(string text, int port)
         {
             if(text.EndsWith("\n") == false)
             {
                 text += "\n";
             }
             TcpClient client = new TcpClient();
-            client.Connect("localhost", 8021);
+            client.Connect("localhost", port);
 
             // Stream string to server
             Stream stm = client.GetStream();

@@ -503,10 +503,6 @@ namespace FlatRedBall.Glue.IO
 
                 FactoryCodeGenerator.AddGeneratedPerformanceTypes();
                 Section.EndContextAndTime();
-                Section.GetAndStartContextAndTime("CSV generation");
-
-                CsvCodeGenerator.RegenerateAllCsvs();
-                Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("PluginManager Init");
 
                 PluginManager.Initialize(false);
@@ -520,6 +516,7 @@ namespace FlatRedBall.Glue.IO
                 SetInitWindowText("Generating all code");
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
                 Section.EndContextAndTime();
+
                 GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh = false;
             }
         }

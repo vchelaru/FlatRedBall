@@ -20,7 +20,13 @@ namespace OfficialPlugins.Compiler
     /// </summary>
     public partial class MainControl : UserControl
     {
+        #region Fields/Properties
+
         OutputParser outputParser;
+
+        #endregion
+
+        #region Events
 
         public event EventHandler BuildClicked;
         public event EventHandler BuildContentClicked;
@@ -29,10 +35,11 @@ namespace OfficialPlugins.Compiler
         public event EventHandler RestartGameClicked;
         public event EventHandler RestartGameCurrentScreenClicked;
         public event EventHandler RestartScreenClicked;
+        public event EventHandler AdvanceOneFrameClicked;
         public event EventHandler PauseClicked;
         public event EventHandler UnpauseClicked;
 
-        
+        #endregion
 
         public MainControl()
         {
@@ -62,16 +69,22 @@ namespace OfficialPlugins.Compiler
 
         public void PrintOutput(string text)
         {
-            var outputType = outputParser.GetOutputType(text);
 
             // suppress warnings...
-            if(outputType != OutputType.Warning)
+            var split = text.Split('\n');
+
+            foreach(var line in split)
             {
-                Glue.MainGlueWindow.Self.Invoke(() =>
+                var outputType = outputParser.GetOutputType(line);
+                if(outputType != OutputType.Warning)
+                // Now all output is combined into one, so we have to do a split
                 {
-                    TextBox.AppendText(text + "\n");
-                    TextBox.ScrollToEnd();
-                });
+                    Glue.MainGlueWindow.Self.Invoke(() =>
+                    {
+                        TextBox.AppendText(line + "\n");
+                        TextBox.ScrollToEnd();
+                    });
+                }
             }
         }
 
@@ -95,6 +108,11 @@ namespace OfficialPlugins.Compiler
             RestartScreenClicked?.Invoke(this, null);
         }
 
+        private void WhileRunningView_AdvanceOneFrameClicked(object sender, EventArgs e)
+        {
+            AdvanceOneFrameClicked?.Invoke(this, null);
+        }
+
         private void WhileRunningView_PauseClicked(object sender, EventArgs e)
         {
             PauseClicked?.Invoke(this, null);
@@ -103,6 +121,20 @@ namespace OfficialPlugins.Compiler
         private void WhileRunningView_UnpauseClicked(object sender, EventArgs e)
         {
             UnpauseClicked?.Invoke(this, null);
+        }
+
+        private void TextBox_KeyEnterUpdate(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox tBox = (TextBox)sender;
+                DependencyProperty prop = TextBox.TextProperty;
+
+                BindingExpression binding = BindingOperations.GetBindingExpression(tBox, prop);
+                if (binding != null) { binding.UpdateSource(); }
+
+                e.Handled = true;
+            }
         }
     }
 }

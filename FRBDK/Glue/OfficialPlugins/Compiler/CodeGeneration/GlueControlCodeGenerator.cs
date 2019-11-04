@@ -20,12 +20,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-// needs to generate the controlmanager init:
-// GlueControlManager glueControlManager;
-//glueControlManager = new GlueControlManager(8021);
-//glueControlManager.Start();
-
-
 namespace " + GlueState.Self.ProjectNamespace + @"
 {
     public class GlueControlManager
@@ -105,7 +99,16 @@ namespace " + GlueState.Self.ProjectNamespace + @"
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
             bool handledImmediately = false;
-            switch(message)
+
+            string data = null;
+
+            if(message.Contains("":""))
+            {
+                data = message.Substring(message.IndexOf("":"") + 1);
+                message = message.Substring(0, message.IndexOf("":""));
+            }
+
+            switch (message)
             {
                 case ""GetCurrentScreen"":
                     handledImmediately = true;
@@ -133,7 +136,24 @@ namespace " + GlueState.Self.ProjectNamespace + @"
                             }
 
                             break;
-                    }
+
+                        case ""AdvanceOneFrame"":
+                            screen.UnpauseThisScreen();
+                            var delegateInstruction = new FlatRedBall.Instructions.DelegateInstruction(() =>
+                            {
+                                screen.PauseThisScreen();
+                            });
+                            delegateInstruction.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + .001;
+
+                            FlatRedBall.Instructions.InstructionManager.Instructions.Add(delegateInstruction);
+                            break;
+
+                        case ""SetSpeed"":
+                            var timeFactor = int.Parse(data);
+                            FlatRedBall.TimeManager.TimeFactor = timeFactor / 100.0f;
+                            break;
+
+                    }       
                 });
             }
 

@@ -16,6 +16,9 @@ namespace OfficialPlugins.Compiler.Managers
     {
         Action<string> printOutput;
         Action<string> printError;
+
+        public int PortNumber { get; set; }
+
         public void InitializeEvents(Action<string> printOutput, Action<string> printError)
         {
             this.printOutput = printOutput;
@@ -79,13 +82,14 @@ namespace OfficialPlugins.Compiler.Managers
             var runner = Runner.Self;
             if (runner.DidRunnerStartProcess)
             {
-                TaskManager.Self.Add(StopAndRestartImmediately,
+                TaskManager.Self.Add(
+                    () => StopAndRestartImmediately(PortNumber),
                    "Restarting due to Glue or file change",
                     TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
 
-        private void StopAndRestartImmediately()
+        private void StopAndRestartImmediately(int portNumber)
         {
             var runner = Runner.Self;
             var compiler = Compiler.Self;
@@ -98,7 +102,7 @@ namespace OfficialPlugins.Compiler.Managers
                 try
                 {
                     screenName = CommandSending.CommandSender
-                        .SendCommand("GetCurrentScreen")
+                        .SendCommand("GetCurrentScreen", portNumber)
                         .Result;
                 }
                 catch (AggregateException)

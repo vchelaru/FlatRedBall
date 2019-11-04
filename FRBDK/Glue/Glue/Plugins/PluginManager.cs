@@ -1634,6 +1634,12 @@ namespace FlatRedBall.Glue.Plugins
             ResumeRelativeDirectory("ReactToLoadedGluxEarly");
         }
 
+        /// <summary>
+        /// Method called after a project is loaded, but before any code has been generated
+        /// </summary>
+        /// <param name="glueProjectSave">The newly-loaded project.</param>
+        /// <param name="fileName">The file name of the plugin.</param>
+        /// <param name="displayCurrentStatusMethod">The method to call to update the status</param>
         internal static void ReactToLoadedGlux(GlueProjectSave glueProjectSave, string fileName, Action<string> displayCurrentStatusMethod)
         {
 

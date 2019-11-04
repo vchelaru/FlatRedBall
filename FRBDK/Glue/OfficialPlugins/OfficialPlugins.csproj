@@ -118,6 +118,9 @@
       <HintPath>..\Glue\Libraries\MSBuild\Current\Microsoft.Build.Framework.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="RemotingHelper">
@@ -182,6 +185,7 @@
     </Compile>
     <Compile Include="Compiler\MainPlugin.cs" />
     <Compile Include="Compiler\Managers\RefreshManager.cs" />
+    <Compile Include="Compiler\Models\CompilerSettingsModel.cs" />
     <Compile Include="Compiler\OutputParser.cs" />
     <Compile Include="Compiler\Runner.cs" />
     <Compile Include="Compiler\Views\RunnerToolbar.xaml.cs">
@@ -439,6 +443,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Compiler\Icons\build.png" />
@@ -460,6 +465,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Compiler\Icons\RestartGameOnCurrentScreen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Compiler\Icons\AdvanceOneFrame.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Compiler\Icons\SlowMotion.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
