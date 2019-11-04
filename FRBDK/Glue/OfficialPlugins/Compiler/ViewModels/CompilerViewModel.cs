@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using OfficialPlugins.Compiler.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,15 @@ namespace OfficialPlugins.Compiler.ViewModels
         public bool IsRunning
         {
             get => Get<bool>();
-            set => Set(value);
+            set
+            {
+                if (Set(value))
+                {
+                    // If the game either stops or restarts, no longer paused
+                    IsPaused = false;
+                    CurrentGameSpeed = "100%";
+                }
+            }
         }
 
         [DependsOn(nameof(IsRunning))]
@@ -41,7 +50,21 @@ namespace OfficialPlugins.Compiler.ViewModels
         public Visibility UnpauseButtonVisibility => IsPaused ?
             Visibility.Visible : Visibility.Collapsed;
 
+        public bool IsGenerateGlueControlManagerInGame1Checked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
+        [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
+        public Visibility PortUiVisibility => IsGenerateGlueControlManagerInGame1Checked ?
+            Visibility.Visible : Visibility.Collapsed;
+
+        public int PortNumber
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
 
         public string Configuration { get; set; }
 
@@ -50,6 +73,42 @@ namespace OfficialPlugins.Compiler.ViewModels
         {
             get { return compileContentButtonVisibility; }
             set { base.ChangeAndNotify(ref compileContentButtonVisibility, value); }
+        }
+
+        public List<string> GameSpeedList { get; set; } =
+            new List<string>
+            {
+                "500%",
+                "200%",
+                "100%",
+                "50%",
+                "25%",
+                "10%"
+            };
+
+        public string CurrentGameSpeed
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public CompilerViewModel()
+        {
+            CurrentGameSpeed = "100%";
+        }
+
+        internal void SetFrom(CompilerSettingsModel model)
+        {
+            this.IsGenerateGlueControlManagerInGame1Checked = model.GenerateGlueControlManagerCode;
+            this.PortNumber = model.PortNumber;
+        }
+
+        public CompilerSettingsModel ToModel()
+        {
+            CompilerSettingsModel toReturn = new CompilerSettingsModel();
+            toReturn.GenerateGlueControlManagerCode = this.IsGenerateGlueControlManagerInGame1Checked;
+            toReturn.PortNumber = this.PortNumber;
+            return toReturn;
         }
     }
 }

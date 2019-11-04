@@ -142,6 +142,10 @@ namespace FlatRedBall.Glue.Plugins
         public Action<string> SelectItemInCurrentFile { get; protected set; }
 
         public Action ReactToLoadedGluxEarly { get; protected set; }
+
+        /// <summary>
+        /// Delegate raised after a project is loaded, but before any code has been generated.
+        /// </summary>
         public Action ReactToLoadedGlux { get; protected set; }
 
         public Action<AddEntityWindow> ModifyAddEntityWindow { get; protected set; }
@@ -406,6 +410,13 @@ namespace FlatRedBall.Glue.Plugins
             {
                 container = pluginTab.LastTabControl;
             }
+
+            if(container== null)
+            {
+                // default to showing the plugin in the leftmost tab
+                container = GetTabContainerFromLocation(TabLocation.Left);
+            }
+
             if (container.Controls.Contains(pluginTab) == false)
             {
                 container.Controls.Add(pluginTab);

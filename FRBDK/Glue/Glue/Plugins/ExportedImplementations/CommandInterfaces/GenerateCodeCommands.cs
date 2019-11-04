@@ -197,6 +197,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             #endregion
 
+            CsvCodeGenerator.RegenerateAllCsvs();
             CsvCodeGenerator.GenerateAllCustomClasses(glueProject);
 
             if(glueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AddedGeneratedGame1)
@@ -216,6 +217,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void GenerateStartupScreenCode()
         {
             CodeWriter.RefreshStartupScreenCode();
+        }
+
+        public void GenerateGame1Task()
+        {
+            TaskManager.Self.Add(
+                GenerateGame1,
+                "Generating Game1.Generated.cs",
+                TaskExecutionPreference.AddOrMoveToEnd
+                );
         }
 
         public void GenerateGame1()

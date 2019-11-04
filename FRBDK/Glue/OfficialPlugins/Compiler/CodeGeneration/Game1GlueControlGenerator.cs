@@ -11,6 +11,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
     public class Game1GlueControlGenerator : Game1CodeGenerator
     {
         public bool IsGlueControlManagerGenerationEnabled { get; set; }
+        public int PortNumber { get; set; }
         public override void GenerateClassScope(ICodeBlock codeBlock)
         {
             if(IsGlueControlManagerGenerationEnabled)
@@ -23,8 +24,9 @@ namespace OfficialPlugins.Compiler.CodeGeneration
         {
             if (IsGlueControlManagerGenerationEnabled)
             {
-                codeBlock.Line("glueControlManager = new GlueControlManager(8021);");
+                codeBlock.Line($"glueControlManager = new GlueControlManager({PortNumber});");
                 codeBlock.Line("glueControlManager.Start();");
+                codeBlock.Line("this.Exiting += (not, used) => glueControlManager.Kill();");
             }
         }
     }

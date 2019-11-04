@@ -28,9 +28,23 @@
                 RestartGameClicked="WhileRunningView_RestartGameClicked"
                 RestartGameCurrentScreenClicked ="WhileRunningView_RestartGameCurrentScreenClicked"
                 RestartScreenClicked="WhileRunningView_RestartScreenClicked"
+                AdvanceOneFrameClicked="WhileRunningView_AdvanceOneFrameClicked"
                 PauseClicked="WhileRunningView_PauseClicked"
                 UnpauseClicked="WhileRunningView_UnpauseClicked"
                 ></views:WhileRunningView>
+            <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsGenerateGlueControlManagerInGame1Checked}">
+                Generate GlueControlManager in Game1
+            </CheckBox>
+            <StackPanel Margin="7,0,0,0" Orientation="Horizontal" Visibility="{Binding PortUiVisibility}">
+                <TextBlock VerticalAlignment="Center">
+                    Port:
+                </TextBlock>
+                <TextBox Width="60" Height="22" VerticalContentAlignment="Center" 
+                         Text="{Binding PortNumber}"
+                         KeyUp="TextBox_KeyEnterUpdate">
+                    
+                </TextBox>
+            </StackPanel>
             <StackPanel Margin="3" Orientation="Horizontal" Visibility="{Binding CompileContentButtonVisibility}">
                 <Button Click="HandleBuildContentClick" Content="Build Content"></Button>
 

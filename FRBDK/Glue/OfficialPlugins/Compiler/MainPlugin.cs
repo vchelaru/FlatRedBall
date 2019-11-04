@@ -13,6 +13,11 @@ using System.Windows;
 using OfficialPlugins.Compiler.CodeGeneration;
 using System.Net.Sockets;
 using OfficialPlugins.Compiler.Managers;
+using FlatRedBall.Glue.Controls;
+using System.ComponentModel;
+using FlatRedBall.Glue.IO;
+using Newtonsoft.Json;
+using OfficialPlugins.Compiler.Models;
 
 namespace OfficialPlugins.Compiler
 {
@@ -26,6 +31,10 @@ namespace OfficialPlugins.Compiler
         Compiler compiler;
         Runner runner;
         CompilerViewModel viewModel;
+
+        PluginTab buildTab;
+
+        Game1GlueControlGenerator game1GlueControlGenerator;
 
         public override string FriendlyName
         {
@@ -53,6 +62,10 @@ namespace OfficialPlugins.Compiler
             }
         }
 
+        FilePath JsonSettingsFilePath => GlueState.Self.ProjectSpecificSettingsFolder + "CompilerSettings.json";
+
+        bool ignoreViewModelChanges = false;
+
         #endregion
 
         public override void StartUp()
@@ -68,6 +81,9 @@ namespace OfficialPlugins.Compiler
             compiler = Compiler.Self;
             runner = Runner.Self;
             runner.IsRunningChanged += HandleIsRunningChanged;
+
+            game1GlueControlGenerator = new Game1GlueControlGenerator();
+            this.RegisterCodeGenerator(game1GlueControlGenerator);
         }
 
         private void AssignEvents()
@@ -94,11 +110,42 @@ namespace OfficialPlugins.Compiler
         private void HandleGluxUnloaded()
         {
             viewModel.CompileContentButtonVisibility = Visibility.Collapsed;
+
         }
+
+        private CompilerSettingsModel LoadOrCreateCompilerSettings()
+        {
+            CompilerSettingsModel compilerSettings = new CompilerSettingsModel();
+            var filePath = JsonSettingsFilePath;
+            if (filePath.Exists())
+            {
+                try
+                {
+                    var text = System.IO.File.ReadAllText(filePath.FullPath);
+                    compilerSettings = JsonConvert.DeserializeObject<CompilerSettingsModel>(text);
+                }
+                catch
+                {
+                    // do nothing, it'll just get wiped out and re-saved later
+                }
+            }
+
+            return compilerSettings;
+        }
+
+        
 
         private void HandleGluxLoaded()
         {
             UpdateCompileContentVisibility();
+
+            var model = LoadOrCreateCompilerSettings();
+            ignoreViewModelChanges = true;
+            viewModel.SetFrom(model);
+            ignoreViewModelChanges = false;
+            game1GlueControlGenerator.PortNumber = model.PortNumber;
+            game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode;
+            RefreshManager.Self.PortNumber = model.PortNumber;
 
             TaskManager.Self.Add(MainCodeGenerator.GenerateAll, "Generate Glue Control Code");
         }
@@ -188,14 +235,60 @@ namespace OfficialPlugins.Compiler
 
         private void CreateControl()
         {
-            control = new MainControl();
             viewModel = new CompilerViewModel();
             viewModel.Configuration = "Debug";
+
+            viewModel.PropertyChanged += HandleMainViewModelPropertyChanged;
+
+            control = new MainControl();
             control.DataContext = viewModel;
 
-            base.AddToTab(
-                PluginManager.BottomTab, control, "Build");
+            buildTab = base.CreateTab(control, "Build");
+            ShowTab(buildTab, TabLocation.Bottom);
+
             AssignControlEvents();
+        }
+
+        private async void HandleMainViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            //////////Early Out////////////////////
+            if(ignoreViewModelChanges)
+            {
+                return;
+            }
+
+            /////////End Early Out////////////////
+            var propertyName = e.PropertyName;
+
+            switch(propertyName)
+            {
+                case nameof(CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked):
+                case nameof(CompilerViewModel.PortNumber):
+                    control.PrintOutput("Applying changes");
+                    game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = viewModel.IsGenerateGlueControlManagerInGame1Checked;
+                    game1GlueControlGenerator.PortNumber = viewModel.PortNumber;
+                    RefreshManager.Self.PortNumber = viewModel.PortNumber;
+                    GlueCommands.Self.GenerateCodeCommands.GenerateGame1Task();
+                    var model = viewModel.ToModel();
+                    try
+                    {
+                        var text = JsonConvert.SerializeObject(model);
+                        GlueCommands.Self.TryMultipleTimes(() =>
+                        {
+                            System.IO.Directory.CreateDirectory(JsonSettingsFilePath.GetDirectoryContainingThis().FullPath);
+                            System.IO.File.WriteAllText(JsonSettingsFilePath.FullPath, text);
+                        });
+                    }
+                    catch
+                    {
+                        // no big deal if it fails
+                    }
+                    break;
+                case nameof(CompilerViewModel.CurrentGameSpeed):
+                    var command = $"SetSpeed:{viewModel.CurrentGameSpeed.Substring(0, viewModel.CurrentGameSpeed.Length-1)}";
+                    await DoCommandSendingLogic(command);
+                    break;
+            }
         }
 
         private void AssignControlEvents()
@@ -230,7 +323,7 @@ namespace OfficialPlugins.Compiler
 
                 try
                 {
-                    screenName = await CommandSending.CommandSender.SendCommand("GetCurrentScreen");
+                    screenName = await CommandSending.CommandSender.SendCommand("GetCurrentScreen", viewModel.PortNumber);
                 }
                 catch(SocketException)
                 {
@@ -253,23 +346,14 @@ namespace OfficialPlugins.Compiler
             control.RestartScreenClicked += async (not, used) =>
             {
                 viewModel.IsPaused = false;
-                try
-                {
-                    control.PrintOutput("Sending command: RestartScreen");
-                    var response = await CommandSending.CommandSender.SendCommand("RestartScreen");
-                    if(response == "true")
-                    {
-                        control.PrintOutput($"Succeeded");
-                    }
-                    else
-                    {
-                        control.PrintOutput($"Response: {response}");
-                    }
-                }
-                catch (Exception e)
-                {
-                    control.PrintOutput("Failed to restart screen:\n" + e.ToString());
-                }
+                var command = "RestartScreen";
+                await DoCommandSendingLogic(command);
+            };
+
+            control.AdvanceOneFrameClicked += async (not, used) =>
+            {
+                var command = "AdvanceOneFrame";
+                await DoCommandSendingLogic(command);
             };
 
             control.BuildContentClicked += delegate
@@ -295,19 +379,42 @@ namespace OfficialPlugins.Compiler
                 }
             };
 
-            control.PauseClicked += (not, used) =>
+            control.PauseClicked += async (not, used) =>
             {
                 viewModel.IsPaused = true;
-                CommandSending.CommandSender.SendCommand("TogglePause");
-                
+                var command = "TogglePause";
+                await DoCommandSendingLogic(command);
             };
 
-            control.UnpauseClicked += (not, used) =>
+            control.UnpauseClicked += async (not, used) =>
             {
                 viewModel.IsPaused = false;
-                CommandSending.CommandSender.SendCommand("TogglePause");
+                var command = "TogglePause";
+                await DoCommandSendingLogic(command);
 
             };
+        }
+
+        private async Task DoCommandSendingLogic(string command)
+        {
+            try
+            {
+                control.PrintOutput($"Sending command: {command}");
+                var response = await CommandSending.CommandSender
+                    .SendCommand(command, viewModel.PortNumber);
+                if (response == "true")
+                {
+                    control.PrintOutput($"Succeeded");
+                }
+                else
+                {
+                    control.PrintOutput($"Response: {response}");
+                }
+            }
+            catch (Exception e)
+            {
+                control.PrintOutput($"Failed to send command {command}:\n" + e.ToString());
+            }
         }
 
         private static bool GetIfHasErrors()
