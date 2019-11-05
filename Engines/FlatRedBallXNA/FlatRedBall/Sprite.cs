@@ -737,6 +737,8 @@ namespace FlatRedBall
             mVertices[3].TextureCoordinate.Y = 1;
             mVertices[3].Scale = new Vector2(-1, -1);
 
+            TimeCreated = TimeManager.CurrentTime;
+
 #if MONODROID
             mVertices[0].Color.X = 1;
             mVertices[1].Color.X = 1;

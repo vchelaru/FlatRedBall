@@ -14,12 +14,21 @@ namespace OfficialPlugins.Compiler.Managers
 {
     public class RefreshManager : Singleton<RefreshManager>
     {
+        #region Fields/Properties
+
         Action<string> printOutput;
         Action<string> printError;
+        string screenToRestartOn = null;
 
-        public bool IsRebuildAndRestartEnabled { get; set; }
+
+        public bool IsExplicitlySetRebuildAndRestartEnabled { get; set; }
+        bool failedToRebuildAndRestart { get; set; }
+
+        bool ShouldRestartOnChange => failedToRebuildAndRestart || IsExplicitlySetRebuildAndRestartEnabled;
 
         public int PortNumber { get; set; }
+
+        #endregion
 
         public void InitializeEvents(Action<string> printOutput, Action<string> printError)
         {
@@ -29,8 +38,8 @@ namespace OfficialPlugins.Compiler.Managers
 
         public void HandleFileChanged(FilePath fileName)
         {
-            var shouldReactToFileChange = 
-                IsRebuildAndRestartEnabled &&
+            var shouldReactToFileChange =
+                ShouldRestartOnChange &&
                 GetIfShouldReactToFileChange(fileName);
 
             if(shouldReactToFileChange)
@@ -56,7 +65,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal void HandleNewEntityCreated(EntitySave arg1, AddEntityWindow arg2)
         {
-            if(IsRebuildAndRestartEnabled)
+            if(ShouldRestartOnChange)
             {
                 StopAndRestartTask();
             }
@@ -71,7 +80,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal void HandleNewObjectCreated(NamedObjectSave newNamedObject)
         {
-            if (IsRebuildAndRestartEnabled)
+            if (ShouldRestartOnChange)
             {
                 StopAndRestartTask();
             }
@@ -79,7 +88,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal void HandleVariableChanged(IElement arg1, CustomVariable arg2)
         {
-            if (IsRebuildAndRestartEnabled)
+            if (ShouldRestartOnChange)
             {
                 StopAndRestartTask();
             }
@@ -87,7 +96,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal void HandleNamedObjectValueChanged(string changedMember, object oldValue)
         {
-            if (IsRebuildAndRestartEnabled)
+            if (ShouldRestartOnChange)
             {
                 StopAndRestartTask();
             }
@@ -96,7 +105,7 @@ namespace OfficialPlugins.Compiler.Managers
         private void StopAndRestartTask()
         {
             var runner = Runner.Self;
-            if (runner.DidRunnerStartProcess)
+            if (runner.DidRunnerStartProcess || (runner.IsRunning == false && failedToRebuildAndRestart))
             {
                 TaskManager.Self.Add(
                     () => StopAndRestartImmediately(PortNumber),
@@ -110,35 +119,41 @@ namespace OfficialPlugins.Compiler.Managers
             var runner = Runner.Self;
             var compiler = Compiler.Self;
 
-            if(runner.DidRunnerStartProcess)
+            if(runner.DidRunnerStartProcess || (runner.IsRunning == false && failedToRebuildAndRestart))
             {
 
-                string screenName = null;
-
-                try
+                if(runner.IsRunning)
                 {
-                    screenName = CommandSending.CommandSender
-                        .SendCommand("GetCurrentScreen", portNumber)
-                        .Result;
-                }
-                catch (AggregateException)
-                {
-                    printOutput("Could not get the game's screen, restarting game from startup screen");
+                    try
+                    {
+                        screenToRestartOn = CommandSending.CommandSender
+                            .SendCommand("GetCurrentScreen", portNumber)
+                            .Result;
+                    }
+                    catch (AggregateException)
+                    {
+                        printOutput("Could not get the game's screen, restarting game from startup screen");
 
-                }
-                catch (SocketException)
-                {
-                    // do nothing, may not have been able to communicate, just output
-                    printOutput("Could not get the game's screen, restarting game from startup screen");
+                    }
+                    catch (SocketException)
+                    {
+                        // do nothing, may not have been able to communicate, just output
+                        printOutput("Could not get the game's screen, restarting game from startup screen");
+                    }
+
+                    runner.Stop();
                 }
 
-
-                runner.Stop();
                 var succeeded = compiler.Compile(printOutput, printError).Result;
 
                 if(succeeded)
                 {
-                    runner.Run(preventFocus:true).Wait();
+                    runner.Run(preventFocus:true, runArguments: screenToRestartOn).Wait();
+                    failedToRebuildAndRestart = false;
+                }
+                else
+                {
+                    failedToRebuildAndRestart = true;
                 }
             }
 

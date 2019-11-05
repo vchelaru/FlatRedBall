@@ -295,7 +295,7 @@ namespace OfficialPlugins.Compiler
                     await DoCommandSendingLogic(command);
                     break;
                 case nameof(CompilerViewModel.EffectiveIsRebuildAndRestartEnabled):
-                    RefreshManager.Self.IsRebuildAndRestartEnabled = viewModel.EffectiveIsRebuildAndRestartEnabled;
+                    RefreshManager.Self.IsExplicitlySetRebuildAndRestartEnabled = viewModel.EffectiveIsRebuildAndRestartEnabled;
                     break;
             }
         }

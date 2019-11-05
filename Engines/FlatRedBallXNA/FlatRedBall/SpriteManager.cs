@@ -1103,7 +1103,6 @@ namespace FlatRedBall
         public static Sprite AddSprite(AnimationChainList animationChainList)
         {
             Sprite s = new Sprite();
-            s.TimeCreated = TimeManager.CurrentTime;
             s.AnimationChains = animationChainList;
             s.Animate = true;
             s.CurrentChainIndex = 0;
@@ -1117,7 +1116,6 @@ namespace FlatRedBall
         public static Sprite AddSprite(AnimationChain animationChain)
         {
             Sprite s = new Sprite();
-            s.TimeCreated = TimeManager.CurrentTime;
             s.SetAnimationChain(animationChain);
             s.Animate = true;
             s.CurrentChainIndex = 0;
@@ -1157,8 +1155,6 @@ namespace FlatRedBall
         {
             Sprite newSprite = new Sprite();
             newSprite.Texture = texture;
-            newSprite.TimeCreated = TimeManager.CurrentTime;
-
             AddSprite(newSprite);
             return newSprite;
         }
@@ -1193,7 +1189,6 @@ namespace FlatRedBall
             Sprite newSprite = new Sprite();
             newSprite.mOrdered = false;
             newSprite.Texture = texture;
-            newSprite.TimeCreated = TimeManager.CurrentTime;
 #if DEBUG
             if (mAutomaticallyUpdatedSprites.Contains(newSprite))
             {
@@ -1231,7 +1226,6 @@ namespace FlatRedBall
         {
             Sprite newSprite = new Sprite();
             newSprite.Texture = texture;
-            newSprite.TimeCreated = TimeManager.CurrentTime;
 
             AddManualSprite(newSprite);
             return newSprite;
@@ -1241,7 +1235,6 @@ namespace FlatRedBall
         {
             Sprite newSprite = new Sprite();
             newSprite.Texture = texture;
-            newSprite.TimeCreated = TimeManager.CurrentTime;
 
             return AddManualZBufferedSprite(newSprite);
         }
@@ -1366,7 +1359,6 @@ namespace FlatRedBall
                 // mOrderedByDistanceFromCameraSprites SpriteList
                 Sprite newSprite = new Sprite();
                 newSprite.Texture = texture;
-                newSprite.TimeCreated = TimeManager.CurrentTime;
 
 #if DEBUG
                 if (mAutomaticallyUpdatedSprites.Contains(newSprite))
@@ -1422,7 +1414,6 @@ namespace FlatRedBall
             // through a DrawableBatch.
             sprite.mVerticesForDrawing = new VertexPositionColorTexture[4];
 
-            sprite.TimeCreated = TimeManager.CurrentTime;
             return sprite;
 
 

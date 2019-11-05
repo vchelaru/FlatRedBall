@@ -118,45 +118,58 @@ namespace OfficialPlugins.Compiler
                 await Task.Delay(200);
 
                 runningGameProcess = TryFindGameProcess();
-                if(runningGameProcess == null)
+                int numberOfTimesToTryGettingProcess = 5;
+                int timesTried = 0;
+                while(runningGameProcess == null)
                 {
                     // didn't find it, so let's wait a little and try again:
 
                     await Task.Delay(500);
 
                     runningGameProcess = TryFindGameProcess();
-                }
 
-                runningGameProcess.EnableRaisingEvents = true;
-                runningGameProcess.Exited += HandleProcessExit;
+                    timesTried++;
 
-                if (lastWindowRectangle != null)
-                {
-                    int numberOfTimesToTry = 30;
-                    for (int i = 0; i < numberOfTimesToTry; i++)
+                    if(timesTried >= numberOfTimesToTryGettingProcess)
                     {
-                        IntPtr id = runningGameProcess.MainWindowHandle;
-
-                        if (id == IntPtr.Zero)
-                        {
-                            await Task.Delay(250);
-                            continue;
-                        }
-                        else
-                        {
-                            var rect = lastWindowRectangle.Value;
-                            MoveWindow(id, rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top, true);
-                            lastWindowRectangle = null;
-                            break;
-                        }
+                        break;
                     }
                 }
 
-
-                global::Glue.MainGlueWindow.Self.Invoke(() =>
+                if(runningGameProcess != null)
                 {
-                    IsRunningChanged?.Invoke(this, null);
-                });
+
+                    runningGameProcess.EnableRaisingEvents = true;
+                    runningGameProcess.Exited += HandleProcessExit;
+
+                    if (lastWindowRectangle != null)
+                    {
+                        int numberOfTimesToTry = 30;
+                        for (int i = 0; i < numberOfTimesToTry; i++)
+                        {
+                            IntPtr id = runningGameProcess.MainWindowHandle;
+
+                            if (id == IntPtr.Zero)
+                            {
+                                await Task.Delay(250);
+                                continue;
+                            }
+                            else
+                            {
+                                var rect = lastWindowRectangle.Value;
+                                MoveWindow(id, rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top, true);
+                                lastWindowRectangle = null;
+                                break;
+                            }
+                        }
+                    }
+
+
+                    global::Glue.MainGlueWindow.Self.Invoke(() =>
+                    {
+                        IsRunningChanged?.Invoke(this, null);
+                    });
+                }
             }
         }
 
