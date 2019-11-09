@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:local="clr-namespace:TopDownPlugin.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="500">
@@ -14,8 +15,27 @@
         </Grid.RowDefinitions>
         <CheckBox IsChecked="{Binding IsTopDown}" 
                   VerticalContentAlignment="Center">Is Top-Down Entity</CheckBox>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Visibility="{Binding TopDownUiVisibility}" Grid.Row="1" >
+            <ItemsControl ItemsSource="{Binding TopDownValues}" HorizontalContentAlignment="Stretch">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local:TopDownValuesView XClick="TopDownValuesXClick"></local:TopDownValuesView>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
 
-        
+        <Grid Visibility="{Binding TopDownUiVisibility}" Grid.Row="2">
+            <!--<Button Click="AddPlatformerValuesClick" Grid.Column="0" Height="28">Add Control Values</Button>
+            <Button Click="AddPlatformerValuesClick" Grid.Column="1" Height="28" Width="15">v</Button>-->
+            <xctk:SplitButton Content="Add Control Values" Click="AddEmptyTopDownValuesClick" x:Name="AddControlButtonInstance">
+                <xctk:SplitButton.DropDownContent>
+                    <StackPanel>
+                        <Button Click="AddEmptyTopDownValuesClick">Empty Values</Button>
+                    </StackPanel>
+                </xctk:SplitButton.DropDownContent>
+            </xctk:SplitButton>
+        </Grid>
 
     </Grid>
 </UserControl>

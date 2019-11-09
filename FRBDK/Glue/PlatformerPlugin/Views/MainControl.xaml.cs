@@ -24,13 +24,8 @@ namespace FlatRedBall.PlatformerPlugin.Views
     /// </summary>
     public partial class MainControl : UserControl
     {
-        PlatformerEntityViewModel ViewModel
-        {
-            get
-            {
-                return DataContext as PlatformerEntityViewModel;
-            }
-        }
+        PlatformerEntityViewModel ViewModel =>
+            DataContext as PlatformerEntityViewModel;
 
         public MainControl()
         {

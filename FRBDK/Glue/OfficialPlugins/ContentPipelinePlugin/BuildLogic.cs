@@ -191,6 +191,10 @@ namespace OfficialPlugins.MonoGameContent
             {
                 contentItem = ContentItem.CreateMp3Build();
             }
+            else if(extension == "wma")
+            {
+                contentItem = ContentItem.CreateWmaBuild();
+            }
             else if (extension == "wav")
             {
                 contentItem = ContentItem.CreateWavBuild();
@@ -410,6 +414,7 @@ namespace OfficialPlugins.MonoGameContent
             string extension = FileManager.GetExtension(fileName);
 
             bool isRequired = extension == "mp3" ||
+                extension == "wma" ||
                 extension == "ogg" ||
                 extension == "wav" ||
                 extension == "fx";

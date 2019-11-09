@@ -69,6 +69,18 @@ namespace OfficialPlugins.MonoGameContent
             return toReturn;
         }
 
+
+        public static ContentItem CreateWmaBuild()
+        {
+            var toReturn = new ContentItem();
+
+            toReturn.Importer = "WmaImporter";
+            toReturn.Processor = "SongProcessor";
+            toReturn.ProcessorParameters.Add("Quality=Best");
+
+            return toReturn;
+        }
+
         public static ContentItem CreateWavBuild()
         {
             var toReturn = new ContentItem();

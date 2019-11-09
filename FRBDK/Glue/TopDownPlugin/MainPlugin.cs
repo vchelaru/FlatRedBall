@@ -18,6 +18,8 @@ namespace TopDownPlugin
     [Export(typeof(PluginBase))]
     public class MainPlugin : PluginBase
     {
+        #region Fields/Properties
+
         public override string FriendlyName => "Top Down Plugin";
 
         // 1.1 - Added support for 0 time speedup and slowdown
@@ -32,12 +34,16 @@ namespace TopDownPlugin
         //       add its own logic.
         // 1.7 - Added TopDownSpeedMultiplier allowing speed to be multiplied easily based on terrain or power-ups
         // 1.7.1 - Will ask the user if plugin should be a required plugin when marking an entity as top-down
+        // 2.0 - New UI for editing top down values
+        //  - TopDownAiInput.cs is now saved in TopDownAiInput.Generated.cs
         public override Version Version => 
-            new Version(1, 7, 1);
+            new Version(2, 0, 0);
 
         MainEntityView control;
+
         PluginTab pluginTab;
 
+        #endregion
 
         public override bool ShutDown(FlatRedBall.Glue.Plugins.Interfaces.PluginShutDownReason shutDownReason)
         {

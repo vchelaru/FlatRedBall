@@ -10,17 +10,16 @@ namespace TopDownPlugin.CodeGenerators
 {
     public class AiCodeGenerator : Singleton<AiCodeGenerator>
     {
+        public const string RelativeFile = "TopDown/TopDownAiInput.Generated.cs";
         public void GenerateAndSave()
         {
             TaskManager.Self.Add(() =>
             {
                 var contents = GenerateFileContents();
 
-                var relativeFile = "TopDown/TopDownAiInput.cs";
+                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(RelativeFile);
 
-                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeFile);
-
-                var fullPath = GlueState.Self.CurrentGlueProjectDirectory + relativeFile;
+                var fullPath = GlueState.Self.CurrentGlueProjectDirectory + RelativeFile;
 
                 GlueCommands.Self.TryMultipleTimes(() =>
                System.IO.File.WriteAllText(fullPath, contents));
@@ -198,5 +197,6 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
 
             return toReturn;
         }
+
     }
 }

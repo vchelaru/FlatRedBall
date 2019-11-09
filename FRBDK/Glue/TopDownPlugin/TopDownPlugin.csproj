@@ -64,6 +64,24 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
+    <Reference Include="Xceed.Wpf.AvalonDock">
+      <HintPath>..\Glue\Libraries\Xceed\Xceed.Wpf.AvalonDock.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero">
+      <HintPath>..\Glue\Libraries\Xceed\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro">
+      <HintPath>..\Glue\Libraries\Xceed\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010">
+      <HintPath>..\Glue\Libraries\Xceed\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.DataGrid">
+      <HintPath>..\Glue\Libraries\Xceed\Xceed.Wpf.DataGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit">
+      <HintPath>..\Glue\Libraries\Xceed\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeGenerators\AiCodeGenerator.cs" />
@@ -72,6 +90,9 @@
     <Compile Include="CodeGenerators\InterfacesFileGenerator.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="DataGenerators\CsvGenerator.cs" />
+    <Compile Include="Data\PredefinedTopDownValues.cs" />
+    <Compile Include="Logic\TopDownEntityPropertyLogic.cs" />
+    <Compile Include="Logic\TopDownValuesCreationLogic.cs" />
     <Compile Include="MainPlugin.cs" />
     <Compile Include="Models\TopDownValues.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -85,6 +106,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj">
+      <Project>{47241002-7eb5-433b-b931-a530bb6b84ee}</Project>
+      <Name>WpfDataUi</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
       <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
       <Name>FlatRedBallXna4</Name>

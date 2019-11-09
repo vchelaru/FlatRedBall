@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -6,11 +7,13 @@ using FlatRedBall.IO.Csv;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TopDownPlugin.CodeGenerators;
 using TopDownPlugin.DataGenerators;
+using TopDownPlugin.Logic;
 using TopDownPlugin.Models;
 using TopDownPlugin.ViewModels;
 using TopDownPlugin.Views;
@@ -27,6 +30,8 @@ namespace TopDownPlugin.Controllers
         bool ignoresPropertyChanges = false;
 
         public PluginBase MainPlugin { get; set; }
+
+        CsvHeader[] lastHeaders;
 
         #endregion
 
@@ -66,13 +71,7 @@ namespace TopDownPlugin.Controllers
 
             if(e.PropertyName == nameof(TopDownEntityViewModel.IsTopDown))
             {
-                if(viewModel.IsTopDown &&
-                    GlueCommands.Self.GluxCommands.GetPluginRequirement(MainPlugin) == false)
-                {
-                    GlueCommands.Self.GluxCommands.SetPluginRequirement(MainPlugin, true);
-                    GlueCommands.Self.PrintOutput("Added Top Down Plugin as a required plugin because the entity was marked as a top down entity");
-                    GlueCommands.Self.GluxCommands.SaveGluxTask();
-                }
+                HandleIsTopDownPropertyChanged(viewModel);
             }
 
             if (shouldGenerateCsv)
@@ -113,8 +112,39 @@ namespace TopDownPlugin.Controllers
                         GlueCommands.Self.GluxCommands.SaveGlux();
                         EnumFileGenerator.Self.GenerateAndSaveEnumFile();
                         InterfacesFileGenerator.Self.GenerateAndSave();
-                        AiCodeGenerator.Self.GenerateAndSave();
+                        if(shouldGenerateCsv || shouldAddTopDownVariables)
+                        {
+                            AiCodeGenerator.Self.GenerateAndSave();
+                        }
                     },"Saving Glue Project");
+            }
+
+        }
+
+        private void HandleIsTopDownPropertyChanged(TopDownEntityViewModel viewModel)
+        {
+            if (viewModel.IsTopDown &&
+                                GlueCommands.Self.GluxCommands.GetPluginRequirement(MainPlugin) == false)
+            {
+                GlueCommands.Self.GluxCommands.SetPluginRequirement(MainPlugin, true);
+                GlueCommands.Self.PrintOutput("Added Top Down Plugin as a required plugin because the entity was marked as a top down entity");
+                GlueCommands.Self.GluxCommands.SaveGluxTask();
+            }
+
+            if(viewModel.IsTopDown == false)
+            {
+                var areAnyEntitiesTopDown = GlueState.Self.CurrentGlueProject.Entities
+                    .Any(item => TopDownEntityPropertyLogic.GetIfIsTopDown(item));
+
+                if(!areAnyEntitiesTopDown)
+                {
+                    FilePath absoluteFile =
+                        GlueState.Self.CurrentGlueProjectDirectory +
+                        AiCodeGenerator.RelativeFile;
+
+                    TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.RemoveFromProjects(absoluteFile),
+                        "Removing " + AiCodeGenerator.RelativeFile);
+                }
             }
         }
 
@@ -145,10 +175,10 @@ namespace TopDownPlugin.Controllers
             }
         }
 
-        private static void GenerateCsv(EntitySave entity, TopDownEntityViewModel viewModel)
+        private void GenerateCsv(EntitySave entity, TopDownEntityViewModel viewModel)
         {
             TaskManager.Self.Add(
-                                () => CsvGenerator.Self.GenerateFor(entity, viewModel),
+                                () => CsvGenerator.Self.GenerateFor(entity, viewModel, lastHeaders),
                                 "Generating Top Down CSV for " + entity.Name);
 
 
@@ -217,7 +247,12 @@ namespace TopDownPlugin.Controllers
 
             viewModel.IsTopDown = currentEntitySave.Properties.GetValue<bool>(nameof(viewModel.IsTopDown));
 
-            var csvValues = GetCsvValues(currentEntitySave);
+            TopDownValuesCreationLogic.GetCsvValues(currentEntitySave,
+                out Dictionary<string, TopDownValues> csvValues,
+                out List<Type> additionalValueTypes,
+                out CsvHeader[] csvHeaders);
+
+            lastHeaders = csvHeaders;
 
             viewModel.TopDownValues.Clear();
 
@@ -227,7 +262,7 @@ namespace TopDownPlugin.Controllers
 
                 topDownValuesViewModel.PropertyChanged += HandleTopDownValuesChanged;
 
-                topDownValuesViewModel.SetFrom(value);
+                topDownValuesViewModel.SetFrom(value, additionalValueTypes);
 
                 viewModel.TopDownValues.Add(topDownValuesViewModel);
             }
@@ -237,29 +272,7 @@ namespace TopDownPlugin.Controllers
 
         private void HandleTopDownValuesChanged(object sender, PropertyChangedEventArgs e)
         {
-
-        }
-
-        private static Dictionary<string, TopDownValues> GetCsvValues(EntitySave currentEntitySave)
-        {
-            var csvValues = new Dictionary<string, TopDownValues>();
-            var filePath = CsvGenerator.Self.CsvFileFor(currentEntitySave);
-
-            bool doesFileExist = filePath.Exists();
-
-            if (doesFileExist)
-            {
-                try
-                {
-                    CsvFileManager.CsvDeserializeDictionary<string, TopDownValues>(filePath.FullPath, csvValues);
-                }
-                catch (Exception e)
-                {
-                    PluginManager.ReceiveError("Error trying to load top down csv:\n" + e.ToString());
-                }
-            }
-
-            return csvValues;
+            
         }
 
     }

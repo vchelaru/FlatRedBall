@@ -13,7 +13,8 @@
             <RowDefinition></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <CheckBox IsChecked="{Binding IsPlatformer}" VerticalContentAlignment="Center">Is Platformer</CheckBox>
+        <CheckBox IsChecked="{Binding IsPlatformer}"
+                  VerticalContentAlignment="Center">Is Platformer</CheckBox>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Visibility="{Binding PlatformerUiVisibility}" Grid.Row="1" >
             <ItemsControl ItemsSource="{Binding PlatformerValues}" HorizontalContentAlignment="Stretch">

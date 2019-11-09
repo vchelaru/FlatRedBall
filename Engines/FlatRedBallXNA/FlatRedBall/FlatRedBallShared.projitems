@@ -192,6 +192,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Instructions\StaticMethodInstruction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Instructions\ValueRelationship.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\BmpLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\Csv\CsvIgnoreAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\Csv\CsvFileManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\Csv\CsvReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\Csv\CsvReader.RecordEnumerator.cs" />

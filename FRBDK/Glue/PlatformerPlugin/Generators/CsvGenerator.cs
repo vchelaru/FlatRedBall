@@ -29,7 +29,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
         internal void GenerateFor(EntitySave entity, PlatformerEntityViewModel viewModel)
         {
-            string contents = GetCsvContents(entity, viewModel);
+            string contents = GenerateCsvContents(entity, viewModel);
 
             string fileName = CsvFileFor(entity);
 
@@ -39,7 +39,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             });
         }
 
-        private string GetCsvContents(EntitySave entity, PlatformerEntityViewModel viewModel)
+        private string GenerateCsvContents(EntitySave entity, PlatformerEntityViewModel viewModel)
         {
             List<PlatformerValues> values = new List<PlatformerValues>();
 

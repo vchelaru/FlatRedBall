@@ -234,7 +234,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
             viewModel.IsPlatformer = currentEntitySave.Properties.GetValue<bool>(nameof(viewModel.IsPlatformer));
 
-            Dictionary<string, PlatformerValues> csvValues = GetCsvValues(currentEntitySave);
+            var csvValues = GetCsvValues(currentEntitySave);
 
             viewModel.PlatformerValues.Clear();
 

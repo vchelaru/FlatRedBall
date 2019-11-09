@@ -29,9 +29,9 @@ namespace TopDownPlugin.DataGenerators
             return absoluteFileName;
         }
 
-        internal void GenerateFor(EntitySave entity, TopDownEntityViewModel viewModel)
+        internal void GenerateFor(EntitySave entity, TopDownEntityViewModel viewModel, CsvHeader[] lastHeaders)
         {
-            string contents = GetCsvContents(entity, viewModel);
+            string contents = GenerateCsvContents(entity, viewModel, lastHeaders);
 
             string fileName = CsvFileFor(entity).FullPath;
 
@@ -41,38 +41,43 @@ namespace TopDownPlugin.DataGenerators
             });
         }
 
-        private string GetCsvContents(EntitySave entity, TopDownEntityViewModel viewModel)
+        private string GenerateCsvContents(EntitySave entity, TopDownEntityViewModel viewModel, CsvHeader[] headers)
         {
             List<TopDownValues> values = new List<TopDownValues>();
 
-            // create a default entry:
-            var defaultValue = new TopDownValues();
-            defaultValue.Name = "DefaultValues";
-            defaultValue.MaxSpeed = 250;
-            defaultValue.AccelerationTime = 1;
-            defaultValue.DecelerationTime = .5f;
-            defaultValue.UpdateDirectionFromVelocity = true;
+            foreach(var valuesViewModel in viewModel.TopDownValues)
+            {
+                var topDownValues = valuesViewModel.ToValues();
 
-            values.Add(defaultValue);
+                values.Add(topDownValues);
+            }
 
             RuntimeCsvRepresentation rcr = RuntimeCsvRepresentation.FromList(values);
 
-            var nameHeader = rcr.Headers[0];
+            rcr.Headers = headers;
 
-            nameHeader.IsRequired = true;
-            // Setting it to IsRequired is not sufficient, need to
-            // modify the "Original Text" prop
-            // chop off the closing quote, and add ", required)"
-            nameHeader.OriginalText = nameHeader.OriginalText.Substring(0, nameHeader.OriginalText.Length - 1) + ", required)";
-
-            rcr.Headers[0] = nameHeader;
-
-            var movementDefaults = new string[]
+            for(int rowIndex = 0; rowIndex < rcr.Records.Count; rowIndex++)
             {
+                var row = rcr.Records[rowIndex];
+                var topDownValues = values[rowIndex];
 
-            };
+                var rowRecordAsList = row.ToList();
+                for (int columnIndex = row.Length; columnIndex < headers.Length; columnIndex++)
+                {
+                    var headerName = headers[columnIndex].Name;
 
-            rcr.Records.Add(movementDefaults);
+                    if (topDownValues.AdditionalValues.ContainsKey(headerName))
+                    {
+                        var value = topDownValues.AdditionalValues[headerName] as TypedValue;
+
+                        // does this need to account for culture?
+                        rowRecordAsList.Add(value?.Value?.ToString());
+
+                    }
+                }
+
+                rcr.Records[rowIndex] = rowRecordAsList.ToArray();
+            }
 
             var toReturn = rcr.GenerateCsvString();
 

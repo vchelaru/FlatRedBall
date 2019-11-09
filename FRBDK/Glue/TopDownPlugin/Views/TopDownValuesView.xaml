@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TopDownPlugin.Views"
+             xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUi"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="600">
     <Grid>
@@ -15,24 +16,27 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Button Grid.Column="3" Width="24" >X</Button>
+        <Button Grid.Column="4" Width="24" Click="HandleXClick" >X</Button>
 
-        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" Fill="LightGray" />
+        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="3" VerticalAlignment="Stretch" Fill="LightGray" />
 
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" HorizontalAlignment="Left" Width="1" Fill="Gray" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Left" Width="1" Fill="Gray" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" HorizontalAlignment="Left" Width="1" Fill="Gray" />
-        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" HorizontalAlignment="Right" Width="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" HorizontalAlignment="Left" Width="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" HorizontalAlignment="Left" Width="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" HorizontalAlignment="Right" Width="1" Fill="Gray" />
 
 
-        <Rectangle Grid.Row="0" Grid.ColumnSpan="4" VerticalAlignment="Top" Height="1" Fill="Black" />
-        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.ColumnSpan="5" VerticalAlignment="Top" Height="1" Fill="Black" />
+        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
 
-        <Rectangle Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
+        <Rectangle Grid.Row="1" Grid.ColumnSpan="5" Grid.Column="0" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
 
 
         <!--Name-->
@@ -48,7 +52,7 @@
         <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,3,8,3">
 
             <TextBlock>Max Speed:</TextBlock>
-            <TextBox Text="{Binding MaxSpeedX}" HorizontalAlignment="Left" Width="70" Margin="0,0,0,5"
+            <TextBox Text="{Binding MaxSpeed}" HorizontalAlignment="Left" Width="70" Margin="0,0,0,5"
                      ></TextBox>
 
             <RadioButton IsChecked="{Binding IsImmediate}">Immediate</RadioButton>
@@ -56,10 +60,10 @@
 
             <StackPanel Visibility="{Binding AccelerationValuesVisibility}">
                 <TextBlock>Speed Up Time:</TextBlock>
-                <TextBox HorizontalAlignment="Left" Width="50"  Text="{Binding AccelerationTimeX}"
+                <TextBox HorizontalAlignment="Left" Width="50"  Text="{Binding AccelerationTime}"
                          ></TextBox>
                 <TextBlock>Slow Down Time:</TextBlock>
-                <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding DecelerationTimeX}"
+                <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding DecelerationTime}"
                          ></TextBox>
             </StackPanel>
         </StackPanel>
@@ -70,9 +74,11 @@
         <StackPanel Grid.Row="1" Grid.Column="2" Margin="12,3,8,3">
             
             <TextBlock>Direction Updates:</TextBlock>
-            <RadioButton IsChecked="{Binding UpdateToMovementDirection}">Update to Movement Direction</RadioButton>
-            <RadioButton  IsChecked="{Binding DontChangeDirection}" Margin="0,0,0,5">Don't Change Direction</RadioButton>
+            <RadioButton IsChecked="{Binding UpdateDirectionFromVelocity}">Update to Movement Direction</RadioButton>
+            <RadioButton  IsChecked="{Binding DontChangeDirectionFromVelocity}" Margin="0,0,0,5">Don't Change Direction</RadioButton>
         </StackPanel>
 
+        <TextBlock Grid.Column="3" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Add'l Props </TextBlock>
+        <wpfdataui:DataUiGrid x:Name="DataGrid" Grid.Row="1" Grid.Column="3"></wpfdataui:DataUiGrid>
     </Grid>
 </UserControl>

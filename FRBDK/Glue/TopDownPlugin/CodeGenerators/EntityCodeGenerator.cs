@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TopDownPlugin.Logic;
 using TopDownPlugin.ViewModels;
 
 namespace TopDownPlugin.CodeGenerators
@@ -18,7 +19,7 @@ namespace TopDownPlugin.CodeGenerators
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
         {
             /////////////////Early Out//////////////////////
-            if(GetIfIsTopDown(element) == false)
+            if(TopDownEntityPropertyLogic.GetIfIsTopDown(element) == false)
             {
                 return codeBlock;
             }
@@ -75,7 +76,7 @@ namespace TopDownPlugin.CodeGenerators
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
         {
             /////////////////Early Out//////////////////////
-            if (GetIfIsTopDown(element) == false)
+            if (TopDownEntityPropertyLogic.GetIfIsTopDown(element) == false)
             {
                 return codeBlock;
             }
@@ -99,7 +100,7 @@ namespace TopDownPlugin.CodeGenerators
         public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
         {
             ///////////////////Early Out///////////////////////////////
-            if (!GetIfIsTopDown(element))
+            if (!TopDownEntityPropertyLogic.GetIfIsTopDown(element))
             {
                 return codeBlock;
             }
@@ -259,7 +260,7 @@ namespace TopDownPlugin.CodeGenerators
         public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
         {
             ///////////////////Early Out///////////////////////////////
-            if (!GetIfIsTopDown(element))
+            if (!TopDownEntityPropertyLogic.GetIfIsTopDown(element))
             {
                 return codeBlock;
             }
@@ -268,12 +269,6 @@ namespace TopDownPlugin.CodeGenerators
             codeBlock.Line("ApplyMovementInput();");
 
             return codeBlock;
-        }
-
-        private bool GetIfIsTopDown(IElement element)
-        {
-            return element.Properties
-                .GetValue<bool>(nameof(TopDownEntityViewModel.IsTopDown));
         }
     }
 }

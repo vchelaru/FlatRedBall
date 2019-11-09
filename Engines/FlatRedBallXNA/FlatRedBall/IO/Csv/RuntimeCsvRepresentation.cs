@@ -600,7 +600,7 @@ namespace FlatRedBall.IO.Csv
 
         public void CreateObjectList(Type typeOfElement, IList listToPopulate, string contentManagerName)
         {
-#region If primitive or string
+            #region If primitive or string
 
 #if WINDOWS_8 || UWP
             bool isPrimitive = typeOfElement.IsPrimitive();
@@ -645,7 +645,7 @@ namespace FlatRedBall.IO.Csv
 
             }
 
-#region Not primitive or string (class/struct)
+            #region Not primitive or string (class/struct)
             else
             {
                 CreateNonPrimitiveList(typeOfElement, listToPopulate, contentManagerName);

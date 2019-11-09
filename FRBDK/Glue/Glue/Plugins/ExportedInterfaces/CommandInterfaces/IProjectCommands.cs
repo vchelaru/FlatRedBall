@@ -48,6 +48,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void MakeGeneratedCodeItemsNested();
 
+        /// <summary>
+        /// Removes the argument filePath from all currently-loaded files, and saves the projects.
+        /// </summary>
+        /// <param name="filePath">The file path to remove</param>
         void RemoveFromProjects(FilePath filePath);
         void RemoveFromProjects(string absoluteFileName);
 

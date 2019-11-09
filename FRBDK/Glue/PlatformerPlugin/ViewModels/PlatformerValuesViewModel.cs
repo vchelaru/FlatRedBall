@@ -268,9 +268,6 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             DownhillMaxSpeedBoostPercentage = values.DownhillMaxSpeedBoostPercentage;
         }
 
-
-
-
         private void ClampUphillValues()
         {
             UphillStopSpeedSlope =
@@ -324,15 +321,6 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             toReturn.DownhillFullSpeedSlope = DownhillFullSpeedSlope;
             toReturn.DownhillMaxSpeedSlope = DownhillMaxSpeedSlope;
             toReturn.DownhillMaxSpeedBoostPercentage = DownhillMaxSpeedBoostPercentage;
-
-
-
-
-
-
-
-
-
 
             return toReturn;
         }
