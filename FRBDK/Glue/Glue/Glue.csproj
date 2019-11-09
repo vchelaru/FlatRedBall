@@ -371,13 +371,6 @@
     <Compile Include="Controls\AddVariableWindow.Designer.cs">
       <DependentUpon>AddVariableWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\AutoCompleteForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\AutoCompleteForm.Designer.cs">
-      <DependentUpon>AutoCompleteForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\AutoCompleteManager.cs" />
     <Compile Include="Controls\AutoLayoutForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -405,12 +398,6 @@
     </Compile>
     <Compile Include="Controls\AddEventWindow.Designer.cs">
       <DependentUpon>AddEventWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\CodeEditing\CodeEditorControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\CodeEditing\CodeEditorControl.Designer.cs">
-      <DependentUpon>CodeEditorControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\ComboBoxMessageBox.cs">
       <SubType>Form</SubType>
@@ -1103,9 +1090,6 @@
       <DependentUpon>AddVariableWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\AutoCompleteForm.resx">
-      <DependentUpon>AutoCompleteForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Controls\AutoLayoutForm.resx">
       <DependentUpon>AutoLayoutForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -1120,9 +1104,6 @@
     <EmbeddedResource Include="Controls\AddEventWindow.resx">
       <DependentUpon>AddEventWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\CodeEditing\CodeEditorControl.resx">
-      <DependentUpon>CodeEditorControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ComboBoxMessageBox.resx">
       <DependentUpon>ComboBoxMessageBox.cs</DependentUpon>
@@ -1339,10 +1320,6 @@
     <ProjectReference Include="..\..\GlueView\GlueView\SelectionInterface\SelectionInterface.csproj">
       <Project>{b85cc176-2137-4a85-91ba-ce9d703bba00}</Project>
       <Name>SelectionInterface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Alsing.SyntaxBox\Alsing.SyntaxBox.NET.csproj">
-      <Project>{19EF75B2-B414-4EB0-9486-160FAF93E62C}</Project>
-      <Name>Alsing.SyntaxBox.NET</Name>
     </ProjectReference>
     <ProjectReference Include="..\CompareNetObjects\Compare-NET-Objects\Compare-NET-Objects.csproj">
       <Project>{94F1F5F2-6BC4-464B-AC51-FBDB4FA3F3AD}</Project>

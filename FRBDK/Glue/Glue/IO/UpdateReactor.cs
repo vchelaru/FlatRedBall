@@ -463,37 +463,6 @@ namespace FlatRedBall.Glue.IO
 
                 if (!isGenerated)
                 {
-                    // See if there is an element
-                    string name = FileManager.MakeRelative(absoluteName);
-
-                    string directory = FileManager.GetDirectory(name, RelativeType.Relative);
-
-                    string nameWithoutDirectory = FileManager.RemovePath(absoluteName);
-
-                    int indexOfDot = nameWithoutDirectory.IndexOf('.');
-                    nameWithoutDirectory = nameWithoutDirectory.Substring(0, indexOfDot);
-
-                    string elementName = directory + nameWithoutDirectory;
-
-                    IElement element = ObjectFinder.Self.GetIElement(elementName);
-
-                    if (element != null)
-                    {
-                        var treeNode = GlueState.Self.Find.ElementTreeNode(element);
-
-                        // Oct 27, 2019
-                        // vic says - I don't think we need this anymore do we? What purpose does it serve?
-                        treeNode?.UpdateReferencedTreeNodes();
-
-                        if (element == EditorLogic.CurrentElement && EditorLogic.CurrentEventResponseSave != null &&
-                            MainGlueWindow.Self.CodeEditor.ContainsFocus == false)
-                        {
-                            // Update the script window if this is a script file.
-                            MainGlueWindow.Self.CodeEditor.UpdateDisplayToCurrentObject();
-                        }
-
-                    }
-
                     PluginManager.ReactToChangedCodeFile(new FilePath(absoluteName));
                 }
             }

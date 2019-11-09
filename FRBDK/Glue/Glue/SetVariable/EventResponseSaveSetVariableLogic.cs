@@ -10,6 +10,8 @@ using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Windows.Forms;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Utilities;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -18,7 +20,7 @@ namespace FlatRedBall.Glue.SetVariable
 
         public void ReactToChange(string changedMember, object oldValue, EventResponseSave ers, IElement container)
         {
-            if (changedMember == "EventName")
+            if (changedMember == nameof(EventResponseSave.EventName))
             {
                 ReactToEventRename(oldValue, ers, container);
             }
@@ -48,21 +50,20 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 PluginManager.ReceiveError("Could not find the file " + fullFileName);
             }
-            else if (CodeEditorControl.DetermineIfCodeFileIsValid(fullFileName) == false)
+            else if (DetermineIfCodeFileIsValid(fullFileName) == false)
             {
                 PluginManager.ReceiveError("Invalid code file " + fullFileName);
-
             }
             else
             {
                 ers.EventName = oldName;
                 string contents =
-                    CodeEditorControl.RemoveWhiteSpaceForCodeWindow(ers.GetEventContents());
+                    RemoveWhiteSpaceForCodeWindow(ers.GetEventContents());
 
                 ers.EventName = newName;
                 // Now save the contents into the new method:
 
-                if (string.IsNullOrEmpty(contents) || CodeEditorControl.HasMatchingBrackets(contents))
+                if (string.IsNullOrEmpty(contents) || HasMatchingBrackets(contents))
                 {
                     EventCodeGenerator.InjectTextForEventAndSaveCustomFile(
                         container, ers, contents);
@@ -91,6 +92,54 @@ namespace FlatRedBall.Glue.SetVariable
 
                 }
             }
-        }   
+        }
+
+        private static bool HasMatchingBrackets(string text)
+        {
+            string contentsWithoutComments = ParsedClass.RemoveComments(text);
+
+            int numberOfOpening = contentsWithoutComments.CountOf('{');
+            int numberOfClosing = contentsWithoutComments.CountOf('}');
+
+            return numberOfOpening == numberOfClosing;
+        }
+
+        private static string RemoveWhiteSpaceForCodeWindow(string textToAssign)
+        {
+            if (!string.IsNullOrEmpty(textToAssign))
+            {
+                textToAssign = textToAssign.Replace("\r\r", "\r");
+                textToAssign = textToAssign.Replace("\n\t\t", "\n");
+                textToAssign = textToAssign.Replace("\r\n\t", "\r\n");
+                textToAssign = textToAssign.Replace("\r\n\t\t", "\r\n");
+                textToAssign = textToAssign.Replace("\r\n            ", "\r\n");
+                textToAssign = textToAssign.Replace("\n            ", "\n");
+                if (textToAssign.StartsWith("            "))
+                {
+                    textToAssign = textToAssign.Substring(12);
+                }
+            }
+            return textToAssign;
+        }
+
+        /// <summary>
+        /// Determines if a code file is valid based off of the number of opening and closing
+        /// brackets it has.  This method counts { and }, but doesn't include comments or contsts like
+        /// "{0}".
+        /// </summary>
+        /// <param name="fileName">The file name to open - this should be the .cs file for C# files.</param>
+        /// <returns>Whether the file is valid.</returns>
+        private static bool DetermineIfCodeFileIsValid(string fileName)
+        {
+            string contents = FileManager.FromFileText(fileName);
+
+            contents = ParsedClass.RemoveComments(contents);
+
+
+            int numberOfOpenBrackets = ParsedClass.NumberOfValid('{', contents);
+            int numberOfClosedBrackets = ParsedClass.NumberOfValid('}', contents);
+
+            return numberOfOpenBrackets == numberOfClosedBrackets;
+        }
     }
 }

@@ -23,8 +23,7 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             bool shouldShowPropertyGrid;
             bool shouldShowCodePreviewWindow;
-            bool shouldShowCodeEditWindow;
-            DetermineWhatShouldBeShown(out shouldShowPropertyGrid, out shouldShowCodePreviewWindow, out shouldShowCodeEditWindow);
+            DetermineWhatShouldBeShown(out shouldShowPropertyGrid, out shouldShowCodePreviewWindow);
 
             TabControl tabControl = MainGlueWindow.Self.MainTabControl;
             
@@ -37,27 +36,6 @@ namespace FlatRedBall.Glue.FormHelpers
                 RemoveTabFromMain(MainGlueWindow.Self.PropertiesTab);
             }
 
-            if (shouldShowCodeEditWindow)
-            {
-                AddTabToMain(MainGlueWindow.Self.CodeTab);  
-
-                MainGlueWindow.Self.CodeEditor.Visible = true;
-                MainGlueWindow.Self.CodeEditor.UpdateDisplayToCurrentObject();
-
-                SetUpCodeEditorForEventResponse();
-            }
-            else
-            {
-                MainGlueWindow.Self.CodeEditor.Visible = false;
-
-                // The auto-complete list could still be visible
-                // and we need to hide it so it doesn't show on top
-                // of other UI.  I don't know why setting visible doesn't
-                // raise the event for visibility changed, so we'll just have
-                // to hide it manually.
-                MainGlueWindow.Self.CodeEditor.HideAutoComplete();
-            }
-
             if (shouldShowCodePreviewWindow)
             {
                 MainGlueWindow.Self.CodePreviewTextBox.Visible = true;
@@ -68,7 +46,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 MainGlueWindow.Self.CodePreviewTextBox.Visible = false;
             }
 
-            if (!shouldShowCodePreviewWindow && !shouldShowCodeEditWindow)
+            if (!shouldShowCodePreviewWindow)
             {
                 RemoveTabFromMain(MainGlueWindow.Self.CodeTab);
             }
@@ -94,7 +72,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         }
 
-        private static void DetermineWhatShouldBeShown(out bool shouldShowPropertyGrid, out bool shouldShowCodePreviewWindow, out bool shouldShowCodeEditWindow)
+        private static void DetermineWhatShouldBeShown(out bool shouldShowPropertyGrid, out bool shouldShowCodePreviewWindow)
         {
 
 
@@ -103,33 +81,20 @@ namespace FlatRedBall.Glue.FormHelpers
             if (EditorLogic.CurrentTreeNode != null && EditorLogic.CurrentTreeNode.IsEventResponseTreeNode())
             {
                 shouldShowPropertyGrid = true;
-                shouldShowCodePreviewWindow = false;
-                shouldShowCodeEditWindow = true;
+                shouldShowCodePreviewWindow = true;
 
             }
             else if (EditorLogic.CurrentTreeNode != null && ShouldShowCode)
             {
                 shouldShowPropertyGrid = true;
                 shouldShowCodePreviewWindow = true;
-                shouldShowCodeEditWindow = false;
             }
             else
             {
                 shouldShowPropertyGrid = true;
-                shouldShowCodeEditWindow = false;
                 shouldShowCodePreviewWindow = false;
             }
         }
 
-        private static void SetUpCodeEditorForEventResponse()
-        {
-            EventResponseSave ers = EditorLogic.CurrentEventResponseSave;
-
-            EventSave eventSave = ers.GetEventSave();
-            string args = ers.GetArgsForMethod(EditorLogic.CurrentElement);
-
-            MainGlueWindow.Self.CodeEditor.TopText = "void On" + ers.EventName + "(" + args + ")\n{";
-            MainGlueWindow.Self.CodeEditor.BottomText = "}";
-        }
     }
 }

@@ -107,7 +107,6 @@
             this.MainTabControl = new FlatRedBall.Glue.Controls.TabControlEx();
             this.PropertiesTab = new FlatRedBall.Glue.Controls.PluginTab();
             this.CodeTab = new System.Windows.Forms.TabPage();
-            this.CodeEditor = new FlatRedBall.Glue.Controls.CodeEditorControl();
             this.CodePreviewTextBox = new System.Windows.Forms.RichTextBox();
             this.tcRight = new FlatRedBall.Glue.Controls.TabControlEx();
             this.ExplorerTab = new FlatRedBall.Glue.Controls.PluginTab();
@@ -775,7 +774,6 @@
             // 
             // CodeTab
             // 
-            this.CodeTab.Controls.Add(this.CodeEditor);
             this.CodeTab.Controls.Add(this.CodePreviewTextBox);
             this.CodeTab.Location = new System.Drawing.Point(4, 25);
             this.CodeTab.Name = "CodeTab";
@@ -783,16 +781,6 @@
             this.CodeTab.TabIndex = 1;
             this.CodeTab.Text = "Code";
             this.CodeTab.UseVisualStyleBackColor = true;
-            // 
-            // CodeEditor
-            // 
-            this.CodeEditor.BottomText = "";
-            this.CodeEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CodeEditor.Location = new System.Drawing.Point(0, 0);
-            this.CodeEditor.Name = "CodeEditor";
-            this.CodeEditor.Size = new System.Drawing.Size(534, 546);
-            this.CodeEditor.TabIndex = 4;
-            this.CodeEditor.TopText = "";
             // 
             // CodePreviewTextBox
             // 
@@ -1151,7 +1139,6 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         public System.Windows.Forms.MenuStrip msProcesses;
-        public FlatRedBall.Glue.Controls.CodeEditorControl CodeEditor;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem contentToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportScreensAndEntitiesToolStripMenuItem;
