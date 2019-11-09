@@ -14,7 +14,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace FlatRedBallAndroidTemplate
 {
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public partial class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
 
