@@ -95,7 +95,7 @@ namespace OfficialPlugins.Compiler
                 .OrderBy(item => item.ProcessName)
                 .ToArray();
 
-            var projectName = GlueState.Self.CurrentMainProject?.Name;
+            var projectName = GlueState.Self.CurrentMainProject?.Name?.ToLowerInvariant();
 
             var found = processes
                 .FirstOrDefault(item => item.ProcessName.ToLowerInvariant() == projectName);
