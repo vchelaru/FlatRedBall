@@ -330,7 +330,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 #if GLUE
-        public static CompareObjects ReloadUsingComparison(this GlueProjectSave instance, string fileName, out GlueProjectSave otherGlueProjectSave)
+        public static ComparisonResult ReloadUsingComparison(this GlueProjectSave instance, string fileName, out GlueProjectSave otherGlueProjectSave)
         {
             bool succeeded = true;
 
@@ -378,27 +378,25 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (succeeded)
             {
-                CompareObjects compareObjects = new CompareObjects();
+                var compareObjects = new CompareLogic();
 
-                compareObjects.ElementsToIgnore.Add("TypedMembers");
-                compareObjects.ElementsToIgnore.Add("UsesTranslation");
-                compareObjects.ElementsToIgnore.Add("ContainerType");
-                compareObjects.ElementsToIgnore.Add("ImageWidth");
-                compareObjects.ElementsToIgnore.Add("ImageHeight");
-                compareObjects.ElementsToIgnore.Add("EquilibriumParticleCount");
-                compareObjects.ElementsToIgnore.Add("BurstParticleCount");
-                compareObjects.ElementsToIgnore.Add("RuntimeType");
-                compareObjects.ElementsToIgnore.Add("EventSave");
-                compareObjects.ElementsToIgnore.Add("SharedCodeFullFileName");
-                compareObjects.AttributesToIgnore.Add(typeof(XmlIgnoreAttribute));
-                compareObjects.MaxDifferences = int.MaxValue;
+                compareObjects.Config.MembersToIgnore.Add("TypedMembers");
+                compareObjects.Config.MembersToIgnore.Add("UsesTranslation");
+                compareObjects.Config.MembersToIgnore.Add("ContainerType");
+                compareObjects.Config.MembersToIgnore.Add("ImageWidth");
+                compareObjects.Config.MembersToIgnore.Add("ImageHeight");
+                compareObjects.Config.MembersToIgnore.Add("EquilibriumParticleCount");
+                compareObjects.Config.MembersToIgnore.Add("BurstParticleCount");
+                compareObjects.Config.MembersToIgnore.Add("RuntimeType");
+                compareObjects.Config.MembersToIgnore.Add("EventSave");
+                compareObjects.Config.MembersToIgnore.Add("SharedCodeFullFileName");
+                compareObjects.Config.AttributesToIgnore.Add(typeof(XmlIgnoreAttribute));
+                compareObjects.Config.MaxDifferences = int.MaxValue;
 
-                if (!compareObjects.Compare(instance, otherGlueProjectSave))
+                var compareResult = compareObjects.Compare(instance, otherGlueProjectSave);
+                if (compareResult.AreEqual == false)
                 {
-                    int m = 3;
-
-
-                    return compareObjects;
+                    return compareResult;
                 }
                 else
                 {

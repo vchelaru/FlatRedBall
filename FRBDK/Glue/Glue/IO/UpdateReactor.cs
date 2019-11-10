@@ -327,9 +327,9 @@ namespace FlatRedBall.Glue.IO
             if (usingQuickReload)
             {
                 GlueProjectSave newGlueProjectSave;
-                CompareObjects comparisonObject = ProjectManager.GlueProjectSave.ReloadUsingComparison(ProjectManager.GlueProjectFileName, out newGlueProjectSave);
+                var compareResult = ProjectManager.GlueProjectSave.ReloadUsingComparison(ProjectManager.GlueProjectFileName, out newGlueProjectSave);
 
-                if (comparisonObject != null && comparisonObject.Differences.Count != 0)
+                if (compareResult != null && compareResult.Differences.Count != 0)
                 {
                     // See if only a Screen or Entity changed.  If so, do a simple set of that and be done with it
 
@@ -339,14 +339,13 @@ namespace FlatRedBall.Glue.IO
                     List<string> elementsAlreadyRefreshed = new List<string>();
 
                     //if (comparisonObject.Differences.Count == 1)
-					foreach(string compDifference in comparisonObject.Differences)
+					foreach(var comparison in compareResult.Differences)
                     {
-						ComparisonDifference comparison = comparisonObject.GetComparisonDifference(compDifference);
                             //comparisonObject.GetComparisonDifference(comparisonObject.Differences[0]);
-                        int indexInOld;
-                        int indexInNew;
-                        IElement element = GetElementFromObjectString(comparison.FullObject1, ProjectManager.GlueProjectSave, out indexInOld);
-                        IElement replacement = GetElementFromObjectString(comparison.FullObject1, newGlueProjectSave, out indexInNew);
+                        int indexInOld = 0;
+                        int indexInNew = 0;
+                        IElement element = GetElementFromObjectString(comparison.PropertyName, ProjectManager.GlueProjectSave, out indexInOld);
+                        IElement replacement = GetElementFromObjectString(comparison.PropertyName, newGlueProjectSave, out indexInNew);
 
                         if (element != null && replacement != null && indexInNew == indexInOld)
 						{
@@ -371,6 +370,7 @@ namespace FlatRedBall.Glue.IO
                                 // Gotta regen this and update the UI and refresh the PropertyGrid if it's selected
                                 GlueCommands.Self.UpdateCommands.Update(replacement);
 
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(element);
                             }
 						}
 						else

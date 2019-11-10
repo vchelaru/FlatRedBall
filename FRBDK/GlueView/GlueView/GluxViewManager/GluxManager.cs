@@ -426,16 +426,16 @@ namespace FlatRedBall.Glue
 					return false;
 				}
 
-				CompareObjects compareObjects = new CompareObjects();
+				var compareObjects = new CompareLogic();
 
-				compareObjects.ElementsToIgnore.Add("ContainerType");
-				compareObjects.ElementsToIgnore.Add("ImageWidth");
-				compareObjects.ElementsToIgnore.Add("ImageHeight");
-				compareObjects.ElementsToIgnore.Add("EquilibriumParticleCount");
-				compareObjects.ElementsToIgnore.Add("BurstParticleCount");
-				compareObjects.ElementsToIgnore.Add("RuntimeType");
-				compareObjects.ElementsToIgnore.Add("EventSave");
-				compareObjects.ElementsToIgnore.Add("SharedCodeFullFileName");
+				compareObjects.Config.MembersToIgnore.Add("ContainerType");
+				compareObjects.Config.MembersToIgnore.Add("ImageWidth");
+				compareObjects.Config.MembersToIgnore.Add("ImageHeight");
+				compareObjects.Config.MembersToIgnore.Add("EquilibriumParticleCount");
+				compareObjects.Config.MembersToIgnore.Add("BurstParticleCount");
+				compareObjects.Config.MembersToIgnore.Add("RuntimeType");
+				compareObjects.Config.MembersToIgnore.Add("EventSave");
+				compareObjects.Config.MembersToIgnore.Add("SharedCodeFullFileName");
 
 
                 // This method gets called on the primary

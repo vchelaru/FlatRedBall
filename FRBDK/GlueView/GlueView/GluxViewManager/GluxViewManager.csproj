@@ -89,6 +89,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="KellermanSoftware.Compare-NET-Objects, Version=4.63.0.0, Culture=neutral, PublicKeyToken=d970ace04cc85217, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Glue\packages\CompareNETObjects.4.63.0\lib\net472\KellermanSoftware.Compare-NET-Objects.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Build">
       <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.dll</HintPath>
     </Reference>
@@ -110,6 +113,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Glue\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.Utilities.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553">
       <Private>False</Private>
     </Reference>
@@ -253,10 +257,6 @@
       <Project>{e1d670b6-ad42-4b84-aff8-d568097be03d}</Project>
       <Name>EditorObjectsXna4</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Glue\CompareNetObjects\Compare-NET-Objects\Compare-NET-Objects.csproj">
-      <Project>{94F1F5F2-6BC4-464B-AC51-FBDB4FA3F3AD}</Project>
-      <Name>Compare-NET-Objects</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Glue\GluePropertyGridClasses\GluePropertyGridClasses.csproj">
       <Project>{852a7438-7afe-490e-a0c7-0a35355d6179}</Project>
       <Name>GluePropertyGridClasses</Name>
@@ -269,6 +269,10 @@
   <ItemGroup>
     <Folder Include="Parsing\" />
     <Folder Include="Reflection\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
