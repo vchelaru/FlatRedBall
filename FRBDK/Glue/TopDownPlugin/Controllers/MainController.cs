@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TopDownPlugin.CodeGenerators;
+using TopDownPlugin.Data;
 using TopDownPlugin.DataGenerators;
 using TopDownPlugin.Logic;
 using TopDownPlugin.Models;
@@ -76,6 +77,12 @@ namespace TopDownPlugin.Controllers
 
             if (shouldGenerateCsv)
             {
+                if(viewModel.IsTopDown && viewModel.TopDownValues.Count == 0)
+                {
+                    var newValues = PredefinedTopDownValues.GetValues("Default");
+                    viewModel.TopDownValues.Add(newValues);
+                }
+
                 GenerateCsv(entity, viewModel);
             }
 

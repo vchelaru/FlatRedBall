@@ -54,32 +54,45 @@ namespace TopDownPlugin.DataGenerators
 
             RuntimeCsvRepresentation rcr = RuntimeCsvRepresentation.FromList(values);
 
-            rcr.Headers = headers;
 
-            for(int rowIndex = 0; rowIndex < rcr.Records.Count; rowIndex++)
+            if(headers != null)
             {
-                var row = rcr.Records[rowIndex];
-                var topDownValues = values[rowIndex];
+                rcr.Headers = headers;
 
-                var rowRecordAsList = row.ToList();
-                for (int columnIndex = row.Length; columnIndex < headers.Length; columnIndex++)
+                for(int rowIndex = 0; rowIndex < rcr.Records.Count; rowIndex++)
                 {
-                    var headerName = headers[columnIndex].Name;
+                    var row = rcr.Records[rowIndex];
+                    var topDownValues = values[rowIndex];
 
-                    if (topDownValues.AdditionalValues.ContainsKey(headerName))
+                    var rowRecordAsList = row.ToList();
+
+                    for (int columnIndex = row.Length; columnIndex < headers.Length; columnIndex++)
                     {
-                        var value = topDownValues.AdditionalValues[headerName] as TypedValue;
+                        var headerName = headers[columnIndex].Name;
 
-                        // does this need to account for culture?
-                        rowRecordAsList.Add(value?.Value?.ToString());
+                        if (topDownValues.AdditionalValues.ContainsKey(headerName))
+                        {
+                            var value = topDownValues.AdditionalValues[headerName] as TypedValue;
 
+                            // does this need to account for culture?
+                            rowRecordAsList.Add(value?.Value?.ToString());
+
+                        }
                     }
-                }
 
-                rcr.Records[rowIndex] = rowRecordAsList.ToArray();
+                    rcr.Records[rowIndex] = rowRecordAsList.ToArray();
+                }
+            }
+
+            // assume header[0] is name, so make it required:
+            if(rcr.Headers.Length > 0)
+            {
+                rcr.Headers[0].IsRequired = true;
+                rcr.Headers[0].OriginalText = rcr.Headers[0].Name + " (string, required)";
             }
 
             var toReturn = rcr.GenerateCsvString();
+
 
             return toReturn;
         }

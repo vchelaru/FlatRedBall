@@ -19,6 +19,18 @@ namespace TopDownPlugin.Data
                 Name = "Unnamed"
             };
             topDownValues.Add(unnamed.Name, unnamed);
+
+            var defaultValues = new TopDownValuesViewModel
+            {
+                Name = "Default",
+                IsImmediate = false,
+                MaxSpeed = 300,
+                AccelerationTime = .5f,
+                DecelerationTime = .25f,
+                ShouldChangeMovementDirection = TopDownValuesViewModel.ChangeOrUnchange.Change
+            };
+
+            topDownValues.Add(defaultValues.Name, defaultValues);
         }
 
         public static TopDownValuesViewModel GetValues(string name)

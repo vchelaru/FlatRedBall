@@ -28,7 +28,8 @@ namespace FlatRedBall.IO.Csv
         /// <summary>
         /// Whether objects must have a value in this header.  This is true for dictionaries, and to
         /// help the csv deserialization understand when a column belongs to a new instance or if it is
-        /// a column used for lists.
+        /// a column used for lists. Note that setting this value to true will not automatically update the
+        /// OriginalText, which should have "required" if the value is set to true
         /// </summary>
         public bool IsRequired;
 
