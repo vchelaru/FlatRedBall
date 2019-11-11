@@ -25,7 +25,7 @@ namespace TileGraphicsPlugin.Views
             InitializeComponent();
         }
 
-        private void TextBox_KeyUp(object sender, KeyEventArgs e)
+        private void TextBox_KeyEnterUpdate(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {

@@ -44,7 +44,7 @@ namespace FlatRedBall.Glue.SetVariable
                 combinedMember = parent + "." + changedMember;
             }
 
-            NamedObjectSave namedObjectSave = EditorLogic.CurrentNamedObject;
+            NamedObjectSave namedObjectSave = GlueState.Self.CurrentNamedObjectSave;
             IElement element = EditorLogic.CurrentElement;
 
             if (PropertiesToMethods.ContainsKey(changedMember))

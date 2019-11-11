@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml.Serialization;
 using TopDownPlugin.Models;
 
 namespace TopDownPlugin.ViewModels
@@ -136,6 +137,7 @@ namespace TopDownPlugin.ViewModels
             }
         }
 
+        [XmlIgnore]
         public Dictionary<string, TypedValue> AdditionalProperties
         {
             get; private set;
@@ -153,6 +155,7 @@ namespace TopDownPlugin.ViewModels
             var newCopy = FlatRedBall.IO.FileManager
                 .XmlDeserializeFromString<TopDownValuesViewModel>(serialized);
 
+            newCopy.AdditionalProperties = new Dictionary<string, TypedValue>();
             newCopy.AdditionalProperties.Clear();
 
             foreach(var kvp in this.AdditionalProperties)

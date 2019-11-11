@@ -23,24 +23,29 @@
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="60">Tile Size:</TextBlock>
-                        <TextBox Width="100" Text="{Binding CollisionTileSize}"></TextBox>
+                        <TextBox Width="100" Text="{Binding CollisionTileSize}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
                         <TextBlock Width="40">Left:</TextBlock>
-                        <TextBox Width="100" Text="{Binding CollisionFillLeft}"></TextBox>
+                        <TextBox Width="100" Text="{Binding CollisionFillLeft}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="40">Top:</TextBlock>
-                        <TextBox Width="100" Text="{Binding CollisionFillTop}"></TextBox>
+                        <TextBox Width="100" Text="{Binding CollisionFillTop}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
                         <TextBlock Width="60">Tiles Wide:</TextBlock>
-                        <TextBox Width="100" Text="{Binding CollisionFillWidth}"></TextBox>
+                        <TextBox Width="100" Text="{Binding CollisionFillWidth}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="60">Tiles High:</TextBlock>
-                        <TextBox Width="100" Text="{Binding CollisionFillHeight}"></TextBox>
+                        <TextBox Width="100" Text="{Binding CollisionFillHeight}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     </StackPanel>
                 </StackPanel>
                 <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
@@ -49,24 +54,29 @@
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="60">Tile Size:</TextBlock>
-                        <TextBox Width="100" Text="{Binding CollisionTileSize}"></TextBox>
+                        <TextBox Width="100" Text="{Binding CollisionTileSize}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
                         <TextBlock Width="40">Left:</TextBlock>
-                        <TextBox Width="100" Text="{Binding CollisionFillLeft}"></TextBox>
+                        <TextBox Width="100" Text="{Binding CollisionFillLeft}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="40">Top:</TextBlock>
-                        <TextBox Width="100" Text="{Binding CollisionFillTop}"></TextBox>
+                        <TextBox Width="100" Text="{Binding CollisionFillTop}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
                         <TextBlock Width="60">Tiles Wide:</TextBlock>
-                        <TextBox Width="100" Text="{Binding CollisionFillWidth}"></TextBox>
+                        <TextBox Width="100" Text="{Binding CollisionFillWidth}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="60">Tiles High:</TextBlock>
-                        <TextBox Width="100" Text="{Binding CollisionFillHeight}"></TextBox>
+                        <TextBox Width="100" Text="{Binding CollisionFillHeight}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     </StackPanel>
                 </StackPanel>
 
@@ -79,7 +89,8 @@
                               ItemsSource="{Binding TmxObjectNames}"
                               SelectedItem="{Binding SourceTmxName}"></ComboBox>
                     <TextBlock Margin="0,5,0,0">Property:</TextBlock>
-                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionTileTypeName}"></TextBox>
+                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionTileTypeName}"
+                             KeyUp="TextBox_KeyEnterUpdate"></TextBox>
 
                 </StackPanel>
 
@@ -94,7 +105,8 @@
                               ItemsSource="{Binding TmxObjectNames}"
                               SelectedItem="{Binding SourceTmxName}"></ComboBox>
                     <TextBlock Margin="0,5,0,0">Property:</TextBlock>
-                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionPropertyName}"></TextBox>
+                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionPropertyName}"
+                             KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     <CheckBox IsChecked="{Binding IsCollisionMerged}" VerticalContentAlignment="Center">IsMerged</CheckBox>
                 </StackPanel>
                 
@@ -107,9 +119,11 @@
                               ItemsSource="{Binding TmxObjectNames}"
                               SelectedItem="{Binding SourceTmxName}"></ComboBox>
                     <TextBlock Margin="0,5,0,0">Layer:</TextBlock>
-                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionLayerName}"></TextBox>
+                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionLayerName}"
+                             KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                     <TextBlock Margin="0,5,0,0">With property</TextBlock>
-                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionLayerTileType}"></TextBox> 
+                    <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionLayerTileType}"
+                             KeyUp="TextBox_KeyEnterUpdate"></TextBox> 
                 </StackPanel>
             </StackPanel>
 

@@ -308,7 +308,7 @@ namespace FlatRedBall.Glue.IO
             return handled;
         }
 
-        private static void ReloadGlux()
+        private static async void ReloadGlux()
         {
             object selectedObject = null;
             IElement parentElement = null;
@@ -381,13 +381,13 @@ namespace FlatRedBall.Glue.IO
                     }
                     if (!wasHandled)
                     {
-                        ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName);
+                        await ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName);
                     }
                 }
             }
             else
             {
-                ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName);
+                await ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName);
             }
             PluginManager.RefreshGlux();
             

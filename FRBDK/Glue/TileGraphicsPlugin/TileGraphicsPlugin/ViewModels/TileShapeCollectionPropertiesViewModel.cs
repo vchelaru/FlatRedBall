@@ -37,14 +37,14 @@ namespace TileGraphicsPlugin.ViewModels
         [DefaultValue(CollisionCreationOptions.Empty)]
         public CollisionCreationOptions CollisionCreationOptions
         {
-            get { return Get<CollisionCreationOptions>(); }
-            set { SetAndPersist(value); }
+            get => Get<CollisionCreationOptions>(); 
+            set => SetAndPersist(value); 
         }
 
         [DependsOn(nameof(CollisionCreationOptions))]
         public bool IsEmptyChecked
         {
-            get { return CollisionCreationOptions == CollisionCreationOptions.Empty; }
+            get => CollisionCreationOptions == CollisionCreationOptions.Empty;
             set
             {
                 if (value)
@@ -57,7 +57,7 @@ namespace TileGraphicsPlugin.ViewModels
         [DependsOn(nameof(CollisionCreationOptions))]
         public bool IsFillCompletelyChecked
         {
-            get { return CollisionCreationOptions == CollisionCreationOptions.FillCompletely; }
+            get => CollisionCreationOptions == CollisionCreationOptions.FillCompletely;
             set
             {
                 if (value)

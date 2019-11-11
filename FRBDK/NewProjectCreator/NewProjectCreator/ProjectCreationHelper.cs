@@ -49,7 +49,27 @@ namespace NewProjectCreator
             "ModelManager",
             "ShapeManager",
             "Sprite",
-            "Scene"
+            "Scene",
+
+            "new",
+            "float",
+            "int",
+            "byte",
+            "long",
+            "double",
+            "decimal",
+            "if",
+            "while",
+            "do",
+            "as",
+            "is",
+            "foreach",
+            "for",
+            "namespace",
+            "class",
+            "Action",
+            "Func",
+            "Task"
         };
 
         static char[] invalidCharacters = new char[] 

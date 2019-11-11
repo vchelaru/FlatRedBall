@@ -3,6 +3,7 @@ using FlatRedBall.Glue.Interfaces;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SetVariable;
 using GlueSaveClasses.Models.TypeConverters;
 using System;
 using System.Collections.Generic;
@@ -145,6 +146,8 @@ namespace FlatRedBall.Glue.MVVM
             }
             var propertyInfo = viewModelProperties[propertyName];
 
+            T oldValue = Get<T>(propertyName);
+
             // don't notify the property change yet, do it after setting the value on the Glue
             // object in case whoever listens wants to do codegen or other things depending on the
             // property already being set.
@@ -165,10 +168,8 @@ namespace FlatRedBall.Glue.MVVM
                 {
                     element = GlueObject as IElement;
                 }
-                else if (GlueObject is NamedObjectSave)
+                else if (GlueObject is NamedObjectSave nos)
                 {
-                    var nos = GlueObject as NamedObjectSave;
-
                     element = ObjectFinder.Self.GetElementContaining(nos);
                 }
                 else if (GlueObject is ReferencedFileSave)
@@ -206,6 +207,7 @@ namespace FlatRedBall.Glue.MVVM
                 //    "Safely setting property");
                 OnSetAndPersist(propertyValue, modelName);
 
+
                 if (element != null)
                 {
                     TaskManager.Self.Add(() =>
@@ -219,6 +221,18 @@ namespace FlatRedBall.Glue.MVVM
                     {
                         GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
                     }, "Generating Global Content Code", TaskExecutionPreference.AddOrMoveToEnd);
+                }
+
+                // Do this in a task after the codegen so that the compiler can pick up on it and restart
+                if (GlueObject is NamedObjectSave namedObject)
+                {
+                    TaskManager.Self.Add(() =>
+                    {
+                        TaskManager.Self.OnUiThread(() =>
+                            EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                                propertyName, namedObject.InstanceName, oldValue));
+                    },
+                    "Restarting due to change " + namedObject.InstanceName + "." + propertyName, TaskExecutionPreference.AddOrMoveToEnd);
                 }
 
                 GlueCommands.Self.GluxCommands.SaveGluxTask();

@@ -992,7 +992,6 @@
     <Compile Include="Plugins\Interfaces\ICurrentElement.cs" />
     <Compile Include="Plugins\Interfaces\IGluxLoad.cs" />
     <Compile Include="Plugins\Interfaces\IMenuStripPlugin.cs" />
-    <Compile Include="Plugins\Interfaces\INamedObject.cs" />
     <Compile Include="Plugins\Interfaces\INewFile.cs" />
     <Compile Include="Plugins\Interfaces\IPropertyGridRightClick.cs" />
     <Compile Include="Plugins\Interfaces\IStateChange.cs" />

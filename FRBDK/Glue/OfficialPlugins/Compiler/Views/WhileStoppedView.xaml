@@ -30,6 +30,7 @@
                 </ToolTip>
             </Button.ToolTip>
         </Button>
-        <TextBox Grid.Column="2" Margin="3,0,0,0" Width="150" Text="{Binding Configuration}"></TextBox>
+        <TextBox Grid.Column="2" Margin="3,0,0,0" Width="150" 
+                 Text="{Binding Configuration}"></TextBox>
     </StackPanel>
 </UserControl>

@@ -201,10 +201,10 @@ namespace NewProjectCreator.ViewModels
                 }
             }
 
-                if(string.IsNullOrEmpty(whyIsntValid))
-                {
-                    whyIsntValid = ProjectCreationHelper.GetWhyProjectNameIsntValid(ProjectName);
-                }
+            if(string.IsNullOrEmpty(whyIsntValid))
+            {
+                whyIsntValid = ProjectCreationHelper.GetWhyProjectNameIsntValid(ProjectName);
+            }
 
 
             return whyIsntValid;

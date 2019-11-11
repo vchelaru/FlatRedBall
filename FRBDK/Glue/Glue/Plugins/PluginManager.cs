@@ -80,9 +80,6 @@ namespace FlatRedBall.Glue.Plugins
         public IEnumerable<IGluxLoad> GluxLoadPlugins { get; set; }
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<INamedObject> NamedObjectsPlugins { get; set; }
-
-        [ImportMany(AllowRecomposition = true)]
         public IEnumerable<ICurrentElement> CurrentElementPlugins { get; set; }
 
         [ImportMany(AllowRecomposition = true)]
@@ -194,7 +191,7 @@ namespace FlatRedBall.Glue.Plugins
                 TreeViewPlugins, PropertyGridRightClickPlugins,
                 OpenVisualStudioPlugins, TreeItemSelectPlugins, NewFilePlugins, MenuStripPlugins,
                 TopTabPlugins, LeftTabPlugins, BottomTabPlugins, RightTabPlugins, CenterTabPlugins,
-                GluxLoadPlugins, NamedObjectsPlugins, PropertyChangePlugins, CodeGeneratorPlugins,
+                GluxLoadPlugins, PropertyChangePlugins, CodeGeneratorPlugins,
                 ContentFileChangePlugins, OutputReceiverPlugins, CurrentElementPlugins
             };
 
@@ -242,7 +239,6 @@ namespace FlatRedBall.Glue.Plugins
             RightTabPlugins = new List<IRightTab>();
             CenterTabPlugins = new List<ICenterTab>();
             GluxLoadPlugins = new List<IGluxLoad>();
-            NamedObjectsPlugins = new List<INamedObject>();
             CurrentElementPlugins = new List<ICurrentElement>();
             PropertyChangePlugins = new List<IPropertyChange>();
             CodeGeneratorPlugins = new List<ICodeGeneratorPlugin>();
@@ -1749,21 +1745,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (INamedObject plugin in pluginManager.NamedObjectsPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        INamedObject plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToNamedObjectChangedValue(changedMember, oldValue);
-                            },container, "Failed in ReactToNamedObjectChangedValue");
-                    }
-                }
-
-                // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToNamedObjectChangedValue != null);
                 foreach (var plugin in plugins)
                 {
