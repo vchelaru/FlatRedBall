@@ -61,6 +61,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove);
         void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateCode);
 
+        void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSave = true, bool updateUi = true,
+            List<string> additionalFilesToRemove = null);
+
 
         void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value);
         void SaveSettings();

@@ -9,8 +9,8 @@ using System.Windows.Forms;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins
 {
-    [Export(typeof(IOutputReceiver))]
-    public class OutputPrintPlugin : EmbeddedPlugin, IOutputReceiver
+    [Export(typeof(PluginBase))]
+    public class OutputPrintPlugin : EmbeddedPlugin
     {
         OutputWindow mOutputWindow; // This is the control we created
 
@@ -18,6 +18,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins
         {
             mOutputWindow = new OutputWindow();
             this.AddToTab(PluginManager.BottomTab, mOutputWindow, "Output");
+
+            this.OnOutputHandler += OnOutput;
+            this.OnErrorOutputHandler += OnErrorOutput;
         }
 
 

@@ -472,6 +472,9 @@
   <ItemGroup>
     <Resource Include="Compiler\Icons\SlowMotion.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Compiler\Icons\HotReload.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(SolutionDir)Glue\bin\Debug\Plugins\" md "$(SolutionDir)Glue\bin\Debug\Plugins\"

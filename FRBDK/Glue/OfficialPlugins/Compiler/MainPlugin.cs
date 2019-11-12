@@ -81,7 +81,6 @@ namespace OfficialPlugins.Compiler
 
             compiler = Compiler.Self;
             runner = Runner.Self;
-            runner.IsRunningChanged += HandleIsRunningChanged;
 
             game1GlueControlGenerator = new Game1GlueControlGenerator();
             this.RegisterCodeGenerator(game1GlueControlGenerator);
@@ -99,15 +98,11 @@ namespace OfficialPlugins.Compiler
             this.ReactToNewEntityCreated += RefreshManager.Self.HandleNewEntityCreated;
             this.ReactToNewScreenCreated += RefreshManager.Self.HandleNewScreenCreated;
             this.ReactToNewObjectHandler += RefreshManager.Self.HandleNewObjectCreated;
+            this.ReactToObjectRemoved += RefreshManager.Self.HandleObjectRemoved;
             this.ReactToElementVariableChange += RefreshManager.Self.HandleVariableChanged;
             this.ReactToNamedObjectChangedValue += RefreshManager.Self.HandleNamedObjectValueChanged;
         }
 
-        private void HandleIsRunningChanged(object sender, EventArgs e)
-        {
-            viewModel.IsRunning = runner.IsRunning;
-            viewModel.DidRunnerStartProcess = runner.DidRunnerStartProcess;
-        }
 
         private void HandleGluxUnloaded()
         {
@@ -206,6 +201,7 @@ namespace OfficialPlugins.Compiler
         {
             var toolbar = new RunnerToolbar();
             toolbar.RunClicked += HandleToolbarRunClicked;
+            toolbar.DataContext = viewModel;
             base.AddToToolBar(toolbar, "Standard");
         }
 
@@ -248,6 +244,9 @@ namespace OfficialPlugins.Compiler
 
             control = new MainControl();
             control.DataContext = viewModel;
+
+            Runner.Self.ViewModel = viewModel;
+            RefreshManager.Self.ViewModel = viewModel;
 
             buildTab = base.CreateTab(control, "Build");
             ShowTab(buildTab, TabLocation.Bottom);
@@ -319,10 +318,7 @@ namespace OfficialPlugins.Compiler
                 var succeeded = await Compile();
                 if (succeeded)
                 {
-                    if (succeeded)
-                    {
-                        await runner.Run(preventFocus:false);
-                    }
+                    await runner.Run(preventFocus:false);
                 }
             };
 
@@ -453,12 +449,15 @@ namespace OfficialPlugins.Compiler
             compiler.BuildContent(control.PrintOutput, control.PrintOutput, afterCompile, viewModel.Configuration);
         }
 
-        private Task<bool> Compile()
+        private async Task<bool> Compile()
         {
-            return compiler.Compile(
+            viewModel.IsCompiling = true;
+            var toReturn = await compiler.Compile(
                 control.PrintOutput, 
                 control.PrintOutput, 
                 viewModel.Configuration);
+            viewModel.IsCompiling = false;
+            return toReturn;
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)

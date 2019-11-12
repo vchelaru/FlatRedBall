@@ -22,6 +22,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void GenerateElementCodeTask(IElement element);
 
         void GenerateGlobalContentCode();
+        void GenerateGlobalContentCodeTask();
 
         string GetNamespaceForElement(IElement element);
 

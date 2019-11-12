@@ -91,9 +91,6 @@ namespace FlatRedBall.Glue.Plugins
         [ImportMany(AllowRecomposition = true)]
         public IEnumerable<IContentFileChange> ContentFileChangePlugins { get; set; }
 
-        [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IOutputReceiver> OutputReceiverPlugins { get; set; }
-
         #endregion
 
 
@@ -192,7 +189,7 @@ namespace FlatRedBall.Glue.Plugins
                 OpenVisualStudioPlugins, TreeItemSelectPlugins, NewFilePlugins, MenuStripPlugins,
                 TopTabPlugins, LeftTabPlugins, BottomTabPlugins, RightTabPlugins, CenterTabPlugins,
                 GluxLoadPlugins, PropertyChangePlugins, CodeGeneratorPlugins,
-                ContentFileChangePlugins, OutputReceiverPlugins, CurrentElementPlugins
+                ContentFileChangePlugins, CurrentElementPlugins
             };
 
             foreach (var pluginList in allPlugins)
@@ -243,7 +240,6 @@ namespace FlatRedBall.Glue.Plugins
             PropertyChangePlugins = new List<IPropertyChange>();
             CodeGeneratorPlugins = new List<ICodeGeneratorPlugin>();
             ContentFileChangePlugins = new List<IContentFileChange>();
-            OutputReceiverPlugins = new List<IOutputReceiver>();
         }
 
         internal static void Initialize(bool isStartup, List<string> pluginsToIgnore = null)
@@ -1114,22 +1110,23 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToNewObject(NamedObjectSave newObject)
         {
-            foreach (PluginManager pluginManager in mInstances)
+            CallMethodOnPlugin((plugin) =>
             {
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToNewObjectHandler != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToNewObjectHandler(newObject);
-                            }, container, "Failed in ReactToNewObject");
-                    }
-                }
-            }
+                plugin.ReactToNewObjectHandler(newObject);
+            },
+            nameof(ReactToNewObject),
+            plugin => plugin.ReactToNewObjectHandler != null);
+        }
+
+        internal static void ReactToObjectRemoved(IElement element, NamedObjectSave removedObject)
+        {
+            CallMethodOnPlugin((plugin) =>
+            {
+                plugin.ReactToObjectRemoved(element, removedObject);
+            },
+            nameof(ReactToNewObject),
+            plugin => plugin.ReactToObjectRemoved != null);
+            
         }
 
         internal static void ReactToNewScreenCreated(ScreenSave screen)
@@ -1494,7 +1491,9 @@ namespace FlatRedBall.Glue.Plugins
         {
             if (ProjectManager.WantsToClose == false)
             {
-                output = System.DateTime.Now.ToLongTimeString() + " - " + output;
+                var time = System.DateTime.Now;
+                var msDigit = (time.Millisecond / 100).ToString();
+                output = $"{time.ToString("h:mm:ss")}.{msDigit} - {output}";
 
                 if (mInstances == null || mInstances.Count == 0)
                 {
@@ -1522,21 +1521,6 @@ namespace FlatRedBall.Glue.Plugins
 
         private static void PrintOutput(string output, PluginManager pluginManager)
         {
-            foreach (IOutputReceiver plugin in pluginManager.OutputReceiverPlugins)
-            {
-                PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                if (container.IsEnabled)
-                {
-                    IOutputReceiver plugin1 = plugin;
-                    PluginCommand(() =>
-                        {
-                            plugin1.OnOutput(output);
-                        },container, "Failed in ReactToChangedFile");
-                }
-            }
-
-            // Execute the new style plugins
             var plugins = pluginManager.ImportedPlugins.Where(x => x.OnOutputHandler != null);
             foreach (var plugin in plugins)
             {
@@ -1576,21 +1560,6 @@ namespace FlatRedBall.Glue.Plugins
 
         private static void PrintError(string output, PluginManager pluginManager)
         {
-            foreach (IOutputReceiver plugin in pluginManager.OutputReceiverPlugins)
-            {
-                PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                if (container.IsEnabled)
-                {
-                    IOutputReceiver plugin1 = plugin;
-                    PluginCommand(() =>
-                        {
-                            plugin1.OnErrorOutput(output);
-                        },container, "Failed in ReactToChangedFile");
-                }
-            }
-
-            // Execute the new style plugins
             var plugins = pluginManager.ImportedPlugins.Where(x => x.OnErrorOutputHandler != null);
             foreach (var plugin in plugins)
             {

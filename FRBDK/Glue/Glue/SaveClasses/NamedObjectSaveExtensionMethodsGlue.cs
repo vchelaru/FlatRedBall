@@ -64,7 +64,12 @@ namespace FlatRedBall.Glue.SaveClasses
 
             else if (element != null)
             {
-                AddExistingNamedObjectToElement(element, namedObject, true);
+                //AddExistingNamedObjectToElement(element, namedObject, true);
+                element.NamedObjects.Add(namedObject);
+                GlueCommands.Self.RefreshCommands.RefreshUi(element);
+                // eventually this method will die, but for now the caller is responsible
+                //PluginManager.ReactToNewObject(namedObject);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(element);
             }
 
             
@@ -115,12 +120,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        internal static void AddExistingNamedObjectToElement(IElement element, NamedObjectSave newNamedObject, bool modifyNamedObject)
-        {
-            element.NamedObjects.Add(newNamedObject);
-            GlueCommands.Self.RefreshCommands.RefreshUi(element);
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-        }
+
 
     }
 }

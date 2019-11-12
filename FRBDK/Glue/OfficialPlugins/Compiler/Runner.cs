@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
+using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,8 +18,12 @@ namespace OfficialPlugins.Compiler
 
         Process runningGameProcess;
 
-        public bool IsRunning => runningGameProcess != null;
-        public event EventHandler IsRunningChanged;
+        //public bool IsRunning => runningGameProcess != null;
+        //public bool IsCompiling
+        //{
+        //    get; private set;
+        //}
+        //public event EventHandler IsRunningChanged;
 
         bool suppressNextExitCodeAnnouncement = false;
         bool foundAlreadyRunningProcess = false;
@@ -27,7 +32,13 @@ namespace OfficialPlugins.Compiler
 
         System.Windows.Forms.Timer timer;
 
-        public bool DidRunnerStartProcess => IsRunning && foundAlreadyRunningProcess == false;
+        public bool DidRunnerStartProcess =>
+            runningGameProcess != null && foundAlreadyRunningProcess == false;
+
+        public CompilerViewModel ViewModel
+        {
+            get; set;
+        }
 
         #endregion
 
@@ -77,10 +88,11 @@ namespace OfficialPlugins.Compiler
                         runningGameProcess.EnableRaisingEvents = true;
                         runningGameProcess.Exited += HandleProcessExit;
 
-                        IsRunningChanged?.Invoke(this, null);
+                        ViewModel.IsRunning = runningGameProcess != null;
+                        ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
 
                     }
-                    catch(InvalidOperationException)
+                    catch (InvalidOperationException)
                     {
                         // do nothing, the game just stopped running
                     }
@@ -104,6 +116,11 @@ namespace OfficialPlugins.Compiler
 
         internal async Task Run(bool preventFocus, string runArguments = null)
         {
+            // disable the timer so it doesn't grab the process while we're looking for it 
+            // (be sure to re-enable it later):
+            timer.Enabled = false;
+            ViewModel.IsWaitingForGameToStart = true;
+
             foundAlreadyRunningProcess = false;
             var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
             var projectDirectory = FileManager.GetDirectory(projectFileName);
@@ -167,10 +184,16 @@ namespace OfficialPlugins.Compiler
 
                     global::Glue.MainGlueWindow.Self.Invoke(() =>
                     {
-                        IsRunningChanged?.Invoke(this, null);
+                        ViewModel.IsRunning = runningGameProcess != null;
+                        ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
+
                     });
                 }
             }
+            ViewModel.IsWaitingForGameToStart = false;
+
+            timer.Enabled = true;
+             
         }
 
         private static void StartProcess(bool preventFocus, string runArguments, string exeLocation)
@@ -312,7 +335,9 @@ namespace OfficialPlugins.Compiler
 
             global::Glue.MainGlueWindow.Self.Invoke(() =>
             {
-                IsRunningChanged?.Invoke(this, null);
+                ViewModel.IsRunning = runningGameProcess != null;
+                ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
+
             });
         }
 
@@ -347,7 +372,8 @@ namespace OfficialPlugins.Compiler
                 {
                     // do nothing
                     process = null;
-                    IsRunningChanged?.Invoke(this, null);
+                    ViewModel.IsRunning = false;
+                    ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
                 }
             }
         }

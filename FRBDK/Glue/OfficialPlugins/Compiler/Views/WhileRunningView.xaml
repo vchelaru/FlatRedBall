@@ -69,6 +69,7 @@
                 </ToolTip>
             </Button.ToolTip>
         </Button>
+
         <Button Margin="0,0,6,0" Click="HandleRestartGameClicked">
             <Image Source="../icons/RestartGame.png"></Image>
             <Button.ToolTip>
@@ -113,7 +114,14 @@
                   Visibility="{Binding RebuildRestartCheckBoxVisiblity}"
                   VerticalAlignment="Center" 
                   VerticalContentAlignment="Center">
-            Rebuild/Restart Game on File Change
+            <Image Source="../icons/HotReload.png"  Margin="0,0,6,0">
+            </Image>
+            <CheckBox.ToolTip>
+                <StackPanel>
+                    <TextBlock FontWeight="Bold">Hot Reload</TextBlock>
+                    <TextBlock>If enabled, Glue will watch for any changes and will reload the game if changes occur</TextBlock>
+                </StackPanel>
+            </CheckBox.ToolTip>
         </CheckBox>
     </StackPanel>
 </UserControl>

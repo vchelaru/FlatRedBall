@@ -789,7 +789,6 @@
     <Compile Include="Plugins\Interfaces\IContentFileChange.cs" />
     <Compile Include="Plugins\Interfaces\IGlueSettings.cs" />
     <Compile Include="Plugins\Interfaces\IOpenVisualStudio.cs" />
-    <Compile Include="Plugins\Interfaces\IOutputReceiver.cs" />
     <Compile Include="CodeGeneration\PerformancePluginCodeGenerator.cs" />
     <Compile Include="Plugins\Performance\EndTimingCodeGenerator.cs" />
     <Compile Include="Plugins\Performance\PerformanceForm.cs">

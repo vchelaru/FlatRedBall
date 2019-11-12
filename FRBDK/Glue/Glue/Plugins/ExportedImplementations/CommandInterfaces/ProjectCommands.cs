@@ -26,6 +26,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             ProjectManager.SaveProjects();
         }
 
+        public void SaveProjectsTask()
+        {
+            TaskManager.Self.Add(SaveProjects, nameof(SaveProjects), TaskExecutionPreference.AddOrMoveToEnd); ;
+        }
+
         public void CreateAndAddPartialFile(IElement element, string partialName, string code)
         {
             var fileName = element.Name + ".Generated." + partialName + ".cs";

@@ -3,6 +3,7 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.SaveClasses;
+using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +22,28 @@ namespace OfficialPlugins.Compiler.Managers
         string screenToRestartOn = null;
 
 
-        public bool IsExplicitlySetRebuildAndRestartEnabled { get; set; }
+        bool isExplicitlySetRebuildAndRestartEnabled;
+        public bool IsExplicitlySetRebuildAndRestartEnabled 
+        {
+            get => isExplicitlySetRebuildAndRestartEnabled;
+            set
+            {
+                isExplicitlySetRebuildAndRestartEnabled = value;
+                RefreshViewModelHotReload();
+
+            }
+        }
         bool failedToRebuildAndRestart { get; set; }
 
         bool ShouldRestartOnChange => failedToRebuildAndRestart || IsExplicitlySetRebuildAndRestartEnabled;
 
         public int PortNumber { get; set; }
+
+        public CompilerViewModel ViewModel
+        {
+            get; set;
+        }
+
 
         #endregion
 
@@ -44,7 +61,7 @@ namespace OfficialPlugins.Compiler.Managers
 
             if(shouldReactToFileChange)
             {
-                StopAndRestartTask();
+                StopAndRestartTask($"File {fileName} changed");
             }
         }
 
@@ -82,7 +99,7 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if (ShouldRestartOnChange)
             {
-                StopAndRestartTask();
+                StopAndRestartTask($"Object {newNamedObject} created");
             }
         }
 
@@ -98,31 +115,47 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if (ShouldRestartOnChange)
             {
-                StopAndRestartTask();
+                StopAndRestartTask($"Object variable {changedMember} changed");
             }
         }
 
-        private void StopAndRestartTask()
+        internal void HandleObjectRemoved(IElement arg1, NamedObjectSave arg2)
+        {
+            if (ShouldRestartOnChange)
+            {
+                StopAndRestartTask($"Object {arg2} removed");
+            }
+        }
+
+        private void StopAndRestartTask(string reason = null)
         {
             var runner = Runner.Self;
-            if (runner.DidRunnerStartProcess || (runner.IsRunning == false && failedToRebuildAndRestart))
+            if (runner.DidRunnerStartProcess || (ViewModel.IsRunning == false && failedToRebuildAndRestart))
             {
                 TaskManager.Self.Add(
-                    () => StopAndRestartImmediately(PortNumber),
+                    () =>
+                    {
+                        if(!string.IsNullOrEmpty(reason))
+                        {
+                            printOutput($"Restarting because: {reason}");
+                        }
+                        StopAndRestartImmediately(PortNumber);
+                    },
                    "Restarting due to Glue or file change",
                     TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
+
 
         private void StopAndRestartImmediately(int portNumber)
         {
             var runner = Runner.Self;
             var compiler = Compiler.Self;
 
-            if(runner.DidRunnerStartProcess || (runner.IsRunning == false && failedToRebuildAndRestart))
+            if(runner.DidRunnerStartProcess || (ViewModel.IsRunning == false && failedToRebuildAndRestart))
             {
 
-                if(runner.IsRunning)
+                if (ViewModel.IsRunning)
                 {
                     try
                     {
@@ -146,19 +179,23 @@ namespace OfficialPlugins.Compiler.Managers
 
                 var succeeded = compiler.Compile(printOutput, printError).Result;
 
-                if(succeeded)
+                if (succeeded)
                 {
-                    runner.Run(preventFocus:true, runArguments: screenToRestartOn).Wait();
+                    runner.Run(preventFocus: true, runArguments: screenToRestartOn).Wait();
                     failedToRebuildAndRestart = false;
                 }
                 else
                 {
                     failedToRebuildAndRestart = true;
                 }
+                RefreshViewModelHotReload();
             }
 
         }
 
-
+        private void RefreshViewModelHotReload()
+        {
+            ViewModel.IsHotReloadEnabled = ShouldRestartOnChange;
+        }
     }
 }

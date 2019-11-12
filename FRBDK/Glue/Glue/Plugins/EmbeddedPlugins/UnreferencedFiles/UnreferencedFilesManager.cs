@@ -90,7 +90,7 @@ namespace FlatRedBall.Glue.Managers
         {
             if (async)
             {
-                TaskManager.Self.AddSync(RefreshUnreferencedFilesInternal, "Refreshing unreferenced files");
+                TaskManager.Self.Add(RefreshUnreferencedFilesInternal, "Refreshing unreferenced files", TaskExecutionPreference.AddOrMoveToEnd);
             }
             else
             {

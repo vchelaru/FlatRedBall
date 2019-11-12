@@ -1155,7 +1155,8 @@ namespace FlatRedBall.Glue.FormHelpers
                         // test deep first
                         if (EditorLogic.CurrentNamedObject != null)
                         {
-                            ProjectManager.RemoveNamedObject(EditorLogic.CurrentNamedObject, true, true, filesToRemove);
+                            GlueCommands.Self.GluxCommands
+                                .RemoveNamedObject(EditorLogic.CurrentNamedObject, true, true, filesToRemove);
                             //ProjectManager.RemoveNamedObject(EditorLogic.CurrentNamedObject);
                         }
                         #endregion
@@ -1341,41 +1342,26 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         if (saveAndRegenerate)
                         {
-
-                            Action regenerateAction = null;
-
                             if (EditorLogic.CurrentScreenTreeNode != null)
                             {
                                 var screen = EditorLogic.CurrentScreenSave;
-                                regenerateAction = () =>
-                                    FlatRedBall.Glue.CodeGeneration.CodeGeneratorIElement.GenerateElementAndDerivedCode(screen);
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(screen);
                             }
                             else if (EditorLogic.CurrentEntityTreeNode != null)
                             {
                                 var entity = EditorLogic.CurrentEntitySave;
-                                regenerateAction = () =>
-                                    FlatRedBall.Glue.CodeGeneration.CodeGeneratorIElement.GenerateElementAndDerivedCode(entity);
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(entity);
                             }
                             else if (EditorLogic.CurrentReferencedFile != null)
                             {
-                                regenerateAction = GlobalContentCodeGenerator.UpdateLoadGlobalContentCode;
+                                GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCodeTask();
 
                                 // Vic asks - do we have to do anything else here?  I don't think so...
                             }
 
 
-
-                            TaskManager.Self.AddSync(() =>
-                                {
-                                    if (regenerateAction != null)
-                                    {
-                                        regenerateAction();
-                                    }
-                                    ProjectManager.SaveProjects();
-                                    GluxCommands.Self.SaveGlux();
-                                },
-                                "Save and regenerate after removal");
-                            
+                            GluxCommands.Self.ProjectCommands.SaveProjectsTask();
+                            GluxCommands.Self.SaveGluxTask();
                         }
                     }
                 }
@@ -1434,7 +1420,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
 
 
-                    ProjectManager.RemoveNamedObject(nos, false, false, null);
+                    GlueCommands.Self.GluxCommands
+                        .RemoveNamedObject(nos, false, false, null);
                 }
 
 
@@ -1472,8 +1459,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     if (namedObjectRemovalResult == DialogResult.OK)
                     {
-
-                        ProjectManager.RemoveNamedObject(nos, false, true, filesThatCouldBeRemoved);
+                        GlueCommands.Self.GluxCommands
+                            .RemoveNamedObject(nos, false, true, filesThatCouldBeRemoved);
                     }
                 }
                 for (int i = 0; i < inheritingEntities.Count; i++)
@@ -1533,7 +1520,8 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     NamedObjectSave nos = screenToRemove.NamedObjects[i];
 
-                    ProjectManager.RemoveNamedObject(nos, false, false, null);
+                    GlueCommands.Self.GluxCommands
+                        .RemoveNamedObject(nos, false, false, null);
                 }
 
                 #endregion

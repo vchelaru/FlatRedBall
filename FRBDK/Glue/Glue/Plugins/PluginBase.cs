@@ -42,7 +42,6 @@ namespace FlatRedBall.Glue.Plugins
             set;
         } = new List<ElementComponentCodeGenerator>();
 
-
         List<Game1CodeGenerator> GameCodeGenerators
         {
             get;
@@ -113,6 +112,7 @@ namespace FlatRedBall.Glue.Plugins
         public ReactToNamedObjectChangedValueDelegate ReactToNamedObjectChangedValue { get; protected set; }
         public ReactToNewFileDelegate ReactToNewFileHandler { get; protected set; }
         public ReactToNewObjectDelegate ReactToNewObjectHandler { get; protected set; }
+        public Action<IElement, NamedObjectSave> ReactToObjectRemoved { get; protected set; }
 
         /// <summary>
         /// Delegate raised when right-clicking on the property grid.

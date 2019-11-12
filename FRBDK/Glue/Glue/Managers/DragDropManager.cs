@@ -4,9 +4,11 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.IO;
 using FlatRedBall.Utilities;
 using Glue;
@@ -127,12 +129,10 @@ namespace FlatRedBall.Glue.Managers
                     // removing from a list
                     NamedObjectSave container = treeNodeMoving.Parent.Tag as NamedObjectSave;
 
-
-
                     IElement elementToAddTo = movingNos.GetContainer();
                     container.ContainedObjects.Remove(movingNos);
-                    NamedObjectSaveExtensionMethodsGlue.AddExistingNamedObjectToElement(
-                        GlueState.Self.CurrentElement, movingNos, false);
+                    AddExistingNamedObjectToElement(
+                        GlueState.Self.CurrentElement, movingNos);
                     EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
 
                     IElement elementToRegenerate = targetNode.Parent.Tag as IElement;
@@ -493,7 +493,8 @@ namespace FlatRedBall.Glue.Managers
             return newTreeNode;
         }
 
-        public NamedObjectSave CreateNewNamedObjectInElement(IElement elementToCreateIn, EntitySave blueprintEntity, bool createList = false)
+        public NamedObjectSave CreateNewNamedObjectInElement(IElement elementToCreateIn, 
+            EntitySave blueprintEntity, bool createList = false)
         {
             if (blueprintEntity == null)
             {
@@ -527,27 +528,25 @@ namespace FlatRedBall.Glue.Managers
 
             }
 
-            NamedObjectSave newNamedObject = new NamedObjectSave();
-
+            var addObjectViewModel = new AddObjectViewModel();
             // We'll add "List" or "Instance" below
-            string newName = FileManager.RemovePath(blueprintEntity.Name);
+            //string newName = FileManager.RemovePath(blueprintEntity.Name);
+            addObjectViewModel.ObjectName = FileManager.RemovePath(blueprintEntity.Name);
 
             #region Set the source type properties for the new NamedObject
 
             if (createList)
             {
-                newName += "List";
-                newNamedObject.SourceType = SourceType.FlatRedBallType;
-                newNamedObject.SourceClassType = "PositionedObjectList<T>";
-                newNamedObject.SourceClassGenericType = blueprintEntity.Name;
-                newNamedObject.UpdateCustomProperties();
+                addObjectViewModel.ObjectName += "List";
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                addObjectViewModel.SourceClassType = "PositionedObjectList<T>";
+                addObjectViewModel.SourceClassGenericType = blueprintEntity.Name;
             }
             else
             {
-                newName += "Instance";
-                newNamedObject.SourceType = SourceType.Entity;
-                newNamedObject.SourceClassType = blueprintEntity.Name;
-                newNamedObject.UpdateCustomProperties();
+                addObjectViewModel.ObjectName += "Instance";
+                addObjectViewModel.SourceType = SourceType.Entity;
+                addObjectViewModel.SourceClassType = blueprintEntity.Name;
             }
 
             #endregion
@@ -555,38 +554,30 @@ namespace FlatRedBall.Glue.Managers
             #region Set the name for the new NamedObject
 
             // get an acceptable name for the new object
-            if (elementToCreateIn.GetNamedObjectRecursively(newName) != null)
+            if (elementToCreateIn.GetNamedObjectRecursively(addObjectViewModel.ObjectName) != null)
             {
-                newName += "2";
+                addObjectViewModel.ObjectName += "2";
             }
 
-            while (elementToCreateIn.GetNamedObjectRecursively(newName) != null)
+            while (elementToCreateIn.GetNamedObjectRecursively(addObjectViewModel.ObjectName) != null)
             {
-                newName = StringFunctions.IncrementNumberAtEnd(newName);
+                addObjectViewModel.ObjectName = StringFunctions.IncrementNumberAtEnd(addObjectViewModel.ObjectName);
             }
-
-            newNamedObject.InstanceName = newName;
 
 
             #endregion
 
-            // We need to add to managers here.  Why?  Because normally when the type of a NamedObject is changed, 
-            // the PropertyGrid handles setting whether it should be added or not. But in this case, we're not changing
-            // the type of the new NamedObject through the PropertyGrid - instead it's being set programatically to be an
-            // Entity.  So, we should add to managers programatically since the PropertyGrid won't do it for us.
-            // Update December 11, 2011
-            // AddToManagers defaults to
-            // true on new NamedObjectSaves
-            // so there's no need to explicitly
-            // set it to true here.
-            //newNamedObject.AddToManagers = true;
+            return GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel,
+                elementToCreateIn, null);
+        }
 
+        private static void AddExistingNamedObjectToElement(IElement element, NamedObjectSave newNamedObject)
+        {
+            element.NamedObjects.Add(newNamedObject);
+            GlueCommands.Self.RefreshCommands.RefreshUi(element);
+            PluginManager.ReactToNewObject(newNamedObject);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(element);
 
-            NamedObjectSaveExtensionMethodsGlue.AddExistingNamedObjectToElement(elementToCreateIn, newNamedObject, true);
-
-            Plugins.PluginManager.ReceiveOutput($"Created {newNamedObject}");
-
-            return newNamedObject;
         }
 
         private static void AskAndAddAllContainedRfsToGlobalContent(IElement element)

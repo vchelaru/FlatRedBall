@@ -166,18 +166,7 @@ namespace FlatRedBall.Glue.IO
 
                     if (anyFlushed)
                     {
-                        TaskManager.Self.AddSync(() =>
-                            {
-                                if (UnreferencedFilesManager.Self.IsRefreshRequested)
-                                {
-                                    // do this first in case someone else requests a refresh while the refresh is going
-
-                                    UnreferencedFilesManager.Self.IsRefreshRequested = false;
-
-                                    UnreferencedFilesManager.Self.RefreshUnreferencedFiles(async: false);
-                                }
-                            },
-                            "Refreshing unreferenced files");
+                        UnreferencedFilesManager.Self.RefreshUnreferencedFiles(async: true);
                     }
                     IsFlushing = false;
                 }

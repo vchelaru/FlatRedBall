@@ -17,6 +17,12 @@ namespace FlatRedBall.Glue.Managers
         AddOrMoveToEnd
     }
 
+    public enum AddedOrRemoved
+    {
+        Added,
+        Removed
+    }
+
     public class TaskManager : Singleton<TaskManager>
     {
 
@@ -33,7 +39,7 @@ namespace FlatRedBall.Glue.Managers
 
         #endregion
 
-        public event Action TaskAddedOrRemoved;
+        public event Action<AddedOrRemoved, GlueTask> TaskAddedOrRemoved;
 
         #region Properties
 
@@ -148,14 +154,6 @@ namespace FlatRedBall.Glue.Managers
                 (arg)=>ExecuteActionSync(action, details));
         }
 
-        void CallTaskAddedOrRemoved()
-        {
-            if(TaskAddedOrRemoved != null)
-            {
-                TaskAddedOrRemoved();
-            }
-        }
-
         void ExecuteActionSync(Action action, string details)
         {
             var glueTask = new GlueTask
@@ -169,7 +167,8 @@ namespace FlatRedBall.Glue.Managers
                 mActiveAsyncTasks.Add(glueTask);
             }
 
-            CallTaskAddedOrRemoved();
+            TaskAddedOrRemoved?.Invoke(AddedOrRemoved.Added, glueTask);
+
             ((Action)action)();
 
             lock (mActiveAsyncTasks)
@@ -181,10 +180,7 @@ namespace FlatRedBall.Glue.Managers
             // not sure why but this can go into the negative...
             asyncTasks = System.Math.Max(asyncTasks, 0);
 
-            CallTaskAddedOrRemoved();
-
-            
-
+            TaskAddedOrRemoved?.Invoke(AddedOrRemoved.Removed, glueTask);
         }
 
 
@@ -234,6 +230,8 @@ namespace FlatRedBall.Glue.Managers
 
             bool shouldProcess = false;
 
+            bool createdNew = true;
+
             lock (mSyncLockObject)
             {
                 if (executionPreference == TaskExecutionPreference.Asap)
@@ -258,6 +256,7 @@ namespace FlatRedBall.Glue.Managers
                         // just move it to the end
                         mSyncedActions.Remove(existingAction);
                         mSyncedActions.Add(glueTask);
+                        createdNew = false;
                     }
                     else
                     {
@@ -271,7 +270,13 @@ namespace FlatRedBall.Glue.Managers
                 }
                 shouldProcess = mSyncedActions.Count == 1 && IsTaskProcessingEnabled;
             }
-            CallTaskAddedOrRemoved();
+
+            // process will take care of reporting it
+            if(createdNew && !shouldProcess)
+            {
+                TaskAddedOrRemoved?.Invoke(AddedOrRemoved.Added, glueTask);
+            }
+
             if (shouldProcess)
             {
                 ProcessNextSync();
@@ -315,7 +320,8 @@ namespace FlatRedBall.Glue.Managers
 
                         shouldProcess = mSyncedActions.Count > 0 && IsTaskProcessingEnabled;
                     }
-                    CallTaskAddedOrRemoved();
+                    TaskAddedOrRemoved?.Invoke(AddedOrRemoved.Removed, glueTask);
+
 
                     if (shouldProcess)
                     {
@@ -323,7 +329,8 @@ namespace FlatRedBall.Glue.Managers
                     }
 
                 });
-                CallTaskAddedOrRemoved();
+                TaskAddedOrRemoved?.Invoke(AddedOrRemoved.Added, glueTask);
+
             }
         }
 

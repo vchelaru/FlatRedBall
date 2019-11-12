@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
 {
     public class TaskDisplayerViewModel : ViewModel
     {
-        string statusText = "Tasks remaining: 0";
         public string StatusText
         {
             get
@@ -18,23 +18,29 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
             }
         }
 
-        public string CurrentTaskText
+        public string CurrentTaskText => TaskManager.Self.CurrentTask;
+
+        public bool LogTaskDetailsToOutput
         {
-            get
-            {
-                return TaskManager.Self.CurrentTask;
-            }
+            get => Get<bool>();
+            set => Set(value);
         }
 
         public TaskDisplayerViewModel()
         {
-            TaskManager.Self.TaskAddedOrRemoved += HandleSyncTaskAddedOrRemovd;
+            TaskManager.Self.TaskAddedOrRemoved += HandleSyncTaskAddedOrRemoved;
         }
 
-        private void HandleSyncTaskAddedOrRemovd()
+        private void HandleSyncTaskAddedOrRemoved(AddedOrRemoved addedOrRemoved, GlueTask glueTask)
         {
             this.NotifyPropertyChanged("StatusText");
             this.NotifyPropertyChanged("CurrentTaskText");
+
+            if(LogTaskDetailsToOutput)
+            {
+                PluginManager.ReceiveOutput($"{addedOrRemoved} {glueTask.DisplayInfo}");
+            }
+
         }
     }
 }

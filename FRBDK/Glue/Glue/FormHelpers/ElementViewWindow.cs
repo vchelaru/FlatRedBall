@@ -453,22 +453,6 @@ namespace FlatRedBall.Glue.FormHelpers
         }
 
      
-
-        public static void GenerateSelectedElementAndDerivedCode()
-        {
-            if (GlueState.Self.CurrentElement != null)
-            {
-                CodeGeneratorIElement.GenerateElementAndDerivedCode(GlueState.Self.CurrentElement);
-            }
-            else if (EditorLogic.CurrentReferencedFile != null)
-            {
-                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
-
-                // Vic asks - do we have to do anything else here?  I don't think so...
-            }
-        }
-
-
         public static void GenerateSelectedElementCode()
         {
             if (EditorLogic.CurrentElement != null)

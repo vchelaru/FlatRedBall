@@ -7,10 +7,10 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-
-        <Label Content="{Binding CurrentTaskText}"></Label>
+        <CheckBox IsChecked="{Binding LogTaskDetailsToOutput}" VerticalContentAlignment="Center">Log Task Details to Output</CheckBox>
+        <Label Grid.Row="1" Content="{Binding CurrentTaskText}"></Label>
     </Grid>
 </UserControl>

@@ -33,14 +33,54 @@ namespace OfficialPlugins.Compiler.ViewModels
             }
         }
 
+        public bool IsCompiling
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsHotReloadEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsWaitingForGameToStart
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsRunning))]
+        [DependsOn(nameof(IsCompiling))]
+        [DependsOn(nameof(IsWaitingForGameToStart))]
+        public bool IsToolbarPlayButtonEnabled => !IsRunning && !IsCompiling && !IsWaitingForGameToStart;
+
+        [DependsOn(nameof(IsHotReloadEnabled))]
+        public Visibility ReloadVisibility => IsHotReloadEnabled ?
+            Visibility.Visible : Visibility.Collapsed;
+
         [DependsOn(nameof(IsRunning))]
         public Visibility WhileRunningViewVisibility => IsRunning ? 
             Visibility.Visible : Visibility.Collapsed;
 
         [DependsOn(nameof(IsRunning))]
-        public Visibility WhileStoppedViewVisibility => IsRunning ?
-            Visibility.Collapsed : Visibility.Visible;
-
+        [DependsOn(nameof(IsCompiling))]
+        [DependsOn(nameof(IsWaitingForGameToStart))]
+        public Visibility WhileStoppedViewVisibility
+        {
+            get
+            {
+                if (IsRunning || IsCompiling || IsWaitingForGameToStart)
+                {
+                    return Visibility.Collapsed;
+                }
+                else
+                {
+                    return Visibility.Visible;
+                }
+            }
+        }
         public bool IsPaused
         {
             get => Get<bool>();

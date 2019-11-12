@@ -10,6 +10,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
     public interface IProjectCommands
     {
         void SaveProjects();
+        void SaveProjectsTask();
 
         /// <summary>
         /// 

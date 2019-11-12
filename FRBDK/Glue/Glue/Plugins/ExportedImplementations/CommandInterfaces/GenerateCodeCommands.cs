@@ -79,6 +79,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
         }
 
+        public void GenerateGlobalContentCodeTask()
+        {
+            TaskManager.Self.Add(GenerateGlobalContentCode, nameof(GenerateGlobalContentCode), TaskExecutionPreference.AddOrMoveToEnd);
+        }
+
         public string GetNamespaceForElement(IElement element)
         {
             string directory = FileManager.GetDirectory(element.Name, RelativeType.Relative);
