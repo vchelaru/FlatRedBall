@@ -1715,11 +1715,12 @@ namespace FlatRedBallAddOns.Entities
                 // *before* prepending the ProjectNamespace
                 bool isEmpty = string.IsNullOrEmpty(startUpScreen);
 
-
-                startUpScreen = ProjectManager.ProjectNamespace + "." + startUpScreen.Replace("\\", ".");
-                string lineThatStartsEverything = string.Format(
-                    "            FlatRedBall.Screens.ScreenManager.Start(typeof({0}));",
-                    startUpScreen);
+                if(!isEmpty)
+                {
+                    startUpScreen = ProjectManager.ProjectNamespace + "." + startUpScreen.Replace("\\", ".");
+                }
+                string lineThatStartsEverything =
+                    $"            FlatRedBall.Screens.ScreenManager.Start(typeof({startUpScreen}));";
 
                 if (isEmpty)
                 {
@@ -1730,7 +1731,9 @@ namespace FlatRedBallAddOns.Entities
 
                 if(contents.Contains("Type startScreenType = "))
                 {
-                    var line = $"            Type startScreenType = typeof({startUpScreen});";
+                    var line = isEmpty ?
+                        $"            Type startScreenType = null;" :
+                        $"            Type startScreenType = typeof({startUpScreen});";
                     // new projects (as of October 25 2019) use this multi-line approach
                     StringFunctions.ReplaceLine(ref contents, "Type startScreenType = ", line);
 
