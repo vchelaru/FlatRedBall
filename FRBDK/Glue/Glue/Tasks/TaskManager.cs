@@ -8,6 +8,7 @@ using FlatRedBall.Glue.Tasks;
 
 namespace FlatRedBall.Glue.Managers
 {
+    #region Enums
 
     public enum TaskExecutionPreference
     {
@@ -23,9 +24,10 @@ namespace FlatRedBall.Glue.Managers
         Removed
     }
 
+    #endregion
+
     public class TaskManager : Singleton<TaskManager>
     {
-
         #region Fields
         int asyncTasks;
 
@@ -192,8 +194,6 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-
-        
         /// <summary>
         /// Adds an action to be executed, guaranteeing that no other actions will be executed at the same time as this.
         /// Actions added will be executed in the order they were added (fifo).
@@ -305,9 +305,9 @@ namespace FlatRedBall.Glue.Managers
                     // This can be uncommented to get information about the task history
                     // to try to improve performance
                     //this.taskHistory.Add(glueTask?.DisplayInfo);
-
+                    glueTask.TimeStarted = DateTime.Now;
                     toProcess();
-
+                    glueTask.TimeEnded = DateTime.Now;
                     bool shouldProcess = false;
 
                     lock (mSyncLockObject)

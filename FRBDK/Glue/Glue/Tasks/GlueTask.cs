@@ -7,6 +7,9 @@ namespace FlatRedBall.Glue.Tasks
 {
     public class GlueTask
     {
+        public DateTime TimeStarted { get; set;}
+        public DateTime TimeEnded { get; set; }
+
         public Action Action
         {
             get;

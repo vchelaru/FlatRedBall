@@ -31,9 +31,9 @@ namespace TopDownPlugin.Views
             InitializeComponent();
         }
 
-        private void AddEmptyTopDownValuesClick(object sender, RoutedEventArgs e)
+        private void AddDefaultValuesClick(object sender, RoutedEventArgs e)
         {
-            string name = "Unnamed";
+            string name = "Default";
             AddTopDownValues(name);
 
             AddControlButtonInstance.IsOpen = false;

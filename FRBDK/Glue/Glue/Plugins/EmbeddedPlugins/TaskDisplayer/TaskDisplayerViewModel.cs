@@ -38,7 +38,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
 
             if(LogTaskDetailsToOutput)
             {
-                PluginManager.ReceiveOutput($"{addedOrRemoved} {glueTask.DisplayInfo}");
+                var text = $"{addedOrRemoved} {glueTask.DisplayInfo}";
+                if(addedOrRemoved == AddedOrRemoved.Removed)
+                {
+                    var time = glueTask.TimeEnded - glueTask.TimeStarted;
+
+                    text += $" {time.Seconds}.{time.Milliseconds.ToString("000")}";
+                }
+                PluginManager.ReceiveOutput(text);
             }
 
         }

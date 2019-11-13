@@ -42,7 +42,7 @@
         <!--Name-->
         <StackPanel Grid.Row="1" Margin="3">
             <TextBlock HorizontalAlignment="Center" Margin="3">Movement Type</TextBlock>
-            <TextBox Text="{Binding Name}" Width="90" VerticalAlignment="Top"></TextBox>
+            <TextBox Text="{Binding Name}" Width="90" VerticalAlignment="Top" KeyUp="TextBox_KeyEnterUpdate"></TextBox>
 
         </StackPanel>
 
@@ -53,6 +53,7 @@
 
             <TextBlock>Max Speed:</TextBlock>
             <TextBox Text="{Binding MaxSpeed}" HorizontalAlignment="Left" Width="70" Margin="0,0,0,5"
+                     KeyUp="TextBox_KeyEnterUpdate"
                      ></TextBox>
 
             <RadioButton IsChecked="{Binding IsImmediate}">Immediate</RadioButton>
@@ -61,9 +62,11 @@
             <StackPanel Visibility="{Binding AccelerationValuesVisibility}">
                 <TextBlock>Speed Up Time:</TextBlock>
                 <TextBox HorizontalAlignment="Left" Width="50"  Text="{Binding AccelerationTime}"
+                         KeyUp="TextBox_KeyEnterUpdate"
                          ></TextBox>
                 <TextBlock>Slow Down Time:</TextBlock>
                 <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding DecelerationTime}"
+                         KeyUp="TextBox_KeyEnterUpdate"
                          ></TextBox>
             </StackPanel>
         </StackPanel>

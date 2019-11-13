@@ -10,6 +10,7 @@ using FlatRedBall.Glue.VSHelpers;
 using System.Collections.ObjectModel;
 using FlatRedBall.Glue.Managers;
 using System.Threading;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -148,7 +149,10 @@ namespace FlatRedBall.Glue.IO
                         IgnoreReason reason;
                         bool isIgnored = IsFileIgnored(file, out reason);
 
-                        var skip = isIgnored && reason == IgnoreReason.GeneratedCodeFile;
+                        // November 12, 2019
+                        // Vic asks - why do we only ignore files that are generated here?
+                        //var skip = isIgnored && reason == IgnoreReason.GeneratedCodeFile;
+                        var skip = isIgnored;
 
                         if(!skip)
                         {
@@ -292,46 +296,41 @@ namespace FlatRedBall.Glue.IO
         //}
 
 
-        private static bool IsFileIgnored(string fileName, out IgnoreReason reason)
+        private static bool IsFileIgnored(FilePath filePath, out IgnoreReason reason)
         {
             bool isIgnored = false;
             reason = IgnoreReason.NotIgnored;
 
-            fileName = FlatRedBall.IO.FileManager.Standardize(fileName, "", false);
-
+            var projectDirectory = new FilePath(GlueState.Self.CurrentGlueProjectDirectory);
+            var contentDirectory = new FilePath(GlueState.Self.ContentDirectory);
+            var objFolder = new FilePath(projectDirectory.FullPath + "obj/");
+            var binFolder = new FilePath(projectDirectory.FullPath + "bin/");
             // This block of code checks
             // if the changed file sits outside
             // of the current project.  If the file
             // is a .csproj file then we want to still
             // process it.
-            if (!FileManager.IsRelative(fileName) && FileManager.GetExtension(fileName) != "csproj")
+            if (!projectDirectory.IsRootOf(filePath) && 
+                !contentDirectory.IsRootOf(filePath) && 
+                filePath.Extension != "csproj" )
             {
-                if (!FileManager.IsRelativeTo(fileName, FileManager.RelativeDirectory))
-                {
-                    if (ProjectManager.ContentProject == null ||
-                        !FileManager.IsRelativeTo(fileName, ProjectManager.ProjectBase.GetAbsoluteContentFolder()))
-                    {
-                        reason = IgnoreReason.OutsideOfProject;
-                        isIgnored = true;
-                    }
-
-                }
-                fileName = FileManager.MakeRelative(fileName);
+                reason = IgnoreReason.OutsideOfProject;
+                isIgnored = true;
             }
 
-            if(!isIgnored && fileName.StartsWith("obj/"))
+            if(!isIgnored && objFolder.IsRootOf(filePath))
             {
                 reason = IgnoreReason.BuiltFile;
                 isIgnored = true;
             }
 
-            if (!isIgnored && IsBuiltFile(fileName))
+            if (!isIgnored && binFolder.IsRootOf(filePath))
             {
                 reason = IgnoreReason.BuiltFile;
                 isIgnored = true;
             }
 
-            if (!isIgnored && fileName.ToLower().EndsWith(".generated.cs"))
+            if (!isIgnored && filePath.FullPath.ToLower().EndsWith(".generated.cs"))
             {
                 reason = IgnoreReason.GeneratedCodeFile;
                 isIgnored = true;

@@ -23,7 +23,7 @@ namespace TopDownPlugin.Data
             var defaultValues = new TopDownValuesViewModel
             {
                 Name = "Default",
-                IsImmediate = false,
+                MovementMode = TopDownValuesViewModel.ImmediateOrAccelerate.Accelerate,
                 MaxSpeed = 300,
                 AccelerationTime = .5f,
                 DecelerationTime = .25f,
