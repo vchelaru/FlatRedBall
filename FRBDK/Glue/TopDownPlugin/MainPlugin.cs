@@ -57,6 +57,7 @@ namespace TopDownPlugin
             base.RegisterCodeGenerator(new EntityCodeGenerator());
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToItemSelectHandler += HandleItemSelected;
+            this.ReactToEntityRemoved += HandleElementRemoved;
         }
 
         private void HandleGluxLoaded()
@@ -104,6 +105,13 @@ namespace TopDownPlugin
             {
                 this.RemoveTab(pluginTab);
             }
+        }
+
+        private void HandleElementRemoved(EntitySave removedElement, List<string> additionalFiles)
+        {
+            // This could be the very last entity that was a top-down, but isn't
+            // anymore.
+            MainController.Self.CheckForNoTopDownEntities();
         }
     }
 }

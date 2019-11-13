@@ -140,18 +140,23 @@ namespace TopDownPlugin.Controllers
 
             if(viewModel.IsTopDown == false)
             {
-                var areAnyEntitiesTopDown = GlueState.Self.CurrentGlueProject.Entities
-                    .Any(item => TopDownEntityPropertyLogic.GetIfIsTopDown(item));
+                CheckForNoTopDownEntities();
+            }
+        }
 
-                if(!areAnyEntitiesTopDown)
-                {
-                    FilePath absoluteFile =
-                        GlueState.Self.CurrentGlueProjectDirectory +
-                        AiCodeGenerator.RelativeFile;
+        public void CheckForNoTopDownEntities()
+        {
+            var areAnyEntitiesTopDown = GlueState.Self.CurrentGlueProject.Entities
+                .Any(item => TopDownEntityPropertyLogic.GetIfIsTopDown(item));
 
-                    TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.RemoveFromProjects(absoluteFile),
-                        "Removing " + AiCodeGenerator.RelativeFile);
-                }
+            if (!areAnyEntitiesTopDown)
+            {
+                FilePath absoluteFile =
+                    GlueState.Self.CurrentGlueProjectDirectory +
+                    AiCodeGenerator.RelativeFile;
+
+                TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.RemoveFromProjects(absoluteFile),
+                    "Removing " + AiCodeGenerator.RelativeFile);
             }
         }
 
