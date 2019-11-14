@@ -12,11 +12,11 @@ namespace TopDownPlugin.CodeGenerators
     {
         public void GenerateAndSaveEnumFile()
         {
+            var relativeDirectory = "TopDown/Enums.Generated.cs";
             TaskManager.Self.AddSync(() =>
             {
                 var contents = GenerateFileContents();
 
-                var relativeDirectory = "TopDown/Enums.cs";
 
                 GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeDirectory);
 

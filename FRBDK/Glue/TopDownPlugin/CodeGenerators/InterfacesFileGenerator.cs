@@ -12,11 +12,11 @@ namespace TopDownPlugin.CodeGenerators
     {
         public void GenerateAndSave()
         {
+            var relativeFile = "TopDown/Interfaces.Generated.cs";
             TaskManager.Self.Add(() =>
             {
                 var contents = GenerateFileContents();
 
-                var relativeFile = "TopDown/Interfaces.cs";
 
                 GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeFile);
 

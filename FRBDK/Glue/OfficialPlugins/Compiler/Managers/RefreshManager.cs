@@ -127,6 +127,9 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
+        const string stopRestartDetails =
+                   "Restarting due to Glue or file change";
+
         private void StopAndRestartTask(string reason = null)
         {
             var runner = Runner.Self;
@@ -141,7 +144,7 @@ namespace OfficialPlugins.Compiler.Managers
                         }
                         StopAndRestartImmediately(PortNumber);
                     },
-                   "Restarting due to Glue or file change",
+                    stopRestartDetails,
                     TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
@@ -149,6 +152,16 @@ namespace OfficialPlugins.Compiler.Managers
 
         private void StopAndRestartImmediately(int portNumber)
         {
+            bool DoesTaskManagerHaveAnotherRestartTask()
+            {
+                var actions = TaskManager.Self.SyncedActions;
+
+                var restartTask = actions.FirstOrDefault(item => item != actions[0] &&
+                    item.DisplayInfo == stopRestartDetails);
+
+                return restartTask != null;
+            }
+
             var runner = Runner.Self;
             var compiler = Compiler.Self;
 
@@ -177,12 +190,19 @@ namespace OfficialPlugins.Compiler.Managers
                     runner.Stop();
                 }
 
-                var succeeded = compiler.Compile(printOutput, printError).Result;
-
-                if (succeeded)
+                bool compileSucceeded = false;
+                if(!DoesTaskManagerHaveAnotherRestartTask())
                 {
-                    runner.Run(preventFocus: true, runArguments: screenToRestartOn).Wait();
-                    failedToRebuildAndRestart = false;
+                    compileSucceeded = compiler.Compile(printOutput, printError).Result;
+                }
+
+                if (compileSucceeded)
+                {
+                    if(!DoesTaskManagerHaveAnotherRestartTask())
+                    {
+                        runner.Run(preventFocus: true, runArguments: screenToRestartOn).Wait();
+                        failedToRebuildAndRestart = false;
+                    }
                 }
                 else
                 {

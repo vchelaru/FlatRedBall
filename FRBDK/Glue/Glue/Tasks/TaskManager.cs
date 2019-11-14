@@ -32,6 +32,10 @@ namespace FlatRedBall.Glue.Managers
         int asyncTasks;
 
         List<GlueTask> mSyncedActions = new List<GlueTask>();
+        public GlueTask[] SyncedActions
+        {
+            get => mSyncedActions.ToArray();
+        }
         static object mSyncLockObject = new object();
 
 
