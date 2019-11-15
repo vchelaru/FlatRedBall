@@ -41,6 +41,8 @@ namespace OfficialPlugins.CollisionPlugin.Views
             if(namedObject != null)
             {
                 GlueState.Self.CurrentNamedObjectSave = namedObject;
+
+                GlueCommands.Self.DialogCommands.FocusDialog("Collision");
             }
         }
     }

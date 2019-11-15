@@ -248,6 +248,30 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        public void FocusDialog(string dialogTitle)
+        {
+            bool TryFocus(TabControl control )
+            {
+                foreach(TabPage tabPage in control.TabPages)
+                {
+                    if (tabPage.Text?.Trim() == dialogTitle)
+                    {
+                        control.SelectedTab = tabPage;
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            var focused = TryFocus(PluginManager.TopTab);
+
+            if (!focused) focused = TryFocus(PluginManager.BottomTab);
+            if (!focused) focused = TryFocus(PluginManager.LeftTab);
+            if (!focused) focused = TryFocus(PluginManager.CenterTab);
+            if (!focused) focused = TryFocus(PluginManager.RightTab);
+        }
+
+
         private static void HandleAddVariableOk(AddVariableWindow addVariableWindow)
         {
             string resultName = addVariableWindow.ResultName;
@@ -735,6 +759,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
             return newName;
+        }
+
+
+        public List<T> ToList<T>(System.Collections.IList list)
+        {
+            List<T> toReturn = new List<T>();
+
+
+            foreach(T item in list)
+            {
+                toReturn.Add(item);
+            }
+
+            return toReturn;
         }
     }
 }

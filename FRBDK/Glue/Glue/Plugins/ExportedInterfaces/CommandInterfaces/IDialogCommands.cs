@@ -12,6 +12,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void ShowMessageBox(string message);
         void ShowYesNoMessageBox(string message, Action yesAction, Action noAction = null);
 
+        void FocusDialog(string dialogTitle);
+
 #if GLUE
         NamedObjectSave ShowAddNewObjectDialog(FlatRedBall.Glue.ViewModels.AddObjectViewModel addObjectViewModel = null);
 
