@@ -32,21 +32,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public static void GenerateElementDerivedAndReferenced(IElement baseElement)
-        {
-            if (baseElement != null)
-            {
-                GenerateElementAndDerivedCode(baseElement);
 
-                var namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(baseElement);
-
-                foreach (var nos in namedObjects)
-                {
-                    IElement element = ObjectFinder.Self.GetElementContaining(nos);
-                    GenerateElement(element);
-                }
-            }
-        }
 
 
     }

@@ -126,7 +126,6 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             var addObjectModel = new AddObjectViewModel();
 
-            // do we need to set dialog result?
             addObjectModel.SourceType = FlatRedBall.Glue.SaveClasses.SourceType.FlatRedBallType;
             addObjectModel.SourceClassType = "FlatRedBall.Math.Collision.CollisionRelationship";
             addObjectModel.ObjectName = "ToBeRenamed";
@@ -158,6 +157,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                     pairViewModel.OtherObjectName);
             }
 
+            
             CollisionRelationshipViewModelController.TryFixSourceClassType(newNos);
 
             // this will regenerate and save everything too:
@@ -166,6 +166,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
 
             RefreshViewModelTo(selectedElement, selectedNamedObject, ViewModel);
+
+            CollisionRelationshipViewModelController.TryFixMassesForTileShapeCollisionRelationship(selectedElement, newNos);
         }
     }
 }

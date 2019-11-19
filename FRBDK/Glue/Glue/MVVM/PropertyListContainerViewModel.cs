@@ -71,6 +71,8 @@ namespace FlatRedBall.Glue.MVVM
             set { Set(value); }
         }
 
+        public bool IsUpdatingFromGlueObject { get; set; }
+
         #endregion
 
         public PropertyListContainerViewModel()
@@ -244,6 +246,8 @@ namespace FlatRedBall.Glue.MVVM
 
         public virtual void UpdateFromGlueObject()
         {
+            IsUpdatingFromGlueObject = true;
+
             var syncedKvps =
                 viewModelProperties.Where(item => item.Value.IsSynced).ToArray();
 
@@ -338,7 +342,9 @@ namespace FlatRedBall.Glue.MVVM
                     }
                 }
             }
-            
+
+            IsUpdatingFromGlueObject = false;
+
         }
 
         // made public for reflection

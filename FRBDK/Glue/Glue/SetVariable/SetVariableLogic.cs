@@ -159,7 +159,8 @@ namespace FlatRedBall.Glue.SetVariable
 
             if (EditorLogic.CurrentElement != null)
             {
-                CodeGeneratorIElement.GenerateElementDerivedAndReferenced(EditorLogic.CurrentElement);
+                GlueCommands.Self.GenerateCodeCommands
+                    .GenerateElementAndReferencedObjectCodeTask(EditorLogic.CurrentElement);
             }
             else if (EditorLogic.CurrentReferencedFile != null)
             {

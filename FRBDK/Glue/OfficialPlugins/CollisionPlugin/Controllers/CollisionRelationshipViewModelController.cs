@@ -15,7 +15,6 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 {
     public class CollisionRelationshipViewModelController
     {
-
         public static CollisionRelationshipViewModel CreateViewModel()
         {
             var viewModel = new CollisionRelationshipViewModel();
@@ -139,6 +138,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
             return false;
         }
+
         public static void RefreshSubcollisionObjects(IElement element, CollisionRelationshipViewModel viewModel)
         {
             var firstNos = element.GetNamedObject(viewModel.FirstCollisionName);
@@ -400,19 +400,34 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
         private static void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var viewModel = sender as CollisionRelationshipViewModel;
+
+            ////////////////Early Out///////////////////
+            if (viewModel.IsUpdatingFromGlueObject)
+            {
+                return;
+            }
+
+            //////////////End Early Out/////////////////
+
             var namedObject = GlueState.Self.CurrentNamedObjectSave;
 
             var element = GlueState.Self.CurrentElement;
+            var nos = viewModel.GlueObject as NamedObjectSave;
             switch (e.PropertyName)
             {
                 case nameof(viewModel.FirstCollisionName):
                 case nameof(viewModel.SecondCollisionName):
-                    var nos = viewModel.GlueObject as NamedObjectSave;
                     CollisionRelationshipViewModelController.TryFixSourceClassType(nos);
 
                     RefreshSubcollisionObjects(element, viewModel);
 
                     TryApplyAutoName(element, namedObject);
+
+                    if(TryFixMassesForTileShapeCollisionRelationship(element, nos))
+                    {
+                        viewModel.UpdateFromGlueObject();
+                    }
+
                     break;
                 case nameof(viewModel.FirstSubCollisionSelectedItem):
                     TryApplyAutoName(element, namedObject);
@@ -424,6 +439,13 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                     break;
                 case nameof(viewModel.IsAutoNameEnabled):
                     TryApplyAutoName(element, namedObject);
+                    break;
+
+                case nameof(viewModel.CollisionType):
+                    if (TryFixMassesForTileShapeCollisionRelationship(element, nos))
+                    {
+                        viewModel.UpdateFromGlueObject();
+                    }
                     break;
             }
         }
@@ -464,6 +486,48 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 }
             }
+        }
+
+        public static bool TryFixMassesForTileShapeCollisionRelationship(IElement selectedElement, NamedObjectSave collisionRelationshipNos)
+        {
+            // at this point "inverting" has already happened so check if the 2nd object is a tile shape collection
+
+            var secondName = collisionRelationshipNos.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.SecondCollisionName));
+            var secondObjectInstance = selectedElement.GetNamedObjectRecursively(secondName);
+
+            var didMakeChange = false;
+
+            if (secondObjectInstance?.SourceClassType?.Contains("TileShapeCollection") == true)
+            {
+                // set the first object's mass to 1, the 2nd object's mass to 1:
+                var shouldSetTo0 =
+                    collisionRelationshipNos.Properties.Any(item => item.Name == nameof(CollisionRelationshipViewModel.FirstCollisionMass)) == false ||
+                    collisionRelationshipNos.Properties.GetValue<float>(nameof(CollisionRelationshipViewModel.FirstCollisionMass)) != 0;
+
+                if (shouldSetTo0)
+                {
+                    collisionRelationshipNos.Properties.SetValuePersistIfDefault(nameof(CollisionRelationshipViewModel.FirstCollisionMass), 0f);
+                    didMakeChange = true;
+                }
+
+                var shouldSetTo1 =
+                    collisionRelationshipNos.Properties.Any(item => item.Name == nameof(CollisionRelationshipViewModel.SecondCollisionMass)) == false ||
+                    collisionRelationshipNos.Properties.GetValue<float>(nameof(CollisionRelationshipViewModel.SecondCollisionMass)) != 1;
+
+                if (shouldSetTo1)
+                {
+                    collisionRelationshipNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionMass), 1.0f);
+                    didMakeChange = true;
+                }
+            }
+
+            if(didMakeChange)
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+                GlueCommands.Self.GluxCommands.SaveGluxTask();
+            }
+
+            return didMakeChange;
         }
 
         public static string GetAutoName(NamedObjectSave namedObject)

@@ -25,6 +25,8 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
     public class CollisionRelationshipViewModel :
         PropertyListContainerViewModel
     {
+        #region Fields/Properties
+
         public const string EntireObject = "<Entire Object>";
 
         [SyncedProperty]
@@ -49,8 +51,8 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         public ObservableCollection<string> SecondCollisionItemSource
         {
-            get { return Get<ObservableCollection<string>>(); }
-            set { Set(value); }
+            get => Get<ObservableCollection<string>>();
+            set => Set(value);
         }
 
         public bool FirstSubCollisionEnabled
@@ -91,8 +93,6 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             get { return Get<ObservableCollection<string>>(); }
             set { Set(value); }
         }
-
-
 
 
         [SyncedProperty]
@@ -294,6 +294,8 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             }
         }
 
+        #endregion
+
         public CollisionRelationshipViewModel()
         {
             FirstCollisionItemSource = new ObservableCollection<string>();
@@ -303,6 +305,10 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             SecondSubCollisionItemsSource = new ObservableCollection<string>();
         }
 
-
+        public void UpdateMassesForTileShapeCollectionCollision()
+        {
+            this.FirstCollisionMass = 0;
+            this.SecondCollisionMass = 1;
+        }
     }
 }

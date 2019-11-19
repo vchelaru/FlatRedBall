@@ -24,6 +24,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void GenerateGlobalContentCode();
         void GenerateGlobalContentCodeTask();
 
+        void GenerateElementAndReferencedObjectCodeTask(IElement element);
+
+
         string GetNamespaceForElement(IElement element);
 
         void GenerateCurrentCsvCode();

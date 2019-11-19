@@ -180,7 +180,8 @@ namespace FlatRedBall.Glue.Managers
 
                 BaseElementTreeNode treeNodeForElementMovedInto = GlueState.Self.Find.ElementTreeNode(elementMovingInto);
                 treeNodeForElementMovedInto.UpdateReferencedTreeNodes();
-                CodeGeneratorIElement.GenerateElementDerivedAndReferenced(elementMovingInto);
+                GlueCommands.Self.GenerateCodeCommands
+                    .GenerateElementAndReferencedObjectCodeTask(elementMovingInto);
 
                 MessageBox.Show("Copied\n" + movingNos + "\n\nto\n" + clonedNos);
             }
@@ -523,7 +524,8 @@ namespace FlatRedBall.Glue.Managers
                 if (result == DialogResult.OK)
                 {
                     blueprintEntity.ImplementsIVisible = true;
-                    CodeGeneratorIElement.GenerateElementDerivedAndReferenced(blueprintEntity);
+                    GlueCommands.Self.GenerateCodeCommands
+                        .GenerateElementAndReferencedObjectCodeTask(blueprintEntity);
                 }
 
             }

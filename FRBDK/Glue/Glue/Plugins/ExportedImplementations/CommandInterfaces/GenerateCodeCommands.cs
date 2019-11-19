@@ -11,6 +11,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using EditorObjects.IoC;
 using FlatRedBall.Glue.CodeGeneration.Game1;
 using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Elements;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -63,6 +64,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void GenerateElementCode(IElement element)
         {
             CodeGeneratorIElement.GenerateElementAndDerivedCode(element);
+        }
+
+        public void GenerateElementAndReferencedObjectCodeTask(IElement element)
+        {
+            if (element != null)
+            {
+                GenerateElementCodeTask(element);
+
+                var namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(element);
+
+                foreach (var nos in namedObjects)
+                {
+                    var nosElement = ObjectFinder.Self.GetElementContaining(nos);
+                    GenerateElementCodeTask(element);
+                }
+            }
         }
 
         public void GenerateElementCodeTask(IElement element)

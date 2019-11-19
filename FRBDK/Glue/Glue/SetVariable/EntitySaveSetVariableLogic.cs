@@ -480,7 +480,8 @@ namespace FlatRedBall.Glue.SetVariable
                             {
                                 nosEntitySave.ImplementsIVisible = true;
 
-                                CodeGeneratorIElement.GenerateElementDerivedAndReferenced(nosEntitySave);
+                                GlueCommands.Self.GenerateCodeCommands
+                                    .GenerateElementAndReferencedObjectCodeTask(nosEntitySave);
                             }
                             else if (result == DialogResult.No)
                             {
