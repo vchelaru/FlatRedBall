@@ -201,7 +201,7 @@ namespace TopDownPlugin.CodeGenerators
                     mCurrentMovement.AccelerationTime,
                     accelerationRatio);
 
-                if(secondsToTake == 0)
+                if(!mCurrentMovement.UsesAcceleration || secondsToTake == 0)
                 {
                     this.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
                     this.Velocity = desiredVelocity;

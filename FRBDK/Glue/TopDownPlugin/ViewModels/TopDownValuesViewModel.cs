@@ -201,6 +201,7 @@ namespace TopDownPlugin.ViewModels
             toReturn.AccelerationTime = this.AccelerationTime;
             toReturn.DecelerationTime = this.DecelerationTime;
             toReturn.UpdateDirectionFromVelocity = this.UpdateDirectionFromVelocity;
+            toReturn.UsesAcceleration = this.UsesAcceleration;
 
             foreach(var kvp in AdditionalProperties)
             {
