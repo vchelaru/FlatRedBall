@@ -63,7 +63,9 @@ namespace OfficialPlugins.Compiler.Views
             }
             else
             {
-                ShowMessageAboutGenerateGame1();
+                RestartGameClicked?.Invoke(this, null);
+
+                //ShowMessageAboutGenerateGame1();
             }
         }
 

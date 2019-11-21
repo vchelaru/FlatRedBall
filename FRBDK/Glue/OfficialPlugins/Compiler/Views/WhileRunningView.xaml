@@ -70,7 +70,7 @@
             </Button.ToolTip>
         </Button>
 
-        <Button Margin="0,0,6,0" Click="HandleRestartGameClicked">
+        <!--<Button Margin="0,0,6,0" Click="HandleRestartGameClicked">
             <Image Source="../icons/RestartGame.png"></Image>
             <Button.ToolTip>
                 <ToolTip>
@@ -80,7 +80,7 @@
                     </StackPanel>
                 </ToolTip>
             </Button.ToolTip>
-        </Button>
+        </Button>-->
 
         <Button Margin="0,0,6,0" Click="HandleRestartGameCurrentScreenClicked"
                 Visibility="{Binding GlueControlDependentVisibility}">
@@ -89,7 +89,7 @@
                 <ToolTip>
                     <StackPanel>
                         <TextBlock FontWeight="Bold">Restart Game on Current Screen</TextBlock>
-                        <TextBlock>Kills, builds, and runs the game - restarts the current screen</TextBlock>
+                        <TextBlock>Kills, builds, and runs the game. Game restarts on the current screen if Glue is connected to the game.</TextBlock>
                     </StackPanel>
                 </ToolTip>
             </Button.ToolTip>

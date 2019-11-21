@@ -801,7 +801,7 @@ namespace FlatRedBall.Glue.SetVariable
                 // If this is a layer, see if any other NOS's use this as their Layer
                 if (namedObjectSave.IsLayer)
                 {
-                    List<NamedObjectSave> namedObjectList = EditorLogic.CurrentElement.NamedObjects;
+                    List<NamedObjectSave> namedObjectList = GlueState.Self.CurrentElement.NamedObjects;
 
                     string oldLayerName = (string)oldValue;
 

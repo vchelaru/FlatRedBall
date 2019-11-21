@@ -792,7 +792,7 @@ namespace FlatRedBall.Glue.FormHelpers
         static void mFillValuesFromVariables_Click(object sender, EventArgs e)
         {
             StateSave stateSave = EditorLogic.CurrentStateSave;
-            IElement element = EditorLogic.CurrentElement;
+            IElement element = GlueState.Self.CurrentElement;
 
             DialogResult result = MessageBox.Show(
                 "Are you sure you want to fill all values in the " +
@@ -1057,15 +1057,15 @@ namespace FlatRedBall.Glue.FormHelpers
             }
             else if (EditorLogic.CurrentNamedObject != null)
             {
-                erlw.PopulateWithReferencesTo(EditorLogic.CurrentNamedObject, EditorLogic.CurrentElement);
+                erlw.PopulateWithReferencesTo(EditorLogic.CurrentNamedObject, GlueState.Self.CurrentElement);
             }
             else if (EditorLogic.CurrentCustomVariable != null)
             {
-                erlw.PopulateWithReferencesTo(EditorLogic.CurrentCustomVariable, EditorLogic.CurrentElement);
+                erlw.PopulateWithReferencesTo(EditorLogic.CurrentCustomVariable, GlueState.Self.CurrentElement);
             }
             else
             {
-                erlw.PopulateWithReferencesToElement(EditorLogic.CurrentElement);
+                erlw.PopulateWithReferencesToElement(GlueState.Self.CurrentElement);
             }
         }
 
@@ -1186,7 +1186,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         else if (EditorLogic.CurrentStateSaveCategory != null)
                         {
-                            EditorLogic.CurrentElement.StateCategoryList.Remove(EditorLogic.CurrentStateSaveCategory);
+                            GlueState.Self.CurrentElement.StateCategoryList.Remove(EditorLogic.CurrentStateSaveCategory);
 
                             EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
 

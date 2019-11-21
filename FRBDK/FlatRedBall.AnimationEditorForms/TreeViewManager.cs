@@ -505,10 +505,6 @@ namespace FlatRedBall.AnimationEditorForms
             MainControl.Self.LoadAnimationChain(fileName);
         }
 
-
-
-
-
         internal void HandleKeyPress(KeyPressEventArgs e)
         {
             #region Copy ( (char)3 )

@@ -6,6 +6,7 @@ using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -22,7 +23,8 @@ namespace FlatRedBall.Glue.SetVariable
             if (changedMember == "Name")
             {
                 string whyItIsntValid;
-                if (!NameVerifier.IsStateNameValid(stateSave.Name, EditorLogic.CurrentElement, EditorLogic.CurrentStateSaveCategory, EditorLogic.CurrentStateSave, out whyItIsntValid))
+                if (!NameVerifier.IsStateNameValid(stateSave.Name, 
+                    GlueState.Self.CurrentElement, EditorLogic.CurrentStateSaveCategory, EditorLogic.CurrentStateSave, out whyItIsntValid))
                 {
                     stateSave.Name = (string)oldValue;
                     updateTreeView = false;

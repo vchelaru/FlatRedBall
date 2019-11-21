@@ -107,7 +107,7 @@ namespace OfficialPlugins.Compiler
         private void HandleGluxUnloaded()
         {
             viewModel.CompileContentButtonVisibility = Visibility.Collapsed;
-
+            viewModel.HasLoadedGlux = false;
         }
 
         private CompilerSettingsModel LoadOrCreateCompilerSettings()
@@ -143,6 +143,8 @@ namespace OfficialPlugins.Compiler
 
             viewModel.IsGluxVersionNewEnoughForGlueControlGeneration = 
                 GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AddedGeneratedGame1;
+            viewModel.HasLoadedGlux = true;
+
             game1GlueControlGenerator.PortNumber = model.PortNumber;
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode;
             RefreshManager.Self.PortNumber = model.PortNumber;
@@ -288,6 +290,9 @@ namespace OfficialPlugins.Compiler
                     {
                         // no big deal if it fails
                     }
+
+                    RefreshManager.Self.StopAndRestartTask($"{propertyName} changed");
+
                     break;
                 case nameof(CompilerViewModel.CurrentGameSpeed):
                     var command = $"SetSpeed:{viewModel.CurrentGameSpeed.Substring(0, viewModel.CurrentGameSpeed.Length-1)}";

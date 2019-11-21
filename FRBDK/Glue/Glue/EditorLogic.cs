@@ -143,6 +143,7 @@ namespace FlatRedBall.Glue
             }
         }
 
+        [Obsolete("Use GlueState.CurrentElement")]
 		public static IElement CurrentElement
 		{
 			get

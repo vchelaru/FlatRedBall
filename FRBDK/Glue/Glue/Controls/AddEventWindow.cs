@@ -346,7 +346,7 @@ namespace FlatRedBall.Glue.Controls
             if (nos != null)
             {
 
-                availableEvents = ExposedEventManager.GetExposableEventsFor(nos, EditorLogic.CurrentElement);
+                availableEvents = ExposedEventManager.GetExposableEventsFor(nos, GlueState.Self.CurrentElement);
             }
 
             if (availableEvents != null)
@@ -376,7 +376,7 @@ namespace FlatRedBall.Glue.Controls
         {
             string nameOfNamedObject = TunnelingObjectComboBox.Text;
 
-            NamedObjectSave nos = EditorLogic.CurrentElement.GetNamedObjectRecursively(nameOfNamedObject);
+            NamedObjectSave nos = GlueState.Self.CurrentElement.GetNamedObjectRecursively(nameOfNamedObject);
             FillTunnelableEventsFor(nos);
         }
 

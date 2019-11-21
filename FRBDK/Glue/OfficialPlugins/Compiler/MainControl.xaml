@@ -13,7 +13,7 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
-        <WrapPanel Orientation="Horizontal">
+        <WrapPanel Orientation="Horizontal" Visibility="{Binding EntireUiVisibility}">
 
             <views:WhileStoppedView
                 Visibility="{Binding WhileStoppedViewVisibility}"

@@ -125,7 +125,7 @@ namespace FlatRedBall.Glue.SetVariable
                 updateTreeView = false;
                 // If this is made IsSharedStatic, that means that the file will not be added to managers
                 // We should see if any named objects reference this and notify the user
-                List<NamedObjectSave> namedObjects = EditorLogic.CurrentElement.NamedObjects;
+                List<NamedObjectSave> namedObjects = GlueState.Self.CurrentElement.NamedObjects;
 
                 foreach (NamedObjectSave namedObject in namedObjects)
                 {

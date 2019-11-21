@@ -73,7 +73,8 @@ namespace FlatRedBall.Glue.SetVariable
             else if (EditorLogic.CurrentStateSave != null)
             {
                 Container.Get<StateSaveSetVariableLogic>().ReactToStateSaveChangedValue(
-                    EditorLogic.CurrentStateSave, EditorLogic.CurrentStateSaveCategory, variableNameAsDisplayed, oldValue, EditorLogic.CurrentElement, ref updateTreeView);
+                    EditorLogic.CurrentStateSave, EditorLogic.CurrentStateSaveCategory, variableNameAsDisplayed, oldValue,
+                    GlueState.Self.CurrentElement, ref updateTreeView);
 
 
             }
@@ -85,7 +86,8 @@ namespace FlatRedBall.Glue.SetVariable
             else if (EditorLogic.CurrentStateSaveCategory != null)
             {
                 Container.Get<StateSaveCategorySetVariableLogic>().ReactToStateSaveCategoryChangedValue(
-                    EditorLogic.CurrentStateSaveCategory, variableNameAsDisplayed, oldValue, EditorLogic.CurrentElement, ref updateTreeView);
+                    EditorLogic.CurrentStateSaveCategory, variableNameAsDisplayed, oldValue,
+                    GlueState.Self.CurrentElement, ref updateTreeView);
 
             }
 
@@ -119,10 +121,10 @@ namespace FlatRedBall.Glue.SetVariable
                     variableNameAsDisplayed, EditorLogic.CurrentCustomVariable, oldValue);
             }
             else if (mPropertyGrid.SelectedObject != null && mPropertyGrid.SelectedObject is PropertyGridDisplayer &&
-                EditorLogic.CurrentElement != null && EditorLogic.CurrentElement.GetCustomVariableRecursively(variableName) != null)
+                GlueState.Self.CurrentElement != null && GlueState.Self.CurrentElement.GetCustomVariableRecursively(variableName) != null)
             {
                 Container.Get<CustomVariableSaveSetVariableLogic>().ReactToCustomVariableChangedValue(
-                    variableName, EditorLogic.CurrentElement.GetCustomVariableRecursively(variableName), oldValue);
+                    variableName, GlueState.Self.CurrentElement.GetCustomVariableRecursively(variableName), oldValue);
             }
             #endregion
 
@@ -157,10 +159,10 @@ namespace FlatRedBall.Glue.SetVariable
 
             PluginManager.ReactToChangedProperty(variableNameAsDisplayed, oldValue);
 
-            if (EditorLogic.CurrentElement != null)
+            if (GlueState.Self.CurrentElement != null)
             {
                 GlueCommands.Self.GenerateCodeCommands
-                    .GenerateElementAndReferencedObjectCodeTask(EditorLogic.CurrentElement);
+                    .GenerateElementAndReferencedObjectCodeTask(GlueState.Self.CurrentElement);
             }
             else if (EditorLogic.CurrentReferencedFile != null)
             {

@@ -11,6 +11,17 @@ namespace OfficialPlugins.Compiler.ViewModels
 {
     public class CompilerViewModel : ViewModel
     {
+        #region Fields/Properties
+
+        public bool HasLoadedGlux
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(HasLoadedGlux))]
+        public Visibility EntireUiVisibility => HasLoadedGlux ? Visibility.Visible : Visibility.Collapsed;
+
         public bool AutoBuildContent { get; set; }
 
         public bool IsGluxVersionNewEnoughForGlueControlGeneration
@@ -54,7 +65,9 @@ namespace OfficialPlugins.Compiler.ViewModels
         [DependsOn(nameof(IsRunning))]
         [DependsOn(nameof(IsCompiling))]
         [DependsOn(nameof(IsWaitingForGameToStart))]
-        public bool IsToolbarPlayButtonEnabled => !IsRunning && !IsCompiling && !IsWaitingForGameToStart;
+        [DependsOn(nameof(HasLoadedGlux))]
+        public bool IsToolbarPlayButtonEnabled => !IsRunning && !IsCompiling && !IsWaitingForGameToStart &&
+            HasLoadedGlux;
 
         [DependsOn(nameof(IsHotReloadEnabled))]
         public Visibility ReloadVisibility => IsHotReloadEnabled ?
@@ -67,11 +80,12 @@ namespace OfficialPlugins.Compiler.ViewModels
         [DependsOn(nameof(IsRunning))]
         [DependsOn(nameof(IsCompiling))]
         [DependsOn(nameof(IsWaitingForGameToStart))]
+        [DependsOn(nameof(HasLoadedGlux))]
         public Visibility WhileStoppedViewVisibility
         {
             get
             {
-                if (IsRunning || IsCompiling || IsWaitingForGameToStart)
+                if (IsRunning || IsCompiling || IsWaitingForGameToStart || HasLoadedGlux == false)
                 {
                     return Visibility.Collapsed;
                 }
@@ -167,10 +181,18 @@ namespace OfficialPlugins.Compiler.ViewModels
             set => Set(value);
         }
 
+        #endregion
+
+        #region Constructor
+
         public CompilerViewModel()
         {
             CurrentGameSpeed = "100%";
         }
+
+        #endregion
+
+        #region To/From Model
 
         internal void SetFrom(CompilerSettingsModel model)
         {
@@ -185,5 +207,7 @@ namespace OfficialPlugins.Compiler.ViewModels
             toReturn.PortNumber = this.PortNumber;
             return toReturn;
         }
+
+        #endregion
     }
 }

@@ -84,7 +84,7 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if(ShouldRestartOnChange)
             {
-                StopAndRestartTask();
+                StopAndRestartTask($"{arg1} created");
             }
         }
 
@@ -107,7 +107,7 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if (ShouldRestartOnChange)
             {
-                StopAndRestartTask();
+                StopAndRestartTask($"{arg2} changed");
             }
         }
 
@@ -130,7 +130,7 @@ namespace OfficialPlugins.Compiler.Managers
         const string stopRestartDetails =
                    "Restarting due to Glue or file change";
 
-        private void StopAndRestartTask(string reason = null)
+        public void StopAndRestartTask(string reason)
         {
             var runner = Runner.Self;
             if (runner.DidRunnerStartProcess || (ViewModel.IsRunning == false && failedToRebuildAndRestart))
