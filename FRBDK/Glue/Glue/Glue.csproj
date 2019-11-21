@@ -1308,7 +1308,7 @@
       <Name>FlatRedBall.SpecializedXnaControls</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
-      <Project>{E1D670B6-AD42-4B84-AFF8-D568097BE03D}</Project>
+      <Project>{e1d670b6-ad42-4b84-aff8-d568097be03d}</Project>
       <Name>EditorObjectsXna4</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GlueView\GlueView\InteractiveInterface\InteractiveInterface.csproj">

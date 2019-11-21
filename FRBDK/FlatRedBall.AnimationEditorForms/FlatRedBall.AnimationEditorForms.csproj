@@ -274,10 +274,6 @@
       <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
       <Name>FlatRedBallXna4</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Gum\ContentLibrary\ContentLibrary.csproj">
-      <Project>{6e3deca0-b292-4fba-b585-7460a329de2e}</Project>
-      <Name>ContentLibrary</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Gum\InputLibrary\InputLibrary.csproj">
       <Project>{938d9a00-8529-4ce8-9077-e0a3994a73ea}</Project>
       <Name>InputLibrary</Name>
