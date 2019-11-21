@@ -105,7 +105,7 @@ namespace FlatRedBall.Glue.Controls
                 }
                 else if (radTunnelVariable.Checked)
                 {
-                    NamedObjectSave nos = EditorLogic.CurrentElement.GetNamedObjectRecursively(TunnelingObjectComboBox.Text);
+                    NamedObjectSave nos = GlueState.Self.CurrentElement.GetNamedObjectRecursively(TunnelingObjectComboBox.Text);
                     string type = ExposedVariableManager.GetMemberTypeForNamedObject(nos, this.TunnelingVariableComboBox.Text);
 
                     return TypeManager.ConvertToCommonType(type);
@@ -355,7 +355,7 @@ namespace FlatRedBall.Glue.Controls
         {
             string nameOfNamedObject = TunnelingObjectComboBox.Text;
 
-            NamedObjectSave nos = EditorLogic.CurrentElement.GetNamedObjectRecursively(nameOfNamedObject);
+            NamedObjectSave nos = GlueState.Self.CurrentElement.GetNamedObjectRecursively(nameOfNamedObject);
 
             PopulateTunnelingVariables(nameOfNamedObject, nos);
         }
@@ -369,7 +369,7 @@ namespace FlatRedBall.Glue.Controls
 
 
                 // We should remove any variables that are already tunneled into
-                foreach (CustomVariable customVariable in EditorLogic.CurrentElement.CustomVariables)
+                foreach (CustomVariable customVariable in GlueState.Self.CurrentElement.CustomVariables)
                 {
                     if (customVariable.SourceObject == nameOfNamedObject)
                     {

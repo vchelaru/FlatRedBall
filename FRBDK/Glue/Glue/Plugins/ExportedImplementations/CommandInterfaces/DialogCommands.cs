@@ -242,8 +242,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                                 GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(tiw.Result);
 
                             GlueState.Self.CurrentElement = screen;
-
+                            var treeNode = EditorLogic.CurrentScreenTreeNode;
+                            if(treeNode != null)
+                            {
+                                treeNode.Expand();
+                            }
                         }
+
                     }
                 }
             }

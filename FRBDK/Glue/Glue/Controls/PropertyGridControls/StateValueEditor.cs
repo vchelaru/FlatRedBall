@@ -12,6 +12,7 @@ using System.Collections;
 using System.Reflection;
 using System.IO;
 using FlatRedBall.Glue.FormHelpers.PropertyGrids;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 
 #if GLUE
@@ -156,13 +157,13 @@ namespace FlatRedBall.Glue.Controls.PropertyGridControls
 
                     string variableName = (string)info.GetValue(e.Context, null);
 
-                    CustomVariable variable = EditorLogic.CurrentElement.GetCustomVariable(variableName);
+                    CustomVariable variable = GlueState.Self.CurrentElement.GetCustomVariable(variableName);
                     if (variable != null)
                     {
 
 
                         InterpolationCharacteristic interpolationCharacteristic =
-                            CustomVariableHelper.GetInterpolationCharacteristic(variable, EditorLogic.CurrentElement);
+                            CustomVariableHelper.GetInterpolationCharacteristic(variable, GlueState.Self.CurrentElement);
 
                         Image bitmap = null;
                         if (interpolationCharacteristic == InterpolationCharacteristic.CanInterpolate ||
