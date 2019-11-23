@@ -207,50 +207,23 @@ namespace FlatRedBall
 
         public static GraphicsDevice GraphicsDevice
         {
-#if FRB_MDX
-            get { return Renderer.GraphicsDevice; }
-#else
             get { return Renderer.Graphics.GraphicsDevice; }
-#endif
         }
 
         public static bool IsWindowsCursorVisible
         {
             get
             {
-#if FRB_MDX
-                return mWindowsCursorVisible;
-#else
                 return (mGame == null) ? true : mGame.IsMouseVisible;
-#endif
             }
             set
             {
-#if FRB_MDX
-                if (mWindowsCursorVisible == true && value == false)
-                {
-                    // It is visisble, but the user wants to hide it.
-                    System.Windows.Forms.Cursor.Hide();
-                    mWindowsCursorVisible = false;
-
-                    InputManager.Mouse.ReacquireExclusive();
-                }
-                else if (mWindowsCursorVisible == false && value == true)
-                {
-                    // It is invisible and the user wants to show it.
-                    System.Windows.Forms.Cursor.Show();
-                    mWindowsCursorVisible = true;
-
-                    InputManager.Mouse.ReacquireNonExclusive();
-                }
-#else
                 if (mGame != null) mGame.IsMouseVisible = value;
-#endif
 
             }
         }
 
-#if !XBOX360 && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
         public static System.Windows.Forms.Control Owner
         {
             get { return mOwner; }
