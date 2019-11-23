@@ -13,7 +13,6 @@ namespace TopDownPlugin.ViewModels
 {
     public class TopDownEntityViewModel : ViewModel
     {
-        public ObservableCollection<TopDownValuesViewModel> TopDownValues { get; private set; }
 
         public bool IsTopDown
         {
@@ -36,6 +35,34 @@ namespace TopDownPlugin.ViewModels
                 }
             }
         }
+
+
+        public List<string> LeftSideItems { get; private set; } = new List<string>
+        {
+            "Movement Values",
+            "Animation"
+        };
+
+        public int SelectedLeftSideIndex
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(SelectedLeftSideIndex))]
+        public Visibility MovementValueVisibility => 
+            SelectedLeftSideIndex == 0 ? 
+                Visibility.Visible : 
+                Visibility.Collapsed;
+
+        [DependsOn(nameof(SelectedLeftSideIndex))]
+        public Visibility AnimationVisibility =>
+            SelectedLeftSideIndex == 1 ?
+                Visibility.Visible :
+                Visibility.Collapsed;
+
+
+        public ObservableCollection<TopDownValuesViewModel> TopDownValues { get; private set; }
 
         public TopDownEntityViewModel()
         {

@@ -11,31 +11,78 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <CheckBox IsChecked="{Binding IsTopDown}" 
                   VerticalContentAlignment="Center">Is Top-Down Entity</CheckBox>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Visibility="{Binding TopDownUiVisibility}" Grid.Row="1" >
-            <ItemsControl ItemsSource="{Binding TopDownValues}" HorizontalContentAlignment="Stretch">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <local:TopDownValuesView XClick="TopDownValuesXClick"></local:TopDownValuesView>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
 
-        <Grid Visibility="{Binding TopDownUiVisibility}" Grid.Row="2">
-            <!--<Button Click="AddPlatformerValuesClick" Grid.Column="0" Height="28">Add Control Values</Button>
-            <Button Click="AddPlatformerValuesClick" Grid.Column="1" Height="28" Width="15">v</Button>-->
-            <xctk:SplitButton Content="Add Control Values" Click="AddDefaultValuesClick" x:Name="AddControlButtonInstance">
-                <xctk:SplitButton.DropDownContent>
-                    <StackPanel>
-                        <Button Click="AddDefaultValuesClick">Default Values</Button>
-                    </StackPanel>
-                </xctk:SplitButton.DropDownContent>
-            </xctk:SplitButton>
+        <Grid Grid.Row="1" Visibility="{Binding TopDownUiVisibility}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"></ColumnDefinition>
+                <ColumnDefinition Width="5"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <ListBox 
+                ItemsSource="{Binding LeftSideItems}"
+                SelectedIndex="{Binding SelectedLeftSideIndex}"
+                >
+
+                <!--From https://blog.jsinh.in/change-background-color-of-selected-listboxitem-listbox-in-wpf/#.XdjCiehKiUk-->
+                <ListBox.Resources>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                    <Border x:Name="Bd"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="true">
+                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="Selector.IsSelectionActive"
+                                            Value="False" />
+                                                <Condition Property="IsSelected"
+                                            Value="True" />
+                                            </MultiTrigger.Conditions>
+                                            <Setter Property="Background"
+                                    TargetName="Bd"
+                                    Value="DarkOrange" />
+                                        </MultiTrigger>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="Selector.IsSelectionActive"
+                                            Value="True" />
+                                                <Condition Property="IsSelected"
+                                            Value="True" />
+                                            </MultiTrigger.Conditions>
+                                            <Setter Property="Background"
+                                    TargetName="Bd"
+                                    Value="OrangeRed" />
+                                        </MultiTrigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.Resources>
+
+            </ListBox>
+
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+
+            <local:MovementValuesView  Visibility="{Binding MovementValueVisibility}" Grid.Column="2">
+            </local:MovementValuesView>
+
+            <TextBlock Visibility="{Binding AnimationVisibility}" Grid.Column="2">Animations and stuffs!</TextBlock>
         </Grid>
+        
 
     </Grid>
 </UserControl>

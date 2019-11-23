@@ -101,6 +101,9 @@
     <Compile Include="Views\MainEntityView.xaml.cs">
       <DependentUpon>MainEntityView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\MovementValuesView.xaml.cs">
+      <DependentUpon>MovementValuesView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TopDownValuesView.xaml.cs">
       <DependentUpon>TopDownValuesView.xaml</DependentUpon>
     </Compile>
@@ -133,6 +136,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\MainEntityView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MovementValuesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
