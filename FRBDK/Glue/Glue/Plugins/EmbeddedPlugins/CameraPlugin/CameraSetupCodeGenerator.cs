@@ -10,6 +10,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System.Globalization;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin;
+using FlatRedBall.Glue.IO;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -27,10 +28,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                     contents = FileManager.FromFileText(GlueState.Self.CurrentGlueProjectDirectory + gameFileName));
             }
 
-            if(!string.IsNullOrEmpty(contents))
-            { 
+            if (!string.IsNullOrEmpty(contents))
+            {
 
-                string whatToLookFor =     "CameraSetup.SetupCamera(SpriteManager.Camera, graphics";
+                string whatToLookFor = "CameraSetup.SetupCamera(SpriteManager.Camera, graphics";
 
                 string lineToReplaceWith = "CameraSetup.SetupCamera(SpriteManager.Camera, graphics);";
 
@@ -65,7 +66,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     int index = CodeParser.GetIndexAfterBaseInitialize(contents);
 
-                    if(index == -1)
+                    if (index == -1)
                     {
                         GlueCommands.Self.PrintError("Could not find code in Game1.cs to add camera setup");
                     }
@@ -76,8 +77,24 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 }
 
-                GlueCommands.Self.TryMultipleTimes(() =>
-                    FileManager.SaveText(contents, FileManager.RelativeDirectory + gameFileName), 5);
+                // load to see if it's changed, and only change it if so:
+                var absoluteFile = new FilePath( FileManager.RelativeDirectory + gameFileName);
+
+                var shouldSave = absoluteFile.Exists() == false;
+
+                if (!shouldSave)
+                {
+                    var existingText = FileManager.FromFileText(absoluteFile.FullPath);
+                    shouldSave = existingText != contents;
+                }
+
+                if(shouldSave)
+                {
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                    {
+                        FileManager.SaveText(contents, absoluteFile.FullPath);
+                    }, 5);
+                }
             }
         }
 
