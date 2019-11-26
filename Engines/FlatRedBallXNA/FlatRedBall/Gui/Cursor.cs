@@ -2504,6 +2504,7 @@ namespace FlatRedBall.Gui
             SecondaryDown = false;
             SecondaryPush = false;
             SecondaryClick = false;
+            SecondaryDoubleClick = false;
 
             MiddleDown = false;
             MiddlePush = false;
