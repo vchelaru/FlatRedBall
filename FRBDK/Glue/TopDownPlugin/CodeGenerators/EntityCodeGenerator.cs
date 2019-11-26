@@ -36,7 +36,12 @@ namespace TopDownPlugin.CodeGenerators
             codeBlock.Line("/// </summary>");
             codeBlock.Property("public DataTypes.TopDownValues", "CurrentMovement")
                 .Get()
-                    .Line("return mCurrentMovement;");
+                    .Line("return mCurrentMovement;").End()
+                .Set("private")
+                    .Line("mCurrentMovement = value;")
+                    .If("value != null")
+                        .Line("mTopDownAnimationLayer.CurrentAnimationSet = AnimationSets[value.Name];");
+
 
             codeBlock.Property("public FlatRedBall.Input.IInputDevice", "InputDevice")
                 .Line("get;")
@@ -68,6 +73,9 @@ namespace TopDownPlugin.CodeGenerators
             codeBlock.Line("/// </summary>");
             codeBlock.AutoProperty("public bool", "InputEnabled");
 
+            codeBlock.Line("TopDown.DirectionBasedAnimationLayer mTopDownAnimationLayer");
+
+
             codeBlock.Line("#endregion");
 
             return codeBlock;
@@ -93,6 +101,8 @@ namespace TopDownPlugin.CodeGenerators
                 ifBlock.Line("mCurrentMovement = TopDownValues.Values.FirstOrDefault();");
             }
             codeBlock.Line("PossibleDirections = PossibleDirections.FourWay;");
+
+            codeBlock.Line("mTopDownAnimationLayer = new TopDown.DirectionBasedAnimationLayer();");
 
             return codeBlock;
         }

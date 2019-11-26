@@ -159,7 +159,6 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Controls the visibility of the NodeNetwork.  This is usually only set to 
         /// true for debugging and testing purposes.  
@@ -169,7 +168,6 @@ namespace FlatRedBall.AI.Pathfinding
         /// NodeNetwork.  Setting it back to false destroys all objects used for visible
         /// representation.
         /// </remarks>
-        #endregion
         public bool Visible
         {
             get { return mVisible; }

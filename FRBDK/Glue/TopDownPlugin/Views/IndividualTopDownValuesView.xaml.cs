@@ -18,15 +18,15 @@ using WpfDataUi.DataTypes;
 namespace TopDownPlugin.Views
 {
     /// <summary>
-    /// Interaction logic for TopDownValuesView.xaml
+    /// Interaction logic for IndividualTopDownValuesView.xaml
     /// </summary>
-    public partial class TopDownValuesView : UserControl
+    public partial class IndividualTopDownValuesView : UserControl
     {
         public event RoutedEventHandler XClick;
 
         TopDownValuesViewModel ViewModel => DataContext as TopDownValuesViewModel;
 
-        public TopDownValuesView()
+        public IndividualTopDownValuesView()
         {
             InitializeComponent();
 

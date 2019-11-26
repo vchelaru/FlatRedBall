@@ -77,8 +77,8 @@
 
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
-            <local:MovementValuesView  Visibility="{Binding MovementValueVisibility}" Grid.Column="2">
-            </local:MovementValuesView>
+            <local:AllTopDownValuesView  Visibility="{Binding MovementValueVisibility}" Grid.Column="2">
+            </local:AllTopDownValuesView>
 
             <TextBlock Visibility="{Binding AnimationVisibility}" Grid.Column="2">Animations and stuffs!</TextBlock>
         </Grid>

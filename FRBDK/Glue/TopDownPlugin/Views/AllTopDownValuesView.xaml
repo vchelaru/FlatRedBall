@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="TopDownPlugin.Views.MovementValuesView"
+﻿<UserControl x:Class="TopDownPlugin.Views.AllTopDownValuesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -17,7 +17,7 @@
             <ItemsControl ItemsSource="{Binding TopDownValues}" HorizontalContentAlignment="Stretch">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <local:TopDownValuesView XClick="TopDownValuesXClick"></local:TopDownValuesView>
+                        <local:IndividualTopDownValuesView XClick="TopDownValuesXClick"></local:IndividualTopDownValuesView>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

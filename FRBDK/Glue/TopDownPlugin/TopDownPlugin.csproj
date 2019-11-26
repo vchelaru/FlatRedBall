@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeGenerators\AiCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\AnimationCodeGenerator.cs" />
     <Compile Include="CodeGenerators\EntityCodeGenerator.cs" />
     <Compile Include="CodeGenerators\EnumFileGenerator.cs" />
     <Compile Include="CodeGenerators\InterfacesFileGenerator.cs" />
@@ -98,14 +99,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\TopDownEntityViewModel.cs" />
     <Compile Include="ViewModels\TopDownValuesViewModel.cs" />
+    <Compile Include="Views\EightWayAnimationControl.xaml.cs">
+      <DependentUpon>EightWayAnimationControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainEntityView.xaml.cs">
       <DependentUpon>MainEntityView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\MovementValuesView.xaml.cs">
-      <DependentUpon>MovementValuesView.xaml</DependentUpon>
+    <Compile Include="Views\AllTopDownValuesView.xaml.cs">
+      <DependentUpon>AllTopDownValuesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\TopDownValuesView.xaml.cs">
-      <DependentUpon>TopDownValuesView.xaml</DependentUpon>
+    <Compile Include="Views\IndividualTopDownValuesView.xaml.cs">
+      <DependentUpon>IndividualTopDownValuesView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -135,15 +139,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\EightWayAnimationControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainEntityView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\MovementValuesView.xaml">
+    <Page Include="Views\AllTopDownValuesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\TopDownValuesView.xaml">
+    <Page Include="Views\IndividualTopDownValuesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -20,12 +20,12 @@ namespace TopDownPlugin.Views
     /// <summary>
     /// Interaction logic for MovementValuesView.xaml
     /// </summary>
-    public partial class MovementValuesView : UserControl
+    public partial class AllTopDownValuesView : UserControl
     {
         TopDownEntityViewModel ViewModel =>
             DataContext as TopDownEntityViewModel;
 
-        public MovementValuesView()
+        public AllTopDownValuesView()
         {
             InitializeComponent();
         }

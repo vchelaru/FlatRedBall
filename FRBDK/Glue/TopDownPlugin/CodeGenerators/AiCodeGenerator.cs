@@ -22,7 +22,7 @@ namespace TopDownPlugin.CodeGenerators
                 var fullPath = GlueState.Self.CurrentGlueProjectDirectory + RelativeFile;
 
                 GlueCommands.Self.TryMultipleTimes(() =>
-               System.IO.File.WriteAllText(fullPath, contents));
+                    System.IO.File.WriteAllText(fullPath, contents));
 
             }, "Adding top-down interface files");
         }
