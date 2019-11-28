@@ -88,46 +88,46 @@
     <Compile Include="Views\TileShapeCollectionProperties.xaml.cs">
       <DependentUpon>TileShapeCollectionProperties.xaml</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TileAnimationFrame.cs">
+    <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TileAnimationFrame.cs">
       <Link>EmbeddedCodeFiles\TileAnimationFrame.cs</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\LayeredTileMapAnimation.cs">
       <Link>EmbeddedCodeFiles\LayeredTileMapAnimation.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TiledMapSave.Conversion.cs">
+    <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TiledMapSave.Conversion.cs">
       <Link>EmbeddedCodeFiles\TiledMapSave.Conversion.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TiledMapSave.Serialization.cs">
+    <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TiledMapSave.Serialization.cs">
       <Link>EmbeddedCodeFiles\TiledMapSave.Serialization.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TileAnimation.cs">
+    <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TileAnimation.cs">
       <Link>EmbeddedCodeFiles\TileAnimation.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\MapLayer.cs">
+    <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\MapLayer.cs">
       <Link>EmbeddedCodeFiles\MapLayer.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\MapTileset.cs">
+    <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\MapTileset.cs">
       <Link>EmbeddedCodeFiles\MapTileset.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\MapTilesetTile.cs">
+    <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\MapTilesetTile.cs">
       <Link>EmbeddedCodeFiles\MapTilesetTile.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\ExternalTileset.cs">
+    <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\ExternalTileset.cs">
       <Link>EmbeddedCodeFiles\ExternalTileset.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TiledMapToShapeCollectionConverter.cs">
+    <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TiledMapToShapeCollectionConverter.cs">
       <Link>EmbeddedCodeFiles\TiledMapToShapeCollectionConverter.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TilesetExtensionMethods.cs">
+    <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TilesetExtensionMethods.cs">
       <Link>EmbeddedCodeFiles\TilesetExtensionMethods.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\DataTypes\ReducedTileMapInfo.TiledMapSave.cs">
+    <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\DataTypes\ReducedTileMapInfo.TiledMapSave.cs">
       <Link>EmbeddedCodeFiles\ReducedTileMapInfo.TiledMapSave.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\AbstractMapLayer.cs">
+    <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\AbstractMapLayer.cs">
       <Link>EmbeddedCodeFiles\AbstractMapLayer.cs</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\DataTypes\NamedValue.cs">
+    <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\DataTypes\NamedValue.cs">
       <Link>EmbeddedCodeFiles\NamedValue.cs</Link>
     </EmbeddedResource>
     <Compile Include="Behaviors\InputBindingsManager.cs" />
@@ -154,7 +154,7 @@
     <Compile Include="Views\CommandLineArgumentsView.xaml.cs">
       <DependentUpon>CommandLineArgumentsView.xaml</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\DataTypes\ReducedTileMapInfo.cs">
+    <EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\DataTypes\ReducedTileMapInfo.cs">
       <Link>EmbeddedCodeFiles\ReducedTileMapInfo.cs</Link>
     </EmbeddedResource>
     <Compile Include="Logic\AssetTypeInfoAdder.cs" />
@@ -205,7 +205,7 @@
       <Project>{02d8d83a-96c7-4d2e-953c-9433c3817412}</Project>
       <Name>TmxEditor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TMXGlueLib.csproj">
+    <ProjectReference Include="..\..\..\..\Tiled\TMXGlueLib\TMXGlueLib.csproj">
       <Project>{8600173a-6281-45e1-8076-54366e42cbde}</Project>
       <Name>TMXGlueLib</Name>
     </ProjectReference>

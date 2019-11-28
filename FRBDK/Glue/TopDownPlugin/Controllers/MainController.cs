@@ -122,6 +122,7 @@ namespace TopDownPlugin.Controllers
                         if(shouldGenerateCsv || shouldAddTopDownVariables)
                         {
                             AiCodeGenerator.Self.GenerateAndSave();
+                            AnimationCodeGenerator.Self.GenerateAndSave();
                         }
                     },"Saving Glue Project");
             }

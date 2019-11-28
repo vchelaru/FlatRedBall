@@ -76,6 +76,7 @@ namespace TopDownPlugin
                 EnumFileGenerator.Self.GenerateAndSaveEnumFile();
                 InterfacesFileGenerator.Self.GenerateAndSave();
                 AiCodeGenerator.Self.GenerateAndSave();
+                AnimationCodeGenerator.Self.GenerateAndSave();
 
             }
         }
