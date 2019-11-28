@@ -625,4 +625,3 @@ namespace FlatRedBall.AnimationEditorForms
         }
     }
 }
-ster.
