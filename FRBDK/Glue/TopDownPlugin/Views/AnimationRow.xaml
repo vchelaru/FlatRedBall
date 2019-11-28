@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:TopDownPlugin.Views"
              mc:Ignorable="d" 
               d:DesignWidth="800">
-    <ScrollViewer>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto">
         <StackPanel Orientation="Horizontal" Margin="10">
             <!--<local:EightWayAnimationControl></local:EightWayAnimationControl>
             <Separator Margin="10"></Separator>

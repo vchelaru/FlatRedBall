@@ -6,11 +6,13 @@
              xmlns:local="clr-namespace:TopDownPlugin.Views"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="300">
-    <ItemsControl ItemsSource="{Binding AnimationRows}">
-        <ItemsControl.ItemTemplate>
-            <DataTemplate>
-                <local:AnimationRow></local:AnimationRow>
-            </DataTemplate>
-        </ItemsControl.ItemTemplate>
-    </ItemsControl>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ItemsControl ItemsSource="{Binding AnimationRows}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <local:AnimationRow></local:AnimationRow>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
 </UserControl>

@@ -80,8 +80,8 @@
             <local:AllTopDownValuesView  Visibility="{Binding MovementValueVisibility}" Grid.Column="2">
             </local:AllTopDownValuesView>
 
+            
             <local:AllAnimationValuesView Visibility="{Binding AnimationVisibility}" Grid.Column="2">
-            <!--<local:AllAnimationValuesView Visibility="Collapsed" Grid.Column="2">-->
             </local:AllAnimationValuesView>
         </Grid>
         

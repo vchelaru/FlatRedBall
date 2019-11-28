@@ -25,38 +25,6 @@ namespace TopDownPlugin.Views
         {
             InitializeComponent();
 
-            var viewModel = new AllAnimationValuesViewModel();
-
-            viewModel.AnimationRows.Add(new AnimationRowViewModel
-            {
-
-            });
-            viewModel.AnimationRows.Add(new AnimationRowViewModel
-            {
-
-            });
-            viewModel.AnimationRows.Add(new AnimationRowViewModel
-            {
-
-            });
-
-            var animations = viewModel.AnimationRows[0];
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "first" });
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "segundo" });
-            
-            animations = viewModel.AnimationRows[1];
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "scorby" });
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "chiefto" });
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "scamby" });
-            
-            animations = viewModel.AnimationRows[2];
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "gumbertaft" });
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "skeel" });
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "noplay" });
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "giminasto" });
-
-
-            this.DataContext = viewModel;
         }
     }
 }

@@ -254,12 +254,56 @@ namespace TopDownPlugin.Controllers
             // the platformer switches between ground/air/double-jump
         }
 
+        #region Update To / Refresh From Model
+
         internal void UpdateTo(EntitySave currentEntitySave)
         {
             ignoresPropertyChanges = true;
 
             viewModel.IsTopDown = currentEntitySave.Properties.GetValue<bool>(nameof(viewModel.IsTopDown));
 
+            RefreshTopDownValues(currentEntitySave);
+
+            RefreshAnimationValues(currentEntitySave);
+
+            ignoresPropertyChanges = false;
+        }
+
+        private void RefreshAnimationValues(EntitySave currentEntitySave)
+        {
+            viewModel.AnimationRows.Clear();
+
+            viewModel.AnimationRows.Add(new AnimationRowViewModel
+            {
+
+            });
+            viewModel.AnimationRows.Add(new AnimationRowViewModel
+            {
+
+            });
+            viewModel.AnimationRows.Add(new AnimationRowViewModel
+            {
+
+            });
+
+            var animations = viewModel.AnimationRows[0];
+            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "first" });
+            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "segundo" });
+
+            animations = viewModel.AnimationRows[1];
+            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "scorby" });
+            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "chiefto" });
+            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "scamby" });
+
+            animations = viewModel.AnimationRows[2];
+            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "gumbertaft" });
+            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "skeel" });
+            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "noplay" });
+            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "giminasto" });
+        }
+
+        private void RefreshTopDownValues(EntitySave currentEntitySave)
+        {
             TopDownValuesCreationLogic.GetCsvValues(currentEntitySave,
                 out Dictionary<string, TopDownValues> csvValues,
                 out List<Type> additionalValueTypes,
@@ -269,7 +313,7 @@ namespace TopDownPlugin.Controllers
 
             viewModel.TopDownValues.Clear();
 
-            foreach(var value in csvValues.Values)
+            foreach (var value in csvValues.Values)
             {
                 var topDownValuesViewModel = new TopDownValuesViewModel();
 
@@ -279,9 +323,9 @@ namespace TopDownPlugin.Controllers
 
                 viewModel.TopDownValues.Add(topDownValuesViewModel);
             }
-
-            ignoresPropertyChanges = false;
         }
+
+        #endregion
 
         private void HandleTopDownValuesChanged(object sender, PropertyChangedEventArgs e)
         {
