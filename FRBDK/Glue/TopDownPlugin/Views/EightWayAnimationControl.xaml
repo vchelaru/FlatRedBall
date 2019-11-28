@@ -5,8 +5,155 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TopDownPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             Width="230">
     <Grid>
-            
+
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="160"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBlock HorizontalAlignment="Center" Text="{Binding AnimationSetName}"></TextBlock>
+
+        <Line Grid.Row="1"
+            X1="115" Y1="30"
+            X2="115" Y2="130"
+                Stroke="Black"
+                StrokeThickness="4" 
+            ></Line>
+
+        <Line Grid.Row="1"
+            X1="80" Y1="80"
+            X2="150" Y2="80"
+                Stroke="Black"
+                StrokeThickness="4" 
+            ></Line>
+
+        <Line Grid.Row="1"
+            X1="90" Y1="100"
+            X2="140" Y2="60"
+                Stroke="Black"
+                StrokeThickness="4" 
+            ></Line>
+
+        <Line Grid.Row="1"
+            X1="90" Y1="60"
+            X2="140" Y2="100"
+                Stroke="Black"
+                StrokeThickness="4" 
+            ></Line>
+
+
+        <Polygon Grid.Row="1"
+            Points="0,10 15,0 15,20 0,10"
+            Fill="Black" 
+            StrokeThickness="2"
+            Margin="94,48,-10,-3"
+            >
+            <Polygon.RenderTransform>
+                <RotateTransform Angle="45"></RotateTransform>
+            </Polygon.RenderTransform>
+         </Polygon>
+
+        <TextBox Text="{Binding UpAnimation}" Grid.Row="1" Width="70" 
+                 HorizontalAlignment="Center" VerticalAlignment="Top"></TextBox>
+        <TextBox Text="{Binding DownAnimation}" Grid.Row="1" Width="70" 
+                 HorizontalAlignment="Center" VerticalAlignment="Bottom"></TextBox>
+        <TextBox Text="{Binding LeftAnimation}" Grid.Row="1" Width="70" 
+                 HorizontalAlignment="Left" VerticalAlignment="Center"></TextBox>
+        <TextBox Text="{Binding RightAnimation}" Grid.Row="1" Width="70" 
+                 HorizontalAlignment="Right" VerticalAlignment="Center"></TextBox>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="3*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="8*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBox Text="{Binding UpLeftAnimation}" Grid.Row="1" Grid.Column="1" Width="70" 
+                     HorizontalAlignment="Left" VerticalAlignment="Top"></TextBox>
+            <TextBox Text="{Binding UpRightAnimation}" Grid.Row="1" Grid.Column="1" Width="70" 
+                     HorizontalAlignment="Right" VerticalAlignment="Top"></TextBox>
+            <TextBox Text="{Binding DownLeftAnimation}" Grid.Row="1" Grid.Column="1" Width="70" 
+                     HorizontalAlignment="Left" VerticalAlignment="Bottom"></TextBox>
+            <TextBox Text="{Binding DownRightAnimation}" Grid.Row="1" Grid.Column="1" Width="70" 
+                     HorizontalAlignment="Right" VerticalAlignment="Bottom"></TextBox>
+
+        </Grid>
+        <Polygon Grid.Row="1"
+            Points="0,10 15,0 15,20 0,10"
+            Fill="Black" 
+            StrokeThickness="2"
+            Margin="151,62,-67,-17"
+            >
+            <Polygon.RenderTransform>
+                <RotateTransform Angle="135"/>
+            </Polygon.RenderTransform>
+        </Polygon>
+        <Polygon Grid.Row="1"
+            Points="0,10 15,0 15,20 0,10"
+            Fill="Black" 
+            StrokeThickness="2"
+            Margin="136,112,-52,-66"
+            >
+            <Polygon.RenderTransform>
+                <RotateTransform Angle="225"/>
+            </Polygon.RenderTransform>
+        </Polygon>
+        <Polygon Grid.Row="1"
+            Points="0,10 15,0 15,20 0,10"
+            Fill="Black" 
+            StrokeThickness="2"
+            Margin="80,99,4,-53"
+            >
+            <Polygon.RenderTransform>
+                <RotateTransform Angle="315"/>
+            </Polygon.RenderTransform>
+        </Polygon>
+        <Polygon Grid.Row="1"
+            Points="0,10 15,0 15,20 0,10"
+            Fill="Black" 
+            StrokeThickness="2"
+            Margin="71,70,13,-25"
+            >
+            <Polygon.RenderTransform>
+                <RotateTransform Angle="0"/>
+            </Polygon.RenderTransform>
+        </Polygon>
+        <Polygon Grid.Row="1"
+            Points="0,10 15,0 15,20 0,10"
+            Fill="Black" 
+            StrokeThickness="2"
+            Margin="159,89,-75,-44"
+            >
+            <Polygon.RenderTransform>
+                <RotateTransform Angle="180"/>
+            </Polygon.RenderTransform>
+        </Polygon>
+        <Polygon Grid.Row="1"
+            Points="0,10 15,0 15,20 0,10"
+            Fill="Black" 
+            StrokeThickness="2"
+            Margin="125,21,-41,24"
+            >
+            <Polygon.RenderTransform>
+                <RotateTransform Angle="90"/>
+            </Polygon.RenderTransform>
+        </Polygon>
+        <Polygon Grid.Row="1"
+            Points="0,10 15,0 15,20 0,10"
+            Fill="Black" 
+            StrokeThickness="2"
+            Margin="105,138,-21,-93"
+            >
+            <Polygon.RenderTransform>
+                <RotateTransform Angle="270"/>
+            </Polygon.RenderTransform>
+        </Polygon>
     </Grid>
 </UserControl>

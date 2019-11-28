@@ -97,8 +97,17 @@
     <Compile Include="MainPlugin.cs" />
     <Compile Include="Models\TopDownValues.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\AllAnimationValuesViewModel.cs" />
+    <Compile Include="ViewModels\AnimationRowViewModel.cs" />
+    <Compile Include="ViewModels\AnimationSetViewModel.cs" />
     <Compile Include="ViewModels\TopDownEntityViewModel.cs" />
     <Compile Include="ViewModels\TopDownValuesViewModel.cs" />
+    <Compile Include="Views\AllAnimationValuesView.xaml.cs">
+      <DependentUpon>AllAnimationValuesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AnimationRow.xaml.cs">
+      <DependentUpon>AnimationRow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\EightWayAnimationControl.xaml.cs">
       <DependentUpon>EightWayAnimationControl.xaml</DependentUpon>
     </Compile>
@@ -139,6 +148,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\AllAnimationValuesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AnimationRow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\EightWayAnimationControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
