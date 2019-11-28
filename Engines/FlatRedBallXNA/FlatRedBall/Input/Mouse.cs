@@ -927,17 +927,25 @@ namespace FlatRedBall.Input
 #endif
         }
 
-#if !SILVERLIGHT && !XBOX360 && !WINDOWS_PHONE && !MONOGAME
+#if !SILVERLIGHT && !XBOX360 && !WINDOWS_PHONE
         public void SetScreenPosition(int newX, int newY)
         {
+#if XNA
             // The velocity should not change when positions are set.
             mThisFrameRepositionX += newX - System.Windows.Forms.Cursor.Position.X;
             mThisFrameRepositionY += newY - System.Windows.Forms.Cursor.Position.Y;
 
-
             System.Windows.Forms.Cursor.Position = new System.Drawing.Point( 
                    newX,
                    newY);
+#else
+            // The velocity should not change when positions are set.
+            MouseState currentState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+            mThisFrameRepositionX += newX - currentState.X;
+            mThisFrameRepositionY += newY - currentState.Y;
+
+            Microsoft.Xna.Framework.Input.Mouse.SetPosition(newX, newY);
+#endif
         }
 #endif
 
