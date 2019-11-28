@@ -53,9 +53,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBall.SpecializedXnaC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Converters", "Converters", "{0980E431-4F09-49D5-BAB2-BBD9A25B19C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TmxEditor", "..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TmxEditor\TmxEditor.csproj", "{02D8D83A-96C7-4D2E-953C-9433C3817412}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TmxEditor", "..\..\Tiled\TmxEditor\TmxEditor.csproj", "{02D8D83A-96C7-4D2E-953C-9433C3817412}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMXGlueLib", "..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TMXGlueLib\TMXGlueLib.csproj", "{8600173A-6281-45E1-8076-54366E42CBDE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMXGlueLib", "..\..\Tiled\TMXGlueLib\TMXGlueLib.csproj", "{8600173A-6281-45E1-8076-54366E42CBDE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputLibrary", "..\..\..\Gum\InputLibrary\InputLibrary.csproj", "{938D9A00-8529-4CE8-9077-E0A3994A73EA}"
 EndProject
