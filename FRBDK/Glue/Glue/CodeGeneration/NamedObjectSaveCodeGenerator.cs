@@ -1379,6 +1379,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
                 }
+                // if it's a file, then the file should handle that (I think)
+                else if(namedObjectSave.SourceType != SourceType.File && namedObjectSave.GetAssetTypeInfo()?.ActivityMethod != null)
+                {
+                    var activityMethod = namedObjectSave.GetAssetTypeInfo()?.ActivityMethod;
+                    codeBlock.Line(activityMethod.Replace("this", namedObjectSave.FieldName) + ";");
+                }
 
             }
 

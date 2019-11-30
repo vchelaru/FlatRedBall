@@ -232,7 +232,7 @@ namespace FlatRedBall.Instructions.Reflection
             }
 
             // Do the conversion
-#region Convert To Object
+            #region Convert To Object
 
             // String needs to be first because it could contain equals and
             // we don't want to cause problems 
@@ -663,11 +663,11 @@ namespace FlatRedBall.Instructions.Reflection
 
 #endregion
 
-                // Why do we catch exceptions here?  That seems baaaad
-                //catch (Exception)
-                //{
-                //    //int m = 3;
-                //}
+            // Why do we catch exceptions here?  That seems baaaad
+            //catch (Exception)
+            //{
+            //    //int m = 3;
+            //}
 
 
                 if (!handled)

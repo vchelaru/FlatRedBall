@@ -51,32 +51,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
 
                     handled = true;
                 }
+                else if(typedMember.MemberType?.Name == "Sprite")
+                {
+                    var nosTypeConverter = new AvailableNamedObjectsAndFiles(container);
+                    nosTypeConverter.NamedObjectTypeRestriction = "FlatRedBall.Sprite";
+                    typeConverter = nosTypeConverter;
+                    handled = true;
+                }
 
-                // Victor Chelaru
-                // October 26, 2015:
-                // I don't think we need this anymore - we should just let the CSVs do their job
-                // defining variables and not rely on reflection. That way plugins will be able to
-                // handle everything without relying on reflection
-                //if (!handled && type != null)
-                //{
-                //    FieldInfo fieldInfo = type.GetField(memberName);
-                //    if (fieldInfo != null)
-                //    {
-                //        memberType = fieldInfo.FieldType;
-                //        wasTypeModified = true;
-                //    }
-
-                //    if (wasTypeModified == false)
-                //    {
-                //        PropertyInfo propertyInfo = type.GetProperty(memberName);
-                //        if (propertyInfo != null)
-                //        {
-                //            memberType = propertyInfo.PropertyType;
-                //            wasTypeModified = true;
-                //        }
-
-                //    }
-                //}
             }
             else if (instance.SourceType == SourceType.File)
             {

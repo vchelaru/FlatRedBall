@@ -8,13 +8,23 @@ namespace FlatRedBall.Graphics.Animation
 {
     public class AnimationController
     {
-        internal IAnimationChainAnimatable AnimatedObject { get; set; }
+        #region Fields/Properties
+
+        public IAnimationChainAnimatable AnimatedObject { get; set; }
 
         public ObservableCollection<AnimationLayer> Layers
         {
             get; private set;
         } = new ObservableCollection<AnimationLayer>();
 
+        public string Name { get; set; }
+
+        #endregion
+
+        public AnimationController()
+        {
+            Layers.CollectionChanged += CollectionChanged;
+        }
 
         public AnimationController(IAnimationChainAnimatable animatable)
         {

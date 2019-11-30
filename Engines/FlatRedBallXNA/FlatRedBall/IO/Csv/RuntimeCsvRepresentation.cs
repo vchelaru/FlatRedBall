@@ -1119,11 +1119,11 @@ namespace FlatRedBall.IO.Csv
                 }
                 catch (ArgumentException e)
                 {
-                    throw new Exception("Could not set variable " + name + " to " + cellValue + "\n\n" + e, e);
+                    throw new Exception($"Could not set variable {name} to {cellValue} at Row {row} Column {column}\n\n" + e, e);
                 }
                 catch (FormatException)
                 {
-                    throw new Exception("Error parsing the value " + cellValue + " for the property " + name);
+                    throw new Exception($"Error parsing the value {cellValue} for the property  at Row {row} Column {column}" + name);
                 }
             }
         }

@@ -15,11 +15,14 @@ using FlatRedBall.Utilities;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using FlatRedBall.Glue.Reflection;
+using FlatRedBall.Glue.FormHelpers.StringConverters;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
     class DialogCommands : IDialogCommands
     {
+        #region File
+
         public ReferencedFileSave ShowAddNewFileDialog()
         {
             ReferencedFileSave rfs = null;
@@ -78,6 +81,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             return rfs;
         }
+
+        #endregion
 
         public NamedObjectSave ShowAddNewObjectDialog(AddObjectViewModel addObjectViewModel = null)
         {
@@ -566,12 +571,27 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             bool isTypePredetermined = currentObject != null && currentObject.IsList;
 
+            if (addObjectViewModel == null)
+            {
+                addObjectViewModel = new AddObjectViewModel();
+            }
+
+            var toAdd = AvailableClassTypeConverter.GetAvailableTypes(false, SourceType.FlatRedBallType)
+                .ToList();
+
+            toAdd.Sort();
+
+            foreach(var item in toAdd)
+            {
+                addObjectViewModel.FlatRedBallAndCustomTypes.Add(item);
+            }
+
             NewObjectTypeSelectionControl typeSelectControl = null;
             if (!isTypePredetermined)
             {
                 tiw.Width = 400;
 
-                typeSelectControl = new NewObjectTypeSelectionControl();
+                typeSelectControl = new NewObjectTypeSelectionControl(addObjectViewModel);
                 typeSelectControl.Width = tiw.Width - 22;
 
                 typeSelectControl.AfterStrongSelect += delegate
@@ -641,10 +661,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 tiw.AddControl(typeSelectControl, AboveOrBelow.Above);
             }
 
-            if (addObjectViewModel == null)
-            {
-                addObjectViewModel = new AddObjectViewModel();
-            }
+            
             addObjectViewModel.DialogResult = tiw.ShowDialog();
 
             addObjectViewModel.SourceType = SourceType.FlatRedBallType;

@@ -473,23 +473,6 @@ namespace OfficialPlugins.VariableDisplay
 
                 instanceMember.TypeConverter = typeConverter;
 
-                instanceMember.CustomRefreshOptions += () =>
-                {
-                    if (typeConverter != null)
-                    {
-                        instanceMember.CustomOptions.Clear();
-
-                        var values = typeConverter.GetStandardValues();
-
-                        foreach (var value in values)
-                        {
-                            instanceMember.CustomOptions.Add(value);
-                        }
-                    }
-
-                };
-
-
                 instanceMember.CustomGetTypeEvent += (throwaway) => memberType;
 
 

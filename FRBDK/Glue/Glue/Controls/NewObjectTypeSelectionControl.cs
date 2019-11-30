@@ -12,6 +12,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.ViewModels;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -20,6 +21,8 @@ namespace FlatRedBall.Glue.Controls
         #region Fields
 
         SearchBarHelper mSearchBarHelper;
+
+        AddObjectViewModel ViewModel;
 
         #endregion
 
@@ -167,8 +170,9 @@ namespace FlatRedBall.Glue.Controls
         #endregion
 
 
-        public NewObjectTypeSelectionControl()
+        public NewObjectTypeSelectionControl(AddObjectViewModel viewModel)
         {
+            ViewModel = viewModel;
 
             InitializeComponent();
             PopulateAllTreeViews();
@@ -303,11 +307,7 @@ namespace FlatRedBall.Glue.Controls
 
         private void PopulateFlatRedBallAndCustomTypes()
         {
-            List<string> addedTypes = new List<string>();
-            addedTypes.AddRange(AvailableClassTypeConverter.GetAvailableTypes(false, SourceType.FlatRedBallType));
-            addedTypes.Sort();
-
-            IEnumerable<string> availableTypes = addedTypes;
+            IEnumerable<string> availableTypes = ViewModel.FlatRedBallAndCustomTypes;
 
             if (!string.IsNullOrEmpty(this.SearchTextBox.Text))
             {

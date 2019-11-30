@@ -13,8 +13,6 @@ namespace OfficialPlugins.VariableDisplay
 
         TypeConverter typeConverter;
 
-        public event Action CustomRefreshOptions;
-
         public TypeConverter TypeConverter
         {
             get

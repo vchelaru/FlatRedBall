@@ -1267,6 +1267,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                 value = "Microsoft.Xna.Framework.Color." + value.Replace("\"", "");
 
             }
+            else if(instructionSave.Type == "FlatRedBall.Sprite" || instructionSave.Type == "Sprite")
+            {
+                value = value.Replace("\"", "");
+            }
             else if ((customVariable != null && customVariable.GetIsVariableState()) || (customVariable == null && rootVariable == "CurrentState"))
             {
                 //string type = "VariableState";
