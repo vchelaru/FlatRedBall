@@ -6,15 +6,16 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 {
     public class CodeLine : ICode
     {
-        private string _value;
-
-        public string Value => _value;
+        public string Value
+        {
+            get; set;
+        }
 
         public CodeLine(string value)
         {
-            _value = value;
+            Value = value;
 
-            if (String.IsNullOrEmpty(_value)) _value = "";
+            if (String.IsNullOrEmpty(Value)) Value = "";
         }
 
         public string TabCharacter { get; set; }
@@ -33,7 +34,7 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
                 pBldr.Append(pTabCharacter);
             }
 
-            pBldr.AppendLine(_value);
+            pBldr.AppendLine(Value);
         }
 
         public override string ToString()
@@ -57,7 +58,7 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 
         public void Replace(string pOldValue, string pNewValue)
         {
-            _value = _value.Replace(pOldValue, pNewValue);
+            Value = Value.Replace(pOldValue, pNewValue);
         }
     }
 

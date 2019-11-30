@@ -37,14 +37,17 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
             TaskManager.Self.Add(() =>
             {
-                string codeFileContents = GetFileAliasLogicFileContents(isUsingContentPipeline);
+                if(glueState.CurrentGlueProject != null)
+                {
+                    string codeFileContents = GetFileAliasLogicFileContents(isUsingContentPipeline);
 
-                glueCommands.ProjectCommands.CreateAndAddCodeFile("FileAliases.Generated.cs");
+                    glueCommands.ProjectCommands.CreateAndAddCodeFile("FileAliases.Generated.cs");
      
-                var absolutePath = glueState.CurrentGlueProjectDirectory + "FileAliases.Generated.cs";
+                    var absolutePath = glueState.CurrentGlueProjectDirectory + "FileAliases.Generated.cs";
 
 
-                glueCommands.TryMultipleTimes(() => System.IO.File.WriteAllText(absolutePath, codeFileContents), 5);
+                    glueCommands.TryMultipleTimes(() => System.IO.File.WriteAllText(absolutePath, codeFileContents), 5);
+                }
                 
      
             }, 

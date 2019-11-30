@@ -92,7 +92,7 @@ namespace TopDownPlugin
             {
                 if (control == null)
                 {
-                    control = MainController.Self.GetControl();
+                    control = MainController.Self.GetExistingOrNewControl();
                     pluginTab = this.CreateTab(control, "Top Down");
                     this.ShowTab(pluginTab, TabLocation.Center);
                 }

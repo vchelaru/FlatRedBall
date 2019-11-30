@@ -5,16 +5,28 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TopDownPlugin.Views"
              mc:Ignorable="d" 
-              d:DesignWidth="800">
-    <ScrollViewer HorizontalScrollBarVisibility="Auto">
-        <StackPanel Orientation="Horizontal" Margin="10">
-            <!--<local:EightWayAnimationControl></local:EightWayAnimationControl>
-            <Separator Margin="10"></Separator>
-            <local:EightWayAnimationControl></local:EightWayAnimationControl>-->
+             Height="Auto" d:DesignWidth="800">
+    <Border CornerRadius="4" BorderThickness="1" BorderBrush="DarkGray">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <TextBlock 
+            Text="{Binding AnimationRowName}" 
+            Margin="20 0 0 0"
+            Grid.Row="0"
+            >
+        </TextBlock>
+        <ScrollViewer Margin="2,2"
+            HorizontalScrollBarVisibility="Auto" 
+            VerticalScrollBarVisibility="Hidden"
+            Grid.Row="1"
+            Height="Auto">
             <ItemsControl ItemsSource="{Binding Animations}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <local:EightWayAnimationControl></local:EightWayAnimationControl>
+                        <local:EightWayAnimationControl Margin="7,3"/>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemsPanel>
@@ -23,6 +35,7 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
-        </StackPanel>
-    </ScrollViewer>
+        </ScrollViewer>
+    </Grid>
+    </Border>
 </UserControl>

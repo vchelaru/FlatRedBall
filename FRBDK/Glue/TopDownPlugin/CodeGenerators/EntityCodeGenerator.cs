@@ -2,11 +2,14 @@
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TopDownPlugin.Controllers;
+using TopDownPlugin.Data;
 using TopDownPlugin.Logic;
 using TopDownPlugin.ViewModels;
 
@@ -16,17 +19,23 @@ namespace TopDownPlugin.CodeGenerators
     {
         public override CodeLocation CodeLocation => CodeLocation.AfterStandardGenerated;
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override void GenerateAdditionalClasses(ICodeBlock codeBlock, IElement element)
         {
             /////////////////Early Out//////////////////////
-            if(TopDownEntityPropertyLogic.GetIfIsTopDown(element) == false)
+            if (TopDownEntityPropertyLogic.GetIfIsTopDown(element) == false)
             {
-                return codeBlock;
+                return;
             }
             //////////////End Early Out//////////////////////
             ///
+
+            var className = element.GetStrippedName();
+
+            codeBlock = codeBlock.Class("public partial", className, ": TopDown.ITopDownEntity");
+
             codeBlock.Line("#region Top Down Fields");
 
+            WriteAnimationFields(element, codeBlock);
 
             codeBlock.Line("DataTypes.TopDownValues mCurrentMovement;");
             codeBlock.Line("public float TopDownSpeedMultiplier { get; set; } = 1;");
@@ -38,9 +47,7 @@ namespace TopDownPlugin.CodeGenerators
                 .Get()
                     .Line("return mCurrentMovement;").End()
                 .Set("private")
-                    .Line("mCurrentMovement = value;")
-                    .If("value != null")
-                        .Line("mTopDownAnimationLayer.CurrentAnimationSet = AnimationSets[value.Name];");
+                    .Line("mCurrentMovement = value;");
 
 
             codeBlock.Property("public FlatRedBall.Input.IInputDevice", "InputDevice")
@@ -52,7 +59,7 @@ namespace TopDownPlugin.CodeGenerators
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// Which direciton the character is facing.");
             codeBlock.Line("/// </summary>");
-            codeBlock.Property("protected TopDownDirection", "DirectionFacing")
+            codeBlock.Property("public TopDownDirection", "DirectionFacing")
                 .Get()
                     .Line("return mDirectionFacing;");
 
@@ -73,12 +80,111 @@ namespace TopDownPlugin.CodeGenerators
             codeBlock.Line("/// </summary>");
             codeBlock.AutoProperty("public bool", "InputEnabled");
 
-            codeBlock.Line("TopDown.DirectionBasedAnimationLayer mTopDownAnimationLayer");
+            codeBlock.Line("TopDown.DirectionBasedAnimationLayer mTopDownAnimationLayer;");
 
 
             codeBlock.Line("#endregion");
+        }
+
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        {
+            /////////////////Early Out//////////////////////
+            if (TopDownEntityPropertyLogic.GetIfIsTopDown(element) == false)
+            {
+                return codeBlock;
+            }
+            //////////////End Early Out//////////////////////
+            ///
+
 
             return codeBlock;
+        }
+
+        private static void WriteAnimationFields(IElement element, ICodeBlock codeBlock)
+        {
+            string ToQuotedSetName(string setValue)
+            {
+                if(setValue == null)
+                {
+                    return "null";
+                }
+                else
+                {
+                    return $"\"{setValue}\"";
+                }
+            }
+
+            TopDownAnimationData animationData = null;
+            var animationFilePath = MainController.GetAnimationFilePathFor(element as EntitySave);
+            if (animationFilePath.Exists())
+            {
+                try
+                {
+                    var contents = System.IO.File.ReadAllText(animationFilePath.FullPath);
+                    animationData = JsonConvert.DeserializeObject<TopDownAnimationData>(contents);
+                }
+                catch
+                {
+                    // do nothing, codegen will skip this
+                }
+            }
+
+            if(animationData != null && animationData.Animations.Count > 0)
+            {
+
+                codeBlock.Line("public List<TopDown.AnimationSet> AnimationSets { get; set; } = new List<TopDown.AnimationSet>");
+                var listBlock = codeBlock.Block();
+                (listBlock.PostCodeLines[0] as CodeLine).Value += ";";
+
+                foreach(var movementValueAnimation in animationData.Animations)
+                {
+
+                    string prefix = movementValueAnimation.MovementValuesName + "_";
+
+                    foreach(var set in movementValueAnimation.AnimationSets)
+                    {
+
+                        var hasAnimations =
+                            set.UpLeftAnimation != null ||
+                            set.UpAnimation != null ||
+                            set.UpRightAnimation != null ||
+                            set.LeftAnimation != null ||
+                            set.RightAnimation != null ||
+                            set.DownLeftAnimation != null ||
+                            set.DownAnimation != null ||
+                            set.DownRightAnimation != null;
+
+                        if(hasAnimations)
+                        {
+                            listBlock.Line($"new TopDown.AnimationSet()");
+                            var assignmentBlock = listBlock.Block();
+                            (assignmentBlock.PostCodeLines[0] as CodeLine).Value += ",";
+
+                            string minSpeed =
+                                set.AnimationSetName == "Idle" ? "0f" : ".1f";
+
+                            assignmentBlock.Line($"MinSpeed = {minSpeed},");
+
+                            assignmentBlock.Line($"MovementValueName = \"{movementValueAnimation.MovementValuesName}\",");
+
+
+
+                            assignmentBlock.Line($"UpLeftAnimationName = {ToQuotedSetName(set.UpLeftAnimation)},");
+                            assignmentBlock.Line($"UpAnimationName = {ToQuotedSetName(set.UpAnimation)},");
+                            assignmentBlock.Line($"UpRightAnimationName = {ToQuotedSetName(set.UpRightAnimation)},");
+
+                            assignmentBlock.Line($"LeftAnimationName = {ToQuotedSetName(set.LeftAnimation)},");
+                            assignmentBlock.Line($"RightAnimationName = {ToQuotedSetName(set.RightAnimation)},");
+
+                            assignmentBlock.Line($"DownLeftAnimationName = {ToQuotedSetName(set.DownLeftAnimation)},");
+                            assignmentBlock.Line($"DownAnimationName = {ToQuotedSetName(set.DownAnimation)},");
+                            assignmentBlock.Line($"DownRightAnimationName = {ToQuotedSetName(set.DownRightAnimation)}");
+
+                        }
+                    }
+                }
+            }
+
         }
 
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
@@ -103,6 +209,7 @@ namespace TopDownPlugin.CodeGenerators
             codeBlock.Line("PossibleDirections = PossibleDirections.FourWay;");
 
             codeBlock.Line("mTopDownAnimationLayer = new TopDown.DirectionBasedAnimationLayer();");
+            codeBlock.Line("mTopDownAnimationLayer.TopDownEntity = this;");
 
             return codeBlock;
         }

@@ -50,6 +50,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -91,7 +94,10 @@
     <Compile Include="CodeGenerators\InterfacesFileGenerator.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="DataGenerators\CsvGenerator.cs" />
+    <Compile Include="Data\AnimationSetModel.cs" />
+    <Compile Include="Data\MovementValueAnimations.cs" />
     <Compile Include="Data\PredefinedTopDownValues.cs" />
+    <Compile Include="Data\TopDownAnimationData.cs" />
     <Compile Include="Logic\TopDownEntityPropertyLogic.cs" />
     <Compile Include="Logic\TopDownValuesCreationLogic.cs" />
     <Compile Include="MainPlugin.cs" />
@@ -175,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

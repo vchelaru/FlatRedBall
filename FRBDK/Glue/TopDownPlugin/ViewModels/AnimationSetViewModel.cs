@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TopDownPlugin.Data;
 
 namespace TopDownPlugin.ViewModels
 {
@@ -64,5 +65,23 @@ namespace TopDownPlugin.ViewModels
             set => Set(value);
         }
 
+        public AnimationSetModel BackingData
+        {
+            get; set;
+        }
+
+        internal void SetValuesOnBackingData()
+        {
+            BackingData.UpLeftAnimation = this.UpLeftAnimation;
+            BackingData.UpAnimation = this.UpAnimation;
+            BackingData.UpRightAnimation = this.UpRightAnimation;
+
+            BackingData.LeftAnimation = this.LeftAnimation;
+            BackingData.RightAnimation = this.RightAnimation;
+
+            BackingData.DownLeftAnimation = this.DownLeftAnimation;
+            BackingData.DownAnimation = this.DownAnimation;
+            BackingData.DownRightAnimation = this.DownRightAnimation;
+        }
     }
 }

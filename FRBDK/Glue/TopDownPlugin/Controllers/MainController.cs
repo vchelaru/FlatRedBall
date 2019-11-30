@@ -4,8 +4,10 @@ using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO.Csv;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -26,6 +28,7 @@ namespace TopDownPlugin.Controllers
         #region Fields
 
         TopDownEntityViewModel viewModel;
+        TopDownAnimationData topDownAnimationData;
         MainEntityView mainControl;
 
         bool ignoresPropertyChanges = false;
@@ -34,13 +37,16 @@ namespace TopDownPlugin.Controllers
 
         CsvHeader[] lastHeaders;
 
+        const string baseAnimationsName = "Base Animations";
+
+
         #endregion
 
         public MainController()
         {
         }
 
-        public MainEntityView GetControl()
+        public MainEntityView GetExistingOrNewControl()
         {
             if (mainControl == null)
             {
@@ -70,9 +76,15 @@ namespace TopDownPlugin.Controllers
             DetermineWhatToGenerate(e.PropertyName, viewModel,
                 out shouldGenerateCsv, out shouldGenerateEntity, out shouldAddTopDownVariables);
 
-            if(e.PropertyName == nameof(TopDownEntityViewModel.IsTopDown))
+            switch(e.PropertyName)
             {
-                HandleIsTopDownPropertyChanged(viewModel);
+                case nameof(TopDownEntityViewModel.IsTopDown):
+                    HandleIsTopDownPropertyChanged(viewModel);
+                    break;
+                    // already handled in a dedicated method
+                case nameof(TopDownEntityViewModel.TopDownValues):
+                    RefreshAnimationValues(entity);
+                    break;
             }
 
             if (shouldGenerateCsv)
@@ -88,7 +100,7 @@ namespace TopDownPlugin.Controllers
 
             if (shouldAddTopDownVariables)
             {
-                AddTopDownVariables(entity);
+                AddTopDownGlueVariables(entity);
             }
 
             if (shouldGenerateEntity)
@@ -158,6 +170,8 @@ namespace TopDownPlugin.Controllers
 
                 TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.RemoveFromProjects(absoluteFile),
                     "Removing " + AiCodeGenerator.RelativeFile);
+
+                // todo - probably need to remove all the other files that are created for top down
             }
         }
 
@@ -247,11 +261,14 @@ namespace TopDownPlugin.Controllers
             );
         }
 
-        private void AddTopDownVariables(EntitySave entity)
+        private void AddTopDownGlueVariables(EntitySave entity)
         {
             // We don't make any variables because currently there's no concept of
             // different movement types that the plugin can switch between, the way
             // the platformer switches between ground/air/double-jump
+
+            // Actually even though there's not air, ground, double jump, there is a CurrentMovementValues
+            // property. But we'll just codegen that for now.
         }
 
         #region Update To / Refresh From Model
@@ -264,6 +281,7 @@ namespace TopDownPlugin.Controllers
 
             RefreshTopDownValues(currentEntitySave);
 
+            // must be called after refreshing the top down values
             RefreshAnimationValues(currentEntitySave);
 
             ignoresPropertyChanges = false;
@@ -271,35 +289,132 @@ namespace TopDownPlugin.Controllers
 
         private void RefreshAnimationValues(EntitySave currentEntitySave)
         {
+            LoadAnimationData(currentEntitySave);
+
+            AddNecessaryAnimationMovementValuesFor(currentEntitySave, viewModel.TopDownValues);
+            RemoveUnneededAnimationMovementValues(currentEntitySave, viewModel.TopDownValues);
+
             viewModel.AnimationRows.Clear();
 
-            viewModel.AnimationRows.Add(new AnimationRowViewModel
+            foreach(var animationValues in topDownAnimationData.Animations)
             {
+                var row = new AnimationRowViewModel();
+                row.AnimationRowName = animationValues.MovementValuesName;
+                foreach(var setModel in animationValues.AnimationSets)
+                {
+                    var setViewModel = new AnimationSetViewModel();
+                    setViewModel.AnimationSetName = setModel.AnimationSetName;
 
-            });
-            viewModel.AnimationRows.Add(new AnimationRowViewModel
+                    setViewModel.UpLeftAnimation = setModel.UpLeftAnimation;
+                    setViewModel.UpAnimation = setModel.UpAnimation;
+                    setViewModel.UpRightAnimation = setModel.UpRightAnimation;
+
+                    setViewModel.LeftAnimation = setModel.LeftAnimation;
+                    setViewModel.RightAnimation = setModel.RightAnimation;
+
+                    setViewModel.DownLeftAnimation = setModel.DownLeftAnimation;
+                    setViewModel.DownAnimation = setModel.DownAnimation;
+                    setViewModel.DownRightAnimation = setModel.DownRightAnimation;
+
+                    setViewModel.PropertyChanged += HandleSetViewModelPropertyChanged;
+
+                    setViewModel.BackingData = setModel;
+
+                    row.Animations.Add(setViewModel);
+                }
+                viewModel.AnimationRows.Add(row);
+            }
+        }
+
+        private void RemoveUnneededAnimationMovementValues(EntitySave currentEntitySave, 
+            ObservableCollection<TopDownValuesViewModel> topDownValues)
+        {
+            for(int i = topDownAnimationData.Animations.Count - 1; i > -1; i--)
             {
+                var movementValueAnimations = topDownAnimationData.Animations[i];
 
-            });
-            viewModel.AnimationRows.Add(new AnimationRowViewModel
+                var isReferencedByTopDownValues =
+                    movementValueAnimations.MovementValuesName == baseAnimationsName ||
+                    topDownValues
+                        .Any(topDownValue => topDownValue.Name == movementValueAnimations.MovementValuesName);
+
+                if(!isReferencedByTopDownValues)
+                {
+                    topDownAnimationData.Animations.RemoveAt(i);
+                }
+            }
+        }
+
+        private void HandleSetViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var changedVm = sender as AnimationSetViewModel;
+
+            changedVm.SetValuesOnBackingData();
+
+            SaveCurrentEntitySaveAnimationDataTask();
+
+            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCodeTask();
+        }
+
+        private void SaveCurrentEntitySaveAnimationDataTask()
+        {
+            var filePath = GetAnimationFilePathFor(GlueState.Self.CurrentEntitySave);
+
+            TaskManager.Self.Add(() =>
             {
+                var contents = JsonConvert.SerializeObject(topDownAnimationData);
 
-            });
+                GlueCommands.Self.TryMultipleTimes(() =>
+                {
+                    System.IO.Directory.CreateDirectory(
+                        filePath.GetDirectoryContainingThis().FullPath);
+                    System.IO.File.WriteAllText(filePath.FullPath, contents);
+                    GlueCommands.Self.PrintOutput($"Saved animation file {filePath.FullPath}");
+                });
 
-            var animations = viewModel.AnimationRows[0];
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "first" });
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "segundo" });
+            }, $"Saving animation file for {GlueState.Self.CurrentEntitySave}");
+        }
 
-            animations = viewModel.AnimationRows[1];
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "scorby" });
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "chiefto" });
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "scamby" });
+        private void AddNecessaryAnimationMovementValuesFor(EntitySave currentEntitySave, ObservableCollection<TopDownValuesViewModel> topDownValues)
+        {
 
-            animations = viewModel.AnimationRows[2];
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "gumbertaft" });
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "skeel" });
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "noplay" });
-            animations.Animations.Add(new AnimationSetViewModel { AnimationSetName = "giminasto" });
+            if(topDownAnimationData.Animations.Any(item => item.MovementValuesName == baseAnimationsName) == false)
+            {
+                var newAnimation = new MovementValueAnimations();
+                newAnimation.MovementValuesName = baseAnimationsName;
+                newAnimation.AnimationSets.Add(new AnimationSetModel()
+                {
+                    AnimationSetName = "Idle"
+                });
+                newAnimation.AnimationSets.Add(new AnimationSetModel()
+                {
+                    AnimationSetName = "Move"
+                });
+                topDownAnimationData.Animations.Add(newAnimation);
+
+                // temporary:
+                
+            }
+
+            foreach (var topDownValue in viewModel.TopDownValues)
+            {
+                if(topDownAnimationData.Animations.Any(item => item.MovementValuesName == topDownValue.Name) == false)
+                {
+                    var newAnimation = new MovementValueAnimations();
+                    newAnimation.MovementValuesName = topDownValue.Name;
+                    newAnimation.AnimationSets.Add(new AnimationSetModel()
+                    {
+                        AnimationSetName = "Idle"
+                    });
+                    newAnimation.AnimationSets.Add(new AnimationSetModel()
+                    {
+                        AnimationSetName = "Move"
+                    });
+                    topDownAnimationData.Animations.Add(newAnimation);
+                }
+            }
+
+
         }
 
         private void RefreshTopDownValues(EntitySave currentEntitySave)
@@ -317,19 +432,70 @@ namespace TopDownPlugin.Controllers
             {
                 var topDownValuesViewModel = new TopDownValuesViewModel();
 
-                topDownValuesViewModel.PropertyChanged += HandleTopDownValuesChanged;
-
+                // setfrom before property changed so that this doesn't raise an event
                 topDownValuesViewModel.SetFrom(value, additionalValueTypes);
+                topDownValuesViewModel.PropertyChanged += HandleTopDownValuesViewModelChanged;
 
                 viewModel.TopDownValues.Add(topDownValuesViewModel);
             }
         }
 
+        private void LoadAnimationData(EntitySave currentEntitySave)
+        {
+            FilePath fileToLoad = GetAnimationFilePathFor(currentEntitySave);
+
+            topDownAnimationData = null;
+
+            if (fileToLoad.Exists())
+            {
+                try
+                {
+                    var fileContents = System.IO.File.ReadAllText(fileToLoad.FullPath);
+
+                    topDownAnimationData = JsonConvert.DeserializeObject<TopDownAnimationData>(fileContents);
+                }
+                catch
+                {
+                    // do nothing
+                }
+            }
+
+            if (topDownAnimationData == null)
+            {
+                // if it's null then the file wasn't there or there was some unrecoverable failure, so just make a new one:
+                topDownAnimationData = new TopDownAnimationData();
+            }
+        }
+
+        public static FilePath GetAnimationFilePathFor(EntitySave currentEntitySave)
+        {
+            return $"{GlueState.Self.CurrentGlueProjectDirectory}AnimationSets/{currentEntitySave.Name}.json";
+        }
+
         #endregion
 
-        private void HandleTopDownValuesChanged(object sender, PropertyChangedEventArgs e)
+        private void HandleTopDownValuesViewModelChanged(object sender, PropertyChangedEventArgs e)
         {
-            
+            var senderAsViewModel = (TopDownValuesViewModel)sender;
+
+
+            switch(e.PropertyName)
+            {
+                case nameof(TopDownValuesViewModel.Name):
+                    var backingData = senderAsViewModel.BackingData;
+
+                    var animationToRename = topDownAnimationData
+                        .Animations
+                        .FirstOrDefault(item => item.MovementValuesName == backingData.Name);
+
+                    animationToRename.MovementValuesName = senderAsViewModel.Name;
+
+                    SaveCurrentEntitySaveAnimationDataTask();
+                    
+                    // todo - regenerate
+
+                    break;
+            }
         }
 
     }

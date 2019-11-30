@@ -143,6 +143,13 @@ namespace TopDownPlugin.ViewModels
             get; private set;
         } = new Dictionary<string, TypedValue>();
 
+        [XmlIgnore]
+        public TopDownValues BackingData
+        {
+            get;
+            private set;
+        }
+
         #endregion
 
         public TopDownValuesViewModel Clone()
@@ -175,6 +182,8 @@ namespace TopDownPlugin.ViewModels
             this.AccelerationTime = values.AccelerationTime;
             this.DecelerationTime = values.DecelerationTime;
             this.UpdateDirectionFromVelocity = values.UpdateDirectionFromVelocity;
+
+            this.BackingData = values;
 
             int index = 0;
             foreach(var kvp in values.AdditionalValues)
@@ -209,6 +218,11 @@ namespace TopDownPlugin.ViewModels
             }
 
             return toReturn;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }
