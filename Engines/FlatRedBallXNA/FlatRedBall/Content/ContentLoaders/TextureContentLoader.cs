@@ -228,7 +228,12 @@ namespace FlatRedBall.Content.ContentLoaders
                     var position = Vector2.Zero;
 
                     SpriteBatch spriteBatch = new SpriteBatch(Renderer.GraphicsDevice);
+
+#if MONOGAME
                     spriteBatch.Begin(SpriteSortMode.Immediate, blendColor, samplerState: SamplerState.PointClamp);
+#else
+                    spriteBatch.Begin(SpriteSortMode.Immediate, blendColor, SamplerState.PointClamp, null, null);
+#endif
                     spriteBatch.Draw(file, position, Color.White);
                     spriteBatch.End();
 
@@ -242,7 +247,11 @@ namespace FlatRedBall.Content.ContentLoaders
                     blendAlpha.AlphaSourceBlend = Blend.One;
                     blendAlpha.ColorSourceBlend = Blend.One;
 
+#if MONOGAME
                     spriteBatch.Begin(SpriteSortMode.Immediate, blendAlpha, samplerState: SamplerState.PointClamp);
+#else
+                    spriteBatch.Begin(SpriteSortMode.Immediate, blendAlpha, SamplerState.PointClamp, null, null);
+#endif
                     spriteBatch.Draw(file, position, Color.White);
                     spriteBatch.End();
 
