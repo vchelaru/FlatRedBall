@@ -225,9 +225,11 @@ namespace FlatRedBall.Content.ContentLoaders
                     blendColor.AlphaSourceBlend = Blend.SourceAlpha;
                     blendColor.ColorSourceBlend = Blend.SourceAlpha;
 
+                    var position = Vector2.Zero;
+
                     SpriteBatch spriteBatch = new SpriteBatch(Renderer.GraphicsDevice);
-                    spriteBatch.Begin(SpriteSortMode.Immediate, blendColor);
-                    spriteBatch.Draw(file, file.Bounds, Color.White);
+                    spriteBatch.Begin(SpriteSortMode.Immediate, blendColor, samplerState: SamplerState.PointClamp);
+                    spriteBatch.Draw(file, position, Color.White);
                     spriteBatch.End();
 
                     //Now copy over the alpha values from the PNG source texture to the final one, without multiplying them
@@ -240,8 +242,8 @@ namespace FlatRedBall.Content.ContentLoaders
                     blendAlpha.AlphaSourceBlend = Blend.One;
                     blendAlpha.ColorSourceBlend = Blend.One;
 
-                    spriteBatch.Begin(SpriteSortMode.Immediate, blendAlpha);
-                    spriteBatch.Draw(file, file.Bounds, Color.White);
+                    spriteBatch.Begin(SpriteSortMode.Immediate, blendAlpha, samplerState: SamplerState.PointClamp);
+                    spriteBatch.Draw(file, position, Color.White);
                     spriteBatch.End();
 
                     //Release the GPU back to drawing to the screen
