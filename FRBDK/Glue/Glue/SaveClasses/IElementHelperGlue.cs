@@ -12,6 +12,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -102,8 +103,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     }
 
-                    ProjectManager.SaveProjects();
-                    GluxCommands.Self.SaveGlux();
+                    GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                    GlueCommands.Self.GluxCommands.SaveGluxTask();
 
 
                     TreeNode treeNode = GlueState.Self.Find.ElementTreeNode(elementToRename);
@@ -125,6 +126,8 @@ namespace FlatRedBall.Glue.SaveClasses
                     {
                         ProjectManager.SortAndUpdateUI(elementToRename as ScreenSave);
                     }
+
+                    PluginManager.ReactToElementRenamed(elementToRename, oldName);
                 }
             }
         }

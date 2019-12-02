@@ -153,6 +153,8 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+
+
         #endregion
 
         #region Constructor/Initialize
@@ -1106,6 +1108,16 @@ namespace FlatRedBall.Glue.Plugins
                    }
                 }
             }
+        }
+
+        internal static void ReactToElementRenamed(IElement elementToRename, string oldName)
+        {
+            CallMethodOnPlugin((plugin) =>
+            {
+                plugin.ReactToElementRenamed(elementToRename, oldName);
+            },
+            nameof(ReactToElementRenamed),
+            plugin => plugin.ReactToElementRenamed != null);
         }
 
         internal static void ReactToNewObject(NamedObjectSave newObject)

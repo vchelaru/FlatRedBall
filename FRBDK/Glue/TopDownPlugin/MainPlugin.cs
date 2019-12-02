@@ -58,6 +58,15 @@ namespace TopDownPlugin
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToItemSelectHandler += HandleItemSelected;
             this.ReactToEntityRemoved += HandleElementRemoved;
+            this.ReactToElementRenamed += HandleElementRenamed;
+        }
+
+        private void HandleElementRenamed(IElement renamedElement, string oldName)
+        {
+            if (renamedElement is EntitySave renamedEntity)
+            {
+                MainController.Self.HandleElementRenamed(renamedElement, oldName);
+            }
         }
 
         private void HandleGluxLoaded()

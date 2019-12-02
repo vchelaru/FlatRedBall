@@ -139,6 +139,13 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action<IElement, CustomVariable> ReactToElementVariableChange { get; protected set; }
 
+        /// <summary>
+        /// Raised whenever an element (screen or entity) is renamed. First parameter is the
+        /// renamed element, the second is the old name. The element will already have its new
+        /// name assigned.
+        /// </summary>
+        public Action<IElement, string> ReactToElementRenamed { get; protected set; }
+
         public Action<string> SelectItemInCurrentFile { get; protected set; }
 
         public Action ReactToLoadedGluxEarly { get; protected set; }

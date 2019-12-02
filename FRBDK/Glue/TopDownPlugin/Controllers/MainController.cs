@@ -141,6 +141,14 @@ namespace TopDownPlugin.Controllers
 
         }
 
+        internal void HandleElementRenamed(IElement renamedElement, string oldName)
+        {
+            if(topDownAnimationData != null)
+            {
+                SaveCurrentEntitySaveAnimationDataTask();
+            }
+        }
+
         private void HandleIsTopDownPropertyChanged(TopDownEntityViewModel viewModel)
         {
             if (viewModel.IsTopDown &&
