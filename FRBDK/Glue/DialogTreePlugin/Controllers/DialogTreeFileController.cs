@@ -83,11 +83,18 @@ namespace DialogTreePlugin.Controllers
 
         public string[] GetLocalizationDbEntryOrDefault(string stringId)
         {
-            var toReturn = LocalizationDb.Records.FirstOrDefault(item => item[0] == stringId);
+            var toReturn = LocalizationDb?.Records.FirstOrDefault(item => item[0] == stringId);
 
             if(toReturn == null)
             {
-                toReturn = new string[LocalizationDb.Headers.Length];
+                if(LocalizationDb == null)
+                {
+                    toReturn = new string[2];
+                }
+                else
+                {
+                    toReturn = new string[LocalizationDb.Headers.Length];
+                }
             }
 
             return toReturn;
@@ -128,7 +135,7 @@ namespace DialogTreePlugin.Controllers
                     }
 
                 }
-                TaskManager.Self.AddAsyncTask(
+                TaskManager.Self.Add(
                     () =>
                     {
                         string fileName = GlueCommands.Self.GetAbsoluteFileName(RelativeToGlobalContentLocalizationDbCsvFile, false);
