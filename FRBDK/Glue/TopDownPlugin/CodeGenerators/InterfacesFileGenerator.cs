@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.CodeGenerators;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System;
 using System.Collections.Generic;
@@ -8,27 +9,24 @@ using System.Threading.Tasks;
 
 namespace TopDownPlugin.CodeGenerators
 {
-    public class InterfacesFileGenerator : Singleton<InterfacesFileGenerator>
+    public class InterfacesFileGenerator : FullFileCodeGenerator
     {
-        public void GenerateAndSave()
+        public override string RelativeFile => "TopDown/Interfaces.Generated.cs";
+
+        static InterfacesFileGenerator mSelf;
+        public static InterfacesFileGenerator Self
         {
-            var relativeFile = "TopDown/Interfaces.Generated.cs";
-            TaskManager.Self.Add(() =>
+            get
             {
-                var contents = GenerateFileContents();
-
-
-                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeFile);
-
-                var fullPath = GlueState.Self.CurrentGlueProjectDirectory + relativeFile;
-
-                GlueCommands.Self.TryMultipleTimes(() =>
-               System.IO.File.WriteAllText(fullPath, contents));
-
-            }, "Adding top-down interface files");
+                if (mSelf == null)
+                {
+                    mSelf = new InterfacesFileGenerator();
+                }
+                return mSelf;
+            }
         }
 
-        private string GenerateFileContents()
+        protected override string GenerateFileContents()
         {
             var toReturn = $@"
 

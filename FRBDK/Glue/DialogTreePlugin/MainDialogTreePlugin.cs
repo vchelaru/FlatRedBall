@@ -52,11 +52,12 @@ namespace DialogTreePlugin
                     mJsonType = new AssetTypeInfo();
                     mJsonType.FriendlyName = "Raw Dialog Tree Json (.json)";
                     mJsonType.QualifiedRuntimeTypeName = new PlatformSpecificType();
+                    mJsonType.QualifiedRuntimeTypeName.QualifiedType = "DialogTreePlugin.SaveClasses.Rootobject";
 
                     mJsonType.QualifiedSaveTypeName = null;
                     mJsonType.Extension = "json";
                     mJsonType.AddToManagersMethod = new List<string>();
-                    mJsonType.CustomLoadMethod = null;
+                    mJsonType.CustomLoadFunc = GetRawDialogTreeLoadCode;
                     mJsonType.DestroyMethod = null;
                     mJsonType.SupportsMakeOneWay = false;
                     mJsonType.ShouldAttach = false;
@@ -65,11 +66,16 @@ namespace DialogTreePlugin
                     mJsonType.HasCursorIsOn = false;
                     mJsonType.HasVisibleProperty = false;
                     mJsonType.CanIgnorePausing = false;
-                    mJsonType.HideFromNewFileWindow = true;
+                    mJsonType.HideFromNewFileWindow = false;
                 }
 
                 return mJsonType;
             }
+        }
+
+        private string GetRawDialogTreeLoadCode(IElement element, NamedObjectSave namedObject, ReferencedFileSave file, string contentManager)
+        {
+            return $"{file.GetInstanceName()} = DialogTreeRaw.Rootobject.FromJson({file.Name});";
         }
 
         private AssetTypeInfo mGlsnType;
@@ -179,10 +185,10 @@ namespace DialogTreePlugin
         private void HandleNewFile(ReferencedFileSave newFile)
         {
             //If the new file is a .json, add it to the dialog tree constants.
-            if(newFile.Name.EndsWith(rawFileType))
-            { 
-                JsonToGlsnConverter.Self.HandleJsonFile(newFile);
-            }
+            //if(newFile.Name.EndsWith(rawFileType))
+            //{ 
+            //    JsonToGlsnConverter.Self.HandleJsonFile(newFile);
+            //}
         }
 
         private void HandleFileChanged(string fileName)
@@ -194,11 +200,11 @@ namespace DialogTreePlugin
 
             if(fileName.EndsWith(rawFileType))
             {
-                var file = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().FirstOrDefault(item => fileName.EndsWith(item.Name));
-                if(file != null)
-                {
-                    JsonToGlsnConverter.Self.HandleJsonFile(file);
-                }
+                //var file = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().FirstOrDefault(item => fileName.EndsWith(item.Name));
+                //if(file != null)
+                //{
+                //    JsonToGlsnConverter.Self.HandleJsonFile(file);
+                //}
             }
         }
     }

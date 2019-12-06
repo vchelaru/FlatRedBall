@@ -54,6 +54,7 @@ namespace FlatRedBall.Glue.Elements
 
     #endregion
 
+    #region MemberWithType Class
     public class MemberWithType
     {
         public string Member;
@@ -64,7 +65,7 @@ namespace FlatRedBall.Glue.Elements
             return string.Format("{0} ({1})", Member, Type);
         }
     }
-
+    #endregion
 
     public class AssetTypeInfo
 	{
@@ -174,6 +175,7 @@ namespace FlatRedBall.Glue.Elements
         /// * string - the content manager in context
         /// * string - the return value which is the code for loading
         /// </summary>
+        /// <remarks>This takes priority over CustomLoadMethod</remarks>
         [XmlIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> CustomLoadFunc;
 
@@ -253,7 +255,8 @@ namespace FlatRedBall.Glue.Elements
         public bool CanIgnorePausing;
 
         /// <summary>
-        /// Line of code used to load a given piece of content. If this is blank, then FlatRedBallServices.Load will be used.
+        /// Line of code used to load a given piece of content. This is not used if CustomLoadFunc is not null.
+        /// If this is blank, then FlatRedBallServices.Load will be used.
         /// </summary>
         /// <remarks>
         /// Supported parameters:
@@ -264,9 +267,6 @@ namespace FlatRedBall.Glue.Elements
         /// * {CONTENT_MANAGER_NAME}
         /// </remarks>
         public string CustomLoadMethod;
-
-
-
 
         public string CustomBuildToolName;
 

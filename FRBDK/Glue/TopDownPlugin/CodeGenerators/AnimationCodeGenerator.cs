@@ -14,8 +14,6 @@ namespace TopDownPlugin.CodeGenerators
     {
         public const string DirectionBasedAnimationLayerFile = "TopDown/DirectionBasedAnimationLayer.Generated.cs";
         public const string AnimationSetFileName = "TopDown/AnimationSet.Generated.cs";
-        public const string ITopDownEntityInterfaceFile =
-            "TopDown/ITopDownEntity";
 
         public void GenerateAndSave()
         {

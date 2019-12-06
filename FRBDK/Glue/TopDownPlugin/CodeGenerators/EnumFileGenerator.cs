@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.CodeGenerators;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System;
 using System.Collections.Generic;
@@ -8,27 +9,24 @@ using System.Threading.Tasks;
 
 namespace TopDownPlugin.CodeGenerators
 {
-    class EnumFileGenerator : Singleton<EnumFileGenerator>
+    class EnumFileGenerator : FullFileCodeGenerator
     {
-        public void GenerateAndSaveEnumFile()
+        public override string RelativeFile => "TopDown/Enums.Generated.cs";
+
+        static EnumFileGenerator mSelf;
+        public static EnumFileGenerator Self
         {
-            var relativeDirectory = "TopDown/Enums.Generated.cs";
-            TaskManager.Self.AddSync(() =>
+            get
             {
-                var contents = GenerateFileContents();
-
-
-                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeDirectory);
-
-                var fullFile = GlueState.Self.CurrentGlueProjectDirectory + relativeDirectory;
-
-                GlueCommands.Self.TryMultipleTimes(() =>
-                    System.IO.File.WriteAllText(fullFile, contents));
-
-            }, "Adding top-down enum files to the project");
+                if (mSelf == null)
+                {
+                    mSelf = new EnumFileGenerator();
+                }
+                return mSelf;
+            }
         }
 
-        private string GenerateFileContents()
+        protected override string GenerateFileContents()
         {
             var toReturn =
 $@"

@@ -115,6 +115,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "New Project Creator", "New 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewProjectCreator", "..\NewProjectCreator\NewProjectCreator\NewProjectCreator.csproj", "{287538D1-2DDA-48C9-8BEA-891AB0C76C7D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArticyDraftPlugin", "ArticyDraftPlugin\ArticyDraftPlugin.csproj", "{B213C113-78E1-47DB-AECB-4671F703C5B8}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
@@ -380,6 +382,12 @@ Global
 		{287538D1-2DDA-48C9-8BEA-891AB0C76C7D}.Release|x86.Build.0 = Release|x86
 		{287538D1-2DDA-48C9-8BEA-891AB0C76C7D}.UnitTests|x86.ActiveCfg = Release|x86
 		{287538D1-2DDA-48C9-8BEA-891AB0C76C7D}.UnitTests|x86.Build.0 = Release|x86
+		{B213C113-78E1-47DB-AECB-4671F703C5B8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B213C113-78E1-47DB-AECB-4671F703C5B8}.Debug|x86.Build.0 = Debug|Any CPU
+		{B213C113-78E1-47DB-AECB-4671F703C5B8}.Release|x86.ActiveCfg = Release|Any CPU
+		{B213C113-78E1-47DB-AECB-4671F703C5B8}.Release|x86.Build.0 = Release|Any CPU
+		{B213C113-78E1-47DB-AECB-4671F703C5B8}.UnitTests|x86.ActiveCfg = Release|Any CPU
+		{B213C113-78E1-47DB-AECB-4671F703C5B8}.UnitTests|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -433,6 +441,7 @@ Global
 		{CE3CC7E8-0005-4551-B94A-FA28E2480A00} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
 		{F5E0D8C2-2DCF-4732-A8AA-03E74EA46E6D} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
 		{287538D1-2DDA-48C9-8BEA-891AB0C76C7D} = {37508B76-01B0-44EB-905A-84AE9967E78A}
+		{B213C113-78E1-47DB-AECB-4671F703C5B8} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {878CCBB8-EADE-4F25-9DE7-D55D999D414A}

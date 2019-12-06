@@ -82,7 +82,7 @@ namespace TopDownPlugin
             if (anyTopDownEntities)
             {
                 // just in case it's not there:
-                EnumFileGenerator.Self.GenerateAndSaveEnumFile();
+                EnumFileGenerator.Self.GenerateAndSave();
                 InterfacesFileGenerator.Self.GenerateAndSave();
                 AiCodeGenerator.Self.GenerateAndSave();
                 AnimationCodeGenerator.Self.GenerateAndSave();

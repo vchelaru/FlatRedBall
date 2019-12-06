@@ -129,7 +129,7 @@ namespace TopDownPlugin.Controllers
                     () =>
                     {
                         GlueCommands.Self.GluxCommands.SaveGlux();
-                        EnumFileGenerator.Self.GenerateAndSaveEnumFile();
+                        EnumFileGenerator.Self.GenerateAndSave();
                         InterfacesFileGenerator.Self.GenerateAndSave();
                         if(shouldGenerateCsv || shouldAddTopDownVariables)
                         {
@@ -174,10 +174,10 @@ namespace TopDownPlugin.Controllers
             {
                 FilePath absoluteFile =
                     GlueState.Self.CurrentGlueProjectDirectory +
-                    AiCodeGenerator.RelativeFile;
+                    AiCodeGenerator.Self.RelativeFile;
 
                 TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.RemoveFromProjects(absoluteFile),
-                    "Removing " + AiCodeGenerator.RelativeFile);
+                    "Removing " + AiCodeGenerator.Self.RelativeFile);
 
                 // todo - probably need to remove all the other files that are created for top down
             }
