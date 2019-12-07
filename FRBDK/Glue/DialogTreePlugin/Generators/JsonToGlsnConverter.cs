@@ -40,14 +40,8 @@ namespace DialogTreePlugin.Generators
                 //Update the localizationdb
                 DialogTreeFileController.Self.UpdateLocalizationDb(localizationDbEntriesToAdd.ToArray(), isGlsnChange: true);
 
-                //Regen the dialog tree constants.
-                CodeGenerator.Self.AddNewTrackedFile(convertedFileName, isGlueLoad);
 
-                //Regen the tag constants
-                CodeGenerator.Self.AddTrackedDialogTreeTag(convertedDialogTree.passages.SelectMany(item => item.tags).ToArray(), isGlueLoad);
-
-                //Update the glue project to include the .glsn instead of the .json
-                ReplaceGluxJsonReferenceWithGlsn(newFile, convertedFileName);
+                RootObjectCodeGenerator.Self.GenerateAndSave();
             }
         }
 

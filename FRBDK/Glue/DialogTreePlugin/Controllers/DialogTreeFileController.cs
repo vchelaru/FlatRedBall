@@ -56,14 +56,14 @@ namespace DialogTreePlugin.Controllers
             serializer.WriteObject(createStream, convertedDialogTree);
         }
 
-        public DialogTreeRaw.Rootobject DeserializeRawDialogTree(string fileName)
+        public DialogTreeRaw.RootObject DeserializeRawDialogTree(string fileName)
         {
-            DialogTreeRaw.Rootobject deserializedDialogTree;
+            DialogTreeRaw.RootObject deserializedDialogTree;
             try
             {
                 Stream openStream = new FileStream(fileName, FileMode.Open);
-                var serializer = new DataContractJsonSerializer(typeof(DialogTreeRaw.Rootobject));
-                deserializedDialogTree = (DialogTreeRaw.Rootobject)serializer.ReadObject(openStream);
+                var serializer = new DataContractJsonSerializer(typeof(DialogTreeRaw.RootObject));
+                deserializedDialogTree = (DialogTreeRaw.RootObject)serializer.ReadObject(openStream);
             }
             catch
             {

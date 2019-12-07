@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.CodeGeneration;
 
 namespace DialogTreePlugin
 {
@@ -52,7 +53,7 @@ namespace DialogTreePlugin
                     mJsonType = new AssetTypeInfo();
                     mJsonType.FriendlyName = "Raw Dialog Tree Json (.json)";
                     mJsonType.QualifiedRuntimeTypeName = new PlatformSpecificType();
-                    mJsonType.QualifiedRuntimeTypeName.QualifiedType = "DialogTreePlugin.SaveClasses.Rootobject";
+                    mJsonType.QualifiedRuntimeTypeName.QualifiedType = "DialogTreePlugin.SaveClasses.DialogTreeRaw.RootObject";
 
                     mJsonType.QualifiedSaveTypeName = null;
                     mJsonType.Extension = "json";
@@ -73,9 +74,14 @@ namespace DialogTreePlugin
             }
         }
 
-        private string GetRawDialogTreeLoadCode(IElement element, NamedObjectSave namedObject, ReferencedFileSave file, string contentManager)
+        private string GetRawDialogTreeLoadCode(IElement element, NamedObjectSave namedObject, ReferencedFileSave referencedFile, string contentManager)
         {
-            return $"{file.GetInstanceName()} = DialogTreeRaw.Rootobject.FromJson({file.Name});";
+
+            var fileName = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(referencedFile, referencedFile.GetAssetTypeInfo());
+
+            fileName = referencedFile.Name.ToLower().Replace("\\", "/");
+
+            return $"{referencedFile.GetInstanceName()} = DialogTreePlugin.SaveClasses.DialogTreeRaw.RootObject.FromJson(\"{fileName}\");";
         }
 
         private AssetTypeInfo mGlsnType;
@@ -146,14 +152,13 @@ namespace DialogTreePlugin
             var jsonRefs = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Where(item => FileManager.GetExtension(item.Name) == rawFileType);
             if(jsonRefs.Count() > 0)
             {
-                foreach(var fileRef in jsonRefs)
-                {
-                    JsonToGlsnConverter.Self.HandleJsonFile(fileRef, isGlueLoad: true);
-                }
+                //foreach(var fileRef in jsonRefs)
+                //{
+                //    JsonToGlsnConverter.Self.HandleJsonFile(fileRef, isGlueLoad: true);
+                //}
 
-                //Regen the code after converting the .glsn files on load.
-                CodeGenerator.Self.RegenCodeDialogTreeFileName();
-                CodeGenerator.Self.RegenCodeDialogTreeTags();
+                RootObjectCodeGenerator.Self.GenerateAndSave();
+
             }
         }
 

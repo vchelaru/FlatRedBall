@@ -71,9 +71,9 @@
   <ItemGroup>
     <Compile Include="Controllers\DialogTreeFileController.cs" />
     <Compile Include="Controllers\TabConroller.cs" />
-    <Compile Include="Generators\CodeGenerator.cs" />
     <Compile Include="Generators\CsvGenerator.cs" />
     <Compile Include="Generators\JsonToGlsnConverter.cs" />
+    <Compile Include="Generators\RootObjectCodeGenerator.cs" />
     <Compile Include="MainDialogTreePlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveClasses\DialogTree.cs" />

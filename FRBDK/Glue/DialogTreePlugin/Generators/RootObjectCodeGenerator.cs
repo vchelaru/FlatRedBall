@@ -1,4 +1,32 @@
-﻿using System.IO;
+﻿using FlatRedBall.Glue.Plugins.CodeGenerators;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DialogTreePlugin.Generators
+{
+    public class RootObjectCodeGenerator : FullFileCodeGenerator
+    {
+        static RootObjectCodeGenerator mSelf;
+
+        public static RootObjectCodeGenerator Self
+        {
+            get
+            {
+                if (mSelf == null) mSelf = new RootObjectCodeGenerator();
+                return mSelf;
+            }
+        }
+
+        public override string RelativeFile => "DialogTreePlugin/RootObject.Generated.cs";
+
+        protected override string GenerateFileContents()
+        {
+            var contents = @"
+
+using System.IO;
 using System.Runtime.Serialization.Json;
 
 namespace DialogTreePlugin.SaveClasses
@@ -37,15 +65,6 @@ namespace DialogTreePlugin.SaveClasses
             public string[] tags { get; set; }
 
             public Position position { get; set; }
-
-            public DialogTreeConverted.Passage ToConvertedPassage()
-            {
-                return new DialogTreeConverted.Passage()
-                {
-                    pid = int.Parse(this.pid),
-                    tags = (string[])this.tags?.Clone()
-                };
-            }
         }
 
         public class Link
@@ -53,14 +72,6 @@ namespace DialogTreePlugin.SaveClasses
             public string name { get; set; }
             public string link { get; set; }
             public string pid { get; set; }
-
-            public DialogTreeConverted.Link ToConvertedLink()
-            {
-                return new DialogTreeConverted.Link()
-                {
-                    pid = int.Parse(this.pid)
-                };
-            }
         }
 
         public class Position
@@ -69,36 +80,12 @@ namespace DialogTreePlugin.SaveClasses
             public int y { get; set; }
         }
 
-
     }
+}
 
-    public class DialogTreeConverted
-    {
-        public class Rootobject
-        {
-            public Passage[] passages { get; set; }
-            public string name { get; set; }
-            public int startnodepid { get; set; }
-            public string pluginversion { get; set; }
-        }
+";
 
-        public class Passage
-        {
-            public string stringid { get; set; }
-            public Link[] links { get; set; }
-            public int pid { get; set; }
-            private string[] mTags;
-            public string[] tags
-            {
-                get => mTags ?? new string[0];
-                set { mTags = value; }
-            }
-        }
-
-        public class Link
-        {
-            public string stringid { get; set; }
-            public int pid { get; set; }
+            return contents;
         }
     }
 }
