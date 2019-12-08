@@ -79,8 +79,6 @@ namespace DialogTreePlugin
 
             var fileName = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(referencedFile, referencedFile.GetAssetTypeInfo());
 
-            fileName = referencedFile.Name.ToLower().Replace("\\", "/");
-
             return $"{referencedFile.GetInstanceName()} = DialogTreePlugin.SaveClasses.DialogTreeRaw.RootObject.FromJson(\"{fileName}\");";
         }
 

@@ -145,7 +145,7 @@ namespace FlatRedBall.Gui
         /// method.  The windowGrabbed's onDrag event is fired every frame.
         /// </remarks>
         #endregion
-        public IWindow mWindowGrabbed;
+        public IWindow WindowGrabbed;
 
         internal Sides mSidesGrabbed = Sides.None;
 
@@ -464,7 +464,7 @@ namespace FlatRedBall.Gui
 
                     WindowPushed = null;
                     WindowOver = null;
-                    mWindowGrabbed = null;
+                    WindowGrabbed = null;
                 }
             }
             get { return active; }
@@ -687,6 +687,11 @@ namespace FlatRedBall.Gui
 
         }
 
+        /// <summary>
+        /// Returns the number of pixels on the X axis
+        /// that the cursor has moved since the last
+        /// frame. This can be used to move grabbed windows.
+        /// </summary>
         public int ScreenXChange
         {
             get
@@ -695,6 +700,11 @@ namespace FlatRedBall.Gui
             }
         }
 
+        /// <summary>
+        /// Returns the number of pixels on the Y axis
+        /// that the cursor has moved since the last
+        /// frame. This can be used to move grabbed windows.
+        /// </summary>
         public int ScreenYChange
         {
             get
@@ -1311,12 +1321,12 @@ namespace FlatRedBall.Gui
         #endregion
         public void GrabWindow(IWindow windowToGrab)
         {
-            this.mWindowGrabbed = windowToGrab;
+            this.WindowGrabbed = windowToGrab;
 
             float cursorX = XForUI;
             float cursorY = YForUI;
 
-            if (mWindowGrabbed != null)
+            if (WindowGrabbed != null)
             {
                 mGrabbedWindowRelativeX = (float)(windowToGrab.WorldUnitX - cursorX);
                 mGrabbedWindowRelativeY = (float)(windowToGrab.WorldUnitY - cursorY);
@@ -2176,7 +2186,7 @@ namespace FlatRedBall.Gui
             //sb.Append("Y Velocity: ").Append(YVelocity).Append("\n");
             sb.Append("PrimaryDown: ").Append(PrimaryDown).Append("\n");
             sb.Append("PrimaryPush: ").Append(PrimaryPush).Append("\n");
-            sb.Append("\nWindow Grabbed: ").Append(mWindowGrabbed);
+            sb.Append("\nWindow Grabbed: ").Append(WindowGrabbed);
 
 
 
@@ -2988,19 +2998,19 @@ namespace FlatRedBall.Gui
         private void WindowMovingActivity()
         {
 
-            if (mWindowGrabbed != null)
+            if (WindowGrabbed != null)
             {
-                if (mWindowGrabbed.MovesWhenGrabbed)
+                if (WindowGrabbed.MovesWhenGrabbed)
                 {
-                    if (mWindowGrabbed.Parent == null)
+                    if (WindowGrabbed.Parent == null)
                     {
 
                         float outX = 0;
                         float outY = 0;
 
                         GetCursorPosition(out outX, out outY, 0);
-                        mWindowGrabbed.WorldUnitX = outX + mGrabbedWindowRelativeX;
-                        mWindowGrabbed.WorldUnitY = outY + mGrabbedWindowRelativeY;
+                        WindowGrabbed.WorldUnitX = outX + mGrabbedWindowRelativeX;
+                        WindowGrabbed.WorldUnitY = outY + mGrabbedWindowRelativeY;
                     }
                     else
                     {
@@ -3009,12 +3019,12 @@ namespace FlatRedBall.Gui
 
                         GetCursorPosition(out cursorX, out cursorY, 0);
 
-                        mWindowGrabbed.WorldUnitRelativeX = cursorX + mGrabbedWindowRelativeX - mWindowGrabbed.Parent.WorldUnitX;
-                        mWindowGrabbed.WorldUnitRelativeY = cursorY + mGrabbedWindowRelativeY - mWindowGrabbed.Parent.WorldUnitY;
+                        WindowGrabbed.WorldUnitRelativeX = cursorX + mGrabbedWindowRelativeX - WindowGrabbed.Parent.WorldUnitX;
+                        WindowGrabbed.WorldUnitRelativeY = cursorY + mGrabbedWindowRelativeY - WindowGrabbed.Parent.WorldUnitY;
                     }
                 }
 
-                mWindowGrabbed.OnDragging();
+                WindowGrabbed.OnDragging();
             }
         }
         

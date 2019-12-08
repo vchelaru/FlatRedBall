@@ -924,7 +924,7 @@ namespace FlatRedBall.Gui
             #region letting go of any grabbed window
             if (Cursor.PrimaryClick)
             {
-                Cursor.mWindowGrabbed = null;
+                Cursor.WindowGrabbed = null;
                 Cursor.mSidesGrabbed = Sides.None;
 
             }

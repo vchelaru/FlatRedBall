@@ -22,6 +22,12 @@ namespace Gum.Wireframe
         public event WindowEvent ClickNoSlide;
         public event WindowEvent SlideOnClick;
         public event WindowEvent Push;
+
+        /// <summary>
+        /// Obsolete - this does not work. Use RollOn, RollOf, or RollOver
+        /// for events raised when over an object.
+        /// </summary>
+        [Obsolete("Use RollOn, RollOff, or RollOver")]
         public event WindowEvent DragOver;
 
         public event WindowEvent RollOn;
