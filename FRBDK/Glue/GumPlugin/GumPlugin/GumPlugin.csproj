@@ -60,6 +60,9 @@
     <Reference Include="Microsoft.Build.Engine">
       <HintPath>..\..\Glue\Libraries\MSBuild\Current\Microsoft.Build.Engine.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -120,6 +123,7 @@
     <EmbeddedResource Include="Embedded\PositionedObjectGueWrapper.cs" />
     <Compile Include="FileAssociations\FileAssociation.cs" />
     <Compile Include="Managers\AppCommands.cs" />
+    <Compile Include="Managers\EventExportManager.cs" />
     <Compile Include="Managers\GumxPropertiesManager.cs" />
     <Compile Include="Resource1.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -548,6 +552,7 @@
     <None Include="app.config" />
     <None Include="Embedded\EmbeddedObjectGumProject\GumProject.gumx" />
     <EmbeddedResource Include="Embedded\EmptyProject\Standards\Polygon.gutx" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

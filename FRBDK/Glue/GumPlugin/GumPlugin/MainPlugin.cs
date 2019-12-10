@@ -601,6 +601,10 @@ namespace GumPlugin
                     // and more precise by only generating the selected element:
                     CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
                 }
+                else if(extension == "json")
+                {
+                    GumPlugin.Managers.EventExportManager.Self.HandleEventExportFile(fileName);
+                }
             }
         }
 

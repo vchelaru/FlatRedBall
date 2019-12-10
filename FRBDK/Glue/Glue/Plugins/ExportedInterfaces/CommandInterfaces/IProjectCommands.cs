@@ -53,8 +53,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// Removes the argument filePath from all currently-loaded files, and saves the projects.
         /// </summary>
         /// <param name="filePath">The file path to remove</param>
-        void RemoveFromProjects(FilePath filePath);
+        void RemoveFromProjects(FilePath filePath, bool saveAfterRemoving = true);
         void RemoveFromProjects(string absoluteFileName);
+        void RemoveFromProjectsTask(FilePath absoluteFileName, bool saveAfterRemoving = true);
 
         bool UpdateFileMembershipInProject(ReferencedFileSave referencedFileSave);
 

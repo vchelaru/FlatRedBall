@@ -575,7 +575,9 @@ namespace FlatRedBall.Glue
         {
             string elementName = element.Name;
 
-            RemoveItemFromAllProjects(elementName + ".cs");
+
+            GlueCommands.Self.ProjectCommands.RemoveFromProjects(
+                GlueState.Self.CurrentGlueProjectDirectory + elementName + ".cs");
             filesThatCouldBeRemoved.Add(elementName + ".cs");
 
             // gotta also remove the generated file

@@ -602,10 +602,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-
-        public void RemoveFromProjects(FilePath filePath)
+        public void RemoveFromProjectsTask(FilePath filePath, bool save = true)
         {
-            ProjectManager.RemoveItemFromAllProjects(filePath.FullPath);
+            TaskManager.Self.Add(() =>
+                ProjectManager.RemoveItemFromAllProjects(filePath.FullPath, save),
+                $"Removing {filePath.FullPath}");
+        }
+
+        public void RemoveFromProjects(FilePath filePath, bool saveAfterRemoving = true)
+        {
+            ProjectManager.RemoveItemFromAllProjects(filePath.FullPath, saveAfterRemoving);
         }
 
         public void RemoveFromProjects(string absoluteFileName)

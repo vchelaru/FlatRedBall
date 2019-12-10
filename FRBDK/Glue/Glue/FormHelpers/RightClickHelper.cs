@@ -1306,12 +1306,12 @@ namespace FlatRedBall.Glue.FormHelpers
                             {
                                 foreach (string file in filesToRemove)
                                 {
-                                    string fileName = ProjectManager.MakeAbsolute(file);
+                                    FilePath fileName = ProjectManager.MakeAbsolute(file);
                                     // This file may have been removed
                                     // in windows explorer, and now removed
                                     // from Glue.  Check to prevent a crash.
 
-                                    ProjectManager.RemoveItemFromAllProjects(fileName, false);
+                                    GlueCommands.Self.ProjectCommands.RemoveFromProjects(fileName, false);
                                 }
                             }
 
