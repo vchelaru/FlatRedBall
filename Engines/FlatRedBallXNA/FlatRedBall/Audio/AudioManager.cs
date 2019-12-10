@@ -203,6 +203,13 @@ namespace FlatRedBall.Audio
             }
         }
 
+        /// <summary>
+        /// Returns whether the argument SoundEffect is playing. If true, then the SoundEffect is already
+        /// playing. If false, the SoundEffect is not playing. This will only check SoundEffects which were 
+        /// played through the AudioManager.Play method.
+        /// </summary>
+        /// <param name="soundEffect">The SoundEffect to test.</param>
+        /// <returns>Whether the sound effect is playing.</returns>
         public static bool IsSoundEffectPlaying(SoundEffect soundEffect)
         {
             for (int i = 0; i < mSoundEffectPlayInfos.Count; i++)
@@ -215,7 +222,10 @@ namespace FlatRedBall.Audio
             return false;
         }
 
-
+        /// <summary>
+        /// Plays the argument sound effect using a default Volume, pitch, and pan.
+        /// </summary>
+        /// <param name="soundEffect"></param>
         public static void Play(SoundEffect soundEffect)
         {
             Play(soundEffect, 1);
@@ -303,7 +313,10 @@ namespace FlatRedBall.Audio
             }
         }
 
-
+        /// <summary>
+        /// Checks if the argument sound effect if playing. If not, plays the sound effect.
+        /// </summary>
+        /// <param name="soundEffect">The sound effect to play.</param>
         public static void PlayIfNotPlaying(SoundEffect soundEffect)
         {
             if(!IsSoundEffectPlaying(soundEffect))
