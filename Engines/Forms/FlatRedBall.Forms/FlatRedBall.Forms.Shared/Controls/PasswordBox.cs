@@ -149,7 +149,7 @@ namespace FlatRedBall.Forms.Controls
 #endif
                     caretIndex++;
 
-                    UpdateToCaretIndex();
+                    UpdateCaretPositionToCaretIndex();
                     OffsetTextToKeepCaretInView();
                     UpdateDisplayedCharacters();
                     PasswordChanged?.Invoke(this, null);

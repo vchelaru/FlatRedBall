@@ -13,7 +13,10 @@ namespace FlatRedBall.Forms.Controls
 
         protected override string DisplayedText
         {
-            get { return Text; }
+            get 
+            { 
+                return Text; 
+            }
         }
 
         public string Text
@@ -97,7 +100,7 @@ namespace FlatRedBall.Forms.Controls
                     this.Text = this.Text.Insert(caretIndex, "" + character);
                     caretIndex++;
                 }
-                UpdateToCaretIndex();
+                UpdateCaretPositionToCaretIndex();
                 OffsetTextToKeepCaretInView();
 
             }
@@ -184,7 +187,7 @@ namespace FlatRedBall.Forms.Controls
                     this.Text = this.Text.Insert(caretIndex, "" + character);
                     caretIndex++;
                 }
-                UpdateToCaretIndex();
+                UpdateCaretPositionToCaretIndex();
                 OffsetTextToKeepCaretInView();
             }
         }
@@ -208,7 +211,9 @@ namespace FlatRedBall.Forms.Controls
 
                 if(SelectionLength == 0)
                 {
+                    // set the field (doesn't update the selection visuals)...
                     selectionStart = System.Math.Min(oldIndex, newIndex);
+                    // ...now set the property to update the visuals.
                     SelectionLength = System.Math.Abs(oldIndex - newIndex);
                 }
                 else
@@ -235,7 +240,7 @@ namespace FlatRedBall.Forms.Controls
                 SelectionLength = 0;
             }
         }
-
+        
         #endregion
 
         #region Utilities

@@ -2,6 +2,7 @@
 using FlatRedBall.Gui;
 using Gum.Wireframe;
 using Microsoft.Xna.Framework.Input;
+using RenderingLibrary;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -40,7 +41,7 @@ namespace FlatRedBall.Forms.Controls
             set
             {
                 caretIndex = value;
-                UpdateToCaretIndex();
+                UpdateCaretPositionToCaretIndex();
                 OffsetTextToKeepCaretInView();
             }
         }
@@ -69,6 +70,19 @@ namespace FlatRedBall.Forms.Controls
         }
 
         protected abstract string DisplayedText { get; }
+
+        TextWrapping textWrapping;
+        public TextWrapping TextWrapping
+        {
+            get => textWrapping;
+            set
+            {
+                if (value != textWrapping)
+                {
+                    UpdateToTextWrappingChanged();
+                }
+            }
+        }
 
         /// <summary>
         /// The cursor index where the cursor was last pushed, used for drag+select
@@ -180,7 +194,7 @@ namespace FlatRedBall.Forms.Controls
             }
             else if(GuiManager.Cursor.PrimaryClickNoSlide)
             {
-                UpdateCarrotIndexFromCursor();
+                UpdateCaretIndexFromCursor();
             }
 
             GuiManager.AddNextPushAction(TryLoseFocusFromPush);
@@ -269,7 +283,7 @@ namespace FlatRedBall.Forms.Controls
             UpdateState();
         }
 
-        private void UpdateCarrotIndexFromCursor()
+        private void UpdateCaretIndexFromCursor()
         {
             int index = GetCaretIndexAtCursor();
 
@@ -279,16 +293,52 @@ namespace FlatRedBall.Forms.Controls
         private int GetCaretIndexAtCursor()
         {
             var cursorScreenX = GuiManager.Cursor.GumX();
-            var leftOfText = this.textComponent.AbsoluteX;
-            var cursorOffset = cursorScreenX - leftOfText;
+            var cursorScreenY = GuiManager.Cursor.GumY();
+            return GetCaretIndexAtPosition(cursorScreenX, cursorScreenY);
+        }
 
-            var index = DisplayedText?.Length ?? 0;
+        private int GetCaretIndexAtPosition(float screenX, float screenY)
+        {
+            var leftOfText = this.textComponent.GetAbsoluteLeft();
+            var cursorOffset = screenX - leftOfText;
+
+            int index = 0;
+
+            if (TextWrapping == TextWrapping.NoWrap)
+            {
+                var textToUse = DisplayedText;
+                index = GetIndex(cursorOffset, textToUse);
+            }
+            else
+            {
+                var bitmapFont = coreTextObject.BitmapFont;
+                var lineHeight = bitmapFont.LineHeightInPixels;
+                var topOfText = this.textComponent.GetAbsoluteTop();
+                var cursorYOffset = screenY - topOfText;
+
+                var lineOn = System.Math.Min((int)cursorYOffset / lineHeight, coreTextObject.WrappedText.Count - 1);
+
+                index = GetIndex(cursorOffset, coreTextObject.WrappedText[lineOn]);
+
+                for (int line = 0; line < lineOn; line++)
+                {
+                    index += coreTextObject.WrappedText[line].Length;
+                }
+
+            }
+
+            return index;
+        }
+
+        private int GetIndex(float cursorOffset, string textToUse)
+        {
+            var index = textToUse?.Length ?? 0;
             float distanceMeasuredSoFar = 0;
             var bitmapFont = this.coreTextObject.BitmapFont;
 
-            for (int i = 0; i < (DisplayedText?.Length ?? 0); i++)
+            for (int i = 0; i < (textToUse?.Length ?? 0); i++)
             {
-                char character = DisplayedText[i];
+                char character = textToUse[i];
                 RenderingLibrary.Graphics.BitmapCharacterInfo characterInfo = bitmapFont.GetCharacterInfo(character);
 
                 int advance = 0;
@@ -358,6 +408,12 @@ namespace FlatRedBall.Forms.Controls
                             caretIndex++;
                         }
                         break;
+                    case Keys.Up:
+                        MoveCursorUpOneLine();
+                        break;
+                    case Keys.Down:
+                        MoveCursorDownOneLine();
+                        break;
                     case Microsoft.Xna.Framework.Input.Keys.Delete:
                         if (caretIndex < (DisplayedText?.Length ?? 0))
                         {
@@ -388,7 +444,7 @@ namespace FlatRedBall.Forms.Controls
                 if (oldIndex != caretIndex)
                 {
                     UpdateToCaretChanged(oldIndex, caretIndex, isShiftDown);
-                    UpdateToCaretIndex();
+                    UpdateCaretPositionToCaretIndex();
                     OffsetTextToKeepCaretInView();
                 }
 
@@ -398,6 +454,34 @@ namespace FlatRedBall.Forms.Controls
 
 
             }
+        }
+
+        private void MoveCursorUpOneLine()
+        {
+            var absoluteX = caretComponent.GetAbsoluteCenterX();
+            var absoluteY = caretComponent.GetAbsoluteCenterY();
+
+            var lineHeight = coreTextObject.BitmapFont.LineHeightInPixels;
+
+            var newY = absoluteY - lineHeight;
+
+            var index = GetCaretIndexAtPosition(absoluteX, newY);
+
+            CaretIndex = index;
+        }
+
+        private void MoveCursorDownOneLine()
+        {
+            var absoluteX = caretComponent.GetAbsoluteCenterX();
+            var absoluteY = caretComponent.GetAbsoluteCenterY();
+
+            var lineHeight = coreTextObject.BitmapFont.LineHeightInPixels;
+
+            var newY = absoluteY - lineHeight;
+
+            var index = GetCaretIndexAtPosition(absoluteX, newY);
+
+            CaretIndex = index;
         }
 
         protected virtual void HandleCopy()
@@ -471,12 +555,45 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        protected void UpdateToCaretIndex()
+        protected void UpdateCaretPositionToCaretIndex()
         {
-            // make sure we measure a valid string
-            var stringToMeasure = DisplayedText ?? "";
+            if(TextWrapping == TextWrapping.NoWrap)
+            {
+                // make sure we measure a valid string
+                var stringToMeasure = DisplayedText ?? "";
 
-            var substring = stringToMeasure.Substring(0, caretIndex);
+                SetCaretPositionForLine(stringToMeasure, caretIndex);
+            }
+            else
+            {
+                int charactersLeft = caretIndex;
+                int lineNumber = 0;
+
+                for(int i = 0; i < coreTextObject.WrappedText.Count; i++)
+                {
+                    var lineLength = coreTextObject.WrappedText[i].Length;
+                    if (charactersLeft <= lineLength)
+                    {
+                        SetCaretPositionForLine(coreTextObject.WrappedText[i], charactersLeft);
+                        break;
+                    }
+                    else
+                    {
+                        charactersLeft -= lineLength;
+                        lineNumber++;
+                    }
+                }
+
+                var lineHeight = coreTextObject.BitmapFont.LineHeightInPixels;
+
+                caretComponent.Y = (textComponent as IPositionedSizedObject).Y +
+                    lineNumber * lineHeight;
+            }
+        }
+
+        private void SetCaretPositionForLine(string stringToMeasure, int indexIntoLine)
+        {
+            var substring = stringToMeasure.Substring(0, indexIntoLine);
             var measure = this.coreTextObject.BitmapFont.MeasureString(substring);
             caretComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
             caretComponent.X = measure + this.textComponent.X;
@@ -508,6 +625,14 @@ namespace FlatRedBall.Forms.Controls
         private void UpdateCaretVisibility()
         {
             caretComponent.Visible = hasFocus && selectionLength == 0;
+        }
+
+        private void UpdateToTextWrappingChanged()
+        {
+            if (textWrapping == TextWrapping.Wrap)
+            {
+
+            }
         }
 
         protected void UpdateToSelection()
@@ -545,30 +670,37 @@ namespace FlatRedBall.Forms.Controls
 
         protected void OffsetTextToKeepCaretInView()
         {
-            this.textComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
-            this.caretComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
-
-            float leftOfCaret = caretComponent.AbsoluteX;
-            float rightOfCaret = caretComponent.AbsoluteX + caretComponent.GetAbsoluteWidth();
-
-            float leftOfParent = caretComponent.EffectiveParentGue.AbsoluteX;
-            float rightOfParent = caretComponent.EffectiveParentGue.AbsoluteX +
-                caretComponent.EffectiveParentGue.GetAbsoluteWidth();
-
-            float shiftAmount = 0;
-            if (rightOfCaret > rightOfParent)
+            if(this.TextWrapping == TextWrapping.NoWrap)
             {
-                shiftAmount = rightOfParent - rightOfCaret - edgeToTextPadding;
+                this.textComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
+                this.caretComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
+
+                float leftOfCaret = caretComponent.AbsoluteX;
+                float rightOfCaret = caretComponent.AbsoluteX + caretComponent.GetAbsoluteWidth();
+
+                float leftOfParent = caretComponent.EffectiveParentGue.AbsoluteX;
+                float rightOfParent = caretComponent.EffectiveParentGue.AbsoluteX +
+                    caretComponent.EffectiveParentGue.GetAbsoluteWidth();
+
+                float shiftAmount = 0;
+                if (rightOfCaret > rightOfParent)
+                {
+                    shiftAmount = rightOfParent - rightOfCaret - edgeToTextPadding;
+                }
+                if (leftOfCaret < leftOfParent)
+                {
+                    shiftAmount = leftOfParent - leftOfCaret + edgeToTextPadding;
+                }
+
+                if (shiftAmount != 0)
+                {
+                    this.textComponent.X += shiftAmount;
+                    this.caretComponent.X += shiftAmount;
+                }
             }
-            if (leftOfCaret < leftOfParent)
+            else
             {
-                shiftAmount = leftOfParent - leftOfCaret + edgeToTextPadding;
-            }
-
-            if (shiftAmount != 0)
-            {
-                this.textComponent.X += shiftAmount;
-                this.caretComponent.X += shiftAmount;
+                // do nothing...except we may want to offset Y at some point
             }
         }
 
