@@ -477,7 +477,7 @@ namespace FlatRedBall.Forms.Controls
 
             var lineHeight = coreTextObject.BitmapFont.LineHeightInPixels;
 
-            var newY = absoluteY - lineHeight;
+            var newY = absoluteY + lineHeight;
 
             var index = GetCaretIndexAtPosition(absoluteX, newY);
 
