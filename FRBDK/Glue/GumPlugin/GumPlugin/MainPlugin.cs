@@ -265,7 +265,10 @@ namespace GumPlugin
             // - Custom code for screns is no longer indented one tab
             // 2.1
             // - Removed resolution setup for specific screens because the new Glue does it automatically
-            get { return new Version(2, 1, 0, 0); }
+            // 2.2
+            // - Added support for text box multiline
+            // - Added support for multiple categories per gum component
+            get { return new Version(2, 2, 0, 0); }
         }
 
         #endregion

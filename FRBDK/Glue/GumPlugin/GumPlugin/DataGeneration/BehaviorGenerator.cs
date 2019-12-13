@@ -9,6 +9,12 @@ using System.Threading.Tasks;
 
 namespace GumPlugin.DataGeneration
 {
+    public class GumStateCategory
+    {
+        public string Name;
+        public string[] States;
+    }
+
     public class FormsControlInfo
     {
         public string BehaviorName;
@@ -16,9 +22,7 @@ namespace GumPlugin.DataGeneration
         public string ControlName;
         public string ComponentFile;
 
-        public string GumStateCategoryName;
-
-        public string[] States;
+        public List<GumStateCategory> GumStateCategory = new List<GumStateCategory>();
 
 
         public static FormsControlInfo Button = new FormsControlInfo
@@ -26,14 +30,20 @@ namespace GumPlugin.DataGeneration
             BehaviorName = "ButtonBehavior",
             ComponentFile = "Button",
             ControlName = "Button",
-            GumStateCategoryName = "ButtonCategory",
-            States = new[]
+            GumStateCategory = new List<GumStateCategory>
             {
-                "Enabled",
-                "Disabled",
-                "Highlighted",
-                "Pushed"
-            },
+                new GumStateCategory
+                {
+                    Name = "ButtonCategory",
+                    States = new[]
+                    {
+                        "Enabled",
+                        "Disabled",
+                        "Highlighted",
+                        "Pushed"
+                    }
+                }
+            }
             
         };
         public static FormsControlInfo CheckBox = new FormsControlInfo
@@ -41,19 +51,24 @@ namespace GumPlugin.DataGeneration
             BehaviorName = "CheckBoxBehavior",
             ComponentFile = "CheckBox",
             ControlName = "CheckBox",
-            GumStateCategoryName = "CheckBoxCategory",
-            States = new[]
+            GumStateCategory = new List<GumStateCategory>
             {
-                "EnabledOn",
-                "EnabledOff",
-                "DisabledOn",
-                "DisabledOff",
+                new GumStateCategory
+                {
+                    Name = "CheckBoxCategory",
+                    States = new[]
+                    {
+                        "EnabledOn",
+                        "EnabledOff",
+                        "DisabledOn",
+                        "DisabledOff",
 
-                "HighlightedOn",
-                "HighlightedOff",
-                "PushedOn",
-                "PushedOff",
-
+                        "HighlightedOn",
+                        "HighlightedOff",
+                        "PushedOn",
+                        "PushedOff",
+                    }
+                }
             }
         };
 
@@ -62,7 +77,7 @@ namespace GumPlugin.DataGeneration
             BehaviorName = null,
             ComponentFile = "ColoredFrame",
             ControlName = null,
-            GumStateCategoryName = null,
+            
 
         };
 
@@ -71,13 +86,19 @@ namespace GumPlugin.DataGeneration
             BehaviorName = "ComboBoxBehavior",
             ComponentFile = "ComboBox",
             ControlName = "ComboBox",
-            GumStateCategoryName = "ComboBoxCategory",
-            States = new []
+            GumStateCategory = new List<GumStateCategory>
             {
-                "Enabled",
-                "Disabled",
-                "Highlighted",
-                "Pushed"
+                new GumStateCategory
+                {
+                    Name = "ComboBoxCategory",
+                    States = new[]
+                    {
+                        "Enabled",
+                        "Disabled",
+                        "Highlighted",
+                        "Pushed"
+                    }
+                }
             }
         };
 
@@ -87,7 +108,7 @@ namespace GumPlugin.DataGeneration
             ComponentFile = "ListBox",
             ControlName = "ListBox",
             // no category (yet?)
-            GumStateCategoryName = null,
+            //GumStateCategoryName = null,
         };
 
         public static FormsControlInfo ListBoxItem = new FormsControlInfo
@@ -95,12 +116,18 @@ namespace GumPlugin.DataGeneration
             BehaviorName = "ListBoxItemBehavior",
             ComponentFile = "ListBoxItem",
             ControlName = "ListBoxItem",
-            GumStateCategoryName = "ListBoxItemCategory",
-            States = new []
+            GumStateCategory = new List<GumStateCategory>
             {
-                "Enabled",
-                "Highlighted",
-                "Selected",
+                new GumStateCategory
+                {
+                    Name = "ListBoxItemCategory",
+                    States = new[]
+                    {
+                        "Enabled",
+                        "Highlighted",
+                        "Selected",
+                    }
+                }
             }
         };
 
@@ -109,14 +136,20 @@ namespace GumPlugin.DataGeneration
             BehaviorName = "PasswordBoxBehavior",
             ComponentFile = "PasswordBox",
             ControlName = "PasswordBox",
-            GumStateCategoryName = "PasswordBoxCategory",
-
-            States = new[]
+            GumStateCategory = new List<GumStateCategory>
             {
-                "Enabled",
-                "Disabled",
-                "Highlighted",
-                "Selected"
+                new GumStateCategory
+                {
+                    Name = "PasswordBoxCategory",
+
+                    States = new[]
+                    {
+                        "Enabled",
+                        "Disabled",
+                        "Highlighted",
+                        "Selected"
+                    }
+                }
             }
         };
 
@@ -125,18 +158,24 @@ namespace GumPlugin.DataGeneration
             BehaviorName = "RadioButtonBehavior",
             ControlName = "RadioButton",
             ComponentFile = "RadioButton",
-            GumStateCategoryName = "RadioButtonCategory",
-            States = new []
+            GumStateCategory = new List<GumStateCategory>
             {
-                "EnabledOn",
-                "EnabledOff",
-                "DisabledOn",
-                "DisabledOff",   
+                new GumStateCategory
+                {
+                    Name = "RadioButtonCategory",
+                    States = new[]
+                    {
+                        "EnabledOn",
+                        "EnabledOff",
+                        "DisabledOn",
+                        "DisabledOff",
 
-                "HighlightedOn",
-                "HighlightedOff",
-                "PushedOn",
-                "PushedOff"
+                        "HighlightedOn",
+                        "HighlightedOff",
+                        "PushedOn",
+                        "PushedOff"
+                    }
+                }
             }
         };
 
@@ -146,7 +185,13 @@ namespace GumPlugin.DataGeneration
             BehaviorName = "ScrollBarBehavior",
             ComponentFile = "ScrollBar",
             ControlName = "ScrollBar",
-            GumStateCategoryName = "ScrollBarCategory",
+            GumStateCategory = new List<GumStateCategory>
+            {
+                new GumStateCategory
+                {
+                    Name = "ScrollBarCategory",
+                }
+            }
         };
 
         public static FormsControlInfo ScrollBarThumb = new FormsControlInfo
@@ -161,7 +206,7 @@ namespace GumPlugin.DataGeneration
             ComponentFile = "ScrollViewer",
             ControlName = "ScrollViewer",
             // no categories needed (yet?)
-            GumStateCategoryName = null,
+            //GumStateCategoryName = null,
         };
 
         public static FormsControlInfo Slider = new FormsControlInfo
@@ -169,7 +214,13 @@ namespace GumPlugin.DataGeneration
             BehaviorName = "SliderBehavior",
             ComponentFile = "Slider",
             ControlName = "Slider",
-            GumStateCategoryName = "SliderCategory",
+            GumStateCategory = new List<GumStateCategory>
+            {
+                new GumStateCategory
+                {
+                    Name = "SliderCategory",
+                }
+            }
         };
 
         public static FormsControlInfo TextBox = new FormsControlInfo
@@ -177,14 +228,31 @@ namespace GumPlugin.DataGeneration
             BehaviorName = "TextBoxBehavior",
             ComponentFile = "TextBox",
             ControlName = "TextBox",
-            GumStateCategoryName = "TextBoxCategory",
-
-            States = new []
+            GumStateCategory = new List<GumStateCategory>
             {
-                "Enabled",
-                "Disabled",
-                "Highlighted",
-                "Selected"
+                new GumStateCategory
+                {
+                    Name = "TextBoxCategory",
+
+                    States = new[]
+                    {
+                        "Enabled",
+                        "Disabled",
+                        "Highlighted",
+                        "Selected"
+                    }
+                },
+                new GumStateCategory
+                {
+                    Name = "LineModeCategory",
+
+                    States = new []
+                    {
+                        "Single",
+                        "Multi"
+                    }
+
+                }
             }
         };
 
@@ -194,18 +262,24 @@ namespace GumPlugin.DataGeneration
             InterfaceName = "FlatRedBall.Gui.Controls.IToggle",
             ComponentFile = "ToggleButton",
             ControlName = "ToggleButton",
-            GumStateCategoryName = "ToggleCategory",
-            States = new []
+            GumStateCategory = new List<GumStateCategory>
             {
-                "EnabledOn",
-                "EnabledOff",
-                "DisabledOn",
-                "DisabledOff",
+                new GumStateCategory
+                {
+                    Name = "ToggleCategory",
+                    States = new[]
+                    {
+                        "EnabledOn",
+                        "EnabledOff",
+                        "DisabledOn",
+                        "DisabledOff",
 
-                "HighlightedOn",
-                "HighlightedOff",
-                "PushedOn",
-                "PushedOff",
+                        "HighlightedOn",
+                        "HighlightedOff",
+                        "PushedOn",
+                        "PushedOff",
+                    }
+                }
             }
         };
         public static FormsControlInfo TreeView = new FormsControlInfo
@@ -214,7 +288,7 @@ namespace GumPlugin.DataGeneration
             ControlName = "TreeView",
             ComponentFile = "TreeView",
             // no categories
-            GumStateCategoryName = null,
+            //GumStateCategoryName = null,
 
         };
 
@@ -224,7 +298,7 @@ namespace GumPlugin.DataGeneration
             ComponentFile = "TreeViewItem",
             ControlName = "TreeViewItem",
             // no categories, contained objects have categories
-            GumStateCategoryName = null,
+            //GumStateCategoryName = null,
         };
 
         public static FormsControlInfo TreeViewToggleButton = new FormsControlInfo
@@ -238,7 +312,7 @@ namespace GumPlugin.DataGeneration
             BehaviorName = "UserControlBehavior",
             ComponentFile = "UserControl",
             ControlName = "UserControl",
-            GumStateCategoryName = null,
+            //GumStateCategoryName = null,
         };
 
 
@@ -274,15 +348,15 @@ namespace GumPlugin.DataGeneration
             BehaviorSave toReturn = new BehaviorSave();
             toReturn.Name = controlInfo.BehaviorName;
 
-            if (!string.IsNullOrEmpty(controlInfo.GumStateCategoryName))
+            foreach(var gumStateCategory in controlInfo.GumStateCategory)
             {
                 var category = new StateSaveCategory();
                 toReturn.Categories.Add(category);
-                category.Name = controlInfo.GumStateCategoryName;
+                category.Name = gumStateCategory.Name;
 
-                if (controlInfo.States != null)
+                if (gumStateCategory.States != null)
                 {
-                    foreach (var stateName in controlInfo.States)
+                    foreach (var stateName in gumStateCategory.States)
                     {
                         category.States.Add(new StateSave { Name = stateName });
                     }

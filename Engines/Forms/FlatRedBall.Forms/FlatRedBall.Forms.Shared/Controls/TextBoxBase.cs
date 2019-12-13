@@ -24,7 +24,6 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-
         protected GraphicalUiElement textComponent;
         protected RenderingLibrary.Graphics.Text coreTextObject;
 

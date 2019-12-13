@@ -101,6 +101,12 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>int?</Type>
+      <Name>MaxLettersToShow</Name>
+      <Category>Text</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>int</Type>
       <Name>OutlineThickness</Name>
       <Value xsi:type="xsd:int">0</Value>
