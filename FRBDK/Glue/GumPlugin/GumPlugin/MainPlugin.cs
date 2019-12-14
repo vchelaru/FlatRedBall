@@ -268,7 +268,10 @@ namespace GumPlugin
             // 2.2
             // - Added support for text box multiline
             // - Added support for multiple categories per gum component
-            get { return new Version(2, 2, 0, 0); }
+            // 2.2.1
+            // - Improved performance by  making the "Removing unreferenced files for Gum project" action add or move to end, eliminating
+            //   unnecessary processing
+            get { return new Version(2, 2, 1, 0); }
         }
 
         #endregion
@@ -590,7 +593,10 @@ namespace GumPlugin
 
                     EventsManager.Self.RefreshEvents();
 
-                    TaskManager.Self.AddSync(FileReferenceTracker.Self.RemoveUnreferencedFilesFromVsProject, "Removing unreferenced files for Gum project");
+                    TaskManager.Self.Add(
+                        FileReferenceTracker.Self.RemoveUnreferencedFilesFromVsProject, 
+                        "Removing unreferenced files for Gum project",
+                        TaskExecutionPreference.AddOrMoveToEnd);
                 }
                 else if(extension == BehaviorReference.Extension)
                 {
