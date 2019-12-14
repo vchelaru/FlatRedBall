@@ -129,10 +129,18 @@ namespace TopDownPlugin.CodeGenerators
                 }
             }
 
-            if(animationData != null && animationData.Animations.Count > 0)
-            {
+            var hasAnimationSets =
+                animationData?.Animations.Count > 0;
 
+            if(!hasAnimationSets)
+            {
+                codeBlock.Line("public List<TopDown.AnimationSet> AnimationSets { get; set; } = new List<TopDown.AnimationSet>();");
+
+            }
+            else
+            {
                 codeBlock.Line("public List<TopDown.AnimationSet> AnimationSets { get; set; } = new List<TopDown.AnimationSet>");
+
                 var listBlock = codeBlock.Block();
                 (listBlock.PostCodeLines[0] as CodeLine).Value += ";";
 

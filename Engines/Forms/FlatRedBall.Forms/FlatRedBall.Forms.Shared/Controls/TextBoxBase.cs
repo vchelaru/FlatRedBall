@@ -630,7 +630,11 @@ namespace FlatRedBall.Forms.Controls
         {
             if (textWrapping == TextWrapping.Wrap)
             {
-
+                Visual.SetProperty("LineModeCategory", "Multi");
+            }
+            else // no wrap
+            {
+                Visual.SetProperty("LineModeCategory", "Single");
             }
         }
 

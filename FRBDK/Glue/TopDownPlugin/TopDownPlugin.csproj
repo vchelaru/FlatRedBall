@@ -98,16 +98,22 @@
     <Compile Include="Data\MovementValueAnimations.cs" />
     <Compile Include="Data\PredefinedTopDownValues.cs" />
     <Compile Include="Data\TopDownAnimationData.cs" />
+    <Compile Include="Logic\ModifyAddEntityWindowLogic.cs" />
+    <Compile Include="Logic\NewEntityCreatedReactionLogic.cs" />
     <Compile Include="Logic\TopDownEntityPropertyLogic.cs" />
     <Compile Include="Logic\TopDownValuesCreationLogic.cs" />
     <Compile Include="MainPlugin.cs" />
     <Compile Include="Models\TopDownValues.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\AdditionalEntitiesControlViewModel.cs" />
     <Compile Include="ViewModels\AllAnimationValuesViewModel.cs" />
     <Compile Include="ViewModels\AnimationRowViewModel.cs" />
     <Compile Include="ViewModels\AnimationSetViewModel.cs" />
     <Compile Include="ViewModels\TopDownEntityViewModel.cs" />
     <Compile Include="ViewModels\TopDownValuesViewModel.cs" />
+    <Compile Include="Views\AdditionalEntitiesControls.xaml.cs">
+      <DependentUpon>AdditionalEntitiesControls.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\AllAnimationValuesView.xaml.cs">
       <DependentUpon>AllAnimationValuesView.xaml</DependentUpon>
     </Compile>
@@ -154,6 +160,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\AdditionalEntitiesControls.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\AllAnimationValuesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -35,6 +35,8 @@ namespace TopDownPlugin.Controllers
 
         public PluginBase MainPlugin { get; set; }
 
+
+
         CsvHeader[] lastHeaders;
 
         const string baseAnimationsName = "Base Animations";
@@ -58,6 +60,14 @@ namespace TopDownPlugin.Controllers
             }
 
             return mainControl;
+        }
+
+        internal void MakeCurrentEntityTopDown()
+        {
+            if(viewModel != null)
+            {
+                viewModel.IsTopDown = true;
+            }
         }
 
         private void HandleViewModelPropertyChange(object sender, PropertyChangedEventArgs e)

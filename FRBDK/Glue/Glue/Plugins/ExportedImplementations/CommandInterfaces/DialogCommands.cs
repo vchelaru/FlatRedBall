@@ -545,7 +545,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 MainGlueWindow.Self.PropertyGrid.Refresh();
                 ElementViewWindow.GenerateSelectedElementCode();
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveGluxTask();
             }
 
             return newElement;

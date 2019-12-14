@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TopDownPlugin.CodeGenerators;
 using TopDownPlugin.Controllers;
+using TopDownPlugin.Logic;
 using TopDownPlugin.ViewModels;
 using TopDownPlugin.Views;
 
@@ -55,10 +56,17 @@ namespace TopDownPlugin
             MainController.Self.MainPlugin = this;
 
             base.RegisterCodeGenerator(new EntityCodeGenerator());
+            AssignEvents();
+        }
+
+        private void AssignEvents()
+        {
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToItemSelectHandler += HandleItemSelected;
             this.ReactToEntityRemoved += HandleElementRemoved;
             this.ReactToElementRenamed += HandleElementRenamed;
+            this.ModifyAddEntityWindow += ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;
+            this.ReactToNewEntityCreated += NewEntityCreatedReactionLogic.ReactToNewEntityCreated;
         }
 
         private void HandleElementRenamed(IElement renamedElement, string oldName)
