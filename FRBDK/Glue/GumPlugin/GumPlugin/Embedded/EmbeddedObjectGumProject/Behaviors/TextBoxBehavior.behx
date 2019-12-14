@@ -17,14 +17,25 @@
       <Name>Selected</Name>
     </State>
   </Category>
+  <Category>
+    <Name>LineModeCategory</Name>
+    <State>
+      <Name>Single</Name>
+    </State>
+    <State>
+      <Name>Multi</Name>
+    </State>
+  </Category>
   <RequiredInstances>
     <InstanceSave>
       <Name>TextInstance</Name>
       <BaseType>Text</BaseType>
+      <DefinedByBase>false</DefinedByBase>
       <Behaviors />
     </InstanceSave>
     <InstanceSave>
       <Name>CaretInstance</Name>
+      <DefinedByBase>false</DefinedByBase>
       <Behaviors />
     </InstanceSave>
   </RequiredInstances>
