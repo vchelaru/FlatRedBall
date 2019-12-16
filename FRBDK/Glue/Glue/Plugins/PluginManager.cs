@@ -56,9 +56,6 @@ namespace FlatRedBall.Glue.Plugins
         public IEnumerable<ITreeItemSelect> TreeItemSelectPlugins { get; set; }
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<INewFile> NewFilePlugins { get; set; }
-
-        [ImportMany(AllowRecomposition = true)]
         public IEnumerable<IMenuStripPlugin> MenuStripPlugins { get; set; }
 
         [ImportMany(AllowRecomposition = true)]
@@ -188,7 +185,7 @@ namespace FlatRedBall.Glue.Plugins
             var allPlugins = new List<IEnumerable<IPlugin>>
             {
                 TreeViewPlugins, PropertyGridRightClickPlugins,
-                OpenVisualStudioPlugins, TreeItemSelectPlugins, NewFilePlugins, MenuStripPlugins,
+                OpenVisualStudioPlugins, TreeItemSelectPlugins, MenuStripPlugins,
                 TopTabPlugins, LeftTabPlugins, BottomTabPlugins, RightTabPlugins, CenterTabPlugins,
                 GluxLoadPlugins, PropertyChangePlugins, CodeGeneratorPlugins,
                 ContentFileChangePlugins, CurrentElementPlugins
@@ -230,7 +227,6 @@ namespace FlatRedBall.Glue.Plugins
             PropertyGridRightClickPlugins = new List<IPropertyGridRightClick>();
             OpenVisualStudioPlugins = new List<IOpenVisualStudio>();
             TreeItemSelectPlugins = new List<ITreeItemSelect>();
-            NewFilePlugins = new List<INewFile>();
             MenuStripPlugins = new List<IMenuStripPlugin>();
             TopTabPlugins = new List<ITopTab>();
             LeftTabPlugins = new List<ILeftTab>();
@@ -549,24 +545,10 @@ namespace FlatRedBall.Glue.Plugins
 
         #region Methods
 
-        internal static void AddNewFileOptions(NewFileWindow newFileWindow)
+        internal static void AddNewFileOptions(CustomizableNewFileWindow newFileWindow)
         {
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (INewFile plugin in pluginManager.NewFilePlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        INewFile plugin1 = plugin;
-                        PluginCommand(() =>
-                                          {
-                                              plugin1.AddNewFileOptions(newFileWindow);
-                                          }, container, "Failed in AddNewFileOptions");
-                    }
-                }
-
                 // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.AddNewFileOptionsHandler != null);
                 foreach (var plugin in plugins)
@@ -591,33 +573,6 @@ namespace FlatRedBall.Glue.Plugins
 
             foreach (PluginManager pluginManager in mInstances)
             {
-                if (created)
-                {
-                    break;
-                }
-
-                foreach (INewFile plugin in pluginManager.NewFilePlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        var exit = false;
-
-                        INewFile plugin1 = plugin;
-                        PluginCommand(() =>
-                                          {
-                                              if (plugin1.CreateNewFile(assetTypeInfo, extraData, directory, name, out createdFile))
-                                              {
-                                                  created = true;
-                                                  exit = true;
-                                              }
-                                          }, container, "Failed in CreateNewFile");
-
-                        if (exit) break;
-                    }
-                }
-
                 // Execute the new style plugins
                 if (!created)
                 {
@@ -633,8 +588,8 @@ namespace FlatRedBall.Glue.Plugins
                                               {
                                                   if (plugin1.CreateNewFileHandler(assetTypeInfo, extraData, directory, name, out createdFile))
                                                   {
-                                                      created = true;
                                                       exit = true;
+                                                      created = true;
                                                   }
                                               }, container, "Failed in CreateNewFile");
 
@@ -1276,20 +1231,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (INewFile plugin in pluginManager.NewFilePlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        INewFile plugin1 = plugin;
-                        PluginCommand(()=>
-                            {
-                                plugin1.ReactToNewFile(newRfs);
-                            },container, "Failed in ReactToNewFile");
-                    }
-                }
-
                 // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToNewFileHandler != null);
                 foreach (var plugin in plugins)

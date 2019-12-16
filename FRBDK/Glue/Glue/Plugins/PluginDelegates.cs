@@ -17,7 +17,7 @@ namespace FlatRedBall.Glue.Plugins
     public delegate void RefreshCurrentElementDelegate();
     public delegate void InitializeMenuDelegate(MenuStrip menuStrip);
     public delegate void ReactToNamedObjectChangedValueDelegate(string changedMember, object oldValue);
-    public delegate void AddNewFileOptionsDelegate(NewFileWindow newFileWindow);
+    public delegate void AddNewFileOptionsDelegate(CustomizableNewFileWindow newFileWindow);
     public delegate bool CreateNewFileDelegate(AssetTypeInfo assetTypeInfo, object extraData, string directory, string name, out string resultingName);
     /// <summary>
     /// Delegate raised when the user creates a brand new file.

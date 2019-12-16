@@ -21,68 +21,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
     class DialogCommands : IDialogCommands
     {
-        #region File
-
-        public ReferencedFileSave ShowAddNewFileDialog()
-        {
-            ReferencedFileSave rfs = null;
-
-            NewFileWindow nfw = CreateNewFileWindow();
-
-            if (nfw.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
-            {
-                string name = nfw.ResultName;
-                AssetTypeInfo resultAssetTypeInfo = nfw.ResultAssetTypeInfo;
-                string errorMessage;
-                string directory = null;
-                IElement element = EditorLogic.CurrentElement;
-
-                if (EditorLogic.CurrentTreeNode.IsDirectoryNode())
-                {
-                    directory = EditorLogic.CurrentTreeNode.GetRelativePath().Replace("/", "\\");
-                }
-
-                var option = nfw.GetOptionFor(resultAssetTypeInfo);
-
-                rfs = GlueProjectSaveExtensionMethods.AddReferencedFileSave(
-                    element, directory, name, resultAssetTypeInfo,
-                    option, out errorMessage);
-
-
-
-
-                if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    MessageBox.Show(errorMessage);
-                }
-                else if (rfs != null)
-                {
-
-                    var createdFile = ProjectManager.MakeAbsolute(rfs.GetRelativePath());
-
-                    if (createdFile.EndsWith(".csv"))
-                    {
-                        string location = ProjectManager.MakeAbsolute(createdFile);
-
-                        CsvCodeGenerator.GenerateAndSaveDataClass(rfs, AvailableDelimiters.Comma);
-                    }
-
-
-                    ElementViewWindow.UpdateChangedElements();
-
-                    ElementViewWindow.SelectedNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(rfs);
-
-                    PluginManager.ReactToNewFile(rfs);
-
-                    GluxCommands.Self.SaveGlux();
-                }
-
-            }
-
-            return rfs;
-        }
-
-        #endregion
+        #region NamedObjectSave
 
         public NamedObjectSave ShowAddNewObjectDialog(AddObjectViewModel addObjectViewModel = null)
         {
@@ -120,9 +59,71 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return newNamedObject;
         }
 
-        private static NewFileWindow CreateNewFileWindow()
+        #endregion
+
+        #region ReferencedFileSave
+
+        public ReferencedFileSave ShowAddNewFileDialog()
         {
-            NewFileWindow nfw = new NewFileWindow();
+            ReferencedFileSave rfs = null;
+
+            var nfw = CreateNewFileWindow();
+
+            var result = nfw.ShowDialog();
+
+            if (result == true)
+            {
+                string name = nfw.ResultName;
+                AssetTypeInfo resultAssetTypeInfo = nfw.ResultAssetTypeInfo;
+                string errorMessage;
+                string directory = null;
+                var element = GlueState.Self.CurrentElement;
+
+                if (EditorLogic.CurrentTreeNode.IsDirectoryNode())
+                {
+                    directory = EditorLogic.CurrentTreeNode.GetRelativePath().Replace("/", "\\");
+                }
+
+                var option = nfw.GetOptionFor(resultAssetTypeInfo);
+
+                rfs = GlueProjectSaveExtensionMethods.AddReferencedFileSave(
+                    element, directory, name, resultAssetTypeInfo,
+                    option, out errorMessage);
+
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    MessageBox.Show(errorMessage);
+                }
+                else if (rfs != null)
+                {
+
+                    var createdFile = ProjectManager.MakeAbsolute(rfs.GetRelativePath());
+
+                    if (createdFile.EndsWith(".csv"))
+                    {
+                        string location = ProjectManager.MakeAbsolute(createdFile);
+
+                        CsvCodeGenerator.GenerateAndSaveDataClass(rfs, AvailableDelimiters.Comma);
+                    }
+
+
+                    ElementViewWindow.UpdateChangedElements();
+
+                    ElementViewWindow.SelectedNode = GlueState.Self.Find.ReferencedFileSaveTreeNode(rfs);
+
+                    PluginManager.ReactToNewFile(rfs);
+
+                    GluxCommands.Self.SaveGlux();
+                }
+
+            }
+
+            return rfs;
+        }
+
+        private static CustomizableNewFileWindow CreateNewFileWindow()
+        {
+            var nfw = new CustomizableNewFileWindow();
 
             PluginManager.AddNewFileOptions(nfw);
 
@@ -130,7 +131,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 foreach (ReferencedFileSave fileInElement in GlueState.Self.CurrentElement.ReferencedFiles)
                 {
-                    nfw.NamedAlreadyUsed.Add(FileManager.RemovePath(FileManager.RemoveExtension(fileInElement.Name)));
+                    nfw.NamesAlreadyUsed.Add(FileManager.RemovePath(FileManager.RemoveExtension(fileInElement.Name)));
                 }
             }
 
@@ -138,6 +139,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             nfw.AddOption(new AssetTypeInfo("csv", "", null, "Spreadsheet (.csv)", "", ""));
             return nfw;
         }
+
+        #endregion
+
+        #region EntitySave
 
         public void ShowAddNewEntityDialog()
         {
@@ -199,6 +204,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        #endregion
+
+        #region Variable
+
         public void ShowAddNewVariableDialog(CustomVariableType variableType = CustomVariableType.Exposed, 
             string tunnelingObject = "",
             string tunneledVariableName = "")
@@ -216,72 +225,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 HandleAddVariableOk(addVariableWindow);
             }
         }
-
-        public void ShowAddNewScreenDialog()
-        {
-            // AddScreen, add screen, addnewscreen, add new screen
-            if (ProjectManager.GlueProjectSave == null)
-            {
-                System.Windows.Forms.MessageBox.Show("You need to create or load a project first.");
-            }
-            else
-            {
-                if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
-                {
-                    TextInputWindow tiw = new TextInputWindow();
-
-                    tiw.Message = "Enter a name for the new Screen";
-                    tiw.Text = "New Screen";
-
-                    if (tiw.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
-                    {
-                        string whyItIsntValid;
-
-                        if (!NameVerifier.IsScreenNameValid(tiw.Result, null, out whyItIsntValid))
-                        {
-                            MessageBox.Show(whyItIsntValid);
-                        }
-                        else
-                        {
-                            var screen =
-                                GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(tiw.Result);
-
-                            GlueState.Self.CurrentElement = screen;
-                            var treeNode = EditorLogic.CurrentScreenTreeNode;
-                            if(treeNode != null)
-                            {
-                                treeNode.Expand();
-                            }
-                        }
-
-                    }
-                }
-            }
-        }
-
-        public void FocusDialog(string dialogTitle)
-        {
-            bool TryFocus(TabControl control )
-            {
-                foreach(TabPage tabPage in control.TabPages)
-                {
-                    if (tabPage.Text?.Trim() == dialogTitle)
-                    {
-                        control.SelectedTab = tabPage;
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            var focused = TryFocus(PluginManager.TopTab);
-
-            if (!focused) focused = TryFocus(PluginManager.BottomTab);
-            if (!focused) focused = TryFocus(PluginManager.LeftTab);
-            if (!focused) focused = TryFocus(PluginManager.CenterTab);
-            if (!focused) focused = TryFocus(PluginManager.RightTab);
-        }
-
 
         private static void HandleAddVariableOk(AddVariableWindow addVariableWindow)
         {
@@ -423,6 +366,97 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 return false;
             }
+        }
+
+
+        #endregion
+
+        #region Screen
+
+        public void ShowAddNewScreenDialog()
+        {
+            // AddScreen, add screen, addnewscreen, add new screen
+            if (ProjectManager.GlueProjectSave == null)
+            {
+                System.Windows.Forms.MessageBox.Show("You need to create or load a project first.");
+            }
+            else
+            {
+                if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
+                {
+                    var tiw = new CustomizableTextInputWindow();
+
+                    tiw.Message = "Enter a name for the new Screen";
+
+                    string name = "NewScreen";
+
+                    if(GlueState.Self.CurrentGlueProject.Screens.Count == 0)
+                    {
+                        name = "GameScreen";
+                    }
+
+                    var allScreenNames =
+                        GlueState.Self.CurrentGlueProject.Screens
+                        .Select(item => item.GetStrippedName())
+                        .ToList();
+
+                    name = StringFunctions.MakeStringUnique(name,
+                        allScreenNames, 2);
+
+                    tiw.Result = name;
+
+                    tiw.HighlghtText();
+
+                    var result = tiw.ShowDialog();
+                    if (result == true)
+                    {
+                        string whyItIsntValid;
+
+                        if (!NameVerifier.IsScreenNameValid(tiw.Result, null, out whyItIsntValid))
+                        {
+                            MessageBox.Show(whyItIsntValid);
+                        }
+                        else
+                        {
+                            var screen =
+                                GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(tiw.Result);
+
+                            GlueState.Self.CurrentElement = screen;
+                            var treeNode = EditorLogic.CurrentScreenTreeNode;
+                            if(treeNode != null)
+                            {
+                                treeNode.Expand();
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        public void FocusTab(string dialogTitle)
+        {
+            bool TryFocus(TabControl control )
+            {
+                foreach(TabPage tabPage in control.TabPages)
+                {
+                    if (tabPage.Text?.Trim() == dialogTitle)
+                    {
+                        control.SelectedTab = tabPage;
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            var focused = TryFocus(PluginManager.TopTab);
+
+            if (!focused) focused = TryFocus(PluginManager.BottomTab);
+            if (!focused) focused = TryFocus(PluginManager.LeftTab);
+            if (!focused) focused = TryFocus(PluginManager.CenterTab);
+            if (!focused) focused = TryFocus(PluginManager.RightTab);
         }
 
         private static EntitySave CreateEntityAndObjects(AddEntityWindow window, string entityName, string directory)

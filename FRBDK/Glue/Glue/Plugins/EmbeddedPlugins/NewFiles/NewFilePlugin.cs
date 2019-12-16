@@ -11,9 +11,11 @@ using FlatRedBall.Glue.IO;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
 {
-    [Export(typeof(INewFile))]
-    public class NewFilePlugin : EmbeddedPlugin, INewFile
+    [Export(typeof(PluginBase))]
+    public class NewFilePlugin : EmbeddedPlugin
     {
+        #region Fields/Properties
+
         public static string BuiltInFileTemplateFolder
         {
             get
@@ -34,7 +36,19 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
             }
         }
 
-        public void AddNewFileOptions(Controls.NewFileWindow newFileWindow)
+        #endregion
+
+
+        public override void StartUp()
+        {
+            System.IO.Directory.CreateDirectory(CustomFileTemplateFolder);
+
+            this.AddNewFileOptionsHandler += AddNewFileOptions;
+            this.CreateNewFileHandler += CreateNewFile;
+            this.ReactToNewFileHandler += ReactToNewFile;
+        }
+
+        void AddNewFileOptions(CustomizableNewFileWindow newFileWindow)
         {
             var listOfFiles = GetAvailableFilesForNewFile();
 
@@ -135,19 +149,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
             return null;
         }
 
-        public void ReactToNewFile(SaveClasses.ReferencedFileSave newFile)
+        private void ReactToNewFile(SaveClasses.ReferencedFileSave newFile)
         {
 
         }
 
 
-        public override void StartUp()
-        {
-            System.IO.Directory.CreateDirectory(CustomFileTemplateFolder);
-        }
 
-
-        public bool CreateNewFile(AssetTypeInfo assetTypeInfo, object extraData, string directory, string name, out string resultingName)
+        private bool CreateNewFile(AssetTypeInfo assetTypeInfo, object extraData, string directory, string name, out string resultingName)
         {
             resultingName = null;
             if (assetTypeInfo != null)

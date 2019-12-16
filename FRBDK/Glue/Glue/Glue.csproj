@@ -280,6 +280,12 @@
     <Compile Include="AutomatedGlue\GlueGui.cs" />
     <Compile Include="CodeGeneration\Game1\Game1CodeGenerator.cs" />
     <Compile Include="CodeGeneration\Game1\Game1CodeGeneratorManager.cs" />
+    <Compile Include="Controls\CustomizableNewFileWindow.xaml.cs">
+      <DependentUpon>CustomizableNewFileWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\CustomizableTextInputWindow.xaml.cs">
+      <DependentUpon>CustomizableTextInputWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Errors\CsvAndCustomClassSameName.cs" />
     <Compile Include="Errors\CsvErrorReporter.cs" />
     <Compile Include="Errors\IErrorReporter.cs" />
@@ -1354,6 +1360,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\AddExistingFileWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\CustomizableNewFileWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\CustomizableTextInputWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

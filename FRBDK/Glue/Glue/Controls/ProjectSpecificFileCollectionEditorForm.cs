@@ -127,7 +127,7 @@ namespace FlatRedBall.Glue.Controls
         {
             if (!ProjectTypeIsValid()) return;
 
-            NewFileWindow nfw = new NewFileWindow();
+            var nfw = new CustomizableNewFileWindow();
 
             foreach(var ati in AvailableAssetTypes.Self.AllAssetTypes)
             {
@@ -148,7 +148,9 @@ namespace FlatRedBall.Glue.Controls
             //nfw.AddOption(new AssetTypeInfo("csv", "", null, "Spreadsheet (.csv)", "", ""));
             nfw.AddOption(AvailableAssetTypes.Self.AllAssetTypes.First(item => item.FriendlyName == "Spreadsheet (.csv)"));
 
-            if (nfw.ShowDialog() == DialogResult.OK)
+            var dialogResult = nfw.ShowDialog();
+
+            if (dialogResult == true)
             {
                 AssetTypeInfo resultAssetTypeInfo = nfw.ResultAssetTypeInfo;
                 bool make2D = nfw.GetOptionFor(resultAssetTypeInfo) == "2D";

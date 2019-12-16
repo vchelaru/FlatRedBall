@@ -1,0 +1,62 @@
+﻿<Window x:Class="FlatRedBall.Glue.Controls.CustomizableNewFileWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
+             mc:Ignorable="d" 
+             SizeToContent="Height"  Width="300">
+    <Grid Margin="3">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel x:Name="StandardUiStack">
+            <Label>Select the file type:</Label>
+            <Grid>
+                <TextBox x:Name="SearchTermTextBox" Height="24" 
+                         TextChanged="SearchTermTextBox_TextChanged"
+                         KeyDown="SearchTermTextBox_KeyDown"
+                         PreviewKeyDown="SearchTermTextBox_PreviewKeyDown"></TextBox>
+                <TextBlock IsHitTestVisible="False" Text="Search..." VerticalAlignment="Center" HorizontalAlignment="Left" 
+                           Margin="4,0,0,0" Foreground="DarkGray">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=SearchTermTextBox}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+            <ListBox 
+                Height="280"
+                x:Name="ListBox" 
+                      SelectionChanged="FileTypeComboBox_SelectionChanged">
+                
+            </ListBox>
+
+            <Label Margin="0,6,0,0">Enter the new file's name:</Label>
+            <TextBox x:Name="TextBox"
+                     KeyDown="TextBox_KeyDown"></TextBox>
+        </StackPanel>
+
+        <StackPanel x:Name="AdditionalUiStack" Grid.Row="1"></StackPanel>
+
+        <Grid x:Name="OkCancelButtonStack" 
+                    Grid.Row="2" Height="39">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Margin="0,8,4,0"
+                    Click="HandleOkClicked">OK</Button>
+            <Button Grid.Column="1" Margin="4,8,0,0"
+                    Click="HandleCancelClicked">Cancel</Button>
+        </Grid>
+    </Grid>
+</Window>

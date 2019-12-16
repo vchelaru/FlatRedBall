@@ -15,7 +15,7 @@ namespace FlatRedBall.Glue.Controls
         Below
     }
 
-	public partial class TextInputWindow : Form
+    public partial class TextInputWindow : Form
 	{
 		#region Properties
 
@@ -46,17 +46,7 @@ namespace FlatRedBall.Glue.Controls
 		}
 
 		#endregion
-
-        #region Event Methods
-
-        private void mOkWindow_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        #endregion
-
-
+        
         public TextInputWindow()
 		{
 			InitializeComponent();

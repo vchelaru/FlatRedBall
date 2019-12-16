@@ -26,7 +26,7 @@ namespace TopDownPlugin.Logic
             {
                 if(viewModel.IsTopDownEntity)
                 {
-                    GlueCommands.Self.DialogCommands.FocusDialog("Top Down");
+                    GlueCommands.Self.DialogCommands.FocusTab("Top Down");
                     MainController.Self.MakeCurrentEntityTopDown();
 
                 }

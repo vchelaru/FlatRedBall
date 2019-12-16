@@ -56,9 +56,11 @@ namespace GameScriptingPlugin
         // - Fixed bug where creating If then calling EndActiveIf wouldn't clear out the if's, and they'd "or" with
         //   the next if
         // - Added check for PC precompile directive so scripting engine could be used on Linux and Mac
+        // 1.4
+        // - Added new ScreenScript.cs file
         public override Version Version
         {
-            get { return new Version(1, 3); }
+            get { return new Version(1, 4); }
         }
         #endregion
 
@@ -85,6 +87,7 @@ namespace GameScriptingPlugin
             mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.IIfScriptEngine.cs");
             mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.IScriptAction.cs");
             mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.IScriptDecision.cs");
+            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.ScreenScript.cs");
             mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.Script.cs");
             mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.ScriptEngine.cs");
 
@@ -121,3 +124,4 @@ namespace GameScriptingPlugin
         }
     }
 }
+    

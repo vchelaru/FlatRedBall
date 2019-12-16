@@ -28,40 +28,13 @@ namespace FlatRedBall.Glue.Controls
 
         #region Properties
 
-        public List<string> NamedAlreadyUsed
+        public List<string> NamesAlreadyUsed
         {
             get
             {
                 return mNamesAlreadyUsed;
             }
         }
-
-        public string GetOptionFor(AssetTypeInfo ati)
-        {
-            string type = GetObjectTypeFromAti(ati);
-
-            return GetOptionFor(type);
-        }
-
-        public string GetOptionFor(string type)
-        {
-            foreach (var option in mFileTypeOptions)
-            {
-                if (option.ObjectType.Contains(type))
-                {
-                    return mDynamicUiHelper.GetValue(option.UiId);
-                }
-            }
-
-            return null;
-        }
-        //public bool Make2D
-        //{
-        //    get
-        //    {
-        //        return mDynamicUiHelper.GetValue(m2D3DId) == "2D";
-        //    }
-        //}
 
         public AssetTypeInfo ResultAssetTypeInfo
 		{

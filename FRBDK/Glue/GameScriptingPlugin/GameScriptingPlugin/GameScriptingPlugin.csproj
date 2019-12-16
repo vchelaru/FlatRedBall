@@ -106,6 +106,9 @@
     <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\AfterThatDecision.cs">
       <Link>EmbeddedCodeFiles\AfterThatDecision.cs</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\ScreenScript.cs">
+      <Link>EmbeddedCodeFiles\ScreenScript.cs</Link>
+    </EmbeddedResource>
     <Compile Include="MainPluginClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
