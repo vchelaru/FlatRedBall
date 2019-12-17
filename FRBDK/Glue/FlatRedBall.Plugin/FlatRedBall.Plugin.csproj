@@ -135,13 +135,13 @@
     <None Include="Libraries\PluginCompiler.exe" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
-      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
-      <Name>FlatRedBallXna4</Name>
-    </ProjectReference>
+    <Folder Include="Helpers\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Helpers\" />
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj">
+      <Project>{c2aee3b6-d6a1-4d91-8b20-54890b5e3624}</Project>
+      <Name>FlatRedBallStandard</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

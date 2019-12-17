@@ -487,11 +487,7 @@
 
 if not exist "$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\" md "$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\"
 copy "$(TargetDir)OfficialPlugins.dll" "$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\OfficialPlugins.dll"
-copy "$(TargetDir)OfficialPlugins.pdb" "$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\OfficialPlugins.pdb"
-
-echo Needed for installer, but causes a warning in Glue. Oh well...
-copy "$(TargetDir)FlatRedBall.dll" "$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\FlatRedBall.dll"
-</PostBuildEvent>
+copy "$(TargetDir)OfficialPlugins.pdb" "$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\OfficialPlugins.pdb"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
