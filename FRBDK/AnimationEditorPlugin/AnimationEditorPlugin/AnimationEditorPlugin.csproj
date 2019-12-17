@@ -94,9 +94,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FlatRedBall.Plugin, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\Glue\FlatRedBall.Plugin\bin\x86\Debug\FlatRedBall.Plugin.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="System" />
@@ -148,6 +145,10 @@
     <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
       <Project>{e1d670b6-ad42-4b84-aff8-d568097be03d}</Project>
       <Name>EditorObjectsXna4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Glue\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj">
+      <Project>{2c289a72-d6bd-4358-afbc-b71f9d31b01e}</Project>
+      <Name>FlatRedBall.Plugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Glue\GlueSaveClasses\GlueSaveClasses.csproj">
       <Project>{545ff183-4d9d-4121-9a04-1d354b0b0dba}</Project>
