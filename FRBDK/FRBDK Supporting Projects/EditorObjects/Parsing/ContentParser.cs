@@ -23,6 +23,7 @@ using FlatRedBall.Graphics;
 using FlatRedBall.Content.Scene;
 
 using FlatRedBall.Content.SpriteFrame;
+using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
 
 using Color = Microsoft.Xna.Framework.Color;
 
@@ -186,23 +187,23 @@ namespace EditorObjects.Parsing
 
             switch (fileExtension)
             {
-                case "scnx":
-                    try
-                    {
-                        SpriteEditorScene ses = SpriteEditorScene.FromFile(fileName);
+                //case "scnx":
+                //    try
+                //    {
+                //        SpriteEditorScene ses = SpriteEditorScene.FromFile(fileName);
 
-                        referencedFiles = ses.GetSourceReferencingReferencedFiles(RelativeType.Absolute);
-                    }
-                    catch (Exception e)
-                    {
-                        error = "Error loading file " + fileName + ": " + e.Message;
-                        referencedFiles = new List<SourceReferencingFile>();
-                        verboseError = e.ToString();
-                    }
-                    break;
-                default:
-                    referencedFiles = new List<SourceReferencingFile>();
-                    break;
+                //        referencedFiles = ses.GetSourceReferencingReferencedFiles(RelativeType.Absolute);
+                //    }
+                //    catch (Exception e)
+                //    {
+                //        error = "Error loading file " + fileName + ": " + e.Message;
+                //        referencedFiles = new List<SourceReferencingFile>();
+                //        verboseError = e.ToString();
+                //    }
+                //    break;
+                //default:
+                //    referencedFiles = new List<SourceReferencingFile>();
+                //    break;
             }
 /**/
             if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)

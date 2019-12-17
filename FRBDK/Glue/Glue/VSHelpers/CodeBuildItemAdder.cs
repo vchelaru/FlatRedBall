@@ -166,7 +166,7 @@ namespace FlatRedBall.Glue.VSHelpers
                 }
             }
 
-            if(ProjectManager.ProjectBase != null)
+            if(GlueState.Self.CurrentMainProject != null)
             {
                 ProjectManager.SaveProjects();
             }
@@ -175,7 +175,7 @@ namespace FlatRedBall.Glue.VSHelpers
 
         private bool SaveResourceFileToProject(Assembly assemblyContainingResource, bool succeeded, List<string> filesToAddToProject, string resourceName)
         {
-            if (ProjectManager.ProjectBase == null)
+            if (GlueState.Self.CurrentMainProject == null)
             {
                 throw new Exception("There is no project loaded.  You can't save a resource to a project without a project being loaded");
             }

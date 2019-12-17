@@ -119,6 +119,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArticyDraftPlugin", "Articy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewProjectCreator.Logic", "..\NewProjectCreator\NewProjectCreator.Logic\NewProjectCreator.Logic.csproj", "{60217569-9C37-4074-AE6C-DE3B5A3F0E5A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlueCommon", "GlueCommon\GlueCommon.csproj", "{9403B27A-6E3A-4083-8A42-0EB62B699246}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBallStandard", "..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj", "{26DD17AA-55AE-46AB-9394-A2319728869A}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
@@ -472,6 +476,22 @@ Global
 		{60217569-9C37-4074-AE6C-DE3B5A3F0E5A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{60217569-9C37-4074-AE6C-DE3B5A3F0E5A}.Release|x86.ActiveCfg = Release|Any CPU
 		{60217569-9C37-4074-AE6C-DE3B5A3F0E5A}.Release|x86.Build.0 = Release|Any CPU
+		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Debug|x86.Build.0 = Debug|Any CPU
+		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Release|x86.ActiveCfg = Release|Any CPU
+		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Release|x86.Build.0 = Release|Any CPU
+		{26DD17AA-55AE-46AB-9394-A2319728869A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26DD17AA-55AE-46AB-9394-A2319728869A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26DD17AA-55AE-46AB-9394-A2319728869A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{26DD17AA-55AE-46AB-9394-A2319728869A}.Debug|x86.Build.0 = Debug|Any CPU
+		{26DD17AA-55AE-46AB-9394-A2319728869A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26DD17AA-55AE-46AB-9394-A2319728869A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26DD17AA-55AE-46AB-9394-A2319728869A}.Release|x86.ActiveCfg = Release|Any CPU
+		{26DD17AA-55AE-46AB-9394-A2319728869A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -527,6 +547,8 @@ Global
 		{287538D1-2DDA-48C9-8BEA-891AB0C76C7D} = {37508B76-01B0-44EB-905A-84AE9967E78A}
 		{B213C113-78E1-47DB-AECB-4671F703C5B8} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
 		{60217569-9C37-4074-AE6C-DE3B5A3F0E5A} = {37508B76-01B0-44EB-905A-84AE9967E78A}
+		{9403B27A-6E3A-4083-8A42-0EB62B699246} = {4532DFDF-D042-4AEE-9FBE-92A1A7BC5F5D}
+		{26DD17AA-55AE-46AB-9394-A2319728869A} = {4532DFDF-D042-4AEE-9FBE-92A1A7BC5F5D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {878CCBB8-EADE-4F25-9DE7-D55D999D414A}

@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace FlatRedBall.IO.Csv
 {
-#region CsvHeader Class
+    #region CsvHeader Class
 
     public struct CsvHeader : IEquatable<CsvHeader>
     {
@@ -137,7 +137,7 @@ namespace FlatRedBall.IO.Csv
 
 #endregion
 
-#region XML Docs
+    #region XML Docs
     /// <summary>
     /// Represents the raw data loaded from a csv file.  This is
     /// used if the data must be processed or converted by hand to
@@ -146,7 +146,7 @@ namespace FlatRedBall.IO.Csv
 #endregion
     public class RuntimeCsvRepresentation
     {
-#region Fields
+        #region Fields
 
         public CsvHeader[] Headers;
         public List<string[]> Records;

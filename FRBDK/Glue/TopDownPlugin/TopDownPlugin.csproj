@@ -138,9 +138,9 @@
       <Project>{47241002-7eb5-433b-b931-a530bb6b84ee}</Project>
       <Name>WpfDataUi</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
-      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
-      <Name>FlatRedBallXna4</Name>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj">
+      <Project>{26dd17aa-55ae-46ab-9394-a2319728869a}</Project>
+      <Name>FlatRedBallStandard</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
       <Project>{E1D670B6-AD42-4B84-AFF8-D568097BE03D}</Project>
@@ -149,6 +149,10 @@
     <ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj">
       <Project>{2c289a72-d6bd-4358-afbc-b71f9d31b01e}</Project>
       <Name>FlatRedBall.Plugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GlueCommon\GlueCommon.csproj">
+      <Project>{9403b27a-6e3a-4083-8a42-0eb62b699246}</Project>
+      <Name>GlueCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\GlueSaveClasses\GlueSaveClasses.csproj">
       <Project>{545FF183-4D9D-4121-9A04-1D354B0B0DBA}</Project>

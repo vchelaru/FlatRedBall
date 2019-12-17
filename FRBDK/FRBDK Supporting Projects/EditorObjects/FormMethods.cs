@@ -47,12 +47,12 @@ namespace EditorObjects
             //Renderer.UseRenderTargets = true;
         }
 
-        public void AllowFileDrop(System.Windows.Forms.DragEventHandler dragEventHandler)
-        {
-            FlatRedBallServices.Owner.AllowDrop = true;
-            FlatRedBallServices.Owner.DragEnter += DragEnter;
-            FlatRedBallServices.Owner.DragDrop += dragEventHandler;
-        }
+        //public void AllowFileDrop(System.Windows.Forms.DragEventHandler dragEventHandler)
+        //{
+        //    FlatRedBallServices.Owner.AllowDrop = true;
+        //    FlatRedBallServices.Owner.DragEnter += DragEnter;
+        //    FlatRedBallServices.Owner.DragDrop += dragEventHandler;
+        //}
 
         void DragEnter(object sender, DragEventArgs e)
         {

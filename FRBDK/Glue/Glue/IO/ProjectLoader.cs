@@ -816,6 +816,12 @@ namespace FlatRedBall.Glue.IO
 
         private void BuildIfOutOfDate(List<ReferencedFileSave> rfsList, bool runBuildsAsync, bool runInParallel)
         {
+
+            if(rfsList.Any(item => item == null))
+            {
+                throw new ArgumentException("List contains null files, which it should not!");
+            }
+
             if (runInParallel)
             {
                 Parallel.ForEach(rfsList, (rfs) =>
@@ -902,13 +908,13 @@ namespace FlatRedBall.Glue.IO
                     {
                         if (rfs.UseContentPipeline)
                         {
-                            if (rfs.TextureFormat == Microsoft.Xna.Framework.Content.Pipeline.Processors.TextureProcessorOutputFormat.DxtCompressed &&
-                                !item.HasMetadata("ProcessorParameters_TextureProcessorOutputFormat"))
-                            {
-                                hasMadeChanges = true;
-                                // Gotta make this thing use the DxtCompression
-                                ContentPipelineHelper.UpdateTextureFormatFor(rfs);
-                            }
+                            //if (rfs.TextureFormat == Microsoft.Xna.Framework.Content.Pipeline.Processors.TextureProcessorOutputFormat.DxtCompressed &&
+                            //    !item.HasMetadata("ProcessorParameters_TextureProcessorOutputFormat"))
+                            //{
+                            //    hasMadeChanges = true;
+                            //    // Gotta make this thing use the DxtCompression
+                            //    ContentPipelineHelper.UpdateTextureFormatFor(rfs);
+                            //}
                         }
                     }
                 }

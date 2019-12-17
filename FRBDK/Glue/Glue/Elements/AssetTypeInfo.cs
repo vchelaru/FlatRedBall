@@ -18,54 +18,6 @@ using FlatRedBall.Instructions.Reflection;
 
 namespace FlatRedBall.Glue.Elements
 {
-    #region PlatformSpecificType class
-    public struct PlatformSpecificType
-    {
-        public const string AllPlatform = "All";
-
-        public string QualifiedType;
-        public string Platform;
-
-
-        [XmlIgnore]
-        public Func<object, string> PlatformFunc;
-    }
-    #endregion
-
-    #region MemberTypeComparer Class
-
-    public class MemberTypeComparer : IEqualityComparer<MemberWithType>
-    {
-        public bool AreEqual(MemberWithType first, MemberWithType second)
-        {
-            return first.Member == second.Member;
-        }
-
-        public bool Equals(MemberWithType x, MemberWithType y)
-        {
-            return x.Member == y.Member;
-        }
-
-        public int GetHashCode(MemberWithType obj)
-        {
-            return obj.Member.GetHashCode();
-        }
-    }
-
-    #endregion
-
-    #region MemberWithType Class
-    public class MemberWithType
-    {
-        public string Member;
-        public string Type;
-
-        public override string ToString()
-        {
-            return string.Format("{0} ({1})", Member, Type);
-        }
-    }
-    #endregion
 
     public class AssetTypeInfo
 	{

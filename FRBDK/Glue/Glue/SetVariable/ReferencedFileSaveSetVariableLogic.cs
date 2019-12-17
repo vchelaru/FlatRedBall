@@ -231,31 +231,31 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region TextureFormat
 
-            else if (changedMember == "TextureFormat")
-            {
-                ContentPipelineHelper.UpdateTextureFormatFor(rfs);
+            //else if (changedMember == "TextureFormat")
+            //{
+            //    ContentPipelineHelper.UpdateTextureFormatFor(rfs);
 
-                // See the UseContentPipeline section for comments on what this
-                // code does.
-                List<ReferencedFileSave> matchingRfses = ObjectFinder.Self.GetMatchingReferencedFiles(rfs);
-                foreach (ReferencedFileSave rfsToUpdate in matchingRfses)
-                {
-                    rfsToUpdate.TextureFormat = rfs.TextureFormat;
-                    IElement container = rfsToUpdate.GetContainer();
+            //    // See the UseContentPipeline section for comments on what this
+            //    // code does.
+            //    List<ReferencedFileSave> matchingRfses = ObjectFinder.Self.GetMatchingReferencedFiles(rfs);
+            //    foreach (ReferencedFileSave rfsToUpdate in matchingRfses)
+            //    {
+            //        rfsToUpdate.TextureFormat = rfs.TextureFormat;
+            //        IElement container = rfsToUpdate.GetContainer();
 
-                    if (container != null)
-                    {
-                        CodeWriter.GenerateCode(container);
-                    }
-                    else
-                    {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
-                    }
-                }
+            //        if (container != null)
+            //        {
+            //            CodeWriter.GenerateCode(container);
+            //        }
+            //        else
+            //        {
+            //            GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+            //        }
+            //    }
 
 
-                updateTreeView = false;
-            }
+            //    updateTreeView = false;
+            //}
 
             #endregion
 

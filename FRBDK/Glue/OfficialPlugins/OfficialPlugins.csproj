@@ -117,7 +117,9 @@
     <Reference Include="Microsoft.Build.Framework">
       <HintPath>..\Glue\Libraries\MSBuild\Current\Microsoft.Build.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="MonoGame.Framework, Version=3.8.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoGame.Framework.DesktopGL.Core.3.8.0.1\lib\net452\MonoGame.Framework.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -309,9 +311,9 @@
       <Project>{47241002-7eb5-433b-b931-a530bb6b84ee}</Project>
       <Name>WpfDataUi</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
-      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
-      <Name>FlatRedBallXna4</Name>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj">
+      <Project>{26dd17aa-55ae-46ab-9394-a2319728869a}</Project>
+      <Name>FlatRedBallStandard</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
       <Project>{E1D670B6-AD42-4B84-AFF8-D568097BE03D}</Project>
@@ -328,6 +330,10 @@
     <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj">
       <Project>{5fe94178-9907-4878-afac-8f347ca86b50}</Project>
       <Name>FlatRedBall.PropertyGrid</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GlueCommon\GlueCommon.csproj">
+      <Project>{9403b27a-6e3a-4083-8a42-0eb62b699246}</Project>
+      <Name>GlueCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\GlueSaveClasses\GlueSaveClasses.csproj">
       <Project>{545FF183-4D9D-4121-9A04-1D354B0B0DBA}</Project>

@@ -223,17 +223,17 @@ namespace FlatRedBall.Glue.ContentPipeline
             }
         }
 
-        public static void UpdateTextureFormatFor(ReferencedFileSave rfs)
-        {
-            string absoluteName = ProjectManager.MakeAbsolute(rfs.Name, true);
+        //public static void UpdateTextureFormatFor(ReferencedFileSave rfs)
+        //{
+        //    string absoluteName = ProjectManager.MakeAbsolute(rfs.Name, true);
 
-            bool usesContentPipeline = rfs.UseContentPipeline || rfs.GetAssetTypeInfo() != null && rfs.GetAssetTypeInfo().MustBeAddedToContentPipeline;
+        //    bool usesContentPipeline = rfs.UseContentPipeline || rfs.GetAssetTypeInfo() != null && rfs.GetAssetTypeInfo().MustBeAddedToContentPipeline;
 
-            string parameterTag = GetTextureFormatTag(rfs);
-            string valueToSet = rfs.TextureFormat.ToString();
+        //    string parameterTag = GetTextureFormatTag(rfs);
+        //    string valueToSet = rfs.TextureFormat.ToString();
 
-            SetParameterOnBuildItems(absoluteName, parameterTag, valueToSet);
-        }
+        //    SetParameterOnBuildItems(absoluteName, parameterTag, valueToSet);
+        //}
 
         private static void SetParameterOnBuildItems(string absoluteName, string parameterTag, string valueToSet)
         {

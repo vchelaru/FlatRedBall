@@ -79,9 +79,9 @@
     <Reference Include="Microsoft.Build">
       <HintPath>..\Glue\Tools\MSBuild\15.0\amd64\Microsoft.Build.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
-    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
-    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="MonoGame.Framework, Version=3.8.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoGame.Framework.DesktopGL.Core.3.8.0.1\lib\net452\MonoGame.Framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -93,9 +93,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Glue\CodeGeneration\ConversionCodeGenInfo.cs">
-      <Link>ConversionCodeGenInfo.cs</Link>
-    </Compile>
     <Compile Include="..\Glue\Controls\MultiButtonMessageBox.cs">
       <Link>Controls\MultiButtonMessageBox.cs</Link>
       <SubType>Form</SubType>
@@ -335,9 +332,6 @@
     <Compile Include="..\Glue\TypeConversions\TypeConverterHelper.cs">
       <Link>TypeConverters\TypeConverterHelper.cs</Link>
     </Compile>
-    <Compile Include="..\Glue\VSHelpers\Projects\ProjectBase.cs">
-      <Link>VSHelpers\Projects\ProjectBase.cs</Link>
-    </Compile>
     <Compile Include="Interfaces\IApplicationSettings.cs" />
     <Compile Include="Interfaces\IAvailableAssetTypes.cs" />
     <Compile Include="Interfaces\IProjectValues.cs" />
@@ -360,9 +354,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
-      <Project>{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}</Project>
-      <Name>FlatRedBallXna4</Name>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj">
+      <Project>{26dd17aa-55ae-46ab-9394-a2319728869a}</Project>
+      <Name>FlatRedBallStandard</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
       <Project>{E1D670B6-AD42-4B84-AFF8-D568097BE03D}</Project>
@@ -372,12 +366,17 @@
       <Project>{5FE94178-9907-4878-AFAC-8F347CA86B50}</Project>
       <Name>FlatRedBall.PropertyGrid</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GlueCommon\GlueCommon.csproj">
+      <Project>{9403b27a-6e3a-4083-8a42-0eb62b699246}</Project>
+      <Name>GlueCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GlueSaveClasses\GlueSaveClasses.csproj">
       <Project>{545FF183-4D9D-4121-9A04-1D354B0B0DBA}</Project>
       <Name>GlueSaveClasses</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Resources\CanInterpolate.bmp" />
   </ItemGroup>
   <ItemGroup>
@@ -389,6 +388,7 @@
   <ItemGroup>
     <Folder Include="Controls\PropertyGridControls\" />
     <Folder Include="MVVM\" />
+    <Folder Include="VSHelpers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

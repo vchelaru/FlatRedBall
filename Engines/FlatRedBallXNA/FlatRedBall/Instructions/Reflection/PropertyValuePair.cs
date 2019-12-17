@@ -210,11 +210,11 @@ namespace FlatRedBall.Instructions.Reflection
             }
             else
             {
-                return ConvertStringValueToValueOfType(value, typeToConvertTo.FullName, contentManagerName, trimQuotes);
+                return ConvertStringValueToValueOfType(value, typeToConvertTo.FullName, typeToConvertTo, contentManagerName, trimQuotes);
             }
         }
 
-        public static object ConvertStringValueToValueOfType(string value, string desiredType, string contentManagerName, bool trimQuotes)
+        public static object ConvertStringValueToValueOfType(string value, string desiredType, Type alreadyKnownType, string contentManagerName, bool trimQuotes)
         {
             value = value.Trim(); // this is in case there is a space in front - I don't think we need it.
 
@@ -247,7 +247,7 @@ namespace FlatRedBall.Instructions.Reflection
 
             if (!handled)
             {
-                TryHandleComplexType(value, desiredType, out handled, out toReturn);
+                TryHandleComplexType(value, desiredType, alreadyKnownType, out handled, out toReturn);
             }
 
             if (!handled)
@@ -702,7 +702,7 @@ namespace FlatRedBall.Instructions.Reflection
 #endif
         }
 
-        private static void TryHandleComplexType(string value, string typeToConvertTo, out bool handled, out object toReturn)
+        private static void TryHandleComplexType(string value, string typeName, Type alreadyKnownType, out bool handled, out object toReturn)
         {
             handled = false;
             toReturn = null;
@@ -714,16 +714,20 @@ namespace FlatRedBall.Instructions.Reflection
             {
                 string typeAfterNewString = value.Substring("new ".Length, value.IndexOf('(') - "new ".Length);
 
-                Type foundType = null;
+                Type foundType = alreadyKnownType;
 
-                if (mUnqualifiedTypeDictionary.ContainsKey(typeAfterNewString))
+                if(foundType == null)
                 {
-                    foundType = mUnqualifiedTypeDictionary[typeAfterNewString];
+                    if (mUnqualifiedTypeDictionary.ContainsKey(typeAfterNewString))
+                    {
+                        foundType = mUnqualifiedTypeDictionary[typeAfterNewString];
+                    }
+                    else
+                    {
+                        foundType = TryToGetTypeFromAssemblies(typeAfterNewString);
+                    }
                 }
-                else
-                {
-                    foundType = TryToGetTypeFromAssemblies(typeAfterNewString);
-                }
+
 
                 if (foundType != null)
                 {
@@ -756,15 +760,17 @@ namespace FlatRedBall.Instructions.Reflection
                 // They're using the "x=0,y=0,z=0" syntax
                 handled = true;
 
-                Type foundType = null;
-
-                if (mUnqualifiedTypeDictionary.ContainsKey(typeToConvertTo))
+                Type foundType = alreadyKnownType;
+                if(foundType == null)
                 {
-                    foundType = mUnqualifiedTypeDictionary[typeToConvertTo];
-                }
-                else
-                {
-                    foundType = TryToGetTypeFromAssemblies(typeToConvertTo);
+                    if (mUnqualifiedTypeDictionary.ContainsKey(typeName))
+                    {
+                        foundType = mUnqualifiedTypeDictionary[typeName];
+                    }
+                    else
+                    {
+                        foundType = TryToGetTypeFromAssemblies(typeName);
+                    }
                 }
 
                 toReturn = CreateInstanceFromNamedAssignment(foundType, value);

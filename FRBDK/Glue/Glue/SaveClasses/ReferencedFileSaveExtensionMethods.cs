@@ -6,6 +6,9 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Content;
 using GluePropertyGridClasses.Interfaces;
+
+using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
+
 #if GLUE
 
 using FlatRedBall.Glue.Facades;
@@ -111,11 +114,14 @@ namespace FlatRedBall.Glue.SaveClasses
                 return true;
             }
 
-            foreach (SourceReferencingFile srf in instance.SourceFileCache)
+            if(instance.SourceFileCache != null)
             {
-                if (srf.SourceFile == fileName)
+                foreach (SourceReferencingFile srf in instance.SourceFileCache)
                 {
-                    return true;
+                    if (srf.SourceFile == fileName)
+                    {
+                        return true;
+                    }
                 }
             }
 

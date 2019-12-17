@@ -24,7 +24,7 @@ using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.IO.Zip;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using Microsoft.Xna.Framework.Content.Pipeline.Processors;
+//using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using FlatRedBall.Glue.ContentPipeline;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Content.SpriteFrame;

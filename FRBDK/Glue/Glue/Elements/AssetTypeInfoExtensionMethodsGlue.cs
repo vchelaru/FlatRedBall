@@ -20,36 +20,6 @@ namespace FlatRedBall.Glue.Elements
 
             switch (extension)
             {
-                case "scnx":
-                    #region Create the SpriteEditorProperties file
-
-                    EditorObjects.EditorSettings.SpriteEditorSceneProperties sesp = new EditorObjects.EditorSettings.SpriteEditorSceneProperties();
-
-                    if (set2D)
-                    {
-                        sesp.PixelSize = .5f;
-                        sesp.Camera.Orthogonal = true;
-                        // -1 means 
-                        // wed don't
-                        // want to specify
-                        // a OrthogonalHeight
-                        // and we want the Scene
-                        // to control that.
-                        sesp.Camera.OrthogonalHeight = -1;
-                    }
-
-                    FileManager.XmlSerialize(sesp, settingsFile + ".sep");
-
-                    #endregion
-
-                    #region Create the ModelEditorProperties file
-
-                    ModelEditorPropertiesSave mepx = new ModelEditorPropertiesSave();
-                    mepx.BuildToolAssociationList = BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList;
-                    FileManager.XmlSerialize(mepx, settingsFile + ".mep");
-                    #endregion
-
-                    break;
                 case "shcx":
                     EditorObjects.EditorSettings.PolygonEditorSettings pes = new EditorObjects.EditorSettings.PolygonEditorSettings();
                     if (set2D)
@@ -62,24 +32,24 @@ namespace FlatRedBall.Glue.Elements
                     FileManager.XmlSerialize(pes, settingsFile);
 
                     break;
-                case "splx":
-                    {
-                        EditorObjects.EditorSettings.SplineEditorSettingsSave ses =
-                            new EditorObjects.EditorSettings.SplineEditorSettingsSave();
+                //case "splx":
+                //    {
+                //        EditorObjects.EditorSettings.SplineEditorSettingsSave ses =
+                //            new EditorObjects.EditorSettings.SplineEditorSettingsSave();
 
-                        if (set2D)
-                        {
-                            ses.ViewCamera.Orthogonal = true;
-                            ses.ViewCamera.OrthogonalHeight = -1;
+                //        if (set2D)
+                //        {
+                //            ses.ViewCamera.Orthogonal = true;
+                //            ses.ViewCamera.OrthogonalHeight = -1;
 
-                            ses.BoundsCamera.Orthogonal = true;
-                            ses.BoundsCamera.OrthogonalWidth = ObjectFinder.Self.GlueProject.OrthogonalWidth;
-                            ses.BoundsCamera.OrthogonalHeight = ObjectFinder.Self.GlueProject.OrthogonalHeight;
-                        }
+                //            ses.BoundsCamera.Orthogonal = true;
+                //            ses.BoundsCamera.OrthogonalWidth = ObjectFinder.Self.GlueProject.OrthogonalWidth;
+                //            ses.BoundsCamera.OrthogonalHeight = ObjectFinder.Self.GlueProject.OrthogonalHeight;
+                //        }
 
-                        FileManager.XmlSerialize(ses, settingsFile + ".splsetx");
-                    }
-                    break;
+                //        FileManager.XmlSerialize(ses, settingsFile + ".splsetx");
+                //    }
+                //    break;
                 case "emix":
                     {
 

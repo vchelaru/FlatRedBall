@@ -13,6 +13,7 @@ using FlatRedBall.Content;
 using FlatRedBall.Glue.Facades;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Managers;
+using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -46,11 +47,14 @@ namespace FlatRedBall.Glue.SaveClasses
                 returnValue |= instance.GetIsFileOutOfDate(contentDirectory + instance.SourceFile, contentDirectory + instance.Name);
             }
 
-            foreach (SourceReferencingFile srf in instance.SourceFileCache)
+            if(instance.SourceFileCache != null)
             {
-                returnValue |= instance.GetIsFileOutOfDate(
-                    contentDirectory + srf.SourceFile,
-                    contentDirectory + srf.DestinationFile);
+                foreach (SourceReferencingFile srf in instance.SourceFileCache)
+                {
+                    returnValue |= instance.GetIsFileOutOfDate(
+                        contentDirectory + srf.SourceFile,
+                        contentDirectory + srf.DestinationFile);
+                }
             }
 
 
@@ -161,7 +165,10 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 }
 
-                ContentParser.EliminateDuplicateSourceReferencingFiles(instance.SourceFileCache);
+                if(instance.SourceFileCache != null)
+                {
+                    ContentParser.EliminateDuplicateSourceReferencingFiles(instance.SourceFileCache);
+                }
             }
             catch (Exception e)
             {

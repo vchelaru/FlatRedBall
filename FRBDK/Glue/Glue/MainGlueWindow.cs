@@ -45,6 +45,8 @@ using FlatRedBall.Glue.Controls.ProjectSync;
 using System.Linq;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.Threading.Tasks;
+using FlatRedBall.Instructions.Reflection;
+using Microsoft.Xna.Framework.Audio;
 
 //using EnvDTE;
 
@@ -244,6 +246,12 @@ namespace Glue
 
             initializationWindow.Message = "Initializing Glue Systems";
             Application.DoEvents();
+
+            // Add Glue.Common
+            PropertyValuePair.AdditionalAssemblies.Add(typeof(PlatformSpecificType).Assembly);
+
+            // Monogame:
+            PropertyValuePair.AdditionalAssemblies.Add(typeof(SoundEffectInstance).Assembly);
 
             // Async stuff
             {

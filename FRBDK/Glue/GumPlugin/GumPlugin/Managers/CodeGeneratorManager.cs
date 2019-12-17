@@ -250,14 +250,14 @@ namespace GumPlugin.Managers
                         string location = directoryToSave + element.Name + "Runtime.Generated.cs";
                         wasAnythingAdded |=
                             FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
-                            FlatRedBall.Glue.ProjectManager.ProjectBase, location);
+                            GlueState.Self.CurrentMainProject, location);
                     }
                     if (generationResult.DidSaveCustom)
                     {
                         string location = directoryToSave + element.Name + "Runtime.cs";
                         wasAnythingAdded |=
                             FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
-                            FlatRedBall.Glue.ProjectManager.ProjectBase, location);
+                            GlueState.Self.CurrentMainProject, location);
                     }
                 });
 
@@ -378,7 +378,7 @@ namespace GumPlugin.Managers
 
             wasAdded |=
                 FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
-                FlatRedBall.Glue.ProjectManager.ProjectBase, whereToSave);
+                GlueState.Self.CurrentMainProject, whereToSave);
 
             return wasAdded;
         }
@@ -474,7 +474,7 @@ namespace GumPlugin.Managers
             {
                 // add the file to the project:
                 FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
-                    FlatRedBall.Glue.ProjectManager.ProjectBase, saveLocation);
+                    GlueState.Self.CurrentMainProject, saveLocation);
 
             }
         }

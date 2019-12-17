@@ -154,11 +154,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// <param name="absoluteFile">The absolute file name to add.</param>
         /// <returns>The ProjectItem which was created and added to the project.</returns>
         public abstract ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Contained, bool forceToContentPipeline = false);
-#if GLUE
+
         public bool SaveAsRelativeSyncedProject;
         public bool SaveAsAbsoluteSyncedProject;
         public abstract void UpdateContentFile(string sourceFileName);
-#endif
         public abstract string FolderName { get; }
 
         public bool IsFilePartOfProject(string fileToUpdate)
@@ -393,7 +392,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         protected virtual void AddCodeBuildItems(ProjectBase sourceProjectBase)
         {
-#if GLUE
+
             var sourceCodeFiles = sourceProjectBase.EvaluatedItems
                 .Where(item => item.UnevaluatedInclude.EndsWith(".cs") && !ShouldIgnoreFile(item.UnevaluatedInclude))
                 .ToList();
@@ -433,7 +432,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     }
                 }
             }
-#endif
+
         }
 
         public virtual void LoadContentProject()

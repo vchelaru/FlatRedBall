@@ -93,9 +93,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
-    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
-    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="MonoGame.Framework, Version=3.8.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoGame.Framework.DesktopGL.Core.3.8.0.1\lib\net452\MonoGame.Framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -118,12 +118,6 @@
     <Compile Include="..\Glue\SaveClasses\CustomClassSave.cs">
       <Link>Models\CustomClassSave.cs</Link>
     </Compile>
-    <Compile Include="..\Glue\SaveClasses\CustomVariable.cs">
-      <Link>Models\CustomVariable.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\SaveClasses\CustomVariableInNamedObject.cs">
-      <Link>Models\CustomVariableInNamedObject.cs</Link>
-    </Compile>
     <Compile Include="..\Glue\SaveClasses\EntitySave.cs">
       <Link>Models\EntitySave.cs</Link>
     </Compile>
@@ -145,14 +139,8 @@
     <Compile Include="..\Glue\SaveClasses\NamedObjectPropertyOverride.cs">
       <Link>NamedObjectPropertyOverride.cs</Link>
     </Compile>
-    <Compile Include="..\Glue\SaveClasses\NamedObjectSave.cs">
-      <Link>NamedObjectSave.cs</Link>
-    </Compile>
     <Compile Include="..\Glue\SaveClasses\PerformanceSettingsSave.cs">
       <Link>PerformanceSettingsSave.cs</Link>
-    </Compile>
-    <Compile Include="..\Glue\SaveClasses\PropertySave.cs">
-      <Link>PropertySave.cs</Link>
     </Compile>
     <Compile Include="..\Glue\SaveClasses\ReferencedFileSave.cs">
       <Link>ReferencedFileSave.cs</Link>
@@ -160,19 +148,13 @@
     <Compile Include="..\Glue\SaveClasses\ScreenSave.cs">
       <Link>ScreenSave.cs</Link>
     </Compile>
-    <Compile Include="..\Glue\SaveClasses\StateSave.cs">
-      <Link>StateSave.cs</Link>
-    </Compile>
     <Compile Include="..\Glue\SaveClasses\StateSaveCategory.cs">
       <Link>StateSaveCategory.cs</Link>
     </Compile>
     <Compile Include="..\Glue\SaveClasses\TranslatedFileSave.cs">
       <Link>TranslatedFileSave.cs</Link>
     </Compile>
-    <Compile Include="Interfaces\IPropertyListContainer.cs" />
     <Compile Include="Models\DisplaySettings.cs" />
-    <Compile Include="Models\FloatRectangle.cs" />
-    <Compile Include="Models\TypeConverters\FloatRectangleTypeConverter.cs" />
     <Compile Include="ExtensionMethods\GlueProjectSaveExtensions.cs" />
     <Compile Include="Models\Interfaces\ITaggable.cs" />
     <Compile Include="Models\GluxPluginData.cs" />
@@ -180,16 +162,26 @@
     <Compile Include="Models\TypeConverters\InverterConverter.cs" />
     <Compile Include="PluginRequirement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReferencedFileReference.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
-      <Name>FlatRedBallXna4</Name>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj">
+      <Project>{26dd17aa-55ae-46ab-9394-a2319728869a}</Project>
+      <Name>FlatRedBallStandard</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
       <Project>{e1d670b6-ad42-4b84-aff8-d568097be03d}</Project>
       <Name>EditorObjectsXna4</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GlueCommon\GlueCommon.csproj">
+      <Project>{9403b27a-6e3a-4083-8a42-0eb62b699246}</Project>
+      <Name>GlueCommon</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

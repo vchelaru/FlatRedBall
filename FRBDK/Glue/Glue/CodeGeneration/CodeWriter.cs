@@ -1489,7 +1489,7 @@ namespace FlatRedBallAddOns.Entities
             {
                 return;
             }
-            var gameFilePath = new FilePath(ProjectManager.ProjectBase.Directory + relativeGameFileName);
+            var gameFilePath = new FilePath(GlueState.Self.CurrentMainProject.Directory + relativeGameFileName);
 
             string contents = FileManager.FromFileText(gameFilePath.FullPath);
             var contentsBeforeChange = contents;
@@ -2073,7 +2073,7 @@ namespace FlatRedBallAddOns.Entities
         {
 
             string fileName = element.Name + ".Event.cs";
-            string fullFileName = ProjectManager.ProjectBase.Directory + fileName;
+            string fullFileName = GlueState.Self.CurrentMainProject.Directory + fileName;
 
             bool save = false; // we'll be doing manual saving after it's created
             ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(fileName, save);
@@ -2086,7 +2086,7 @@ namespace FlatRedBallAddOns.Entities
         {
 
             string fileName = element.Name + ".Generated.Event.cs";
-            string fullFileName = ProjectManager.ProjectBase.Directory + fileName;
+            string fullFileName = GlueState.Self.CurrentMainProject.Directory + fileName;
 
             bool save = false; // we'll be doing manual saving after it's created
             ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(fileName, save);

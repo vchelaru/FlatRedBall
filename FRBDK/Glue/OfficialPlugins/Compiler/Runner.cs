@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
 using OfficialPlugins.Compiler.ViewModels;
 using System;
@@ -76,6 +77,8 @@ namespace OfficialPlugins.Compiler
 
             if(process == null)
             {
+                ProjectBase projectBase = null;
+
                 Process found = TryFindGameProcess();
 
                 if (found != null)

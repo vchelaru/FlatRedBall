@@ -11,8 +11,9 @@ using FlatRedBall.Glue.Controls;
 using FlatRedBall.IO;
 using FlatRedBall.Content;
 //using FlatRedBall.Gui;
-using Microsoft.Xna.Framework.Content.Pipeline.Processors;
+//using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using FlatRedBall.Glue.Interfaces;
+using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -307,7 +308,7 @@ namespace FlatRedBall.Glue.SaveClasses
             get;
             // Setter is made public so extension methods can access it
             set;
-        }
+        } = new List<SourceReferencingFile>();
 
         [Category("Build")]
         public string SourceFile
@@ -376,18 +377,18 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        [XmlIgnore]
-        public TextureProcessorOutputFormat TextureFormat
-        {
-            get
-            {
-                return Properties.GetValue<TextureProcessorOutputFormat>("TextureFormat");
-            }
-            set
-            {
-                Properties.SetValue("TextureFormat", value);
-            }
-        }
+        //[XmlIgnore]
+        //public TextureProcessorOutputFormat TextureFormat
+        //{
+        //    get
+        //    {
+        //        return Properties.GetValue<TextureProcessorOutputFormat>("TextureFormat");
+        //    }
+        //    set
+        //    {
+        //        Properties.SetValue("TextureFormat", value);
+        //    }
+        //}
 
         //[XmlIgnore]
         //public bool GenerateMipmaps
@@ -485,7 +486,7 @@ namespace FlatRedBall.Glue.SaveClasses
             AddToManagers = true;
 
             CsvDelimiter = AvailableDelimiters.Comma;
-            SourceFileCache = new List<Content.SourceReferencingFile>();
+            SourceFileCache = new List<SourceReferencingFile>();
             LoadedAtRuntime = true;
             OpensWith = "<DEFAULT>";
 

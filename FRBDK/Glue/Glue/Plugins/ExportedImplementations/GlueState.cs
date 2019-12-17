@@ -217,10 +217,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         {
             get
             {
-#if TEST
-                return FileManager.CurrentDirectory + "TestProject.glux";
-#else
-
                 if (CurrentMainProject == null)
                 {
                     return null;
@@ -229,8 +225,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 {
                     return FileManager.RemoveExtension(CurrentMainProject.FullFileName) + ".glux";
                 }
-#endif
-
             }
 
         }
