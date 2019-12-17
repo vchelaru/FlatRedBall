@@ -203,11 +203,16 @@ copy $(TargetDir)XnaAndWinforms.pdb C:\Users\%username%\AppData\Roaming\FRBDK\Pl
   <PropertyGroup>
     <PostBuildEvent>echo Copying %25appdata%25\FRBDK\plugins\animationeditor\AnimationEditorPlugin.dll
 md %25appdata%25\FRBDK\plugins\animationeditor\
+echo 1
 copy $(TargetDir)AnimationEditorPlugin.dll "%25appdata%25\FRBDK\plugins\animationeditor\AnimationEditorPlugin.dll"
+echo 2
 copy $(TargetDir)AnimationEditorPlugin.pdb "%25appdata%25\FRBDK\plugins\animationeditor\AnimationEditorPlugin.pdb"
 
+echo 3
 copy $(TargetDir)FlatRedBall.AnimationEditorForms.dll "%25appdata%25\FRBDK\plugins\animationeditor\FlatRedBall.AnimationEditorForms.dll"
-copy $(TargetDir)FlatRedBall.AnimationEditorForms.pdb "%25appdata%25\FRBDK\plugins\animationeditor\FlatRedBall.AnimationEditorForms.pdb"</PostBuildEvent>
+echo 4
+copy $(TargetDir)FlatRedBall.AnimationEditorForms.pdb "%25appdata%25\FRBDK\plugins\animationeditor\FlatRedBall.AnimationEditorForms.pdb"
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
