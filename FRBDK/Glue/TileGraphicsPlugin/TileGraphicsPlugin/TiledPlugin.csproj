@@ -201,7 +201,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\TiledMap-FlatRedBall-Conversion\testbed\TmxEditor\TmxEditor.csproj">
+    <ProjectReference Include="..\..\..\..\Tiled\TmxEditor\TmxEditor.csproj">
       <Project>{02d8d83a-96c7-4d2e-953c-9433c3817412}</Project>
       <Name>TmxEditor</Name>
     </ProjectReference>
