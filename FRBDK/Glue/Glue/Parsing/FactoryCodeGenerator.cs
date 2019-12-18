@@ -304,11 +304,11 @@ namespace FlatRedBall.Glue.Parsing
             {
                 // Vic says:  This could be optimized, but it might not be worth the extra complexity
                 // since this method is likely really fast.
-                string contents = Resources.Resource1.PoolList;
+                string contents = System.IO.File.ReadAllText("Resources/PoolList.cs");
                 contents = CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
                 FileManager.SaveText(contents, poolListFileName);
 
-                contents = Resources.Resource1.IEntityFactory;
+                contents = System.IO.File.ReadAllText("Resources/IEntityFactory.cs");
                 contents = CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
                 FileManager.SaveText(contents, iEntityFactoryFileName);
 

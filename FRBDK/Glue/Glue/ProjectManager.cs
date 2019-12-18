@@ -20,7 +20,7 @@ using FlatRedBall.Glue.Elements;
 using EditorObjects.Parsing;
 using FlatRedBall.Glue.ContentPipeline;
 using FlatRedBall.Glue.Plugins;
-using NewProjectCreator.Remote;
+//using NewProjectCreator.Remote;
 using FlatRedBall.Glue.Errors;
 using System.Collections;
 using FlatRedBall.Glue.CodeGeneration;

@@ -49,7 +49,7 @@ namespace FlatRedBall.Glue.IO
                     {
                         string directory = FileManager.GetDirectory(zipEntry.FileName, RelativeType.Relative);
 
-                        zipEntry.Extract(unpackDirectory, true);
+                        zipEntry.Extract(unpackDirectory, ExtractExistingFileAction.OverwriteSilently);
 
                         foundFiles.Add(unpackDirectory + zipEntry.FileName);
                     }

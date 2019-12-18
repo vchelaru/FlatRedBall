@@ -31,7 +31,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         Task LoadProjectAsync(string fileName);
 
 #if GLUE
-        ExportedImplementations.CommandInterfaces.GlueViewCommands GlueViewCommands { get; }
+        //ExportedImplementations.CommandInterfaces.GlueViewCommands GlueViewCommands { get; }
 #endif
     }
 }

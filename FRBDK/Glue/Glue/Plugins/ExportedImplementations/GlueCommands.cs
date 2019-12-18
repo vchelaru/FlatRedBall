@@ -44,7 +44,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public IDialogCommands DialogCommands { get; private set; }
 
-        public GlueViewCommands GlueViewCommands { get; private set; }
+        //public GlueViewCommands GlueViewCommands { get; private set; }
 
         public IFileCommands FileCommands { get; private set; }
 
@@ -125,7 +125,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             TreeNodeCommands = new TreeNodeCommands();
             UpdateCommands = new UpdateCommands();
             DialogCommands = new DialogCommands();
-            GlueViewCommands = new GlueViewCommands();
+            //GlueViewCommands = new GlueViewCommands();
             FileCommands = new FileCommands();
             SelectCommands = new SelectCommands();
         }

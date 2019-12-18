@@ -122,7 +122,7 @@ namespace FlatRedBall.Glue.IO
         {
             lock (FileWatchManager.LockObject)
             {
-                if (!IsFlushing && PerformFlushing && !MainGlueWindow.GetIsTortoiseRunning())
+                if (!IsFlushing && PerformFlushing)
                 {
                     IsFlushing = true;
 

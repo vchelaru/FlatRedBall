@@ -9,7 +9,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.CodeDom.Compiler;
 using Microsoft.Xna.Framework.Content.Pipeline.Processors;
-using Ionic.Zip;
+
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition;
 
@@ -562,7 +562,7 @@ namespace FlatRedBall.Glue.Plugins
 
             //Reference types to force assembly load
             const TextureProcessorOutputFormat texture = TextureProcessorOutputFormat.Color;
-            using (new ZipFile()) { }
+
 
             texture.ToString();// We do this to eliminate "is never used" warnings
 

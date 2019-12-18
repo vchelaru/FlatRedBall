@@ -10,11 +10,11 @@ using FlatRedBall.Utilities;
 using FlatRedBall.Content;
 using FlatRedBall.Content.Math.Geometry;
 using FlatRedBall.Content.Particle;
-using FlatRedBall.Content.SpriteRig;
+//using FlatRedBall.Content.SpriteRig;
 using FlatRedBall.Content.AI.Pathfinding;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Content.Math.Splines;
-using FlatRedBall.Content.Model.WMELoader;
+//using FlatRedBall.Content.Model.WMELoader;
 
 namespace FlatRedBall.Glue.Parsing
 {

@@ -302,9 +302,6 @@
     <Compile Include="..\Glue\SaveClasses\EntitySaveExtensionMethods.cs">
       <Link>SaveClasses\EntitySaveExtensionMethods.cs</Link>
     </Compile>
-    <Compile Include="..\Glue\SaveClasses\IElementExtensionMethods.cs">
-      <Link>SaveClasses\IElementExtensionMethods.cs</Link>
-    </Compile>
     <Compile Include="..\Glue\SaveClasses\IElementHelper.cs">
       <Link>SaveClasses\IElementHelper.cs</Link>
     </Compile>
@@ -331,6 +328,7 @@
     </Compile>
     <Compile Include="Interfaces\IApplicationSettings.cs" />
     <Compile Include="Interfaces\IAvailableAssetTypes.cs" />
+    <Compile Include="Interfaces\IElementExtensionMethods.cs" />
     <Compile Include="Interfaces\IProjectValues.cs" />
     <Compile Include="Interfaces\IVsProjectState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

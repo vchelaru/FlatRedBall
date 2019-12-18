@@ -65,7 +65,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
                 try
                 {
 
-                    zip.AddFileFromString("Compatibility.txt", directory.Name, time.ToString());
+                    zip.AddFile("Compatibility.txt", directory.Name);
                     response = "Successfully Created";
                 }
                 catch (Exception)

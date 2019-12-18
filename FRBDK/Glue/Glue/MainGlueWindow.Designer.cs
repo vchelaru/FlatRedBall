@@ -121,7 +121,6 @@
             this.bottomPanelContainer = new System.Windows.Forms.SplitContainer();
             this.tcBottom = new FlatRedBall.Glue.Controls.TabControlEx();
             this.msProcesses = new System.Windows.Forms.MenuStrip();
-            this.TortoiseWatchTimer = new System.Windows.Forms.Timer(this.components);
             this.elementHost2 = new System.Windows.Forms.Integration.ElementHost();
             this.toolbarControl1 = new FlatRedBall.Glue.Controls.ToolbarControl();
             this.mElementContextMenu.SuspendLayout();
@@ -1008,12 +1007,6 @@
             this.msProcesses.Visible = false;
             this.msProcesses.ItemAdded += new System.Windows.Forms.ToolStripItemEventHandler(this.MsProcessesItemAdded);
             this.msProcesses.ItemRemoved += new System.Windows.Forms.ToolStripItemEventHandler(this.MsProcessesItemRemoved);
-            // 
-            // TortoiseWatchTimer
-            // 
-            this.TortoiseWatchTimer.Enabled = true;
-            this.TortoiseWatchTimer.Interval = 1000;
-            this.TortoiseWatchTimer.Tick += new System.EventHandler(this.TortoiseWatchTimer_Tick);
             // 
             // elementHost2
             // 

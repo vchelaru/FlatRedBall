@@ -32,12 +32,12 @@ using System.Drawing;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using System.ServiceModel;
-using GlueWcfServices;
-using Glue.Wcf;
-using FlatRedBall.Glue.Wcf;
+//using GlueWcfServices;
+//using Glue.Wcf;
+//using FlatRedBall.Glue.Wcf;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Data;
-using System.Management;
+//using System.Management;
 using FlatRedBall.Glue.SetVariable;
 using Container = EditorObjects.IoC;
 using FlatRedBall.Glue.UnreferencedFiles;
@@ -257,7 +257,7 @@ namespace Glue
             {
 
                 initializationWindow.SubMessage = "Initializing WCF"; Application.DoEvents();
-                TaskManager.Self.AddAsyncTask(() => WcfManager.Self.Initialize(), "Initializing WCF");
+                //TaskManager.Self.AddAsyncTask(() => WcfManager.Self.Initialize(), "Initializing WCF");
 
                 initializationWindow.SubMessage = "Initializing EventManager"; Application.DoEvents();
                 TaskManager.Self.AddAsyncTask(() => EventManager.Initialize(), "Initializing EventManager");
@@ -1633,81 +1633,6 @@ namespace Glue
             this.ViewAdditionalContentTypes(GlobalOrProjectSpecific.ProjectSpecific);
         }
 
-        private void TortoiseWatchTimer_Tick(object sender, EventArgs e)
-        {
-            if (GetIsTortoiseRunning())
-            {
-                var form = WaitingForm.Self;
-                form.SetText("Please close any Tortoise windows.");
-
-                if (!form.Visible)
-                {
-                    try
-                    {
-                        form.ShowDialog(MainGlueWindow.Self);
-                    }
-                    catch
-                    {
-                        // The form may already be showing, no big deal.
-                    }
-                }
-            }
-            else
-            {
-                WaitingForm.Self.Hide();
-            }
-        }
-
-        public static bool GetIsTortoiseRunning()
-        {
-            Process[] processes = Process.GetProcessesByName("TortoiseProc");
-            bool possibleCandidatesExist = processes.Length != 0;
-
-            if (possibleCandidatesExist)
-            {
-
-                string user = System.Environment.UserName;
-
-
-                // The call to InvokeMethod below will fail if the Handle property is not retrieved
-                string[] propertiesToSelect = new[] { "Handle", "ProcessId" };
-                SelectQuery processQuery = new SelectQuery("Win32_Process", "Name = 'TortoiseProc.exe'", propertiesToSelect);
-
-                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(processQuery))
-                using (ManagementObjectCollection managementProcesses = searcher.Get())
-                {
-                    foreach (ManagementObject managementProcess in managementProcesses)
-                    {
-                        object[] outParameters = new object[2];
-                        try
-                        {
-                            uint result = (uint)managementProcess.InvokeMethod("GetOwner", outParameters);
-
-                            if (result == 0)
-                            {
-                                string processUser = (string)outParameters[0];
-                                string domain = (string)outParameters[1];
-
-                                if (user == processUser)
-                                {
-                                    return true;
-                                }
-                            }
-                            else
-                            {
-                                // Handle GetOwner() failure...
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            // do nothing?
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
 
         private void ElementTreeView_BeforeSelect(object sender, TreeViewCancelEventArgs e)
         {

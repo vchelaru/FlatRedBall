@@ -85,7 +85,7 @@ namespace FlatRedBall.Glue.IO.Zip
                     // based on entry name, size, date, checkbox status, etc.  
                     foreach (ZipEntry zipEntry in zip1)
                     {
-                        zipEntry.Extract(unpackDirectory, true);
+                        zipEntry.Extract(unpackDirectory, ExtractExistingFileAction.OverwriteSilently);
                     }
                 }
                 fileName = fileName.Substring(0, fileName.Length - 1) + 'x';
@@ -127,7 +127,7 @@ namespace FlatRedBall.Glue.IO.Zip
                         filesToAddToContent.Add(zipEntry.FileName);
                     }
 
-                    zipEntry.Extract(unpackDirectory, true);
+                    zipEntry.Extract(unpackDirectory, ExtractExistingFileAction.OverwriteSilently);
                 }
             }
 
