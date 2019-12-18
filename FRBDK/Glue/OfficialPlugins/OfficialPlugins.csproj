@@ -149,6 +149,29 @@
     <Compile Include="CodeGenerationPlugin\CodeGenerationControl.xaml.cs">
       <DependentUpon>CodeGenerationControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CodeGenerationPlugin\Compiler\CodeGeneration\Game1GlueControlGenerator.cs" />
+    <Compile Include="CodeGenerationPlugin\Compiler\CodeGeneration\GlueControlCodeGenerator.cs" />
+    <Compile Include="CodeGenerationPlugin\Compiler\CodeGeneration\MainCodeGenerator.cs" />
+    <Compile Include="CodeGenerationPlugin\Compiler\CommandSending\CommandSender.cs" />
+    <Compile Include="CodeGenerationPlugin\Compiler\Compiler.cs" />
+    <Compile Include="CodeGenerationPlugin\Compiler\MainControl.xaml.cs">
+      <DependentUpon>MainControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CodeGenerationPlugin\Compiler\MainPlugin.cs" />
+    <Compile Include="CodeGenerationPlugin\Compiler\Managers\RefreshManager.cs" />
+    <Compile Include="CodeGenerationPlugin\Compiler\Models\CompilerSettingsModel.cs" />
+    <Compile Include="CodeGenerationPlugin\Compiler\OutputParser.cs" />
+    <Compile Include="CodeGenerationPlugin\Compiler\Runner.cs" />
+    <Compile Include="CodeGenerationPlugin\Compiler\ViewModels\CompilerViewModel.cs" />
+    <Compile Include="CodeGenerationPlugin\Compiler\Views\RunnerToolbar.xaml.cs">
+      <DependentUpon>RunnerToolbar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CodeGenerationPlugin\Compiler\Views\WhileRunningView.xaml.cs">
+      <DependentUpon>WhileRunningView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CodeGenerationPlugin\Compiler\Views\WhileStoppedView.xaml.cs">
+      <DependentUpon>WhileStoppedView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CodeGenerationPlugin\MainPlugin.cs" />
     <Compile Include="CollisionPlugin\CodeGenerators\CollisionCodeGenerator.cs" />
     <Compile Include="CollisionPlugin\Controllers\CollidableNamedObjectController.cs" />
@@ -358,10 +381,7 @@
       <DependentUpon>CopyToProjectControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Compiler\Logic\" />
-    <Folder Include="GlueView\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Page Include="BuiltFileSizeInspector\Views\SizeInspectorControl.xaml">
       <SubType>Designer</SubType>
@@ -371,6 +391,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <None Include="CodeGenerationPlugin\Compiler\Views\RunnerToolbar.xaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="CodeGenerationPlugin\Compiler\Views\WhileRunningView.xaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="CodeGenerationPlugin\Compiler\Views\WhileStoppedView.xaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="CodeGenerationPlugin\Compiler\MainControl.xaml">
+      <SubType>Designer</SubType>
+    </None>
     <Page Include="CollisionPlugin\Views\CollidableNamedObjectRelationshipDisplay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -443,6 +475,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="CodeGenerationPlugin\Compiler\Icons\HotReload.pdn" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Compiler\Icons\build.png" />
@@ -481,6 +514,39 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.2</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeGenerationPlugin\Compiler\Icons\AdvanceOneFrame.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeGenerationPlugin\Compiler\Icons\build.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeGenerationPlugin\Compiler\Icons\HotReload.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeGenerationPlugin\Compiler\Icons\Pause.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeGenerationPlugin\Compiler\Icons\play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeGenerationPlugin\Compiler\Icons\RestartGame.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeGenerationPlugin\Compiler\Icons\RestartGameOnCurrentScreen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeGenerationPlugin\Compiler\Icons\RestartScreen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeGenerationPlugin\Compiler\Icons\SlowMotion.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeGenerationPlugin\Compiler\Icons\stop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeGenerationPlugin\Compiler\Icons\Unpause.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

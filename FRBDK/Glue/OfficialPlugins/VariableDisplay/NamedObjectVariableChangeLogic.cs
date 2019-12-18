@@ -69,7 +69,7 @@ namespace OfficialPlugins.VariableDisplay
                 bool sendRefreshCommands = false;
                 GlueCommands.Self.GluxCommands.SaveGlux(sendRefreshCommands);
 
-                GlueCommands.Self.GlueViewCommands.SendRefreshVariablesCommand();
+                //GlueCommands.Self.GlueViewCommands.SendRefreshVariablesCommand();
 
                 if(currentElement != null)
                 {

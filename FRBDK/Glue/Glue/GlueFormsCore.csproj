@@ -76,6 +76,7 @@
     <ProjectReference Include="..\..\..\..\Gum\InputLibrary\InputLibrary.csproj" />
     <ProjectReference Include="..\..\..\..\Gum\RenderingLibrary\RenderingLibrary.csproj" />
     <ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilities.csproj" />
+    <ProjectReference Include="..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj" />
     <ProjectReference Include="..\..\..\..\Gum\XnaAndWinforms\XnaAndWinforms.csproj" />
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\..\FlatRedBall.SpecializedXnaControls\FlatRedBall.SpecializedXnaControls.csproj" />
@@ -96,6 +97,7 @@
     <PackageReference Include="CompareNETObjects" Version="4.64.0" />
     <PackageReference Include="Ionic.Zip" Version="1.9.1.8" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
   </ItemGroup>
 
