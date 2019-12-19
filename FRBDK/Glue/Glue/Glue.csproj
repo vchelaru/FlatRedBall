@@ -835,8 +835,6 @@
     <Compile Include="WaitingForm.Designer.cs">
       <DependentUpon>WaitingForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wcf\WcfManager.cs" />
-    <Compile Include="Wcf\WcfService.cs" />
     <None Include="Content\Icons\IncreaseAreaGum.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -1227,6 +1225,7 @@
     <Folder Include="Resources\TreeView\" />
     <Folder Include="Tools\" />
     <Folder Include="Translation\Data\" />
+    <Folder Include="Wcf\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

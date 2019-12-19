@@ -160,10 +160,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
-      <Project>{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}</Project>
-      <Name>FlatRedBallXna4</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\FlatRedBall\FRBDK\FlatRedBall.SpecializedXnaControls\FlatRedBall.SpecializedXnaControls.csproj">
       <Project>{8c80ba7b-1cba-4579-9382-d9dc6c365070}</Project>
       <Name>FlatRedBall.SpecializedXnaControls</Name>

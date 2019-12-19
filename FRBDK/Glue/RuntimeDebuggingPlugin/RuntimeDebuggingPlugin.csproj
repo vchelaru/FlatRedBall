@@ -57,10 +57,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
-      <Project>{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}</Project>
-      <Name>FlatRedBallXna4</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
       <Project>{e1d670b6-ad42-4b84-aff8-d568097be03d}</Project>
       <Name>EditorObjectsXna4</Name>
@@ -76,10 +72,6 @@
     <ProjectReference Include="..\GlueSaveClasses\GlueSaveClasses.csproj">
       <Project>{545ff183-4d9d-4121-9a04-1d354b0b0dba}</Project>
       <Name>GlueSaveClasses</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Glue\Glue.csproj">
-      <Project>{213357e3-f729-4ff3-9b99-e91c40d50e6e}</Project>
-      <Name>Glue</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

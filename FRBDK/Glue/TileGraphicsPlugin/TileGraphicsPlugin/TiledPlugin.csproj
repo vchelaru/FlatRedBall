@@ -225,10 +225,6 @@
       <Project>{545ff183-4d9d-4121-9a04-1d354b0b0dba}</Project>
       <Name>GlueSaveClasses</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Glue\Glue.csproj">
-      <Project>{213357e3-f729-4ff3-9b99-e91c40d50e6e}</Project>
-      <Name>Glue</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Tilesets\PlatformerTiles.png" />

@@ -114,10 +114,6 @@
     <Compile Include="TextureCoordinateSelectionLogic.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
-      <Project>{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}</Project>
-      <Name>FlatRedBallXna4</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Gum\InputLibrary\InputLibrary.csproj">
       <Project>{938d9a00-8529-4ce8-9077-e0a3994a73ea}</Project>
       <Name>InputLibrary</Name>
@@ -153,10 +149,6 @@
     <ProjectReference Include="..\..\Glue\GlueSaveClasses\GlueSaveClasses.csproj">
       <Project>{545ff183-4d9d-4121-9a04-1d354b0b0dba}</Project>
       <Name>GlueSaveClasses</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Glue\Glue\Glue.csproj">
-      <Project>{213357e3-f729-4ff3-9b99-e91c40d50e6e}</Project>
-      <Name>Glue</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

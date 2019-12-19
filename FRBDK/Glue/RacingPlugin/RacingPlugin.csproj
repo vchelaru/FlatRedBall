@@ -100,10 +100,6 @@
       <Project>{545ff183-4d9d-4121-9a04-1d354b0b0dba}</Project>
       <Name>GlueSaveClasses</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Glue\Glue.csproj">
-      <Project>{213357E3-F729-4FF3-9B99-E91C40D50E6E}</Project>
-      <Name>Glue</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="3.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj" />
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
+    <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj" />
+    <ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj" />
+    <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
+    <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
+    <ProjectReference Include="..\GlueSaveClasses\GlueSaveClasses.csproj" />
+    <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
+  </ItemGroup>
+
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="echo PostBuild Top Down Plugin&#xD;&#xA;&#xA;&#xA;&#xD;&#xA;IF NOT EXIST &quot;%25AppData%25\FRBDK\Plugins\TopDownPlugin\&quot; MD &quot;%25AppData%25\FRBDK\Plugins\TopDownPlugin\&quot;&#xD;&#xA;&#xA;&#xD;&#xA;&#xA;echo 1&#xD;&#xA;&#xA;copy &quot;$(TargetDir)\TopDownPluginCore.dll&quot; &quot;%25AppData%25\FRBDK\Plugins\TopDownPlugin\TopDownPluginCore.dll&quot;&#xD;&#xA;&#xA;&#xA;echo 2&#xD;&#xA;&#xD;&#xA;&#xA;copy &quot;$(TargetDir)\TopDownPluginCore.pdb&quot; &quot;%25AppData%25\FRBDK\Plugins\TopDownPlugin\TopDownPluginCore.pdb&quot;" />
+  </Target>
+
+</Project>
