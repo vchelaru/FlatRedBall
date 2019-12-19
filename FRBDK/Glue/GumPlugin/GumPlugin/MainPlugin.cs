@@ -286,7 +286,7 @@ namespace GumPlugin
 
             addGumProjectMenuItem = this.AddMenuItemTo("Add New Gum Project", HandleAddNewGumProject, "Content");
             //var bmp = new Bitmap(WindowsFormsApplication1.Properties.Resources.myimage);
-            addGumProjectMenuItem.Image = new Bitmap(GumPlugin.Resource1.GumIcon);
+            addGumProjectMenuItem.Image = new Bitmap(GumPluginCore.Resource1.GumIcon);
 
             AssignEvents();
 
