@@ -180,6 +180,10 @@
       <Project>{b941a93f-6093-4dc6-ad11-91a058b6c2cc}</Project>
       <Name>ToolsUtilities</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj">
+      <Project>{26dd17aa-55ae-46ab-9394-a2319728869a}</Project>
+      <Name>FlatRedBallStandard</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TMXGlueLib\TMXGlueLib.csproj">
       <Project>{8600173A-6281-45E1-8076-54366E42CBDE}</Project>
       <Name>TMXGlueLib</Name>
