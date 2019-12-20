@@ -18,30 +18,30 @@ namespace TileGraphicsPlugin.Managers
             mTileGraphicsAdder = new CodeBuildItemAdder();
             mTileGraphicsAdder.OutputFolderInProject = "TileGraphics";
             mTileGraphicsAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/AnimationChainContainer.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/LayeredTileMap.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/LayeredTileMapAnimation.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/MapDrawableBatch.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/Tileset.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/ReducedTileMapInfo.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TileAnimationFrame.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TileNodeNetworkCreator.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/AnimationChainContainer.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/LayeredTileMap.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/LayeredTileMapAnimation.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/MapDrawableBatch.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/Tileset.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/ReducedTileMapInfo.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TileAnimationFrame.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TileNodeNetworkCreator.cs");
 
 
 
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/AbstractMapLayer.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/ExternalTileset.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/MapLayer.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/MapTileset.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/MapTilesetTile.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/NamedValue.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TiledMapSave.Conversion.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TiledMapSave.Serialization.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TileAnimation.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TiledMapToShapeCollectionConverter.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TilesetExtensionMethods.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TilesetExtensionMethods.cs");
-            mTileGraphicsAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/ReducedTileMapInfo.TiledMapSave.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/AbstractMapLayer.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/ExternalTileset.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/MapLayer.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/MapTileset.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/MapTilesetTile.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/NamedValue.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TiledMapSave.Conversion.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TiledMapSave.Serialization.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TileAnimation.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TiledMapToShapeCollectionConverter.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TilesetExtensionMethods.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TilesetExtensionMethods.cs");
+            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/ReducedTileMapInfo.TiledMapSave.cs");
 
             
 
@@ -49,15 +49,15 @@ namespace TileGraphicsPlugin.Managers
             mTileCollisionAdder = new CodeBuildItemAdder();
             mTileCollisionAdder.OutputFolderInProject = "TileCollisions";
             mTileCollisionAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
-            mTileCollisionAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TileShapeCollection.cs");
-            mTileCollisionAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/CollidableListVsTileShapeCollectionRelationship.cs");
-            mTileCollisionAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/CollidableVsTileShapeCollectionRelationship.cs");
-            mTileCollisionAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/CollisionManagerTileShapeCollectionExtensions.cs");
+            mTileCollisionAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TileShapeCollection.cs");
+            mTileCollisionAdder.Add("TiledPluginCore/EmbeddedCodeFiles/CollidableListVsTileShapeCollectionRelationship.cs");
+            mTileCollisionAdder.Add("TiledPluginCore/EmbeddedCodeFiles/CollidableVsTileShapeCollectionRelationship.cs");
+            mTileCollisionAdder.Add("TiledPluginCore/EmbeddedCodeFiles/CollisionManagerTileShapeCollectionExtensions.cs");
 
             mTileEntityAdder = new CodeBuildItemAdder();
             mTileEntityAdder.OutputFolderInProject = "TileEntities";
             mTileEntityAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
-            mTileEntityAdder.Add("TileGraphicsPlugin/EmbeddedCodeFiles/TileEntityInstantiator.cs");
+            mTileEntityAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TileEntityInstantiator.cs");
         }
 
 

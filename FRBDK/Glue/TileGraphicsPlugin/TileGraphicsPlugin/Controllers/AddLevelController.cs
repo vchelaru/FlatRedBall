@@ -11,8 +11,6 @@ using System.Windows.Forms;
 using TileGraphicsPlugin.Views;
 using TileGraphicsPlugin.ViewModels;
 using System.Reflection;
-using TmxEditor;
-using TmxEditor.Managers;
 using FlatRedBall.Glue.ViewModels;
 
 namespace TileGraphicsPlugin.Controllers
@@ -214,12 +212,12 @@ namespace TileGraphicsPlugin.Controllers
                     {
                         bool shouldSave = false;
 
-                        foreach (var tileset in tiledMapSave.Tilesets.Where(item=>item.IsShared == false))
-                        {
-                            SharedTilesetManager.ConvertToSharedTileset(
-                                tileset, tiledMapSave, destinationDirectory);
-                            shouldSave = true;
-                        }
+                        //foreach (var tileset in tiledMapSave.Tilesets.Where(item=>item.IsShared == false))
+                        //{
+                        //    SharedTilesetManager.ConvertToSharedTileset(
+                        //        tileset, tiledMapSave, destinationDirectory);
+                        //    shouldSave = true;
+                        //}
 
                         if (shouldSave)
                         {

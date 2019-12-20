@@ -1,4 +1,5 @@
-﻿using FlatRedBall.IO;
+﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +9,7 @@ using TMXGlueLib;
 
 namespace TileGraphicsPlugin.Managers
 {
-    class CopyFileManager : TmxEditor.Controllers.Singleton<CopyFileManager>
+    class CopyFileManager : Singleton<CopyFileManager>
     {
         public void CopyTmx(string absoluteSourceFile, string absoluteDestinationFile)
         {

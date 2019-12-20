@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using TileGraphicsPlugin.ViewModels;
 using TileGraphicsPlugin.Views;
-using TmxEditor;
 
 namespace TileGraphicsPlugin.Managers
 {
@@ -21,18 +20,18 @@ namespace TileGraphicsPlugin.Managers
 
         bool ReactingToChangedProperties = true;
 
-        public void AddEntityCreationView(TmxEditorControl control)
-        {
-            var entitiesView = new TiledMapEntityCreationView();
-            entitiesView.ViewTiledObjectXmlClicked += HandleViewTiledObjectXmlClicked;
-            if(viewModel == null)
-            {
-                viewModel = new TiledMapEntityCreationViewModel();
-            }
-            viewModel.PropertyChanged += HandleEntitiesTabPropertyChanged;
-            entitiesView.DataContext = viewModel;
-            control.AddTab("Entities", entitiesView);
-        }
+        //public void AddEntityCreationView(TmxEditorControl control)
+        //{
+        //    var entitiesView = new TiledMapEntityCreationView();
+        //    entitiesView.ViewTiledObjectXmlClicked += HandleViewTiledObjectXmlClicked;
+        //    if(viewModel == null)
+        //    {
+        //        viewModel = new TiledMapEntityCreationViewModel();
+        //    }
+        //    viewModel.PropertyChanged += HandleEntitiesTabPropertyChanged;
+        //    entitiesView.DataContext = viewModel;
+        //    control.AddTab("Entities", entitiesView);
+        //}
 
         private void HandleViewTiledObjectXmlClicked(object sender, EventArgs e)
         {

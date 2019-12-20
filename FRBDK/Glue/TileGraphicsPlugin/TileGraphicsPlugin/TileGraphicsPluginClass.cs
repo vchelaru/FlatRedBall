@@ -18,8 +18,6 @@ using FlatRedBall.Glue.VSHelpers;
 using TileGraphicsPlugin.Controllers;
 using TileGraphicsPlugin.Managers;
 using FlatRedBall.Content.Instructions;
-using TmxEditor;
-using TmxEditor.Controllers;
 using TMXGlueLib.DataTypes;
 using ProjectManager = FlatRedBall.Glue.ProjectManager;
 using TMXGlueLib;
@@ -27,7 +25,6 @@ using FlatRedBall.Glue.Parsing;
 using TileGraphicsPlugin.CodeGeneration;
 using TileGraphicsPlugin.Views;
 using TileGraphicsPlugin.ViewModels;
-using TmxEditor.Events;
 using FlatRedBall.Glue.IO;
 using TileGraphicsPlugin.Logic;
 using System.ComponentModel;
@@ -39,14 +36,9 @@ namespace TileGraphicsPlugin
     {
         #region Fields
 
-        TilesetXnaRightClickController mTilesetXnaRightClickController;
-
         string mLastFile;
 
-        TmxEditor.TmxEditorControl mControl;
         PluginTab collisionTab;
-
-        CommandLineViewModel mCommandLineViewModel;
 
         TiledObjectTypeCreator tiledObjectTypeCreator;
 
@@ -251,34 +243,34 @@ namespace TileGraphicsPlugin
 
         private void InitializeTab()
         {
-            try
-            {
-                mControl = new TmxEditor.TmxEditorControl();
-            }
-            catch(System.NotSupportedException exc)
-            {
-                GlueCommands.PrintError("Could not find a graphics device that supports XNA hi-def. Attempting to load Tiled plugin without the control tab");
-            }
+            //try
+            //{
+            //    mControl = new TmxEditor.TmxEditorControl();
+            //}
+            //catch(System.NotSupportedException exc)
+            //{
+            //    GlueCommands.PrintError("Could not find a graphics device that supports XNA hi-def. Attempting to load Tiled plugin without the control tab");
+            //}
 
-            if(mControl != null)
-            {
-                mControl.AnyTileMapChange += HandleUserChangeTmx;
-                mControl.LoadEntities += OnLoadEntities;
+            //if(mControl != null)
+            //{
+            //    mControl.AnyTileMapChange += HandleUserChangeTmx;
+            //    mControl.LoadEntities += OnLoadEntities;
 
 
-                EntityCreationManager.Self.AddEntityCreationView(mControl);
+            //    EntityCreationManager.Self.AddEntityCreationView(mControl);
                 
 
-                var commandLineArgumentsView = new TileGraphicsPlugin.Views.CommandLineArgumentsView();
-                mCommandLineViewModel = new CommandLineViewModel();
-                mCommandLineViewModel.CommandLineChanged += HandleCommandLinePropertyChanged;
-                commandLineArgumentsView.DataContext = mCommandLineViewModel;
-                mControl.AddTab("Command Line", commandLineArgumentsView);
+            //    var commandLineArgumentsView = new TileGraphicsPlugin.Views.CommandLineArgumentsView();
+            //    mCommandLineViewModel = new CommandLineViewModel();
+            //    mCommandLineViewModel.CommandLineChanged += HandleCommandLinePropertyChanged;
+            //    commandLineArgumentsView.DataContext = mCommandLineViewModel;
+            //    mControl.AddTab("Command Line", commandLineArgumentsView);
 
-                mTilesetXnaRightClickController = new TilesetXnaRightClickController();
-                mTilesetXnaRightClickController.Initialize(mControl.TilesetXnaContextMenu);
-                mControl.TilesetDisplayRightClick += (o, s) => mTilesetXnaRightClickController.RefreshMenuItems();
-            }
+            //    mTilesetXnaRightClickController = new TilesetXnaRightClickController();
+            //    mTilesetXnaRightClickController.Initialize(mControl.TilesetXnaContextMenu);
+            //    mControl.TilesetDisplayRightClick += (o, s) => mTilesetXnaRightClickController.RefreshMenuItems();
+            //}
         }
 
         private void AddEvents()
@@ -306,10 +298,10 @@ namespace TileGraphicsPlugin
             this.FillWithReferencedFiles += FileReferenceManager.Self.HandleGetFilesReferencedBy;
             this.CanFileReferenceContent += HandleCanFileReferenceContent;
 
-            TilesetController.Self.EntityAssociationsChanged +=
-                EntityListManager.Self.OnEntityAssociationsChanged;
+            //TilesetController.Self.EntityAssociationsChanged +=
+            //    EntityListManager.Self.OnEntityAssociationsChanged;
 
-            TilesetController.Self.GetTsxDirectoryRelativeToTmx = () => "../Tilesets/";
+            //TilesetController.Self.GetTsxDirectoryRelativeToTmx = () => "../Tilesets/";
 
             this.ReactToChangedPropertyHandler += (changedMember, oldalue) =>
             {
@@ -384,7 +376,7 @@ namespace TileGraphicsPlugin
         private static void SaveTemplateTmx()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
-            string whatToSave = "TileGraphicsPlugin.Content.Levels.TiledMap.tmx";
+            string whatToSave = "TiledPluginCore.Content.Levels.TiledMap.tmx";
             //C:\Users\Victor\AppData\Roaming\Glue\FilesForAddNewFile\
 
             string destination = FileManager.UserApplicationData +
@@ -488,7 +480,7 @@ namespace TileGraphicsPlugin
             {
                 shouldRemove = false;
 
-                FileReferenceManager.Self.UpdateAvailableTsxFiles();
+                //FileReferenceManager.Self.UpdateAvailableTsxFiles();
 
                 ReactToRfsSelected(rfs);
             }
@@ -521,19 +513,6 @@ namespace TileGraphicsPlugin
 
         private void ReactToRfsSelected(ReferencedFileSave rfs)
         {
-            if(mControl != null)
-            {
-                if(this.PluginTab == null)
-                {
-                    this.AddToTab(PluginManager.CenterTab, mControl, "TMX");
-                }
-                else if(this.PluginTab.Parent == null)
-                {
-                    base.AddTab();
-                }
-
-            }
-
             // These aren't built anymore, so no command line
             //mCommandLineViewModel.ReferencedFileSave = rfs;
 
@@ -545,7 +524,6 @@ namespace TileGraphicsPlugin
 
             string fullFileName = FlatRedBall.Glue.ProjectManager.MakeAbsolute(fileNameToUse, true);
             mLastFile = fullFileName;
-            mControl?.LoadFile(fullFileName);
 
             EntityCreationManager.Self.ReactToRfsSelected(rfs);
         }
@@ -587,7 +565,7 @@ namespace TileGraphicsPlugin
             {
                 if (changesToIgnore == 0)
                 {
-                    mControl?.LoadFile(fileName);
+                    //mControl?.LoadFile(fileName);
                 }
                 else
                 {
@@ -597,28 +575,12 @@ namespace TileGraphicsPlugin
         }
 
 
-        private void HandleCommandLinePropertyChanged()
-        {
-            var file = mCommandLineViewModel.ReferencedFileSave;
-            file.AdditionalArguments =
-                mCommandLineViewModel.CommandLineString;
-
-            FlatRedBall.Glue.Managers.TaskManager.Self.AddSync(() =>
-            {
-                file.PerformExternalBuild();
-            },
-            "Building file " + file);
-
-            GlueCommands.GluxCommands.SaveGlux();
-        }
-
-
         private void OnLoadEntities(object sender, EventArgs args)
         {
-            if(mControl != null)
-            {
-                mControl.Entities = (GlueState.CurrentGlueProject.Entities.Select(e => e.Name).ToList());
-            }
+            //if(mControl != null)
+            //{
+            //    mControl.Entities = (GlueState.CurrentGlueProject.Entities.Select(e => e.Name).ToList());
+            //}
         }
 
         private void OnClosedByUser(object sender)
@@ -629,36 +591,36 @@ namespace TileGraphicsPlugin
         int changesToIgnore = 0;
         private void HandleUserChangeTmx(object sender, EventArgs args)
         {
-            var asTileMapChangeEventArgs = args as TileMapChangeEventArgs;
+            //var asTileMapChangeEventArgs = args as TileMapChangeEventArgs;
 
-            ChangeType changeType = ChangeType.Other;
+            //ChangeType changeType = ChangeType.Other;
 
-            if(asTileMapChangeEventArgs != null)
-            {
-                changeType = asTileMapChangeEventArgs.ChangeType;
-            }
+            //if(asTileMapChangeEventArgs != null)
+            //{
+            //    changeType = asTileMapChangeEventArgs.ChangeType;
+            //}
 
-            SaveTiledMapSave(changeType);
+            //SaveTiledMapSave(changeType);
         }
 
-        public void SaveTiledMapSave(ChangeType changeType)
-        {
-            if(mControl != null)
-            {
-                string fileName = mLastFile;
+        //public void SaveTiledMapSave(ChangeType changeType)
+        //{
+        //    if(mControl != null)
+        //    {
+        //        string fileName = mLastFile;
 
-                FlatRedBall.Glue.Managers.TaskManager.Self.AddSync(() =>
-                    {
+        //        FlatRedBall.Glue.Managers.TaskManager.Self.AddSync(() =>
+        //            {
 
-                        changesToIgnore++;
+        //                changesToIgnore++;
 
-                        bool saveTsxFiles = changeType == ChangeType.Tileset;
+        //                bool saveTsxFiles = changeType == ChangeType.Tileset;
 
-                        mControl.SaveCurrentTileMap(saveTsxFiles);
-                    },
-                    "Saving tile map");
-            }
-        }
+        //                mControl.SaveCurrentTileMap(saveTsxFiles);
+        //            },
+        //            "Saving tile map");
+        //    }
+        //}
 
         void HandleAdjustDisplayedReferencedFile(ReferencedFileSave rfs, ReferencedFileSavePropertyGridDisplayer displayer)
         {
@@ -696,7 +658,7 @@ namespace TileGraphicsPlugin
 
         internal void UpdateTilesetDisplay()
         {
-            mControl?.UpdateTilesetDisplay();
+            //mControl?.UpdateTilesetDisplay();
         }
 
         #endregion

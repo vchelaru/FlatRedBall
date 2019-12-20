@@ -59,8 +59,6 @@ namespace TileGraphicsPlugin.Behaviors
 
         static void DoUpdateSource(object source)
         {
-            int m = 3;
-
             DependencyProperty property =
                 GetUpdatePropertySourceWhenEnterPressed(source as DependencyObject);
 

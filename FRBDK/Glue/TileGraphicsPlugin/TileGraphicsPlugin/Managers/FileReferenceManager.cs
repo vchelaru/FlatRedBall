@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using TmxEditor;
+//using TmxEditor;
 using TMXGlueLib;
 using TMXGlueLib.DataTypes;
 
@@ -159,7 +159,7 @@ namespace TileGraphicsPlugin.Managers
 
                 listToFill.AddRange(referencedFiles.Select(item =>new FilePath(item)));
             }
-            catch (EndOfStreamException e)
+            catch (EndOfStreamException)
             {
                 PluginManager.ReceiveError("Error trying to read TMX: " + fileName + "\nEnd of file reached unexpectedly");
             }
@@ -176,77 +176,6 @@ namespace TileGraphicsPlugin.Managers
             return tsxFile != null;
         }
 
-        public void UpdateAvailableTsxFiles()
-        {
-            /////////// Early Out //////////////
-
-            if (GlueState.Self.CurrentElement == null)
-            {
-                return;
-            }
-
-            //////////End Early Out ////////////
-
-            AppState.Self.ProvidedContext.AvailableTsxFiles.Clear();
-
-            List<string> foundFiles = new List<string>();
-
-            var tmxFiles =
-                GlueState.Self.CurrentElement.ReferencedFiles
-                .Where(item => IsTmx(item))
-                .ToList();
-
-            foreach (var rfs in tmxFiles)
-            {
-                string fullFile = FlatRedBall.Glue.ProjectManager.MakeAbsolute(GetTsxFileFor(rfs), true);
-
-
-                if (System.IO.File.Exists(fullFile))
-                {
-                    TiledMapSave tms = null;
-                    string tmxDirectory = FileManager.GetDirectory(fullFile);
-
-                    bool succeeded = true;
-
-                    try
-                    {
-                        tms = TiledMapSave.FromFile(fullFile);
-                    }
-                    catch (Exception e)
-                    {
-                        var exception = e;
-
-                        if(e.InnerException != null && e.InnerException is FileNotFoundException)
-                        {
-                            exception = e.InnerException;
-                        }
-
-                        PluginManager.ReceiveError("Error trying to load " + GetTsxFileFor(rfs) + ":\n" + exception.ToString());
-                        succeeded = false;
-
-                    }
-
-                    if (succeeded)
-                    {
-                        foreach (var tileset in tms.Tilesets.Where(item => !string.IsNullOrEmpty(item.Source)))
-                        {
-                            string absoluteSource = tmxDirectory + tileset.Source;
-
-                            absoluteSource = FileManager.RemoveDotDotSlash(absoluteSource);
-
-                            foundFiles.Add(absoluteSource);
-                        }
-                    }
-                }
-            }
-
-
-
-            AppState.Self.ProvidedContext.AvailableTsxFiles.AddRange(foundFiles.Distinct(StringComparer.InvariantCultureIgnoreCase));
-
-
-        }
-
         public IEnumerable<TiledMapRfsPair> GetAllTiledMapSaves()
         {
             foreach (var rfs in GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Where(item => IsTmx(item)))
@@ -261,7 +190,7 @@ namespace TileGraphicsPlugin.Managers
                 {
                     tms = TiledMapSave.FromFile(fullFile);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                 // This is now properly handled by the error window, so let's not clutter the output window
                     //PluginManager.ReceiveError("Error trying to load " + GetTsxFileFor( rfs)+ ":\n" + e.ToString());

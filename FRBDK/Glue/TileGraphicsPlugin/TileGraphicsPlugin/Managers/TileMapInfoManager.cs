@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TmxEditor.Controllers;
 
 namespace TileGraphicsPlugin.Managers
 {
@@ -31,15 +30,15 @@ namespace TileGraphicsPlugin.Managers
                 wasAnythingAdded = true;
             }
 
-            if (TryAdd(TilesetController.HasCollisionVariableName, "bool", false, tileMapInfoClass))
-            {
-                wasAnythingAdded = true;
-            }
+            //if (TryAdd(TilesetController.HasCollisionVariableName, "bool", false, tileMapInfoClass))
+            //{
+            //    wasAnythingAdded = true;
+            //}
 
-            if (TryAdd(TilesetController.EntityToCreatePropertyName, "string", null, tileMapInfoClass))
-            {
-                wasAnythingAdded = true;
-            }
+            //if (TryAdd(TilesetController.EntityToCreatePropertyName, "string", null, tileMapInfoClass))
+            //{
+            //    wasAnythingAdded = true;
+            //}
 
             if(TryAdd("Name", "string", null, tileMapInfoClass))
             {

@@ -6,11 +6,13 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using FlatRedBall.Glue;
+using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 
 namespace TileGraphicsPlugin.Managers
 {
-    public class BuildToolSaver : TmxEditor.Controllers.Singleton<BuildToolSaver>
+    public class BuildToolSaver : Singleton<BuildToolSaver>
     {
         /// <summary>
         /// Saves all build tools (like TmxToScnx.exe) to the proper location if either they don't exist or if
@@ -27,7 +29,7 @@ namespace TileGraphicsPlugin.Managers
             string[] allNames = assembly.GetManifestResourceNames();
 
 
-            string projectFolder = FileManager.GetDirectory(ProjectManager.GlueProjectFileName);
+            string projectFolder = FileManager.GetDirectory(GlueState.Self.GlueProjectFileName);
             string destinationFolder = projectFolder + "Libraries/Tmx/";
 
             System.IO.Directory.CreateDirectory(destinationFolder);

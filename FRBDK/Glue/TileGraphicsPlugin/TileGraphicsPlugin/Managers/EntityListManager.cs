@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TmxEditor;
-using TmxEditor.Controllers;
 
 namespace TileGraphicsPlugin.Managers
 {
@@ -35,29 +33,29 @@ namespace TileGraphicsPlugin.Managers
 
         public void OnEntityAssociationsChanged(object sender, EventArgs eventArgs)
         {
-            var currentTile = TilesetController.Self.CurrentTilesetTile;
+            //var currentTile = TilesetController.Self.CurrentTilesetTile;
 
-            var property =
-                TilesetController.Self.GetExistingProperty(TilesetController.EntityToCreatePropertyName, currentTile);
+            //var property =
+            //    TilesetController.Self.GetExistingProperty(TilesetController.EntityToCreatePropertyName, currentTile);
 
-            if (property == null)
-            {
-                return;
-            }
+            //if (property == null)
+            //{
+            //    return;
+            //}
 
-            var entityToCreate = property.value;
-            if (entityToCreate == "None")
-            {
-                return;
-            }
-            var entity = GlueState.Self.CurrentGlueProject.Entities.FirstOrDefault(e => e.Name == entityToCreate);
-            var screen = GlueState.Self.CurrentScreenSave;
+            //var entityToCreate = property.value;
+            //if (entityToCreate == "None")
+            //{
+            //    return;
+            //}
+            //var entity = GlueState.Self.CurrentGlueProject.Entities.FirstOrDefault(e => e.Name == entityToCreate);
+            //var screen = GlueState.Self.CurrentScreenSave;
 
-            SetupEntityAssociation(entity);
-            SetupEntityListInScreen(entity, screen);
-            SetupFileAssociations(screen);
+            //SetupEntityAssociation(entity);
+            //SetupEntityListInScreen(entity, screen);
+            //SetupFileAssociations(screen);
 
-            TileGraphicsPluginClass.ExecuteFinalGlueCommands(entity);
+            //TileGraphicsPluginClass.ExecuteFinalGlueCommands(entity);
         }
 
         private void SetupFileAssociations(ScreenSave screen)
@@ -65,48 +63,48 @@ namespace TileGraphicsPlugin.Managers
             var fileSaves =
                 screen.GetAllReferencedFileSavesRecursively().ToList();
 
-            var tmxCSVExists =
-                fileSaves.Any(
-                    f => AppState.Self.TmxFileName.EndsWith(f.SourceFile, StringComparison.CurrentCultureIgnoreCase) &&
-                         f.Name.EndsWith(".csv", StringComparison.CurrentCultureIgnoreCase));
+            //var tmxCSVExists =
+            //    fileSaves.Any(
+            //        f => AppState.Self.TmxFileName.EndsWith(f.SourceFile, StringComparison.CurrentCultureIgnoreCase) &&
+            //             f.Name.EndsWith(".csv", StringComparison.CurrentCultureIgnoreCase));
 
-            if (!tmxCSVExists)
+            //if (!tmxCSVExists)
             {
-                var otherfile =
-                    fileSaves.First(
-                        f =>
-                            AppState.Self.TmxFileName.EndsWith(f.SourceFile, StringComparison.CurrentCultureIgnoreCase) &&
-                            f.Name.EndsWith(".tilb"));
+                //var otherfile =
+                //    fileSaves.First(
+                //        f =>
+                //            AppState.Self.TmxFileName.EndsWith(f.SourceFile, StringComparison.CurrentCultureIgnoreCase) &&
+                //            f.Name.EndsWith(".tilb"));
 
-                var file = new ReferencedFileSave
-                {
-                    CreatesDictionary = true,
-                    SourceFile = otherfile.SourceFile,
-                    Name = otherfile.Name.Replace(".tilb", "Properties.csv"),
-                    BuildTool = BuildToolAssociationManager.Self.TmxToCsv.ToString(),
-                    IsSharedStatic = true
-                };
-                file.DestroyOnUnload = false;
+                //var file = new ReferencedFileSave
+                //{
+                //    CreatesDictionary = true,
+                //    SourceFile = otherfile.SourceFile,
+                //    Name = otherfile.Name.Replace(".tilb", "Properties.csv"),
+                //    BuildTool = BuildToolAssociationManager.Self.TmxToCsv.ToString(),
+                //    IsSharedStatic = true
+                //};
+                //file.DestroyOnUnload = false;
                 
 
-                string fileName = FlatRedBall.Glue.ProjectManager.ContentDirectory + file.SourceFile;
+                //string fileName = FlatRedBall.Glue.ProjectManager.ContentDirectory + file.SourceFile;
 
-                var errorMessage = BuildToolAssociationManager.Self.TmxToCsv.PerformBuildOn(
-                    fileName , 
-                    FlatRedBall.Glue.ProjectManager.ContentDirectory + file.Name, null, FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput,
-                    PluginManager.ReceiveError);
+                //var errorMessage = BuildToolAssociationManager.Self.TmxToCsv.PerformBuildOn(
+                //    fileName , 
+                //    FlatRedBall.Glue.ProjectManager.ContentDirectory + file.Name, null, FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput,
+                //    PluginManager.ReceiveError);
 
-                if (string.IsNullOrWhiteSpace(errorMessage))
-                {
-                    var tileMapInfoCustomClass =
-                        GlueState.Self.CurrentGlueProject.CustomClasses.FirstOrDefault(c => c.Name == "TileMapInfo");
-                    if (tileMapInfoCustomClass != null)
-                    {
-                        tileMapInfoCustomClass.CsvFilesUsingThis.Add(file.Name);
-                        screen.ReferencedFiles.Add(file);
+                //if (string.IsNullOrWhiteSpace(errorMessage))
+                //{
+                //    var tileMapInfoCustomClass =
+                //        GlueState.Self.CurrentGlueProject.CustomClasses.FirstOrDefault(c => c.Name == "TileMapInfo");
+                //    if (tileMapInfoCustomClass != null)
+                //    {
+                //        tileMapInfoCustomClass.CsvFilesUsingThis.Add(file.Name);
+                //        screen.ReferencedFiles.Add(file);
 
-                    }
-                }
+                //    }
+                //}
             }
         }
 

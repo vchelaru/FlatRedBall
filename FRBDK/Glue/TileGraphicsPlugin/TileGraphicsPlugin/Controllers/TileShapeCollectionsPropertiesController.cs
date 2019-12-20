@@ -17,8 +17,6 @@ namespace TileGraphicsPlugin.Controllers
         Views.TileShapeCollectionProperties view;
         ViewModels.TileShapeCollectionPropertiesViewModel viewModel;
 
-        bool shouldApplyViewModelChanges = true;
-
         public Views.TileShapeCollectionProperties GetView()
         {
             if(view == null)
@@ -53,8 +51,6 @@ namespace TileGraphicsPlugin.Controllers
             // the selection to null, and even persist it to the Glue object
             view.DataContext = null;
 
-            shouldApplyViewModelChanges = false;
-
             viewModel.GlueObject = namedObject;
 
             RefreshAvailableTiledObjects(element);
@@ -63,9 +59,7 @@ namespace TileGraphicsPlugin.Controllers
 
             viewModel.IsEntireViewEnabled = namedObject.DefinedByBase == false;
 
-            shouldApplyViewModelChanges = true;
             view.DataContext = viewModel;
-
         }
 
         private void RefreshAvailableTiledObjects(IElement element)

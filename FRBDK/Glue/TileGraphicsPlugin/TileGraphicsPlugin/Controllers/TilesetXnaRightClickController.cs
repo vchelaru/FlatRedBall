@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using TmxEditor;
-using TmxEditor.Controllers;
 
 namespace TileGraphicsPlugin.Controllers
 {
@@ -30,10 +28,10 @@ namespace TileGraphicsPlugin.Controllers
 
         public void RefreshMenuItems()
         {
-            ToolStripMenuItem tsmi = new ToolStripMenuItem();
-            tsmi.Text = "Create Entity for this tile";
-            tsmi.Click += EntityCreationController.Self.HandleCreateEntityClick;
-            mMenuStrip.Items.Add(tsmi);
+            //ToolStripMenuItem tsmi = new ToolStripMenuItem();
+            //tsmi.Text = "Create Entity for this tile";
+            //tsmi.Click += EntityCreationController.Self.HandleCreateEntityClick;
+            //mMenuStrip.Items.Add(tsmi);
         }
 
     }

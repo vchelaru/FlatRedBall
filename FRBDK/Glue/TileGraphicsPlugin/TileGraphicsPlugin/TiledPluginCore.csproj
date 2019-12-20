@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -17,6 +18,14 @@
     <Compile Remove="EmbeddedCodeFiles\TileEntityInstantiator.cs" />
     <Compile Remove="EmbeddedCodeFiles\TileNodeNetworkCreator.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Content\Levels\PlatformerTileMap.tmx" />
+    <None Remove="Content\Levels\TiledMap.tmx" />
+    <None Remove="Content\Levels\TopDown8Bit.tmx" />
+    <None Remove="Content\Tilesets\PlatformerTiles.png" />
+    <None Remove="Content\Tilesets\TopDown8Bit.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,7 +62,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj" />
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
-    <ProjectReference Include="..\..\..\..\Tiled\TmxEditor\TmxEditor.csproj" />
     <ProjectReference Include="..\..\..\..\Tiled\TMXGlueLib\TMXGlueLib.csproj" />
     <ProjectReference Include="..\..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj" />
     <ProjectReference Include="..\..\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj" />
@@ -74,8 +82,17 @@
   </ItemGroup>
 
 
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Levels\PlatformerTileMap.tmx" />
+    <EmbeddedResource Include="Content\Levels\TiledMap.tmx" />
+    <EmbeddedResource Include="Content\Levels\TopDown8Bit.tmx" />
+    <EmbeddedResource Include="Content\Tilesets\PlatformerTiles.png" />
+    <EmbeddedResource Include="Content\Tilesets\TopDown8Bit.png" />
+  </ItemGroup>
+
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo PostBuild&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\&quot; MD &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.dll&quot; &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\TiledPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.pdb&quot; &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\TiledPluginCore.pdb&quot;&#xD;&#xA;&#xD;&#xA;echo 3&#xD;&#xA;copy &quot;$(TargetDir)\TmxEditor.exe&quot; &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\TmxEditor.exe&quot;&#xD;&#xA;&#xD;&#xA;echo 4&#xD;&#xA;copy &quot;$(TargetDir)\TmxGlueLib.dll&quot; &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\TmxGlueLib.dll&quot;" />
+    <Exec Command="echo PostBuild&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\&quot; MD &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.dll&quot; &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\TiledPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.pdb&quot; &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\TiledPluginCore.pdb&quot;&#xD;&#xA;&#xD;&#xA;echo 3&#xD;&#xA;copy &quot;$(TargetDir)\TmxGlueLib.dll&quot; &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\TmxGlueLib.dll&quot;" />
   </Target>
 
 
