@@ -83,7 +83,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
             if (!string.IsNullOrEmpty(fileToOpen))
             {
-                var startedProcess = Process.Start(fileToOpen);
+                var startInfo = new ProcessStartInfo();
+                startInfo.FileName = fileToOpen;
+                startInfo.UseShellExecute = true; // needed in .net core according to:
+                // https://github.com/dotnet/corefx/issues/10361
+
+                var startedProcess = Process.Start(startInfo);
 
                 if (startedProcess != null)
                 {

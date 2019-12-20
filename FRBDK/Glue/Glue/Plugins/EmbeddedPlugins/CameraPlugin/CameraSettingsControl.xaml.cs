@@ -38,29 +38,29 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             }
         }
 
-        private void StretchRadioButtonChecked(object sender, RoutedEventArgs e)
-        {
-            StretchAreaMediaElement.Position = new TimeSpan(0, 0, 1);
-            StretchAreaMediaElement.Play();
-        }
+        //private void StretchRadioButtonChecked(object sender, RoutedEventArgs e)
+        //{
+        //    StretchAreaMediaElement.Position = TimeSpan.FromMilliseconds(1000);
+        //    StretchAreaMediaElement.Play();
+        //}
 
-        private void IncreaseAreaRadioButtonChecked(object sender, RoutedEventArgs e)
-        {
-            IncreaseAreaMediaElement.Position = new TimeSpan(0, 0, 1);
-            IncreaseAreaMediaElement.Play();
-        }
+        //private void IncreaseAreaRadioButtonChecked(object sender, RoutedEventArgs e)
+        //{
+        //    IncreaseAreaMediaElement.Position = TimeSpan.FromMilliseconds(1000);
+        //    IncreaseAreaMediaElement.Play();
+        //}
 
-        private void StretchRadioButtonGumChecked(object sender, RoutedEventArgs e)
-        {
-            StretchAreaGumMediaElement.Position = new TimeSpan(0, 0, 1);
-            StretchAreaGumMediaElement.Play();
-        }
+        //private void StretchRadioButtonGumChecked(object sender, RoutedEventArgs e)
+        //{
+        //    StretchAreaGumMediaElement.Position = TimeSpan.FromMilliseconds(1000);
+        //    StretchAreaGumMediaElement.Play();
+        //}
 
-        private void IncreaseAreaRadioButtonGumChecked(object sender, RoutedEventArgs e)
-        {
-            IncreaseAreaGumMediaElement.Position = new TimeSpan(0, 0, 1);
-            IncreaseAreaGumMediaElement.Play();
-        }
+        //private void IncreaseAreaRadioButtonGumChecked(object sender, RoutedEventArgs e)
+        //{
+        //    IncreaseAreaGumMediaElement.Position = TimeSpan.FromMilliseconds(1000);
+        //    IncreaseAreaGumMediaElement.Play();
+        //}
 
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -68,6 +68,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
 
+        }
+
+        private void HandleMediaEnded(object sender, RoutedEventArgs e)
+        {
+            (sender as MediaElement).Position = TimeSpan.FromMilliseconds(1);
+            //(sender as MediaElement).Play();
         }
     }
 }

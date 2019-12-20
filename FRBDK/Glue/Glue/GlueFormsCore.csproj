@@ -148,9 +148,15 @@
     <Resource Include="Content\Icons\file.png" />
     <Resource Include="Content\Icons\folder.png" />
     <Resource Include="Content\Icons\GlueIcon.png" />
-    <Resource Include="Content\Icons\IncreaseArea.Agif" />
-    <Resource Include="Content\Icons\IncreaseArea.gif" />
-    <Resource Include="Content\Icons\IncreaseAreaGum.gif" />
+    <EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\IncreaseArea.Agif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\IncreaseArea.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\IncreaseAreaGum.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Resource Include="Content\Icons\master_code.png" />
     <Resource Include="Content\Icons\master_entity.png" />
     <Resource Include="Content\Icons\master_file.png" />
@@ -162,9 +168,15 @@
     <Resource Include="Content\Icons\object.png" />
     <Resource Include="Content\Icons\screen.png" />
     <Resource Include="Content\Icons\states.png" />
-    <Resource Include="Content\Icons\StretchArea.agif" />
-    <Resource Include="Content\Icons\StretchArea.gif" />
-    <Resource Include="Content\Icons\StretchAreaGum.gif" />
+    <EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\StretchArea.agif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\StretchArea.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\StretchAreaGum.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Resource Include="Content\Icons\transparent.png" />
     <Resource Include="Content\Icons\variable.png" />
     <Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraIcon.png" />

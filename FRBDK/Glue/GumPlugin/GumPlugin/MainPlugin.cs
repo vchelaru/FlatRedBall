@@ -24,6 +24,7 @@ using System.Drawing;
 using Gum.DataTypes.Behaviors;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Managers;
+using System.Diagnostics;
 
 namespace GumPlugin
 {
@@ -355,7 +356,12 @@ namespace GumPlugin
             {
                 // open the Gum file:
                 var fileName = AppState.Self.GumProjectSave.FullFileName;
-                System.Diagnostics.Process.Start(fileName);
+
+                var startInfo = new ProcessStartInfo();
+                startInfo.FileName = fileName;
+                startInfo.UseShellExecute = true;
+
+                System.Diagnostics.Process.Start(startInfo);
             }
         }
 

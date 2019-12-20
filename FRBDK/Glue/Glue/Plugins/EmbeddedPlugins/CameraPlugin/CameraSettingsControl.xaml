@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin"
              mc:Ignorable="d" 
              
-             d:DesignHeight="560" Width="230">
+             d:DesignHeight="660" Width="230">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding GenerateDisplayCode}">Generate Display Code</CheckBox>
@@ -63,20 +63,34 @@
                         <GroupBox Header="On Resize:" Visibility="{Binding OnResizeUiVisibility}">
                             <StackPanel>
                                 <RadioButton GroupName="1" 
-                                             Margin="18,0,0,0" IsChecked="{Binding UseStretchResizeBehavior}" VerticalContentAlignment="Center" Checked="StretchRadioButtonChecked" >
+                                             Margin="18,0,0,0" IsChecked="{Binding UseStretchResizeBehavior}" 
+                                             VerticalContentAlignment="Center" >
                                     <StackPanel>
-                                        <MediaElement x:Name="StretchAreaMediaElement" HorizontalAlignment="Left" Margin="0, 17, 0, 1" UnloadedBehavior="Manual" 
-                                                  LoadedBehavior="Play" Stretch="None" Source="pack://siteoforigin:,,,/Content/Icons/StretchArea.gif"/>
+                                        <MediaElement 
+                                            x:Name="StretchAreaMediaElement" HorizontalAlignment="Left" 
+                                            Margin="0, 17, 0, 1" UnloadedBehavior="Manual" 
+                                            LoadedBehavior="Play" 
+                                            Stretch="None" 
+                                            MediaEnded="HandleMediaEnded"
+                                            Source="pack://siteoforigin:,,,/Plugins/EmbeddedPlugins/CameraPlugin/StretchArea.gif"/>
                                         <TextBlock>Preserve (Stretch) Visible Area</TextBlock>
                                     </StackPanel>
                                 </RadioButton>
 
                                 <!--Increase Visible Area-->
                                 <RadioButton GroupName="1"
-                                             Margin="18,0,0,0" IsChecked="{Binding UseIncreaseVisibleResizeBehavior}" VerticalContentAlignment="Center" Checked="IncreaseAreaRadioButtonChecked" >
+                                             Margin="18,0,0,0" IsChecked="{Binding UseIncreaseVisibleResizeBehavior}" 
+                                             VerticalContentAlignment="Center" >
                                     <StackPanel>
-                                        <MediaElement x:Name="IncreaseAreaMediaElement" HorizontalAlignment="Left" Margin="0, 17, 0, 1" UnloadedBehavior="Manual" 
-                                                  LoadedBehavior="Play" Stretch="None" Source="pack://siteoforigin:,,,/Content/Icons/IncreaseArea.gif"/>
+                                        <MediaElement 
+                                            x:Name="IncreaseAreaMediaElement" 
+                                            HorizontalAlignment="Left" 
+                                            Margin="0, 17, 0, 1" 
+                                            UnloadedBehavior="Manual" 
+                                            LoadedBehavior="Play" 
+                                            Stretch="None" 
+                                            MediaEnded="HandleMediaEnded"
+                                            Source="pack://siteoforigin:,,,/Plugins/EmbeddedPlugins/CameraPlugin/IncreaseArea.gif"/>
                                         <TextBlock>Increase Visible Area</TextBlock>
                                     </StackPanel>
                                 </RadioButton>
@@ -87,18 +101,26 @@
                         <GroupBox Header="On Resize (Gum):" Visibility="{Binding OnResizeGumUiVisibility}">
                             <StackPanel>
                                 <RadioButton Margin="18,0,0,0" IsChecked="{Binding UseStretchResizeGumBehavior}" 
-                                             VerticalContentAlignment="Center"  Checked="StretchRadioButtonGumChecked" >
+                                             VerticalContentAlignment="Center" >
                                     <StackPanel>
-                                        <MediaElement x:Name="StretchAreaGumMediaElement" HorizontalAlignment="Left" Margin="0, 17, 0, 1" UnloadedBehavior="Manual" 
-                                                  LoadedBehavior="Play" Stretch="None" Source="pack://siteoforigin:,,,/Content/Icons/StretchAreaGum.gif"/>
+                                        <MediaElement 
+                                            x:Name="StretchAreaGumMediaElement" HorizontalAlignment="Left" Margin="0, 17, 0, 1" 
+                                            UnloadedBehavior="Manual" 
+                                            LoadedBehavior="Play" Stretch="None" 
+                                            MediaEnded="HandleMediaEnded"
+                                            Source="pack://siteoforigin:,,,/Plugins/EmbeddedPlugins/CameraPlugin/StretchAreaGum.gif"/>
                                         <TextBlock>Preserve (Stretch) Visible Area</TextBlock>
                                     </StackPanel>
                                 </RadioButton>
                                 <RadioButton Margin="18,0,0,0" IsChecked="{Binding UseIncreaseVisibleResizeGumBehavior}" 
-                                             VerticalContentAlignment="Center" Checked="IncreaseAreaRadioButtonGumChecked">
+                                             VerticalContentAlignment="Center" >
                                     <StackPanel>
-                                        <MediaElement x:Name="IncreaseAreaGumMediaElement" HorizontalAlignment="Left" Margin="0, 17, 0, 1" UnloadedBehavior="Manual" 
-                                                  LoadedBehavior="Play" Stretch="None" Source="pack://siteoforigin:,,,/Content/Icons/IncreaseAreaGum.gif"/>
+                                        <MediaElement 
+                                            x:Name="IncreaseAreaGumMediaElement" 
+                                            HorizontalAlignment="Left" Margin="0, 17, 0, 1" UnloadedBehavior="Manual" 
+                                            LoadedBehavior="Play" Stretch="None" 
+                                            MediaEnded="HandleMediaEnded"
+                                            Source="pack://siteoforigin:,,,/Plugins/EmbeddedPlugins/CameraPlugin/IncreaseAreaGum.gif"/>
                                         <TextBlock>Increase Visible Area</TextBlock>
                                     </StackPanel>
                                 </RadioButton>
