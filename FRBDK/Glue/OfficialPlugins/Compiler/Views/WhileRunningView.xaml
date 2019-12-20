@@ -12,7 +12,7 @@
                 Visibility="{Binding PauseButtonVisibility}"
                 Click="HandlePauseClicked"
             >
-            <Image Source="../icons/pause.png"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Pause.png"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -24,7 +24,7 @@
 
         </Button>
         <StackPanel Orientation="Horizontal" Margin="8,0,8,0" Visibility="{Binding PauseButtonVisibility}">
-            <Image Source="/OfficialPlugins;component/Compiler/Icons/SlowMotion.png"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/SlowMotion.png"></Image>
             <ComboBox Width="70" ItemsSource="{Binding GameSpeedList}" 
                       HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                       SelectedItem="{Binding CurrentGameSpeed}"></ComboBox>
@@ -33,7 +33,7 @@
                 Visibility="{Binding UnpauseButtonVisibility}"
                 Click="HandleUnpauseClicked"
             >
-            <Image Source="../icons/Unpause.png"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Unpause.png"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -48,7 +48,7 @@
                 Visibility="{Binding UnpauseButtonVisibility}"
                 Click="HandleAdvanceOneFrameClicked"
         >
-            <Image Source="../icons/AdvanceOneFrame.png"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/AdvanceOneFrame.png"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -59,7 +59,7 @@
             </Button.ToolTip>
         </Button>
         <Button Margin="0,0,6,0" Click="HandleStopClicked">
-            <Image Source="../icons/stop.png"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/stop.png"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -84,7 +84,7 @@
 
         <Button Margin="0,0,6,0" Click="HandleRestartGameCurrentScreenClicked"
                 Visibility="{Binding GlueControlDependentVisibility}">
-            <Image Source="../icons/RestartGameOnCurrentScreen.png"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RestartGameOnCurrentScreen.png"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -98,7 +98,7 @@
 
         <Button Margin="0,0,6,0" Click="HandleRestartScreenClicked"
                 Visibility="{Binding GlueControlDependentVisibility}">
-            <Image Source="../icons/RestartScreen.png"></Image>
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/RestartScreen.png"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -114,7 +114,7 @@
                   Visibility="{Binding RebuildRestartCheckBoxVisiblity}"
                   VerticalAlignment="Center" 
                   VerticalContentAlignment="Center">
-            <Image Source="../icons/HotReload.png"  Margin="0,0,6,0">
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/HotReload.png"  Margin="0,0,6,0">
             </Image>
             <CheckBox.ToolTip>
                 <StackPanel>

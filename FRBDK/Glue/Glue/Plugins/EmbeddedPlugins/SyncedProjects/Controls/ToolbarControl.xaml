@@ -8,7 +8,7 @@
     <Grid>
         <Button Click="VisualStudioButtonClick" 
              Height="22" Width="22">
-            <Image Source="/Glue;component/Plugins/EmbeddedPlugins/SyncedProjects/Images/VsIcon.png"></Image>
+            <Image Source="/Plugins/EmbeddedPlugins/SyncedProjects/Images/VsIcon.png"></Image>
         </Button>
     </Grid>
 </UserControl>

@@ -19,6 +19,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Compiler\Icons\AdvanceOneFrame.png" />
+    <None Remove="Compiler\Icons\build.png" />
+    <None Remove="Compiler\Icons\HotReload.pdn" />
+    <None Remove="Compiler\Icons\HotReload.png" />
+    <None Remove="Compiler\Icons\Pause.png" />
+    <None Remove="Compiler\Icons\play.png" />
+    <None Remove="Compiler\Icons\RestartGame.png" />
+    <None Remove="Compiler\Icons\RestartGameOnCurrentScreen.png" />
+    <None Remove="Compiler\Icons\RestartScreen.png" />
+    <None Remove="Compiler\Icons\SlowMotion.png" />
+    <None Remove="Compiler\Icons\stop.png" />
+    <None Remove="Compiler\Icons\Unpause.png" />
+    <None Remove="ErrorPlugin\Icons\CopyAll.png" />
+    <None Remove="ErrorPlugin\Icons\CopySingle.png" />
+    <None Remove="ErrorPlugin\Icons\ErrorWindowError.png" />
+    <None Remove="ErrorPlugin\Icons\Refresh.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
   </ItemGroup>
@@ -34,6 +53,24 @@
     <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
     <ProjectReference Include="..\GlueSaveClasses\GlueSaveClasses.csproj" />
     <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Compiler\Icons\AdvanceOneFrame.png" />
+    <Resource Include="Compiler\Icons\build.png" />
+    <Resource Include="Compiler\Icons\HotReload.png" />
+    <Resource Include="Compiler\Icons\Pause.png" />
+    <Resource Include="Compiler\Icons\play.png" />
+    <Resource Include="Compiler\Icons\RestartGame.png" />
+    <Resource Include="Compiler\Icons\RestartGameOnCurrentScreen.png" />
+    <Resource Include="Compiler\Icons\RestartScreen.png" />
+    <Resource Include="Compiler\Icons\SlowMotion.png" />
+    <Resource Include="Compiler\Icons\stop.png" />
+    <Resource Include="Compiler\Icons\Unpause.png" />
+    <Resource Include="ErrorPlugin\Icons\CopyAll.png" />
+    <Resource Include="ErrorPlugin\Icons\CopySingle.png" />
+    <Resource Include="ErrorPlugin\Icons\ErrorWindowError.png" />
+    <Resource Include="ErrorPlugin\Icons\Refresh.png" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

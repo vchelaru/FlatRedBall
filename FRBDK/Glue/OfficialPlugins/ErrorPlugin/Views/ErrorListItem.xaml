@@ -11,7 +11,7 @@
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Image VerticalAlignment="Top" Grid.Column="0" Source="/OfficialPlugins;component/ErrorPlugin/Icons/ErrorWindowError.png" />
+        <Image VerticalAlignment="Top" Grid.Column="0" Source="/ErrorPlugin/Icons/ErrorWindowError.png" />
 
         <TextBlock Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow" Text="{Binding Details}"></TextBlock>
         <Grid.InputBindings>

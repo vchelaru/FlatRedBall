@@ -22,8 +22,6 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             set;
         }
 
-        PluginForm mForm;
-                
         ToolStripMenuItem mMenuItem;
         MenuStrip mMenuStrip;
 

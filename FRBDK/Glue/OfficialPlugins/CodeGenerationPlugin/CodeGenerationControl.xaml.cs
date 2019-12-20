@@ -29,7 +29,7 @@ namespace OfficialPlugins.CodeGenerationPlugin
         private void HandleGenerateEverythingClick(object sender, RoutedEventArgs e)
         {
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
+            GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
         }
     }
 }

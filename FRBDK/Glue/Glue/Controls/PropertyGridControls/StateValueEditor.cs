@@ -16,7 +16,6 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 
 #if GLUE
-using FlatRedBall.Glue.Resources;
 using FlatRedBall.Glue.SaveClasses.Helpers;
 #else
 using GluePropertyGridClasses;
@@ -41,11 +40,11 @@ namespace FlatRedBall.Glue.Controls.PropertyGridControls
             : base()
         {
 
-            mCanInterpolate = Resource1.CanInterpolate;
+            mCanInterpolate = GlueFormsCore.Resources.Resource1.CanInterpolate;
 
-            mCantInterpolate = Resource1.CantInterpolate;
+            mCantInterpolate = GlueFormsCore.Resources.Resource1.CantInterpolate;
 
-            mNeedsVelocityVariable = Resource1.NeedsInterpolateVariable;
+            mNeedsVelocityVariable = GlueFormsCore.Resources.Resource1.NeedsInterpolateVariable;
         }
 
         

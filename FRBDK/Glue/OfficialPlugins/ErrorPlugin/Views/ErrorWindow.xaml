@@ -16,19 +16,19 @@
                 <Button.ToolTip>
                     <TextBlock>Copy Current Error</TextBlock>
                 </Button.ToolTip>
-                <Image Source="/OfficialPlugins;component/ErrorPlugin/Icons/CopySingle.png"></Image>
+                <Image Source="/ErrorPlugin/Icons/CopySingle.png"></Image>
             </Button>
             <Button Margin="1" Command="{Binding CopyAllCommand}">
                 <Button.ToolTip>
                     <TextBlock>Copy All Errors</TextBlock>
                 </Button.ToolTip>
-                <Image Source="/OfficialPlugins;component/ErrorPlugin/Icons/CopyAll.png"></Image>
+                <Image Source="/ErrorPlugin/Icons/CopyAll.png"></Image>
             </Button>
             <Button Margin="1" Command="{Binding RefreshCommand}">
                 <Button.ToolTip>
                     <TextBlock>Refresh Errors</TextBlock>
                 </Button.ToolTip>
-                <Image Source="/OfficialPlugins;component/ErrorPlugin/Icons/Refresh.png"></Image>
+                <Image Source="/ErrorPlugin/Icons/Refresh.png"></Image>
             </Button>
         </StackPanel>
         <ListBox Grid.Row="1" x:Name="ListBox" ItemsSource="{Binding Errors}" 

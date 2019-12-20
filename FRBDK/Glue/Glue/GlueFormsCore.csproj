@@ -69,6 +69,42 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Content\Icons\CanInterpolate.bmp" />
+    <None Remove="Content\Icons\CantInterpolate.bmp" />
+    <None Remove="Content\Icons\code.png" />
+    <None Remove="Content\Icons\copyIcon.png" />
+    <None Remove="Content\Icons\edit_code.png" />
+    <None Remove="Content\Icons\entity.png" />
+    <None Remove="Content\Icons\file.png" />
+    <None Remove="Content\Icons\folder.png" />
+    <None Remove="Content\Icons\GlueIcon.png" />
+    <None Remove="Content\Icons\IncreaseArea.Agif" />
+    <None Remove="Content\Icons\IncreaseArea.gif" />
+    <None Remove="Content\Icons\IncreaseAreaGum.gif" />
+    <None Remove="Content\Icons\master_code.png" />
+    <None Remove="Content\Icons\master_entity.png" />
+    <None Remove="Content\Icons\master_file.png" />
+    <None Remove="Content\Icons\master_object.png" />
+    <None Remove="Content\Icons\master_screen.png" />
+    <None Remove="Content\Icons\master_states.png" />
+    <None Remove="Content\Icons\master_variables.png" />
+    <None Remove="Content\Icons\NeedsInterpolateVariable.bmp" />
+    <None Remove="Content\Icons\object.png" />
+    <None Remove="Content\Icons\screen.png" />
+    <None Remove="Content\Icons\states.png" />
+    <None Remove="Content\Icons\StretchArea.agif" />
+    <None Remove="Content\Icons\StretchArea.gif" />
+    <None Remove="Content\Icons\StretchAreaGum.gif" />
+    <None Remove="Content\Icons\transparent.png" />
+    <None Remove="Content\Icons\variable.png" />
+    <None Remove="Plugins\EmbeddedPlugins\CameraPlugin\CameraIcon.png" />
+    <None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\Error.png" />
+    <None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\OpenFolder.png" />
+    <None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\VsIcon.png" />
+    <None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\XamarinIcon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\GluePropertyGridClasses\Interfaces\IVsProjectState.cs" Link="IO\IVsProjectState.cs" />
   </ItemGroup>
 
@@ -103,6 +139,39 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Content\Icons\CanInterpolate.bmp" />
+    <Resource Include="Content\Icons\CantInterpolate.bmp" />
+    <Resource Include="Content\Icons\code.png" />
+    <Resource Include="Content\Icons\copyIcon.png" />
+    <Resource Include="Content\Icons\edit_code.png" />
+    <Resource Include="Content\Icons\entity.png" />
+    <Resource Include="Content\Icons\file.png" />
+    <Resource Include="Content\Icons\folder.png" />
+    <Resource Include="Content\Icons\GlueIcon.png" />
+    <Resource Include="Content\Icons\IncreaseArea.Agif" />
+    <Resource Include="Content\Icons\IncreaseArea.gif" />
+    <Resource Include="Content\Icons\IncreaseAreaGum.gif" />
+    <Resource Include="Content\Icons\master_code.png" />
+    <Resource Include="Content\Icons\master_entity.png" />
+    <Resource Include="Content\Icons\master_file.png" />
+    <Resource Include="Content\Icons\master_object.png" />
+    <Resource Include="Content\Icons\master_screen.png" />
+    <Resource Include="Content\Icons\master_states.png" />
+    <Resource Include="Content\Icons\master_variables.png" />
+    <Resource Include="Content\Icons\NeedsInterpolateVariable.bmp" />
+    <Resource Include="Content\Icons\object.png" />
+    <Resource Include="Content\Icons\screen.png" />
+    <Resource Include="Content\Icons\states.png" />
+    <Resource Include="Content\Icons\StretchArea.agif" />
+    <Resource Include="Content\Icons\StretchArea.gif" />
+    <Resource Include="Content\Icons\StretchAreaGum.gif" />
+    <Resource Include="Content\Icons\transparent.png" />
+    <Resource Include="Content\Icons\variable.png" />
+    <Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraIcon.png" />
+    <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\Error.png" />
+    <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\OpenFolder.png" />
+    <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\VsIcon.png" />
+    <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\XamarinIcon.png" />
     <Resource Include="Resources\CameraSetupTemplate.cs" />
     <None Include="Resources\IEntityFactory.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -110,6 +179,21 @@
     <None Include="Resources\PoolList.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\Resource1.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resource1.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Resource1.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

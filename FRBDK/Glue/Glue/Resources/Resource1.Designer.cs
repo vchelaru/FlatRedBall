@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FlatRedBall.Glue.Resources {
+namespace GlueFormsCore.Resources {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace FlatRedBall.Glue.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FlatRedBall.Glue.Resources.Resource1", typeof(Resource1).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GlueFormsCore.Resources.Resource1", typeof(Resource1).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,16 +57,6 @@ namespace FlatRedBall.Glue.Resources {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap broadcastFRB {
-            get {
-                object obj = ResourceManager.GetObject("broadcastFRB", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
