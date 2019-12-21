@@ -47,11 +47,18 @@ namespace FlatRedBall.Glue.Projects
                     break;
                 }
             }
-            const string newProjectCreatorLocation = @"..\..\..\..\NewProjectCreator\NewProjectCreator\bin\x86\Debug\NewProjectCreator.exe";
+            const string newProjectCreatorLocation = @"..\..\..\..\..\..\NewProjectCreator\NewProjectCreator\bin\x86\Debug\NewProjectCreator.exe";
             if (newProjectCreatorFile == null)
             {
                 newProjectCreatorFile = newProjectCreatorLocation;
             }
+
+
+            if (!File.Exists(newProjectCreatorFile))
+            {
+
+            }
+
 
             if (!File.Exists(newProjectCreatorFile))
             {
