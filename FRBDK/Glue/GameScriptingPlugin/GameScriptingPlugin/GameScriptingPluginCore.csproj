@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Platforms>x86</Platforms>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\AfterThatDecision.cs" Link="EmbeddedCodeFiles\AfterThatDecision.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\Debugging\ScriptDebuggingForm.cs" Link="EmbeddedCodeFilesDebugging\ScriptDebuggingForm.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\Debugging\ScriptDebuggingForm.Designer.cs" Link="EmbeddedCodeFilesDebugging\ScriptDebuggingForm.Designer.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\DecisionAndList.cs" Link="EmbeddedCodeFiles\DecisionAndList.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\DecisionOrList.cs" Link="EmbeddedCodeFiles\DecisionOrList.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\DelegateDecision.cs" Link="EmbeddedCodeFiles\DelegateDecision.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\GeneralAction.cs" Link="EmbeddedCodeFiles\GeneralAction.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\GeneralDecision.cs" Link="EmbeddedCodeFiles\GeneralDecision.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\IDecisionList.cs" Link="EmbeddedCodeFiles\IDecisionList.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\IDoScriptEngine.cs" Link="EmbeddedCodeFiles\IDoScriptEngine.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\IIfScriptEngine.cs" Link="EmbeddedCodeFiles\IIfScriptEngine.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\IScriptAction.cs" Link="EmbeddedCodeFiles\IScriptAction.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\IScriptDecision.cs" Link="EmbeddedCodeFiles\IScriptDecision.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\ScreenScript.cs" Link="EmbeddedCodeFiles\ScreenScript.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\Script.cs" Link="EmbeddedCodeFiles\Script.cs" />
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\ScriptEngine.cs" Link="EmbeddedCodeFiles\ScriptEngine.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="EmbeddedCodeFiles\" />
+    <Folder Include="EmbeddedCodeFilesDebugging\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
+    <ProjectReference Include="..\..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
+    <ProjectReference Include="..\..\GlueCommon\GlueCommon.csproj" />
+    <ProjectReference Include="..\..\Glue\GlueFormsCore.csproj" />
+  </ItemGroup>
+  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="IF NOT EXIST %25appdata%25\FRBDK\plugins\GameScriptingPlugin\ MD %25appdata%25\FRBDK\plugins\GameScriptingPlugin\&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)GameScriptingPluginCore.dll&quot;  &quot;%25appdata%25\FRBDK\plugins\GameScriptingPlugin\GameScriptingPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo Copied files" />
+  </Target>
+
+</Project>
