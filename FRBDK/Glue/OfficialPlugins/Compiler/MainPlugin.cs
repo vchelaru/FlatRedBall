@@ -184,6 +184,14 @@ namespace OfficialPlugins.Compiler
             }
         }
 
+        private void CreateToolbar()
+        {
+            var toolbar = new RunnerToolbar();
+            toolbar.RunClicked += HandleToolbarRunClicked;
+            toolbar.DataContext = viewModel;
+            base.AddToToolBar(toolbar, "Standard");
+        }
+
         private void HandleFileChanged(string fileName)
         {
             bool shouldBuildContent = viewModel.AutoBuildContent &&
@@ -199,17 +207,9 @@ namespace OfficialPlugins.Compiler
             
         }
 
-        private void CreateToolbar()
-        {
-            var toolbar = new RunnerToolbar();
-            toolbar.RunClicked += HandleToolbarRunClicked;
-            toolbar.DataContext = viewModel;
-            base.AddToToolBar(toolbar, "Standard");
-        }
-
         private async void HandleToolbarRunClicked(object sender, EventArgs e)
         {
-            PluginManager.ReceiveOutput("Building Project. See \"Build\" tab for more information...");
+            GlueCommands.Self.DialogCommands.FocusTab("Build");
             var succeeded = await Compile();
 
             if (succeeded)
