@@ -54,7 +54,7 @@ namespace GumPlugin.Managers
 
         void SaveGumFile(string fileName)
         {
-            string resourceName = "GumPlugin/Embedded/EmptyProject/" + fileName;
+            string resourceName = "GumPluginCore/Embedded/EmptyProject/" + fileName;
 
             resourceName = resourceName.Replace("/", ".");
 
@@ -81,21 +81,24 @@ namespace GumPlugin.Managers
         {
 
             mStateInterpolationItemAdder = new CodeBuildItemAdder();
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Back.cs");
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Bounce.cs");
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Circular.cs");
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Cubic.cs");
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Elastic.cs");
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Exponential.cs");
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Instant.cs");
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Linear.cs");
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Quadratic.cs");
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Quartic.cs");
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Quintic.cs");
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/ShakeTweener.cs");
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Sinusoidal.cs");
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/Tweener.cs");
-            mStateInterpolationItemAdder.Add("GumPlugin/Embedded/StateInterpolation/TweenerManager.cs");
+
+            var prefix = "GumPluginCore/Embedded/StateInterpolation/";
+
+            mStateInterpolationItemAdder.Add(prefix + "Back.cs");
+            mStateInterpolationItemAdder.Add(prefix + "Bounce.cs");
+            mStateInterpolationItemAdder.Add(prefix + "Circular.cs");
+            mStateInterpolationItemAdder.Add(prefix + "Cubic.cs");
+            mStateInterpolationItemAdder.Add(prefix + "Elastic.cs");
+            mStateInterpolationItemAdder.Add(prefix + "Exponential.cs");
+            mStateInterpolationItemAdder.Add(prefix + "Instant.cs");
+            mStateInterpolationItemAdder.Add(prefix + "Linear.cs");
+            mStateInterpolationItemAdder.Add(prefix + "Quadratic.cs");
+            mStateInterpolationItemAdder.Add(prefix + "Quartic.cs");
+            mStateInterpolationItemAdder.Add(prefix + "Quintic.cs");
+            mStateInterpolationItemAdder.Add(prefix + "ShakeTweener.cs");
+            mStateInterpolationItemAdder.Add(prefix + "Sinusoidal.cs");
+            mStateInterpolationItemAdder.Add(prefix + "Tweener.cs");
+            mStateInterpolationItemAdder.Add(prefix + "TweenerManager.cs");
 
 
             mStateInterpolationItemAdder.OutputFolderInProject = "StateInterpolation";
@@ -144,7 +147,7 @@ namespace GumPlugin.Managers
                     // Just in case the project was unloaded:
                     if(GlueState.Self.CurrentGlueProject != null)
                     {
-                        codeItemAdder.PerformAddAndSave(assemblyContainingResources);
+                        codeItemAdder.PerformAdd(assemblyContainingResources, saveCsproj:false);
                     }
 
                 }, "Adding standard Gum files");
@@ -153,7 +156,7 @@ namespace GumPlugin.Managers
             {
                 TaskManager.Self.AddSync(() =>
                 {
-                    codeItemAdder.PerformRemoveAndSave(assemblyContainingResources);
+                    codeItemAdder.PerformAdd(assemblyContainingResources);
 
                 }, "Removing standard Gum files");
             }
@@ -164,41 +167,43 @@ namespace GumPlugin.Managers
             var codeItemAdder = new CodeBuildItemAdder();
             codeItemAdder.OutputFolderInProject = "GumCore";
 
-            codeItemAdder.Add("GumPlugin/Embedded/ContentManagerWrapper.cs");
+            var embeddedFolder = "GumPluginCore/Embedded/";
 
-            codeItemAdder.Add("GumPlugin/Embedded/GumIdb.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/PlatformCompatability.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/PositionedObjectGueWrapper.cs");
+            codeItemAdder.Add(embeddedFolder + "ContentManagerWrapper.cs");
 
-            codeItemAdder.Add("GumPlugin/Embedded/GraphicalUiElement.IWindow.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/SystemManagers.FlatRedBall.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/GumAnimation.cs");
+            codeItemAdder.Add(embeddedFolder + "GumIdb.cs");
+            codeItemAdder.Add(embeddedFolder + "PlatformCompatability.cs");
+            codeItemAdder.Add(embeddedFolder + "PositionedObjectGueWrapper.cs");
+
+            codeItemAdder.Add(embeddedFolder + "GraphicalUiElement.IWindow.cs");
+            codeItemAdder.Add(embeddedFolder + "SystemManagers.FlatRedBall.cs");
+            codeItemAdder.Add(embeddedFolder + "GumAnimation.cs");
 
 
             // Sometimes we can add entire folders because the extensions
             // are simple:
-            codeItemAdder.AddFolder("GumPlugin.Embedded.LibraryFiles.GumDataTypes", assemblyContainingResources);
+            codeItemAdder.AddFolder("GumPluginCore.Embedded.LibraryFiles.GumDataTypes", assemblyContainingResources);
 
 
             // But in situations where files have names like
             // FileName.Subname.cs, we have to be explicit and use slashes:
-            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/Blend.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/ElementSaveExtensionMethods.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/ElementSaveExtensions.GumRuntime.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/ElementWithState.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/GraphicalUiElement.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/InstanceSaveExtensionMethods.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/InstanceSaveExtensionMethods.GumRuntime.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/ObjectFinder.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/RecursiveVariableFinder.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/StandardElementsManager.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/StateSaveExtensionMethods.cs");
-            codeItemAdder.Add("GumPlugin/Embedded/LibraryFiles/GumRuntime/VariableSaveExtensionMethods.cs");
+            codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/Blend.cs");
+            codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/ElementSaveExtensionMethods.cs");
+            codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/ElementSaveExtensions.GumRuntime.cs");
+            codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/ElementWithState.cs");
+            codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/GraphicalUiElement.cs");
+            codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/InstanceSaveExtensionMethods.cs");
+            codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/InstanceSaveExtensionMethods.GumRuntime.cs");
+            codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/ObjectFinder.cs");
+            codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/RecursiveVariableFinder.cs");
+            codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/StandardElementsManager.cs");
+            codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/StateSaveExtensionMethods.cs");
+            codeItemAdder.Add(embeddedFolder + "LibraryFiles /GumRuntime/VariableSaveExtensionMethods.cs");
 
 
-            codeItemAdder.AddFolder("GumPlugin.Embedded.LibraryFiles.RenderingLibrary", assemblyContainingResources);
+            codeItemAdder.AddFolder("GumPluginCore.Embedded.LibraryFiles.RenderingLibrary", assemblyContainingResources);
 
-            codeItemAdder.AddFolder("GumPlugin.Embedded.LibraryFiles.ToolsUtilities", assemblyContainingResources);
+            codeItemAdder.AddFolder("GumPluginCore.Embedded.LibraryFiles.ToolsUtilities", assemblyContainingResources);
 
             return codeItemAdder;
         }

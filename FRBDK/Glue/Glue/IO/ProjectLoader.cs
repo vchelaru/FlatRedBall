@@ -197,14 +197,7 @@ namespace FlatRedBall.Glue.IO
                     GluxCommands.Self.SaveGluxTask();
                 }
 
-                TaskManager.Self.AddSync(() =>
-                {
-                    // Someone may have unloaded the project while it was starting up
-                    if (GlueState.Self.CurrentGlueProject != null)
-                    {
-                        GlueCommands.Self.ProjectCommands.SaveProjects();
-                    }
-                }, "Save all projects after initial load");
+                GlueCommands.Self.ProjectCommands.SaveProjectsTask();
 
                 FileWatchManager.PerformFlushing = true;
                 FileWatchManager.FlushAndClearIgnores();

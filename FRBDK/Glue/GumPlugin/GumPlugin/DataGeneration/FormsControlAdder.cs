@@ -39,7 +39,7 @@ namespace GumPlugin.DataGeneration
             {
                 // example:
                 // "GumPlugin.Embedded.EmbeddedObjectGumProject.Components.DefaultFormsButton.gucx"
-                var resourceName = "GumPlugin/Embedded/EmbeddedObjectGumProject/Components/DefaultForms/" + file + ".gucx";
+                var resourceName = "GumPluginCore/Embedded/EmbeddedObjectGumProject/Components/DefaultForms/" + file + ".gucx";
 
                 var destination = componentDestination + file + ".gucx";
 
@@ -63,7 +63,7 @@ namespace GumPlugin.DataGeneration
 
             foreach(var file in ContentItems)
             {
-                var resourceName = "GumPlugin/Embedded/EmbeddedObjectGumProject/" + file;
+                var resourceName = "GumPluginCore/Embedded/EmbeddedObjectGumProject/" + file;
 
                 FileManager.SaveEmbeddedResource(assembly, resourceName.Replace("/", "."), contentDestination + file);
             }

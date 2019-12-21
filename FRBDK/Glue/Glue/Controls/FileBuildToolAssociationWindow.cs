@@ -13,6 +13,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -56,7 +57,7 @@ namespace FlatRedBall.Glue.Controls
             UpdateExternalBuildDirectory();
 
             ProjectManager.GlueSettingsSave.Save();
-            ProjectManager.SaveProjects();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
             BuildToolAssociationManager.Self.SaveProjectSpecificBuildTools();
 
             this.Close();

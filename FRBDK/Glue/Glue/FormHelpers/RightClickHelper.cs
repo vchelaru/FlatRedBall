@@ -648,7 +648,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 (EntitySave)ElementViewWindow.TreeNodeDraggedOff.Tag,
                 true);
 
-            ProjectManager.SaveProjects();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
             GlueCommands.Self.GluxCommands.SaveGlux();
 
         }
@@ -660,7 +660,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 MainGlueWindow.Self.ElementTreeView.SelectedNode);
 
 
-            ProjectManager.SaveProjects();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
             GlueCommands.Self.GluxCommands.SaveGlux();
         }
 
@@ -863,7 +863,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     GlueCommands.Self.TreeNodeCommands.SelectTreeNode(newState);
 
                     GluxCommands.Self.SaveGlux();
-                    ProjectManager.SaveProjects();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
             }
         }

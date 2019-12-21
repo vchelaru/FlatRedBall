@@ -335,6 +335,8 @@ namespace GumPlugin
             this.GetUsedTypes = HandleGetUsedTypes;
 
             this.GetAvailableAssetTypes = HandleGetAvailableAssetTypes;
+
+            this.ReactToFileRemoved += HandleFileRemoved;
         }
 
         private void CreateToolbar()
@@ -342,6 +344,15 @@ namespace GumPlugin
             gumToolbar = new GumToolbar();
             gumToolbar.GumButtonClicked += HandleToolbarButtonClick;
             base.AddToToolBar(gumToolbar, "Standard");
+        }
+
+        private void HandleFileRemoved(IElement container, ReferencedFileSave file)
+        {
+            if(file.Name.EndsWith(".gumx"))
+            {
+                // gum project was removed, so mark it as removed:
+                AppState.Self.GumProjectSave = null;
+            }
         }
 
         private void HandleToolbarButtonClick(object sender, EventArgs e)
@@ -518,6 +529,7 @@ namespace GumPlugin
                     if(this.propertiesManager.IsReactingToProperyChanges)
                     {
                         EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
+                        GlueCommands.Self.ProjectCommands.SaveProjectsTask();
                     }
                 }
 
@@ -580,7 +592,7 @@ namespace GumPlugin
                     // Why do we reload the
                     // entire project and not
                     // just the object that changed?
-                    GumProjectManager.Self.ReloadProject();
+                    GumProjectManager.Self.ReloadGumProject();
 
                     // Something could have changed - more components could have been added
                     AssetTypeInfoManager.Self.RefreshProjectSpecificAtis();
@@ -645,7 +657,11 @@ namespace GumPlugin
                     "Would you like to mark the Gum plugin as a required plugin for this project? " +
                     "This can help others who open this project",
                     yesAction:HandleMakePluginRequiredYes);
+
+                //GlueCommands.Self.GluxCommands.SaveGluxTask();
             }
+
+
 
             propertiesManager.IsReactingToProperyChanges = true;
 
@@ -663,7 +679,7 @@ namespace GumPlugin
 
         private void HandleGluxLoadEarly()
         {
-            GumProjectManager.Self.ReloadProject();
+            GumProjectManager.Self.ReloadGumProject();
 
             propertiesManager.UpdateUseAtlases();
 
@@ -690,6 +706,10 @@ namespace GumPlugin
                 FileReferenceTracker.Self.RemoveUnreferencedFilesFromVsProject();
 
                 UpdateMenuItemVisibility();
+
+                // the UpdatecodeInProjectPresence may add new files, so save:
+                GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+
             }, "Gum plugin reacting to glux load");
         }
 

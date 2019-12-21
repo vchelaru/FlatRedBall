@@ -85,6 +85,8 @@ namespace GumPlugin.Managers
                 var behavior = (FileAdditionBehavior)gumRfs.Properties.GetValue<FileAdditionBehavior>(nameof(FileAdditionBehavior));
 
                 EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
+
+                GlueCommands.Self.ProjectCommands.SaveProjectsTask();
             }
         }
 

@@ -753,7 +753,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 // 6 Save everything
                 GluxCommands.Self.SaveGlux();
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }
 
@@ -820,7 +820,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
-                    ProjectManager.SaveProjects();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
                     GluxCommands.Self.SaveGlux();
                 }
 

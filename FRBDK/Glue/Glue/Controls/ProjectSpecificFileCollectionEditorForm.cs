@@ -85,7 +85,7 @@ namespace FlatRedBall.Glue.Controls
             UnreferencedFilesManager.Self.ProcessRefreshOfUnreferencedFiles();
             GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
-            ProjectManager.SaveProjects();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
 
             //ProjectManager.RefreshUnreferencedFiles();
 
@@ -171,7 +171,7 @@ namespace FlatRedBall.Glue.Controls
                 Value.Add(psf);
                 Rfs.ProjectSpecificFiles = Value;
                 GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(Rfs);
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
                 RefreshList();
@@ -226,7 +226,7 @@ namespace FlatRedBall.Glue.Controls
             Value.Add(psf);
             Rfs.ProjectSpecificFiles = Value;
             GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(Rfs);
-            ProjectManager.SaveProjects();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
             GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
             RefreshList();
         }

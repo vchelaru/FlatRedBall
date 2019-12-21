@@ -647,7 +647,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (performSave)
             {
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
 
         }

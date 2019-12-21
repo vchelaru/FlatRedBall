@@ -49,7 +49,7 @@ namespace GumPlugin.Managers
             return null;
         }
 
-        public void ReloadProject()
+        public void ReloadGumProject()
         {
             string gumProjectFileName = GetGumProjectFileName();
             if (!string.IsNullOrEmpty(gumProjectFileName))
@@ -85,18 +85,23 @@ namespace GumPlugin.Managers
                 string gumProjectDirectory = GlueState.Self.ContentDirectory + "GumProject/";
                 EmbeddedResourceManager.Self.SaveEmptyProject(gumProjectDirectory);
 
-                GlueCommands.Self.DoOnUiThread(() =>
-                {
-                    EditorLogic.CurrentTreeNode = FlatRedBall.Glue.FormHelpers.ElementViewWindow.GlobalContentFileNode;
-                });
+                EditorLogic.CurrentTreeNode = FlatRedBall.Glue.FormHelpers.ElementViewWindow.GlobalContentFileNode;
 
                 bool userCancelled = false;
 
                 // ignore changes while this is being added, because we don't want to add then remove files:
 
 
-                var rfs = FlatRedBall.Glue.FormHelpers.RightClickHelper.AddSingleFile(
-                    gumProjectDirectory + "GumProject.gumx", ref userCancelled);
+                //var rfs = FlatRedBall.Glue.FormHelpers.RightClickHelper.AddSingleFile(
+                //    gumProjectDirectory + "GumProject.gumx", ref userCancelled);
+                //var rfs = GlueCommands.Self.GluxCommands.AddSingleFileTo(gumProjectDirectory + "GumProject.gumx",
+                //    "GumProject.gumx", null, null, false, null, null, null);
+                var absoluteGumFile = gumProjectDirectory + "GumProject.gumx";
+                var relativeFile = FileManager.MakeRelative(absoluteGumFile, GlueState.Self.ContentDirectory);
+
+                var rfs = GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(
+                    relativeFile,
+                    false);
 
                 rfs.Properties.SetValue(
                     nameof(FileAdditionBehavior), 
@@ -116,7 +121,7 @@ namespace GumPlugin.Managers
                 if(added)
                 {
                     GlueState.Self.CurrentReferencedFileSave = rfs;
-                    ReloadProject();
+                    ReloadGumProject();
                 }
             }
 

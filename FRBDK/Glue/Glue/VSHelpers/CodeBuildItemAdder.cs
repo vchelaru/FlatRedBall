@@ -105,8 +105,14 @@ namespace FlatRedBall.Glue.VSHelpers
 
         public bool PerformAddAndSave(Assembly assemblyContainingResource)
         {
+            return PerformAdd(assemblyContainingResource);
+        }
+
+        public bool PerformAdd(Assembly assemblyContainingResource, bool saveCsproj = true)
+        { 
             bool succeeded = true;
             bool preserveCase = FileManager.PreserveCase;
+            bool wasAnythingAdded = false;
             FileManager.PreserveCase = true;
 
             List<string> filesToAddToProject = new List<string>();
@@ -138,13 +144,14 @@ namespace FlatRedBall.Glue.VSHelpers
                     if(wasAdded)
                     {
                         PluginManager.ReceiveOutput("Added file to project: " + file);
+                        wasAdded = true;
                     }
                 }
             }
 
             FileManager.PreserveCase = preserveCase;
 
-            if (succeeded)
+            if (succeeded && saveCsproj && wasAnythingAdded)
             {
                 GlueCommands.Self.TryMultipleTimes(() => GlueCommands.Self.ProjectCommands.SaveProjects());
             }

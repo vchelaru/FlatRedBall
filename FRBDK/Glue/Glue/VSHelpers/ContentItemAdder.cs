@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
@@ -73,7 +74,7 @@ namespace FlatRedBall.Glue.VSHelpers
 
             if (succeeded)
             {
-                ProjectManager.SaveProjects();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
 
             return succeeded;
