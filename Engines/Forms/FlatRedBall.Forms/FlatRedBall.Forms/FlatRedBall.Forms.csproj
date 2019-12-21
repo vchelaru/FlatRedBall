@@ -70,6 +70,10 @@
       <Project>{fc2030b0-e60b-434d-a513-400270b8d7c6}</Project>
       <Name>GumCoreXnaPc</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
+      <Project>{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}</Project>
+      <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

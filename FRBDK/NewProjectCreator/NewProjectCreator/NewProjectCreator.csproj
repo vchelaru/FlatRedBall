@@ -217,6 +217,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
+      <Project>{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}</Project>
+      <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NewProjectCreator.Logic\NewProjectCreator.Logic.csproj">
       <Project>{60217569-9c37-4074-ae6c-de3b5a3f0e5a}</Project>
       <Name>NewProjectCreator.Logic</Name>
