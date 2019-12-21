@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Platforms>AnyCPU;x86</Platforms>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="app.config" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
+    <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj" />
+    <ProjectReference Include="..\..\Glue\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj" />
+    <ProjectReference Include="..\..\Glue\GlueCommon\GlueCommon.csproj" />
+    <ProjectReference Include="..\..\Glue\Glue\GlueFormsCore.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="echo Copying %25appdata%25\FRBDK\plugins\animationeditor\AnimationEditorPluginCore.dll&#xD;&#xA;md %25appdata%25\FRBDK\plugins\animationeditor\&#xD;&#xA;echo 1&#xD;&#xA;copy $(TargetDir)AnimationEditorPluginCore.dll &quot;%25appdata%25\FRBDK\plugins\animationeditor\AnimationEditorPluginCore.dll&quot;&#xD;&#xA;echo 2&#xD;&#xA;copy $(TargetDir)AnimationEditorPluginCore.pdb &quot;%25appdata%25\FRBDK\plugins\animationeditor\AnimationEditorPluginCore.pdb&quot;&#xD;&#xA;" />
+  </Target>
+
+</Project>

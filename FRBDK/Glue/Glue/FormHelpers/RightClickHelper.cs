@@ -1153,26 +1153,26 @@ namespace FlatRedBall.Glue.FormHelpers
                     {
                         #region If is NamedObjectSave
                         // test deep first
-                        if (EditorLogic.CurrentNamedObject != null)
+                        if (GlueState.Self.CurrentNamedObjectSave != null)
                         {
                             GlueCommands.Self.GluxCommands
-                                .RemoveNamedObject(EditorLogic.CurrentNamedObject, true, true, filesToRemove);
+                                .RemoveNamedObject(GlueState.Self.CurrentNamedObjectSave, true, true, filesToRemove);
                             //ProjectManager.RemoveNamedObject(EditorLogic.CurrentNamedObject);
                         }
                         #endregion
 
                         #region Else if is StateSave
-                        else if (EditorLogic.CurrentStateSave != null)
+                        else if (GlueState.Self.CurrentStateSave != null)
                         {
-                            var name = EditorLogic.CurrentStateSave.Name;
+                            var name = GlueState.Self.CurrentStateSave.Name;
 
-                            EditorLogic.CurrentElement.RemoveState(EditorLogic.CurrentStateSave);
+                            GlueState.Self.CurrentElement.RemoveState(GlueState.Self.CurrentStateSave);
 
-                            AskToRemoveCustomVariablesWithoutState(EditorLogic.CurrentElement);
+                            AskToRemoveCustomVariablesWithoutState(GlueState.Self.CurrentElement);
 
                             EditorLogic.CurrentElementTreeNode.UpdateReferencedTreeNodes();
 
-                            PluginManager.ReactToStateRemoved(EditorLogic.CurrentElement, name);
+                            PluginManager.ReactToStateRemoved(GlueState.Self.CurrentElement, name);
 
                             
 
@@ -2270,15 +2270,15 @@ namespace FlatRedBall.Glue.FormHelpers
             if (EditorLogic.CurrentCustomVariable != null)
             {
                 objectToRemove = EditorLogic.CurrentCustomVariable;
-                listToRemoveFrom = EditorLogic.CurrentElement.CustomVariables;
+                listToRemoveFrom = GlueState.Self.CurrentElement.CustomVariables;
             }
 
-            else if (EditorLogic.CurrentNamedObject != null)
+            else if (GlueState.Self.CurrentNamedObjectSave != null)
             {
-                objectToRemove = EditorLogic.CurrentNamedObject;
+                objectToRemove = GlueState.Self.CurrentNamedObjectSave;
 
                 NamedObjectSave container = NamedObjectContainerHelper.GetNamedObjectThatIsContainerFor(
-                    EditorLogic.CurrentElement, EditorLogic.CurrentNamedObject);
+                    GlueState.Self.CurrentElement, GlueState.Self.CurrentNamedObjectSave);
 
                 if (container != null)
                 {
@@ -2286,7 +2286,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
                 else
                 {
-                    listToRemoveFrom = EditorLogic.CurrentElement.NamedObjects;
+                    listToRemoveFrom = GlueState.Self.CurrentElement.NamedObjects;
                 }
             }
         }
@@ -2297,11 +2297,11 @@ namespace FlatRedBall.Glue.FormHelpers
             // do this before refreshing the tree nodes
             var tag = namedObjectTreeNode.Tag;
 
-            EditorLogic.CurrentElement.RefreshStatesToCustomVariables();
+            GlueState.Self.CurrentElement.RefreshStatesToCustomVariables();
 
             UpdateCurrentElementTreeNode();
 
-            IElement element = EditorLogic.CurrentElement;
+            IElement element = GlueState.Self.CurrentElement;
             List<IElement> elementsToRegen = new List<IElement>();
 
             foreach (NamedObjectSave nos in ObjectFinder.Self.GetAllNamedObjectsThatUseElement(element))

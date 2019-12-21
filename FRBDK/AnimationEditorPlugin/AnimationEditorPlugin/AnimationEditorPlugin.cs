@@ -10,9 +10,9 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Plugins;
 using System.Windows.Forms;
 using FlatRedBall.Glue.Controls;
-using FlatRedBall.AnimationEditorForms;
+//using FlatRedBall.AnimationEditorForms;
 using FlatRedBall.IO;
-using FlatRedBall.AnimationEditorForms.CommandsAndState;
+//using FlatRedBall.AnimationEditorForms.CommandsAndState;
 using FlatRedBall.Content.AnimationChain;
 
 
@@ -24,8 +24,8 @@ namespace AnimationEditorPlugin
     {
         #region Fields
 
-        MainControl mAchxControl;
-        TextureCoordinateSelectionWindow mTextureCoordinateControl;
+        //MainControl mAchxControl;
+        //TextureCoordinateSelectionWindow mTextureCoordinateControl;
         TabControl mContainer; // This is the tab control for all tabs on the left
         PluginTab mTab; // This is the tab that will hold our control
         string mLastFile;
@@ -134,28 +134,28 @@ namespace AnimationEditorPlugin
 
             this.ReactToItemSelectHandler += HandleItemSelect;
 
-            this.ReactToFileChangeHandler += HandleFileChange;
+            //this.ReactToFileChangeHandler += HandleFileChange;
 
             this.ReactToLoadedGlux += HandleGluxLoad;
 
             this.ReactToChangedPropertyHandler += HandleChangedProperty;
 
-            this.SelectItemInCurrentFile += HandleSelectItemInCurrentFile;
+            //this.SelectItemInCurrentFile += HandleSelectItemInCurrentFile;
         }
 
-        private void HandleSelectItemInCurrentFile(string objectName)
-        {
-            if(mAchxControl != null)
-            {
-                var found = 
-                    mAchxControl.AnimationChainList.AnimationChains.FirstOrDefault(item => item.Name == objectName);
+        //private void HandleSelectItemInCurrentFile(string objectName)
+        //{
+        //    if(mAchxControl != null)
+        //    {
+        //        var found = 
+        //            mAchxControl.AnimationChainList.AnimationChains.FirstOrDefault(item => item.Name == objectName);
 
-                if(found != null)
-                {
-                    SelectedState.Self.SelectedChain = found;
-                }
-            }
-        }
+        //        if(found != null)
+        //        {
+        //            SelectedState.Self.SelectedChain = found;
+        //        }
+        //    }
+        //}
 
         bool ignoringChanges = false;
         private void HandleChangedProperty(string changedMember, object oldValue)
@@ -165,29 +165,29 @@ namespace AnimationEditorPlugin
 
                 if (IsSelectedItemSprite)
                 {
-                    if (changedMember == "Texture" ||
+                    //if (changedMember == "Texture" ||
 
-                        changedMember == "LeftTextureCoordinate" ||
-                        changedMember == "RightTextureCoordinate" ||
-                        changedMember == "TopTextureCoordinate" ||
-                        changedMember == "BottomTextureCoordinate" ||
+                    //    changedMember == "LeftTextureCoordinate" ||
+                    //    changedMember == "RightTextureCoordinate" ||
+                    //    changedMember == "TopTextureCoordinate" ||
+                    //    changedMember == "BottomTextureCoordinate" ||
 
-                        changedMember == "LeftTexturePixel" ||
-                        changedMember == "RightTexturePixel" ||
-                        changedMember == "TopTexturePixel" ||
-                        changedMember == "BottomTexturePixel"
-                        )
-                    {
-                        textureCoordinateSelectionLogic.RefreshSpriteDisplay(mTextureCoordinateControl);
-                    }
+                    //    changedMember == "LeftTexturePixel" ||
+                    //    changedMember == "RightTexturePixel" ||
+                    //    changedMember == "TopTexturePixel" ||
+                    //    changedMember == "BottomTexturePixel"
+                    //    )
+                    //{
+                    //    textureCoordinateSelectionLogic.RefreshSpriteDisplay(mTextureCoordinateControl);
+                    //}
                 }
             }
         }
 
         private void HandleGluxLoad()
         {
-            ApplicationState.Self.ProjectFolder =
-                FlatRedBall.Glue.ProjectManager.ContentDirectory;
+            //ApplicationState.Self.ProjectFolder =
+            //    FlatRedBall.Glue.ProjectManager.ContentDirectory;
         }
         
         public override bool ShutDown(PluginShutDownReason reason)
@@ -200,29 +200,29 @@ namespace AnimationEditorPlugin
             }
             mContainer = null;
             mTab = null;
-            mAchxControl = null;
-            mTextureCoordinateControl = null;
+            //mAchxControl = null;
+            //mTextureCoordinateControl = null;
             return true;
         }
 
-        void HandleFileChange(string fileName)
-        {
-            string standardizedChangedFile = FileManager.Standardize(fileName, null, false);
-            string standardizedCurrent = 
-                FileManager.Standardize(FlatRedBall.AnimationEditorForms.ProjectManager.Self.FileName, null, false);
+        //void HandleFileChange(string fileName)
+        //{
+        //    string standardizedChangedFile = FileManager.Standardize(fileName, null, false);
+        //    string standardizedCurrent = 
+        //        FileManager.Standardize(FlatRedBall.AnimationEditorForms.ProjectManager.Self.FileName, null, false);
 
-            if (standardizedChangedFile == standardizedCurrent)
-            {
-                if (mReloadsToIgnore == 0)
-                {
-                    mAchxControl.LoadAnimationChain(standardizedCurrent);
-                }
-                else
-                {
-                    mReloadsToIgnore--;
-                }
-            }
-        }
+        //    if (standardizedChangedFile == standardizedCurrent)
+        //    {
+        //        if (mReloadsToIgnore == 0)
+        //        {
+        //            mAchxControl.LoadAnimationChain(standardizedCurrent);
+        //        }
+        //        else
+        //        {
+        //            mReloadsToIgnore--;
+        //        }
+        //    }
+        //}
 
         void HandleItemSelect(TreeNode selectedTreeNode)
         {
@@ -244,23 +244,23 @@ namespace AnimationEditorPlugin
 
                 mTab.Text = "  Texture Coordinates"; // add spaces to make room for the X to close the plugin
 
-                if (mTextureCoordinateControl == null)
-                {
-                    mTextureCoordinateControl = new TextureCoordinateSelectionWindow();
-                    mTextureCoordinateControl.Dock = DockStyle.Fill;
-                    mTextureCoordinateControl.EndRegionChanged += HandleRegionChanged;
-                }
+                //if (mTextureCoordinateControl == null)
+                //{
+                //    mTextureCoordinateControl = new TextureCoordinateSelectionWindow();
+                //    mTextureCoordinateControl.Dock = DockStyle.Fill;
+                //    mTextureCoordinateControl.EndRegionChanged += HandleRegionChanged;
+                //}
 
-                if (!mTab.Controls.Contains(mTextureCoordinateControl))
-                {
-                    mTab.Controls.Add(mTextureCoordinateControl);
-                }
-                if (mTab.Controls.Contains(mAchxControl))
-                {
-                    mTab.Controls.Remove(mAchxControl);
-                }
+                //if (!mTab.Controls.Contains(mTextureCoordinateControl))
+                //{
+                //    mTab.Controls.Add(mTextureCoordinateControl);
+                //}
+                //if (mTab.Controls.Contains(mAchxControl))
+                //{
+                //    mTab.Controls.Remove(mAchxControl);
+                //}
 
-                textureCoordinateSelectionLogic.RefreshSpriteDisplay(mTextureCoordinateControl);
+                //textureCoordinateSelectionLogic.RefreshSpriteDisplay(mTextureCoordinateControl);
             }
         }
 
@@ -270,8 +270,8 @@ namespace AnimationEditorPlugin
         {
             ignoringChanges = true;
 
-            textureCoordinateSelectionLogic.HandleCoordinateChanged(
-                mTextureCoordinateControl, GlueState.CurrentNamedObjectSave);
+            //textureCoordinateSelectionLogic.HandleCoordinateChanged(
+            //    mTextureCoordinateControl, GlueState.CurrentNamedObjectSave);
 
             ignoringChanges = false;
         }
@@ -292,41 +292,41 @@ namespace AnimationEditorPlugin
                     mContainer.SelectTab(mContainer.Controls.Count - 1);
                 }
 
-                if (mAchxControl == null)
-                {
-                    mAchxControl = new MainControl();
+                //if (mAchxControl == null)
+                //{
+                //    mAchxControl = new MainControl();
 
-                    ToolStripMenuItem saveToolStripItem = new ToolStripMenuItem("Force Save", null, HandleSaveClick);
-                    mAchxControl.AddToolStripMenuItem(saveToolStripItem, "File");
+                //    ToolStripMenuItem saveToolStripItem = new ToolStripMenuItem("Force Save", null, HandleSaveClick);
+                //    mAchxControl.AddToolStripMenuItem(saveToolStripItem, "File");
 
-                    ToolStripMenuItem forceSaveAllItem = new ToolStripMenuItem("Re-Save all .achx files in this Glue project", null, HandleForceSaveAll);
-                    mAchxControl.AddToolStripMenuItem(forceSaveAllItem, "File");
+                //    ToolStripMenuItem forceSaveAllItem = new ToolStripMenuItem("Re-Save all .achx files in this Glue project", null, HandleForceSaveAll);
+                //    mAchxControl.AddToolStripMenuItem(forceSaveAllItem, "File");
 
 
-                    mAchxControl.AnimationChainChange += new EventHandler(HandleAnimationChainChange);
-                    mAchxControl.AnimationChainSelected += HandleAnimationChainInFileSelected;
-                    mAchxControl.Dock = DockStyle.Fill;
-                }
+                //    mAchxControl.AnimationChainChange += new EventHandler(HandleAnimationChainChange);
+                //    mAchxControl.AnimationChainSelected += HandleAnimationChainInFileSelected;
+                //    mAchxControl.Dock = DockStyle.Fill;
+                //}
 
 
                 mTab.Text = "  Animation"; // add spaces to make room for the X to close the plugin
 
-                if (!mTab.Controls.Contains(mAchxControl))
-                {
-                    mTab.Controls.Add(mAchxControl);
-                }
-                if (mTab.Controls.Contains(mTextureCoordinateControl))
-                {
-                    mTab.Controls.Remove(mTextureCoordinateControl);
-                }
+                //if (!mTab.Controls.Contains(mAchxControl))
+                //{
+                //    mTab.Controls.Add(mAchxControl);
+                //}
+                //if (mTab.Controls.Contains(mTextureCoordinateControl))
+                //{
+                //    mTab.Controls.Remove(mTextureCoordinateControl);
+                //}
 
-                string fullFileName = FlatRedBall.Glue.ProjectManager.MakeAbsolute(rfs.Name);
-                mLastFile = fullFileName;
+                //string fullFileName = FlatRedBall.Glue.ProjectManager.MakeAbsolute(rfs.Name);
+                //mLastFile = fullFileName;
 
-                if (System.IO.File.Exists(fullFileName))
-                {
-                    mAchxControl.LoadAnimationChain(fullFileName);
-                }
+                //if (System.IO.File.Exists(fullFileName))
+                //{
+                //    mAchxControl.LoadAnimationChain(fullFileName);
+                //}
             }
             else if (mContainer.Controls.Contains(mTab))
             {
@@ -344,25 +344,25 @@ namespace AnimationEditorPlugin
                 // add any files here from
                 // the entity or global content
                 // if they're not already added.
-                var viewModel =
-                    mAchxControl.WireframeEditControlsViewModel;
+                //var viewModel =
+                //    mAchxControl.WireframeEditControlsViewModel;
 
-                var pngFiles = currentElement.ReferencedFiles.Concat(GlueState.CurrentGlueProject.GlobalFiles)
-                    .Select(item => new ToolsUtilities.FilePath(GlueCommands.GetAbsoluteFileName(item)))
-                    .Where(item => item.Extension == "png")
-                    .Distinct()
-                    .Except(viewModel.AvailableTextures)
-                    .ToArray();
+                //var pngFiles = currentElement.ReferencedFiles.Concat(GlueState.CurrentGlueProject.GlobalFiles)
+                //    .Select(item => new ToolsUtilities.FilePath(GlueCommands.GetAbsoluteFileName(item)))
+                //    .Where(item => item.Extension == "png")
+                //    .Distinct()
+                //    .Except(viewModel.AvailableTextures)
+                //    .ToArray();
 
-                foreach (var file in pngFiles)
-                {
-                    viewModel.AvailableTextures.Add(file);
-                }
+                //foreach (var file in pngFiles)
+                //{
+                //    viewModel.AvailableTextures.Add(file);
+                //}
 
-                if (viewModel.SelectedTextureFilePath == null && viewModel.AvailableTextures.Any())
-                {
-                    viewModel.SelectedTextureFilePath = viewModel.AvailableTextures.First();
-                }
+                //if (viewModel.SelectedTextureFilePath == null && viewModel.AvailableTextures.Any())
+                //{
+                //    viewModel.SelectedTextureFilePath = viewModel.AvailableTextures.First();
+                //}
             }
         }
 
@@ -394,8 +394,8 @@ namespace AnimationEditorPlugin
 
         private void HandleSaveClick(object sender, EventArgs e)
         {
-            mReloadsToIgnore++;
-            mAchxControl.SaveCurrentAnimationChain();
+            //mReloadsToIgnore++;
+            //mAchxControl.SaveCurrentAnimationChain();
         }
 
         void HandleInitializeTab(TabControl tabControl)
@@ -412,7 +412,7 @@ namespace AnimationEditorPlugin
         void HandleAnimationChainChange(object sender, EventArgs e)
         {
             mReloadsToIgnore++;
-            mAchxControl.SaveCurrentAnimationChain();
+            //mAchxControl.SaveCurrentAnimationChain();
         }
 
         void HandleAnimationChainInFileSelected(object sender, EventArgs e)

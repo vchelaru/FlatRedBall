@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using FlatRedBall.AnimationEditorForms;
+//using FlatRedBall.AnimationEditorForms;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -104,71 +104,71 @@ namespace AnimationEditorPlugin
             }
         }
 
-        internal void HandleCoordinateChanged(TextureCoordinateSelectionWindow selectionWindow, NamedObjectSave nos)
-        {
-            AssignTextureCoordinateValues(selectionWindow, nos);
+        //internal void HandleCoordinateChanged(TextureCoordinateSelectionWindow selectionWindow, NamedObjectSave nos)
+        //{
+        //    AssignTextureCoordinateValues(selectionWindow, nos);
 
-            GlueCommands.Self.GluxCommands.SaveGlux();
+        //    GlueCommands.Self.GluxCommands.SaveGlux();
 
-            GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+        //    GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-        }
+        //    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+        //}
 
         
-        private static void AssignTextureCoordinateValues(TextureCoordinateSelectionWindow selectionWindow, NamedObjectSave nos)
-        {
-            var texture = selectionWindow.CurrentTexture;
-            var rectangle = selectionWindow.RectangleSelector;
+        //private static void AssignTextureCoordinateValues(TextureCoordinateSelectionWindow selectionWindow, NamedObjectSave nos)
+        //{
+        //    var texture = selectionWindow.CurrentTexture;
+        //    var rectangle = selectionWindow.RectangleSelector;
 
-            if (texture != null)
-            {
-                // Victor Chelaru September 24, 2016
-                // The user may invert the rectangle and not know it.
-                // Even though there are valid reasons to invert, allowing
-                // it here probably causes more harm than good. Therefore, I'm
-                // adding the Min/Max calls to the rectangle values.
-                GlueCommands.Self.GluxCommands.SetVariableOn(
-                    nos,
-                    "LeftTexturePixel",
-                    typeof(float),
-                    System.Math.Min( rectangle.Left, rectangle.Right));
+        //    if (texture != null)
+        //    {
+        //        // Victor Chelaru September 24, 2016
+        //        // The user may invert the rectangle and not know it.
+        //        // Even though there are valid reasons to invert, allowing
+        //        // it here probably causes more harm than good. Therefore, I'm
+        //        // adding the Min/Max calls to the rectangle values.
+        //        GlueCommands.Self.GluxCommands.SetVariableOn(
+        //            nos,
+        //            "LeftTexturePixel",
+        //            typeof(float),
+        //            System.Math.Min( rectangle.Left, rectangle.Right));
 
-                GlueCommands.Self.GluxCommands.SetVariableOn(
-                    nos,
-                    "RightTexturePixel",
-                    typeof(float),
-                    System.Math.Max(rectangle.Left, rectangle.Right));
+        //        GlueCommands.Self.GluxCommands.SetVariableOn(
+        //            nos,
+        //            "RightTexturePixel",
+        //            typeof(float),
+        //            System.Math.Max(rectangle.Left, rectangle.Right));
 
-                GlueCommands.Self.GluxCommands.SetVariableOn(
-                    nos,
-                    "TopTexturePixel",
-                    typeof(float),
-                    System.Math.Min(rectangle.Top, rectangle.Bottom));
+        //        GlueCommands.Self.GluxCommands.SetVariableOn(
+        //            nos,
+        //            "TopTexturePixel",
+        //            typeof(float),
+        //            System.Math.Min(rectangle.Top, rectangle.Bottom));
                                                                                                                                                                                                                                    
-                GlueCommands.Self.GluxCommands.SetVariableOn(
-                    nos,
-                    "BottomTexturePixel",
-                    typeof(float),
-                    System.Math.Max(rectangle.Top, rectangle.Bottom));
-            }
-        }
+        //        GlueCommands.Self.GluxCommands.SetVariableOn(
+        //            nos,
+        //            "BottomTexturePixel",
+        //            typeof(float),
+        //            System.Math.Max(rectangle.Top, rectangle.Bottom));
+        //    }
+        //}
 
-        public void RefreshSpriteDisplay(TextureCoordinateSelectionWindow selectionWindow)
-        {
-            var nos = GlueState.Self.CurrentNamedObjectSave;
+        //public void RefreshSpriteDisplay(TextureCoordinateSelectionWindow selectionWindow)
+        //{
+        //    var nos = GlueState.Self.CurrentNamedObjectSave;
 
-            float leftTextureCoordinate;
-            float rightTextureCoordinate;
-            float topTextureCoordinate;
-            float bottomTextureCoordinate;
-            string fullFileName;
+        //    float leftTextureCoordinate;
+        //    float rightTextureCoordinate;
+        //    float topTextureCoordinate;
+        //    float bottomTextureCoordinate;
+        //    string fullFileName;
 
-            GetTextureCoordinates(nos, out leftTextureCoordinate, out rightTextureCoordinate, out topTextureCoordinate, out bottomTextureCoordinate, out fullFileName);
+        //    GetTextureCoordinates(nos, out leftTextureCoordinate, out rightTextureCoordinate, out topTextureCoordinate, out bottomTextureCoordinate, out fullFileName);
 
 
-            selectionWindow.ShowSprite(fullFileName, topTextureCoordinate, bottomTextureCoordinate, leftTextureCoordinate, rightTextureCoordinate);
-        }
+        //    selectionWindow.ShowSprite(fullFileName, topTextureCoordinate, bottomTextureCoordinate, leftTextureCoordinate, rightTextureCoordinate);
+        //}
 
     }
 }
