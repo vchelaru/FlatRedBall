@@ -128,7 +128,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     {
                         bool forceError = false;
 
-                        if (buildOnMissingFile && (!string.IsNullOrEmpty(instance.SourceFile) || instance.SourceFileCache.Count != 0))
+                        if (buildOnMissingFile && (!string.IsNullOrEmpty(instance.SourceFile) || instance.SourceFileCache?.Count != 0))
                         {
                             string subError = instance.PerformExternalBuild(runAsync:false);
 

@@ -65,7 +65,7 @@ namespace DialogTreePlugin.Controllers
                 dialogTree = dialogTreeNew;
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }

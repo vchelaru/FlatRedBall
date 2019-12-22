@@ -347,7 +347,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
 
 
-                if (!string.IsNullOrEmpty(rfs.SourceFile) || rfs.SourceFileCache.Count != 0)
+                if (!string.IsNullOrEmpty(rfs.SourceFile) || rfs.SourceFileCache?.Count != 0)
                 {
                     menu.Items.Add("-");
                     menu.Items.Add(mViewSourceInExplorer);

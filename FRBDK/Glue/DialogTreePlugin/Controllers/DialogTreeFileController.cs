@@ -29,7 +29,7 @@ namespace DialogTreePlugin.Controllers
                 var filePath = GlueCommands.Self.GetAbsoluteFileName(RelativeToGlobalContentLocalizationDbCsvFile, false);
                 SetLocalizationDb(filePath);
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }

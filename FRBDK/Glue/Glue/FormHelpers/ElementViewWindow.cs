@@ -922,7 +922,11 @@ namespace FlatRedBall.Glue.FormHelpers
                     {
                         try
                         {
-                            ProcessManager.OpenProcess(fileName, null);
+                            var startInfo = new ProcessStartInfo();
+                            startInfo.FileName = fileName;
+                            startInfo.UseShellExecute = true;
+
+                            System.Diagnostics.Process.Start(startInfo);
                         }
                         catch (Exception ex)
                         {
