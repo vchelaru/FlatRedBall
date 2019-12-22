@@ -64,9 +64,9 @@ namespace TileGraphicsPlugin.Managers
         public void UpdateCodeInProjectPresence()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
-            mTileGraphicsAdder.PerformAddAndSave(assembly);
-            mTileCollisionAdder.PerformAddAndSave(assembly);
-            mTileEntityAdder.PerformAddAndSave(assembly);
+            mTileGraphicsAdder.PerformAddAndSaveTask(assembly);
+            mTileCollisionAdder.PerformAddAndSaveTask(assembly);
+            mTileEntityAdder.PerformAddAndSaveTask(assembly);
         }
 
     }

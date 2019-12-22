@@ -10,6 +10,7 @@ using FlatRedBall.Glue.Plugins;
 using System.Windows.Forms;
 using System.ComponentModel.Composition;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.VSHelpers
 {
@@ -103,12 +104,17 @@ namespace FlatRedBall.Glue.VSHelpers
             return filesInFolder;
         }
 
-        public bool PerformAddAndSave(Assembly assemblyContainingResource)
+        public void PerformAddAndSaveTask(Assembly assemblyContainingResource)
         {
-            return PerformAdd(assemblyContainingResource);
+            TaskManager.Self.Add(() =>
+            {
+                PerformAddInternal(assemblyContainingResource);
+
+            },
+            "Adding and saving files...");
         }
 
-        public bool PerformAdd(Assembly assemblyContainingResource, bool saveCsproj = true)
+        private bool PerformAddInternal(Assembly assemblyContainingResource)
         { 
             bool succeeded = true;
             bool preserveCase = FileManager.PreserveCase;
@@ -151,7 +157,7 @@ namespace FlatRedBall.Glue.VSHelpers
 
             FileManager.PreserveCase = preserveCase;
 
-            if (succeeded && saveCsproj && wasAnythingAdded)
+            if (succeeded && wasAnythingAdded)
             {
                 GlueCommands.Self.TryMultipleTimes(() => GlueCommands.Self.ProjectCommands.SaveProjects());
             }

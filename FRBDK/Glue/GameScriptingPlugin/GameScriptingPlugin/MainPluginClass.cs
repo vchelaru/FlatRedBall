@@ -114,13 +114,13 @@ namespace GameScriptingPlugin
         void HandleAddGameScript(object sender, EventArgs args)
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
-            mCoreItemAdder.PerformAddAndSave(assembly);
+            mCoreItemAdder.PerformAddAndSaveTask(assembly);
         }
 
         private void HandleAddGameScriptDebugging(object sender, EventArgs e)
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
-            mDebuggingItemAdder.PerformAddAndSave(assembly);
+            mDebuggingItemAdder.PerformAddAndSaveTask(assembly);
         }
     }
 }

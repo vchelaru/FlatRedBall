@@ -106,13 +106,7 @@ namespace GumPlugin.Managers
             {
                 mStateInterpolationItemAdder.AddFileBehavior = AddFileBehavior.IfOutOfDate;
 
-                TaskManager.Self.AddSync(() =>
-                {
-                    FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput("Adding interpolation files from Gum plugin");
-                    mStateInterpolationItemAdder.IsVerbose = true;
-                    mStateInterpolationItemAdder.PerformAddAndSave(assembly);
-                }
-                , "Adding interpolation files for Gum");
+                mStateInterpolationItemAdder.PerformAddAndSaveTask(assembly);
 
             }
             else if(behavior == FileAdditionBehavior.IncludeNoFiles)
@@ -142,15 +136,8 @@ namespace GumPlugin.Managers
                 // than the plugin.
                 //mCodeAdder.AddFileBehavior = AddFileBehavior.IfOutOfDate;
                 codeItemAdder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
-                TaskManager.Self.AddSync(() =>
-                {
-                    // Just in case the project was unloaded:
-                    if(GlueState.Self.CurrentGlueProject != null)
-                    {
-                        codeItemAdder.PerformAdd(assemblyContainingResources, saveCsproj:false);
-                    }
 
-                }, "Adding standard Gum files");
+                codeItemAdder.PerformAddAndSaveTask(assemblyContainingResources);
             }
             else // remove both:
             {
