@@ -156,7 +156,7 @@ namespace GumPlugin.Managers
             {
                 TaskManager.Self.AddSync(() =>
                 {
-                    codeItemAdder.PerformAdd(assemblyContainingResources);
+                    codeItemAdder.PerformRemoveAndSave(assemblyContainingResources);
 
                 }, "Removing standard Gum files");
             }
@@ -198,7 +198,7 @@ namespace GumPlugin.Managers
             codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/RecursiveVariableFinder.cs");
             codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/StandardElementsManager.cs");
             codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/StateSaveExtensionMethods.cs");
-            codeItemAdder.Add(embeddedFolder + "LibraryFiles /GumRuntime/VariableSaveExtensionMethods.cs");
+            codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/VariableSaveExtensionMethods.cs");
 
 
             codeItemAdder.AddFolder("GumPluginCore.Embedded.LibraryFiles.RenderingLibrary", assemblyContainingResources);

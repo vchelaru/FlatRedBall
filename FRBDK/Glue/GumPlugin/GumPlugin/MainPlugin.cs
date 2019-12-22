@@ -694,25 +694,29 @@ namespace GumPlugin
         private void HandleGluxLoad()
         {
             var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
-            var behavior = GetBehavior(gumRfs);
 
-            // todo: Removing a file should cause this to get called, but I don't think Gum lets us subscribe to that yet.
-            TaskManager.Self.AddSync(() =>
+            if(gumRfs != null)
             {
-                EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
+                var behavior = GetBehavior(gumRfs);
 
-                CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
+                // todo: Removing a file should cause this to get called, but I don't think Gum lets us subscribe to that yet.
+                TaskManager.Self.AddSync(() =>
+                {
+                    EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 
-                CodeGeneratorManager.Self.GenerateAllBehaviors();
+                    CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
 
-                FileReferenceTracker.Self.RemoveUnreferencedFilesFromVsProject();
+                    CodeGeneratorManager.Self.GenerateAllBehaviors();
 
-                UpdateMenuItemVisibility();
+                    FileReferenceTracker.Self.RemoveUnreferencedFilesFromVsProject();
 
-                // the UpdatecodeInProjectPresence may add new files, so save:
-                GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+                    UpdateMenuItemVisibility();
 
-            }, "Gum plugin reacting to glux load");
+                    // the UpdatecodeInProjectPresence may add new files, so save:
+                    GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+
+                }, "Gum plugin reacting to glux load");
+            }
         }
 
         private void UpdateMenuItemVisibility()
