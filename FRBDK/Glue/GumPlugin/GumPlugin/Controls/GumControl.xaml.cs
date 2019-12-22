@@ -29,9 +29,6 @@ namespace GumPlugin.Controls
     /// </summary>
     public partial class GumControl : UserControl
     {
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public GumControl()
         {
             InitializeComponent();

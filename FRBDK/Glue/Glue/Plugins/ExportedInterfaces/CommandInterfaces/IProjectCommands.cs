@@ -57,6 +57,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void RemoveFromProjects(string absoluteFileName);
         void RemoveFromProjectsTask(FilePath absoluteFileName, bool saveAfterRemoving = true);
 
+        /// <summary>
+        /// Verifies that the passed ReferencedFileSave is part of the project, and if not, adds it.
+        /// This recurisvely adds all files referenced by the argument.
+        /// </summary>
+        /// <param name="referencedFileSave"></param>
+        /// <returns>Whether anything was added</returns>
         bool UpdateFileMembershipInProject(ReferencedFileSave referencedFileSave);
 
         /// <summary>

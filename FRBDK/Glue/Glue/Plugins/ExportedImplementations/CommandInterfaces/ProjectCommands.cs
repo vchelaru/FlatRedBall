@@ -91,7 +91,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
         /// <summary>
-        /// Adds the argument fileRelativeToProject to the argument project if it's not already part of the project.
+        /// Adds the argument fileRelativeToProject to the argument project if it's not already part of the project. This is a recursive
+        /// call so it will also add all referenced files to the project.
         /// </summary>
         /// <param name="project"></param>
         /// <param name="fileName"></param>

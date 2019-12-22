@@ -645,9 +645,6 @@ namespace GumPlugin
             {
                 var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
 
-
-
-
                 var behavior = GetBehavior(gumRfs);
 
                 EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
@@ -655,12 +652,28 @@ namespace GumPlugin
                 // show the tab for the new file:
                 this.FocusTab();
 
+                TaskManager.Self.Add(
+                    () =>
+                    {
+                        // When we first add the RFS to Glue, the RFS tries to refresh its file cache.
+                        // But since the .glux hasn't yet been assigned as the currently-loaded project, 
+                        // the Gum plugin doesn't track its references and returns an empty list. That empty
+                        // list return is then cached, and future calls will always treat the .gumx as having 
+                        // no referenced files. Now that we've assigned the custom project, clear the cache so
+                        // it can properly be set up.
+                        GlueCommands.Self.FileCommands.ClearFileCache(
+                            GlueCommands.Self.GetAbsoluteFileName(gumRfs));
+                        GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(gumRfs);
+
+                    },
+                    "Adding Gum referenced files to project");
+
+                GlueCommands.Self.GluxCommands.SaveGluxTask();
+
                 GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
                     "Would you like to mark the Gum plugin as a required plugin for this project? " +
                     "This can help others who open this project",
                     yesAction:HandleMakePluginRequiredYes);
-
-                GlueCommands.Self.GluxCommands.SaveGluxTask();
             }
 
 
