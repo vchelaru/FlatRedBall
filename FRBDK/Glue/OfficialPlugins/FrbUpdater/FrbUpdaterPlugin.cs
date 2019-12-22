@@ -36,11 +36,18 @@ namespace OfficialPlugins.FrbUpdater
 
             if (settings.AutoUpdate && (settings.SelectedSource == "Daily Build" || settings.SelectedSource == "Current"))
             {
-                var window = new UpdateWindow(this);
-                GlueCommands.DialogCommands.SetFormOwner(window);
-                if (window.Owner == null)
-                    window.TopMost = true;
-                window.Show();
+                try
+                {
+                    var window = new UpdateWindow(this);
+                    GlueCommands.DialogCommands.SetFormOwner(window);
+                    if (window.Owner == null)
+                        window.TopMost = true;
+                    window.Show();
+                }
+                catch (Exception e)
+                {
+                    GlueCommands.PrintError("Error starting updater plugin:\n" + e.ToString());
+                }
             }
         }
 
