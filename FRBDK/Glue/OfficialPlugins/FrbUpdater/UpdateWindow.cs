@@ -7,6 +7,7 @@ using System.Threading;
 using System.Windows.Forms;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace OfficialPlugins.FrbUpdater
 {
@@ -120,7 +121,15 @@ namespace OfficialPlugins.FrbUpdater
                                     }
                                 };
 
-            action.BeginInvoke(null, null);
+            try
+            {
+                action.BeginInvoke(null, null);
+            }
+            catch(Exception exc)
+            {
+                GlueCommands.Self.PrintError("Error updating:\n" + exc.ToString());
+
+            }
         }
 
         private bool IsMonthValid(DateTime date)
