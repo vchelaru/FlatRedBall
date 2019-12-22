@@ -161,19 +161,20 @@ namespace FlatRedBall.Glue.VSHelpers
 
         public void PerformRemoveAndSave(Assembly assemblyContainingResource)
         {
+            bool removed = false;
             foreach (string resourceName in mFilesToAdd)
             {
                 string destinationDirectory, destination;
                 GetDestination(resourceName, out destinationDirectory, out destination);
-
                 if(ProjectManager.ProjectBase?.IsFilePartOfProject(destination, Projects.BuildItemMembershipType.Any) == true)
                 {
                     ProjectManager.ProjectBase.RemoveItem(destination);
                     GlueCommands.Self.PrintOutput($"Removing {destination} from project");
+                    removed = true;
                 }
             }
 
-            if(GlueState.Self.CurrentMainProject != null)
+            if(GlueState.Self.CurrentMainProject != null && removed)
             {
                 ProjectManager.SaveProjects();
             }

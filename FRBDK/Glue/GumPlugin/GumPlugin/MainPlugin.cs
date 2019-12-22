@@ -646,6 +646,8 @@ namespace GumPlugin
                 var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
 
 
+
+
                 var behavior = GetBehavior(gumRfs);
 
                 EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
@@ -658,7 +660,7 @@ namespace GumPlugin
                     "This can help others who open this project",
                     yesAction:HandleMakePluginRequiredYes);
 
-                //GlueCommands.Self.GluxCommands.SaveGluxTask();
+                GlueCommands.Self.GluxCommands.SaveGluxTask();
             }
 
 

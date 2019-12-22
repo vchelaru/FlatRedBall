@@ -457,7 +457,7 @@ namespace FlatRedBall.Glue.Plugins
 
         protected void FocusTab()
         {
-            mTabContainer.SelectTab(PluginTab);
+            mTabContainer?.SelectTab(PluginTab);
         }
 
         public void RegisterCodeGenerator(ElementComponentCodeGenerator codeGenerator)
