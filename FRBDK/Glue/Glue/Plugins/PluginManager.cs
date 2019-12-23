@@ -167,13 +167,13 @@ namespace FlatRedBall.Glue.Plugins
             // ... and we should do the same thing with ToolsUtilities
             var throwaway = ToolsUtilities.FileManager.GetExtension("something.png");
             // ... and XNA+winforms
-            var anotherThrowaway = typeof(XnaAndWinforms.GraphicsDeviceControl);
+            //var anotherThrowaway = typeof(XnaAndWinforms.GraphicsDeviceControl);
             // .. specialized xna controls:
 
             var throwaway4 = typeof(InputLibrary.Keyboard);
             var throwaway5 = typeof(RenderingLibrary.Camera);
             var throwaway6 = typeof(ToolsUtilities.FileManager);
-            var throwaway7 = typeof(XnaAndWinforms.GraphicsDeviceControl);
+            //var throwaway7 = typeof(XnaAndWinforms.GraphicsDeviceControl);
         }
 
         protected override void StartAllPlugins(List<string> pluginsToIgnore = null)
