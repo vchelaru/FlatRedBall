@@ -221,7 +221,6 @@ namespace OfficialPlugins.StateDataPlugin.Controls
 
         private void HandleCellEdit(object sender, DataGridPreparingCellForEditEventArgs e)
         {
-            int m = 3;
         }
 
         private void AddColumnForVariableAtIndex(int i, CustomVariable variable)
@@ -333,7 +332,6 @@ namespace OfficialPlugins.StateDataPlugin.Controls
 
         private void DataGridInstance_KeyDown(object sender, KeyEventArgs e)
         {
-            int m = 3;
         }
 
         private void DataGridInstance_PreviewKeyDown(object sender, KeyEventArgs e)
