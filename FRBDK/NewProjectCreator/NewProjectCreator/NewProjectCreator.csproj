@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NewProjectCreator</RootNamespace>
     <AssemblyName>NewProjectCreator</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>FRB_NewProjectCreator.ico</ApplicationIcon>
     <FileUpgradeFlags>
@@ -217,9 +217,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
-      <Project>{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}</Project>
-      <Name>FlatRedBallXna4</Name>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj">
+      <Project>{26dd17aa-55ae-46ab-9394-a2319728869a}</Project>
+      <Name>FlatRedBallStandard</Name>
     </ProjectReference>
     <ProjectReference Include="..\NewProjectCreator.Logic\NewProjectCreator.Logic.csproj">
       <Project>{60217569-9c37-4074-ae6c-de3b5a3f0e5a}</Project>
