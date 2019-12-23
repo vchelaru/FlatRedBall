@@ -17,8 +17,6 @@ namespace PluginTestbed.MoveToLayerPlugin
     {
         List<ElementComponentCodeGenerator> mGeneratorList = new List<ElementComponentCodeGenerator>();
 
-        bool mIsEnabled = true;
-
         [Import("GlueCommands")]
         public IGlueCommands GlueCommands
         {
@@ -47,8 +45,6 @@ namespace PluginTestbed.MoveToLayerPlugin
         
         public override void StartUp()
         {
-            mIsEnabled = true;
-
             mGeneratorList.Add(new MoveToLayerComponentGenerator());
 
             foreach(var generator in mGeneratorList)
@@ -59,9 +55,6 @@ namespace PluginTestbed.MoveToLayerPlugin
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
-            mIsEnabled = false;
-
-
             foreach (var generator in mGeneratorList)
             {
                 if (CodeWriter.CodeGenerators.Contains(generator))

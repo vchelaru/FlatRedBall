@@ -48,7 +48,6 @@
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj" />
     <ProjectReference Include="..\..\GlueView\GlueView\InteractiveInterface\InteractiveInterface.csproj" />
-    <ProjectReference Include="..\..\GlueView\GlueView\SelectionInterface\SelectionInterface.csproj" />
     <ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj" />
     <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
     <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
