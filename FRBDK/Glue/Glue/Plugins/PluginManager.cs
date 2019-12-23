@@ -169,8 +169,6 @@ namespace FlatRedBall.Glue.Plugins
             // ... and XNA+winforms
             var anotherThrowaway = typeof(XnaAndWinforms.GraphicsDeviceControl);
             // .. specialized xna controls:
-            var throwaway2 = typeof(FlatRedBall.SpecializedXnaControls.TimeManager);
-            var throwaway3 = typeof(FlatRedBall.SpecializedXnaControls.Input.CameraPanningLogic);
 
             var throwaway4 = typeof(InputLibrary.Keyboard);
             var throwaway5 = typeof(RenderingLibrary.Camera);

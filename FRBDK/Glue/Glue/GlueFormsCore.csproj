@@ -115,7 +115,6 @@
     <ProjectReference Include="..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj" />
     <ProjectReference Include="..\..\..\..\Gum\XnaAndWinforms\XnaAndWinforms.csproj" />
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
-    <ProjectReference Include="..\..\FlatRedBall.SpecializedXnaControls\FlatRedBall.SpecializedXnaControls.csproj" />
     <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj" />
     <ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj" />
     <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
