@@ -167,9 +167,9 @@ namespace OfficialPlugins.Compiler
                         int numberOfTimesToTry = 30;
                         for (int i = 0; i < numberOfTimesToTry; i++)
                         {
-                            IntPtr id = runningGameProcess.MainWindowHandle;
+                            var id = runningGameProcess?.MainWindowHandle;
 
-                            if (id == IntPtr.Zero)
+                            if (id == null ||  id == IntPtr.Zero)
                             {
                                 await Task.Delay(250);
                                 continue;
@@ -177,7 +177,7 @@ namespace OfficialPlugins.Compiler
                             else
                             {
                                 var rect = lastWindowRectangle.Value;
-                                MoveWindow(id, rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top, true);
+                                MoveWindow(id.Value, rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top, true);
                                 lastWindowRectangle = null;
                                 break;
                             }
