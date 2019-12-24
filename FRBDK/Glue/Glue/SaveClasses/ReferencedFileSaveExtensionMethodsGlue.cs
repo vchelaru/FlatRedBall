@@ -79,19 +79,21 @@ namespace FlatRedBall.Glue.SaveClasses
             }
 
 
-            foreach (SourceReferencingFile srf in instance.SourceFileCache)
+            if(instance.SourceFileCache != null)
             {
-
-
-                string absoluteSourceName = ProjectManager.MakeAbsolute(srf.SourceFile, true);
-                string absoluteDestinationName = ProjectManager.MakeAbsolute(srf.DestinationFile, true);
-
-                string resultOfBuild = instance.PerformBuildOnFile(absoluteSourceName, absoluteDestinationName, runAsync);
-
-                if (!string.IsNullOrEmpty(resultOfBuild))
+                foreach (SourceReferencingFile srf in instance.SourceFileCache)
                 {
-                    error += resultOfBuild;
+                    string absoluteSourceName = ProjectManager.MakeAbsolute(srf.SourceFile, true);
+                    string absoluteDestinationName = ProjectManager.MakeAbsolute(srf.DestinationFile, true);
+
+                    string resultOfBuild = instance.PerformBuildOnFile(absoluteSourceName, absoluteDestinationName, runAsync);
+
+                    if (!string.IsNullOrEmpty(resultOfBuild))
+                    {
+                        error += resultOfBuild;
+                    }
                 }
+
             }
 
             return error;
