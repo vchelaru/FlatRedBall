@@ -37,8 +37,8 @@ namespace TileGraphicsPlugin.ViewModels
         [DefaultValue(CollisionCreationOptions.Empty)]
         public CollisionCreationOptions CollisionCreationOptions
         {
-            get => Get<CollisionCreationOptions>(); 
-            set => SetAndPersist(value); 
+            get => (CollisionCreationOptions)Get<int>(); 
+            set => SetAndPersist((int)value); 
         }
 
         [DependsOn(nameof(CollisionCreationOptions))]
