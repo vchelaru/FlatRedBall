@@ -628,8 +628,7 @@ namespace Glue
 
         private void newFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-            RightClickHelper.ShowAddNewFileWindow();
+            GlueCommands.Self.DialogCommands.ShowAddNewFileDialog();
         }
 
 

@@ -574,7 +574,10 @@ namespace FlatRedBall.Glue.Plugins
                 // Execute the new style plugins
                 if (!created)
                 {
-                    var plugins = pluginManager.ImportedPlugins.Where(x => x.CreateNewFileHandler != null);
+                    var plugins = pluginManager
+                        .ImportedPlugins
+                        .Where(x => x.CreateNewFileHandler != null)
+                        .ToArray();
                     foreach (var plugin in plugins)
                     {
                         var container = pluginManager.mPluginContainers[plugin];

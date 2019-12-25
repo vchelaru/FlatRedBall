@@ -8,6 +8,8 @@ using FlatRedBall.IO;
 using System.ComponentModel.Composition;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Parsing;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
 {
@@ -207,6 +209,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
                 object saveInstance = Activator.CreateInstance(assetTypeInfo.SaveType);
                 FileManager.XmlSerialize(assetTypeInfo.SaveType, saveInstance, createdFile);
             }
+            else if(assetTypeInfo.QualifiedSaveTypeName != null)
+            {
+                var type = TypeManager.GetTypeFromString(assetTypeInfo.QualifiedSaveTypeName);
+
+                if(type != null)
+                {
+                    object saveInstance = Activator.CreateInstance(type);
+                    FileManager.XmlSerialize(assetTypeInfo.SaveType, saveInstance, createdFile);
+                }
+            }
             // Unknown type, so save an empty file.
             else
             {
@@ -257,7 +269,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
                 if (ObjectFinder.Self.GlueProject != null)
                 {
                     // I think we should always use the content directory whether we have a content project or not:
-                    createdFile = ProjectManager.ContentDirectory + directory + name + "." + assetTypeInfo.Extension;
+                    createdFile = GlueState.Self.ContentDirectory + directory + name + "." + assetTypeInfo.Extension;
                 }
 
             }

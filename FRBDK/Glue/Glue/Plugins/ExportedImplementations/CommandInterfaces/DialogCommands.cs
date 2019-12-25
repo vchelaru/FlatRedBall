@@ -113,7 +113,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     PluginManager.ReactToNewFile(rfs);
 
-                    GluxCommands.Self.SaveGlux();
+                    GluxCommands.Self.SaveGluxTask();
                 }
 
             }

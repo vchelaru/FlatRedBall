@@ -2100,70 +2100,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
             }
         }
-
-        internal static void ShowAddNewFileWindow()
-        {
-            // Search terms:  add file, addfile, add new file, addnewfile
-            if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
-            {
-                ReferencedFileSave rfs = GlueCommands.Self.DialogCommands.ShowAddNewFileDialog();
-
-                // if rfs is null, that means the user hit cancel
-                if (GlueState.Self.CurrentEntitySave != null && rfs != null)
-                {
-                    bool created = AskToCreateEntireFileObject(rfs);
-
-                    if (created)
-                    {
-                        GluxCommands.Self.SaveGlux();
-                    }
-                }
-            }
-        }
-
-        private static bool AskToCreateEntireFileObject(ReferencedFileSave rfs)
-        {
-            string extension = FileManager.GetExtension(rfs.Name);
-            bool shouldAskToMakeEntireFile = extension == "scnx" || extension == "shcx";
-            bool created = false;
-
-            if (shouldAskToMakeEntireFile)
-            {
-                string message = "Would you like to make an Object for this new file (recommended)?";
-
-                DialogResult result = MessageBox.Show(message, "Make entire object?", MessageBoxButtons.YesNo);
-
-                if (result == DialogResult.Yes)
-                {
-                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromExtension(extension);
-
-                    string runtimeTypeName = ati.RuntimeTypeName;
-
-                    NamedObjectSave nos = NamedObjectSaveExtensionMethodsGlue.AddNewNamedObjectTo(
-                        "Entire" + runtimeTypeName, MembershipInfo.ContainedInThis,
-                        GlueState.Self.CurrentElement, GlueState.Self.CurrentNamedObjectSave, false);
-
-                    IElement element = GlueState.Self.CurrentElement;
-
-                    while (element.AllNamedObjects.Any(item => item != nos && item.InstanceName == nos.InstanceName))
-                    {
-                        nos.InstanceName  = StringFunctions.IncrementNumberAtEnd(nos.InstanceName);
-                    }
-
-                    nos.SourceFile = rfs.Name;
-
-                    PluginManager.ReactToNewObject(nos);
-
-                    nos.SourceName = "Entire File (" + ati.RuntimeTypeName + ")";
-                    created = true;
-
-                    // The NOS may have had its named changed:
-                    GlueCommands.Self.RefreshCommands.RefreshUiForSelectedElement();
-                }
-            }
-            return created;
-        }
-
+        
         private static void MoveToTopClick(object sender, EventArgs e)
         {
             MoveToTop();

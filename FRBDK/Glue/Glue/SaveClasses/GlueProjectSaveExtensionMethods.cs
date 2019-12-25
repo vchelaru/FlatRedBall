@@ -165,6 +165,11 @@ namespace FlatRedBall.Glue.SaveClasses
                 string createdFile = PluginManager.CreateNewFile(resultAssetTypeInfo, option == "2D",
                     directoryRelativeToContent, fileName);
 
+                if(createdFile == null)
+                {
+                    throw new NullReferenceException(nameof(createdFile));
+                }
+
                 // let's just re-route this 
                 // to the code that adds existing
                 // files now that we have a file and
