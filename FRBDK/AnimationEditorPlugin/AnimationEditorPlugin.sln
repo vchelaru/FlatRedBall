@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimationEditorPlugin", "AnimationEditorPlugin\AnimationEditorPlugin.csproj", "{9275379B-790B-436D-89EC-D3C2D077DCBE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBall.AnimationEditorForms", "..\FlatRedBall.AnimationEditorForms\FlatRedBall.AnimationEditorForms.csproj", "{A484BDC1-C1CA-43F9-A888-AD0569E8F93D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBall.SpecializedXnaControls", "..\FlatRedBall.SpecializedXnaControls\FlatRedBall.SpecializedXnaControls.csproj", "{8C80BA7B-1CBA-4579-9382-D9DC6C365070}"
@@ -78,46 +76,6 @@ Global
 		UnitTests|x86 = UnitTests|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.AutomatedBuild|Any CPU.ActiveCfg = AutomatedBuild|Any CPU
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.AutomatedBuild|Any CPU.Build.0 = AutomatedBuild|Any CPU
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.AutomatedBuild|x86.ActiveCfg = Debug|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Debug Docs|Any CPU.ActiveCfg = Debug|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Debug Docs|x86.ActiveCfg = Debug|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Debug Docs|x86.Build.0 = Debug|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Debug|x86.ActiveCfg = Debug|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Debug|x86.Build.0 = Debug|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Debug2|Any CPU.ActiveCfg = DebugCopyScripts|Any CPU
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Debug2|Any CPU.Build.0 = DebugCopyScripts|Any CPU
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Debug2|x86.ActiveCfg = DebugCopyScripts|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Debug2|x86.Build.0 = DebugCopyScripts|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.DebugCopyScripts|Any CPU.ActiveCfg = Debug|Any CPU
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.DebugCopyScripts|Any CPU.Build.0 = Debug|Any CPU
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.DebugCopyScripts|x86.ActiveCfg = DebugCopyScripts|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.DebugCopyScripts|x86.Build.0 = DebugCopyScripts|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.DebugProfile|Any CPU.ActiveCfg = Debug|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.DebugProfile|x86.ActiveCfg = Debug|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.DebugProfile|x86.Build.0 = Debug|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Profile|Any CPU.ActiveCfg = Release|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Profile|x86.ActiveCfg = Release|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Profile|x86.Build.0 = Release|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Release|x86.ActiveCfg = Release|Any CPU
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Submission Phone|Any CPU.ActiveCfg = Release|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Submission Phone|x86.ActiveCfg = Release|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Submission Phone|x86.Build.0 = Release|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Submission|Any CPU.ActiveCfg = Release|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Submission|x86.ActiveCfg = Release|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.Submission|x86.Build.0 = Release|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.UnitTest|Any CPU.ActiveCfg = Release|Any CPU
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.UnitTest|Any CPU.Build.0 = Release|Any CPU
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.UnitTest|x86.ActiveCfg = Release|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.UnitTest|x86.Build.0 = Release|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.UnitTests|Any CPU.ActiveCfg = Release|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.UnitTests|x86.ActiveCfg = Release|x86
-		{9275379B-790B-436D-89EC-D3C2D077DCBE}.UnitTests|x86.Build.0 = Release|x86
 		{A484BDC1-C1CA-43F9-A888-AD0569E8F93D}.AutomatedBuild|Any CPU.ActiveCfg = AutomatedBuild|Any CPU
 		{A484BDC1-C1CA-43F9-A888-AD0569E8F93D}.AutomatedBuild|Any CPU.Build.0 = AutomatedBuild|Any CPU
 		{A484BDC1-C1CA-43F9-A888-AD0569E8F93D}.AutomatedBuild|x86.ActiveCfg = Debug|x86

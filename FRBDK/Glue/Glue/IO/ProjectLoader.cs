@@ -775,8 +775,9 @@ namespace FlatRedBall.Glue.IO
 
             foreach (var error in errors)
             {
-                ErrorReporter.ReportError("", error, true);
-
+                // popups suck! Just output it:
+                //ErrorReporter.ReportError("", error, true);
+                GlueCommands.Self.PrintError(error);
             }
 
         }

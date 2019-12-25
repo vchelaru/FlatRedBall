@@ -83,7 +83,12 @@ namespace DialogTreePlugin.SaveClasses
             public string[] tags { get; set; }
 
             public Position position { get; set; }
-        }
+
+            public override string ToString()
+            {
+                return $""{text}"";
+            }
+    }
 
         public class Link
         {

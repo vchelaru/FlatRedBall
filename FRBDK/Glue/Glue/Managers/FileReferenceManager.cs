@@ -98,8 +98,12 @@ namespace FlatRedBall.Glue.Managers
                 {
                     PluginManager.ReceiveError(e.ToString());
                 }
+                catch(Exception e)
+                {
+                    PluginManager.ReceiveError(e.ToString());
+                }
 
-                if(succeeded)
+                if (succeeded)
                 {
                     var response = PluginManager.GetFilesReferencedBy(absoluteName, TopLevelOrRecursive.TopLevel, topLevelOnly);
 

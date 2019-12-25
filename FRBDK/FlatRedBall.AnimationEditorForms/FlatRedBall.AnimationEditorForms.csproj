@@ -282,6 +282,10 @@
       <Project>{c39a973c-66d6-4a6c-82b5-ae0042f210f8}</Project>
       <Name>XnaAndWinforms</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj">
+      <Project>{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}</Project>
+      <Name>FlatRedBallXna4</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FlatRedBall.SpecializedXnaControls\FlatRedBall.SpecializedXnaControls.csproj">
       <Project>{8C80BA7B-1CBA-4579-9382-D9DC6C365070}</Project>
       <Name>FlatRedBall.SpecializedXnaControls</Name>

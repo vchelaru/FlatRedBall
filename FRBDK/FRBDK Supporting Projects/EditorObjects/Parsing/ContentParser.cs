@@ -320,8 +320,11 @@ namespace EditorObjects.Parsing
                     #region AnimationChain List
 
                     case "achx":
-                        AnimationChainListSave acls = AnimationChainListSave.FromFile(fileName);
+
+                        AnimationChainListSave acls = null;
+                        acls = AnimationChainListSave.FromFile(fileName);
                         newReferencedFiles = acls.GetReferencedFiles(RelativeType.Absolute);
+
                         break;
 
                     #endregion
