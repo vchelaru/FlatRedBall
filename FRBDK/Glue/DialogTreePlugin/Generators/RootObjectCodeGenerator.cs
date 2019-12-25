@@ -59,6 +59,24 @@ namespace DialogTreePlugin.SaveClasses
         public class Passage
         {
             public string text { get; set; }
+                        
+            public string StrippedText
+            {
+                get
+                {
+                    if(text.Contains(""\n[[""))
+                    {
+                        var index = text.IndexOf(""\n[["");
+
+                        return text.Substring(0, index);
+                    }
+                    else
+                    {
+                        return text;
+                    }
+                }
+            }
+
             public Link[] links { get; set; }
             public string name { get; set; }
             public string pid { get; set; }
