@@ -216,7 +216,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
                 if(type != null)
                 {
                     object saveInstance = Activator.CreateInstance(type);
-                    FileManager.XmlSerialize(assetTypeInfo.SaveType, saveInstance, createdFile);
+                    FileManager.XmlSerialize(type, saveInstance, createdFile);
                 }
             }
             // Unknown type, so save an empty file.
