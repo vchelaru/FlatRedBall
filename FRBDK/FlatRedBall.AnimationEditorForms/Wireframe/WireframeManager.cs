@@ -186,7 +186,7 @@ namespace FlatRedBall.AnimationEditorForms
                 var didChange = false;
                 if (isCtrlDown)
                 {
-                    CreateNewFrameFromMagicWand(minX, minY, minX + gridSize, minY + gridSize);
+                    CreateNewFrameFromTextureCoordinates(minX, minY, minX + gridSize, minY + gridSize);
                     didChange = true;
                 }
                 else
@@ -232,7 +232,7 @@ namespace FlatRedBall.AnimationEditorForms
 
                     if (isCtrlDown)
                     {
-                        CreateNewFrameFromMagicWand(minX, minY, maxX, maxY);
+                        CreateNewFrameFromTextureCoordinates(minX, minY, maxX, maxY);
                     }
                     else
                     {
@@ -250,7 +250,7 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
-        private void CreateNewFrameFromMagicWand(int minX, int minY, int maxX, int maxY)
+        private void CreateNewFrameFromTextureCoordinates(int minX, int minY, int maxX, int maxY)
         {
             AnimationChainSave chain = SelectedState.Self.SelectedChain;
 
@@ -355,9 +355,8 @@ namespace FlatRedBall.AnimationEditorForms
             var tileInformation = SelectedState.Self.SelectedTileMapInformation;
             if (PropertyGridManager.Self.UnitType == UnitType.SpriteSheet &&
                 mControl.CurrentTexture != null &&
-                tileInformation != null &&
-                tileInformation.TileWidth != 0 &&
-                tileInformation.TileHeight != 0 &&
+                tileInformation?.TileWidth != 0 &&
+                tileInformation?.TileHeight != 0 &&
                 frame != null
                 )
             {
@@ -367,12 +366,35 @@ namespace FlatRedBall.AnimationEditorForms
                 if (worldX > 0 && worldX < mControl.CurrentTexture.Width &&
                     worldY > 0 && worldY < mControl.CurrentTexture.Height)
                 {
+
+                    bool isCtrlDown =
+                        keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl) ||
+                        keyboard.KeyDown(Microsoft.Xna.Framework.Input.Keys.RightControl);
+
+
                     int xIndex = (int)(worldX / tileInformation.TileWidth);
                     int yIndex = (int)(worldY / tileInformation.TileHeight);
 
-                    PropertyGridManager.Self.SetTileX(frame, xIndex);
-                    PropertyGridManager.Self.SetTileY(frame, yIndex);
+                    if(isCtrlDown)
+                    {
+                        var textureWidth = mControl.CurrentTexture.Width;
+                        var textureHeight = mControl.CurrentTexture.Height;
 
+                        int pixelPositionX = xIndex * tileInformation.TileWidth;
+                        var leftCoordinate = pixelPositionX;
+                        var rightCoordinate = leftCoordinate + tileInformation.TileWidth;
+
+                        int pixelPositionY = yIndex * tileInformation.TileHeight;
+                        var topCoordinate = pixelPositionY;
+                        var bottomCoordinate = topCoordinate + tileInformation.TileHeight;
+
+                        CreateNewFrameFromTextureCoordinates(leftCoordinate, topCoordinate, rightCoordinate, bottomCoordinate);
+                    }
+                    else
+                    {
+                        PropertyGridManager.Self.SetTileX(frame, xIndex);
+                        PropertyGridManager.Self.SetTileY(frame, yIndex);
+                    }
 
                     this.RefreshAll();
                 }
