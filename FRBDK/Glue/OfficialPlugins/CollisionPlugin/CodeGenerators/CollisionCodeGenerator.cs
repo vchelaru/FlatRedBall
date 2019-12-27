@@ -51,7 +51,7 @@ namespace OfficialPlugins.CollisionPlugin
 
             ///////////End Early Out///////////////////
 
-            var collisionType = namedObject.Properties.GetValue<CollisionType>(
+            var collisionType = (CollisionType)namedObject.Properties.GetValue<int>(
                 nameof(CollisionRelationshipViewModel.CollisionType));
 
             var firstMass = namedObject.Properties.GetValue<float>(

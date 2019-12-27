@@ -62,7 +62,7 @@ namespace FlatRedBall.IO
 
     public static partial class FileManager
     {
-#region Fields
+        #region Fields
 
         static bool mHasUserFolderBeenInitialized = false;
 
@@ -98,7 +98,7 @@ namespace FlatRedBall.IO
 
 #endregion
 
-#region Properties
+        #region Properties
 
         public static string CurrentDirectory
         {
@@ -295,7 +295,7 @@ namespace FlatRedBall.IO
 #endif
 #endregion
 
-#region Methods
+        #region Methods
 
 #region Constructor
 

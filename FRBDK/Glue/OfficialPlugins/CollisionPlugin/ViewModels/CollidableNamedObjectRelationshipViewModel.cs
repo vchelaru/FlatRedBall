@@ -12,15 +12,15 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
     {
         public string CollisionRelationshipsTitle
         {
-            get { return Get<string>(); }
-            set { Set(value); }
+            get => Get<string>();
+            set => Set(value); 
         }
 
 
         public ObservableCollection<NamedObjectPairRelationshipViewModel> NamedObjectPairs
         {
-            get { return Get<ObservableCollection<NamedObjectPairRelationshipViewModel>>(); }
-            set { Set(value); }
+            get => Get<ObservableCollection<NamedObjectPairRelationshipViewModel>>(); 
+            set => Set(value); 
         }
 
         public CollidableNamedObjectRelationshipViewModel()

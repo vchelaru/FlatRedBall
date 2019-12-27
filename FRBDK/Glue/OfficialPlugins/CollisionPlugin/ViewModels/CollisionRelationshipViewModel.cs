@@ -98,8 +98,8 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [SyncedProperty]
         public CollisionType CollisionType
         {
-            get { return Get<CollisionType>(); }
-            set { SetAndPersist(value); }
+            get => (CollisionType)Get<int>();
+            set => SetAndPersist((int)value);
         }
 
         [DependsOn(nameof(CollisionType))]
