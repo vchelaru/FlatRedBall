@@ -267,20 +267,20 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static AssetTypeInfo GetAssetTypeInfo(this ReferencedFileSave instance)
+        public static AssetTypeInfo GetAssetTypeInfo(this ReferencedFileSave referencedFileSave)
         {
-            string extension = FileManager.GetExtension(instance.Name);
+            string extension = FileManager.GetExtension(referencedFileSave.Name);
 
-            if (!string.IsNullOrEmpty(instance.RuntimeType))
+            if (!string.IsNullOrEmpty(referencedFileSave.RuntimeType))
             {
                 // try finding one based on extension and type. If that doesn't exist, then just look at type
 
                 var found = AvailableAssetTypes.Self.GetAssetTypeFromExtensionAndQualifiedRuntime(
-                    extension, instance.RuntimeType);
+                    extension, referencedFileSave.RuntimeType);
 
                 if(found == null)
                 {
-                    found = AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => item.QualifiedRuntimeTypeName.QualifiedType == instance.RuntimeType);
+                    found = AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => item.QualifiedRuntimeTypeName.QualifiedType == referencedFileSave.RuntimeType);
                 }
 
                 return found;

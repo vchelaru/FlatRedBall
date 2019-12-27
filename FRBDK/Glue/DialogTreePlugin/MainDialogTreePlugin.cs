@@ -13,12 +13,16 @@ using System.Linq;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.CodeGeneration;
+using Newtonsoft.Json;
+using static DialogTreePlugin.SaveClasses.DialogTreeRaw;
 
 namespace DialogTreePlugin
 {
     [System.ComponentModel.Composition.Export(typeof(PluginBase))]
     public class MainDialogTreePlugin : PluginBase
     {
+        #region Fields/Properties
+
         MainControl mainControl;
 
         public override string FriendlyName => "Dialog Tree Plugin";
@@ -38,7 +42,9 @@ namespace DialogTreePlugin
         // - Preserving the story name in the string ids to help design find troublesome strings.
         //V3.1.0 Fixed a bug where we were keeping track of the same tag multiple times.
         //V3.2.0 Fixed a bug where we were deleting LocalizationDB entries which were not added by the plugin.
-        public override Version Version => new Version(3, 2, 0);
+        // 4.0.0
+        // - New dialog tree plugin that doesn't use source and reduced files.
+        public override Version Version => new Version(4, 0, 0);
 
         const string rawFileType = "json";
         const string convertedFileType = "glsn";
@@ -112,6 +118,8 @@ namespace DialogTreePlugin
             }
         }
 
+        #endregion
+
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
             var toReturn = true;
@@ -121,13 +129,18 @@ namespace DialogTreePlugin
 
         public override void StartUp()
         {
+            AddEvents();
+
+            JsonToGlsnConverter.Self.currentPluginVersion = Version.ToString();
+        }
+
+        private void AddEvents()
+        {
             this.ReactToLoadedGluxEarly += HandleEarlyGluxLoad;
             this.ReactToLoadedGlux += GetJsonRefs;
             this.ReactToItemSelectHandler += HandleItemSelected;
             this.ReactToFileChangeHandler += HandleFileChanged;
             this.ReactToNewFileHandler += HandleNewFile;
-
-            JsonToGlsnConverter.Self.currentPluginVersion = Version.ToString();
         }
 
         private void HandleEarlyGluxLoad()
@@ -192,6 +205,32 @@ namespace DialogTreePlugin
             //{ 
             //    JsonToGlsnConverter.Self.HandleJsonFile(newFile);
             //}
+            // if the file is a JSON file and properly deserializes to a root object, then set its asset type info:
+            var shouldAssignType = false;
+            if(newFile.Name.EndsWith(".json"))
+            {
+                try
+                {
+                    var fullFile = GlueCommands.Self.GetAbsoluteFileName(newFile);
+                    var content = System.IO.File.ReadAllText(fullFile);
+                    if(!string.IsNullOrEmpty(content))
+                    {
+                        var parsed = JsonConvert.DeserializeObject<RootObject>(content);
+
+                        shouldAssignType = parsed?.creator != null;
+                    }
+
+                }
+                catch
+                {
+
+                }
+            }
+
+            if(shouldAssignType)
+            {
+                newFile.RuntimeType = JsonAti.QualifiedRuntimeTypeName.QualifiedType;
+            }
         }
 
         private void HandleFileChanged(string fileName)
