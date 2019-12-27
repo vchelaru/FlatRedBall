@@ -1,8 +1,10 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
 using OfficialPlugins.Compiler.ViewModels;
+using OfficialPluginsCore.Compiler;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -117,12 +119,14 @@ namespace OfficialPlugins.Compiler
             return found;
         }
 
-        internal async Task Run(bool preventFocus, string runArguments = null)
+        internal async Task<GeneralResponse> Run(bool preventFocus, string runArguments = null)
         {
             // disable the timer so it doesn't grab the process while we're looking for it 
             // (be sure to re-enable it later):
             timer.Enabled = false;
             ViewModel.IsWaitingForGameToStart = true;
+
+            GeneralResponse toReturn = GeneralResponse.FailedResponse;
 
             foundAlreadyRunningProcess = false;
             var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
@@ -161,7 +165,7 @@ namespace OfficialPlugins.Compiler
 
                     runningGameProcess.EnableRaisingEvents = true;
                     runningGameProcess.Exited += HandleProcessExit;
-
+                    toReturn = GeneralResponse.SuccessfulResponse;
                     if (lastWindowRectangle != null)
                     {
                         int numberOfTimesToTry = 30;
@@ -192,20 +196,30 @@ namespace OfficialPlugins.Compiler
 
                     });
                 }
+                else
+                {
+                    toReturn.Succeeded = false;
+                    toReturn.Message = $"Found the game .exe, but couldn't get it to launch. PreventFocus: {preventFocus}";
+                }
+            }
+            else
+            {
+                toReturn.Succeeded = false;
+                toReturn.Message = $"Could not find game .exe";
             }
             ViewModel.IsWaitingForGameToStart = false;
 
             timer.Enabled = true;
+
+            return toReturn;
              
         }
 
         private static void StartProcess(bool preventFocus, string runArguments, string exeLocation)
         {
-            // from here:
-            // https://stackoverflow.com/questions/12586957/how-do-i-open-a-process-so-that-it-doesnt-have-focus
             if(preventFocus)
             {
-                RestartGamePreventFocus(runArguments, exeLocation);
+                Win32ProcessStarter.StartProcessPreventFocus(runArguments, exeLocation);
             }
             else
             {
@@ -216,99 +230,6 @@ namespace OfficialPlugins.Compiler
                 System.Diagnostics.Process.Start(startInfo);
             }
         }
-
-        #region Restart Game, Prevent Focus
-
-        [StructLayout(LayoutKind.Sequential)]
-        struct STARTUPINFO
-        {
-            public Int32 cb;
-            public string lpReserved;
-            public string lpDesktop;
-            public string lpTitle;
-            public Int32 dwX;
-            public Int32 dwY;
-            public Int32 dwXSize;
-            public Int32 dwYSize;
-            public Int32 dwXCountChars;
-            public Int32 dwYCountChars;
-            public Int32 dwFillAttribute;
-            public Int32 dwFlags;
-            public Int16 wShowWindow;
-            public Int16 cbReserved2;
-            public IntPtr lpReserved2;
-            public IntPtr hStdInput;
-            public IntPtr hStdOutput;
-            public IntPtr hStdError;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct PROCESS_INFORMATION
-        {
-            public IntPtr hProcess;
-            public IntPtr hThread;
-            public int dwProcessId;
-            public int dwThreadId;
-        }
-
-        [DllImport("kernel32.dll")]
-        static extern bool CreateProcess(
-            string lpApplicationName,
-            string lpCommandLine,
-            IntPtr lpProcessAttributes,
-            IntPtr lpThreadAttributes,
-            bool bInheritHandles,
-            uint dwCreationFlags,
-            IntPtr lpEnvironment,
-            string lpCurrentDirectory,
-            [In] ref STARTUPINFO lpStartupInfo,
-            out PROCESS_INFORMATION lpProcessInformation
-        );
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool CloseHandle(IntPtr hObject);
-
-        const int STARTF_USESHOWWINDOW = 1;
-        const int SW_SHOWNOACTIVATE = 4;
-        const int SW_SHOWMINNOACTIVE = 7;
-
-
-        private static void StartProcessNoActivate(string cmdLine)
-        {
-            STARTUPINFO si = new STARTUPINFO();
-            si.cb = Marshal.SizeOf(si);
-
-
-            // Set si.wShowWindow to SW_SHOWNOACTIVATE to show the window normally but without stealing focus
-            // and SW_SHOWMINNOACTIVE to start the app minimised, again without stealing focus.
-            si.dwFlags = STARTF_USESHOWWINDOW;
-            si.wShowWindow = SW_SHOWNOACTIVATE;
-
-            PROCESS_INFORMATION pi = new PROCESS_INFORMATION();
-
-            CreateProcess(null, cmdLine, IntPtr.Zero, IntPtr.Zero, true,
-                0, IntPtr.Zero, null, ref si, out pi);
-
-            CloseHandle(pi.hProcess);
-            CloseHandle(pi.hThread);
-        }
-
-
-
-        private static void RestartGamePreventFocus(string runArguments, string exeLocation)
-        {
-            if(!string.IsNullOrWhiteSpace(runArguments))
-            {
-                StartProcessNoActivate(exeLocation + " " + runArguments);
-            }
-            else
-            {
-                StartProcessNoActivate(exeLocation);
-            }
-        }
-
-        #endregion
 
         private void HandleProcessExit(object sender, EventArgs e)
         {

@@ -150,7 +150,7 @@ namespace OfficialPlugins.Compiler.Managers
         }
 
 
-        private void StopAndRestartImmediately(int portNumber)
+        private async void StopAndRestartImmediately(int portNumber)
         {
             bool DoesTaskManagerHaveAnotherRestartTask()
             {
@@ -193,15 +193,19 @@ namespace OfficialPlugins.Compiler.Managers
                 bool compileSucceeded = false;
                 if(!DoesTaskManagerHaveAnotherRestartTask())
                 {
-                    compileSucceeded = compiler.Compile(printOutput, printError).Result;
+                    compileSucceeded = await compiler.Compile(printOutput, printError);
                 }
 
                 if (compileSucceeded)
                 {
                     if(!DoesTaskManagerHaveAnotherRestartTask())
                     {
-                        runner.Run(preventFocus: true, runArguments: screenToRestartOn).Wait();
-                        failedToRebuildAndRestart = false;
+                        var response = await runner.Run(preventFocus: true, runArguments: screenToRestartOn);
+                        if(response.Succeeded == false)
+                        {
+                            printError(response.Message);
+                        }
+                        failedToRebuildAndRestart = response.Succeeded == false;
                     }
                 }
                 else
