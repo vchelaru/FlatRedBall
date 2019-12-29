@@ -25,6 +25,7 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             int failures = 0;
             // This gives Glue 2 chances to save....but not like weekend sales at RC Willey
+            // whoa actually 3!
             const int maxFailures = 3;
 
             bool succeeded = false;

@@ -193,6 +193,11 @@ namespace GumPlugin.CodeGeneration
         {
             base.Children.Add(newChild);
         }
+
+        public void RemoveChild(T childToRemove)
+        {
+            base.Children.Remove(childToRemove);
+        }
     }
 ");
         }

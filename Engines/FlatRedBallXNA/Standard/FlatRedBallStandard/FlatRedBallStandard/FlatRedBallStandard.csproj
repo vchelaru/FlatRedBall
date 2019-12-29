@@ -2,13 +2,22 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;MONOGAME; NO_CODE_EMIT; STANDARD; FRB_XNA; XNA4; DESKTOP_GL</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <DefineConstants>TRACE;MONOGAME; NO_CODE_EMIT; STANDARD; FRB_XNA; XNA4; DESKTOP_GL; WINDOWS</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;MONOGAME; NO_CODE_EMIT; STANDARD; FRB_XNA; XNA4; DESKTOP_GL</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <DefineConstants>TRACE;MONOGAME; NO_CODE_EMIT; STANDARD; FRB_XNA; XNA4; DESKTOP_GL</DefineConstants>
   </PropertyGroup>
 

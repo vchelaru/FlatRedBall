@@ -590,7 +590,7 @@ namespace FlatRedBall
             // use one of them.
 
 
-#if WINDOWS
+#if WINDOWS && !STANDARD
             mOwner =
                 System.Windows.Forms.Form.FromHandle(mWindowHandle);
 
@@ -601,7 +601,7 @@ namespace FlatRedBall
 
 #endif
 
-#if WINDOWS
+#if WINDOWS && !STANDARD
 
             mOwner.Resize += new EventHandler(Window_ClientSizeChanged);
 #else
@@ -818,7 +818,7 @@ namespace FlatRedBall
         public static void InitializeShaders()
         {
 
-#if WINDOWS
+#if WINDOWS && !STANDARD
             if(mResourceContentManager != null)
             {
                 mResourceContentManager.Dispose();
