@@ -10,6 +10,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.IO;
 using Gum.Managers;
+using Polenter.Serialization;
 
 namespace GumPlugin.Managers
 {
@@ -138,6 +139,8 @@ namespace GumPlugin.Managers
                 directory + gumStandardElement.Name + "." + GumProjectSave.StandardExtension;
 
             gumStandardElement.Save(standardsFileName);
+            //var serializer = new SharpSerializer();
+            //serializer.Serialize(gumStandardElement, standardsFileName);
 
         }
 

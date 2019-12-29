@@ -203,7 +203,9 @@ namespace GumPlugin.DataGeneration
 
                 if(added)
                 {
+                    // This won't work in Core because it uses enum values
                     AppCommands.Self.SaveStandardElement(textStandard);
+
                 }
             }
         }
