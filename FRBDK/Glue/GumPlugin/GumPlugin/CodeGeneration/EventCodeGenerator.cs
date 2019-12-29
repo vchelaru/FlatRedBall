@@ -74,15 +74,21 @@ namespace GumPlugin.CodeGeneration
                 {
                     foreach (var child in elementSave.Instances)
                     {
-                        var hasEvents = (bool)defaultState.GetValueRecursive(child.Name + ".HasEvents");
-
-                        if (hasEvents)
+                        var hasEventsAsObject =
+                            defaultState.GetValueRecursive(child.Name + ".HasEvents");
+                        
+                        if(hasEventsAsObject is bool hasEvents)
                         {
-                            EventSave eventSave = new EventSave();
-                            eventSave.Name = $"{child.MemberNameInCode()}.Click";
-                            eventSave.ExposedAsName = $"{child.MemberNameInCode()}Click";
 
-                            exposedChildrenEvents.Add(eventSave);
+                            if (hasEvents)
+                            {
+                                EventSave eventSave = new EventSave();
+                                eventSave.Name = $"{child.MemberNameInCode()}.Click";
+                                eventSave.ExposedAsName = $"{child.MemberNameInCode()}Click";
+
+                                exposedChildrenEvents.Add(eventSave);
+                            }
+
                         }
                     }
                 }
