@@ -65,7 +65,14 @@ namespace GumPlugin.DataGeneration
             {
                 var resourceName = "GumPluginCore/Embedded/EmbeddedObjectGumProject/" + file;
 
-                FileManager.SaveEmbeddedResource(assembly, resourceName.Replace("/", "."), contentDestination + file);
+                try
+                {
+                    FileManager.SaveEmbeddedResource(assembly, resourceName.Replace("/", "."), contentDestination + file);
+                }
+                catch(Exception e)
+                {
+                    GlueCommands.Self.PrintOutput($"Skipping adding file {file}:\n{e.ToString()}");
+                }
             }
 
             // Now that everything is on disk, add the files to the Gum project if necessary
@@ -203,9 +210,16 @@ namespace GumPlugin.DataGeneration
 
                 if(added)
                 {
+                    foreach(var state in textStandard.AllStates)
+                    {
+                        state.ConvertEnumerationValuesToInts();
+                    }
                     // This won't work in Core because it uses enum values
                     AppCommands.Self.SaveStandardElement(textStandard);
-
+                    foreach (var state in textStandard.AllStates)
+                    {
+                        state.FixEnumerations();
+                    }
                 }
             }
         }
