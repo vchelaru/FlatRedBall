@@ -66,42 +66,76 @@ namespace DialogTreePlugin.SaveClasses
                 {
                     if(text.Contains(""[[""))
                     {
-                        var index = text.IndexOf(""[["");
+                var index = text.IndexOf(""[["");
 
-                        return text.Substring(0, index);
-                    }
+                return text.Substring(0, index);
+            }
                     else
-                    {
-                        return text;
-                    }
-                }
-            }
-
-            public Link[] links { get; set; }
-            public string name { get; set; }
-            public string pid { get; set; }
-            public string[] tags { get; set; }
-
-            public Position position { get; set; }
-
-            public override string ToString()
             {
-                return $""{text}"";
+                return text;
             }
+        }
     }
 
-        public class Link
-        {
-            public string name { get; set; }
-            public string link { get; set; }
-            public string pid { get; set; }
-        }
+    public Link[] links { get; set; }
+    public string name { get; set; }
+    public string pid { get; set; }
+    public string[] tags { get; set; }
 
-        public class Position
+    public Position position { get; set; }
+
+    public override string ToString()
+    {
+        return $""{text}"";
+    }
+}
+
+public class Link
+{
+    public string name { get; set; }
+    public string link { get; set; }
+    public string pid { get; set; }
+
+    public string StrippedName
+    {
+        get
         {
-            public double x { get; set; }
-            public double y { get; set; }
+            if (name.Contains(""|""))
+            {
+                var index = name.IndexOf(""|"");
+
+                return name.Substring(0, index);
+            }
+            else
+            {
+                return name;
+            }
         }
+    }
+
+    public string StrippedLink
+    {
+        get
+        {
+            if (link.Contains(""|""))
+            {
+                var index = link.IndexOf(""|"");
+                var length = link.Length - index - 1;
+                return link.Substring(index + 1, length);
+            }
+            else
+            {
+                return link;
+            }
+        }
+    }
+}
+
+public class Position
+{
+    public double x { get; set; }
+    public double y { get; set; }
+}
 
     }
 }
