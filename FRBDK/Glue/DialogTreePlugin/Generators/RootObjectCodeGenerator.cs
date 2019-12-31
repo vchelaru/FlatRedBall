@@ -64,9 +64,9 @@ namespace DialogTreePlugin.SaveClasses
             {
                 get
                 {
-                    if(text.Contains(""\n[[""))
+                    if(text.Contains(""[[""))
                     {
-                        var index = text.IndexOf(""\n[["");
+                        var index = text.IndexOf(""[["");
 
                         return text.Substring(0, index);
                     }
