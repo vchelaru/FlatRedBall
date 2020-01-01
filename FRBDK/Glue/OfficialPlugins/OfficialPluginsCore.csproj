@@ -4,7 +4,8 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
-    <Platforms>AnyCPU;x86</Platforms>
+    <Platforms>x86</Platforms>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,6 +42,7 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
+    <PackageReference Include="System.Runtime" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,7 +50,6 @@
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj" />
     <ProjectReference Include="..\..\GlueView\GlueView\InteractiveInterface\InteractiveInterface.csproj" />
-    <ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj" />
     <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
     <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
     <ProjectReference Include="..\GlueSaveClasses\GlueSaveClasses.csproj" />
@@ -74,7 +75,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if not exist &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\&quot; md &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\&quot;&#xD;&#xA;&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\&quot; md &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\&quot;&#xD;&#xA;copy &quot;$(TargetDir)OfficialPluginsCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\OfficialPluginsCore.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)OfficialPluginsCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\OfficialPluginsCore.pdb&quot;" />
+    <Exec Command="echo Creating $(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\&quot; md &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\&quot;&#xD;&#xA;&#xD;&#xA;echo creating $(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\&quot; md &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\&quot;&#xD;&#xA;echo copy $(TargetDir)OfficialPluginsCore.dll to $(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\OfficialPluginsCore.dll&#xD;&#xA;copy &quot;$(TargetDir)OfficialPluginsCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\OfficialPluginsCore.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)OfficialPluginsCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\OfficialPlugins\OfficialPluginsCore.pdb&quot;" />
   </Target>
 
 </Project>

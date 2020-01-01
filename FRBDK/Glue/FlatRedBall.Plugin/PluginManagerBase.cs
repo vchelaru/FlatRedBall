@@ -8,7 +8,6 @@ using FlatRedBall.IO;
 using System.IO;
 using System.Windows.Forms;
 using System.CodeDom.Compiler;
-using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition;
@@ -378,26 +377,13 @@ namespace FlatRedBall.Glue.Plugins
 
                 if (shouldProcessPlugin)
                 {
-                    var compileResult = CompilePlugin(plugin);
-
                     // We had a && false here, so I don't think we use this ignored check, do we?
                     bool isIgnored = pluginsToIgnore != null && pluginsToIgnore.Any(item => 
                         FileManager.Standardize(item.ToLowerInvariant()) == FileManager.Standardize(plugin.ToLowerInvariant()));
 
                     if (!isIgnored)
                     {
-                        bool wasCompiledFromCSharpCode = compileResult != null;
-
-                        if (wasCompiledFromCSharpCode)
-                        {
-                            HandleAddingDynamicallyCompiledPlugin(returnValue, plugin, compileResult);
-                        }
-
-                        // If nothing was compiled check for any dlls to load
-                        else
-                        {
-                            HandleAddingPreCompiledPluginInDirectory(returnValue, plugin);
-                        }
+                        HandleAddingPluginInDirectory(returnValue, plugin);
                     }
                 }
             }
@@ -407,7 +393,7 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        private void HandleAddingPreCompiledPluginInDirectory(AggregateCatalog returnValue, string pluginDirectory)
+        private void HandleAddingPluginInDirectory(AggregateCatalog returnValue, string pluginDirectory)
         {
             List<Assembly> assemblies = new List<Assembly>();
 
@@ -560,12 +546,6 @@ namespace FlatRedBall.Glue.Plugins
 
             CompilePluginOutput("Attempting to compile plugin : " + filepath);
 
-            //Reference types to force assembly load
-            const TextureProcessorOutputFormat texture = TextureProcessorOutputFormat.Color;
-
-
-            texture.ToString();// We do this to eliminate "is never used" warnings
-
             string whyIsntCompatible = GetWhyIsntCompatible(filepath);
 
             if (string.IsNullOrEmpty(whyIsntCompatible))
@@ -574,15 +554,9 @@ namespace FlatRedBall.Glue.Plugins
 
                 string output;
                 string name = Assembly.GetEntryAssembly().GetName().Name;
-                PluginCompiler.Compiler.Path = System.IO.Path.GetTempPath() + name + @"Compiled\";
                 string details;
                 // need to fix this, or pass it a root folder or something.
-                CompilerResults results = PluginCompiler.Compiler.CompilePlugin(
-                    filepath,
-                    mReferenceListInternal,
-                    mReferenceListLoaded,
-                    mReferenceListExternal,
-                    out details);
+                CompilerResults results = null;
 
                 // Make sure a non-null result was returned
                 if (results == null)

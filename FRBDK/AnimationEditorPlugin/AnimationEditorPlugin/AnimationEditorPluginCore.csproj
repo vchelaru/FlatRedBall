@@ -22,7 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj" />
-    <ProjectReference Include="..\..\Glue\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj" />
     <ProjectReference Include="..\..\Glue\GlueCommon\GlueCommon.csproj" />
     <ProjectReference Include="..\..\Glue\Glue\GlueFormsCore.csproj" />
   </ItemGroup>
