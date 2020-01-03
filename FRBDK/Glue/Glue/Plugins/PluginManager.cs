@@ -608,7 +608,11 @@ namespace FlatRedBall.Glue.Plugins
             List<AssetTypeInfo> listToReturn = new List<AssetTypeInfo>();
             CallMethodOnPlugin(plugin =>
             {
-                listToReturn.AddRange( plugin.GetAvailableAssetTypes(referencedFileSave));
+                var assetTypes = plugin.GetAvailableAssetTypes(referencedFileSave);
+                if(assetTypes != null)
+                {
+                    listToReturn.AddRange(assetTypes);
+                }
             },
             nameof(GetAvailableAssetTypes),
             plugin => plugin.GetAvailableAssetTypes != null);

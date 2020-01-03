@@ -61,7 +61,11 @@ namespace TopDownPlugin.CodeGenerators
             codeBlock.Line("/// </summary>");
             codeBlock.Property("public TopDownDirection", "DirectionFacing")
                 .Get()
-                    .Line("return mDirectionFacing;");
+                    .Line("return mDirectionFacing;")
+                    .End()
+                .Set()
+                    .Line("mDirectionFacing = value;");
+
 
             codeBlock.Property("public PossibleDirections", "PossibleDirections")
                 .AutoGet().End()
