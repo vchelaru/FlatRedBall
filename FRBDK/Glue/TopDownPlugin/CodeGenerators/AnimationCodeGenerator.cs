@@ -128,7 +128,45 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
                         currentAnimation = setToUse.DownRightAnimationName;
                         break;
                 }}
+                // If the animation to assign isn't set, use the last animation...
                 currentAnimation = currentAnimation ?? LastAnimation;
+                // ...however the last animation may have come from a different
+                // set (like if the player was walking diagonally but then stopped
+                // and is now idle.
+                var isAnimationContained = setToUse.Contains(currentAnimation);
+                // If it isn't contained, then find the closest
+                if(isAnimationContained == false)
+                {{
+                    switch (TopDownEntity.DirectionFacing)
+                    {{
+                        case Entities.TopDownDirection.UpLeft:
+                            currentAnimation = setToUse.LeftAnimationName ?? setToUse.UpAnimationName;
+                            break;
+                        case Entities.TopDownDirection.Up:
+                            currentAnimation = setToUse.RightAnimationName ?? setToUse.LeftAnimationName;
+                            break;
+                        case Entities.TopDownDirection.UpRight:
+                            currentAnimation = setToUse.RightAnimationName ?? setToUse.UpAnimationName;
+                            break;
+
+                        case Entities.TopDownDirection.Left:
+                            currentAnimation = setToUse.DownAnimationName ?? setToUse.UpAnimationName;
+                            break;
+                        case Entities.TopDownDirection.Right:
+                            currentAnimation = setToUse.DownAnimationName ?? setToUse.UpAnimationName;
+                            break;
+
+                        case Entities.TopDownDirection.DownLeft:
+                            currentAnimation = setToUse.LeftAnimationName ?? setToUse.DownAnimationName;
+                            break;
+                        case Entities.TopDownDirection.Down:
+                            currentAnimation = setToUse.RightAnimationName ?? setToUse.LeftAnimationName;
+                            break;
+                        case Entities.TopDownDirection.DownRight:
+                            currentAnimation = setToUse.RightAnimationName ?? setToUse.DownAnimationName;
+                            break;
+                    }}
+                }}
 
                 LastAnimation = currentAnimation;
 
@@ -163,6 +201,25 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
         public string DownLeftAnimationName {{ get; set; }}
         public string DownAnimationName {{ get; set; }}
         public string DownRightAnimationName {{ get; set; }}
+
+        public override string ToString()
+        {{
+            return $""{{MovementValueName}}"";
+        }}
+
+        public bool Contains(string animationName)
+        {{
+            return
+                UpLeftAnimationName == animationName ||
+                UpAnimationName == animationName ||
+                UpRightAnimationName == animationName ||
+                LeftAnimationName == animationName ||
+                RightAnimationName == animationName ||
+                DownLeftAnimationName == animationName ||
+                DownAnimationName == animationName ||
+                DownRightAnimationName == animationName;
+        }}
+
     }}
 }}
 ";
