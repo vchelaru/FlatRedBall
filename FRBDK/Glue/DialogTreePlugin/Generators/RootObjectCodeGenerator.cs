@@ -117,7 +117,7 @@ public class Link
     {
         get
         {
-            if (link.Contains(""|""))
+            if (link?.Contains(""|"") == true)
             {
                 var index = link.IndexOf(""|"");
                 var length = link.Length - index - 1;
