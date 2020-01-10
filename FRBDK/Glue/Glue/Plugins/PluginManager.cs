@@ -174,6 +174,7 @@ namespace FlatRedBall.Glue.Plugins
             var throwaway5 = typeof(RenderingLibrary.Camera);
             //var throwaway6 = typeof(ToolsUtilities.FileManager);
             //var throwaway7 = typeof(XnaAndWinforms.GraphicsDeviceControl);
+            var throwaway8 = typeof(Microsoft.Build.Utilities.AssemblyFoldersFromConfigInfo);
         }
 
         protected override void StartAllPlugins(List<string> pluginsToIgnore = null)
