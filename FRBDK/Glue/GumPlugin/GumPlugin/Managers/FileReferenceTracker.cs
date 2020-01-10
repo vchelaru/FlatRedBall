@@ -16,6 +16,7 @@ using Microsoft.Build.Evaluation;
 using System.IO;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.IO;
+using RenderingLibrary.Graphics;
 
 namespace GumPlugin.Managers
 {
@@ -206,7 +207,7 @@ namespace GumPlugin.Managers
                     {
                         string variableValue = variable.Value as string;
 
-                        var shouldUsePattern = RenderingLibrary.Graphics.NineSlice.GetIfShouldUsePattern(variableValue);
+                        var shouldUsePattern = NineSliceExtensions.GetIfShouldUsePattern(variableValue);
 
                         if (shouldUsePattern)
                         {
@@ -214,10 +215,10 @@ namespace GumPlugin.Managers
 
                             string variableWithoutExtension = FileManager.RemoveExtension(variableValue);
 
-                            string bareTexture = RenderingLibrary.Graphics.NineSlice.GetBareTextureForNineSliceTexture(
+                            string bareTexture = NineSliceExtensions.GetBareTextureForNineSliceTexture(
                                 variableValue);
 
-                            foreach (var side in RenderingLibrary.Graphics.NineSlice.PossibleNineSliceEndings)
+                            foreach (var side in NineSliceExtensions.PossibleNineSliceEndings)
                             {
                                 listToFill.Add(FileManager.RelativeDirectory + bareTexture + side + "." + extension);
                             }
@@ -342,7 +343,8 @@ namespace GumPlugin.Managers
         {
             if (!string.IsNullOrEmpty(fontNameValue))
             {
-                string fontFileName = global::RenderingLibrary.Graphics.Fonts.BmfcSave.GetFontCacheFileNameFor(fontSizeValue, fontNameValue, outlineThickness, useFontSmoothing);
+                // copy this to get rid of XNA nonsense, will need to update this if we ever add more font support
+                string fontFileName = GetFontCacheFileNameFor(fontSizeValue, fontNameValue, outlineThickness, useFontSmoothing);
 
                 fontFileName = FileManager.RelativeDirectory + fontFileName;
 
@@ -365,6 +367,32 @@ namespace GumPlugin.Managers
 
                 }
             }
+        }
+
+        static string GetFontCacheFileNameFor(int fontSize, string fontName, int outline, bool useFontSmoothing)
+        {
+            string fileName = null;
+
+
+            // don't allow some charactersin the file name:
+            fontName = fontName.Replace(' ', '_');
+
+            fileName = "Font" + fontSize + fontName;
+            if (outline != 0)
+            {
+                fileName = "Font" + fontSize + fontName + "_o" + outline;
+            }
+
+            if (useFontSmoothing == false)
+            {
+                fileName += "_noSmooth";
+            }
+
+            fileName += ".fnt";
+
+            fileName = System.IO.Path.Combine("FontCache", fileName);
+
+            return fileName;
         }
 
 
