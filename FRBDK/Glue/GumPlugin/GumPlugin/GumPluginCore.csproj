@@ -260,6 +260,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Gum\GumDataTypes\GumDataTypes.csproj" />
     <ProjectReference Include="..\..\..\..\..\Gum\GumRuntime\GumRuntime.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Gum\RenderingLibrary\RenderingLibrary.csproj" />
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj" />
     <ProjectReference Include="..\..\GlueCommon\GlueCommon.csproj" />
