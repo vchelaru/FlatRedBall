@@ -163,7 +163,7 @@ namespace FlatRedBall.Glue.Plugins
             // This forces the RenderingLibrary.dll to be loaded
             // so we don't allow plugins to load their own versions.
             // We're just accessing the class, we're not going to actually use it.
-            //RenderingLibrary.IPositionedSizedObject test = null ;
+            RenderingLibrary.IPositionedSizedObject test = null;
             // ... and we should do the same thing with ToolsUtilities
             //var throwaway = ToolsUtilities.FileManager.GetExtension("something.png");
             // ... and XNA+winforms
@@ -171,7 +171,7 @@ namespace FlatRedBall.Glue.Plugins
             // .. specialized xna controls:
 
             //var throwaway4 = typeof(InputLibrary.Keyboard);
-            //var throwaway5 = typeof(RenderingLibrary.Camera);
+            var throwaway5 = typeof(RenderingLibrary.Camera);
             //var throwaway6 = typeof(ToolsUtilities.FileManager);
             //var throwaway7 = typeof(XnaAndWinforms.GraphicsDeviceControl);
         }
