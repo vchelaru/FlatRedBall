@@ -456,7 +456,6 @@ namespace FlatRedBall.Graphics
             set { mRelativeToCamera = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// The Sprites referenced by and drawn on the Layer.
         /// </summary>
@@ -464,10 +463,7 @@ namespace FlatRedBall.Graphics
         /// The Layer stores a regular SpriteList internally.  Since
         /// this internal list is used for drawing the layer the engine
         /// sorts it every frame.  
-        /// 
-        /// For efficiency purposes the internal SpriteList cannot be sorted.
         /// </remarks>
-        #endregion
         public  ReadOnlyCollection<Sprite> Sprites
         {
             get { return mSpritesReadOnlyCollection; }

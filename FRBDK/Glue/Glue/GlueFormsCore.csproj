@@ -110,8 +110,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Gum\InputLibrary\InputLibrary.csproj" />
-    <ProjectReference Include="..\..\..\..\Gum\RenderingLibrary\RenderingLibrary.csproj" />
     <ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilities.csproj" />
     <ProjectReference Include="..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj" />
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />

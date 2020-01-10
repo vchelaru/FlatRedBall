@@ -26,6 +26,7 @@ namespace DialogTreePlugin.Generators
         {
             var contents = @"
 
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Json;
 
@@ -35,7 +36,7 @@ namespace DialogTreePlugin.SaveClasses
     {
         public class RootObject
         {
-            public Passage[] passages { get; set; }
+            public List<Passage> passages { get; set; }
             public string name { get; set; }
             public string startnode { get; set; }
             public string creator { get; set; }
