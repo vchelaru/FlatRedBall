@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using FlatRedBall.Utilities;
 using System;
 using System.Collections.Generic;
@@ -25,15 +26,31 @@ namespace OfficialPluginsCore.FilesPlugin.Managers
 
         private static void HandleDuplicate(ReferencedFileSave rfs)
         {
+            var file = GlueCommands.Self.GetAbsoluteFileName(rfs);
+
+
             var newRfs = rfs.Clone();
+
+            var stripped = FileManager.RemovePath(FileManager.RemoveExtension(newRfs.Name));
 
             var container = rfs.GetContainer();
 
-            while(NameVerifier.IsReferencedFileNameValid(newRfs.Name,
-                newRfs.GetAssetTypeInfo(), rfs, rfs.GetContainer(), out string throwaway))
+            var directoryOnDisk = FileManager.GetDirectory(file);
+            var extension = FileManager.GetExtension(rfs.Name);
+
+            while (!NameVerifier.IsReferencedFileNameValid(stripped,
+                newRfs.GetAssetTypeInfo(), newRfs, rfs.GetContainer(), out string throwaway) || 
+                System.IO.File.Exists(directoryOnDisk + stripped + "." + extension)
+                )
             {
-                newRfs.Name = StringFunctions.IncrementNumberAtEnd(newRfs.Name);
+                stripped = StringFunctions.IncrementNumberAtEnd(stripped);
             }
+
+            newRfs.Name = FileManager.GetDirectory(rfs.Name, RelativeType.Relative) + stripped + "." + FileManager.GetExtension(rfs.Name);
+
+            var destinationFile = FileManager.GetDirectory(file) + stripped + "." + FileManager.GetExtension(file);
+
+            System.IO.File.Copy(file, destinationFile);
 
             if(container != null)
             {
@@ -41,8 +58,20 @@ namespace OfficialPluginsCore.FilesPlugin.Managers
             }
             else
             {
-
+                GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(newRfs);
             }
+
+            var customClass = GlueState.Self.CurrentGlueProject.GetCustomClassReferencingFile(rfs.Name);
+
+            if(customClass != null)
+            {
+                customClass.CsvFilesUsingThis.Add(newRfs.Name);
+            }
+
+            GlueCommands.Self.GluxCommands.SaveGluxTask();
+            GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+
+            GlueState.Self.CurrentReferencedFileSave = newRfs;
         }
     }
 }

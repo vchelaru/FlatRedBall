@@ -75,7 +75,14 @@ namespace OfficialPlugins.FilesPlugin
                     referencedFileTab = CreateTab(control, "Referenced Files");
 
                 }
-                ShowTab(referencedFileTab);
+                if(referencedFileTab.LastTabControl == null)
+                {
+                    ShowTab(referencedFileTab,  TabLocation.Center);
+                }
+                else
+                {
+                    ShowTab(referencedFileTab);
+                }
 
             }
             else

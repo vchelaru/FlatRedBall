@@ -237,6 +237,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 referencedFileSave.IncludeDirectoryRelativeToContainer = true;
             }
 
+            AddReferencedFileToGlobalContent(referencedFileSave);
+
+            return referencedFileSave;
+        }
+
+        public void AddReferencedFileToGlobalContent(ReferencedFileSave referencedFileSave)
+        {
+
             ProjectManager.GlueProjectSave.GlobalFiles.Add(referencedFileSave);
             ProjectManager.GlueProjectSave.GlobalContentHasChanged = true;
 
@@ -254,8 +262,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshGlobalContent);
 
-            return referencedFileSave;
         }
+
 
         public ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, string extraCommandLineArguments,
             BuildToolAssociation buildToolAssociation, bool isBuiltFile, string options, IElement sourceElement, string directoryOfTreeNode)
@@ -759,6 +767,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         }
 
+        public void AddReferencedFileToElement(ReferencedFileSave rfs, IElement element)
+        {
+            throw new NotImplementedException();
+        }
 
 
         #endregion

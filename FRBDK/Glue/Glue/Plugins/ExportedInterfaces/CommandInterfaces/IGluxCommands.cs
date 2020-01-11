@@ -36,6 +36,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// in the name of the newly-created file.</param>
         /// <returns>The new ReferencedFileSave.</returns>
         ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool includeDirectoryInGlobalContentInName);
+        void AddReferencedFileToGlobalContent(ReferencedFileSave rfs);
+        void AddReferencedFileToElement(ReferencedFileSave rfs, IElement element);
 
         ReferencedFileSave GetReferencedFileSaveFromFile(string fileName);
 
