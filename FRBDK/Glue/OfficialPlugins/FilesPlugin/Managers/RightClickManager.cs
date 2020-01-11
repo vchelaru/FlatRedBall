@@ -27,13 +27,22 @@ namespace OfficialPluginsCore.FilesPlugin.Managers
         {
             var newRfs = rfs.Clone();
 
+            var container = rfs.GetContainer();
+
             while(NameVerifier.IsReferencedFileNameValid(newRfs.Name,
                 newRfs.GetAssetTypeInfo(), rfs, rfs.GetContainer(), out string throwaway))
             {
                 newRfs.Name = StringFunctions.IncrementNumberAtEnd(newRfs.Name);
             }
 
-            GlueCommands.Self.FileCommands
+            if(container != null)
+            {
+                throw new NotImplementedException("Bug Vic to implement this");
+            }
+            else
+            {
+
+            }
         }
     }
 }

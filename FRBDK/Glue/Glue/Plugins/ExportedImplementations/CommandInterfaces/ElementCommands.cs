@@ -470,5 +470,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return ProjectManager.ContentDirectory + resultNameInFolder;
         }
 
+
+
+
     }
 }
