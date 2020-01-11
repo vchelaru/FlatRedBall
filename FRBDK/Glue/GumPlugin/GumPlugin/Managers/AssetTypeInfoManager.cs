@@ -351,7 +351,9 @@ namespace GumPlugin.Managers
         {
             List<AssetTypeInfo> assetTypeInfos = new List<AssetTypeInfo>();
 
-            foreach (var element in AppState.Self.AllLoadedElements)
+            var allElements = AppState.Self.AllLoadedElements.ToList();
+
+            foreach (var element in allElements)
             {
                 if (GueDerivingClassCodeGenerator.Self.ShouldGenerateRuntimeFor(element))
                 {

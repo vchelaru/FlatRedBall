@@ -10,12 +10,16 @@ using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.FilesPlugin.Controls;
 using OfficialPlugins.FilesPlugin.ViewModels;
 using System.ComponentModel.Composition;
+using FlatRedBall.Glue.Controls;
+using OfficialPluginsCore.FilesPlugin.Managers;
 
 namespace OfficialPlugins.FilesPlugin
 {
     [Export(typeof(PluginBase))]
     public class MainFilesPlugin : PluginBase
     {
+        #region Fields/Properties
+
         FileReferenceControl control;
         FileReferenceViewModel viewModel;
 
@@ -35,6 +39,10 @@ namespace OfficialPlugins.FilesPlugin
             }
         }
 
+
+        PluginTab referencedFileTab;
+        #endregion
+
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
             return true;
@@ -43,7 +51,8 @@ namespace OfficialPlugins.FilesPlugin
         public override void StartUp()
         {
             this.ReactToItemSelectHandler += HandleItemSelected;
-
+            this.ReactToTreeViewRightClickHandler +=
+                RightClickManager.HandleRightClick;
         }
 
         private void HandleItemSelected(TreeNode selectedTreeNode)
@@ -63,17 +72,15 @@ namespace OfficialPlugins.FilesPlugin
 
                     control.DataContext = viewModel;
 
-                    AddToTab(PluginManager.CenterTab, control, "Referenced Files");
+                    referencedFileTab = CreateTab(control, "Referenced Files");
+
                 }
-                else
-                {
-                    AddTab();
-                }
+                ShowTab(referencedFileTab);
 
             }
             else
             {
-                base.RemoveTab();
+                base.RemoveTab(referencedFileTab);
             }
 
             if(viewModel != null)

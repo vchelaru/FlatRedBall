@@ -327,7 +327,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         bool useFullPathAsName = false;
                         // todo - support built files here
-                        referencedFileSaveToReturn = AddReferencedFileToGlobalContent(fileToAdd, useFullPathAsName);
+                        referencedFileSaveToReturn =
+                            GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(fileToAdd, useFullPathAsName);
                     }
 
 
@@ -468,65 +469,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             return ProjectManager.ContentDirectory + resultNameInFolder;
         }
-
-
-        public ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool includeDirectoryInGlobalContentInName)
-        {
-            if(FileManager.IsRelative(fileToAdd) == false)
-            {
-                throw new ArgumentException("The argument fileToAdd must be relative to the Glue project");
-            }
-
-
-            var referencedFileSave = new ReferencedFileSave();
-            referencedFileSave.DestroyOnUnload = false;
-            referencedFileSave.SetNameNoCall(fileToAdd);
-            referencedFileSave.IsSharedStatic = true;
-            referencedFileSave.HasPublicProperty = true;
-
-            // We include
-            // the directory
-            // as part of the
-            // name because if
-            // a user adds multiple
-            // ReferencedFileSaves to
-            // GlobalContent it's very
-            // likely that there will be
-            // some kind of naming conflict.
-            // Doing this reduces the chances
-            // of this to almost 0.
-            // UPDATE July 18, 2011
-            // Turns out this method
-            // is called if either a new
-            // RFS is added or if it is dragged
-            // on to GlobalContent from an Entity.
-            // Therefore, we only want to do this if
-            // the useFullPathAsName argument is true;
-            if (includeDirectoryInGlobalContentInName)
-            {
-                referencedFileSave.IncludeDirectoryRelativeToContainer = true;
-            }
-
-            ProjectManager.GlueProjectSave.GlobalFiles.Add(referencedFileSave);
-            ProjectManager.GlueProjectSave.GlobalContentHasChanged = true;
-
-            GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(referencedFileSave);
-
-
-            // Update any element that may reference this file because now it may mean the element
-            // will simply reference it from GlobalContent instead of using the content manager.
-            List<IElement> elements = ObjectFinder.Self.GetAllElementsReferencingFile(referencedFileSave.Name);
-
-            foreach (IElement element in elements)
-            {
-                element.HasChanged = true;
-            }
-
-            GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshGlobalContent);
-
-            return referencedFileSave;
-        }
-
 
     }
 }

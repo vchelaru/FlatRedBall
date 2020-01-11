@@ -625,7 +625,7 @@ namespace FlatRedBall.Glue.Managers
                     if (!alreadyExists)
                     {
                         bool useFullPathAsName = true;
-                        ElementCommands.Self.AddReferencedFileToGlobalContent(rfs.Name, useFullPathAsName);
+                        GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(rfs.Name, useFullPathAsName);
                     }
                 }
 

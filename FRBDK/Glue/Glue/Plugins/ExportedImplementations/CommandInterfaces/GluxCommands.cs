@@ -987,38 +987,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return succeeded;
         }
 
-        #endregion
-
-        private static bool GetIfFileIsFactory(EntitySave entitySave, string file)
-        {
-            return file.EndsWith("Factories/" + entitySave.ClassName + "Factory.Generated.cs");
-        }
-
-
-        static bool MoveSingleCodeFileToDirectory(string relativeCodeFile, string directory)
-        {
-            string absoluteCodeFile = FileManager.MakeAbsolute(relativeCodeFile);
-            bool succeeded = true;
-            FilePath targetFile = directory + FileManager.RemovePath(absoluteCodeFile);
-
-            if (targetFile.Exists())
-            {
-                System.Windows.Forms.MessageBox.Show(
-                    "Can't move the the file " + absoluteCodeFile + " because the following file exists in the target location: " + targetFile);
-                succeeded = false;
-            }
-
-            if (succeeded)
-            {
-                File.Move(absoluteCodeFile, targetFile.FullPath);
-
-                ProjectManager.RemoveItemFromAllProjects(relativeCodeFile, false);
-
-                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(targetFile, save: false);
-            }
-            return succeeded;
-        }
-
         public bool MoveEntityToDirectory(EntitySave entitySave, string newRelativeDirectory)
         {
             bool succeeded = true;
@@ -1112,6 +1080,42 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return succeeded;
         }
 
+        #endregion
+
+        #region Code Files
+
+        private static bool GetIfFileIsFactory(EntitySave entitySave, string file)
+        {
+            return file.EndsWith("Factories/" + entitySave.ClassName + "Factory.Generated.cs");
+        }
+
+        static bool MoveSingleCodeFileToDirectory(string relativeCodeFile, string directory)
+        {
+            string absoluteCodeFile = FileManager.MakeAbsolute(relativeCodeFile);
+            bool succeeded = true;
+            FilePath targetFile = directory + FileManager.RemovePath(absoluteCodeFile);
+
+            if (targetFile.Exists())
+            {
+                System.Windows.Forms.MessageBox.Show(
+                    "Can't move the the file " + absoluteCodeFile + " because the following file exists in the target location: " + targetFile);
+                succeeded = false;
+            }
+
+            if (succeeded)
+            {
+                File.Move(absoluteCodeFile, targetFile.FullPath);
+
+                ProjectManager.RemoveItemFromAllProjects(relativeCodeFile, false);
+
+                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(targetFile, save: false);
+            }
+            return succeeded;
+        }
+
+        #endregion
+
+        #region Plugin Requirements
 
         public bool GetPluginRequirement(Interfaces.IPlugin plugin)
         {
@@ -1152,7 +1156,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             return didChange;
         }
-        
+
+        #endregion
 
         public void SetVariableOn(NamedObjectSave nos, string memberName, Type memberType, object value)
         {
@@ -1177,9 +1182,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             ProjectManager.GlueSettingsSave.Save();
         }
-
-        
-
 
     }
 }

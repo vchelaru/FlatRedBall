@@ -816,7 +816,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     }
 
                     bool useFullPathAsName = true;
-                    ElementCommands.Self.AddReferencedFileToGlobalContent(referencedFileSave.Name, useFullPathAsName);
+                    GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(referencedFileSave.Name, useFullPathAsName);
 
                     GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
