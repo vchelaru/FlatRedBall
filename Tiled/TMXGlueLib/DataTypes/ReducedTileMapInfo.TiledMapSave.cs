@@ -50,7 +50,7 @@ namespace TMXGlueLib.DataTypes
 
     public partial class ReducedTileMapInfo
     {
-        public static bool FastCreateFromTmx = false;
+        public static bool FastCreateFromTmx = true;
 
 
         /// <summary>
