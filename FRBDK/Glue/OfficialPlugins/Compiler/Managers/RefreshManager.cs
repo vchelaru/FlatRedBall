@@ -2,7 +2,10 @@
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
+using OfficialPlugins.Compiler.CommandSending;
 using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -53,7 +56,7 @@ namespace OfficialPlugins.Compiler.Managers
             this.printError = printError;
         }
 
-        public void HandleFileChanged(FilePath fileName)
+        public async void HandleFileChanged(FilePath fileName)
         {
             var shouldReactToFileChange =
                 ShouldRestartOnChange &&
@@ -61,7 +64,32 @@ namespace OfficialPlugins.Compiler.Managers
 
             if(shouldReactToFileChange)
             {
-                StopAndRestartTask($"File {fileName} changed");
+                var rfs = GlueCommands.Self.FileCommands.GetReferencedFile(fileName.FullPath);
+
+                var isGlobalContent = rfs != null && rfs.GetContainer() == null;
+
+                bool canSendCommands = ViewModel.IsGenerateGlueControlManagerInGame1Checked;
+
+                if(isGlobalContent && rfs.GetAssetTypeInfo().CustomReloadFunc != null && canSendCommands)
+                {
+
+                    var strippedName = FileManager.RemovePath(FileManager.RemoveExtension(rfs.Name));
+
+                    printOutput($"Waiting for Glue to copy reload global file {strippedName}");
+
+                    // just give the file time to copy:
+                    await Task.Delay(500);
+
+                    // it's part of global content and can be reloaded, so let's just tell
+                    // it to reload:
+                    await CommandSender.SendCommand($"ReloadGlobal:{strippedName}", ViewModel.PortNumber);
+
+                    printOutput($"Reloading global file {strippedName}");
+                }
+                else
+                {
+                    StopAndRestartTask($"File {fileName} changed");
+                }
             }
         }
 
@@ -219,7 +247,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         private void RefreshViewModelHotReload()
         {
-            ViewModel.IsHotReloadEnabled = ShouldRestartOnChange;
+            ViewModel.IsHotReloadAvailable = ShouldRestartOnChange;
         }
     }
 }

@@ -132,6 +132,17 @@ namespace FlatRedBall.Glue.Elements
         public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> CustomLoadFunc;
 
         /// <summary>
+        /// Func which is used to generate a reload function if the file is in GlobalContent.
+        /// * IElement - The Screen or Entity containing the file
+        /// * NamedObjectSave - the NamedObjectSave associated with the load
+        /// * ReferencedFileSave - the file being loaded
+        /// * string - the content manager in context
+        /// * string - the return value which is the code for loading
+        /// </summary>
+        [XmlIgnore]
+        public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> CustomReloadFunc;
+
+        /// <summary>
         /// The generated code to include to add the object to managers.
         /// </summary>
         /// <remarks>

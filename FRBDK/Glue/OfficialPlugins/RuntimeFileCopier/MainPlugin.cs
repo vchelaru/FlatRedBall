@@ -26,6 +26,7 @@ namespace OfficialPlugins.RuntimeFileCopier
             "png",
             "achx",
             "emix",
+            "json"
         };
 
         ToolStripMenuItem menuItem;

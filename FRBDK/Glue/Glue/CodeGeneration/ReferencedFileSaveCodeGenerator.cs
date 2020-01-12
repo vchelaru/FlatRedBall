@@ -813,9 +813,10 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             bool shouldGenerateInitialize = GetIfShouldGenerateInitialize(referencedFile);
 
-            if(shouldGenerateInitialize)
+            if (shouldGenerateInitialize)
             {
-                if(referencedFile.IsCsvOrTreatedAsCsv && referencedFile.CreatesDictionary)
+                var ati = referencedFile.GetAssetTypeInfo();
+                if (referencedFile.IsCsvOrTreatedAsCsv && referencedFile.CreatesDictionary)
                 {
                     var fileName = ProjectBase.AccessContentDirectory + referencedFile.Name.ToLower().Replace("\\", "/");
                     var instanceName = referencedFile.GetInstanceName();
@@ -823,11 +824,18 @@ namespace FlatRedBall.Glue.CodeGeneration
                         $"FlatRedBall.IO.Csv.CsvFileManager.UpdateDictionaryValuesFromCsv({instanceName}, \"{fileName}\");";
                     codeBlock.Line(line);
                 }
-                if(referencedFile.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Graphics.Texture2D")
+                if (ati?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Graphics.Texture2D")
                 {
                     codeBlock.Line($"var oldTexture = {referencedFile.GetInstanceName()};");
                     GetInitializationForReferencedFile(referencedFile, container, codeBlock, loadType);
                     codeBlock.Line($"FlatRedBall.SpriteManager.ReplaceTexture(oldTexture, {referencedFile.GetInstanceName()});");
+                }
+                else if (ati?.CustomReloadFunc != null)
+                {
+                    var line = 
+                        ati.CustomReloadFunc(container, null, referencedFile, "Global");
+
+                    codeBlock.Line(line);
                 }
                 else
                 {

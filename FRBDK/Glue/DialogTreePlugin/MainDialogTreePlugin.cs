@@ -15,6 +15,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.CodeGeneration;
 using Newtonsoft.Json;
 using static DialogTreePlugin.SaveClasses.DialogTreeRaw;
+using DialogTreePluginCore.Managers;
 
 namespace DialogTreePlugin
 {
@@ -49,75 +50,6 @@ namespace DialogTreePlugin
         const string rawFileType = "json";
         const string convertedFileType = "glsn";
 
-        private AssetTypeInfo mJsonType;
-        AssetTypeInfo JsonAti
-        {
-            get
-            {
-                if (mJsonType == null)
-                {
-                    mJsonType = new AssetTypeInfo();
-                    mJsonType.FriendlyName = "Raw Dialog Tree Json (.json)";
-                    mJsonType.QualifiedRuntimeTypeName = new PlatformSpecificType();
-                    mJsonType.QualifiedRuntimeTypeName.QualifiedType = "DialogTreePlugin.SaveClasses.DialogTreeRaw.RootObject";
-
-                    mJsonType.QualifiedSaveTypeName = null;
-                    mJsonType.Extension = "json";
-                    mJsonType.AddToManagersMethod = new List<string>();
-                    mJsonType.CustomLoadFunc = GetRawDialogTreeLoadCode;
-                    mJsonType.DestroyMethod = null;
-                    mJsonType.SupportsMakeOneWay = false;
-                    mJsonType.ShouldAttach = false;
-                    mJsonType.MustBeAddedToContentPipeline = false;
-                    mJsonType.CanBeCloned = false;
-                    mJsonType.HasCursorIsOn = false;
-                    mJsonType.HasVisibleProperty = false;
-                    mJsonType.CanIgnorePausing = false;
-                    mJsonType.HideFromNewFileWindow = false;
-                }
-
-                return mJsonType;
-            }
-        }
-
-        private string GetRawDialogTreeLoadCode(IElement element, NamedObjectSave namedObject, ReferencedFileSave referencedFile, string contentManager)
-        {
-
-            var fileName = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(referencedFile, referencedFile.GetAssetTypeInfo());
-
-            return $"{referencedFile.GetInstanceName()} = DialogTreePlugin.SaveClasses.DialogTreeRaw.RootObject.FromJson(\"{fileName}\");";
-        }
-
-        private AssetTypeInfo mGlsnType;
-        AssetTypeInfo GlsnAti
-        {
-            get
-            {
-                if (mGlsnType == null)
-                {
-                    mGlsnType = new AssetTypeInfo();
-                    mGlsnType.FriendlyName = "Dialog Tree Json (.glsn)";
-                    mGlsnType.QualifiedRuntimeTypeName = new PlatformSpecificType();
-
-                    mGlsnType.QualifiedSaveTypeName = null;
-                    mGlsnType.Extension = "glsn";
-                    mGlsnType.AddToManagersMethod = new List<string>();
-                    mGlsnType.CustomLoadMethod = null;
-                    mGlsnType.DestroyMethod = null;
-                    mGlsnType.SupportsMakeOneWay = false;
-                    mGlsnType.ShouldAttach = false;
-                    mGlsnType.MustBeAddedToContentPipeline = false;
-                    mGlsnType.CanBeCloned = false;
-                    mGlsnType.HasCursorIsOn = false;
-                    mGlsnType.HasVisibleProperty = false;
-                    mGlsnType.CanIgnorePausing = false;
-                    mGlsnType.HideFromNewFileWindow = false;
-                }
-
-                return mGlsnType;
-            }
-        }
-
         #endregion
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
@@ -145,8 +77,8 @@ namespace DialogTreePlugin
 
         private void HandleEarlyGluxLoad()
         {
-            AddAssetTypeIfNotPresent(JsonAti);
-            AddAssetTypeIfNotPresent(GlsnAti);
+            AddAssetTypeIfNotPresent(AssetTypeInfoManager.Self.JsonAti);
+            AddAssetTypeIfNotPresent(AssetTypeInfoManager.Self.GlsnAti);
         }
 
         private void AddAssetTypeIfNotPresent(AssetTypeInfo ati)
@@ -229,7 +161,8 @@ namespace DialogTreePlugin
 
             if(shouldAssignType)
             {
-                newFile.RuntimeType = JsonAti.QualifiedRuntimeTypeName.QualifiedType;
+                newFile.RuntimeType = 
+                    AssetTypeInfoManager.Self.JsonAti.QualifiedRuntimeTypeName.QualifiedType;
             }
         }
 

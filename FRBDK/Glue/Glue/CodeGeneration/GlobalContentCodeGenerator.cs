@@ -435,12 +435,12 @@ namespace FlatRedBall.Glue.Parsing
 
         private static bool GetIfFileCanBeReloaded(ReferencedFileSave item)
         {
-            var extension = FileManager.GetExtension(item.Name);
             var assetTypeInfo = item.GetAssetTypeInfo();
             var qualifiedType = assetTypeInfo?.QualifiedRuntimeTypeName.QualifiedType;
             return item.IsCsvOrTreatedAsCsv ||
                 qualifiedType == "FlatRedBall.Graphics.Animation.AnimationChainList" ||
-                qualifiedType == "Microsoft.Xna.Framework.Graphics.Texture2D";
+                qualifiedType == "Microsoft.Xna.Framework.Graphics.Texture2D" ||
+                assetTypeInfo?.CustomReloadFunc != null;
         }
 
         #endregion

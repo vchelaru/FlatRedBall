@@ -50,7 +50,7 @@ namespace OfficialPlugins.Compiler.ViewModels
             set => Set(value);
         }
 
-        public bool IsHotReloadEnabled
+        public bool IsHotReloadAvailable
         {
             get => Get<bool>();
             set => Set(value);
@@ -69,8 +69,8 @@ namespace OfficialPlugins.Compiler.ViewModels
         public bool IsToolbarPlayButtonEnabled => !IsRunning && !IsCompiling && !IsWaitingForGameToStart &&
             HasLoadedGlux;
 
-        [DependsOn(nameof(IsHotReloadEnabled))]
-        public Visibility ReloadVisibility => IsHotReloadEnabled ?
+        [DependsOn(nameof(IsHotReloadAvailable))]
+        public Visibility ReloadVisibility => IsHotReloadAvailable ?
             Visibility.Visible : Visibility.Collapsed;
 
         [DependsOn(nameof(IsRunning))]
@@ -130,7 +130,10 @@ namespace OfficialPlugins.Compiler.ViewModels
 
         [DependsOn(nameof(DidRunnerStartProcess))]
         [DependsOn(nameof(IsGluxVersionNewEnoughForGlueControlGeneration))]
-        public Visibility RebuildRestartCheckBoxVisiblity => DidRunnerStartProcess && IsGluxVersionNewEnoughForGlueControlGeneration ?
+        public Visibility RebuildRestartCheckBoxVisiblity => 
+            // We need this for debugging
+            //DidRunnerStartProcess && 
+            IsGluxVersionNewEnoughForGlueControlGeneration ?
             Visibility.Visible : Visibility.Collapsed;
 
         [DependsOn(nameof(IsPaused))]

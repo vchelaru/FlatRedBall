@@ -124,6 +124,9 @@ namespace " + GlueState.Self.ProjectNamespace + @"
                         case ""RestartScreen"":
                             screen.RestartScreen(true);
                             break;
+                        case ""ReloadGlobal"":
+                            GlobalContent.Reload(GlobalContent.GetFile(data));
+                            break;
                         case ""TogglePause"":
 
                             if (screen.IsPaused)
