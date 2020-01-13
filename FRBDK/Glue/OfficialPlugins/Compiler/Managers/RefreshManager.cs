@@ -70,23 +70,37 @@ namespace OfficialPlugins.Compiler.Managers
 
                 bool canSendCommands = ViewModel.IsGenerateGlueControlManagerInGame1Checked;
 
-                if(isGlobalContent && rfs.GetAssetTypeInfo().CustomReloadFunc != null && canSendCommands)
+                var handled = false;
+
+                if(canSendCommands)
                 {
-
                     var strippedName = FileManager.RemovePath(FileManager.RemoveExtension(rfs.Name));
+                    if(isGlobalContent && rfs.GetAssetTypeInfo().CustomReloadFunc != null)
+                    {
+                        printOutput($"Waiting for Glue to copy reload global file {strippedName}");
 
-                    printOutput($"Waiting for Glue to copy reload global file {strippedName}");
+                        // just give the file time to copy:
+                        await Task.Delay(500);
 
-                    // just give the file time to copy:
-                    await Task.Delay(500);
+                        // it's part of global content and can be reloaded, so let's just tell
+                        // it to reload:
+                        await CommandSender.SendCommand($"ReloadGlobal:{strippedName}", ViewModel.PortNumber);
 
-                    // it's part of global content and can be reloaded, so let's just tell
-                    // it to reload:
-                    await CommandSender.SendCommand($"ReloadGlobal:{strippedName}", ViewModel.PortNumber);
+                        printOutput($"Reloading global file {strippedName}");
 
-                    printOutput($"Reloading global file {strippedName}");
+                        handled = true;
+                    }
+                    else
+                    {
+                        // Right now we'll assume the screen owns this file, although it is possible that it's 
+                        // global but not part of global content. That's a special case we'll have to handle later
+                        printOutput($"Waiting for Glue to copy reload global file {strippedName}");
+                        await Task.Delay(500);
+                        await CommandSender.SendCommand("RestartScreen", ViewModel.PortNumber);
+                        handled = true;
+                    }
                 }
-                else
+                if(!handled)
                 {
                     StopAndRestartTask($"File {fileName} changed");
                 }
