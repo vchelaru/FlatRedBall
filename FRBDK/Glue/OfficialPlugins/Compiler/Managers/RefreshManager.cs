@@ -74,7 +74,11 @@ namespace OfficialPlugins.Compiler.Managers
 
                 if(canSendCommands)
                 {
-                    var strippedName = FileManager.RemovePath(FileManager.RemoveExtension(rfs.Name));
+                    string strippedName = null;
+                    if (rfs != null)
+                    {
+                        strippedName = FileManager.RemovePath(FileManager.RemoveExtension(rfs.Name));
+                    }
                     if(isGlobalContent && rfs.GetAssetTypeInfo().CustomReloadFunc != null)
                     {
                         printOutput($"Waiting for Glue to copy reload global file {strippedName}");
@@ -90,7 +94,7 @@ namespace OfficialPlugins.Compiler.Managers
 
                         handled = true;
                     }
-                    else
+                    else if(rfs != null)
                     {
                         // Right now we'll assume the screen owns this file, although it is possible that it's 
                         // global but not part of global content. That's a special case we'll have to handle later

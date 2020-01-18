@@ -17,6 +17,11 @@ namespace Microsoft.Xna.Framework
                 (vectorToMeasure.Y * vectorToMeasure.Y);
         }
 
+        /// <summary>
+        /// Reeturns the length of the vector ignoring the Z value. The returned value is the same as first setting Z to 0 and calling Length.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
         public static float Length2D(this Vector3 vector)
         {
             return (float)System.Math.Sqrt((vector.X * vector.X) +

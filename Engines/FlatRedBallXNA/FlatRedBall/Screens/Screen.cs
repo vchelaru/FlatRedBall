@@ -536,13 +536,24 @@ namespace FlatRedBall.Screens
             var beforeDot = variableName.Substring(0, indexOfDot);
             afterDot = variableName.Substring(indexOfDot + 1);
             instance = null;
-            if (beforeDot == "this")
+            if (instance == null && beforeDot == "this")
             {
                 instance = this;
             }
+            else if(container == null && beforeDot == "Camera")
+            {
+                instance = typeof(Camera);
+            }
             else if (container != null)
             {
-                if (beforeDot.Contains("["))
+                if(container is Type containerType && containerType == typeof(Camera))
+                {
+                    if(beforeDot == "Main")
+                    {
+                        instance = Camera.Main;
+                    }
+                }
+                else if (beforeDot.Contains("["))
                 {
                     var openBracketIndex = beforeDot.IndexOf("[");
                     var closeBracketInex = beforeDot.IndexOf("]");
@@ -571,6 +582,12 @@ namespace FlatRedBall.Screens
             else
             {
                 throw new Exception("Variable must start with \"this\"");
+            }
+            if(afterDot.Contains("."))
+            {
+                var afterDotBefore = afterDot;
+                var newContainer = instance;
+                GetInstance(afterDotBefore, newContainer, out afterDot, out instance);
             }
         }
 
