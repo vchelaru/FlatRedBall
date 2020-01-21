@@ -568,23 +568,37 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 TypedMemberBase tmb = instance.TypedMembers.FirstOrDefault(member=>member.MemberName == propertyName);
 
-                if(tmb != null)
-                {
-                    instruction = instance.AddNewGenericInstructionFor(propertyName, tmb.MemberType);
+                Type type = tmb.MemberType ?? valueToSet?.GetType();
+                var customTypeName = tmb.CustomTypeName;
 
-                }
-                else
+
+                if(type.IsEnum && valueToSet != null)
                 {
-                    instruction = instance.AddNewGenericInstructionFor(propertyName, valueToSet.GetType());
+                    var asInt = (int)valueToSet;
+                    customTypeName = type.Name;
+                    type = typeof(int);
+                    valueToSet = asInt;
                 }
 
-                if(tmb.CustomTypeName != null)
+                instruction = instance.AddNewGenericInstructionFor(propertyName, type);
+
+                if(customTypeName != null)
                 {
                     instruction.Type = tmb.CustomTypeName;
                 }
             }
 
-            instruction.Value = valueToSet;
+            var valueType = valueToSet?.GetType();
+
+            if (valueType?.IsEnum == true)
+            {
+                instruction.Type = valueType.Name;
+                instruction.Value = (int)valueToSet;
+            }
+            else
+            {
+                instruction.Value = valueToSet;
+            }
             return instruction;
         }
 

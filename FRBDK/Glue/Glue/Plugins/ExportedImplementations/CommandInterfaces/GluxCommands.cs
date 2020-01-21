@@ -87,10 +87,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void SaveGluxTask()
         {
-            TaskManager.Self.Add(() => SaveGlux(), "Saving .glux", TaskExecutionPreference.AddOrMoveToEnd);
+            TaskManager.Self.Add(() => SaveGluxSync(sendPluginRefreshCommand: true), "Saving .glux", TaskExecutionPreference.AddOrMoveToEnd);
         }
 
-        static void SaveGluxSync(bool sendMessageToRefresh)
+        static void SaveGluxSync(bool sendPluginRefreshCommand)
         {
             if (ProjectManager.GlueProjectSave != null)
             {
@@ -156,7 +156,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         else
                         {
 
-                            if (sendMessageToRefresh)
+                            if (sendPluginRefreshCommand)
                             {
                                 PluginManager.ReactToGluxSave();
                             }

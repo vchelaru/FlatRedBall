@@ -510,7 +510,14 @@ namespace OfficialPlugins.VariableDisplay
                     }
                     else
                     {
-                        return instruction.Value;
+                        if(memberType.IsEnum && instruction.Value is int)
+                        {
+                            return Enum.ToObject(memberType, instruction.Value);
+                        }
+                        else
+                        {
+                            return instruction.Value;
+                        }
                     }
                 };
 

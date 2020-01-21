@@ -1311,27 +1311,6 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
 
             bool needsEndif = false;
-            if (value.StartsWith("FlatRedBall.Graphics.ColorOperation."))
-            {
-                codeBlock.Line("#if FRB_MDX");
-
-                codeBlock.Line(objectName + "." + instructionSave.Member + " = " + value.Replace("FlatRedBall.Graphics.ColorOperation.", "Microsoft.DirectX.Direct3D.TextureOperation.") + ";");
-                codeBlock.Line("#else");
-
-                needsEndif = true;
-            }
-
-
-            if (value.StartsWith("Microsoft.Xna.Framework.Graphics.TextureAddressMode."))
-            {
-
-                codeBlock.Line("#if FRB_MDX");
-
-                codeBlock.Line(objectName + "." + instructionSave.Member + " = " + value.Replace("Microsoft.Xna.Framework.Graphics.TextureAddressMode.", "Microsoft.DirectX.Direct3D.TextureAddress.") + ";");
-                codeBlock.Line("#else");
-
-                needsEndif = true;
-            }
 
             if (namedObject.DefinedByBase)
             {

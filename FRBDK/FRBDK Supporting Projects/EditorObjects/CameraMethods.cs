@@ -1,23 +1,11 @@
-#if FRB_MDX || XNA3
-#define SUPPORTS_FRB_DRAWN_GUI
-#endif
 
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-#if FRB_MDX
-using Keys = Microsoft.DirectX.DirectInput.Key;
-using Vector2 = Microsoft.DirectX.Vector2;
-using Vector3 = Microsoft.DirectX.Vector3;
-using Matrix = Microsoft.DirectX.Matrix;
-
-using FlatRedBall.Math;
-#elif FRB_XNA
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
-#endif
 
 using FlatRedBall;
 
@@ -215,14 +203,8 @@ namespace EditorObjects
 
                     const float multiplier = .0015f;
 
-#if FRB_MDX
-                    Vector3 cameraRight = camera.RotationMatrix.Right();
-                    Vector3 cameraUp = camera.RotationMatrix.Up();
-#else
                     Vector3 cameraRight = camera.RotationMatrix.Right;
                     Vector3 cameraUp = camera.RotationMatrix.Up;
-#endif
-
                     Vector3 offset = -InputManager.Mouse.XChange * distanceAway * multiplier * cameraRight +
                         InputManager.Mouse.YChange * distanceAway * multiplier * cameraUp;
 
@@ -272,21 +254,13 @@ namespace EditorObjects
                     else camera.XVelocity = 0;
 
                     // TODO:  Make this time based
-#if FRB_MDX
-                    if (InputManager.Keyboard.KeyDown(Keys.Equals))
-#elif FRB_XNA
                     if(InputManager.Keyboard.KeyDown(Keys.OemPlus))
-#endif
                     {
                         camera.OrthogonalWidth *= .98f;
                         camera.OrthogonalHeight *= .98f;
                     }
 
-#if FRB_MDX
-                    else if (InputManager.Keyboard.KeyDown(Keys.Minus))
-#elif FRB_XNA
                     else if(InputManager.Keyboard.KeyDown(Keys.OemMinus))
-#endif
                     {
                         camera.OrthogonalWidth *= 1.02f;
                         camera.OrthogonalHeight *= 1.02f;

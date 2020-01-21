@@ -12,13 +12,7 @@ using FlatRedBall.Content.Scene;
 using FlatRedBall.IO;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Math.Geometry;
-#if FRB_MDX
-
-
-
-#elif FRB_XNA
 using Microsoft.Xna.Framework.Graphics;
-#endif
 
 namespace FlatRedBall.Content.SpriteGrid
 {

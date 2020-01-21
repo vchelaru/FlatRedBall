@@ -347,11 +347,7 @@ namespace FlatRedBall.AI.Pathfinding
                 }
                 else
                 {
-#if FRB_MDX
-                    vectorToMoveAlong.Scale(1 / length);
-#else
                     vectorToMoveAlong /= length;
-#endif
                     break;
                 }
             }

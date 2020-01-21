@@ -10,12 +10,6 @@ using FlatRedBall.Math;
 using FlatRedBall.Glue.Elements;
 
 
-#if FRB_MDX
-using Microsoft.DirectX;
-using System.Collections.ObjectModel;
-
-#endif
-
 #if GLUE
 using FlatRedBall.Math;
 using System.Security.Policy;
