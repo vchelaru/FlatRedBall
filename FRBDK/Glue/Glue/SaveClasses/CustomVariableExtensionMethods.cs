@@ -252,6 +252,14 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        public static void ConvertEnumerationValuesToInts(this CustomVariable customVariable)
+        {
+            if(customVariable.DefaultValue?.GetType()?.IsEnum == true)
+            {
+                customVariable.DefaultValue = (int)customVariable.DefaultValue;
+            }
+        }
+
 
         public static bool GetIsEnumeration(this CustomVariable customVariable)
         {

@@ -112,6 +112,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     ProjectSyncer.SyncGlux();
 
+                    // Jan 20, 2020
+                    // .NET Core XmlSerialization
+                    // requires no enums - values must
+                    // be ints, so let's convert them:
+                    ProjectManager.GlueProjectSave.ConvertEnumerationValuesToInts();
+
 
                     // October 27, 2011
                     // Instead of saving

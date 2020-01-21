@@ -331,7 +331,20 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 screen.FixEnumerationValues();
             }
+        }
 
+        public static void ConvertEnumerationValuesToInts(this GlueProjectSave instance)
+        {
+            foreach (EntitySave entitySave in instance.Entities)
+            {
+                entitySave.ConvertEnumerationValuesToInts();
+
+            }
+
+            foreach (ScreenSave screen in instance.Screens)
+            {
+                screen.ConvertEnumerationValuesToInts();
+            }
         }
 
 #if GLUE

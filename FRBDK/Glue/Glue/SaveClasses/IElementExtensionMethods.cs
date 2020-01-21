@@ -255,6 +255,22 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        public static void ConvertEnumerationValuesToInts(this IElement instance)
+        {
+            foreach (NamedObjectSave nos in instance.NamedObjects)
+            {
+                nos.ConvertEnumerationValuesToInts();
+            }
+            foreach (StateSave state in instance.AllStates)
+            {
+                state.ConvertEnumerationValuesToInts();
+            }
+            foreach (CustomVariable customVariable in instance.CustomVariables)
+            {
+                customVariable.ConvertEnumerationValuesToInts();
+            }
+        }
+
 
         public static StateSave GetState(this IElement element, string stateName, string categoryName = null)
         {

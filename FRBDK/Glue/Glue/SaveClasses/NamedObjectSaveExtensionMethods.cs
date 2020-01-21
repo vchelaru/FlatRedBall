@@ -369,6 +369,23 @@ namespace FlatRedBall.Glue.SaveClasses
                 contained.FixEnumerationTypes();
             }
         }
+
+        public static void ConvertEnumerationValuesToInts(this NamedObjectSave instance)
+        {
+            foreach (CustomVariableInNamedObject instruction in instance.InstructionSaves)
+            {
+                if (instruction.Value != null && instruction.Value.GetType().IsEnum)
+                {
+                    instruction.Value = (int)instruction.Value;
+                }
+            }
+
+            foreach (NamedObjectSave contained in instance.ContainedObjects)
+            {
+                contained.ConvertEnumerationValuesToInts();
+            }
+        }
+
         public static void PostLoadLogic(this NamedObjectSave instance)
         {
             for (int i = instance.InstructionSaves.Count - 1; i > -1; i--)
@@ -571,15 +588,6 @@ namespace FlatRedBall.Glue.SaveClasses
                 Type type = tmb.MemberType ?? valueToSet?.GetType();
                 var customTypeName = tmb.CustomTypeName;
 
-
-                if(type.IsEnum && valueToSet != null)
-                {
-                    var asInt = (int)valueToSet;
-                    customTypeName = type.Name;
-                    type = typeof(int);
-                    valueToSet = asInt;
-                }
-
                 instruction = instance.AddNewGenericInstructionFor(propertyName, type);
 
                 if(customTypeName != null)
@@ -590,15 +598,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
             var valueType = valueToSet?.GetType();
 
-            if (valueType?.IsEnum == true)
-            {
-                instruction.Type = valueType.Name;
-                instruction.Value = (int)valueToSet;
-            }
-            else
-            {
-                instruction.Value = valueToSet;
-            }
+
+            instruction.Value = valueToSet;
+
             return instruction;
         }
 

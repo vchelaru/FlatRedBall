@@ -105,6 +105,17 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        public static void ConvertEnumerationValuesToInts(this StateSave instance)
+        {
+            foreach (InstructionSave instructionSave in instance.InstructionSaves)
+            {
+                if(instructionSave.Value?.GetType()?.IsEnum == true)
+                {
+                    instructionSave.Value = (int)instructionSave.Value;
+                }
+            }
+        }
+
         // This function incorrectly
         // assumes that all variables
         // that represent states will be
