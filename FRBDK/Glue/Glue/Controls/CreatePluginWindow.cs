@@ -10,6 +10,7 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins;
+using System.Diagnostics;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -105,14 +106,16 @@ namespace FlatRedBall.Glue.Controls
 
             ExportPluginLogic exportPluginLogic = new ExportPluginLogic();
 
-            string response = exportPluginLogic.CreatePluginFromDirectory(
+            exportPluginLogic.CreatePluginFromDirectory(
                 sourceDirectory: PluginFolder, destinationFileName: sfdPlugin.FileName,
                 includeAllFiles: this.AllFilesRadioButton.Checked);
 
-            MessageBox.Show(response);
 
-            System.Diagnostics.Process.Start(FileManager.GetDirectory(sfdPlugin.FileName));
+            var startInfo = new ProcessStartInfo();
+            startInfo.FileName = FileManager.GetDirectory(sfdPlugin.FileName);
+            startInfo.UseShellExecute = true;
 
+            System.Diagnostics.Process.Start(startInfo);
             Close();
         }
 

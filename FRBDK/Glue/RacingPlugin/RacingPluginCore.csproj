@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo PostBuild Racing Plugin&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;%25AppData%25\FRBDK\Plugins\RacingPlugin\&quot; MD &quot;%25AppData%25\FRBDK\Plugins\RacingPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\RacingPluginCore.dll&quot; &quot;%25AppData%25\FRBDK\Plugins\RacingPlugin\RacingPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\RacingPluginCore.pdb&quot; &quot;%25AppData%25\FRBDK\Plugins\RacingPlugin\RacingPluginCore.pdb&quot;&#xD;&#xA;" />
+    <Exec Command="echo PostBuild Racing Plugin&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\RacingPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\RacingPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\RacingPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\RacingPlugin\RacingPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\RacingPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\RacingPlugin\RacingPluginCore.pdb&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>

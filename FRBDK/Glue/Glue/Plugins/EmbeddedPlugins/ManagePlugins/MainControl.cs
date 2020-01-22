@@ -49,5 +49,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
         {
             InitializeComponent();
         }
+
+        public void RefreshCheckboxes()
+        {
+            this.pluginsWindow1.RefreshCheckBoxes();
+        }
     }
 }

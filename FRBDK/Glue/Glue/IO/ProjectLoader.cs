@@ -355,6 +355,9 @@ namespace FlatRedBall.Glue.IO
 
                 SetInitWindowText("Notifying plugins of project...");
 
+                Section.GetAndStartContextAndTime("PluginManager Init");
+
+                PluginManager.Initialize(false);
 
                 // The project specific settings are needed before the plugins do their thing...
                 PluginManager.ReactToLoadedGluxEarly(ProjectManager.GlueProjectSave);
@@ -496,9 +499,7 @@ namespace FlatRedBall.Glue.IO
 
                 FactoryCodeGenerator.AddGeneratedPerformanceTypes();
                 Section.EndContextAndTime();
-                Section.GetAndStartContextAndTime("PluginManager Init");
 
-                PluginManager.Initialize(false);
 
                 SetInitWindowText("Notifying Plugins of startup");
 

@@ -33,7 +33,7 @@
 
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo PostBuild Top Down Plugin&#xD;&#xA;&#xA;&#xA;&#xD;&#xA;IF NOT EXIST &quot;%25AppData%25\FRBDK\Plugins\TopDownPlugin\&quot; MD &quot;%25AppData%25\FRBDK\Plugins\TopDownPlugin\&quot;&#xD;&#xA;&#xA;&#xD;&#xA;&#xA;echo 1&#xD;&#xA;&#xA;copy &quot;$(TargetDir)\TopDownPluginCore.dll&quot; &quot;%25AppData%25\FRBDK\Plugins\TopDownPlugin\TopDownPluginCore.dll&quot;&#xD;&#xA;&#xA;&#xA;echo 2&#xD;&#xA;&#xD;&#xA;&#xA;copy &quot;$(TargetDir)\TopDownPluginCore.pdb&quot; &quot;%25AppData%25\FRBDK\Plugins\TopDownPlugin\TopDownPluginCore.pdb&quot;" />
+    <Exec Command="echo PostBuild Top Down Plugin&#xD;&#xA;&#xA;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TopDownPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TopDownPlugin\&quot;&#xD;&#xA;&#xA;&#xD;&#xA;&#xA;echo 1&#xD;&#xA;&#xA;copy &quot;$(TargetDir)\TopDownPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TopDownPlugin\TopDownPluginCore.dll&quot;&#xD;&#xA;&#xA;&#xA;echo 2&#xD;&#xA;&#xD;&#xA;&#xA;copy &quot;$(TargetDir)\TopDownPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TopDownPlugin\TopDownPluginCore.pdb&quot;" />
   </Target>
 
 </Project>

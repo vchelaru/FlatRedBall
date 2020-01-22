@@ -181,7 +181,7 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        protected static bool PopulateCatalog(PluginManagerBase instance, string pluginFolderInAppData, List<string> pluginsToIgnore = null)
+        protected static bool PopulateCatalog(PluginManagerBase instance, string absoluteFilePath, List<string> pluginsToIgnore = null)
         {
             instance.mError = false;
 
@@ -192,7 +192,7 @@ namespace FlatRedBall.Glue.Plugins
                 AppDomain currentDomain = AppDomain.CurrentDomain;
                 //currentDomain.AssemblyResolve += reh;
 
-                AggregateCatalog catalog = instance.CreateCatalog(pluginFolderInAppData, pluginsToIgnore);
+                AggregateCatalog catalog = instance.CreateCatalog(absoluteFilePath, pluginsToIgnore);
 
                 // Before we compose the parts, we want to pull out any .dll that doesn't have its references satisfied
                 // Update : this isn't going to work because sometimes a .dll references another .dll, but the other .dll
@@ -288,7 +288,7 @@ namespace FlatRedBall.Glue.Plugins
             return null;
         }
 
-        private AggregateCatalog CreateCatalog(string folderInAppData, List<string> pluginsToIgnore = null)
+        private AggregateCatalog CreateCatalog(string absoluteFilePath, List<string> pluginsToIgnore = null)
         {
 
             mExternalAssemblies.Clear();
@@ -296,7 +296,7 @@ namespace FlatRedBall.Glue.Plugins
 
             var returnValue = new AggregateCatalog();
 
-            var pluginDirectories = GetPluginDirectories(folderInAppData);
+            var pluginDirectories = GetPluginDirectories(absoluteFilePath);
 
             foreach (var directory in pluginDirectories)
             {
@@ -332,7 +332,7 @@ namespace FlatRedBall.Glue.Plugins
             return returnValue;
         }
 
-        private List<string> GetPluginDirectories(string folderInAppData)
+        private List<string> GetPluginDirectories(string absoluteFilePath)
         {
             var pluginDirectories = new List<string>();
 
@@ -341,7 +341,7 @@ namespace FlatRedBall.Glue.Plugins
                 var paths = new List<string>
                                          {
                                              FileManager.GetDirectory(Application.ExecutablePath) + "Plugins",
-                                             FileManager.UserApplicationData + folderInAppData
+                                             absoluteFilePath
                                          };
                 // Glue startup is super verbose, we can quite it down now that plugins seem to be working fine:
                 //foreach (string path in paths)
@@ -756,12 +756,12 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        public bool LoadPlugins(string pluginFolderInAppData, List<string> pluginsToIgnore = null)
+        public bool LoadPlugins(string absoluteFilePath, List<string> pluginsToIgnore = null)
         {
             CompileOutput = new List<string>();
             CompileErrors = new List<string>();
 
-            bool succeeded = PopulateCatalog (this, pluginFolderInAppData, pluginsToIgnore);
+            bool succeeded = PopulateCatalog (this, absoluteFilePath, pluginsToIgnore);
 
             if (succeeded)
             {

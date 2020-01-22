@@ -50,7 +50,7 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF NOT EXIST %25appdata%25\FRBDK\plugins\GameScriptingPlugin\ MD %25appdata%25\FRBDK\plugins\GameScriptingPlugin\&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)GameScriptingPluginCore.dll&quot;  &quot;%25appdata%25\FRBDK\plugins\GameScriptingPlugin\GameScriptingPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo Copied files" />
+    <Exec Command="IF NOT EXIST $(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GameScriptingPlugin\ MD $(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GameScriptingPlugin\&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)GameScriptingPluginCore.dll&quot;  &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GameScriptingPlugin\GameScriptingPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo Copied files" />
   </Target>
 
 </Project>

@@ -12,6 +12,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins.Rss;
 using System.ComponentModel;
 using GlueSaveClasses;
+using System.Diagnostics;
 
 #if GLUE_VIEW
 using PluginManager = GlueView.Plugin.PluginManager;
@@ -132,10 +133,10 @@ namespace FlatRedBall.Glue.Controls
 
 #endregion
 
-#region Methods
+        #region Methods
 
 
-        private void RefreshCheckBoxes()
+        public void RefreshCheckBoxes()
         {
 
             this.ListBox.Items.Clear();
@@ -150,11 +151,11 @@ namespace FlatRedBall.Glue.Controls
                 }
             }
 
-            toAdd.Sort(delegate(PluginContainer first, PluginContainer second)
-            {
-                return first.Name.CompareTo(second.Name);
-
-            }
+            toAdd.Sort(
+                delegate(PluginContainer first, PluginContainer second)
+                {
+                    return first.Name.CompareTo(second.Name);
+                }
             );
 
 
@@ -482,7 +483,11 @@ namespace FlatRedBall.Glue.Controls
             {
                 if (SelectedPlugin != null)
                 {
-                    System.Diagnostics.Process.Start(SelectedPlugin.RemoteLocation);
+                    ProcessStartInfo psi = new ProcessStartInfo();
+                    psi.UseShellExecute = true;
+                    psi.FileName = SelectedPlugin.RemoteLocation;
+
+                    System.Diagnostics.Process.Start(psi);
                 }
 
             }

@@ -10,6 +10,7 @@
 
         <Button Click="HandleUninstallPlugin">Uninstall Plugin</Button>
         <Button Click="HandleExportPluginClicked">Export Plugin</Button>
+        <Button Click="HandleOpenPluginFolderClicked">Open Plugin Folder</Button>
         
         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding LoadOnStartup}">Load on startup</CheckBox>
         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding RequiredByProject}">Required by project</CheckBox>

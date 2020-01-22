@@ -39,8 +39,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
             else
             {
                 this.AddTab();
+                mainControl.RefreshCheckboxes();
             }
-
 
 
          

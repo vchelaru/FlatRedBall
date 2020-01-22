@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo PostBuild&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;%25AppData%25\FRBDK\Plugins\EntityPerformancePlugin\&quot; MD &quot;%25AppData%25\FRBDK\Plugins\EntityPerformancePlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\EntityPerformancePluginCore.dll&quot; &quot;%25AppData%25\FRBDK\Plugins\EntityPerformancePlugin\EntityPerformancePluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\EntityPerformancePluginCore.pdb&quot; &quot;%25AppData%25\FRBDK\Plugins\EntityPerformancePlugin\EntityPerformancePluginCore.pdb&quot;&#xD;&#xA;" />
+    <Exec Command="echo PostBuild&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\EntityPerformancePlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\EntityPerformancePlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\EntityPerformancePluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\EntityPerformancePlugin\EntityPerformancePluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\EntityPerformancePluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\EntityPerformancePlugin\EntityPerformancePluginCore.pdb&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>

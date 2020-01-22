@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF NOT EXIST &quot;%25AppData%25\FRBDK\Plugins\DialogTreePlugin\&quot; MD &quot;%25AppData%25\FRBDK\Plugins\DialogTreePlugin\&quot;&#xD;&#xA; &#xD;&#xA;copy &quot;$(TargetDir)\DialogTreePluginCore.dll&quot; &quot;%25AppData%25\FRBDK\Plugins\DialogTreePlugin\DialogTreePluginCore.dll&quot;" />
+    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\DialogTreePlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\DialogTreePlugin\&quot;&#xD;&#xA; &#xD;&#xA;copy &quot;$(TargetDir)\DialogTreePluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\DialogTreePlugin\DialogTreePluginCore.dll&quot;" />
   </Target>
 
 </Project>

@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -73,13 +74,15 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
 
                     string pluginFolder = FileManager.GetDirectory(pluginContainer.AssemblyLocation);
 
-                    string response = exportPluginLogic.CreatePluginFromDirectory(
+                    exportPluginLogic.CreatePluginFromDirectory(
                         sourceDirectory: pluginFolder, destinationFileName: filename,
                         includeAllFiles: true);
 
-                    MessageBox.Show(response);
+                    var startInfo = new ProcessStartInfo();
+                    startInfo.FileName = FileManager.GetDirectory(filename);
+                    startInfo.UseShellExecute = true;
 
-                    System.Diagnostics.Process.Start(FileManager.GetDirectory(filename));
+                    System.Diagnostics.Process.Start(startInfo);
 
                 }
             }
@@ -108,5 +111,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
             }
         }
 
+        private void HandleOpenPluginFolderClicked(object sender, RoutedEventArgs e)
+        {
+            if(pluginContainer != null)
+            {
+                ProcessStartInfo psi = new ProcessStartInfo();
+                psi.UseShellExecute = true;
+                psi.FileName = FileManager.GetDirectory(pluginContainer.AssemblyLocation);
+
+                System.Diagnostics.Process.Start(psi);
+            }
+        }
     }
 }

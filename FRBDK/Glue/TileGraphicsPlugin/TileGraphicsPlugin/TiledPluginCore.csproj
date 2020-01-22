@@ -91,7 +91,7 @@
 
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo PostBuild&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\&quot; MD &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.dll&quot; &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\TiledPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.pdb&quot; &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\TiledPluginCore.pdb&quot;&#xD;&#xA;&#xD;&#xA;echo 3&#xD;&#xA;copy &quot;$(TargetDir)\TmxGlueLib.dll&quot; &quot;%25AppData%25\FRBDK\Plugins\TiledPlugin\TmxGlueLib.dll&quot;" />
+    <Exec Command="echo PostBuild&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\TiledPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\TiledPluginCore.pdb&quot;&#xD;&#xA;&#xD;&#xA;echo 3&#xD;&#xA;copy &quot;$(TargetDir)\TmxGlueLib.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\TmxGlueLib.dll&quot;" />
   </Target>
 
 

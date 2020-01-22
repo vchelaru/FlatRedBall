@@ -42,13 +42,14 @@
             // 
             this.cbInstallType.FormattingEnabled = true;
             this.cbInstallType.Items.AddRange(new object[] {
-            "For User",
-            "For Current Project"});
+            "For Current Project",
+            "For User"
+            });
             this.cbInstallType.Location = new System.Drawing.Point(84, 6);
             this.cbInstallType.Name = "cbInstallType";
             this.cbInstallType.Size = new System.Drawing.Size(219, 21);
             this.cbInstallType.TabIndex = 0;
-            this.cbInstallType.Text = "For User";
+            this.cbInstallType.Text = "For Current Project";
             // 
             // label1
             // 

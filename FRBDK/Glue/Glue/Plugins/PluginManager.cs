@@ -38,55 +38,55 @@ namespace FlatRedBall.Glue.Plugins
         #region Interface Lists
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<PluginBase> ImportedPlugins { get; set; }
+        public IEnumerable<PluginBase> ImportedPlugins { get; set; } = new List<PluginBase>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<ITreeViewRightClick> TreeViewPlugins { get; set; }
+        public IEnumerable<ITreeViewRightClick> TreeViewPlugins { get; set; } = new List<ITreeViewRightClick>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IStateChange> StateChangePlugins { get; set; }
+        public IEnumerable<IStateChange> StateChangePlugins { get; set; } = new List<IStateChange>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IPropertyGridRightClick> PropertyGridRightClickPlugins { get; set; }
+        public IEnumerable<IPropertyGridRightClick> PropertyGridRightClickPlugins { get; set; } = new List<IPropertyGridRightClick>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IOpenVisualStudio> OpenVisualStudioPlugins { get; set; }
+        public IEnumerable<IOpenVisualStudio> OpenVisualStudioPlugins { get; set; } = new List<IOpenVisualStudio>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<ITreeItemSelect> TreeItemSelectPlugins { get; set; }
+        public IEnumerable<ITreeItemSelect> TreeItemSelectPlugins { get; set; } = new List<ITreeItemSelect>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IMenuStripPlugin> MenuStripPlugins { get; set; }
+        public IEnumerable<IMenuStripPlugin> MenuStripPlugins { get; set; } = new List<IMenuStripPlugin>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<ITopTab> TopTabPlugins { get; set; }
+        public IEnumerable<ITopTab> TopTabPlugins { get; set; } = new List<ITopTab>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<ILeftTab> LeftTabPlugins { get; set; }
+        public IEnumerable<ILeftTab> LeftTabPlugins { get; set; } = new List<ILeftTab>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IBottomTab> BottomTabPlugins { get; set; }
+        public IEnumerable<IBottomTab> BottomTabPlugins { get; set; } = new List<IBottomTab>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IRightTab> RightTabPlugins { get; set; }
+        public IEnumerable<IRightTab> RightTabPlugins { get; set; } = new List<IRightTab>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<ICenterTab> CenterTabPlugins { get; set; }
+        public IEnumerable<ICenterTab> CenterTabPlugins { get; set; } = new List<ICenterTab>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IGluxLoad> GluxLoadPlugins { get; set; }
+        public IEnumerable<IGluxLoad> GluxLoadPlugins { get; set; } = new List<IGluxLoad>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<ICurrentElement> CurrentElementPlugins { get; set; }
+        public IEnumerable<ICurrentElement> CurrentElementPlugins { get; set; } = new List<ICurrentElement>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IPropertyChange> PropertyChangePlugins { get; set; }
+        public IEnumerable<IPropertyChange> PropertyChangePlugins { get; set; } = new List<IPropertyChange>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<ICodeGeneratorPlugin> CodeGeneratorPlugins { get; set; }
+        public IEnumerable<ICodeGeneratorPlugin> CodeGeneratorPlugins { get; set; } = new List<ICodeGeneratorPlugin>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IContentFileChange> ContentFileChangePlugins { get; set; }
+        public IEnumerable<IContentFileChange> ContentFileChangePlugins { get; set; } = new List<IContentFileChange>();
 
         #endregion
 
@@ -175,6 +175,8 @@ namespace FlatRedBall.Glue.Plugins
             //var throwaway6 = typeof(ToolsUtilities.FileManager);
             //var throwaway7 = typeof(XnaAndWinforms.GraphicsDeviceControl);
             var throwaway8 = typeof(Microsoft.Build.Utilities.AssemblyFoldersFromConfigInfo);
+
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         }
 
         protected override void StartAllPlugins(List<string> pluginsToIgnore = null)
@@ -275,66 +277,73 @@ namespace FlatRedBall.Glue.Plugins
 
             mProjectInstance = new PluginManager(false);
 
+            if(FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentGlueProject != null)
+            {
+                var gameDirectory = FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentGlueProjectDirectory;
+
+                FilePath installedDirectory = gameDirectory + @"InstalledPlugins\";
+                FilePath pluginDirectory = gameDirectory + @"Plugins\";
+                CopyInstalledPluginsToRunnableLocation(installedDirectory, pluginDirectory);
+
+                mProjectInstance.LoadPlugins(gameDirectory + @"Plugins\");
+            }
+
             mInstances.Clear();
             mInstances.Add(mGlobalInstance);
             mInstances.Add(mProjectInstance);
 
 
-            mProjectInstance.LoadPlugins(@"FRBDK\Plugins");
 
-            foreach (var error in mProjectInstance.CompileErrors)
-            {
-                GlueGui.ShowException(error, "Plugin Error", new Exception(error));
-            }
         }
 
         public static bool InstallPlugin(InstallationType installationType, string localPlugFile)
         {
             bool succeeded = true;
-
-
-            string installPath = null;
-            //Validate install path
-
-            var glueState = ExportedImplementations.GlueState.Self;
-            switch (installationType)
+            if (!File.Exists(localPlugFile))
             {
-                case InstallationType.ForUser:
-                    // We're now going to install to a temporary location and copy those files
-                    // to their final location on a restart.
-
-                    //installPath = FileManager.UserApplicationData + @"\FRBDK\Plugins\";
-                    installPath = FileManager.UserApplicationDataForThisApplication + "InstalledPlugins\\";
-
-                    break;
-                case InstallationType.ForCurrentProject:
-                    if (glueState.CurrentGlueProject == null)
-                    {
-                        MessageBox.Show(@"Can not select For Current Project because no project is currently open.");
-                        succeeded = false;
-                    }
-
-                    if (succeeded)
-                    {
-                        Directory.CreateDirectory(glueState.CurrentGlueProjectDirectory + "Plugins");
-
-                        installPath = glueState.CurrentGlueProjectDirectory + "Plugins";
-                    }
-                    break;
-                default:
-                    MessageBox.Show(@"Unknown install type.  Please select a valid install type.");
-                    succeeded = false;
-                    break;
+                MessageBox.Show(@"Please select a valid *.plug file to install.");
+                succeeded = false;
             }
-
+            
+            FilePath installPath = null;
             if (succeeded)
             {
-                //Validate plugin file
-                if (!File.Exists(localPlugFile))
+                //Validate install path
+
+                var glueState = ExportedImplementations.GlueState.Self;
+                switch (installationType)
                 {
-                    MessageBox.Show(@"Please select a valid *.plug file to install.");
-                    succeeded = false;
+                    case InstallationType.ForUser:
+                        // We're now going to install to a temporary location and copy those files
+                        // to their final location on a restart.
+
+                        //installPath = FileManager.UserApplicationData + @"\FRBDK\Plugins\";
+                        //installPath = FileManager.UserApplicationDataForThisApplication + "InstalledPlugins\\";
+                        // Update Jan 21, 2020
+                        // Now we install to the current exe location instead of shared, so different installs can coexist:
+                        installPath = AppDomain.CurrentDomain.BaseDirectory + @"InstalledPlugins\";
+
+                        break;
+                    case InstallationType.ForCurrentProject:
+                        if (glueState.CurrentGlueProject == null)
+                        {
+                            MessageBox.Show(@"Can not select For Current Project because no project is currently open.");
+                            succeeded = false;
+                        }
+
+                        if (succeeded)
+                        {
+                            Directory.CreateDirectory(glueState.CurrentGlueProjectDirectory + "InstalledPlugins\\");
+
+                            installPath = glueState.CurrentGlueProjectDirectory + "InstalledPlugins\\";
+                        }
+                        break;
+                    default:
+                        MessageBox.Show(@"Unknown install type.  Please select a valid install type.");
+                        succeeded = false;
+                        break;
                 }
+
             }
 
             if (succeeded)
@@ -355,7 +364,7 @@ namespace FlatRedBall.Glue.Plugins
                     {
 
                         //Delete existing folder
-                        if (Directory.Exists(installPath + @"\" + rootDirectory))
+                        if (Directory.Exists(installPath + rootDirectory))
                         {
                             Plugins.PluginManager.ReceiveOutput("Plugin file already exists: " + installPath + @"\" + rootDirectory);
                             DialogResult result = MessageBox.Show(@"Existing plugin already exists!  Do you want to replace it?", @"Confirm delete", MessageBoxButtons.YesNo);
@@ -381,7 +390,7 @@ namespace FlatRedBall.Glue.Plugins
                         if (succeeded)
                         {
                             //Extract into install path
-                            zip.ExtractAll(installPath);
+                            zip.ExtractAll(installPath.FullPath);
 
                             Plugins.PluginManager.ReceiveOutput("Installed to " + installPath);
 
@@ -408,7 +417,7 @@ namespace FlatRedBall.Glue.Plugins
                             //var existingPlugins = 
 
                             var message =
-                                $"On restart plugin will be installed to\n{endResultDirectory}\nRestart Glue to use the new plugin.";
+                                $"On restart plugin will be installed to\n{installPath + rootDirectory}\nRestart Glue to use the new plugin.";
 
                             if(firstMatching != null)
                             {
@@ -459,16 +468,20 @@ namespace FlatRedBall.Glue.Plugins
 
         private static void CopyIntalledPluginsToRunnableLocation()
         {
-            string installedDirectory = FileManager.UserApplicationDataForThisApplication + "InstalledPlugins\\";
-            string pluginDirectory = FileManager.UserApplicationData + @"FRBDK\Plugins\";
+            string installedDirectory = AppDomain.CurrentDomain.BaseDirectory + @"InstalledPlugins\";
+            string pluginDirectory = AppDomain.CurrentDomain.BaseDirectory + @"Plugins\";
+            CopyInstalledPluginsToRunnableLocation(installedDirectory, pluginDirectory);
+        }
 
+        private static void CopyInstalledPluginsToRunnableLocation(FilePath installedDirectory, FilePath pluginDirectory)
+        { 
             // Making Glue startup not so verbose:
             //PluginManager.ReceiveOutput("Looking to copy plugins from " + installedDirectory);
 
-            if (Directory.Exists(installedDirectory))
+            if (Directory.Exists(installedDirectory.FullPath))
             {
                 //PluginManager.ReceiveOutput("Install directory found");
-                var directories = Directory.GetDirectories(installedDirectory);
+                var directories = Directory.GetDirectories(installedDirectory.FullPath);
 
                 foreach (var directory in directories)
                 {
