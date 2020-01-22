@@ -77,8 +77,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TiledPluginCore", "TileGrap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GumPluginCore", "GumPlugin\GumPlugin\GumPluginCore.csproj", "{DCC8D6F5-FE0D-4A9F-B0C5-A2EBFCCBE8A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallXna4", "..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallXna4.csproj", "{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimationEditorPluginCore", "..\AnimationEditorPlugin\AnimationEditorPlugin\AnimationEditorPluginCore.csproj", "{9A9B0F43-332E-404A-8102-B7876982236E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameScriptingPluginCore", "GameScriptingPlugin\GameScriptingPlugin\GameScriptingPluginCore.csproj", "{F9A79CEC-A00E-4C0E-84DE-BE6575D176FF}"
@@ -99,7 +97,6 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
 		..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{728151f0-03e0-4253-94fe-46b9c77edea6}*SharedItemsImports = 13
-		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{e1cb7d7b-e2ec-4deb-92e2-6ef0b76f40f0}*SharedItemsImports = 4
 		..\..\..\Gum\GumCoreShared.projitems*{f919c045-eac7-4806-9a1f-ce421f923e97}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -790,28 +787,6 @@ Global
 		{DCC8D6F5-FE0D-4A9F-B0C5-A2EBFCCBE8A5}.UnitTests|Any CPU.Build.0 = Debug|Any CPU
 		{DCC8D6F5-FE0D-4A9F-B0C5-A2EBFCCBE8A5}.UnitTests|x86.ActiveCfg = Debug|Any CPU
 		{DCC8D6F5-FE0D-4A9F-B0C5-A2EBFCCBE8A5}.UnitTests|x86.Build.0 = Debug|Any CPU
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.AutomatedBuild|Any CPU.ActiveCfg = AutomatedBuild|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.AutomatedBuild|x86.ActiveCfg = AutomatedBuild|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.AutomatedBuild|x86.Build.0 = AutomatedBuild|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug|x86.ActiveCfg = Debug|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug|x86.Build.0 = Debug|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug2|Any CPU.ActiveCfg = Debug2|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug2|x86.ActiveCfg = Debug2|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Debug2|x86.Build.0 = Debug2|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.DebugProfile|Any CPU.ActiveCfg = DebugProfile|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.DebugProfile|x86.ActiveCfg = DebugProfile|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.DebugProfile|x86.Build.0 = DebugProfile|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.DebugWithPlugins|Any CPU.ActiveCfg = Debug2|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.DebugWithPlugins|Any CPU.Build.0 = Debug2|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.DebugWithPlugins|x86.ActiveCfg = Debug2|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.DebugWithPlugins|x86.Build.0 = Debug2|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Release|Any CPU.ActiveCfg = Release|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Release|x86.ActiveCfg = Release|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.Release|x86.Build.0 = Release|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.UnitTests|Any CPU.ActiveCfg = UnitTests|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.UnitTests|x86.ActiveCfg = UnitTests|x86
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0}.UnitTests|x86.Build.0 = UnitTests|x86
 		{9A9B0F43-332E-404A-8102-B7876982236E}.AutomatedBuild|Any CPU.ActiveCfg = Debug|Any CPU
 		{9A9B0F43-332E-404A-8102-B7876982236E}.AutomatedBuild|Any CPU.Build.0 = Debug|Any CPU
 		{9A9B0F43-332E-404A-8102-B7876982236E}.AutomatedBuild|x86.ActiveCfg = Debug|Any CPU
@@ -1058,7 +1033,6 @@ Global
 		{C5D613DF-0E6A-4BE5-BEAC-E5524DC1EC93} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
 		{6F58A8DD-C47E-4157-85BE-70E5371293FA} = {DABAF6E1-1075-4CD2-959A-78FFB46B868D}
 		{DCC8D6F5-FE0D-4A9F-B0C5-A2EBFCCBE8A5} = {3DDD0995-4B47-47A2-82A4-F0A6367C9FF2}
-		{E1CB7D7B-E2EC-4DEB-92E2-6EF0B76F40F0} = {1D66D67D-064B-4AAC-94E1-AF754D281FA0}
 		{9A9B0F43-332E-404A-8102-B7876982236E} = {EB65CC7C-BBBA-46CE-B8C8-9C86DAA0C4FB}
 		{F9A79CEC-A00E-4C0E-84DE-BE6575D176FF} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
 		{1D3A9503-99E6-47C3-AB8F-83762CE94444} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
