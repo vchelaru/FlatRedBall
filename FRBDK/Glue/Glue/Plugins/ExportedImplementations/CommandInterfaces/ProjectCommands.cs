@@ -367,7 +367,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (filePath.Exists() == false)
             {
                 // will get back in later
-                System.IO.File.WriteAllText(filePath.FullPath, "");
+                GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(filePath.FullPath, ""));
             }
 
             ProjectItem added = null;

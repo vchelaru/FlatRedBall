@@ -2348,6 +2348,7 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TopDown\TopDownAiInput.Generated.cs">
       <Link>TopDown\TopDownAiInput.Generated.cs</Link>
     </Compile>
+    <Compile Include="Code" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
