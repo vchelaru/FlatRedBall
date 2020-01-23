@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System.Threading.Tasks;
 
 namespace OfficialPlugins.FrbUpdater
 {
@@ -107,29 +108,19 @@ namespace OfficialPlugins.FrbUpdater
                     break;
             }
 
-            Action action = () =>
-                                {
-                                    PopulateFiles();
-
-                                    if (this.mFoundFiles.Count > 0)
-                                    {
-                                        BeginInvoke((Action) (updateWorkerThread.RunWorkerAsync));
-                                    }
-                                    else
-                                    {
-                                        BeginInvoke((Action) (Close));
-                                    }
-                                };
-
-            try
+            Task.Run(() =>
             {
-                action.BeginInvoke(null, null);
-            }
-            catch(Exception exc)
-            {
-                GlueCommands.Self.PrintError("Error updating:\n" + exc.ToString());
+                PopulateFiles();
 
-            }
+                if (this.mFoundFiles.Count > 0)
+                {
+                    BeginInvoke((Action)(updateWorkerThread.RunWorkerAsync));
+                }
+                else
+                {
+                    BeginInvoke((Action)(Close));
+                }
+            });
         }
 
         private bool IsMonthValid(DateTime date)

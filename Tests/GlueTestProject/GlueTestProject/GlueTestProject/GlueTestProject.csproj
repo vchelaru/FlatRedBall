@@ -1362,9 +1362,20 @@
     <Compile Include="TileGraphics\TileNodeNetworkCreator.cs" />
     <Compile Include="TileGraphics\Tileset.cs" />
     <Compile Include="TileGraphics\TilesetExtensionMethods.cs" />
+    <Compile Include="TopDown\AnimationSet.Generated.cs" />
+    <Compile Include="TopDown\DirectionBasedAnimationLayer.Generated.cs" />
     <Compile Include="TopDown\Enums.cs" />
+    <Compile Include="TopDown\Enums.Generated.cs">
+      <DependentUpon>Enums.cs</DependentUpon>
+    </Compile>
     <Compile Include="TopDown\Interfaces.cs" />
+    <Compile Include="TopDown\Interfaces.Generated.cs">
+      <DependentUpon>Interfaces.cs</DependentUpon>
+    </Compile>
     <Compile Include="TopDown\TopDownAiInput.cs" />
+    <Compile Include="TopDown\TopDownAiInput.Generated.cs">
+      <DependentUpon>TopDownAiInput.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

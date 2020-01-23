@@ -31,7 +31,7 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo Copying $(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\plugins\animationeditor\AnimationEditorPluginCore.dll&#xD;&#xA;md $(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\animationeditor\&#xD;&#xA;echo 1&#xD;&#xA;copy $(TargetDir)AnimationEditorPluginCore.dll &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\animationeditor\AnimationEditorPluginCore.dll&quot;&#xD;&#xA;echo 2&#xD;&#xA;copy $(TargetDir)AnimationEditorPluginCore.pdb &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\animationeditor\AnimationEditorPluginCore.pdb&quot;&#xD;&#xA;" />
+    <Exec Command="echo Copying $(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\plugins\animationeditor\AnimationEditorPluginCore.dll&#xD;&#xA;md &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\animationeditor\&quot;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)AnimationEditorPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\animationeditor\AnimationEditorPluginCore.dll&quot;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)AnimationEditorPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\animationeditor\AnimationEditorPluginCore.pdb&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>

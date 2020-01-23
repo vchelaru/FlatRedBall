@@ -127,6 +127,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Microsoft\XNA Game Studio\v4.0\" />
     <Folder Include="MonoGame\v3.0\" />
     <Folder Include="Tools\" />
   </ItemGroup>
@@ -248,6 +249,33 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Microsoft.NETFramework.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.AvailablePlatforms.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Common.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Content.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.ContentPipeline.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.VisualBasic.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Windows.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Xbox 360.targets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="MonoGame.Build.Tasks.dll">

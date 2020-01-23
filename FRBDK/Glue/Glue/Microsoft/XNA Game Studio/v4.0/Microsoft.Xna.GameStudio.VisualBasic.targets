@@ -1,0 +1,13 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(XnaPlatform)' == 'Windows Phone' ">
+    <LangVersion Condition=" '$(LangVersion)' == '' ">10</LangVersion>
+  </PropertyGroup>
+
+  <!-- In the event that VS2010 SP1 is not installed, Windows Phone OS 7.0 and Xbox 360 Visual Basic templates will fail to generate
+       in Visual Studio due to missing Microsoft.VisualBasic.dll. Detect and indicate this to Visual Basic targets
+       so that projects can still be created and an error thrown during compilation to indicate the need for VS2010 SP1. -->
+  <PropertyGroup>
+    <!-- Windows platform targets could build without a SP, but this would cause runtime issues in retail environments. -->
+    <FailSPCheck Condition="'$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\DevDiv\VS\Servicing\10.0@SP)' == '0'">true</FailSPCheck>
+  </PropertyGroup>
+</Project>
