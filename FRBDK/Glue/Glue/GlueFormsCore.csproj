@@ -18,9 +18,6 @@
     <OutputPath></OutputPath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
-  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="GlueView\**" />
