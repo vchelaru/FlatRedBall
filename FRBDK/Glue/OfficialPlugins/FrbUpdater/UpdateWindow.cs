@@ -112,14 +112,9 @@ namespace OfficialPlugins.FrbUpdater
             {
                 PopulateFiles();
 
-                if (this.mFoundFiles.Count > 0)
-                {
-                    BeginInvoke((Action)(updateWorkerThread.RunWorkerAsync));
-                }
-                else
-                {
-                    BeginInvoke((Action)(Close));
-                }
+                DoAllDownloadLogic();
+
+                this.Invoke(new ActionDelegate(Close));
             });
         }
 
@@ -171,27 +166,7 @@ namespace OfficialPlugins.FrbUpdater
                     // some engines now have release and debug folders.  If so, we
                     // need to capture those, and I don't want to modify the code to
                     // have to handle those files explicitly - it should just check and
-                    // download whatever exists:
-
-                    //foreach (var dll in project.LibraryDlls)
-                    //{
-
-
-
-                    //    string fileName = dll;
-                    //    string absoluteFileName = project.Directory + LibraryFolder + "/" + dll;
-
-                    //    AddFileToFoundFiles(project, fileName, absoluteFileName);
-
-                    //    string xml = FileManager.RemoveExtension(dll) + ".xml";
-                    //    string absoluteXml = project.Directory + LibraryFolder + "/" + xml;
-
-                    //    if (System.IO.File.Exists(absoluteXml))
-                    //    {
-                    //        AddFileToFoundFiles(project, xml, absoluteXml);
-                    //    }
-
-                    //}
+                    // download whatever exists.
                 }
                 else
                 {
@@ -233,6 +208,10 @@ namespace OfficialPlugins.FrbUpdater
                 try
                 {
                     response = (HttpWebResponse)request.GetResponse();
+
+                    DoDownloadAndSaveFile(ref cancelled, fileData, url, response);
+                    PluginManager.ReceiveOutput("Successfully downloaded " + fileData.ServerFile);
+                    successfullyDownloadedFiles.Add(fileData);
                     response.Close();
                 }
                 catch (WebException e)
@@ -249,18 +228,6 @@ namespace OfficialPlugins.FrbUpdater
                     // errors occurred:
                     //PluginManager.ReceiveError("Unable to download " + fileData.ServerFile);
                     continue;
-                }
-
-                DoDownloadAndSaveFile(ref cancelled, fileData, url, response);
-                PluginManager.ReceiveOutput("Successfully downloaded " + fileData.ServerFile);
-
-                if (updateWorkerThread.CancellationPending)
-                {
-                    return;
-                }
-                else
-                {
-                    successfullyDownloadedFiles.Add(fileData);
                 }
             }
         }
@@ -294,13 +261,25 @@ namespace OfficialPlugins.FrbUpdater
                                     fileStream.Write(byteBuffer, 0, bytesRead);
                                     bytesDownloaded += bytesRead;
 
-                                    UpdateDownloadProgressAndSpeed(bytesDownloaded, byteBuffer, start);
 
-                                    if (updateWorkerThread.CancellationPending)
+                                    ActionDelegate updateDelegate = () =>
                                     {
-                                        cancelled = true;
-                                        break;
-                                    }
+
+                                        _speed =
+                                            (int)
+                                            ((bytesDownloaded / 1000f) / ((DateTime.Now - start).TotalMilliseconds / 1000f)) +
+                                            @" kb/s        " + (bytesDownloaded / (double)(1024 * 1024)).ToString("0.00") +
+                                            "/" +
+                                            (byteBuffer.Length / (double)(1024 * 1024)).ToString("0.00") + " MB";
+                                        lblSpeed.Text = _speed;
+                                        lblFileName.Text = _fileName;
+                                        pbValue.Value = (int)(100 * bytesRead / (float)fileSize);
+
+                                    };
+
+                                    lblSpeed.Invoke(updateDelegate);
+
+
                                 }
                             }
                         }
@@ -313,31 +292,7 @@ namespace OfficialPlugins.FrbUpdater
 
                     _downloadedFile = true;
                 }
-                else
-                {
-                    pbValue.BeginInvoke(
-                        new EventHandler(
-                            delegate
-                            {
-                                pbValue.Value = 100;
-                                Application.DoEvents();
-                            }));
-                }
             }
-        }
-
-        private void UpdateDownloadProgressAndSpeed(int bytesDownloaded, byte[] byteBuffer, DateTime start)
-        {
-
-            _speed =
-                (int)
-                ((bytesDownloaded / 1000f) / ((DateTime.Now - start).TotalMilliseconds / 1000f)) +
-                @" kb/s        " + (bytesDownloaded / (double)(1024 * 1024)).ToString("0.00") +
-                "/" +
-                (byteBuffer.Length / (double)(1024 * 1024)).ToString("0.00") + " MB";
-
-            updateWorkerThread.ReportProgress(
-                (int)(((double)bytesDownloaded / byteBuffer.Length) * 100));
         }
 
         private bool AlreadyDownloaded(FileData saveFile, DateTime fileTimestamp)
@@ -369,7 +324,7 @@ namespace OfficialPlugins.FrbUpdater
             return false;
         }
 
-        private void UpdateWorkerThreadDoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        private void DoAllDownloadLogic()
         {
 
             try
@@ -378,22 +333,10 @@ namespace OfficialPlugins.FrbUpdater
             }
             catch (InvalidOperationException ioe)
             {
-                if (_currentFile != null && !updateWorkerThread.CancellationPending)
+                if (_currentFile != null)
                 {
-                    MessageBox.Show(@"Download for the following file has failed:
-
-" +
-                                    _currentFile.ServerFile + @"
-
-Exception Info:
-" + ioe);
+                    MessageBox.Show($@"Download for the following file has failed:\n{_currentFile.ServerFile}\n{ioe}");
                 }
-                return;
-            }
-
-            if (updateWorkerThread.CancellationPending)
-            {
-                e.Cancel = true;
                 return;
             }
 
@@ -407,32 +350,23 @@ Exception Info:
             }
             catch (Exception exception)
             {
-                MessageBox.Show(@"Copy failed.
-
-Exception Info:
-" + exception);
+                MessageBox.Show($@"Copy failed.\n\nException Info:\n" + exception);
                 return;
             }
         }
 
-        private void UpdateWorkerThreadProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
-        {
-            lblSpeed.Text = _speed;
-            lblFileName.Text = _fileName;
-            pbValue.Value = Math.Min( e.ProgressPercentage, 100);
-        }
+
+        delegate void ActionDelegate();
 
         private void UpdateWorkerThreadRunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             if (!e.Cancelled)
             {
                 if (_downloadedFile)
-                    pbValue.Invoke(
-                        new EventHandler(
-                            delegate
-                            {
-                                MessageBox.Show(@"Successfully downloaded and updated files!");
-                            }));
+                {
+                    ActionDelegate toInvoke = () => MessageBox.Show(@"Successfully downloaded and updated files!");
+                    pbValue.Invoke(toInvoke);
+                }
             }
 
             Close();
@@ -440,7 +374,6 @@ Exception Info:
 
         private void UpdateWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            updateWorkerThread.CancelAsync();
         }
     }
 }

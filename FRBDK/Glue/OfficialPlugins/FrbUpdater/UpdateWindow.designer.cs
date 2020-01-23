@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.pbValue = new System.Windows.Forms.ProgressBar();
-            this.updateWorkerThread = new System.ComponentModel.BackgroundWorker();
             this.lblSpeed = new System.Windows.Forms.Label();
             this.lblFileName = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -42,14 +41,6 @@
             this.pbValue.Name = "pbValue";
             this.pbValue.Size = new System.Drawing.Size(449, 23);
             this.pbValue.TabIndex = 0;
-            // 
-            // updateWorkerThread
-            // 
-            this.updateWorkerThread.WorkerReportsProgress = true;
-            this.updateWorkerThread.WorkerSupportsCancellation = true;
-            this.updateWorkerThread.DoWork += new System.ComponentModel.DoWorkEventHandler(this.UpdateWorkerThreadDoWork);
-            this.updateWorkerThread.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.UpdateWorkerThreadProgressChanged);
-            this.updateWorkerThread.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.UpdateWorkerThreadRunWorkerCompleted);
             // 
             // lblSpeed
             // 
@@ -92,7 +83,6 @@
         #endregion
 
         private System.Windows.Forms.ProgressBar pbValue;
-        private System.ComponentModel.BackgroundWorker updateWorkerThread;
         private System.Windows.Forms.Label lblSpeed;
         private System.Windows.Forms.Label lblFileName;
     }

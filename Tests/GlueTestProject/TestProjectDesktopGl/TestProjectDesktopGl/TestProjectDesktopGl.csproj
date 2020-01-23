@@ -2339,26 +2339,14 @@
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TopDown\DirectionBasedAnimationLayer.Generated.cs">
       <Link>TopDown\DirectionBasedAnimationLayer.Generated.cs</Link>
     </Compile>
-    <Compile Include="..\..\GlueTestProject\GlueTestProject\TopDown\Enums.cs">
-      <Link>TopDown\Enums.cs</Link>
-    </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TopDown\Enums.Generated.cs">
       <Link>TopDown\Enums.Generated.cs</Link>
-      <DependentUpon>Enums.cs</DependentUpon>
-    </Compile>
-    <Compile Include="..\..\GlueTestProject\GlueTestProject\TopDown\Interfaces.cs">
-      <Link>TopDown\Interfaces.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TopDown\Interfaces.Generated.cs">
       <Link>TopDown\Interfaces.Generated.cs</Link>
-      <DependentUpon>Interfaces.cs</DependentUpon>
-    </Compile>
-    <Compile Include="..\..\GlueTestProject\GlueTestProject\TopDown\TopDownAiInput.cs">
-      <Link>TopDown\TopDownAiInput.cs</Link>
     </Compile>
     <Compile Include="..\..\GlueTestProject\GlueTestProject\TopDown\TopDownAiInput.Generated.cs">
       <Link>TopDown\TopDownAiInput.Generated.cs</Link>
-      <DependentUpon>TopDownAiInput.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
