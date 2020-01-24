@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Math.Collision
 {
+    /// <summary>
+    /// Stores and executes collision relationships.
+    /// </summary>
     public class CollisionManager : IManager
     {
         #region Fields/Properties

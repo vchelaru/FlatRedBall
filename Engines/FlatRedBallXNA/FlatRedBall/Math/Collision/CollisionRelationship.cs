@@ -115,6 +115,30 @@ namespace FlatRedBall.Math.Collision
         public abstract bool DoCollisions();
     }
 
+    public class DelegateCollisionRelationship<First, Second> : CollisionRelationship
+    {
+        First first;
+        Second second;
+
+        public Func<First, Second, bool> CollisionFunction { get; set; }
+
+        public override object FirstAsObject => first;
+        public override object SecondAsObject => second;
+
+        public DelegateCollisionRelationship(First first, Second second)
+        {
+            this.first = first;
+            this.second = second;
+        }
+
+        public override bool DoCollisions()
+        {
+            return CollisionFunction(first, second);
+        }
+
+    }
+
+
     public abstract class CollisionRelationship<FirstCollidableT, SecondCollidableT> : CollisionRelationship
         where FirstCollidableT : PositionedObject, ICollidable where SecondCollidableT : PositionedObject, ICollidable
     {
