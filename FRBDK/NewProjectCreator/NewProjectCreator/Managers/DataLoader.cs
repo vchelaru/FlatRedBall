@@ -38,7 +38,8 @@ namespace NewProjectCreator.Managers
             }
             else
             {
-                CsvFileManager.CsvDeserializeList(typeof(PlatformProjectInfo), fileName, emptyProjects);
+                var type = typeof(PlatformProjectInfo);
+                CsvFileManager.CsvDeserializeList(type, fileName, emptyProjects);
             }
 
             fileName = "Content/StarterProjects.csv";

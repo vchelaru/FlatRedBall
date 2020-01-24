@@ -34,6 +34,8 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -84,6 +86,9 @@
     <Reference Include="Ionic.Zlib, Version=1.7.2.26, Culture=neutral, PublicKeyToken=c551e179877da246, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Ionic.Zlib.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework, Version=3.8.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Glue\packages\MonoGame.Framework.DesktopGL.Core.3.8.0.2\lib\net452\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -180,6 +185,7 @@
     <None Include="Content\StarterProjects.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -234,6 +240,13 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\Glue\packages\MonoGame.Framework.DesktopGL.Core.3.8.0.2\build\MonoGame.Framework.DesktopGL.Core.targets" Condition="Exists('..\..\Glue\packages\MonoGame.Framework.DesktopGL.Core.3.8.0.2\build\MonoGame.Framework.DesktopGL.Core.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\Glue\packages\MonoGame.Framework.DesktopGL.Core.3.8.0.2\build\MonoGame.Framework.DesktopGL.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\Glue\packages\MonoGame.Framework.DesktopGL.Core.3.8.0.2\build\MonoGame.Framework.DesktopGL.Core.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
