@@ -379,6 +379,13 @@ namespace FlatRedBall.Glue.SaveClasses
                     instruction.Value = (int)instruction.Value;
                 }
             }
+            foreach(var property in instance.Properties)
+            {
+                if(property.Value != null && property.Value.GetType().IsEnum)
+                {
+                    property.Value = (int)property.Value;
+                }
+            }
 
             foreach (NamedObjectSave contained in instance.ContainedObjects)
             {
