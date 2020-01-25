@@ -87,9 +87,10 @@ namespace FlatRedBall.PlatformerPlugin
 
         private void HandleItemSelected(TreeNode selectedTreeNode)
         {
-            bool shouldShow = GlueState.Self.CurrentEntitySave != null && 
+            var entity = GlueState.Self.CurrentEntitySave;
+            bool shouldShow = entity != null && 
                 // So this only shows if the entity itself is selected:
-                selectedTreeNode?.Tag == GlueState.Self.CurrentEntitySave;
+                selectedTreeNode?.Tag == entity;
 
             if(shouldShow)
             {
@@ -104,13 +105,8 @@ namespace FlatRedBall.PlatformerPlugin
                     this.ShowTab(pluginTab);
                 }
 
-                var entity = GlueState.Self.CurrentEntitySave;
 
-                var isPlatformer = entity.Properties.GetValue<bool>("IsPlatformer");
-                if(isPlatformer)
-                {
-                    MainController.Self.UpdateTo(GlueState.Self.CurrentEntitySave);
-                }
+                MainController.Self.UpdateTo(entity);
 
             }
             else
