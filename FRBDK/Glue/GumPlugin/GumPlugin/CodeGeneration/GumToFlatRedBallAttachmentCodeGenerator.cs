@@ -49,7 +49,8 @@ namespace GumPlugin.CodeGeneration
 
             return assetTypeInfo != null &&
                 AssetTypeInfoManager.Self.AssetTypesForThisProject
-                .Any(item => item.QualifiedRuntimeTypeName?.QualifiedType == assetTypeInfo.QualifiedRuntimeTypeName?.QualifiedType);
+                .Any(item => item.QualifiedRuntimeTypeName.QualifiedType == assetTypeInfo.QualifiedRuntimeTypeName.QualifiedType);
         }
     }
 }
+    
