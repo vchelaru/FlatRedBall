@@ -18,7 +18,9 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
     {
         NoPhysics,
         MoveCollision,
-        BounceCollision
+        BounceCollision,
+        PlatformerSolidCollision,
+        PlatformerCloudCollision
     }
     #endregion
 
@@ -173,6 +175,40 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             }
         }
 
+        public bool IsFirstPlatformer
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsFirstPlatformer))]
+        public Visibility PlatformerOptionsVisibility => IsFirstPlatformer ? Visibility.Visible : Visibility.Collapsed;
+
+        [DependsOn(nameof(CollisionType))]
+        public bool IsPlatformerSolidCollisionChecked
+        {
+            get { return CollisionType == CollisionType.PlatformerSolidCollision; }
+            set
+            {
+                if (value)
+                {
+                    CollisionType = CollisionType.PlatformerSolidCollision;
+                }
+            }
+        }
+
+        [DependsOn(nameof(CollisionType))]
+        public bool IsPlatformerCloudCollisionChecked
+        {
+            get { return CollisionType == CollisionType.PlatformerCloudCollision; }
+            set
+            {
+                if (value)
+                {
+                    CollisionType = CollisionType.PlatformerCloudCollision;
+                }
+            }
+        }
 
         [SyncedProperty]
         [DefaultValue(1.0f)]

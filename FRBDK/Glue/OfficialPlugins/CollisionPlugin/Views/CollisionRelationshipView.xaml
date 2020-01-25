@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:OfficialPlugins.CollisionPlugin.Views"
              xmlns:VM="clr-namespace:OfficialPlugins.CollisionPlugin.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="600">
+             d:DesignHeight="420" d:DesignWidth="600">
     <ScrollViewer>
         <StackPanel>
             <Grid>
@@ -106,6 +106,12 @@
                                      Text="{Binding CollisionElasticity}"></TextBox>
                         </StackPanel>
                     </StackPanel>
+                    <RadioButton
+                        IsChecked="{Binding IsPlatformerSolidCollisionChecked}"
+                        Visibility="{Binding PlatformerOptionsVisibility}">Platformer Solid Collision</RadioButton>
+                    <RadioButton
+                        IsChecked="{Binding IsPlatformerCloudCollisionChecked}"
+                        Visibility="{Binding PlatformerOptionsVisibility}">Platformer Cloud Collision</RadioButton>
                 </StackPanel>
             </GroupBox>
             

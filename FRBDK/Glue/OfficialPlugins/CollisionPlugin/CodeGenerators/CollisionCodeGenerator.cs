@@ -89,7 +89,47 @@ namespace OfficialPlugins.CollisionPlugin
             var isFirstShapeCollection = firstType == "FlatRedBall.Math.Geometry.ShapeCollection";
             var isSecondShapeCollection = secondType == "FlatRedBall.Math.Geometry.ShapeCollection";
 
-            if(isSecondTileShapeCollection)
+            if(collisionType == CollisionType.PlatformerSolidCollision ||
+                collisionType == CollisionType.PlatformerCloudCollision)
+            {
+                var block = codeBlock.Block();
+
+                var effectiveFirstType = firstType;
+                if(isFirstList)
+                {
+
+                    effectiveFirstType = $"FlatRedBall.Math.PositionedObjectList<{firstType}>";
+                }
+
+                block.Line($"var temp = new FlatRedBall.Math.Collision.DelegateCollisionRelationship<{effectiveFirstType}, {secondType}>({firstCollidable}, {secondCollidable});");
+                block.Line($"var isCloud = {(collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant()};");
+                block.Line($"temp.CollisionFunction = (first, second) =>");
+                block = block.Block();
+
+                if(isFirstList)
+                {
+                    block.ForEach("var firstItem in first")
+                        .Line("firstItem.CollideAgainst(second, isCloud);");
+                }
+                else
+                {
+                    block.Line("first.CollideAgainst(second, isCloud);");
+                }
+                block.Line("return false;");
+
+                block = block.End();
+                block.Line(";");
+
+                block.Line("FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Add(temp);");
+                block.Line($"{instanceName} = temp;");
+                //CollisionManager.Self.Relationships.Add(PlayerVsSolidCollision);
+
+
+
+
+
+            }
+            else if(isSecondTileShapeCollection)
             {
                 // same method used for both list and non-list
                 codeBlock.Line($"{instanceName} = " +

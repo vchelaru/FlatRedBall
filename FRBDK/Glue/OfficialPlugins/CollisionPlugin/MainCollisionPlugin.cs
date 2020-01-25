@@ -208,6 +208,8 @@ namespace OfficialPlugins.CollisionPlugin
 
             relationshipViewModel.GlueObject = selectedNos;
 
+
+
             CollisionRelationshipViewModelController
                 .RefreshAvailableCollisionObjects(GlueState.Self.CurrentElement, relationshipViewModel);
 
@@ -215,6 +217,9 @@ namespace OfficialPlugins.CollisionPlugin
                 .RefreshSubcollisionObjects(GlueState.Self.CurrentElement, relationshipViewModel);
 
             relationshipViewModel.UpdateFromGlueObject();
+
+            CollisionRelationshipViewModelController
+                .RefreshIfIsPlatformer(GlueState.Self.CurrentElement, relationshipViewModel);
 
             if (relationshipControl != null)
             {

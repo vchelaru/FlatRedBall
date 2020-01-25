@@ -87,7 +87,22 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                     // todo - list vs. shape collection
 
                     string relationshipType;
-                    if (isFirstList == false && isSecondList == false)
+
+                    var collisionType = (CollisionType)nos.Properties.GetValue<int>(
+                        nameof(CollisionRelationshipViewModel.CollisionType));
+
+                    if(collisionType == CollisionType.PlatformerCloudCollision ||
+                        collisionType == CollisionType.PlatformerSolidCollision)
+                    {
+                        var effectiveFirstType = firstType;
+                        if(isFirstList)
+                        {
+                            effectiveFirstType = $"FlatRedBall.Math.PositionedObjectList<{firstType}>";
+                        }
+                        relationshipType =
+                            $"FlatRedBall.Math.Collision.DelegateCollisionRelationship<{effectiveFirstType}, {secondType}>";
+                    }
+                    else if (isFirstList == false && isSecondList == false)
                     {
 
                         if (isSecondTileShapeCollection)
@@ -136,7 +151,12 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                             "FlatRedBall.Math.Collision.CollisionRelationship";
                     }
 
-                    if(isSecondTileShapeCollection || isSecondShapeCollection)
+                    if (collisionType == CollisionType.PlatformerCloudCollision ||
+                        collisionType == CollisionType.PlatformerSolidCollision)
+                    {
+                        return relationshipType;
+                    }
+                    else if (isSecondTileShapeCollection || isSecondShapeCollection)
                     {
                         // doesn't require 2nd type param:
                         return

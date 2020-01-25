@@ -423,6 +423,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                     TryApplyAutoName(element, namedObject);
 
+                    RefreshIfIsPlatformer(element, viewModel);
+
                     if(TryFixMassesForTileShapeCollisionRelationship(element, nos))
                     {
                         viewModel.UpdateFromGlueObject();
@@ -448,6 +450,35 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                     }
                     break;
             }
+        }
+
+        public static void RefreshIfIsPlatformer(IElement element, CollisionRelationshipViewModel viewModel)
+        {
+            var firstName = viewModel.FirstCollisionName;
+
+            var firstNos = element.GetNamedObject(firstName);
+
+            bool isPlatformer = false;
+                       
+            if (firstNos != null)
+            {
+                IElement nosElement = null;
+                
+                if(firstNos.IsList)
+                {
+                    var genericType = firstNos.SourceClassGenericType;
+                    nosElement = ObjectFinder.Self.GetEntitySave(genericType);
+
+                }
+                else
+                {
+                    nosElement = firstNos.GetReferencedElement();
+                }
+
+                isPlatformer = nosElement?.Properties.GetValue<bool>("IsPlatformer") == true;
+            }
+
+            viewModel.IsFirstPlatformer = isPlatformer;
         }
 
         public static void TryApplyAutoName(IElement element, NamedObjectSave namedObject)
