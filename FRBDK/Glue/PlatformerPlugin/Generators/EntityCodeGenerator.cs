@@ -112,6 +112,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             codeBlock.Line("#region Platformer Properties");
 
+
+            codeBlock.Property("public FlatRedBall.Input.IInputDevice", "InputDevice")
+                .Line("get;")
+                .Line("private set;");
+
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// Returns the current time, considering whether a Screen is active. ");
             codeBlock.Line("/// This is used to control how long a user can hold the jump button during");
@@ -328,6 +333,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 this.VerticalInput =
                     FlatRedBall.Input.InputManager.Xbox360GamePads[0].LeftStick.Vertical;
+
+                this.InputDevice = FlatRedBall.Input.InputManager.Xbox360GamePads[0];
+
             }
             else
             {
@@ -339,10 +347,18 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 this.VerticalInput =
                     FlatRedBall.Input.InputManager.Keyboard.Get1DInput(Microsoft.Xna.Framework.Input.Keys.Down, Microsoft.Xna.Framework.Input.Keys.Up);
+
+                this.InputDevice = FlatRedBall.Input.InputManager.Keyboard;
+
             }
 
             InputEnabled = true;
+
+            CustomInitializePlatformerInput();
         }
+
+        partial void CustomInitializePlatformerInput();
+
 
         public void InitializePlatformerInput(FlatRedBall.Input.IInputDevice inputDevice)
         {
