@@ -46,8 +46,10 @@ namespace GumPlugin.CodeGeneration
 
         private bool IsAssetTypeInfoGum(AssetTypeInfo assetTypeInfo)
         {
-            return AssetTypeInfoManager.Self.AssetTypesForThisProject
-                .Any(item => item.QualifiedRuntimeTypeName.QualifiedType == assetTypeInfo.QualifiedRuntimeTypeName.QualifiedType);
+
+            return assetTypeInfo != null &&
+                AssetTypeInfoManager.Self.AssetTypesForThisProject
+                .Any(item => item.QualifiedRuntimeTypeName?.QualifiedType == assetTypeInfo.QualifiedRuntimeTypeName?.QualifiedType);
         }
     }
 }
