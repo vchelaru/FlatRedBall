@@ -74,22 +74,23 @@ namespace GameScriptingPlugin
 
         public override void StartUp()
         {
+            string prefix = "GameScriptingPluginCore.EmbeddedCodeFiles";
             // Do anything your plugin needs to do when it first starts up
             mCoreItemAdder = new CodeBuildItemAdder();
-            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.AfterThatDecision.cs");
-            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.DecisionAndList.cs");
-            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.DecisionOrList.cs");
-            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.DelegateDecision.cs");
-            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.GeneralAction.cs");
-            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.GeneralDecision.cs");
-            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.IDecisionList.cs");
-            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.IDoScriptEngine.cs");
-            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.IIfScriptEngine.cs");
-            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.IScriptAction.cs");
-            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.IScriptDecision.cs");
-            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.ScreenScript.cs");
-            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.Script.cs");
-            mCoreItemAdder.Add("GameScriptingPlugin.EmbeddedCodeFiles.ScriptEngine.cs");
+            mCoreItemAdder.Add($"{prefix}.AfterThatDecision.cs");
+            mCoreItemAdder.Add($"{prefix}.DecisionAndList.cs");
+            mCoreItemAdder.Add($"{prefix}.DecisionOrList.cs");
+            mCoreItemAdder.Add($"{prefix}.DelegateDecision.cs");
+            mCoreItemAdder.Add($"{prefix}.GeneralAction.cs");
+            mCoreItemAdder.Add($"{prefix}.GeneralDecision.cs");
+            mCoreItemAdder.Add($"{prefix}.IDecisionList.cs");
+            mCoreItemAdder.Add($"{prefix}.IDoScriptEngine.cs");
+            mCoreItemAdder.Add($"{prefix}.IIfScriptEngine.cs");
+            mCoreItemAdder.Add($"{prefix}.IScriptAction.cs");
+            mCoreItemAdder.Add($"{prefix}.IScriptDecision.cs");
+            mCoreItemAdder.Add($"{prefix}.ScreenScript.cs");
+            mCoreItemAdder.Add($"{prefix}.Script.cs");
+            mCoreItemAdder.Add($"{prefix}.ScriptEngine.cs");
 
             mCoreItemAdder.OutputFolderInProject = "GameScriptingCore";
             //this.ReactToLoadedGlux += HandleOpenProject;
@@ -98,9 +99,9 @@ namespace GameScriptingPlugin
 
             mDebuggingItemAdder = new CodeBuildItemAdder();
             mDebuggingItemAdder.Add(
-                "GameScriptingPlugin/EmbeddedCodeFilesDebugging/ScriptDebuggingForm.cs");
+                "GameScriptingPluginCore/EmbeddedCodeFilesDebugging/ScriptDebuggingForm.cs");
             mDebuggingItemAdder.Add(
-                "GameScriptingPlugin/EmbeddedCodeFilesDebugging/ScriptDebuggingForm.Designer.cs");
+                "GameScriptingPluginCore/EmbeddedCodeFilesDebugging/ScriptDebuggingForm.Designer.cs");
 
             mDebuggingItemAdder.OutputFolderInProject = "GameScriptingDebugging";
 
