@@ -386,7 +386,13 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         {
             float horizontalRatio = HorizontalRatio;
 
+#if DEBUG
+            if(CurrentMovement == null)
+            {
+                throw new InvalidOperationException(""You must set CurrentMovement variable (can be done in Glue)"");
+            }
 
+#endif
             if(horizontalRatio > 0)
             {
                 mDirectionFacing = HorizontalDirection.Right;

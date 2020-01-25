@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math.Geometry;
 using System;
@@ -20,10 +21,32 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
             }
         }
 
+        static bool ShouldGenerateCollisionCodeFor(IElement element)
+        {
+            var asEntitySave = element as EntitySave;
+
+            var shouldGenerateCollision = asEntitySave?.ImplementsICollidable == true;
+
+            if (shouldGenerateCollision)
+            {
+                // see if any base entities do. If they don't, then don't generate
+                var baseEntities = ObjectFinder.Self.GetAllBaseElementsRecursively(asEntitySave);
+
+                var doAnyImplementICollidable = baseEntities.Any(item => (item as EntitySave).ImplementsICollidable);
+
+                if (doAnyImplementICollidable)
+                {
+                    shouldGenerateCollision = false;
+                }
+            }
+            return shouldGenerateCollision;
+        }
+
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
             EntitySave asEntitySave = element as EntitySave;
-            if (asEntitySave != null && asEntitySave.ImplementsICollidable)
+
+            if (ShouldGenerateCollisionCodeFor(element))
             {
 
                 codeBlock.Line("private FlatRedBall.Math.Geometry.ShapeCollection mGeneratedCollision;");
@@ -41,7 +64,7 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
 
         public override ICodeBlock GeneratePostInitialize(ICodeBlock codeBlock, IElement element)
         {
-            if (element.IsICollidable())
+            if (ShouldGenerateCollisionCodeFor(element))
             {
                 codeBlock.Line("mGeneratedCollision = new FlatRedBall.Math.Geometry.ShapeCollection();");
 
@@ -75,7 +98,7 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
 
         private static void TryGenerateRemoveShapeCollectionFromManagers(ICodeBlock codeBlock, IElement element)
         {
-            if (element.IsICollidable())
+            if (ShouldGenerateCollisionCodeFor(element))
             {
                 codeBlock.Line("mGeneratedCollision.RemoveFromManagers(clearThis: false);");
             }
@@ -90,7 +113,7 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
 
         public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
         {
-            if (element.IsICollidable())
+            if (ShouldGenerateCollisionCodeFor(element))
             {
 
                 listToAddTo.Add("FlatRedBall.Math.Geometry.ICollidable");
