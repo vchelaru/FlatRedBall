@@ -5,6 +5,7 @@ using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.StateDataPlugin.Controls;
 using OfficialPlugins.StateDataPlugin.ViewModels;
+using OfficialPluginsCore.StateDataPlugin.Managers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -76,7 +77,7 @@ namespace OfficialPlugins.StateDataPlugin
             var viewModel = new StateCategoryViewModel(currentStateSaveCategory, GlueState.Self.CurrentElement);
 
             var variablesToConsider = GlueState.Self.CurrentElement.CustomVariables
-                .Where(item => item.IsShared == false)
+                .Where(item=> VariableInclusionManager.ShouldIncludeVariable(item, currentStateSaveCategory))
                 .ToList() ;
 
             foreach (var variable in variablesToConsider)

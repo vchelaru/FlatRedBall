@@ -63,7 +63,15 @@ namespace GumPlugin.CodeGeneration
 
             if (!string.IsNullOrEmpty(fullAnimationName) && System.IO.File.Exists(fullAnimationName))
             {
-                animations = FileManager.XmlDeserialize<ElementAnimationsSave>(fullAnimationName);
+                try
+                {
+                    animations = FileManager.XmlDeserialize<ElementAnimationsSave>(fullAnimationName);
+                }
+                catch(Exception e)
+                {
+                    throw new Exception($"Error trying to generate code for animation file {fullAnimationName}:\n{e}",
+                        e);
+                }
             }
             return animations;
         }

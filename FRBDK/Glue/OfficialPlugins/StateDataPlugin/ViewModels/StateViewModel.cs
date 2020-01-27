@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using OfficialPluginsCore.StateDataPlugin.Managers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -108,6 +109,11 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             get { return Get<bool>(); }
             set { Set(value); }
         }
+
+        public override string ToString()
+        {
+            return $"{VariableName} = {Value}";
+        }
     }
 
     class StateViewModel : ViewModel
@@ -172,17 +178,23 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             {
                 var variable = element.CustomVariables[i];
 
-                // see if there is a value for this variable
-                var instruction = 
-                    state?.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
+                var shouldInclude = VariableInclusionManager.ShouldIncludeVariable(variable, category);
 
-                var viewModel = new StateVariableViewModel();
-                viewModel.VariableName = variable.Name;
-                viewModel.Value = instruction?.Value;
-                viewModel.DefaultValue = element.GetCustomVariable(variable.Name)?.DefaultValue;
-                viewModel.PropertyChanged += HandleStateVariablePropertyChanged;
-                viewModel.HasState = state != null;
-                this.Variables.Add(viewModel);
+                if(shouldInclude)
+                {
+
+                    // see if there is a value for this variable
+                    var instruction = 
+                        state?.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
+
+                    var viewModel = new StateVariableViewModel();
+                    viewModel.VariableName = variable.Name;
+                    viewModel.Value = instruction?.Value;
+                    viewModel.DefaultValue = element.GetCustomVariable(variable.Name)?.DefaultValue;
+                    viewModel.PropertyChanged += HandleStateVariablePropertyChanged;
+                    viewModel.HasState = state != null;
+                    this.Variables.Add(viewModel);
+                }
             }
 
         }

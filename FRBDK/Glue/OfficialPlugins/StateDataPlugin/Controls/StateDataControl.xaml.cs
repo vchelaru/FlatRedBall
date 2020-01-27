@@ -208,7 +208,11 @@ namespace OfficialPlugins.StateDataPlugin.Controls
 
             for(int i = 0; i < ViewModel.Columns.Count; i++)
             {
-                var variable = ViewModel.Element.CustomVariables[i];
+
+                var variable =
+                    // This may not match 1:1 if we exclude variables
+                    ViewModel.Element.CustomVariables.Find(item => item.Name == ViewModel.Columns[i]);
+                    //ViewModel.Element.CustomVariables[i];
 
                 var shouldInclude = ViewModel.IncludedVariables.Contains(variable.Name);
 

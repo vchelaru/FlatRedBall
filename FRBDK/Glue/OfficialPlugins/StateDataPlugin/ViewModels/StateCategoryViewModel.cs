@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using OfficialPluginsCore.StateDataPlugin.Managers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -136,7 +137,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
         private void RefreshExcludedAndIncludedVariables()
         {
             var allVariableNames = Element.CustomVariables
-                .Where(item => item.IsShared == false)
+                .Where(item => VariableInclusionManager.ShouldIncludeVariable(item, this.category))
                 .Select(item => item.Name)
                 .ToList();
 
