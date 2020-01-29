@@ -119,7 +119,7 @@ namespace TMXGlueLib.DataTypes
                 {
                     var objectLayer = tiledLayer as mapObjectgroup;
 
-                    var firstObjectWithTexture = objectLayer.@object.First(item => item.gid != 0);
+                    var firstObjectWithTexture = objectLayer.@object?.FirstOrDefault(item => item.gid != 0);
 
                     firstGid = firstObjectWithTexture?.gid;
                 }
