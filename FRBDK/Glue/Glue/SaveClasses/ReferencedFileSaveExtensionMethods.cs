@@ -212,10 +212,10 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             return
                 // CSVs can use content pipeline
-                instance.IsCsvOrTreatedAsCsv ||
+                // Update 1/29/2020 - no it can't:
+                //instance.IsCsvOrTreatedAsCsv ||
 
-                (instance.GetAssetTypeInfo() != null &&
-                !string.IsNullOrEmpty(instance.GetAssetTypeInfo().ContentProcessor));
+                (!string.IsNullOrEmpty(instance.GetAssetTypeInfo()?.ContentProcessor));
         }
 
         public static string ReferencedFileSaveToString(ReferencedFileSave instance)

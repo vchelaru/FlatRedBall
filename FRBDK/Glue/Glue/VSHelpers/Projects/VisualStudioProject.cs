@@ -137,7 +137,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
 #if GLUE
 
-            bool handledByContentPipelinePlugin = Plugins.EmbeddedPlugins.SyncedProjects.SyncedProjectLogic.Self.GetIfHandledByContentPipelinePlugin(this, extension, rfs);
+            bool handledByContentPipelinePlugin = Plugins.EmbeddedPlugins.SyncedProjects.SyncedProjectLogic.Self
+                .GetIfHandledByContentPipelinePlugin(this, extension, rfs);
             if (handledByContentPipelinePlugin)
             {
                 return null;

@@ -162,6 +162,14 @@ namespace GumPlugin.Managers
             var extension = file.Extension;
 
             var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
+
+            ///////////////////Early Out//////////////////////////
+            if(gumProject == null)
+            {
+                return null;
+            }
+            /////////////////End Early Out////////////////////////
+
             var gumDirectory = FlatRedBall.IO.FileManager.GetDirectory(gumProject.FullFileName);
 
             var fileRelativeToGum = FlatRedBall.IO.FileManager.MakeRelative(file.Standardized, gumDirectory);

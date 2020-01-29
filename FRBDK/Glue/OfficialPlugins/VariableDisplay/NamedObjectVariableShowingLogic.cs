@@ -281,7 +281,7 @@ namespace OfficialPlugins.VariableDisplay
 
                 instance.InstanceName = value as string;
 
-                EditorObjects.IoC.Container.Get<SetVariableLogic>().ReactToPropertyChanged(
+                EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
                     "InstanceName", oldValue, "InstanceName", null);
 
 

@@ -117,9 +117,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             }
             else if(targetProject is DesktopGlLinuxProject || targetProject is DesktopGlProject)
             {
-                return extension == "wav" || 
-                    extension == "mp3" ||
-                    (extension == "png" && rfs != null && rfs.UseContentPipeline);
+                // DesktopGL can support other audio engines like NAudio. I don't know if other
+                // platforms will get this, but we may want to expand this at some point in the future...
+                return (extension == "wav" || extension == "mp3" || extension == "png") && 
+                    rfs?.UseContentPipeline == true;
             }
             else if(targetProject is IosMonogameProject)
             {

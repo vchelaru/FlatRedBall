@@ -204,6 +204,18 @@ namespace OfficialPlugins.MonoGameContent
 
                 HandleRfsChange(rfs);
             }
+            else if(memberName == nameof(ReferencedFileSave.RuntimeType))
+            {
+                // See if the new ATI says "no content pipeline" but the object is using the content pipeline:
+                var rfs = GlueState.CurrentReferencedFileSave;
+                if(rfs.GetCanUseContentPipeline() == false && rfs.UseContentPipeline)
+                {
+                    rfs.UseContentPipeline = false;
+
+                    HandleRfsChange(rfs);
+
+                }
+            }
         }
 
         private void HandleRfsChange(ReferencedFileSave rfs)

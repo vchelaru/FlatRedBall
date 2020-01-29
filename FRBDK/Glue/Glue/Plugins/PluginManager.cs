@@ -80,9 +80,6 @@ namespace FlatRedBall.Glue.Plugins
         public IEnumerable<ICurrentElement> CurrentElementPlugins { get; set; } = new List<ICurrentElement>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IPropertyChange> PropertyChangePlugins { get; set; } = new List<IPropertyChange>();
-
-        [ImportMany(AllowRecomposition = true)]
         public IEnumerable<ICodeGeneratorPlugin> CodeGeneratorPlugins { get; set; } = new List<ICodeGeneratorPlugin>();
 
         [ImportMany(AllowRecomposition = true)]
@@ -188,7 +185,7 @@ namespace FlatRedBall.Glue.Plugins
                 TreeViewPlugins, PropertyGridRightClickPlugins,
                 OpenVisualStudioPlugins, TreeItemSelectPlugins, MenuStripPlugins,
                 TopTabPlugins, LeftTabPlugins, BottomTabPlugins, RightTabPlugins, CenterTabPlugins,
-                GluxLoadPlugins, PropertyChangePlugins, CodeGeneratorPlugins,
+                GluxLoadPlugins, CodeGeneratorPlugins,
                 ContentFileChangePlugins, CurrentElementPlugins
             };
 
@@ -236,7 +233,6 @@ namespace FlatRedBall.Glue.Plugins
             CenterTabPlugins = new List<ICenterTab>();
             GluxLoadPlugins = new List<IGluxLoad>();
             CurrentElementPlugins = new List<ICurrentElement>();
-            PropertyChangePlugins = new List<IPropertyChange>();
             CodeGeneratorPlugins = new List<ICodeGeneratorPlugin>();
             ContentFileChangePlugins = new List<IContentFileChange>();
         }
@@ -1704,22 +1700,12 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToReferencedFileChangedValue(string changedMember, object oldValue)
         {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToReferencedFileChangedValueHandler != null);
-                foreach (var plugin in plugins)
+            CallMethodOnPlugin((plugin) =>
                 {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                        {
-                            plugin1.ReactToReferencedFileChangedValueHandler(changedMember, oldValue);
-                        }, container, "Failed in ReactToReferencedFileChangedValue");
-                    }
-                }
-            }
+                    plugin.ReactToReferencedFileChangedValueHandler(changedMember, oldValue);
+                },
+                nameof(PluginBase.ReactToReferencedFileChangedValueHandler),
+                (plugin) => plugin.ReactToReferencedFileChangedValueHandler != null);
         }
 
         /// <summary>
@@ -1731,37 +1717,12 @@ namespace FlatRedBall.Glue.Plugins
         /// <param name="oldValue">The value of the member before the change</param>
         internal static void ReactToChangedProperty(string changedMember, object oldValue)
         {
-            foreach (PluginManager pluginManager in mInstances)
+            CallMethodOnPlugin((plugin) =>
             {
-                foreach (IPropertyChange plugin in pluginManager.PropertyChangePlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        IPropertyChange plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToChangedProperty(changedMember, oldValue);
-                            },container, "Failed in ReactToChangedProperty");
-                    }
-                }
-
-                // Execute the new style plugins
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToChangedPropertyHandler != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToChangedPropertyHandler(changedMember, oldValue);
-                            },container, "Failed in ReactToChangedProperty");
-                    }
-                }
-            }
+                plugin.ReactToChangedPropertyHandler(changedMember, oldValue);
+            },
+            nameof(PluginBase.ReactToChangedPropertyHandler),
+            (plugin) => plugin.ReactToChangedPropertyHandler != null);
         }
 
         internal static void ReactToGluxSave()

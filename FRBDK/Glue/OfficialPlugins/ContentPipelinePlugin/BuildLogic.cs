@@ -44,10 +44,11 @@ namespace OfficialPlugins.MonoGameContent
 
             if (needsMonoGameFilesBuilt)
             {
+                // Actually files could be removed from the content pipeline, so we should 
+                // consider all files:
+                //var filesToBeBuilt = allReferencedFileSaves.Where(item => IsBuiltByContentPipeline(item, forcePngsToContentPipeline)).ToList();
 
-                var filesToBeBuilt = allReferencedFileSaves.Where(item => IsBuiltByContentPipeline(item, forcePngsToContentPipeline)).ToList();
-
-                foreach (var fileToBeBuilt in filesToBeBuilt)
+                foreach (var fileToBeBuilt in allReferencedFileSaves)
                 {
                     UpdateFileMembershipAndBuildReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline);
                 }
@@ -413,10 +414,15 @@ namespace OfficialPlugins.MonoGameContent
         {
             string extension = FileManager.GetExtension(fileName);
 
-            bool isRequired = extension == "mp3" ||
+            bool isRequired = 
                 extension == "wma" ||
-                extension == "ogg" ||
-                extension == "wav" ||
+
+                // OGG and WAV no longer force content pipeline now that we support other audio engines
+                // like NAudio
+                //extension == "ogg" ||
+                //extension == "wav" ||
+                // extension == "mp3" ||
+
                 extension == "fx";
 
             if (isRequired)

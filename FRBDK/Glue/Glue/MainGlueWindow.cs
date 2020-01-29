@@ -431,12 +431,12 @@ namespace Glue
 
         private void AddObjectsToIocContainer()
         {
-            EditorObjects.IoC.Container.Set(new SetVariableLogic());
+            EditorObjects.IoC.Container.Set(new SetPropertyManager());
             EditorObjects.IoC.Container.Set(new NamedObjectSetVariableLogic());
             EditorObjects.IoC.Container.Set(new StateSaveCategorySetVariableLogic());
             EditorObjects.IoC.Container.Set(new StateSaveSetVariableLogic());
             EditorObjects.IoC.Container.Set(new EventResponseSaveSetVariableLogic());
-            EditorObjects.IoC.Container.Set(new ReferencedFileSaveSetVariableLogic());
+            EditorObjects.IoC.Container.Set(new ReferencedFileSaveSetPropertyManager());
             EditorObjects.IoC.Container.Set(new CustomVariableSaveSetVariableLogic());
             EditorObjects.IoC.Container.Set(new EntitySaveSetVariableLogic());
             EditorObjects.IoC.Container.Set(new ScreenSaveSetVariableLogic());
@@ -738,7 +738,7 @@ namespace Glue
 
         private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
-            EditorObjects.IoC.Container.Get<SetVariableLogic>().PropertyValueChanged(e, this.PropertyGrid);
+            EditorObjects.IoC.Container.Get<SetPropertyManager>().PropertyValueChanged(e, this.PropertyGrid);
 
         }
 

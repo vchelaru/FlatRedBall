@@ -21,13 +21,11 @@ using FlatRedBall.Glue.Plugins;
 
 namespace FlatRedBall.Glue.SetVariable
 {
-    public class ReferencedFileSaveSetVariableLogic
+    public class ReferencedFileSaveSetPropertyManager
     {
         internal void ReactToChangedReferencedFile(string changedMember, object oldValue, ref bool updateTreeView)
         {
             ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
-
-
 
             #region Opens With
 
