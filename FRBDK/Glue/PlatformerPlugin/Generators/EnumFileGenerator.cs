@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System;
@@ -18,7 +19,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             {
                 var contents = GenerateFileContents();
 
-                var relativeDirectory = "Platformer/Enums.cs";
+                var relativeDirectory = "Platformer/Enums.Generated.cs";
 
                 GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeDirectory);
 
@@ -26,6 +27,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                 GlueCommands.Self.TryMultipleTimes(() =>
                     System.IO.File.WriteAllText(fullFile, contents));
+
+                FilePath oldFile = GlueState.Self.CurrentGlueProjectDirectory +
+                    "Platformer/Enums.cs";
+                GlueCommands.Self.ProjectCommands.RemoveFromProjects(
+                    oldFile, saveAfterRemoving: true);
 
             }, "Adding platformer enum files to the project");
 

@@ -100,8 +100,15 @@ namespace OfficialPlugins.Compiler.Managers
                         // global but not part of global content. That's a special case we'll have to handle later
                         printOutput($"Waiting for Glue to copy reload global file {strippedName}");
                         await Task.Delay(500);
-                        await CommandSender.SendCommand("RestartScreen", ViewModel.PortNumber);
-                        handled = true;
+                        try
+                        {
+                            await CommandSender.SendCommand("RestartScreen", ViewModel.PortNumber);
+                            handled = true;
+                        }
+                        catch(Exception e)
+                        {
+                            printError($"Error trying to send command:{e.ToString()}");
+                        }
                     }
                 }
                 if(!handled)
