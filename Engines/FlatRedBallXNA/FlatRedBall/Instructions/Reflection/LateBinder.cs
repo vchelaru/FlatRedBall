@@ -188,10 +188,11 @@ namespace FlatRedBall.Instructions.Reflection
             }
             else
             {
-#if WINDOWS_8 || UWP
+#if UWP
                 if (mType.GetField(name) != null)
 #else
-                if (mType.GetField(name, mGetFieldBindingFlags) != null)
+                GetFieldRecursive(mType, name, out FieldInfo fieldInfo, out Type throwaway);
+                if (fieldInfo != null)
 #endif
                 {
                     mFieldsSet.Add(name);
@@ -202,6 +203,21 @@ namespace FlatRedBall.Instructions.Reflection
                     mPropertieSet.Add(name);
                     return GetProperty(target, name);
                 }
+            }
+        }
+
+        private void GetFieldRecursive(Type type, string fieldName, out FieldInfo field, out Type ownerType)
+        {
+            field = type.GetField(fieldName, mGetFieldBindingFlags);
+            ownerType = null;
+
+            if(field != null)
+            {
+                ownerType = type;
+            }
+            else if(field == null && type.BaseType != null)
+            {
+                GetFieldRecursive(type.BaseType, fieldName, out field, out ownerType);
             }
         }
 
@@ -466,7 +482,8 @@ namespace FlatRedBall.Instructions.Reflection
         }
 
 #if !WINDOWS_8 && !UWP
-        static BindingFlags mGetFieldBindingFlags = BindingFlags.GetField | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+        static BindingFlags mGetFieldBindingFlags = BindingFlags.GetField | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | 
+            BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
 #endif
 
         public object GetField(object target, string fieldName)
@@ -490,9 +507,12 @@ namespace FlatRedBall.Instructions.Reflection
 #else
 
                 Binder binder = null;
-                object[] args = null; 
-                
-                return mType.InvokeMember(
+                object[] args = null;
+
+                // use this to get the recurisve type in case it's defined by base
+                GetFieldRecursive(mType, fieldName, out FieldInfo fieldInfo, out Type fieldOwner);
+
+                return fieldOwner.InvokeMember(
                    fieldName,
                    mGetFieldBindingFlags,
                    binder,
@@ -618,7 +638,8 @@ namespace FlatRedBall.Instructions.Reflection
 
 #if !WINDOWS_8 && !UWP
         static BindingFlags mGetterBindingFlags = 
-            BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.Static;                
+            BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.Static |
+            BindingFlags.FlattenHierarchy;                
 #endif
 
         private void ValidateGetter(ref string propertyName)
