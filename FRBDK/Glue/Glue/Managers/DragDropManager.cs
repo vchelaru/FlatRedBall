@@ -378,8 +378,10 @@ namespace FlatRedBall.Glue.Managers
                     // Make sure that the two types match
                     string listType = targetNamedObjectSave.SourceClassGenericType;
 
+                    var entity = treeNodeMoving.EntitySave;
+
                     bool isOfTypeOrInherits =
-                        listType == treeNodeMoving.EntitySave.Name ||
+                        listType == entity.Name ||
                         treeNodeMoving.EntitySave.InheritsFrom(listType);
 
                     if (isOfTypeOrInherits == false)
@@ -387,14 +389,14 @@ namespace FlatRedBall.Glue.Managers
                         MessageBox.Show("The target list type is of type\n\n" +
                             listType +
                             "\n\nBut the Entity is of type\n\n" +
-                            treeNodeMoving.EntitySave.Name +
+                            entity.Name +
                             "\n\nCould not add an instance to the list", "Could not add instance");
                     }
                     else
                     {
                         NamedObjectSave namedObject = new NamedObjectSave();
                         namedObject.InstanceName =
-                            FileManager.RemovePath(treeNodeMoving.EntitySave.Name) + "1";
+                            FileManager.RemovePath(entity.Name) + "1";
 
                         StringFunctions.MakeNameUnique<NamedObjectSave>(
                             namedObject, targetNamedObjectSave.ContainedObjects);
@@ -404,6 +406,12 @@ namespace FlatRedBall.Glue.Managers
                         namedObject.DefinedByBase = false;
 
                         NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToCurrentNamedObjectList(namedObject);
+
+                        if(namedObject.SourceClassType != entity.Name)
+                        {
+                            namedObject.SourceClassType = entity.Name;
+                            namedObject.UpdateCustomProperties();
+                        }
 
                         ElementViewWindow.GenerateSelectedElementCode();
                         // Don't save the Glux, the caller of this method will take care of it
