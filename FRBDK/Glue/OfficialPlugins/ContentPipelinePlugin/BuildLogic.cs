@@ -429,6 +429,13 @@ namespace OfficialPlugins.MonoGameContent
             {
                 return true;
             }
+            else if(rfsUseContentPipeline && 
+                (extension == "ogg" ||
+                 extension == "wav" ||
+                 extension == "mp3"))
+            {
+                return true;
+            }
             else if (rfsUseContentPipeline || forcePngsToContentPipeline)
             {
                 return extension == "png";
