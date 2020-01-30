@@ -21,7 +21,7 @@ namespace NAudioPlugin.Managers
                     nAudioSongAti.Extension = "ogg";
                     nAudioSongAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
                     {
-                        QualifiedType = "NAudio.Song"
+                        QualifiedType = "FlatRedBall.NAudio.NAudio_Song"
                     };
 
                     nAudioSongAti.CustomLoadFunc = GetLoadSongCode;
@@ -43,7 +43,7 @@ namespace NAudioPlugin.Managers
                     nAudioSoundEffectAti.Extension = "wav";
                     nAudioSoundEffectAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
                     {
-                        QualifiedType = "NAudio.SoundEffect"
+                        QualifiedType = "FlatRedBall.NAudio.NAudio_Sfx"
                     };
 
                     nAudioSoundEffectAti.CustomLoadFunc = GetLoadSoundEffectCode;
@@ -69,9 +69,9 @@ namespace NAudioPlugin.Managers
         {
             var instanceName = file.GetInstanceName();
 
-            var relativeFileName = file.Name;
+            var relativeFileName = file.Name.ToLower();
 
-            return $"{instanceName} = LoadSongFromFile({relativeFileName});";
+            return $"{instanceName} =  new {nAudioSongAti.QualifiedRuntimeTypeName.QualifiedType}(\"Content/{relativeFileName}\");";
         }
 
         private static string GetLoadSoundEffectCode(IElement screenOrEntity, NamedObjectSave namedObject, 
@@ -79,9 +79,9 @@ namespace NAudioPlugin.Managers
         {
             var instanceName = file.GetInstanceName();
 
-            var relativeFileName = file.Name;
+            var relativeFileName = file.Name.ToLower();
 
-            return $"{instanceName} = LoadSoundEffectFromFile({relativeFileName});";
+            return $"{instanceName} =  new {nAudioSoundEffectAti.QualifiedRuntimeTypeName.QualifiedType}(\"Content/{relativeFileName}\");";
 
         }
     }
