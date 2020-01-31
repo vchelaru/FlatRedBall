@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.Interfaces;
+using NAudioPlugin.CodeGenerators;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -17,13 +18,14 @@ namespace NAudioPlugin
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
             Managers.AssetTypeInfoManager.RemoveAssetTypes();
-
+            UnregisterAllCodeGenerators();
             return true;
         }
 
         public override void StartUp()
         {
             Managers.AssetTypeInfoManager.AddAssetTypes();
+            RegisterCodeGenerator(new ElementCodeGenerator());
         }
     }
 }
