@@ -8,6 +8,16 @@
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Embedded\NAudio_Sfx.Generated.cs" />
+    <Compile Remove="Embedded\NAudio_Song.Generated.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Embedded\NAudio_Sfx.Generated.cs" />
+    <EmbeddedResource Include="Embedded\NAudio_Song.Generated.cs" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="3.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />

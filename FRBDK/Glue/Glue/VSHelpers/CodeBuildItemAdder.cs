@@ -91,7 +91,7 @@ namespace FlatRedBall.Glue.VSHelpers
         {
             List<string> filesInFolder = new List<string>();
             var named = assembly.GetManifestResourceNames();
-            string libraryWithDotAtEnd = folderName + ".";
+            string libraryWithDotAtEnd = folderName.Replace("/", ".") + ".";
 
             foreach (var item in named)
             {

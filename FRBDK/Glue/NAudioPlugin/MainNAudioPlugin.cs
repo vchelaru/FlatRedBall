@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.Interfaces;
+using FlatRedBall.Glue.VSHelpers;
 using NAudioPlugin.CodeGenerators;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,20 @@ namespace NAudioPlugin
         {
             Managers.AssetTypeInfoManager.AddAssetTypes();
             RegisterCodeGenerator(new ElementCodeGenerator());
+
+            AddMenuItemTo("Embed NAudio Classes", HandleEmbedNAudioFiles, "Content");
+        }
+
+        private void HandleEmbedNAudioFiles(object sender, EventArgs e)
+        {
+            var codeItemAdder = new CodeBuildItemAdder();
+            codeItemAdder.OutputFolderInProject = "NAudio";
+            var thisAssembly = this.GetType().Assembly;
+
+            codeItemAdder.AddFolder("NAudioPlugin/Embedded", thisAssembly);
+
+            codeItemAdder.PerformAddAndSaveTask(thisAssembly);
+
         }
     }
 }
