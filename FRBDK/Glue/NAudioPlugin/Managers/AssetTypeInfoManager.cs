@@ -23,6 +23,7 @@ namespace NAudioPlugin.Managers
                     {
                         QualifiedType = "NAudio.Song"
                     };
+                    nAudioSongAti.DestroyMethod = null; // handled by codegen
 
                     nAudioSongAti.CustomLoadFunc = GetLoadSongCode;
                 }
@@ -46,6 +47,7 @@ namespace NAudioPlugin.Managers
                         QualifiedType = "NAudio.SoundEffect"
                     };
 
+                    nAudioSoundEffectAti.DestroyMethod = null; // handled by codegen
                     nAudioSoundEffectAti.CustomLoadFunc = GetLoadSoundEffectCode;
                 }
                 return nAudioSoundEffectAti;
