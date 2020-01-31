@@ -91,13 +91,18 @@ namespace FlatRedBall.Glue.VSHelpers
         {
             List<string> filesInFolder = new List<string>();
             var named = assembly.GetManifestResourceNames();
-            string libraryWithDotAtEnd = folderName.Replace("/", ".") + ".";
+            string libraryWithSlash = folderName + "/";
+
+            var slashesReplacedWithDots = libraryWithSlash.Replace("/", ".");
 
             foreach (var item in named)
             {
-                if (item.StartsWith(libraryWithDotAtEnd))
+
+                if (item.StartsWith(slashesReplacedWithDots))
                 {
-                    filesInFolder.Add(item);
+                    var whatToAdd = libraryWithSlash + item.Substring(libraryWithSlash.Length);
+
+                    filesInFolder.Add(whatToAdd);
                 }
             }
 
@@ -150,7 +155,7 @@ namespace FlatRedBall.Glue.VSHelpers
                     if(wasAdded)
                     {
                         PluginManager.ReceiveOutput("Added file to project: " + file);
-                        wasAdded = true;
+                        wasAnythingAdded = true;
                     }
                 }
             }
