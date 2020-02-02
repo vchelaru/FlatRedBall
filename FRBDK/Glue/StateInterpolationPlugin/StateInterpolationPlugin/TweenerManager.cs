@@ -39,7 +39,14 @@ namespace StateInterpolationPlugin
 
         public void Add(Tweener tweener)
         {
+            // Jan 2, 2020
+            // I think we should
+            // default Running to 
+            // true when adding a tweener
+            // to the tweener manager
             mTweeners.Add(tweener);
+            tweener.Start();
+
             // We could use a function in the
             // tweener to prevent allocating a function.
             // Update January 1, 2018
