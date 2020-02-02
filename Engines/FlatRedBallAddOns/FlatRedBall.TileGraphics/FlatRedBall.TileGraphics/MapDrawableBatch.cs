@@ -181,6 +181,15 @@ namespace FlatRedBall.TileGraphics
         // so -(_parallaxMultiplier - 1) = value
         // thus -_parallaxMultiplier + 1 = value (get)
         private float _parallaxMultiplierX;
+
+        /// <summary>
+        /// The multiplier applied when scrolling the camera. 
+        /// Defaults to a value of 1, which 
+        /// means when the camera scrolls 1 unit, the 
+        /// layer moves by 1 unit to the left. A value of less than 1 should be used for
+        /// layers in the background, while a value greater
+        /// than 1 for layers in the foreground.
+        /// </summary>
         public float ParallaxMultiplierX
         {
             get { return -_parallaxMultiplierX + 1; }
@@ -188,6 +197,14 @@ namespace FlatRedBall.TileGraphics
         }
 
         private float _parallaxMultiplierY;
+        /// <summary>
+        /// The multiplier applied when scrolling the camera. 
+        /// Defaults to a value of 1, which 
+        /// means when the camera scrolls 1 unit, the 
+        /// layer moves by 1 unit to the left. A value of less than 1 should be used for
+        /// layers in the background, while a value greater
+        /// than 1 for layers in the foreground.
+        /// </summary>
         public float ParallaxMultiplierY
         {
             get { return -_parallaxMultiplierY + 1; }
