@@ -216,14 +216,21 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     var canvasHeight = Gum.Wireframe.GraphicalUiElement.CanvasHeight;
                     var zoom = (float)destinationRectangleHeight / (float)Gum.Wireframe.GraphicalUiElement.CanvasHeight;
-                    global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;
+                    if(global::RenderingLibrary.SystemManagers.Default != null)
+                    {
+                        global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;
+                    }
+                    
 ")
                 .End().Else()
                 .Line(@"
                     var graphicsHeight = Gum.Wireframe.GraphicalUiElement.CanvasHeight;
                     var windowHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height;
                     var zoom = windowHeight / (float)graphicsHeight;
-                    global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;
+                    if(global::RenderingLibrary.SystemManagers.Default != null)
+                    {
+                        global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = zoom;
+                    }
                     ");
 
 

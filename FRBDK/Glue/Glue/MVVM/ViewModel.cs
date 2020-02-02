@@ -150,11 +150,6 @@ namespace FlatRedBall.Glue.MVVM
             }
         }
 
-
-
         public event PropertyChangedEventHandler PropertyChanged;
-
-
-
     }
 }
