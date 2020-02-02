@@ -37,6 +37,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)FrameworkElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GumExtensions\GraphicalUiElementExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\KeyEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextWrapping.cs" />
   </ItemGroup>
 </Project>

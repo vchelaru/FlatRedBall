@@ -159,12 +159,12 @@ namespace FlatRedBall.Glue.Controls
             else
             {
                 string fileType = ati.FriendlyName;
-                if (fileType.Contains("("))
+                if (fileType?.Contains("(") == true)
                 {
                     fileType = fileType.Substring(0, fileType.IndexOf('('));
                 }
 
-                fileType = fileType.Replace(" ", "");
+                fileType = fileType?.Replace(" ", "");
                 return fileType;
             }
         }
