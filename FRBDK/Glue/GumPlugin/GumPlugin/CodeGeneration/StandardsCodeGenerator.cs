@@ -57,7 +57,10 @@ namespace GumPlugin.CodeGeneration
             mStandardElementToQualifiedTypes.Add("LineRectangle", "RenderingLibrary.Math.Geometry.LineRectangle");
             mStandardElementToQualifiedTypes.Add("NineSlice", "RenderingLibrary.Graphics.NineSlice");
             mStandardElementToQualifiedTypes.Add("ColoredRectangle", "RenderingLibrary.Graphics.SolidRectangle");
-            mStandardElementToQualifiedTypes.Add("Container", "RenderingLibrary.Math.Geometry.LineRectangle");
+
+            // This could be any type, so don't force it to line rectangle
+            //mStandardElementToQualifiedTypes.Add("Container", "RenderingLibrary.Math.Geometry.LineRectangle");
+            mStandardElementToQualifiedTypes.Add("Container", null);
 
             mStandardElementToQualifiedTypes.Add("SolidRectangle", "RenderingLibrary.Graphics.SolidRectangle");
             mStandardElementToQualifiedTypes.Add("Sprite", "RenderingLibrary.Graphics.Sprite");
@@ -235,7 +238,12 @@ namespace GumPlugin.CodeGeneration
 
                 foreach(var additionalVariable in variableNamesToAddForProperties)
                 {
-                    GenerateVariable(currentBlock, containedGraphicalObjectName, additionalVariable, standardElementSave);
+                    bool shouldGenerateVariable = GetIfShouldGenerateProperty(additionalVariable, standardElementSave);
+
+                    if (shouldGenerateVariable)
+                    {
+                        GenerateVariable(currentBlock, containedGraphicalObjectName, additionalVariable, standardElementSave);
+                    }
                 }
             }
 
@@ -269,27 +277,35 @@ namespace GumPlugin.CodeGeneration
                     $"does not contain the key {standardElementSave.Name}");
             }
             string qualifiedBaseType = mStandardElementToQualifiedTypes[standardElementSave.Name];
-            string unqualifiedBaseType = standardElementSave.Name;
 
-            string fieldName = "mContained" + unqualifiedBaseType;
-
-            currentBlock.Line(qualifiedBaseType + " " + fieldName + ";");
-
-            string propertyName = "Contained" + unqualifiedBaseType;
-
-            var containedProperty = currentBlock.Property(qualifiedBaseType, propertyName);
+            if(!string.IsNullOrEmpty(qualifiedBaseType))
             {
-                var get = containedProperty.Get();
-                {
-                    var ifBlock = get.If(fieldName + " == null");
-                    {
-                        ifBlock.Line(fieldName + " = this.RenderableComponent as " + qualifiedBaseType + ";");
-                    }
+                string unqualifiedBaseType = standardElementSave.Name;
 
-                    get.Line("return " + fieldName + ";");
+                string fieldName = "mContained" + unqualifiedBaseType;
+
+                currentBlock.Line(qualifiedBaseType + " " + fieldName + ";");
+
+                string propertyName = "Contained" + unqualifiedBaseType;
+
+                var containedProperty = currentBlock.Property(qualifiedBaseType, propertyName);
+                {
+                    var get = containedProperty.Get();
+                    {
+                        var ifBlock = get.If(fieldName + " == null");
+                        {
+                            ifBlock.Line(fieldName + " = this.RenderableComponent as " + qualifiedBaseType + ";");
+                        }
+
+                        get.Line("return " + fieldName + ";");
+                    }
                 }
+                return propertyName;
             }
-            return propertyName;
+            else
+            {
+                return null;
+            }
         }
 
         private bool GetIfShouldGenerateProperty(Gum.DataTypes.Variables.VariableSave variable, ElementSave standardElementSave)
@@ -303,6 +319,11 @@ namespace GumPlugin.CodeGeneration
             // Core Gum objets don't have states, so if it's a state then don't create a property for it - it'll be handled
             // by the code that handles states
             if(variable.IsState(standardElementSave))
+            {
+                return false;
+            }
+
+            if(standardElementSave.Name == "Container" && variable.Name == "Color")
             {
                 return false;
             }
@@ -337,6 +358,11 @@ namespace GumPlugin.CodeGeneration
             if (mStandardVariableNameAliases.ContainsKey(variableName.Replace(" ", "")))
             {
                 variableName = mStandardVariableNameAliases[variableName.Replace(" ", "")];
+            }
+
+            if(containedGraphicalObjectName == null)
+            {
+                containedGraphicalObjectName = "((RenderingLibrary.Graphics.IRenderableIpso)this.RenderableComponent)";
             }
 
             string whatToGetOrSet = containedGraphicalObjectName + "." + variableName.Replace(" ", "");
