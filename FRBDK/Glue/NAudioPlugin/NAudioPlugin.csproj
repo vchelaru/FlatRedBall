@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <Platforms>x86</Platforms>
   </PropertyGroup>
@@ -10,12 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Embedded\NAudio_Sfx.Generated.cs" />
     <Compile Remove="Embedded\NAudio_Song.Generated.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Embedded\NAudio_Sfx.Generated.cs" />
     <EmbeddedResource Include="Embedded\NAudio_Song.Generated.cs" />
   </ItemGroup>
   <ItemGroup>

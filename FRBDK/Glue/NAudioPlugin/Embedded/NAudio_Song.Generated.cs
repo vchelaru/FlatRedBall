@@ -7,8 +7,9 @@ namespace FlatRedBall.NAudio
 {
     public class NAudio_Song : IDisposable
     {
-        VorbisWaveReader reader;
-        WaveOut waveOut;
+        NAudio_LoopReader reader;
+        WaveOutEvent waveOut;
+        WaveChannel32 waveChannel;
 
         public bool IsPlaying
         {
@@ -27,40 +28,31 @@ namespace FlatRedBall.NAudio
             set
             {
                 volume = value;
-                if (waveOut != null)
-                {
-                    waveOut.Volume = volume;
-                }
+                waveChannel.Volume = volume;
             }
         }
-        public bool IsRepeating { get; set; } = true;
-
-        public NAudio_Song (string fileName) 
+        public bool IsRepeating
         {
-            this.reader = new VorbisWaveReader(fileName);
-            this.reader.Position = 0;
-            this.waveOut = new WaveOut();
+            get => this.reader.IsRepeating;
+            set
+            {
+                this.reader.IsRepeating = value;
+            }
+        }
 
-            this.waveOut.Init(reader);
-            this.waveOut.Volume = volume;
-            this.waveOut.PlaybackStopped += HandlePlaybackStopped;
+        public NAudio_Song(string fileName)
+        {
+            this.reader = new NAudio_LoopReader(fileName);
+            this.reader.IsRepeating = true;
+            this.reader.Position = 0;
+            this.waveChannel = new WaveChannel32(this.reader, volume, 0);
+            this.waveOut = new WaveOutEvent();
+            this.waveOut.Init(this.waveChannel);
         }
 
         public void Play()
         {
             this.waveOut.Play();
-        }
-
-        private void HandlePlaybackStopped(object sender, StoppedEventArgs e)
-        {
-            if (IsRepeating)
-            {
-                StartOver();
-            }
-            else
-            {
-                TryDisposeContainedObjects();
-            }
         }
 
         public void StartOver()
@@ -78,8 +70,10 @@ namespace FlatRedBall.NAudio
             {
                 waveOut.Dispose();
                 reader.Dispose();
+                waveChannel.Dispose();
                 waveOut = null;
                 reader = null;
+                waveChannel = null;
             }
         }
 
@@ -87,9 +81,8 @@ namespace FlatRedBall.NAudio
         {
             if (waveOut != null)
             {
-                waveOut.Volume = volume;
+                waveOut.Stop();
             }
-            TryDisposeContainedObjects();
         }
 
         public void Dispose()
