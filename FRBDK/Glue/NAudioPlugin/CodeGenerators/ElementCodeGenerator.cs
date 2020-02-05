@@ -28,10 +28,6 @@ namespace NAudioPlugin.CodeGenerators
                 {
                     codeBlock.Line($"{instanceName}.Dispose();");
                 }
-                else if(rfsAti == AssetTypeInfoManager.NAudioSoundEffectAti)
-                {
-                    codeBlock.Line($"{instanceName}.Dispose();");
-                }
             }
             return codeBlock;
         }

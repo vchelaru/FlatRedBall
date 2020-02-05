@@ -32,38 +32,14 @@ namespace NAudioPlugin.Managers
             }
         }
 
-        static AssetTypeInfo nAudioSoundEffectAti;
-        public static AssetTypeInfo NAudioSoundEffectAti
-        {
-            get
-            {
-                if(nAudioSoundEffectAti == null)
-                {
-                    nAudioSoundEffectAti = new AssetTypeInfo();
-                    nAudioSoundEffectAti.MustBeAddedToContentPipeline = false;
-                    nAudioSoundEffectAti.Extension = "wav";
-                    nAudioSoundEffectAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
-                    {
-                        QualifiedType = "FlatRedBall.NAudio.NAudio_Sfx"
-                    };
-
-                    nAudioSoundEffectAti.DestroyMethod = null; // handled by codegen
-                    nAudioSoundEffectAti.CustomLoadFunc = GetLoadSoundEffectCode;
-                }
-                return nAudioSoundEffectAti;
-            }
-        }
-
         internal static void AddAssetTypes()
         {
             AvailableAssetTypes.Self.AddAssetType(NAudioSongAti);
-            AvailableAssetTypes.Self.AddAssetType(NAudioSoundEffectAti);
         }
 
         internal static void RemoveAssetTypes()
         {
             AvailableAssetTypes.Self.RemoveAssetType(NAudioSongAti);
-            AvailableAssetTypes.Self.RemoveAssetType(NAudioSoundEffectAti);
         }
 
         private static string GetLoadSongCode(IElement screenOrEntity, NamedObjectSave namedObject, 
@@ -74,17 +50,6 @@ namespace NAudioPlugin.Managers
             var relativeFileName = file.Name.ToLower();
 
             return $"{instanceName} =  new {nAudioSongAti.QualifiedRuntimeTypeName.QualifiedType}(\"Content/{relativeFileName}\");";
-        }
-
-        private static string GetLoadSoundEffectCode(IElement screenOrEntity, NamedObjectSave namedObject, 
-            ReferencedFileSave file, string contentManager)
-        {
-            var instanceName = file.GetInstanceName();
-
-            var relativeFileName = file.Name.ToLower();
-
-            return $"{instanceName} =  new {nAudioSoundEffectAti.QualifiedRuntimeTypeName.QualifiedType}(\"Content/{relativeFileName}\");";
-
         }
     }
 }
