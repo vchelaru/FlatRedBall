@@ -426,8 +426,9 @@ namespace Glue
         private void AddErrorReporters()
         {
             EditorObjects.IoC.Container.Get<List<IErrorReporter>>()
-                .Add(new CsvErrorReporter())
-;        }
+                .Add(new CsvErrorReporter());
+
+        }
 
         private void AddObjectsToIocContainer()
         {

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.SaveClasses;
+using GumPluginCore.Managers;
 
 namespace GumPlugin.CodeGeneration
 {
@@ -35,7 +36,7 @@ namespace GumPlugin.CodeGeneration
             StateCodeGeneratorContext context = new StateCodeGeneratorContext();
             context.Element = elementSave;
 
-            ElementAnimationsSave animations = GetAnimationsFor(elementSave);
+            ElementAnimationsSave animations = AnimationLogic.GetAnimationsFor(elementSave);
 
             if(animations != null)
             {
@@ -52,29 +53,7 @@ namespace GumPlugin.CodeGeneration
             currentBlock.Line("#endregion");
         }
 
-        private static ElementAnimationsSave GetAnimationsFor(ElementSave elementSave)
-        {
-            string gumFolder = FileManager.GetDirectory(AppState.Self.GumProjectSave.FullFileName);
 
-            string fullAnimationName = null;
-            fullAnimationName = gumFolder + elementSave.Subfolder + "/" + elementSave.Name + "Animations.ganx";
-
-            ElementAnimationsSave animations = null;
-
-            if (!string.IsNullOrEmpty(fullAnimationName) && System.IO.File.Exists(fullAnimationName))
-            {
-                try
-                {
-                    animations = FileManager.XmlDeserialize<ElementAnimationsSave>(fullAnimationName);
-                }
-                catch(Exception e)
-                {
-                    throw new Exception($"Error trying to generate code for animation file {fullAnimationName}:\n{e}",
-                        e);
-                }
-            }
-            return animations;
-        }
 
         private void GenerateAnimationMember(StateCodeGeneratorContext context, ICodeBlock currentBlock, AnimationSave animation, AbsoluteOrRelative absoluteOrRelative)
         {
@@ -179,13 +158,13 @@ namespace GumPlugin.CodeGeneration
 
                     if (subElement != null)
                     {
-                        subAnimation = GetAnimationsFor(subElement).Animations.FirstOrDefault(candidate => candidate.Name == item.RootName);
+                        subAnimation = AnimationLogic.GetAnimationsFor(subElement).Animations.FirstOrDefault(candidate => candidate.Name == item.RootName);
                     }
                 }
                 else
                 {
                     subElement = element;
-                    subAnimation = GetAnimationsFor(element).Animations.FirstOrDefault(candidate => candidate.Name == item.RootName);
+                    subAnimation = AnimationLogic.GetAnimationsFor(element).Animations.FirstOrDefault(candidate => candidate.Name == item.RootName);
                 }
 
                 if (subElement != null && subAnimation != null)
@@ -586,7 +565,7 @@ namespace GumPlugin.CodeGeneration
                     currentBlock.Line(item.MemberNameInCode() + ".StopAnimations();");
                 }
             }
-            ElementAnimationsSave animations = GetAnimationsFor(elementSave);
+            ElementAnimationsSave animations = AnimationLogic.GetAnimationsFor(elementSave);
             if (animations != null)
             {
                 foreach (var animation in animations.Animations)

@@ -25,6 +25,7 @@ using Gum.DataTypes.Behaviors;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Managers;
 using System.Diagnostics;
+using FlatRedBall.Glue.Errors;
 
 namespace GumPlugin
 {
@@ -299,6 +300,11 @@ namespace GumPlugin
             FlatRedBall.Glue.Parsing.CodeWriter.GlobalContentCodeGenerators.Add(globalContentCodeGenerator);
 
             Gum.Managers.StandardElementsManager.Self.Initialize();
+
+            //EditorObjects.IoC.Container.Get<IErrorContainer>().
+            var error = new GumPluginCore.ErrorReporting.ErrorReporter();
+
+            EditorObjects.IoC.Container.Get<List<IErrorReporter>>().Add(error);
 
         }
 
