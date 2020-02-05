@@ -105,7 +105,7 @@ namespace FlatRedBall.Glue.Controls
                 var text = SearchTermTextBox.Text?.ToLowerInvariant();
 
                 var shouldAdd = string.IsNullOrEmpty(text) ||
-                    toString.ToLowerInvariant().Contains(text);
+                    toString?.ToLowerInvariant().Contains(text) == true;
 
                 if(shouldAdd)
                 {
