@@ -113,7 +113,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
             List<string> listOfFiles = new List<string>();
             listOfFiles.AddRange(System.IO.Directory.GetFiles(BuiltInFileTemplateFolder));
 
-            listOfFiles.AddRange(System.IO.Directory.GetFiles(CustomFileTemplateFolder));
+            var customFiles = System.IO.Directory.GetFiles(CustomFileTemplateFolder);
+            listOfFiles.AddRange(customFiles);
 
             return listOfFiles;
         }

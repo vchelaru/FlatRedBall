@@ -381,8 +381,8 @@ namespace TileGraphicsPlugin
             string whatToSave = "TiledPluginCore.Content.Levels.TiledMap.tmx";
             //C:\Users\Victor\AppData\Roaming\Glue\FilesForAddNewFile\
 
-            string destination = FileManager.UserApplicationData +
-                @"Glue\FilesForAddNewFile\TiledMap.tmx";
+            string destination = FileManager.UserApplicationDataForThisApplication + "FilesForAddNewFile/" + 
+                "TiledMap.tmx";
             try
             {
                 FileManager.SaveEmbeddedResource(assembly, whatToSave, destination);
