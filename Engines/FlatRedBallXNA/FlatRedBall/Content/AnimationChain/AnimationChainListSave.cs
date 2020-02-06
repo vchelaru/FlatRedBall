@@ -25,9 +25,9 @@ using FlatRedBall.Graphics;
 namespace FlatRedBall.Content.AnimationChain
 {
     [XmlType("AnimationChainArraySave")]
-    public class AnimationChainListSave :AnimationChainListSaveBase<AnimationChainSave>
+    public class AnimationChainListSave
     {
-#if WINDOWS_PHONE || XBOX360 || ANDROID || IOS
+#if ANDROID || IOS
         public static bool ManualDeserialization = true;
 #else
         public static bool ManualDeserialization = false;
@@ -37,21 +37,42 @@ namespace FlatRedBall.Content.AnimationChain
 
         private List<string> mToRuntimeErrors = new List<string>();
 
-
+        [XmlIgnore]
+        public string FileName
+        {
+            set { mFileName = value; }
+            get { return mFileName; }
+        }
 
         #endregion
 
-
         #region Properties
 
-		[XmlIgnore]
+        [XmlIgnore]
         public List<string> ToRuntimeErrors
         {
             get { return mToRuntimeErrors; }
         }
 
-        #endregion
+        [XmlIgnore]
+        protected string mFileName;
 
+        /// <summary>
+        /// Whether files (usually image files) referenced by this object (and .achx) are
+        /// relative to the .achx itself. If false, then file references will be stored as absolute. 
+        /// If true, then file reference,s will be stored relative to the .achx itself. This value should
+        /// be true so that a .achx can be moved to a different file system or computer and still
+        /// have valid references.
+        /// </summary>
+        public bool FileRelativeTextures = true;
+
+        public FlatRedBall.TimeMeasurementUnit TimeMeasurementUnit;
+        public FlatRedBall.Graphics.TextureCoordinateType CoordinateType = Graphics.TextureCoordinateType.UV;
+
+        [XmlElementAttribute("AnimationChain")]
+        public List<AnimationChainSave> AnimationChains;
+
+        #endregion
 
         #region Methods
 
@@ -375,7 +396,5 @@ namespace FlatRedBall.Content.AnimationChain
         }
 
         #endregion
-
-
     }
 }

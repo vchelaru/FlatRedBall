@@ -1,12 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-
-#if !FRB_MDX
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
-#endif
-
-using FlatRedBall.IO;
 using FlatRedBall.Utilities;
 
 
@@ -14,12 +8,10 @@ using FlatRedBall.Utilities;
 
 namespace FlatRedBall.Graphics.Animation
 {
-    #region XML Docs
     /// <summary>
     /// Represents a collection of AnimationFrames which can be used to perform
     /// texture flipping animation on IAnimationChainAnimatables such as Sprites.
     /// </summary>
-    #endregion
     public partial class AnimationChain : List<AnimationFrame>, INameable, IEquatable<AnimationChain>
     {
         #region Fields

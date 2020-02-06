@@ -590,11 +590,6 @@ namespace FlatRedBall
                 UpdateToCurrentAnimationFrame();
                 mJustChangedFrame = true;
             }
-
-            if (mJustCycled)
-            {
-                mJustCycled = true;
-            }
         }
 
         #region XML Docs

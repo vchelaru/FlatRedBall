@@ -32,11 +32,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Content\AI\Pathfinding\NodeNetworkSave.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\AI\Pathfinding\PositionedNodeSave.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\AnimationChain\AnimationChainListSave.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Content\AnimationChain\AnimationChainListSaveBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\AnimationChain\AnimationChainSave.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Content\AnimationChain\AnimationChainSaveBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\AnimationChain\AnimationFrameSave.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Content\AnimationChain\AnimationFrameSaveBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentLoaders\SongLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentLoaders\TextureContentLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentManager.cs" />

@@ -21,9 +21,20 @@ namespace FlatRedBall.Content.AnimationChain
 #if !UWP && !WINDOWS_8
     [Serializable]
 #endif
-    public class AnimationChainSave : AnimationChainSaveBase<AnimationFrameSave>
+    public class AnimationChainSave
     {
         #region Fields
+
+        public string Name;
+
+        /// <summary>
+        /// This is used if the AnimationChain actually comes from 
+        /// a file like a .gif.
+        /// </summary>
+        public string ParentFile;
+
+        [XmlElementAttribute("Frame")]
+        public List<AnimationFrameSave> Frames = new List<AnimationFrameSave>();
 
 
         #endregion
