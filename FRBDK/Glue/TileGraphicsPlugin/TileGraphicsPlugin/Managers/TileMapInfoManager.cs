@@ -45,7 +45,8 @@ namespace TileGraphicsPlugin.Managers
                 wasAnythingAdded = true;
             }
 
-            if (TryAdd("EmbeddedAnimation", "System.Collections.Generic.List<FlatRedBall.Content.AnimationChain.AnimationFrameSave>", null, tileMapInfoClass))
+            // force it to eliminate any old AnimationFrameSaveBase
+            if (TryAdd("EmbeddedAnimation", "System.Collections.Generic.List<FlatRedBall.Content.AnimationChain.AnimationFrameSave>", null, tileMapInfoClass, forceAdd:true))
             {
                 wasAnythingAdded = true;
             }
@@ -59,8 +60,13 @@ namespace TileGraphicsPlugin.Managers
             }
         }
 
-        bool TryAdd(string memberName, string type, object defaultValue, CustomClassSave tileMapInfoClass)
+        bool TryAdd(string memberName, string type, object defaultValue, CustomClassSave tileMapInfoClass, bool forceAdd = false)
         {
+            if(forceAdd)
+            {
+                tileMapInfoClass.RequiredProperties.RemoveAll(item => item.Member == memberName);
+            }
+
             bool shouldAdd = tileMapInfoClass.RequiredProperties.Any(item=>item.Member == memberName) == false;
             if(shouldAdd)
             {
