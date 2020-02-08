@@ -45,7 +45,7 @@ namespace TileGraphicsPlugin.Managers
                 wasAnythingAdded = true;
             }
 
-            if (TryAdd("EmbeddedAnimation", "System.Collections.Generic.List<FlatRedBall.Content.AnimationChain.AnimationFrameSaveBase>", null, tileMapInfoClass))
+            if (TryAdd("EmbeddedAnimation", "System.Collections.Generic.List<FlatRedBall.Content.AnimationChain.AnimationFrameSave>", null, tileMapInfoClass))
             {
                 wasAnythingAdded = true;
             }
