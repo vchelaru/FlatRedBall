@@ -78,6 +78,7 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("Width Units");
             mVariableNamesToSkipForProperties.Add("Parent");
             mVariableNamesToSkipForProperties.Add("Guide");
+            mVariableNamesToSkipForProperties.Add("IsItalic");
 
             mVariableNamesToSkipForProperties.Add("X Origin");
             mVariableNamesToSkipForProperties.Add("X Units");
