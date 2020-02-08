@@ -273,7 +273,9 @@ namespace GumPlugin
             // 2.2.1
             // - Improved performance by  making the "Removing unreferenced files for Gum project" action add or move to end, eliminating
             //   unnecessary processing
-            get { return new Version(2, 2, 1, 0); }
+            // 2.2.2
+            // - Fixed Circle.Radius setting width and height incorrectly
+            get { return new Version(2, 2, 2, 0); }
         }
 
         #endregion

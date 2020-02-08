@@ -413,8 +413,8 @@ namespace GumPlugin.CodeGeneration
 
             if(elementSave.Name == "Circle" && variable.GetRootName() == "Radius")
             {
-                setter.Line("mWidth = value/2;");
-                setter.Line("mHeight = value/2;");
+                setter.Line("mWidth = value*2;");
+                setter.Line("mHeight = value*2;");
                 setter.Line("ContainedCircle.Radius = value;");
                 return true;
             }
