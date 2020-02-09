@@ -33,12 +33,10 @@ namespace FlatRedBall.Glue.IO
                 
             lock (mUpdateFileLock)
             {
+                string projectFileName = ProjectManager.ProjectBase?.FullFileName;
                 if(ProjectManager.ProjectBase != null)
                 {
-
                     handled = TryHandleProjectFileChanges(changedFile);
-
-                    string projectFileName = ProjectManager.ProjectBase.FullFileName;
 
                     var standardizedGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + ".glux";
                     var partialGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + @"\..*\.generated\.glux";
