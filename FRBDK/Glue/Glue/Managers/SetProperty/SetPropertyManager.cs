@@ -132,7 +132,7 @@ namespace FlatRedBall.Glue.SetVariable
             #region Entity
             else if (EditorLogic.CurrentEntitySave != null)
             {
-                Container.Get<EntitySaveSetVariableLogic>().ReactToEntityChangedValue(variableNameAsDisplayed, oldValue);
+                Container.Get<EntitySaveSetVariableLogic>().ReactToEntityChangedProperty(variableNameAsDisplayed, oldValue);
             }
 
             #endregion

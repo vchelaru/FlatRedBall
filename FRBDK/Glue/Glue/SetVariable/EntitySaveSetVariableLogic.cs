@@ -17,13 +17,13 @@ namespace FlatRedBall.Glue.SetVariable
 {
     class EntitySaveSetVariableLogic
     {
-        internal void ReactToEntityChangedValue(string changedMember, object oldValue)
+        internal void ReactToEntityChangedProperty(string changedMember, object oldValue)
         {
             EntitySave entitySave = EditorLogic.CurrentEntitySave;
 
             #region BaseEntity changed
 
-            if (changedMember == "BaseEntity")
+            if (changedMember == nameof(EntitySave.BaseEntity))
             {
                 // Not sure why we want to return here.  Maybe the user used
                 // to have this set to something but now is undoing it
@@ -31,7 +31,7 @@ namespace FlatRedBall.Glue.SetVariable
                 //{
                 //    return;
                 //}
-                ReactToChangedBaseEntity(oldValue, entitySave);
+                ReactToChangedBaseEntity(oldValue as string, entitySave);
             }
 
             #endregion
@@ -226,7 +226,7 @@ namespace FlatRedBall.Glue.SetVariable
             PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
         }
 
-        private static void ReactToChangedBaseEntity(object oldValue, EntitySave entitySave)
+        private static void ReactToChangedBaseEntity(string oldValue, EntitySave entitySave)
         {
             bool isValidBase = GetIfCurrentEntityBaseIsValid(entitySave);
 
@@ -237,8 +237,44 @@ namespace FlatRedBall.Glue.SetVariable
             }
             else
             {
+                var oldEntity = GlueState.Self.GetElement(oldValue) as EntitySave;
+                var newEntity = GlueState.Self.GetElement(entitySave.BaseEntity) as EntitySave;
+
+                HashSet<ScreenSave> screensToRegenerate = new HashSet<ScreenSave>();
+
+                if(oldEntity != null)
+                {
+                    var allObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldEntity);
+                    var screens = allObjects.Select(item => item.GetContainer())
+                        .Where(item => item as ScreenSave != null)
+                        .Select(item => item as ScreenSave);
+
+                    foreach (var screen in screens)
+                    {
+                        screensToRegenerate.Add(screen);
+                    }
+                }
+
+                if(newEntity != null)
+                {
+                    var allObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(newEntity);
+                    var screens = allObjects.Select(item => item.GetContainer())
+                        .Where(item => item as ScreenSave != null)
+                        .Select(item => item as ScreenSave);
+
+                    foreach (var screen in screens)
+                    {
+                        screensToRegenerate.Add(screen);
+                    }
+                }
+
+                foreach(var screen in screensToRegenerate)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(screen);
+                }
 
                 List<CustomVariable> variablesBefore = new List<CustomVariable>();
+
                 variablesBefore.AddRange(entitySave.CustomVariables);
 
                 entitySave.UpdateFromBaseType();
