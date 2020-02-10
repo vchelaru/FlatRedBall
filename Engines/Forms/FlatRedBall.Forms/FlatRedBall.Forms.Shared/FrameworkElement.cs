@@ -1,9 +1,14 @@
 ﻿using FlatRedBall.Forms.GumExtensions;
 using FlatRedBall.Gui;
 using Gum.Wireframe;
+using RenderingLibrary.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace FlatRedBall.Forms.Controls
@@ -11,6 +16,88 @@ namespace FlatRedBall.Forms.Controls
     public class FrameworkElement
     {
         #region Fields/Properties
+
+        Dictionary<string, string> vmPropsToUiProps = new Dictionary<string, string>();
+
+        object mInheritedBindingContext;
+        internal object InheritedBindingContext
+        {
+            get => mInheritedBindingContext;
+            set
+            {
+                if (value != EffectiveBindingContext)
+                {
+                    var oldBindingContext = EffectiveBindingContext;
+                    if (oldBindingContext is INotifyPropertyChanged oldViewModel)
+                    {
+                        oldViewModel.PropertyChanged -= HandleViewModelPropertyChanged;
+                    }
+                    mInheritedBindingContext = value;
+
+                    if (EffectiveBindingContext is INotifyPropertyChanged viewModel)
+                    {
+                        viewModel.PropertyChanged += HandleViewModelPropertyChanged;
+
+                        foreach (var vmProperty in vmPropsToUiProps.Keys)
+                        {
+                            UpdateToVmProperty(vmProperty);
+                        }
+                    }
+
+                    UpdateChildrenInheritedBindingContext(this.Visual.Children);
+                }
+            }
+        }
+
+        object mBindingContext;
+        public object BindingContext
+        {
+            get => EffectiveBindingContext;
+            set
+            {
+                if(value != EffectiveBindingContext)
+                {
+                    var oldBindingContext = EffectiveBindingContext;
+                    if (oldBindingContext is INotifyPropertyChanged oldViewModel)
+                    {
+                        oldViewModel.PropertyChanged -= HandleViewModelPropertyChanged;
+                    }
+                    mBindingContext = value;
+
+                    if (EffectiveBindingContext is INotifyPropertyChanged viewModel)
+                    {
+                        viewModel.PropertyChanged += HandleViewModelPropertyChanged;
+
+                        foreach (var vmProperty in vmPropsToUiProps.Keys)
+                        {
+                            UpdateToVmProperty(vmProperty);
+                        }
+                    }
+
+                    UpdateChildrenInheritedBindingContext(this.Visual.Children);
+                }
+                
+            }
+        }
+
+        object EffectiveBindingContext => mBindingContext ?? InheritedBindingContext;
+
+        private void UpdateChildrenInheritedBindingContext(IEnumerable<IRenderableIpso> children)
+        {
+            foreach(var child in children)
+            {
+                if(child is GraphicalUiElement gue && 
+                    gue.FormsControlAsObject is FrameworkElement frameworkElement)
+                {
+                    frameworkElement.InheritedBindingContext = this.BindingContext;
+                }
+
+                UpdateChildrenInheritedBindingContext(child.Children);
+            }
+        }
+
+
+
 
         /// <summary>
         /// The height in pixels. This is a calculated value considering HeightUnits and Height.
@@ -210,6 +297,78 @@ namespace FlatRedBall.Forms.Controls
         protected virtual void ReactToVisualChanged()
         {
 
+        }
+
+        private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var vmPropertyName = e.PropertyName;
+            var updated = UpdateToVmProperty(vmPropertyName);
+            //if (updated)
+            //{
+            //    this.EffectiveManagers?.InvalidateSurface();
+            //}
+        }
+
+        public void SetBinding(string uiProperty, string vmProperty)
+        {
+            if(vmPropsToUiProps.ContainsKey(vmProperty))
+            {
+                vmPropsToUiProps.Remove(vmProperty);
+            }
+            vmPropsToUiProps.Add(vmProperty, uiProperty);
+        }
+
+        private bool UpdateToVmProperty(string vmPropertyName)
+        {
+            var updated = false;
+            if (vmPropsToUiProps.ContainsKey(vmPropertyName))
+            {
+                var vmProperty = EffectiveBindingContext.GetType().GetProperty(vmPropertyName);
+                if (vmProperty == null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Could not find property {vmPropertyName} in {mBindingContext.GetType()}");
+                }
+                else
+                {
+                    var vmValue = vmProperty.GetValue(EffectiveBindingContext, null);
+
+                    var uiProperty = this.GetType().GetProperty(vmPropsToUiProps[vmPropertyName]);
+                    if (uiProperty.PropertyType == typeof(string))
+                    {
+                        uiProperty.SetValue(this, vmValue?.ToString(), null);
+                    }
+                    else
+                    {
+                        uiProperty.SetValue(this, vmValue, null);
+                    }
+                    updated = true;
+                }
+            }
+            return updated;
+        }
+
+        protected void PushValueToViewModel([CallerMemberName]string uiPropertyName = null)
+        {
+
+            var kvp = vmPropsToUiProps.FirstOrDefault(item => item.Value == uiPropertyName);
+
+            if(kvp.Value == uiPropertyName)
+            {
+                var vmPropName = kvp.Key;
+
+                var vmProperty = EffectiveBindingContext?.GetType().GetProperty(vmPropName);
+
+                if(vmProperty != null)
+                {
+                    var uiProperty = this.GetType().GetProperty(uiPropertyName);
+                    if(uiProperty != null)
+                    {
+                        var uiValue = uiProperty.GetValue(this, null);
+
+                        vmProperty.SetValue(EffectiveBindingContext, uiValue, null);
+                    }
+                }
+            }
         }
     }
 }

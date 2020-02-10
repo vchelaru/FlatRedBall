@@ -233,13 +233,15 @@ namespace FlatRedBall.Forms.Controls
                 float trackHeight = Track.GetAbsoluteHeight();
 
                 var valueRange = (Maximum - Minimum) + ViewportSize;
+                if(valueRange > 0)
+                {
+                    var thumbRatio = ViewportSize / valueRange;
 
-                var thumbRatio = ViewportSize / valueRange;
+                    thumb.Visual.YUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
+                    thumb.Visual.HeightUnits = global::Gum.DataTypes.DimensionUnitType.Absolute;
 
-                thumb.Visual.YUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
-                thumb.Visual.HeightUnits = global::Gum.DataTypes.DimensionUnitType.Absolute;
-
-                thumb.Height = System.Math.Max(MinimumThumbSize, (float)(trackHeight * thumbRatio));
+                    thumb.Height = System.Math.Max(MinimumThumbSize, (float)(trackHeight * thumbRatio));
+                }
             }
         }
 

@@ -51,6 +51,8 @@ namespace FlatRedBall.Forms.Controls
                 var index = Items.IndexOf(value);
 
                 SelectedIndex = index;
+
+                PushValueToViewModel();
             }
         }
 
@@ -130,6 +132,9 @@ namespace FlatRedBall.Forms.Controls
             }
 
             SelectionChanged?.Invoke(this, args);
+
+            PushValueToViewModel(nameof(SelectedObject));
+            PushValueToViewModel(nameof(SelectedIndex));
         }
 
     }
