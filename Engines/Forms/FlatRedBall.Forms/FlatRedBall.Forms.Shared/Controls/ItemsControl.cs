@@ -94,9 +94,9 @@ namespace FlatRedBall.Forms.Controls
             return item;
         }
 
-#region Event Handler methods
+        #region Event Handler methods
 
-        private void HandleCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        protected virtual void HandleCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
@@ -166,6 +166,6 @@ namespace FlatRedBall.Forms.Controls
 
         }
 
-#endregion
+        #endregion
     }
 }

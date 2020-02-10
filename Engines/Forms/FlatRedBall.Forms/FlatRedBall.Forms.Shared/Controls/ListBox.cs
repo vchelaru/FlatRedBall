@@ -119,6 +119,26 @@ namespace FlatRedBall.Forms.Controls
         {
         }
 
+        protected override void HandleCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            base.HandleCollectionChanged(sender, e);
+
+            if(e.Action == NotifyCollectionChangedAction.Remove && 
+                (e.OldStartingIndex == selectedIndex ||
+                    selectedIndex >= Items.Count))
+            {
+                // we removed the selected item, so update the VM:
+
+                PushValueToViewModel(nameof(SelectedObject));
+                PushValueToViewModel(nameof(SelectedIndex));
+            }
+            else if(e.Action == NotifyCollectionChangedAction.Reset && selectedIndex >= 0)
+            {
+                SelectedIndex = -1;
+                PushValueToViewModel(nameof(SelectedObject));
+            }
+        }
+
         #endregion
 
         protected override void OnItemSelected(object sender, SelectionChangedEventArgs args)
