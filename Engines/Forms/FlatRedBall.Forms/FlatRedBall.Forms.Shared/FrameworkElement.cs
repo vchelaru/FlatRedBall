@@ -333,6 +333,12 @@ namespace FlatRedBall.Forms.Controls
                     var vmValue = vmProperty.GetValue(EffectiveBindingContext, null);
 
                     var uiProperty = this.GetType().GetProperty(vmPropsToUiProps[vmPropertyName]);
+
+                    if(uiProperty == null)
+                    {
+                        throw new Exception($"The type {this.GetType()} does not have a property {vmPropsToUiProps[vmPropertyName]}");
+                    }
+
                     if (uiProperty.PropertyType == typeof(string))
                     {
                         uiProperty.SetValue(this, vmValue?.ToString(), null);
