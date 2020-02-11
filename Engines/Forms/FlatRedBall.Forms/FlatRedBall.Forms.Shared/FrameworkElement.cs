@@ -166,11 +166,19 @@ namespace FlatRedBall.Forms.Controls
             set { Visual.Y = value; }
         }
 
+        bool isEnabled = true;
         public virtual bool IsEnabled
         {
-            get;
-            set;
-        } = true;
+            get => isEnabled;
+            set
+            {
+                if(isEnabled != value)
+                {
+                    isEnabled = value;
+                    Visual.Enabled = value;
+                }
+            }
+        }
 
         public bool IsMouseOver { get; set; }
 
