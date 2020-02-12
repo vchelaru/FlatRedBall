@@ -45,9 +45,10 @@ namespace FlatRedBall.Glue.SaveClasses
         public enum GluxVersions
         {
             PreVersion = 1,
-            AddedGeneratedGame1 = 2
+            AddedGeneratedGame1 = 2,
+            ListsHaveAssociateWithFactoryBool = 3
         }
-        public const int LatestVersion = 2;
+        public const int LatestVersion = 3;
 
         public int FileVersion { get; set; }
 

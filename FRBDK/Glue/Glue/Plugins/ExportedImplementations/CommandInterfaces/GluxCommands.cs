@@ -798,7 +798,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             MembershipInfo membershipInfo = NamedObjectSaveExtensionMethodsGlue.GetMemberMembershipInfo(addObjectViewModel.ObjectName);
 
-            var newNos = NamedObjectSaveExtensionMethodsGlue.AddNewNamedObjectTo(addObjectViewModel.ObjectName,
+            var newNos = AddNewNamedObjectToInternal(addObjectViewModel.ObjectName,
                 membershipInfo, element, namedObject, false);
 
             if (addObjectViewModel.SourceClassType != NoType && !string.IsNullOrEmpty(addObjectViewModel.SourceClassType))
@@ -852,6 +852,52 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GluxCommands.Self.SaveGlux();
 
             return newNos;
+        }
+
+        private static NamedObjectSave AddNewNamedObjectToInternal(string objectName, MembershipInfo membershipInfo,
+            IElement element, NamedObjectSave namedObjectSave, bool raisePluginResponse = true)
+        {
+            NamedObjectSave namedObject = new NamedObjectSave();
+
+            if (GlueState.Self.CurrentGlueProject.FileVersion >=
+                (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool)
+            {
+                namedObject.AssociateWithFactory = true;
+            }
+
+            namedObject.InstanceName = objectName;
+
+            namedObject.DefinedByBase = membershipInfo == MembershipInfo.ContainedInBase;
+
+            #region Adding to a NamedObject (PositionedObjectList)
+
+            if (namedObjectSave != null)
+            {
+                NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToCurrentNamedObjectList(namedObject);
+
+            }
+            #endregion
+
+            else if (element != null)
+            {
+                //AddExistingNamedObjectToElement(element, namedObject, true);
+                element.NamedObjects.Add(namedObject);
+                GlueCommands.Self.RefreshCommands.RefreshUi(element);
+                // eventually this method will die, but for now the caller is responsible
+                //PluginManager.ReactToNewObject(namedObject);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(element);
+            }
+
+
+            if (raisePluginResponse)
+            {
+                PluginManager.ReactToNewObject(namedObject);
+            }
+            MainGlueWindow.Self.PropertyGrid.Refresh();
+            ElementViewWindow.GenerateSelectedElementCode();
+            GluxCommands.Self.SaveGlux();
+
+            return namedObject;
         }
 
         public void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSave = true, 

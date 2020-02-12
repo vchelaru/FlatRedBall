@@ -395,6 +395,12 @@ namespace FlatRedBall.Glue.Managers
                     else
                     {
                         NamedObjectSave namedObject = new NamedObjectSave();
+
+                        if(GlueState.Self.CurrentGlueProject.FileVersion >= 
+                            (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool)
+                        {
+                            namedObject.AssociateWithFactory = true;
+                        }
                         namedObject.InstanceName =
                             FileManager.RemovePath(entity.Name) + "1";
 

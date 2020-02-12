@@ -594,14 +594,8 @@ namespace FlatRedBall.Glue.SaveClasses
         [XmlIgnore]
         public bool IsManuallyUpdated
         {
-            get
-            {
-                return Properties.GetValue<bool>(nameof(IsManuallyUpdated));
-            }
-            set
-            {
-                Properties.SetValue(nameof(IsManuallyUpdated), value);
-            }
+            get => Properties.GetValue<bool>(nameof(IsManuallyUpdated));
+            set => Properties.SetValue(nameof(IsManuallyUpdated), value);
         }
 
         [Browsable(false)]
@@ -722,6 +716,15 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             return IsZBuffered;
         }
+
+        [CategoryAttribute("Creation"), DefaultValue(true)]
+        [XmlIgnore]
+        public bool AssociateWithFactory
+        {
+            get => Properties.GetValue<bool>(nameof(AssociateWithFactory));
+            set => Properties.SetValue(nameof(AssociateWithFactory), value);
+        }
+
 
         // August 28, 2012
         // I initially

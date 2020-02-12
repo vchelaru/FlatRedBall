@@ -45,45 +45,6 @@ namespace FlatRedBall.Glue.SaveClasses
             return MembershipInfo.NotContained;
         }
 
-        public static NamedObjectSave AddNewNamedObjectTo(string objectName, MembershipInfo membershipInfo, 
-            IElement element, NamedObjectSave namedObjectSave, bool raisePluginResponse = true)
-        {
-            NamedObjectSave namedObject = new NamedObjectSave();
-            namedObject.InstanceName = objectName;
-
-            namedObject.DefinedByBase = membershipInfo == MembershipInfo.ContainedInBase;
-
-            #region Adding to a NamedObject (PositionedObjectList)
-
-            if (namedObjectSave != null)
-            {
-                AddNamedObjectToCurrentNamedObjectList(namedObject);
-
-            }
-            #endregion
-
-            else if (element != null)
-            {
-                //AddExistingNamedObjectToElement(element, namedObject, true);
-                element.NamedObjects.Add(namedObject);
-                GlueCommands.Self.RefreshCommands.RefreshUi(element);
-                // eventually this method will die, but for now the caller is responsible
-                //PluginManager.ReactToNewObject(namedObject);
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeTask(element);
-            }
-
-            
-            if (raisePluginResponse)
-            {
-                PluginManager.ReactToNewObject(namedObject);
-            }
-            MainGlueWindow.Self.PropertyGrid.Refresh();
-            ElementViewWindow.GenerateSelectedElementCode();
-            GluxCommands.Self.SaveGlux();
-
-            return namedObject;
-        }
-
         public static void AddNamedObjectToCurrentNamedObjectList(NamedObjectSave namedObject)
         {
             namedObject.AddToManagers = true;

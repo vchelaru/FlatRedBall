@@ -14,15 +14,13 @@ using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.Parsing;
 using System.Reflection;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 //using FlatRedBall.Glue.FormHelpers.StringConverters;
 //using FlatRedBall.Glue.FormHelpers;
 
 namespace FlatRedBall.Glue.GuiDisplay
 {
-
-
-
     public class NamedObjectPropertyGridDisplayer : PropertyGridDisplayer
     {
 
@@ -303,7 +301,7 @@ namespace FlatRedBall.Glue.GuiDisplay
         private void UpdateIncludedAndExcluded(NamedObjectSave instance)
         {
             ////////////////////Early Out/////////////////////////
-            if (instance == null)
+            if (instance == null || GlueState.Self.CurrentGlueProject == null)
             {
                 return;
             }
@@ -316,6 +314,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         private void ExcludeAndIncludeGlueVariables(NamedObjectSave instance)
         {
+            var glueVersion = GlueState.Self.CurrentGlueProject.FileVersion;
 
             bool shouldIncludeSourceClassType = true;
             bool shouldIncludeSourceFile = true;
@@ -331,6 +330,10 @@ namespace FlatRedBall.Glue.GuiDisplay
             bool shouldShowGenerateTimedEmit = false;
             bool shouldIncludeIsManuallyUpdated = false;
 
+            if(glueVersion < (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool)
+            {
+                ExcludeMember(nameof(NamedObjectSave.AssociateWithFactory));
+            }
 
             ExcludeMember(nameof(NamedObjectSave.InstructionSaves));
             ExcludeMember(nameof(NamedObjectSave.Properties));

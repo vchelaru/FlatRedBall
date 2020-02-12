@@ -104,24 +104,36 @@ namespace FlatRedBall.Glue.Parsing
             var allEntitiesWithFactories = GlueState.Self.CurrentGlueProject.Entities
                 .Where(item => item.CreatedByOtherEntities);
 
+            var shouldConsiderAssociateWithFactory =
+                GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool;
 
             foreach (var listNos in entityLists)
             {
-                // Find all factories of this type, or of derived type
-                EntitySave listEntityType = ObjectFinder.Self.GetEntitySave(listNos.SourceClassGenericType);
+                var isEligibleForAdding = true;
 
-                var factoryTypesToCallAddListOn = allEntitiesWithFactories.Where(item =>
+                if(shouldConsiderAssociateWithFactory)
                 {
-                    return item == listEntityType || item.InheritsFrom(listEntityType.Name);
-                });
+                    isEligibleForAdding = listNos.AssociateWithFactory;
+                }
 
-                // find any lists of entities that are of this type, or of a derived type.
-                foreach (var factoryEntityType in factoryTypesToCallAddListOn)
+                if(isEligibleForAdding)
                 {
-                    string entityClassName = FileManager.RemovePath(factoryEntityType.Name);
+                    // Find all factories of this type, or of derived type
+                    EntitySave listEntityType = ObjectFinder.Self.GetEntitySave(listNos.SourceClassGenericType);
 
-                    string factoryName = $"Factories.{entityClassName}Factory";
-                    codeBlock.Line($"{factoryName}.AddList({listNos.FieldName});");
+                    var factoryTypesToCallAddListOn = allEntitiesWithFactories.Where(item =>
+                    {
+                        return item == listEntityType || item.InheritsFrom(listEntityType.Name);
+                    });
+
+                    // find any lists of entities that are of this type, or of a derived type.
+                    foreach (var factoryEntityType in factoryTypesToCallAddListOn)
+                    {
+                        string entityClassName = FileManager.RemovePath(factoryEntityType.Name);
+
+                        string factoryName = $"Factories.{entityClassName}Factory";
+                        codeBlock.Line($"{factoryName}.AddList({listNos.FieldName});");
+                    }
                 }
 
             }
@@ -493,8 +505,8 @@ namespace FlatRedBall.Glue.Parsing
 
         private static void AddRemoveListMethod(ICodeBlock codeBlock, string entityClassName)
         {
-            var method = codeBlock.Function("public static void", "RemoveList<T>", "System.Collections.Generic.IList<T> newList", $"where T : {entityClassName}");
-            method.Line("ListsToAddTo.Remove(newList as System.Collections.IList);");
+            var method = codeBlock.Function("public static void", "RemoveList<T>", "System.Collections.Generic.IList<T> listToRemove", $"where T : {entityClassName}");
+            method.Line("ListsToAddTo.Remove(listToRemove as System.Collections.IList);");
         }
 
         private static void AddClearListsToAddTo(ICodeBlock codeBlock)
