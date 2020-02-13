@@ -113,6 +113,11 @@ namespace FlatRedBall.Math.Collision
         /// </summary>
         /// <returns>Whether collisions occurred this frame.</returns>
         public abstract bool DoCollisions();
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     public class DelegateCollisionRelationship<First, Second> : CollisionRelationship
