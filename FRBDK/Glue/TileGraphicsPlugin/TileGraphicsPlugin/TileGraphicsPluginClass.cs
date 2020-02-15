@@ -185,7 +185,9 @@ namespace TileGraphicsPlugin
             // - Added TileShapeCollection.MergeRectangles
             // 2.7.0.2
             // - Added comments
-            get { return new Version(2, 7, 0, 2); }
+            // 2.8
+            // - CollidableVsTileShapeCollectionData.DoFirstCollisionLineVsShapeCollection is now public 
+            get { return new Version(2, 8, 0, 0); }
         }
 
         [Import("GlueProjectSave")]

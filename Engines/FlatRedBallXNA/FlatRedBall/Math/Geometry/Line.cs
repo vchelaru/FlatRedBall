@@ -634,14 +634,12 @@ namespace FlatRedBall.Math.Geometry
         }
 
 
-        #region XML Docs
         /// <summary>
         /// Sets the Line's Position to the average of the two given endpoints and
         /// it's RelativePoints to be the distance from the new Position to each of the given Vectors.
         /// </summary>
         /// <param name="endpoint1">The first endpoint for which to find the midpoint</param>
         /// <param name="endpoint2">The second endpoint for which to find the midpoint</param>
-        #endregion
         public void SetFromAbsoluteEndpoints(Vector3 endpoint1, Vector3 endpoint2)
         {
             Position = new Vector3((endpoint2.X + endpoint1.X) / 2.0f,
@@ -651,6 +649,23 @@ namespace FlatRedBall.Math.Geometry
             RelativePoint1 = new Point3D(endpoint1 - Position);
             RelativePoint2 = new Point3D(endpoint2 - Position);
             RotationZ = 0f;
+        }
+
+        public enum SetFromEndpointStyle { PositionInCenter, PositionAtEndpoint1 }
+        public void SetFromAbsoluteEndpoints(Vector3 endpoint1, Vector3 endpoint2, SetFromEndpointStyle setFromEndpointStyle)
+        {
+            if(setFromEndpointStyle == SetFromEndpointStyle.PositionInCenter)
+            {
+                // this uses a center position
+                SetFromAbsoluteEndpoints(endpoint1, endpoint2);
+            }
+            else // PositionAtendpoint1
+            {
+                RotationZ = 0;
+                Position = endpoint1;
+                RelativePoint1 = new Point3D();
+                RelativePoint2 = new Point3D(endpoint2.X - endpoint1.X, endpoint2.Y - endpoint1.Y);
+            }
         }
 
         public void SetFromAbsoluteEndpoints(Point3D endpoint1, Point3D endpoint2)
