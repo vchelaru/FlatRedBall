@@ -112,6 +112,8 @@
                     <RadioButton
                         IsChecked="{Binding IsPlatformerCloudCollisionChecked}"
                         Visibility="{Binding PlatformerOptionsVisibility}">Platformer Cloud Collision</RadioButton>
+                    <RadioButton
+                        IsChecked="{Binding IsDelegateCollisionChecked}">Delegate Collision (delegate assigned in code)</RadioButton>
                 </StackPanel>
             </GroupBox>
             

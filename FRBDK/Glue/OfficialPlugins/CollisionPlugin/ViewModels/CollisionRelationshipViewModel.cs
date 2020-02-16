@@ -20,7 +20,8 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         MoveCollision,
         BounceCollision,
         PlatformerSolidCollision,
-        PlatformerCloudCollision
+        PlatformerCloudCollision,
+        DelegateCollision
     }
     #endregion
 
@@ -200,12 +201,24 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [DependsOn(nameof(CollisionType))]
         public bool IsPlatformerCloudCollisionChecked
         {
-            get { return CollisionType == CollisionType.PlatformerCloudCollision; }
+            get => CollisionType == CollisionType.PlatformerCloudCollision;
             set
             {
                 if (value)
                 {
                     CollisionType = CollisionType.PlatformerCloudCollision;
+                }
+            }
+        }
+
+        public bool IsDelegateCollisionChecked
+        {
+            get => CollisionType == CollisionType.DelegateCollision;
+            set
+            {
+                if(value)
+                {
+                    CollisionType = CollisionType.DelegateCollision;
                 }
             }
         }

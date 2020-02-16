@@ -94,6 +94,20 @@ namespace OfficialPlugins.CollisionPlugin
             {
                 GeneratePlatformerCollision(codeBlock, firstCollidable, secondCollidable, collisionType, instanceName, isFirstList, firstType, isSecondList, secondType);
             }
+            else if(collisionType == CollisionType.DelegateCollision)
+            {
+                if(isFirstList && isSecondList)
+                {
+                    codeBlock.Line($"{instanceName} = new FlatRedBall.Math.Collision.DelegateListVsListRelationship<{firstType}, {secondType}>(" +
+                        $"{firstCollidable}, {secondCollidable});");
+                }
+                else
+                {
+                    codeBlock.Line($"{instanceName} = new FlatRedBall.Math.Collision.DelegateCollisionRelationshipBase<{firstType}, {secondType}>(" +
+                        $"{firstCollidable}, {secondCollidable});");
+                }
+                codeBlock.Line($"FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Add({instanceName});");
+            }
             else if(isSecondTileShapeCollection)
             {
                 // same method used for both list and non-list

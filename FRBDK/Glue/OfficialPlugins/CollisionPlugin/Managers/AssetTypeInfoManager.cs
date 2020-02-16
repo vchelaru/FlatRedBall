@@ -105,7 +105,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                     var collisionType = (CollisionType)nos.Properties.GetValue<int>(
                         nameof(CollisionRelationshipViewModel.CollisionType));
 
-                    if(collisionType == CollisionType.PlatformerCloudCollision ||
+                    if (collisionType == CollisionType.PlatformerCloudCollision ||
                         collisionType == CollisionType.PlatformerSolidCollision)
                     {
                         var effectiveFirstType = firstType;
@@ -128,6 +128,17 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                             relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsListRelationship<{firstType}, {secondType}>";
                         }
                     }
+                    else if (collisionType == CollisionType.DelegateCollision)
+                    {
+                        if (isFirstList && isSecondList)
+                        {
+                            relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsListRelationship";
+                        }
+                        else
+                        {
+                            relationshipType = $"FlatRedBall.Math.Collision.DelegateCollisionRelationshipBase";
+                        }
+                    }
                     else if (isFirstList == false && isSecondList == false)
                     {
 
@@ -136,7 +147,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                             relationshipType =
                                 "FlatRedBall.Math.Collision.CollidableVsTileShapeCollectionRelationship";
                         }
-                        else if(isSecondShapeCollection)
+                        else if (isSecondShapeCollection)
                         {
                             relationshipType =
                                 "FlatRedBall.Math.Collision.PositionedObjectVsShapeCollection";
@@ -147,17 +158,17 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                             "FlatRedBall.Math.Collision.CollisionRelationship";
                         }
                     }
-                    else if(isFirstList && isSecondList)
+                    else if (isFirstList && isSecondList)
                     {
                         relationshipType = "FlatRedBall.Math.Collision.ListVsListRelationship";
                     }
-                    else if(isFirstList)
+                    else if (isFirstList)
                     {
-                        if(isSecondTileShapeCollection)
+                        if (isSecondTileShapeCollection)
                         {
                             relationshipType = "FlatRedBall.Math.Collision.CollidableListVsTileShapeCollectionRelationship";
                         }
-                        else if(isSecondShapeCollection)
+                        else if (isSecondShapeCollection)
                         {
                             relationshipType = "FlatRedBall.Math.Collision.ListVsShapeCollectionRelationship";
                         }
@@ -166,7 +177,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                             relationshipType = "FlatRedBall.Math.Collision.ListVsPositionedObjectRelationship";
                         }
                     }
-                    else if(isSecondList)
+                    else if (isSecondList)
                     {
                         relationshipType = "FlatRedBall.Math.Collision.PositionedObjectVsListRelationship";
                     }

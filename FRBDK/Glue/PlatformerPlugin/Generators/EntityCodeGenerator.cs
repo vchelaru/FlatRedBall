@@ -586,14 +586,14 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         /// Performs a standard solid collision against a ShapeCollection.
         /// </summary>
         /// <param name=""shapeCollection""></param>
-        public void CollideAgainst(FlatRedBall.Math.Geometry.ShapeCollection shapeCollection)
+        public bool CollideAgainst(FlatRedBall.Math.Geometry.ShapeCollection shapeCollection)
         {
-            CollideAgainst(shapeCollection, false);
+            return CollideAgainst(shapeCollection, false);
         }
 
-        public void CollideAgainst(FlatRedBall.Math.Geometry.AxisAlignedRectangle rectangle, bool isCloudCollision = false)
+        public bool CollideAgainst(FlatRedBall.Math.Geometry.AxisAlignedRectangle rectangle, bool isCloudCollision = false)
         {
-            CollideAgainst(() => rectangle.CollideAgainstBounce(this.Collision, 1, 0, 0), isCloudCollision);
+            return CollideAgainst(() => rectangle.CollideAgainstBounce(this.Collision, 1, 0, 0), isCloudCollision);
         }
 
         /// <summary>
@@ -601,9 +601,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         /// </summary>
         /// <param name=""shapeCollection"">The ShapeCollection to collide against.</param>
         /// <param name=""isCloudCollision"">Whether to perform solid or cloud collisions.</param>
-        public void CollideAgainst(FlatRedBall.Math.Geometry.ShapeCollection shapeCollection, bool isCloudCollision)
+        public bool CollideAgainst(FlatRedBall.Math.Geometry.ShapeCollection shapeCollection, bool isCloudCollision)
         {
-            CollideAgainst(() => shapeCollection.CollideAgainstBounce(this.Collision, 1, 0, 0), isCloudCollision);
+            return CollideAgainst(() => shapeCollection.CollideAgainstBounce(this.Collision, 1, 0, 0), isCloudCollision);
         }
 
         /// <summary>
