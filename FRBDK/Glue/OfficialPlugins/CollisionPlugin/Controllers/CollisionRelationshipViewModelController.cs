@@ -391,8 +391,12 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.CollidableVsTileShapeCollectionRelationship") == true ||
 
                 selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.DelegateCollisionRelationship<") == true ||
+                selectedNos.SourceClassType?.StartsWith("FlatRedBall.Math.Collision.DelegateListVsListRelationship<") == true ||
 
-                selectedNos.SourceClassType?.StartsWith("CollisionRelationship<") == true)
+                selectedNos.SourceClassType?.StartsWith("CollisionRelationship<") == true
+
+
+                )
             {
                 selectedNos.SourceClassType = AssetTypeInfoManager.Self.CollisionRelationshipAti
                     .QualifiedRuntimeTypeName.PlatformFunc(selectedNos);

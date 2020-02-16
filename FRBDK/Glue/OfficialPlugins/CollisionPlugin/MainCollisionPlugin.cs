@@ -75,6 +75,8 @@ namespace OfficialPlugins.CollisionPlugin
 
         private void AssignEvents()
         {
+            this.ReactToLoadedGluxEarly += HandleGluxLoad;
+
             this.ReactToItemSelectHandler += HandleTreeViewItemSelected;
 
             this.AddEventsForObject += HandleAddEventsForObject;
@@ -82,6 +84,27 @@ namespace OfficialPlugins.CollisionPlugin
             this.GetEventSignatureArgs += GetEventSignatureAndArgs;
 
             this.ReactToChangedPropertyHandler += CollisionRelationshipViewModelController.HandleGlueObjectPropertyChanged;
+        }
+
+        private void HandleGluxLoad()
+        {
+            foreach(var screen in GlueState.Self.CurrentGlueProject.Screens)
+            {
+                foreach(var nos in screen.AllNamedObjects)
+                {
+                    CollisionRelationshipViewModelController.TryFixSourceClassType(nos);
+                }
+            }
+
+            // entities probably won't have collisisons but...what if they do? Might as well be prepared:
+            foreach (var entity in GlueState.Self.CurrentGlueProject.Entities)
+            {
+                foreach (var nos in entity.AllNamedObjects)
+                {
+                    CollisionRelationshipViewModelController.TryFixSourceClassType(nos);
+                }
+            }
+
         }
 
         private void GetEventSignatureAndArgs(NamedObjectSave namedObjectSave, EventResponseSave eventResponseSave, out string type, out string signatureArgs)

@@ -120,30 +120,6 @@ namespace FlatRedBall.Math.Collision
         }
     }
 
-    public class DelegateCollisionRelationship<First, Second> : CollisionRelationship
-    {
-        First first;
-        Second second;
-
-        public Func<First, Second, bool> CollisionFunction { get; set; }
-
-        public override object FirstAsObject => first;
-        public override object SecondAsObject => second;
-
-        public DelegateCollisionRelationship(First first, Second second)
-        {
-            this.first = first;
-            this.second = second;
-        }
-
-        public override bool DoCollisions()
-        {
-            return CollisionFunction(first, second);
-        }
-
-    }
-
-
     public abstract class CollisionRelationship<FirstCollidableT, SecondCollidableT> : CollisionRelationship
         where FirstCollidableT : PositionedObject, ICollidable where SecondCollidableT : PositionedObject, ICollidable
     {
@@ -695,6 +671,46 @@ namespace FlatRedBall.Math.Collision
             this.CollidedThisFrame = didCollisionOccur;
 
             return didCollisionOccur;
+        }
+    }
+
+    #endregion
+
+    #region Delegate-based Single vs Single
+
+    public abstract class DelegateCollisionRelationshipBase<First, Second> : CollisionRelationship
+    {
+        protected First first;
+        protected Second second;
+
+        public override object FirstAsObject => first;
+        public override object SecondAsObject => second;
+    }
+
+    public class DelegateCollisionRelationship<First, Second> : DelegateCollisionRelationshipBase<First, Second>
+    {
+        public Func<First, Second, bool> CollisionFunction { get; set; }
+
+        public Action<First, Second> CollisionOccurred;
+
+
+        public DelegateCollisionRelationship(First first, Second second)
+        {
+            this.first = first;
+            this.second = second;
+        }
+
+
+        public override bool DoCollisions()
+        {
+            var collided = CollisionFunction(first, second);
+
+            if(collided)
+            {
+                CollisionOccurred?.Invoke(first, second);
+            }
+
+            return collided;
         }
     }
 
@@ -1312,6 +1328,81 @@ namespace FlatRedBall.Math.Collision
             }
         }
     }
+
+    #endregion
+
+    #region Delegate-based List vs List
+
+    public class DelegateListVsListRelationship<FirstCollidableT, SecondCollidableT> : 
+        DelegateCollisionRelationshipBase<PositionedObjectList<FirstCollidableT>, PositionedObjectList<SecondCollidableT>>
+        where FirstCollidableT : PositionedObject, ICollidable where SecondCollidableT : PositionedObject, ICollidable
+
+    {
+
+        public Func<FirstCollidableT, SecondCollidableT, bool> CollisionFunction { get; set; }
+
+        public Action<FirstCollidableT, SecondCollidableT> CollisionOccurred;
+
+
+        public DelegateListVsListRelationship(PositionedObjectList<FirstCollidableT> first, PositionedObjectList<SecondCollidableT> second)
+        {
+            this.first = first;
+            this.second = second;
+
+        }
+
+        public override bool DoCollisions()
+        {
+#if DEBUG
+            if (first == null)
+            {
+                throw new NullReferenceException("The first list is null. This needs to be set");
+            }
+            if (second == null)
+            {
+                throw new NullReferenceException("The second list is null. This needs to be set");
+            }
+#endif
+            bool collisionOccurred = false;
+            if (skippedFrames < FrameSkip)
+            {
+                skippedFrames++;
+            }
+            else
+            {
+                skippedFrames = 0;
+
+                /////////////////early out here so we don't have to do 0-checks later
+                if (first.Count == 0 || second.Count == 0)
+                {
+                    return false;
+                }
+
+
+                // todo - partition...
+
+                int j = 0;
+                for (int i = first.Count - 1; i > -1; i--)
+                {
+                    var firstItem = first[i];
+                    for (j = second.Count - 1; j > -1; j--)
+                    {
+                        var secondItem = second[j];
+                        var collided = CollisionFunction(firstItem, secondItem);
+
+
+                        if (collided)
+                        {
+                            CollisionOccurred?.Invoke(firstItem, secondItem);
+                            collisionOccurred = true;
+                        }
+                    }
+                }
+            }
+            return collisionOccurred;
+        }
+    }
+
 
     #endregion
 

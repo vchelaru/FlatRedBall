@@ -92,42 +92,7 @@ namespace OfficialPlugins.CollisionPlugin
             if(collisionType == CollisionType.PlatformerSolidCollision ||
                 collisionType == CollisionType.PlatformerCloudCollision)
             {
-                var block = codeBlock.Block();
-
-                var effectiveFirstType = firstType;
-                if(isFirstList)
-                {
-
-                    effectiveFirstType = $"FlatRedBall.Math.PositionedObjectList<{firstType}>";
-                }
-
-                block.Line($"var temp = new FlatRedBall.Math.Collision.DelegateCollisionRelationship<{effectiveFirstType}, {secondType}>({firstCollidable}, {secondCollidable});");
-                block.Line($"var isCloud = {(collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant()};");
-                block.Line($"temp.CollisionFunction = (first, second) =>");
-                block = block.Block();
-
-                if(isFirstList)
-                {
-                    block.ForEach("var firstItem in first")
-                        .Line("firstItem.CollideAgainst(second, isCloud);");
-                }
-                else
-                {
-                    block.Line("first.CollideAgainst(second, isCloud);");
-                }
-                block.Line("return false;");
-
-                block = block.End();
-                block.Line(";");
-
-                block.Line("FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Add(temp);");
-                block.Line($"{instanceName} = temp;");
-                //CollisionManager.Self.Relationships.Add(PlayerVsSolidCollision);
-
-
-
-
-
+                GeneratePlatformerCollision(codeBlock, firstCollidable, secondCollidable, collisionType, instanceName, isFirstList, firstType, isSecondList, secondType);
             }
             else if(isSecondTileShapeCollection)
             {
@@ -185,6 +150,64 @@ namespace OfficialPlugins.CollisionPlugin
                 codeBlock.Line(
                     $"{instanceName}.{nameof(FlatRedBall.Math.Collision.CollisionRelationship.IsActive)} = false;");
             }
+        }
+
+        private static void GeneratePlatformerCollision(ICodeBlock codeBlock, string firstCollidable, string secondCollidable, CollisionType collisionType,
+            string instanceName, bool isFirstList, string firstType, bool isSecondList, string secondType)
+        {
+            var block = codeBlock.Block();
+
+            var effectiveFirstType = firstType;
+            if (isFirstList)
+            {
+                effectiveFirstType = $"FlatRedBall.Math.PositionedObjectList<{firstType}>";
+            }
+            var effectiveSecondType = secondType;
+            if (isSecondList)
+            {
+                effectiveSecondType = $"FlatRedBall.Math.PositionedObjectList<{secondType}>";
+            }
+
+
+            var relationshipType =
+                $"FlatRedBall.Math.Collision.DelegateCollisionRelationship<{effectiveFirstType}, {effectiveSecondType}>";
+
+            if (isFirstList && isSecondList)
+            {
+                relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsListRelationship<{firstType}, {secondType}>";
+            }
+
+            block.Line($"var temp = new {relationshipType}({firstCollidable}, {secondCollidable});");
+            block.Line($"var isCloud = {(collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant()};");
+            block.Line($"temp.CollisionFunction = (first, second) =>");
+            block = block.Block();
+
+            string whatToCollideAgainst = "second";
+
+            // list vs list is internally handled already
+            if (isFirstList && !isSecondList)
+            {
+                block.ForEach("var firstItem in first")
+                    .Line($"firstItem.CollideAgainst({whatToCollideAgainst}, isCloud);");
+            }
+            else if( isSecondList)
+            {
+                // it's an icollidable probably
+                block.Line($"first.CollideAgainst({whatToCollideAgainst}.Collision, isCloud);");
+            }
+            else
+            {
+                // assume it's a shape collection
+                block.Line($"first.CollideAgainst({whatToCollideAgainst}, isCloud);");
+            }
+            block.Line("return false;");
+
+            block = block.End();
+            block.Line(";");
+
+            block.Line("FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Add(temp);");
+            block.Line($"{instanceName} = temp;");
+            //CollisionManager.Self.Relationships.Add(PlayerVsSolidCollision);
         }
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)

@@ -423,6 +423,12 @@ namespace FlatRedBall.Glue.SaveClasses
             return uses;
         }
 
+        /// <summary>
+        /// Returns all named objects contained in this object (both single and objects in lists) as well
+        /// as all named objects in base elements.
+        /// </summary>
+        /// <param name="element">Element named object container.</param>
+        /// <returns>All named objects.</returns>
         public static IEnumerable<NamedObjectSave> GetAllNamedObjectsRecurisvely(this IElement element)
         {
             if (element != null)

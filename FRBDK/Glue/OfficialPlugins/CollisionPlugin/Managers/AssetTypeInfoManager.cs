@@ -77,8 +77,22 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                     var firstType = GetFirstGenericType(nos, out isFirstList);
                     var secondType = GetSecondGenericType(nos, out isSecondList);
 
-                    var isFirstTileShapeCollection = firstType == "FlatRedBall.TileCollisions.TileShapeCollection";
-                    var isSecondTileShapeCollection = secondType == "FlatRedBall.TileCollisions.TileShapeCollection";
+                    // qualify this to make code gen and other logic work correctly:
+                    if(firstType == "TileShapeCollection")
+                    {
+                        firstType = "FlatRedBall.TileCollisions.TileShapeCollection";
+                    }
+
+                    if(secondType == "TileShapeCollection")
+                    {
+                        secondType = "FlatRedBall.TileCollisions.TileShapeCollection";
+                    }
+
+                    var isFirstTileShapeCollection =
+                        firstType == "FlatRedBall.TileCollisions.TileShapeCollection";
+
+                    var isSecondTileShapeCollection =
+                        secondType == "FlatRedBall.TileCollisions.TileShapeCollection";
 
                     var isFirstShapeCollection = firstType == "FlatRedBall.Math.Geometry.ShapeCollection";
                     var isSecondShapeCollection = secondType == "FlatRedBall.Math.Geometry.ShapeCollection";
@@ -95,12 +109,24 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                         collisionType == CollisionType.PlatformerSolidCollision)
                     {
                         var effectiveFirstType = firstType;
-                        if(isFirstList)
+                        if (isFirstList)
                         {
                             effectiveFirstType = $"FlatRedBall.Math.PositionedObjectList<{firstType}>";
                         }
+                        var effectiveSecondType = secondType;
+                        if (isSecondList)
+                        {
+                            effectiveSecondType = $"FlatRedBall.Math.PositionedObjectList<{secondType}>";
+                        }
+
+
                         relationshipType =
-                            $"FlatRedBall.Math.Collision.DelegateCollisionRelationship<{effectiveFirstType}, {secondType}>";
+                            $"FlatRedBall.Math.Collision.DelegateCollisionRelationship<{effectiveFirstType}, {effectiveSecondType}>";
+
+                        if (isFirstList && isSecondList)
+                        {
+                            relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsListRelationship<{firstType}, {secondType}>";
+                        }
                     }
                     else if (isFirstList == false && isSecondList == false)
                     {
