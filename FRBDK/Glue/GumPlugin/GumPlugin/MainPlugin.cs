@@ -275,7 +275,9 @@ namespace GumPlugin
             //   unnecessary processing
             // 2.2.2
             // - Fixed Circle.Radius setting width and height incorrectly
-            get { return new Version(2, 2, 2, 0); }
+            // 2.2.3
+            // - Fixed possible crash when reading midding event export JSON files
+            get { return new Version(2, 2, 3); }
         }
 
         #endregion

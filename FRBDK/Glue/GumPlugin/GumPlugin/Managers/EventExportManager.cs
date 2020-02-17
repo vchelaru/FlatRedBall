@@ -34,12 +34,23 @@ namespace GumPlugin.Managers
     {
         public void HandleEventExportFile(string fileName)
         {
-            var contents = System.IO.File.ReadAllText(fileName);
+            string contents = null;
+            try
+            {
+                contents = System.IO.File.ReadAllText(fileName);
+            }
+            catch
+            {
+                // do nothing, could have gotten deleted last minute...
+            }
 
-            var deserialized = 
-                JsonConvert.DeserializeObject<ExportedEvent>(contents);
+            if(!string.IsNullOrEmpty(contents))
+            {
+                var deserialized = 
+                    JsonConvert.DeserializeObject<ExportedEvent>(contents);
 
-            ReactToExportedEvent(deserialized);
+                ReactToExportedEvent(deserialized);
+            }
         }
 
         private void ReactToExportedEvent(ExportedEvent deserialized)

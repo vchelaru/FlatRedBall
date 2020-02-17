@@ -2025,13 +2025,13 @@ namespace FlatRedBall.Glue.FormHelpers
                 // cannot regenerate the non-generated code file.
 
 
-                bool isScreenOrEntity = EditorLogic.CurrentScreenSave != null ||
-                    EditorLogic.CurrentEntitySave != null;
+                var currentElement = EditorLogic.CurrentElement;
 
-                if (isScreenOrEntity)
+                if (currentElement != null)
                 {
                     ElementViewWindow.GenerateSelectedElementCode();
                 }
+
 
                 foreach (ProjectBase project in ProjectManager.SyncedProjects)
                 {
