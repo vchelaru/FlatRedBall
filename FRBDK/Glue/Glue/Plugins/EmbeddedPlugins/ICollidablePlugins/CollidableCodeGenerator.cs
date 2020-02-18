@@ -68,6 +68,12 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
             {
                 codeBlock.Line("mGeneratedCollision = new FlatRedBall.Math.Geometry.ShapeCollection();");
 
+            }
+
+            // This should be done at any level in case derived
+            // objects are adding their own collision
+            if(element.IsICollidableRecursive())
+            {
                 // July 16 2019
                 // This used to only
                 // check top-level objects,
@@ -75,16 +81,17 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
                 // created ShapeCollections. Those shapes
                 // should be added to the generated collision 
                 // object too, so using AllNamedObjects instead
-                foreach (var item in element.AllNamedObjects.Where(item=>item.IncludeInICollidable && !item.IsDisabled))
+
+                foreach (var item in element.AllNamedObjects.Where(item=>item.IncludeInICollidable && !item.IsDisabled && !item.DefinedByBase))
                 {
                     string addCall = item.GetAddToShapeCollection();
 
                     if (!string.IsNullOrEmpty(addCall))
-                    { 
-                        codeBlock.Line("mGeneratedCollision." + addCall + "(" + item.FieldName + ");");
+                    {
+                        // use Collision instead of mGeneratedCollision since
+                        // mGeneratedCollision is private
+                        codeBlock.Line("Collision." + addCall + "(" + item.FieldName + ");");
                     }
-
-
                 }
             }
 
@@ -129,6 +136,23 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
         public static bool IsICollidable(this IElement element)
         {
             return element is EntitySave && (element as EntitySave).ImplementsICollidable;
+        }
+
+        public static bool IsICollidableRecursive(this IElement element)
+        {
+            if(element is EntitySave entitySave)
+            {
+                if (entitySave.ImplementsICollidable)
+                {
+                    return true;
+                }
+                else
+                {
+                    var baseEntities = ObjectFinder.Self.GetAllBaseElementsRecursively(entitySave);
+                    return baseEntities.Any(item => (item as EntitySave).ImplementsICollidable);
+                }
+            }
+            return false;
         }
 
         public static string GetAddToShapeCollection(this NamedObjectSave nos)
