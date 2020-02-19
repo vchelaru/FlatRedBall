@@ -56,7 +56,8 @@ namespace FlatRedBall.PlatformerPlugin
                 //         values allow falling through clouds, cloud collision will not be tested.
                 // 1.5   - Added InitializePlatformerInput which takes an IInputDevice
                 // 1.5.1 - Fixed bug where duplicate entries could get added to the CSV
-                return new Version(1, 5, 1);
+                // 1.6   - Added support for entities that derive from entities which are platformer entities
+                return new Version(1, 6, 0);
             }
         }
 

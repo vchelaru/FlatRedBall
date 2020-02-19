@@ -8,6 +8,7 @@ using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.PlatformerPlugin.ViewModels;
 using FlatRedBall.Glue.Plugins.Interfaces;
+using FlatRedBall.Glue.Elements;
 
 namespace FlatRedBall.PlatformerPlugin.Generators
 {
@@ -25,7 +26,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
         {
             ///////////////Early Out//////////////////////
-            if (GetIfIsPlatformer(element) == false)
+            if (GetIfIsPlatformer(element) == false || GetIfInheritsFromPlatformer(element))
             {
                 return codeBlock;
             }
@@ -248,7 +249,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
         {
             ///////////////////Early Out///////////////////////////////
-            if(!GetIfIsPlatformer(element))
+            if(!GetIfIsPlatformer(element) || GetIfInheritsFromPlatformer(element))
             {
                 return codeBlock;
             }
@@ -283,7 +284,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
         {
             ///////////////////Early Out///////////////////////////////
-            if(!GetIfIsPlatformer(element))
+            if(!GetIfIsPlatformer(element) || GetIfInheritsFromPlatformer(element))
             {
                 return codeBlock;
             }
@@ -856,7 +857,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
         {
             ///////////////////Early Out///////////////////////////////
-            if(!GetIfIsPlatformer(element))
+            if(!GetIfIsPlatformer(element) || GetIfInheritsFromPlatformer(element))
             {
                 return codeBlock;
             }
@@ -878,5 +879,18 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             return element.Properties
                 .GetValue<bool>(nameof(PlatformerEntityViewModel.IsPlatformer));
         }
+
+        bool GetIfInheritsFromPlatformer(IElement element)
+        {
+            if(string.IsNullOrEmpty(element.BaseElement))
+            {
+                return false;
+            }
+
+            var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(element);
+
+            return allBase.Any(GetIfIsPlatformer);
+        }
+
     }
 }

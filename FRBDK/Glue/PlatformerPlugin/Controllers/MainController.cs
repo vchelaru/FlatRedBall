@@ -13,6 +13,7 @@ using FlatRedBall.IO.Csv;
 using FlatRedBall.PlatformerPlugin.SaveClasses;
 using FlatRedBall.PlatformerPlugin.Generators;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Elements;
 
 namespace FlatRedBall.PlatformerPlugin.Controllers
 {
@@ -102,26 +103,29 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             {
 
                 bool alreadyHasVariable = entity.CustomVariables.Any(
-                    item => item.Name == GroundMovement);
+                    item => item.Name == GroundMovement) || GetIfInheritsFromPlatformer(entity);
                 if(!alreadyHasVariable)
                 {
                     CustomVariable newVariable = new CustomVariable();
                     newVariable.Type = GlueState.Self.ProjectNamespace + ".DataTypes.PlatformerValues";
                     newVariable.Name = GroundMovement;
                     newVariable.CreatesEvent = true;
+                    newVariable.SetByDerived = true;
+
                     entity.CustomVariables.Add(newVariable);
                 }
             }
 
             {
                 bool alreadyHasVariable = entity.CustomVariables.Any(
-                    item => item.Name == AirMovement);
+                    item => item.Name == AirMovement) || GetIfInheritsFromPlatformer(entity);
                 if(!alreadyHasVariable)
                 {
                     CustomVariable newVariable = new CustomVariable();
                     newVariable.Type = GlueState.Self.ProjectNamespace + ".DataTypes.PlatformerValues";
                     newVariable.Name = AirMovement;
                     newVariable.CreatesEvent = true;
+                    newVariable.SetByDerived = true;
 
                     entity.CustomVariables.Add(newVariable);
                 }
@@ -129,13 +133,14 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
             {
                 bool alreadyHasVariable = entity.CustomVariables.Any(
-                    item => item.Name == AfterDoubleJump);
+                    item => item.Name == AfterDoubleJump) || GetIfInheritsFromPlatformer(entity);
                 if(!alreadyHasVariable)
                 {
                     CustomVariable newVariable = new CustomVariable();
                     newVariable.Type = GlueState.Self.ProjectNamespace + ".DataTypes.PlatformerValues";
                     newVariable.Name = AfterDoubleJump;
                     newVariable.CreatesEvent = true;
+                    newVariable.SetByDerived = true;
 
                     entity.CustomVariables.Add(newVariable);
                 }
@@ -277,6 +282,24 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             }
 
             return csvValues;
+        }
+
+        static bool GetIfIsPlatformer(IElement element)
+        {
+            return element.Properties
+                .GetValue<bool>(nameof(PlatformerEntityViewModel.IsPlatformer));
+        }
+
+        static bool GetIfInheritsFromPlatformer(IElement element)
+        {
+            if (string.IsNullOrEmpty(element.BaseElement))
+            {
+                return false;
+            }
+
+            var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(element);
+
+            return allBase.Any(GetIfIsPlatformer);
         }
     }
 }
