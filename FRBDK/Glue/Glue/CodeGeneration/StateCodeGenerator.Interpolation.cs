@@ -11,6 +11,7 @@ using FlatRedBall.Glue.SaveClasses.Helpers;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Reflection;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -485,6 +486,15 @@ namespace FlatRedBall.Glue.CodeGeneration
                                         {
                                             stateContainingEntity = ObjectFinder.Self.GetIElement(nos.SourceClassType);
                                         }
+                                        else if(customVariable.Type?.StartsWith("Entities.") == true)
+                                        {
+                                            var lastPeriod = customVariable.Type.LastIndexOf('.');
+                                            var stripped = customVariable.Type.Substring(0, lastPeriod);
+                                            var elementName = stripped.Replace(".", @"\");
+
+                                            stateContainingEntity = GlueState.Self.CurrentGlueProject.GetElement(elementName);
+
+                                        }
                                         else if (string.IsNullOrEmpty(customVariable.SourceObject))
                                         {
                                             stateContainingEntity = element;
@@ -497,6 +507,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                                             if (customVariable != null && customVariable.Type.ToLower() != "string")
                                             {
                                                 stateType = customVariable.Type;
+                                                if(stateType?.Contains('.') == true)
+                                                {
+                                                    var lastPeriod = stateType.LastIndexOf('.');
+                                                    stateType = stateType.Substring(lastPeriod + 1);
+                                                }
                                             }
 
                                             defaultStartingValue = StateCodeGenerator.FullyQualifiedDefaultStateValue(stateContainingEntity, stateType);
