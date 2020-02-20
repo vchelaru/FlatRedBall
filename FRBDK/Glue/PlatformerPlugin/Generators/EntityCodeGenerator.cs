@@ -108,7 +108,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             codeBlock.Line("double mLastCollisionTime = -1;");
             codeBlock.Line("#endregion");
 
-
+            codeBlock.Line("public Microsoft.Xna.Framework.Vector3 PositionBeforeLastPlatformerCollision;");
 
 
             codeBlock.Line("#region Platformer Properties");
@@ -628,6 +628,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             {
                 wasOnGroundLastFrame = mIsOnGround;
                 mLastCollisionTime = FlatRedBall.TimeManager.CurrentTime;
+                PositionBeforeLastPlatformerCollision = this.Position;
                 mIsOnGround = false;
                 mHitHead = false;
             }
