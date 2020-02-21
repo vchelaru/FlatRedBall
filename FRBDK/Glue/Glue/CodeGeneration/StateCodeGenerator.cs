@@ -134,15 +134,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
 
 
-                currentBlock.Line($"public static Dictionary<string, {categoryClassName}> AllStates = new Dictionary<string, {categoryClassName}>");
-                var dictionaryBlock = currentBlock.Block();
-                dictionaryBlock.PostCodeLines.Add(new CodeLine(";"));
 
                 for (int i = 0; i < statesForThisCategory.Count; i++)
                 {
                     var state = statesForThisCategory[i];
-                    dictionaryBlock.Line("{\"" + state.Name + "\", " + state.Name + "},");
-
                     currentBlock.Line($"public static {categoryClassName} {state.Name} = new {categoryClassName}()");
 
                     var variableBlock = currentBlock.Block();
@@ -168,6 +163,17 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
                 }
+
+                currentBlock.Line($"public static Dictionary<string, {categoryClassName}> AllStates = new Dictionary<string, {categoryClassName}>");
+                var dictionaryBlock = currentBlock.Block();
+                dictionaryBlock.PostCodeLines.Add(new CodeLine(";"));
+
+                for (int i = 0; i < statesForThisCategory.Count; i++)
+                {
+                    var state = statesForThisCategory[i];
+                    dictionaryBlock.Line("{\"" + state.Name + "\", " + state.Name + "},");
+                }
+
                 currentBlock = currentBlock.End();
             }
             return currentBlock;
