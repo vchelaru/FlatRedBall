@@ -1887,13 +1887,13 @@ namespace FlatRedBall.IO
             {
                 fileName = GetIsolatedStorageFileName(fileName);
 
-    #if WINDOWS_8 || UWP
+#if WINDOWS_8 || UWP
                 throw new NotImplementedException();
-    #else
+#else
                 IsolatedStorageFileStream isfs = new IsolatedStorageFileStream(fileName, mode, mIsolatedStorageFile);
 
                 stream = isfs;
-    #endif
+#endif
             }
             else
             {
@@ -1920,8 +1920,13 @@ namespace FlatRedBall.IO
 #endif
             }
 #else
+            // If the file is locked (like by excel) then
+            // this will fail. We only want to read it, so it shouldn't...
+            //stream = File.OpenRead(fileName);
+            // https://stackoverflow.com/questions/12942717/read-log-file-being-used-by-another-process
 
-            stream = File.OpenRead(fileName);
+            //stream = File.OpenRead(fileName);
+            stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 #endif
 
             return stream;
