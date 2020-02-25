@@ -102,7 +102,10 @@ namespace OfficialPlugins.Compiler.Managers
                         await Task.Delay(500);
                         try
                         {
-                            await CommandSender.SendCommand("RestartScreen", ViewModel.PortNumber);
+                            printOutput($"Telling game to restart screen");
+
+                            var result = await CommandSender.SendCommand("RestartScreen", ViewModel.PortNumber);
+
                             handled = true;
                         }
                         catch(Exception e)

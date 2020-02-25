@@ -129,15 +129,22 @@ namespace TileGraphicsPlugin.Managers
 
             if (tms != null)
             {
-                var referencedFiles = tms.GetReferencedFiles();
-
-                string directory = FileManager.GetDirectory(fileName.Standardized);
-                for (int i = 0; i < referencedFiles.Count; i++)
+                try
                 {
-                    referencedFiles[i] = directory + referencedFiles[i];
-                }
+                    var referencedFiles = tms.GetReferencedFiles();
 
-                listToFill.AddRange(referencedFiles.Select(item =>new FilePath(item)));
+                    string directory = FileManager.GetDirectory(fileName.Standardized);
+                    for (int i = 0; i < referencedFiles.Count; i++)
+                    {
+                        referencedFiles[i] = directory + referencedFiles[i];
+                    }
+
+                    listToFill.AddRange(referencedFiles.Select(item =>new FilePath(item)));
+                }
+                catch(Exception e)
+                {
+                    int m = 3;
+                }
             }
 
             return response;

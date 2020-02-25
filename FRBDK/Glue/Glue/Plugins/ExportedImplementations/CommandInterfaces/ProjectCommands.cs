@@ -221,6 +221,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 shouldAddChildren = false;
             }
 
+            if(alreadyReferencedFiles == null)
+            {
+                alreadyReferencedFiles = new List<string>();
+            }
+            alreadyReferencedFiles.AddRange(listOfReferencedFiles);
 
             if (shouldAddChildren && listOfReferencedFiles != null && recursive)
             {
@@ -239,7 +244,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     else
                     {
-                        wasProjectModified |= UpdateFileMembershipInProject(project, file, useContentPipeline, shouldLink, fileToAddAbsolute, recursive:true, alreadyReferencedFiles: listOfReferencedFiles);
+                        wasProjectModified |= UpdateFileMembershipInProject(project, file, useContentPipeline, shouldLink, fileToAddAbsolute, recursive:true, alreadyReferencedFiles: alreadyReferencedFiles);
                     }
                 }
             }
