@@ -98,21 +98,29 @@ namespace FlatRedBall.TileEntities
 
                     var entityType = entityAddingProperty.Value as string;
 
-                    if (!string.IsNullOrEmpty(entityType))
+                    var shouldCreate = !string.IsNullOrEmpty(entityType);
+                    if (restrictions?.InclusiveList != null)
+                    {
+                        shouldCreate = restrictions.InclusiveList.Contains(entityType);
+                    }
+                    if(shouldCreate)
                     {
                         IEntityFactory factory = GetFactory(entityType);
 
-                        var entity = factory.CreateNew(null) as PositionedObject;
-
-                        entity.Name = circle.Name;
-                        ApplyPropertiesTo(entity, properties, circle.Position);
-                        shapeCollection.Circles.Remove(circle);
-
-                        if (entity is Math.Geometry.ICollidable)
+                        if(factory != null)
                         {
-                            var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
-                            entityCollision.Circles.Add(circle);
-                            circle.AttachTo(entity, false);
+                            var entity = factory.CreateNew(null) as PositionedObject;
+
+                            entity.Name = circle.Name;
+                            ApplyPropertiesTo(entity, properties, circle.Position);
+                            shapeCollection.Circles.Remove(circle);
+
+                            if (entity is Math.Geometry.ICollidable)
+                            {
+                                var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
+                                entityCollision.Circles.Add(circle);
+                                circle.AttachTo(entity, false);
+                            }
                         }
                     }
                 }
@@ -139,20 +147,21 @@ namespace FlatRedBall.TileEntities
                     if (shouldCreate)
                     {
                         IEntityFactory factory = GetFactory(entityType);
-
-                        var entity = factory.CreateNew(null) as PositionedObject;
-
-                        entity.Name = rectangle.Name;
-                        ApplyPropertiesTo(entity, properties, rectangle.Position);
-                        shapeCollection.AxisAlignedRectangles.Remove(rectangle);
-
-                        if (entity is Math.Geometry.ICollidable)
+                        if(factory != null)
                         {
-                            var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
-                            entityCollision.AxisAlignedRectangles.Add(rectangle);
-                            rectangle.AttachTo(entity, false);
-                        }
+                            var entity = factory.CreateNew(null) as PositionedObject;
 
+                            entity.Name = rectangle.Name;
+                            ApplyPropertiesTo(entity, properties, rectangle.Position);
+                            shapeCollection.AxisAlignedRectangles.Remove(rectangle);
+
+                            if (entity is Math.Geometry.ICollidable)
+                            {
+                                var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
+                                entityCollision.AxisAlignedRectangles.Add(rectangle);
+                                rectangle.AttachTo(entity, false);
+                            }
+                        }
                     }
                 }
             }
@@ -170,23 +179,29 @@ namespace FlatRedBall.TileEntities
                     var entityAddingProperty = properties.FirstOrDefault(item => item.Name == "EntityToCreate" || item.Name == "Type");
 
                     var entityType = entityAddingProperty.Value as string;
-                    if (!string.IsNullOrEmpty(entityType))
+                    var shouldCreate = !string.IsNullOrEmpty(entityType);
+                    if (restrictions?.InclusiveList != null)
+                    {
+                        shouldCreate = restrictions.InclusiveList.Contains(entityType);
+                    }
+                    if (shouldCreate)
                     {
                         IEntityFactory factory = GetFactory(entityType);
-
-                        var entity = factory.CreateNew(null) as PositionedObject;
-
-                        entity.Name = polygon.Name;
-                        ApplyPropertiesTo(entity, properties, polygon.Position);
-                        shapeCollection.Polygons.Remove(polygon);
-
-                        if (entity is Math.Geometry.ICollidable)
+                        if(factory != null)
                         {
-                            var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
-                            entityCollision.Polygons.Add(polygon);
-                            polygon.AttachTo(entity, false);
-                        }
+                            var entity = factory.CreateNew(null) as PositionedObject;
 
+                            entity.Name = polygon.Name;
+                            ApplyPropertiesTo(entity, properties, polygon.Position);
+                            shapeCollection.Polygons.Remove(polygon);
+
+                            if (entity is Math.Geometry.ICollidable)
+                            {
+                                var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
+                                entityCollision.Polygons.Add(polygon);
+                                polygon.AttachTo(entity, false);
+                            }
+                        }
                     }
                 }
             }
