@@ -14,7 +14,7 @@ namespace FlatRedBall.TileEntities
 {
     public class InstantiationRestrictions
     {
-        public Microsoft.Xna.Framework.Rectangle? Bounds = null;
+        public AxisAlignedRectangle Bounds = null;
         public List<string> InclusiveList = null;
 
     }
@@ -252,7 +252,7 @@ namespace FlatRedBall.TileEntities
                                     layer.GetBottomLeftWorldCoordinateForOrderedTile(tileIndex, out float x, out float y);
                                     x += tileSize / 2.0f;
                                     y += tileSize / 2.0f;
-                                    shouldCreate = bounds.Value.Contains(x, y);
+                                    shouldCreate = bounds.IsPointInside(x, y);
                                 }
 
                                 if(shouldCreate)
