@@ -189,7 +189,9 @@ namespace TileGraphicsPlugin
             // - CollidableVsTileShapeCollectionData.DoFirstCollisionLineVsShapeCollection is now public 
             // 2.9
             // - Added animated, flipped tile support
-            get { return new Version(2, 9, 0, 0); }
+            // 2.10
+            // - Added ability to restrict instantiation to a bound
+            get { return new Version(2, 10, 0, 0); }
         }
 
         [Import("GlueProjectSave")]

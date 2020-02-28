@@ -63,7 +63,7 @@ namespace FlatRedBall.Screens
 
         /// <summary>
         /// A collection of variables to reset. This can be variables on the Screen itself or variables on objects within
-        /// the screen, like PlayerInstance.X
+        /// the screen, like this.PlayerInstance.X. Note that any objects which belong to the screen must begin with the name "this".
         /// </summary>
         protected static List<string> RestartVariables { get; private set; } = new List<string>();
 
