@@ -91,10 +91,10 @@ namespace FlatRedBall.Glue.Elements
 
             fileName = FileManager.Standardize(fileName).ToLower();
 
-
-            if (GlueProject != null)
+            var project = GlueProject;
+            if (project != null)
             {
-                foreach (ScreenSave screenSave in GlueProject.Screens)
+                foreach (ScreenSave screenSave in project.Screens)
                 {
                     foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
                     {
@@ -107,9 +107,9 @@ namespace FlatRedBall.Glue.Elements
                     }
                 }
 
-                lock (GlueProject.Entities)
+                lock (project.Entities)
                 {
-                    foreach (EntitySave entitySave in GlueProject.Entities)
+                    foreach (EntitySave entitySave in project.Entities)
                     {
                         foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
                         {
@@ -123,7 +123,7 @@ namespace FlatRedBall.Glue.Elements
                     }
                 }
 
-                foreach (ReferencedFileSave rfs in GlueProject.GlobalFiles)
+                foreach (ReferencedFileSave rfs in project.GlobalFiles)
                 {
                     string absoluteRfsFile = FileManager.Standardize(ObjectFinder.Self.MakeAbsoluteContent(rfs.Name)).ToLower();
 
