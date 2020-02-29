@@ -531,41 +531,16 @@ namespace FlatRedBallAddOns.Entities
                 }
                 else
                 {
-                    while (tryAgain)
+                    try
                     {
+                        GlueCommands.Self.TryMultipleTimes(() =>FileManager.SaveText(fileContents, fileName), 10);
+                    }
+                    catch(Exception e)
+                    {
+                        string errorMessage = "Could not generate the file " + fileName + "\n\n" +
+                            "Try manually re-generating this through Glue.  This is not a fatal error.";
 
-                        try
-                        {
-                            FileManager.SaveText(fileContents, fileName);
-                            tryAgain = false;
-
-                        }
-                        catch (Exception ex)
-                        {
-                            if (numberOfTries < numberOfSavesToTry)
-                            {
-                                numberOfTries++;
-                                System.Threading.Thread.Sleep(25);
-                            }
-                            else
-                            {
-                                string errorMessage;
-
-                                if (fileName.Contains(".Generated."))
-                                {
-
-                                    errorMessage = "Could not generate the file " + fileName + "\n\n" +
-                                        "Try manually re-generating this through Glue.  This is not a fatal error.";
-                                }
-                                else
-                                {
-                                    errorMessage = "Could not save the file " + fileName;
-                                }
-
-                                GlueGui.ShowException(errorMessage, "Error Saving file", ex);
-                                tryAgain = false;
-                            }
-                        }
+                        GlueCommands.Self.PrintOutput(errorMessage);
                     }
                 }
             }
