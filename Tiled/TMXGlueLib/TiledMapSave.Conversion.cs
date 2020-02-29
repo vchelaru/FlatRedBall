@@ -876,7 +876,7 @@ namespace TMXGlueLib
                 }
 
                 var group = abstractMapLayer as mapObjectgroup;
-                bool shouldProcess = group?.@object != null && group.Visible && !string.IsNullOrEmpty(group.Name);
+                bool shouldProcess = group?.@object != null && group.IsVisible && !string.IsNullOrEmpty(group.Name);
                 if (shouldProcess) //&& (string.IsNullOrEmpty(layerName) || group.name.Equals(layerName)))
                 {
                     foreach (mapObjectgroupObject @object in @group.@object)
