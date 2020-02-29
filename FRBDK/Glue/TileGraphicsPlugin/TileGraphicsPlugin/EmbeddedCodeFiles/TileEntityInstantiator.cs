@@ -19,8 +19,16 @@ namespace FlatRedBall.TileEntities
 
     }
 
+
     public static class TileEntityInstantiator
     {
+        public class Settings
+        {
+            public bool RemoveTileObjectsAfterEntityCreation = true;
+        }
+
+        public static Settings CurrentSettings { get; set; } = new Settings();
+
         /// <summary>
         /// A dictionary that stores all available values for a given type.
         /// </summary>
@@ -54,10 +62,13 @@ namespace FlatRedBall.TileEntities
 
             CreateEntitiesFrom(entitiesToRemove, mapLayer, layeredTileMap.TileProperties, layeredTileMap.WidthPerTile ?? 16);
 
-            foreach (var entityToRemove in entitiesToRemove)
+            if(CurrentSettings.RemoveTileObjectsAfterEntityCreation)
             {
-                string remove = entityToRemove;
-                mapLayer.RemoveTiles(t => t.Any(item => (item.Name == "EntityToCreate" || item.Name == "Type") && item.Value as string == remove), layeredTileMap.TileProperties);
+                foreach (var entityToRemove in entitiesToRemove)
+                {
+                    string remove = entityToRemove;
+                    mapLayer.RemoveTiles(t => t.Any(item => (item.Name == "EntityToCreate" || item.Name == "Type") && item.Value as string == remove), layeredTileMap.TileProperties);
+                }
             }
 
         }
@@ -70,11 +81,15 @@ namespace FlatRedBall.TileEntities
             {
                 CreateEntitiesFrom(entitiesToRemove, layer, layeredTileMap.TileProperties, layeredTileMap.WidthPerTile ?? 16, restrictions);
             }
-            foreach (var entityToRemove in entitiesToRemove)
+            if(CurrentSettings.RemoveTileObjectsAfterEntityCreation)
             {
-                string remove = entityToRemove;
-                layeredTileMap.RemoveTiles(t => t.Any(item => (item.Name == "EntityToCreate" || item.Name == "Type") && item.Value as string == remove), layeredTileMap.TileProperties);
+                foreach (var entityToRemove in entitiesToRemove)
+                {
+                    string remove = entityToRemove;
+                    layeredTileMap.RemoveTiles(t => t.Any(item => (item.Name == "EntityToCreate" || item.Name == "Type") && item.Value as string == remove), layeredTileMap.TileProperties);
+                }
             }
+
             foreach (var shapeCollection in layeredTileMap.ShapeCollections)
             {
                 CreateEntitiesFromCircles(layeredTileMap, shapeCollection, restrictions);
@@ -113,7 +128,11 @@ namespace FlatRedBall.TileEntities
 
                             entity.Name = circle.Name;
                             ApplyPropertiesTo(entity, properties, circle.Position);
-                            shapeCollection.Circles.Remove(circle);
+
+                            if(CurrentSettings.RemoveTileObjectsAfterEntityCreation)
+                            {
+                                shapeCollection.Circles.Remove(circle);
+                            }
 
                             if (entity is Math.Geometry.ICollidable)
                             {
@@ -153,7 +172,11 @@ namespace FlatRedBall.TileEntities
 
                             entity.Name = rectangle.Name;
                             ApplyPropertiesTo(entity, properties, rectangle.Position);
-                            shapeCollection.AxisAlignedRectangles.Remove(rectangle);
+
+                            if(CurrentSettings.RemoveTileObjectsAfterEntityCreation)
+                            {
+                                shapeCollection.AxisAlignedRectangles.Remove(rectangle);
+                            }
 
                             if (entity is Math.Geometry.ICollidable)
                             {
@@ -193,7 +216,11 @@ namespace FlatRedBall.TileEntities
 
                             entity.Name = polygon.Name;
                             ApplyPropertiesTo(entity, properties, polygon.Position);
-                            shapeCollection.Polygons.Remove(polygon);
+
+                            if (CurrentSettings.RemoveTileObjectsAfterEntityCreation)
+                            {
+                                shapeCollection.Polygons.Remove(polygon);
+                            }
 
                             if (entity is Math.Geometry.ICollidable)
                             {

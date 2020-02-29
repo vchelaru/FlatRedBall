@@ -191,7 +191,9 @@ namespace TileGraphicsPlugin
             // - Added animated, flipped tile support
             // 2.10
             // - Added ability to restrict instantiation to a bound
-            get { return new Version(2, 10, 0, 0); }
+            // 2.11
+            // - Added ability to prevent objects from being removed when creating objects from tiles
+            get { return new Version(2, 11, 0, 0); }
         }
 
         [Import("GlueProjectSave")]
