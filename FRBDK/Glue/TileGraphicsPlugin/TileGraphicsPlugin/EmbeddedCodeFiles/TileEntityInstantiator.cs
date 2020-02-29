@@ -578,6 +578,15 @@ namespace FlatRedBall.TileEntities
                 }
 
             }
+            else if (valueType?.Contains(".") == true)
+            {
+                var type = typeof(TileEntityInstantiator).Assembly.GetType(valueType);
+
+                if (type != null && type.IsEnum)
+                {
+                    valueToSet = Enum.Parse(type, (string)valueToSet);
+                }
+            }
             return valueToSet;
         }
 
