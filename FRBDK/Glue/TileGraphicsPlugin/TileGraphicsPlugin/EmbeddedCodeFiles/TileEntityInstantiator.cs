@@ -259,7 +259,7 @@ namespace FlatRedBall.TileEntities
                     var shouldCreateEntityType =
                         !string.IsNullOrEmpty(entityType) && dictionary.ContainsKey(tileName);
 
-                    if (shouldCreateEntityType && restrictions.InclusiveList != null)
+                    if (shouldCreateEntityType && restrictions?.InclusiveList != null)
                     {
                         shouldCreateEntityType = restrictions.InclusiveList.Contains(entityType);
                     }

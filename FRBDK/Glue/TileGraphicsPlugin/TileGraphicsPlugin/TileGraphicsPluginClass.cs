@@ -193,7 +193,7 @@ namespace TileGraphicsPlugin
             // - Added ability to restrict instantiation to a bound
             // 2.11
             // - Added ability to prevent objects from being removed when creating objects from tiles
-            get { return new Version(2, 11, 0, 0); }
+            get { return new Version(2, 11, 1, 0); }
         }
 
         [Import("GlueProjectSave")]
