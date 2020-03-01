@@ -324,15 +324,25 @@ namespace FlatRedBall.Glue.IO
 
             if (usingQuickReload)
             {
-                GlueProjectSave newGlueProjectSave;
-                var compareResult = ProjectManager.GlueProjectSave.ReloadUsingComparison(ProjectManager.GlueProjectFileName, out newGlueProjectSave);
+                GlueProjectSave newGlueProjectSave = null;
+                bool wasHandled = false;
+                ComparisonResult compareResult = null;
+
+                // March 1, 2020 - this can fail on int comparison so...we'll just tolerate it and do a full reload:
+                try
+                {
+                    compareResult = ProjectManager.GlueProjectSave.ReloadUsingComparison(ProjectManager.GlueProjectFileName, out newGlueProjectSave);
+                }
+                catch
+                {
+                    // write out put?
+                }
 
                 if (compareResult != null && compareResult.Differences.Count != 0)
                 {
                     // See if only a Screen or Entity changed.  If so, do a simple set of that and be done with it
+                    wasHandled = true;
 
-
-                    bool wasHandled = true;
 
                     List<string> elementsAlreadyRefreshed = new List<string>();
 
@@ -377,10 +387,10 @@ namespace FlatRedBall.Glue.IO
 							break;
 						}
                     }
-                    if (!wasHandled)
-                    {
-                        await ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName);
-                    }
+                }
+                if (!wasHandled)
+                {
+                    await ProjectLoader.Self.LoadProject(ProjectManager.ProjectBase.FullFileName);
                 }
             }
             else

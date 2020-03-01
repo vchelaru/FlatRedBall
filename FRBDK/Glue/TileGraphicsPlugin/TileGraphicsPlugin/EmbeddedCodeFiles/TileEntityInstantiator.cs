@@ -598,7 +598,7 @@ namespace FlatRedBall.TileEntities
 
 
         static Type[] typesInThisAssembly;
-        private static IEntityFactory GetFactory(string entityType)
+        public static IEntityFactory GetFactory(string entityType)
         {
             if (typesInThisAssembly == null)
             {

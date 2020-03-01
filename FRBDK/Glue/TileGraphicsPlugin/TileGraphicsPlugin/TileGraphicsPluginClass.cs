@@ -195,7 +195,9 @@ namespace TileGraphicsPlugin
             // - Added ability to prevent objects from being removed when creating objects from tiles
             // 2.12
             // - Object layers now have a Visible property
-            get { return new Version(2, 12, 0, 0); }
+            // 2.13
+            // - TileEntityInstantiator.GetFactory is now public making it easier for other code to instantiate objects by name
+            get { return new Version(2, 13, 0, 0); }
         }
 
         [Import("GlueProjectSave")]
