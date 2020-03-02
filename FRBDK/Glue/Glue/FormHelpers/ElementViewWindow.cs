@@ -1064,7 +1064,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     if(System.IO.File.Exists(absolute))
                     {
-                        System.Diagnostics.Process.Start(absolute);
+                        var startInfo = new ProcessStartInfo();
+                        startInfo.FileName = absolute;
+                        startInfo.UseShellExecute = true;
+                        System.Diagnostics.Process.Start(startInfo);
                     }
 
                 }
