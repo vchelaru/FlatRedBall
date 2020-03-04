@@ -58,7 +58,9 @@ namespace FlatRedBall.PlatformerPlugin
                 // 1.5.1 - Fixed bug where duplicate entries could get added to the CSV
                 // 1.6   - Added support for entities that derive from entities which are platformer entities
                 // 1.7   - Added variable to keep track of position before last collision
-                return new Version(1, 7, 0);
+                // 1.7.1 - Made DirectionFacing public
+                //       - Added HorizontalDirection extensions
+                return new Version(1, 7, 1);
             }
         }
 

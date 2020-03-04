@@ -143,7 +143,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// Which direciton the character is facing.");
             codeBlock.Line("/// </summary>");
-            codeBlock.Property("protected HorizontalDirection", "DirectionFacing")
+            codeBlock.Property("public HorizontalDirection", "DirectionFacing")
                 .Get()
                     .Line("return mDirectionFacing;");
 
