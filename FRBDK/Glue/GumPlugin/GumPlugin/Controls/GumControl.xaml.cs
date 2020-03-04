@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using Gum.DataTypes.Behaviors;
@@ -61,13 +62,14 @@ namespace GumPlugin.Controls
         private void HandleAddAllForms(object sender, RoutedEventArgs e)
         {
             var project = GlueState.Self.CurrentMainProject;
-            var error = GetWhyAddingMonoGameIsNotSupported(project);
+            var response = GetWhyAddingMonoGameIsNotSupported(project);
 
-            if(!string.IsNullOrEmpty(error))
+            if(!string.IsNullOrEmpty(response.Message))
             {
-                GlueCommands.Self.DialogCommands.ShowMessageBox(error);
+                GlueCommands.Self.DialogCommands.ShowMessageBox(response.Message);
             }
-            else
+
+            if(response.Succeeded)
             {
                 var viewModel = DataContext as GumViewModel;
 
@@ -78,23 +80,27 @@ namespace GumPlugin.Controls
             }
         }
 
-        private string GetWhyAddingMonoGameIsNotSupported(ProjectBase project)
+        private GeneralResponse GetWhyAddingMonoGameIsNotSupported(ProjectBase project)
         {
-            string errorMessage = null;
+            GeneralResponse response = GeneralResponse.SuccessfulResponse;
 
             if (project == null)
             {
-                errorMessage = "You must load a project before adding Gum";
+                response.Succeeded = false;
+                response.Message = "You must load a project before adding Gum";
             }
             else if (project is IosMonogameProject)
             {
-                errorMessage = "FlatRedBall.Forms is not yet supported on iOS. Complain in chat!";
+                response.Succeeded = false;
+                response.Message = "FlatRedBall.Forms is not yet supported on iOS. Complain in chat!";
             }
             else if (project is Xna4Project)
             {
-                errorMessage = "FlatRedBall.Forms is not supported for FlatRedBall XNA projects.";
+                // Just tell the user:
+                response.Succeeded = true;
+                response.Message = "Forms is being added, but you may need to manually add .dlls to your project.";
             }
-            return errorMessage;
+            return response;
         }
 
         private void HandleGenerateBehaviors(object sender, RoutedEventArgs e)

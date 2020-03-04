@@ -277,7 +277,9 @@ namespace GumPlugin
             // - Fixed Circle.Radius setting width and height incorrectly
             // 2.2.3
             // - Fixed possible crash when reading midding event export JSON files
-            get { return new Version(2, 2, 3); }
+            // 2.2.4
+            // - FlatRedBall XNA can now have .forms, but a warning message is displayed
+            get { return new Version(2, 2, 4); }
         }
 
         #endregion
