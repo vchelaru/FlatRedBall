@@ -26,6 +26,7 @@
     <None Remove="Content\Levels\TopDown8Bit.tmx" />
     <None Remove="Content\Tilesets\PlatformerTiles.png" />
     <None Remove="Content\Tilesets\TopDown8Bit.png" />
+    <None Remove="Icons\TiledIcon.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -71,6 +72,7 @@
 
 
   <ItemGroup>
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="3.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
   </ItemGroup>
@@ -87,6 +89,11 @@
     <EmbeddedResource Include="Content\Levels\TopDown8Bit.tmx" />
     <EmbeddedResource Include="Content\Tilesets\PlatformerTiles.png" />
     <EmbeddedResource Include="Content\Tilesets\TopDown8Bit.png" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Resource Include="Icons\TiledIcon.png" />
   </ItemGroup>
 
 

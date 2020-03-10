@@ -28,6 +28,7 @@ using TileGraphicsPlugin.ViewModels;
 using FlatRedBall.Glue.IO;
 using TileGraphicsPlugin.Logic;
 using System.ComponentModel;
+using TiledPluginCore.Controls;
 
 namespace TileGraphicsPlugin
 {
@@ -41,7 +42,7 @@ namespace TileGraphicsPlugin
         PluginTab collisionTab;
 
         TiledObjectTypeCreator tiledObjectTypeCreator;
-
+        TiledToolbar tiledToolbar;
 
         #endregion
 
@@ -197,7 +198,9 @@ namespace TileGraphicsPlugin
             // - Object layers now have a Visible property
             // 2.13
             // - TileEntityInstantiator.GetFactory is now public making it easier for other code to instantiate objects by name
-            get { return new Version(2, 13, 0, 0); }
+            // 2.14
+            // - Added new tooltip
+            get { return new Version(2, 14, 0, 0); }
         }
 
         [Import("GlueProjectSave")]
@@ -249,6 +252,8 @@ namespace TileGraphicsPlugin
             InitializeTab();
 
             AddEvents();
+
+            CreateToolbar();
 
             SaveTemplateTmx();
 
@@ -369,6 +374,23 @@ namespace TileGraphicsPlugin
             this.ReactToNewFileHandler = ReactToNewFile;
         }
 
+        private void CreateToolbar()
+        {
+            tiledToolbar = new TiledToolbar();
+            tiledToolbar.Opened += HandleToolbarOpened;
+            //gumToolbar.GumButtonClicked += HandleToolbarButtonClick;
+            base.AddToToolBar(tiledToolbar, "Standard");
+        }
+
+        private void HandleToolbarOpened(object sender, EventArgs e)
+        {
+            var availableTmxFiles = ObjectFinder.Self.GetAllReferencedFiles()
+                .Where(item => item.Name?.ToLowerInvariant()?.EndsWith(".tmx") == true)
+                .ToList();
+
+            tiledToolbar.FillDropdown(availableTmxFiles);
+        }
+
         private void ReactToNewFile(ReferencedFileSave newFile)
         {
             var isTmx = FileManager.GetExtension(newFile.Name) == "tmx";
@@ -422,6 +444,12 @@ namespace TileGraphicsPlugin
         {
             // Do anything your plugin needs to do to shut down
             // or don't shut down and return false
+
+            if (tiledToolbar != null)
+            {
+                base.RemoveFromToolbar(tiledToolbar, "Standard");
+            }
+
             return true;
         }
 

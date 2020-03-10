@@ -60,6 +60,9 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
+        public string NoPath => FileManager.RemovePath(FullPath);
+
+
         public string FullPath
         {
             get

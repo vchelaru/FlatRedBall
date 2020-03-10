@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="TiledPluginCore.Controls.TiledToolbar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TiledPluginCore.Controls"
+             mc:Ignorable="d" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             
+             d:DesignHeight="250" d:DesignWidth="300">
+    <Grid>
+        <xctk:SplitButton 
+            Opened="HandleOpened"
+            Width="40" Height="22" Click="HandleButtonClick"
+            x:Name="AddControlButtonInstance">
+            <xctk:SplitButton.DropDownContent>
+                <StackPanel x:Name="TiledDropdown">
+                </StackPanel>
+            </xctk:SplitButton.DropDownContent>
+            <Image Source="/TiledPluginCore;component/Icons/TiledIcon.png"></Image>
+
+        </xctk:SplitButton>
+        <!--<Button Width="22" Height="22" Click="HandleButtonClick">
+            <Image Source="/TiledPluginCore;component/Icons/TiledIcon.png"></Image>
+        </Button>-->            
+    </Grid>
+</UserControl>
