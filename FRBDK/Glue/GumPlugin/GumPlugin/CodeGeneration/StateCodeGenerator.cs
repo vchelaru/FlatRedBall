@@ -78,6 +78,7 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForStates.Add("ExposeChildrenEvents");
             //mVariableNamesToSkipForStates.Add("SourceFile");
             mVariableNamesToSkipForStates.Add("Contained Type");
+            mVariableNamesToSkipForStates.Add("IsXamarinFormsControl");
 
             // Eventually we'll support this but first Gum needs to support 
             // setting categorized states on instances
