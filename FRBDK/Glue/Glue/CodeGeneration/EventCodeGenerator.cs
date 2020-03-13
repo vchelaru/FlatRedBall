@@ -186,14 +186,14 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
-        internal static void GenerateEventsForVariable(ICodeBlock codeBlock, string variableName, bool isEventNew = false)
+        internal static void GenerateEventsForVariable(ICodeBlock codeBlock, string variableName, string variableType, bool isEventNew = false)
         {
             string prefix = "public ";
             if (isEventNew)
             {
                 prefix += "new ";
             }
-            codeBlock.Line(prefix + "event System.EventHandler Before" + variableName + "Set;");
+            codeBlock.Line(prefix + $"event Action<{variableType}> Before" + variableName + "Set;");
             codeBlock.Line(prefix + "event System.EventHandler After" + variableName + "Set;");
 
         }
@@ -204,14 +204,16 @@ namespace FlatRedBall.Glue.CodeGeneration
             PerformancePluginCodeGenerator.SaveObject = saveObject;
 
             string beforeOrAfterAsString = "Before";
+            string parameters = "value";
             if (beforeOrAfter == BeforeOrAfter.After)
             {
                 beforeOrAfterAsString = "After";
+                parameters = "this, null";
             }
             PerformancePluginCodeGenerator.GenerateStart(beforeOrAfterAsString + " set " + variableName);
 
             codeBlock.If(beforeOrAfterAsString + variableName + "Set != null")
-                .Line(beforeOrAfterAsString + variableName + "Set(this, null);");
+                .Line(beforeOrAfterAsString + variableName + $"Set({parameters});");
 
             PerformancePluginCodeGenerator.GenerateEnd();
         }
@@ -758,7 +760,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             // Currently we don't support events on static variables
             if (shouldGenerate)
             {
-                EventCodeGenerator.GenerateEventsForVariable(codeBlock, customVariable.Name);
+                EventCodeGenerator.GenerateEventsForVariable(codeBlock, customVariable.Name, customVariable.Type);
             }
         }
     }

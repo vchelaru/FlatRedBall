@@ -80,7 +80,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (hasEvents)
             {
-                EventCodeGenerator.GenerateEventsForVariable(codeBlock, exposedEnabledVariable.Name);
+                EventCodeGenerator.GenerateEventsForVariable(codeBlock, exposedEnabledVariable.Name, exposedEnabledVariable.Type);
             }
 
             string prefix;

@@ -60,7 +60,9 @@ namespace FlatRedBall.PlatformerPlugin
                 // 1.7   - Added variable to keep track of position before last collision
                 // 1.7.1 - Made DirectionFacing public
                 //       - Added HorizontalDirection extensions
-                return new Version(1, 7, 1);
+                // 1.8   - Changing one of the variables will update the 
+                //         last values jumped with, allowing a player to jump out of water and have the push value reset
+                return new Version(1, 8, 0);
             }
         }
 

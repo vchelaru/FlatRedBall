@@ -41,6 +41,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             codeBlock.Line("/// </summary>");
             codeBlock.Line("bool mIsOnGround = false;");
 
+            codeBlock.Line("bool mCanContinueToApplyJumpToHold = false;");
+
+
             codeBlock.Line("bool wasOnGroundLastFrame = false;");
 
             codeBlock.Line("private float lastNonZeroPlatformerHorizontalMaxSpeed = 0;");
@@ -260,7 +263,30 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             // this provides default controls for the platformer using either keyboad or 360. Can be overridden in custom code:
             this.InitializeInput();
 
+            BeforeGroundMovementSet += (newValue) => 
+            {
+                if(mGroundMovement != null && mGroundMovement == mValuesJumpedWith)
+                {
+                    mValuesJumpedWith = newValue;
+                }
+            };
 
+            BeforeAirMovementSet += (newValue) => 
+            {
+                if(mAirMovement != null && mAirMovement == mValuesJumpedWith)
+                {
+                    mValuesJumpedWith = newValue;
+                }
+            };
+
+            BeforeAfterDoubleJumpSet += (newValue) =>  
+            {
+                if(mAfterDoubleJump != null && mAfterDoubleJump == mValuesJumpedWith)
+                {
+                    mValuesJumpedWith = newValue;
+                }
+            };
+            
             AfterGroundMovementSet += (not, used) => UpdateCurrentMovement();
             AfterAirMovementSet += (not, used) => UpdateCurrentMovement();
             AfterAfterDoubleJumpSet += (not, used) => UpdateCurrentMovement();
@@ -506,6 +532,8 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 this.YVelocity = CurrentMovement.JumpVelocity;
                 mValuesJumpedWith = CurrentMovement;
 
+                mCanContinueToApplyJumpToHold = true;
+
                 if (JumpAction != null)
                 {
                     JumpAction();
@@ -521,12 +549,16 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             double secondsSincePush = CurrentTime - mTimeJumpPushed;
 
             if (mValuesJumpedWith != null && 
+                mCanContinueToApplyJumpToHold &&
                 secondsSincePush < mValuesJumpedWith.JumpApplyLength &&
 				(mValuesJumpedWith.JumpApplyByButtonHold == false || JumpInput.IsDown)
                 )
             {
                 this.YVelocity = mValuesJumpedWith.JumpVelocity;
-
+            }
+            else
+            {
+                mCanContinueToApplyJumpToHold = false;
             }
 
             if (mValuesJumpedWith != null && mValuesJumpedWith.JumpApplyByButtonHold &&

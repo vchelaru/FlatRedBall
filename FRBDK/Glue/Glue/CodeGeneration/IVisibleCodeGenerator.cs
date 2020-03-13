@@ -52,7 +52,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 #endregion
                 bool isNew = entitySave.GetInheritsFromIVisible();
 
-                EventCodeGenerator.GenerateEventsForVariable(codeBlock, "Visible", isNew);
+                EventCodeGenerator.GenerateEventsForVariable(codeBlock, "Visible", "bool", isNew);
 
                 GenerateVisibleProperty(codeBlock, element, entitySave);
 
