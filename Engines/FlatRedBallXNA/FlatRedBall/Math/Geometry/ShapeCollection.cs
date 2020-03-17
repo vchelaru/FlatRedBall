@@ -1623,6 +1623,38 @@ namespace FlatRedBall.Math.Geometry
 
         }
 
+        public bool CollideAgainstMoveSoft(ShapeCollection shapeCollection, float thisMass, float otherMass, float separationVelocity)
+        {
+
+            mSuppressLastCollisionClear = true;
+            bool returnValue = false;
+
+            // currently we only support aarect vs aarect and
+            // circle vs circle
+            for (int i = 0; i < shapeCollection.AxisAlignedRectangles.Count; i++)
+            {
+                AxisAlignedRectangle shape = shapeCollection.AxisAlignedRectangles[i];
+
+                for(int j = 0; j < this.AxisAlignedRectangles.Count; j++)
+                {
+                    returnValue |= shape.CollideAgainstMoveSoft(AxisAlignedRectangles[j], otherMass, thisMass, separationVelocity);
+                }
+            }
+
+            for(int i = 0; i < shapeCollection.Circles.Count; i++)
+            {
+                var shape = shapeCollection.Circles[i];
+
+                for(int j = 0; j < Circles.Count; j++)
+                {
+                    returnValue |= shape.CollideAgainstMoveSoft(Circles[j], otherMass, thisMass, separationVelocity);
+                }
+            }
+
+            mSuppressLastCollisionClear = false;
+            return returnValue;
+        }
+
 		#endregion
 
         public bool IsMouseOver(Gui.Cursor cursor)

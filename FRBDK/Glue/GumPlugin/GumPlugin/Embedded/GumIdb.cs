@@ -480,6 +480,8 @@ namespace FlatRedBall.Gum
         public void Update()
         {
             mManagers.Activity(TimeManager.CurrentTime);
+
+            global::Gum.Wireframe.TimeManager.Self.Activity();
         }
 
         /// <summary>
