@@ -13,6 +13,11 @@
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\WaitAction.cs" Link="EmbeddedCodeFiles\WaitAction.cs" />
+  </ItemGroup>
   
   <ItemGroup>
     <EmbeddedResource Include="..\..\..\..\Engines\FlatRedBallAddOns\FlatRedBall.Scripting\XNA4\Scripting\AfterThatDecision.cs" Link="EmbeddedCodeFiles\AfterThatDecision.cs" />

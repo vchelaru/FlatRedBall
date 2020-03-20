@@ -147,6 +147,13 @@ namespace FlatRedBall.Scripting
             CreateGeneralAction(() => action(arg1, arg2, arg3, arg4, arg5, arg6, arg7));
         }
 
+        public void Wait(double secondsToWait)
+        {
+            var action = new WaitAction();
+            action.TimeToWaitInSeconds = secondsToWait;
+            AddAction(action);
+        }
+
 
         #endregion
     }

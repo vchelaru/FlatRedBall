@@ -58,9 +58,11 @@ namespace GameScriptingPlugin
         // - Added check for PC precompile directive so scripting engine could be used on Linux and Mac
         // 1.4
         // - Added new ScreenScript.cs file
+        // 1.5
+        // - Added WaitAction and Do.Wait
         public override Version Version
         {
-            get { return new Version(1, 4); }
+            get { return new Version(1, 5); }
         }
         #endregion
 
@@ -91,6 +93,7 @@ namespace GameScriptingPlugin
             mCoreItemAdder.Add($"{prefix}.ScreenScript.cs");
             mCoreItemAdder.Add($"{prefix}.Script.cs");
             mCoreItemAdder.Add($"{prefix}.ScriptEngine.cs");
+            mCoreItemAdder.Add($"{prefix}.WaitAction.cs");
 
             mCoreItemAdder.OutputFolderInProject = "GameScriptingCore";
             //this.ReactToLoadedGlux += HandleOpenProject;
