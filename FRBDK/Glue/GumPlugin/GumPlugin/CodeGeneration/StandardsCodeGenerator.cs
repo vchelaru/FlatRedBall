@@ -85,6 +85,9 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("Y Origin");
             mVariableNamesToSkipForProperties.Add("Y Units");
 
+            mVariableNamesToSkipForProperties.Add("FlipHorizontal");
+
+
             mVariableNamesToSkipForProperties.Add("Font");
             mVariableNamesToSkipForProperties.Add("FontSize");
 
