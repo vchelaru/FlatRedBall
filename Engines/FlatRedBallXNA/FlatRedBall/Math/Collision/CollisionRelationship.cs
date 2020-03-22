@@ -1189,15 +1189,19 @@ namespace FlatRedBall.Math.Collision
 
                     for (j = secondListStartInclusive; j > secondListEndExclusive; j--)
                     {
-                        var second = secondList[j];
-
-                        if (CollideConsideringSubCollisions(first, second))
+                        // collision can remove more than one, so let's be safe:
+                        if(j < secondList.Count)
                         {
-                            CollisionOccurred?.Invoke(first, second);
-                            collisionOccurred = true;
-                            if (CollisionLimit == CollisionLimit.First)
+                            var second = secondList[j];
+
+                            if (CollideConsideringSubCollisions(first, second))
                             {
-                                break;
+                                CollisionOccurred?.Invoke(first, second);
+                                collisionOccurred = true;
+                                if (CollisionLimit == CollisionLimit.First)
+                                {
+                                    break;
+                                }
                             }
                         }
                     }
