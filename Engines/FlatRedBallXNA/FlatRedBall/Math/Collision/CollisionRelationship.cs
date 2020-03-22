@@ -26,6 +26,18 @@ namespace FlatRedBall.Math.Collision
         //,PlatformerCollision
     }
 
+    public enum LoopDirection
+    {
+        /// <summary>
+        /// Indicates that loops will run from back to front (a reverse loop)
+        /// </summary>
+        BackToFront,
+        /// <summary>
+        /// Indicates that loops will run from front to back (normal loop)
+        /// </summary>
+        FrontToBack
+    }
+
     #endregion
 
     #region Base Implementations
@@ -1041,6 +1053,8 @@ namespace FlatRedBall.Math.Collision
         public override object FirstAsObject => firstList;
         public override object SecondAsObject => secondList;
 
+        public LoopDirection LoopDirection { get; set; } = LoopDirection.BackToFront;
+
         public void SetPartitioningSize(PositionedObjectList<FirstCollidableT> partitionedObject, float widthOrHeight)
         {
             firstPartitioningSize = widthOrHeight;
@@ -1091,8 +1105,6 @@ namespace FlatRedBall.Math.Collision
                 }
                 else
                 {
-                    int startInclusive;
-                    int endExclusive;
                     GetPartitions(out parameters.FirstPartition, out parameters.SecondPartition);
                     parameters.CalculateValuesForCollision(this);
 
@@ -1106,105 +1118,187 @@ namespace FlatRedBall.Math.Collision
                     }
 
                     // lots of copy/pasted code here, unrolled for maximum performance
-                    int j = 0;
                     if (parameters.PartitioningAxis == Axis.X)
                     {
-                        for (int i = firstList.Count - 1; i > -1; i--)
-                        {
-                            var first = firstList[i];
-                            parameters.ItemInFirstList = first;
-                            parameters.FirstIndex = i;
-
-                            GetSecondListCollisionStartAndInt(parameters, out startInclusive, out endExclusive);
-
-                            for (j = startInclusive; j > endExclusive; j--)
-                            {
-                                var second = secondList[j];
-
-                                var distanceY =
-                                    first.Position.Y - second.Position.Y;
-
-                                if (distanceY < -maxDistanceOnSecondaryAxis || distanceY > maxDistanceOnSecondaryAxis)
-                                {
-                                    continue;
-                                }
-
-                                if (CollideConsideringSubCollisions(first, second))
-                                {
-                                    CollisionOccurred?.Invoke(first, second);
-                                    collisionOccurred = true;
-                                    if (CollisionLimit == CollisionLimit.First)
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                        collisionOccurred = DoPartitionedXCollision(maxDistanceOnSecondaryAxis);
                     }
                     else if (parameters.PartitioningAxis == Axis.Y)
                     {
-                        for (int i = firstList.Count - 1; i > -1; i--)
-                        {
-                            var first = firstList[i];
-                            parameters.ItemInFirstList = first;
-                            parameters.FirstIndex = i;
-
-                            GetSecondListCollisionStartAndInt(parameters, out startInclusive, out endExclusive);
-
-                            for (j = startInclusive; j > endExclusive; j--)
-                            {
-                                var second = secondList[j];
-
-                                var distanceX =
-                                    first.Position.X - second.Position.X;
-
-                                if (distanceX < -maxDistanceOnSecondaryAxis || distanceX > maxDistanceOnSecondaryAxis)
-                                {
-                                    continue;
-                                }
-
-                                if (CollideConsideringSubCollisions(first, second))
-                                {
-                                    CollisionOccurred?.Invoke(first, second);
-                                    collisionOccurred = true;
-                                    if (CollisionLimit == CollisionLimit.First)
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                        collisionOccurred = DoPartitionedYCollision(maxDistanceOnSecondaryAxis);
                     }
                     else
                     {
-                        for (int i = firstList.Count - 1; i > -1; i--)
+                        collisionOccurred = DoNoPartitionCollision(collisionOccurred);
+                    }
+                }
+            }
+
+            this.CollidedThisFrame = collisionOccurred;
+
+            return collisionOccurred;
+        }
+
+        private bool DoNoPartitionCollision(bool collisionOccurred)
+        {
+            int j = 0;
+            int secondListStartInclusive;
+            int secondListEndExclusive;
+
+            if(LoopDirection == LoopDirection.FrontToBack)
+            {
+                secondListStartInclusive = 0;
+                secondListEndExclusive = secondList.Count;
+                for (int i = 0; i < firstList.Count; i++)
+                {
+                    var first = firstList[i];
+
+                    if (firstList == (object)secondList)
+                    {
+                        secondListStartInclusive = i + 1;
+                    }
+
+                    for (j = secondListStartInclusive; j < secondListEndExclusive; j++)
+                    {
+                        var second = secondList[j];
+
+                        if (CollideConsideringSubCollisions(first, second))
                         {
-                            var first = firstList[i];
-                            parameters.ItemInFirstList = first;
-                            parameters.FirstIndex = i;
-
-                            GetSecondListCollisionStartAndInt(parameters, out startInclusive, out endExclusive);
-
-                            for (j = startInclusive; j > endExclusive; j--)
+                            CollisionOccurred?.Invoke(first, second);
+                            collisionOccurred = true;
+                            if (CollisionLimit == CollisionLimit.First)
                             {
-                                var second = secondList[j];
+                                break;
+                            }
+                        }
+                    }
+                }
 
-                                if (CollideConsideringSubCollisions(first, second))
-                                {
-                                    CollisionOccurred?.Invoke(first, second);
-                                    collisionOccurred = true;
-                                    if (CollisionLimit == CollisionLimit.First)
-                                    {
-                                        break;
-                                    }
-                                }
+            }
+            else // back to front
+            {
+                secondListStartInclusive = secondList.Count - 1;
+                secondListEndExclusive = -1;
+                for (int i = firstList.Count - 1; i > -1; i--)
+                {
+                    var first = firstList[i];
+
+                    if(firstList == (object)secondList)
+                    {
+                        secondListStartInclusive = i - 1;
+                    }
+
+                    for (j = secondListStartInclusive; j > secondListEndExclusive; j--)
+                    {
+                        var second = secondList[j];
+
+                        if (CollideConsideringSubCollisions(first, second))
+                        {
+                            CollisionOccurred?.Invoke(first, second);
+                            collisionOccurred = true;
+                            if (CollisionLimit == CollisionLimit.First)
+                            {
+                                break;
                             }
                         }
                     }
                 }
             }
 
-            this.CollidedThisFrame = collisionOccurred;
+
+            return collisionOccurred;
+        }
+
+        private bool DoPartitionedYCollision(float? maxDistanceOnSecondaryAxis)
+        {
+            if (this.LoopDirection == LoopDirection.FrontToBack)
+            {
+                throw new NotImplementedException("Bug Vic!");
+            }
+
+            bool collisionOccurred = false;
+            int j = 0;
+
+            int startInclusive;
+            int endExclusive;
+            for (int i = firstList.Count - 1; i > -1; i--)
+            {
+                var first = firstList[i];
+                parameters.ItemInFirstList = first;
+                parameters.FirstIndex = i;
+
+                GetSecondListCollisionStartAndInt(parameters, out startInclusive, out endExclusive);
+
+                for (j = startInclusive; j > endExclusive; j--)
+                {
+                    var second = secondList[j];
+
+                    var distanceX =
+                        first.Position.X - second.Position.X;
+
+                    if (distanceX < -maxDistanceOnSecondaryAxis || distanceX > maxDistanceOnSecondaryAxis)
+                    {
+                        continue;
+                    }
+
+                    if (CollideConsideringSubCollisions(first, second))
+                    {
+                        CollisionOccurred?.Invoke(first, second);
+                        collisionOccurred = true;
+                        if (CollisionLimit == CollisionLimit.First)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return collisionOccurred;
+        }
+
+        private bool DoPartitionedXCollision(float? maxDistanceOnSecondaryAxis)
+        {
+            bool collisionOccurred = false;
+            int startInclusive;
+            int endExclusive;
+
+            int j = 0;
+
+            if(this.LoopDirection == LoopDirection.FrontToBack)
+            {
+                throw new NotImplementedException("Bug Vic!");
+            }
+
+            for (int i = firstList.Count - 1; i > -1; i--)
+            {
+                var first = firstList[i];
+                parameters.ItemInFirstList = first;
+                parameters.FirstIndex = i;
+
+                GetSecondListCollisionStartAndInt(parameters, out startInclusive, out endExclusive);
+
+                for (j = startInclusive; j > endExclusive; j--)
+                {
+                    var second = secondList[j];
+
+                    var distanceY =
+                        first.Position.Y - second.Position.Y;
+
+                    if (distanceY < -maxDistanceOnSecondaryAxis || distanceY > maxDistanceOnSecondaryAxis)
+                    {
+                        continue;
+                    }
+
+                    if (CollideConsideringSubCollisions(first, second))
+                    {
+                        CollisionOccurred?.Invoke(first, second);
+                        collisionOccurred = true;
+                        if (CollisionLimit == CollisionLimit.First)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
 
             return collisionOccurred;
         }
@@ -1262,6 +1356,7 @@ namespace FlatRedBall.Math.Collision
                 startInclusive = lastExclusiveBound - 1;
                 endExclusive = -1;
             }
+
         }
 
         private void DoClosestCollision()
