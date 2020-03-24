@@ -274,7 +274,17 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                         buildItem.SetMetadataValue("Link", linkValue);
                     }
                 }
-                mProject.ReevaluateIfNecessary();
+                try
+                {
+                    mProject.ReevaluateIfNecessary();
+                }
+                catch
+                {
+                    // this can be readonly so wait and try again
+                    System.Threading.Thread.Sleep(1000);
+                    mProject.ReevaluateIfNecessary();
+
+                }
 
                 return buildItem;
             }
