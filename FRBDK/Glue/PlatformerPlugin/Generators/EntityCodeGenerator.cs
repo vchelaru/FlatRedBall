@@ -352,36 +352,12 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         {
             if (FlatRedBall.Input.InputManager.Xbox360GamePads[0].IsConnected)
             {
-                this.JumpInput =
-                    FlatRedBall.Input.InputManager.Xbox360GamePads[0].GetButton(FlatRedBall.Input.Xbox360GamePad.Button.A);
-
-                this.HorizontalInput =
-                    FlatRedBall.Input.InputManager.Xbox360GamePads[0].LeftStick.Horizontal;
-
-                this.VerticalInput =
-                    FlatRedBall.Input.InputManager.Xbox360GamePads[0].LeftStick.Vertical;
-
-                this.InputDevice = FlatRedBall.Input.InputManager.Xbox360GamePads[0];
-
+                InitializePlatformerInput(FlatRedBall.Input.InputManager.Xbox360GamePads[0]);
             }
             else
             {
-                this.JumpInput =
-                    FlatRedBall.Input.InputManager.Keyboard.GetKey(Microsoft.Xna.Framework.Input.Keys.Space);
-
-                this.HorizontalInput =
-                    FlatRedBall.Input.InputManager.Keyboard.Get1DInput(Microsoft.Xna.Framework.Input.Keys.Left, Microsoft.Xna.Framework.Input.Keys.Right);
-
-                this.VerticalInput =
-                    FlatRedBall.Input.InputManager.Keyboard.Get1DInput(Microsoft.Xna.Framework.Input.Keys.Down, Microsoft.Xna.Framework.Input.Keys.Up);
-
-                this.InputDevice = FlatRedBall.Input.InputManager.Keyboard;
-
+                InitializePlatformerInput(FlatRedBall.Input.InputManager.Keyboard);
             }
-
-            InputEnabled = true;
-
-            CustomInitializePlatformerInput();
         }
 
         partial void CustomInitializePlatformerInput();
@@ -392,6 +368,10 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             this.JumpInput = inputDevice.DefaultPrimaryActionInput;
             this.HorizontalInput = inputDevice.DefaultHorizontalInput;
             this.VerticalInput = inputDevice.DefaultVerticalInput;
+            this.InputDevice = inputDevice;
+
+            InputEnabled = true;
+            CustomInitializePlatformerInput();
         }
 
 

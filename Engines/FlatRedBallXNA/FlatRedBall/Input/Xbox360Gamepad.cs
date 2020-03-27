@@ -1188,12 +1188,7 @@ namespace FlatRedBall.Input
 
         public override string ToString()
         {
-            StringBuilder stringBuilder = new StringBuilder();
-
-            stringBuilder.Append("Left Stick").Append(mLeftStick);
-
-            return stringBuilder.ToString();
-
+            return $"{mPlayerIndex} Left Stick{mLeftStick}";
         }
 
 

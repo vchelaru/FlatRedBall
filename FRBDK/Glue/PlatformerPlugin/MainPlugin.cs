@@ -62,6 +62,7 @@ namespace FlatRedBall.PlatformerPlugin
                 //       - Added HorizontalDirection extensions
                 // 1.8   - Changing one of the variables will update the 
                 //         last values jumped with, allowing a player to jump out of water and have the push value reset
+                // 1.9   - Fixed input initialization so setting the input device calls custom input initialize
                 return new Version(1, 8, 0);
             }
         }

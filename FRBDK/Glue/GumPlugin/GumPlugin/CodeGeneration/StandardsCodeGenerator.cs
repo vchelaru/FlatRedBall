@@ -131,6 +131,7 @@ namespace GumPlugin.CodeGeneration
             {
                 mVariableNamesToSkipForProperties.Add("Rotation");
                 mVariableNamesToSkipForProperties.Add("Wrap");
+                mVariableNamesToSkipForProperties.Add("CurrentChainName");
             }
 
             variableNamesToAddForProperties.Add(new VariableSave
