@@ -60,9 +60,11 @@ namespace GameScriptingPlugin
         // - Added new ScreenScript.cs file
         // 1.5
         // - Added WaitAction and Do.Wait
+        // 1.6 
+        // - If.Check now returns the general action, allowing setting of complete actions. 
         public override Version Version
         {
-            get { return new Version(1, 5); }
+            get { return new Version(1, 6); }
         }
         #endregion
 

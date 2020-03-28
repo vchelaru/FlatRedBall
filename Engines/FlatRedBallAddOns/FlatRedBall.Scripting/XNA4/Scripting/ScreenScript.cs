@@ -3,7 +3,7 @@ using System;
 
 namespace FlatRedBall.Scripting
 {
-    interface IScreenScriptIf : FlatRedBall.Scripting.IIfScriptEngine
+    public interface IScreenScriptIf : FlatRedBall.Scripting.IIfScriptEngine
     {
         void TimeHasPassed(double time);
         void Check(Func<bool> conditionFunc);
@@ -17,20 +17,21 @@ namespace FlatRedBall.Scripting
 
     }
 
-    interface IScreenScriptDo : FlatRedBall.Scripting.IDoScriptEngine
+    public interface IScreenScriptDo : FlatRedBall.Scripting.IDoScriptEngine
     {
-        void Call(Action action);
-        void Call<T>(Action<T> action, T arg1);
-        void Call<T1, T2>(Action<T1, T2> action, T1 arg1, T2 arg2);
-        void Call<T1, T2, T3>(Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3);
-        void Call<T1, T2, T3, T4>(Action<T1, T2, T3, T4> action, 
+        GeneralAction Call(Action action);
+        GeneralAction Call<T>(Action<T> action, T arg1);
+        GeneralAction Call<T1, T2>(Action<T1, T2> action, T1 arg1, T2 arg2);
+        GeneralAction Call<T1, T2, T3>(Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3);
+        GeneralAction Call<T1, T2, T3, T4>(Action<T1, T2, T3, T4> action, 
             T1 arg1, T2 arg2, T3 arg3, T4 arg4);
-        void Call<T1, T2, T3, T4, T5>(Action<T1, T2, T3, T4, T5> action,
+        GeneralAction Call<T1, T2, T3, T4, T5>(Action<T1, T2, T3, T4, T5> action,
             T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
-        void Call<T1, T2, T3, T4, T5, T6>(Action<T1, T2, T3, T4, T5, T6> action,
+        GeneralAction Call<T1, T2, T3, T4, T5, T6>(Action<T1, T2, T3, T4, T5, T6> action,
             T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6);
-        void Call<T1, T2, T3, T4, T5, T6, T7>(Action<T1, T2, T3, T4, T5, T6, T7> action,
+        GeneralAction Call<T1, T2, T3, T4, T5, T6, T7>(Action<T1, T2, T3, T4, T5, T6, T7> action,
             T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7);
+        void Wait(double secondsToWait);
     }
 
 
@@ -106,45 +107,44 @@ namespace FlatRedBall.Scripting
 
         #region Do Implementations
 
-        public void Call(Action action)
+        public GeneralAction Call(Action action)
         {
-            CreateGeneralAction(action);
+            return CreateGeneralAction(action);
         }
 
-        public void Call<T1>(Action<T1> action, T1 arg1)
+        public GeneralAction Call<T1>(Action<T1> action, T1 arg1)
         {
-            CreateGeneralAction(() => action(arg1));
+            return CreateGeneralAction(() => action(arg1));
         }
 
-        public void Call<T1, T2>(Action<T1, T2> action, T1 arg1, T2 arg2)
+        public GeneralAction Call<T1, T2>(Action<T1, T2> action, T1 arg1, T2 arg2)
         {
-            CreateGeneralAction(() => action(arg1, arg2));
+            return CreateGeneralAction(() => action(arg1, arg2));
         }
 
-        public void Call<T1, T2, T3>(Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3)
+        public GeneralAction Call<T1, T2, T3>(Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3)
         {
-            CreateGeneralAction(() => action(arg1, arg2, arg3));
+            return CreateGeneralAction(() => action(arg1, arg2, arg3));
         }
 
-        public void Call<T1, T2, T3, T4>(Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        public GeneralAction Call<T1, T2, T3, T4>(Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
-            CreateGeneralAction(() => action(arg1, arg2, arg3, arg4));
+            return CreateGeneralAction(() => action(arg1, arg2, arg3, arg4));
         }
 
-        public void Call<T1, T2, T3, T4, T5>(Action<T1, T2, T3, T4, T5> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+        public GeneralAction Call<T1, T2, T3, T4, T5>(Action<T1, T2, T3, T4, T5> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
-            CreateGeneralAction(() => action(arg1, arg2, arg3, arg4, arg5));
+            return CreateGeneralAction(() => action(arg1, arg2, arg3, arg4, arg5));
         }
 
-        public void Call<T1, T2, T3, T4, T5, T6>(Action<T1, T2, T3, T4, T5, T6> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
+        public GeneralAction Call<T1, T2, T3, T4, T5, T6>(Action<T1, T2, T3, T4, T5, T6> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
         {
-            CreateGeneralAction(() => action(arg1, arg2, arg3, arg4, arg5, arg6));
+            return CreateGeneralAction(() => action(arg1, arg2, arg3, arg4, arg5, arg6));
         }
 
-        public void Call<T1, T2, T3, T4, T5, T6, T7>(Action<T1, T2, T3, T4, T5, T6, T7> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
-
+        public GeneralAction Call<T1, T2, T3, T4, T5, T6, T7>(Action<T1, T2, T3, T4, T5, T6, T7> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
         {
-            CreateGeneralAction(() => action(arg1, arg2, arg3, arg4, arg5, arg6, arg7));
+            return CreateGeneralAction(() => action(arg1, arg2, arg3, arg4, arg5, arg6, arg7));
         }
 
         public void Wait(double secondsToWait)
@@ -153,6 +153,7 @@ namespace FlatRedBall.Scripting
             action.TimeToWaitInSeconds = secondsToWait;
             AddAction(action);
         }
+
 
 
         #endregion
