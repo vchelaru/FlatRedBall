@@ -8,6 +8,9 @@ namespace FlatRedBall.Scripting
 {
 	public class GeneralAction : IScriptAction
 	{
+		public double ScreenTimeExecuted { get; private set; }
+
+
 		bool hasExecuted = false; 
 		public string Name
 		{
@@ -32,10 +35,17 @@ namespace FlatRedBall.Scripting
 		public bool Execute()
 		{
 			ActionToPerform();
-			hasExecuted = true; 
+			hasExecuted = true;
+			ScreenTimeExecuted = FlatRedBall.TimeManager.CurrentScreenTime;
 			return true;
 		}
 
+		public GeneralAction Lasting(double durationInSeconds)
+		{
+			IsCompleteFunction = () => TimeManager.CurrentScreenSecondsSince(durationInSeconds) > durationInSeconds;
+
+			return this;
+		}
 
 		public override string ToString()
 		{
