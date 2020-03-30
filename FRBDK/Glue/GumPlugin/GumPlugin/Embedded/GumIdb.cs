@@ -113,7 +113,7 @@ namespace FlatRedBall.Gum
 
         public GumIdb()
         {
-
+            global::RenderingLibrary.Graphics.Renderer.ApplyCameraZoomOnWorldTranslation = true;
         }
 
         public GraphicalUiElement CreateAndUseEmptyGraphicalUiElement()
