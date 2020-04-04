@@ -1,19 +1,8 @@
-#if !WINDOWS_8
 #define IMPLEMENT_INTERNALS
-#endif
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-
-//#if SILVERLIGHT
-//using SilverArcade.SilverSprite;
-//using SilverArcade.SilverSprite.Input;
-//using Vector2 = SilverArcade.SilverSprite.Vector2;
-//#else
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-//#endif
 
 namespace FlatRedBall.Input
 {
@@ -75,8 +64,6 @@ namespace FlatRedBall.Input
 
         const float AnalogOnThreshold = .5f;
 
-        //GamePadDeadZone mGamePadDeadZone;
-
         GamePadState mGamePadState;
         GamePadState mLastGamePadState;
 
@@ -93,15 +80,19 @@ namespace FlatRedBall.Input
         double[] mLastButtonPush = new double[NumberOfButtons];
         double[] mLastRepeatRate = new double[NumberOfButtons];
 
-#if !SILVERLIGHT
         GamePadCapabilities mCapabilities;
-#endif
 
         bool[] mButtonsIgnoredForThisFrame = new bool[NumberOfButtons];
 
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// The deadzone amount (axis independent) between 0 and 1. Values which 
+        /// are smaller than this (absolute value) will be treated as 0.
+        /// </summary>
+        public float Deadzone { get; set; } = .1f;
 
         public I1DInput DPadHorizontal
         {
@@ -388,7 +379,7 @@ namespace FlatRedBall.Input
             }
         }
 
-#if !SILVERLIGHT && !MONODROID
+#if !MONODROID
         public GamePadType GamePadType
         {
             get
@@ -1012,7 +1003,6 @@ namespace FlatRedBall.Input
         {
             UpdateInputManagerBack();
 
-
             mLastGamePadState = mGamePadState;
 
             mGamePadState = gamepadState;
@@ -1041,8 +1031,27 @@ namespace FlatRedBall.Input
         {
             if (mButtonMap == null)
             {
-                mLeftStick.Update(mGamePadState.ThumbSticks.Left);
-                mRightStick.Update(mGamePadState.ThumbSticks.Right);
+                var leftStick = mGamePadState.ThumbSticks.Left;
+                if(System.Math.Abs(leftStick.X) < Deadzone)
+                {
+                    leftStick.X = 0;
+                }
+                if(System.Math.Abs(leftStick.Y) < Deadzone)
+                {
+                    leftStick.Y = 0;
+                }
+                mLeftStick.Update(leftStick);
+
+                var rightStick = mGamePadState.ThumbSticks.Right;
+                if (System.Math.Abs(rightStick.X) < Deadzone)
+                {
+                    rightStick.X = 0;
+                }
+                if (System.Math.Abs(rightStick.Y) < Deadzone)
+                {
+                    rightStick.Y = 0;
+                }
+                mRightStick.Update(rightStick);
 
                 mLeftTrigger.Update(mGamePadState.Triggers.Left);
                 mRightTrigger.Update(mGamePadState.Triggers.Right);
@@ -1200,10 +1209,9 @@ namespace FlatRedBall.Input
         {
             GamePadState gamepadState;
 
-#if MONOGAME
-            gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex);//, GamePadDeadZone.Circular);
-#else
-            gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.Circular);
+            gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
+#if !MONOGAME
+            // Vic says April 4 2020 - not sure if this is supported on monogame or not, maybe it is now? This could be an old comment
             mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities(mPlayerIndex);
 #endif
 
