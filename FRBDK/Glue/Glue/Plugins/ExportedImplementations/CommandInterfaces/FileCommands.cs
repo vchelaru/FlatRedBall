@@ -330,6 +330,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 return GeneralResponse.SuccessfulResponse;
             }
         }
+
+        public FilePath GetGlueExecutingFolder()
+        {
+            FilePath filePath = System.Reflection.Assembly.GetExecutingAssembly()
+                .Location;
+            return filePath.GetDirectoryContainingThis();
+        }
     }
 
 }

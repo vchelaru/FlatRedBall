@@ -260,7 +260,7 @@ namespace Glue
                 //TaskManager.Self.AddAsyncTask(() => WcfManager.Self.Initialize(), "Initializing WCF");
 
                 initializationWindow.SubMessage = "Initializing EventManager"; Application.DoEvents();
-                TaskManager.Self.AddAsyncTask(() => EventManager.Initialize(), "Initializing EventManager");
+                TaskManager.Self.Add(() => EventManager.Initialize(), "Initializing EventManager");
 
                 Application.DoEvents();
 

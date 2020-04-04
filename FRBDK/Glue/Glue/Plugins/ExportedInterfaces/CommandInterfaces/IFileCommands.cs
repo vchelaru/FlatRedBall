@@ -34,5 +34,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         string GetFullFileName(ReferencedFileSave rfs);
         ReferencedFileSave GetReferencedFile(string absoluteFile);
+
+        FilePath GetGlueExecutingFolder();
     }
 }

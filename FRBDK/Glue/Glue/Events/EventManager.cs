@@ -7,6 +7,8 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Parsing;
 using System.Windows.Forms;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.IO;
 
 namespace FlatRedBall.Glue.Events
 {
@@ -31,18 +33,26 @@ namespace FlatRedBall.Glue.Events
 
         public static void Initialize()
         {
-            string fileToLoad = FlatRedBall.IO.FileManager.MakeAbsolute(
-                @"Content/BuiltInEvents.csv");
-            
-            try
-            {
+            var directory = GlueCommands.Self.FileCommands.GetGlueExecutingFolder();
 
-                CsvFileManager.CsvDeserializeDictionary<string, EventSave>(fileToLoad, mAllEvents);
-            }
-            catch (Exception e)
+            FilePath fileToLoad = directory.FullPath + 
+                @"Content/BuiltInEvents.csv";
+            
+            if(fileToLoad.Exists() == false)
             {
-                System.Windows.Forms.MessageBox.Show("Could not initialize event manager.  Check to make sure " +
-                    "the following file exists and is not corrupt: " + fileToLoad);
+                System.Windows.Forms.MessageBox.Show("Could not find the file: " + fileToLoad);
+            }
+            else
+            {
+                try
+                {
+                    CsvFileManager.CsvDeserializeDictionary<string, EventSave>(fileToLoad.FullPath, mAllEvents);
+                }
+                catch (Exception e)
+                {
+                    System.Windows.Forms.MessageBox.Show("Could not initialize event manager.  Check to make sure " +
+                        "the following file exists and is not corrupt: " + fileToLoad + "\n\n" + e.ToString());
+                }
             }
 
         }
