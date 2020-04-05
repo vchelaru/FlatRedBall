@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.Collections;
+using RenderingLibrary;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -157,5 +158,35 @@ namespace FlatRedBall.Forms.Controls
             PushValueToViewModel(nameof(SelectedIndex));
         }
 
+        public void ScrollIntoView(object item)
+        {
+            var itemIndex = Items.IndexOf(item);
+
+            if(itemIndex != -1)
+            {
+                var visual = listBoxItems[itemIndex];
+
+                var visualAsIpso = (IPositionedSizedObject)visual.Visual;
+                var visualTop = visualAsIpso.Y;
+                var visualBottom = visualAsIpso.Y + visualAsIpso.Height;
+
+                var viewTop = -InnerPanel.Y;
+                var viewBottom = -InnerPanel.Y + clipContainer.GetAbsoluteHeight();
+                var isAboveView = visualBottom < viewTop;
+                var isBelowView = visualBottom > viewBottom;
+
+                if(isAboveView)
+                {
+                    var amountToScroll = visualTop - viewTop;
+                    verticalScrollBar.Value += amountToScroll;
+                }
+                else if(isBelowView)
+                {
+                    var amountToScroll = visualBottom - viewBottom;
+
+                    verticalScrollBar.Value += amountToScroll;
+                }
+            }
+        }
     }
 }
