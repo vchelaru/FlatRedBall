@@ -127,6 +127,10 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                         {
                             relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsListRelationship<{firstType}, {secondType}>";
                         }
+                        else if(isFirstList)
+                        {
+                            relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsSingleRelationship<{firstType}, {secondType}>";
+                        }
                     }
                     else if (collisionType == CollisionType.DelegateCollision)
                     {

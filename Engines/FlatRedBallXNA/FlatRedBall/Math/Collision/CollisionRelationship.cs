@@ -728,6 +728,63 @@ namespace FlatRedBall.Math.Collision
 
     #endregion
 
+    #region Delegate-based List vs Single
+
+    public class DelegateListVsSingleRelationship<FirstCollidableT, Second> : CollisionRelationship
+        where FirstCollidableT : PositionedObject
+    {
+        PositionedObjectList<FirstCollidableT> list;
+        Second singleObject;
+
+        public Func<FirstCollidableT, Second, bool> CollisionFunction { get; set; }
+
+        public override object FirstAsObject => list;
+
+        public override object SecondAsObject => singleObject;
+
+        public Action<FirstCollidableT, Second> CollisionOccurred;
+
+        public DelegateListVsSingleRelationship(PositionedObjectList<FirstCollidableT> first, Second second)
+        {
+            this.list = first;
+            this.singleObject = second;
+        }
+
+        public override bool DoCollisions()
+        {
+            bool didCollisionOccur = false;
+            if (skippedFrames < FrameSkip)
+            {
+                skippedFrames++;
+            }
+            else if (list.Count > 0)
+            {
+                skippedFrames = 0;
+                int startInclusive;
+                int endExclusive;
+
+                //GetCollisionStartAndInt(out startInclusive, out endExclusive);
+
+                for (int i = list.Count - 1; i > -1; i--)
+                {
+                    var atI = list[i];
+
+
+                    if (CollisionFunction(atI, singleObject))
+                    {
+                        CollisionOccurred?.Invoke(atI, singleObject);
+                        didCollisionOccur = true;
+                        // Collision Limit doesn't do anything here
+                    }
+                }
+            }
+
+            return didCollisionOccur;
+        }
+    }
+
+    #endregion
+
     #region Single vs List
     public class PositionedObjectVsListRelationship<FirstCollidableT, SecondCollidableT> :
         CollisionRelationship<FirstCollidableT, SecondCollidableT>

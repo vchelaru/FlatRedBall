@@ -727,7 +727,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             {
                 
                 codeBlock.Line(@"
-        public void CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, bool isCloudCollision = false)
+        public bool CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, bool isCloudCollision = false)
         {
             var positionBefore = this.Position;
             var velocityBefore = this.Velocity;
@@ -813,6 +813,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     this.ForceUpdateDependenciesDeep();
                 }
             }
+            return collided;
         }
 
         

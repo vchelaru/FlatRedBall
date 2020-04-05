@@ -101,6 +101,11 @@ namespace OfficialPlugins.CollisionPlugin
                     codeBlock.Line($"{instanceName} = new FlatRedBall.Math.Collision.DelegateListVsListRelationship<{firstType}, {secondType}>(" +
                         $"{firstCollidable}, {secondCollidable});");
                 }
+                else if(isFirstList)
+                {
+                    codeBlock.Line($"{instanceName} = new FlatRedBall.Math.Collision.DelegateListVsSingleRelationship<{firstType}, {secondType}>(" +
+                        $"{firstCollidable}, {secondCollidable});");
+                }
                 else
                 {
                     codeBlock.Line($"{instanceName} = new FlatRedBall.Math.Collision.DelegateCollisionRelationshipBase<{firstType}, {secondType}>(" +
@@ -190,6 +195,10 @@ namespace OfficialPlugins.CollisionPlugin
             {
                 relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsListRelationship<{firstType}, {secondType}>";
             }
+            else if(isFirstList)
+            {
+                relationshipType = $"FlatRedBall.Math.Collision.DelegateListVsSingleRelationship<{firstType}, {secondType}>";
+            }
 
             block.Line($"var temp = new {relationshipType}({firstCollidable}, {secondCollidable});");
             block.Line($"var isCloud = {(collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant()};");
@@ -199,22 +208,16 @@ namespace OfficialPlugins.CollisionPlugin
             string whatToCollideAgainst = "second";
 
             // list vs list is internally handled already
-            if (isFirstList && !isSecondList)
-            {
-                block.ForEach("var firstItem in first")
-                    .Line($"firstItem.CollideAgainst({whatToCollideAgainst}, isCloud);");
-            }
-            else if( isSecondList)
+            if( isSecondList)
             {
                 // it's an icollidable probably
-                block.Line($"first.CollideAgainst({whatToCollideAgainst}.Collision, isCloud);");
+                block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, isCloud);");
             }
-            else
+            else // even if the first is list, we don't loop because we use a collision relationship type that handles the looping internally
             {
                 // assume it's a shape collection
-                block.Line($"first.CollideAgainst({whatToCollideAgainst}, isCloud);");
+                block.Line($"return first.CollideAgainst({whatToCollideAgainst}, isCloud);");
             }
-            block.Line("return false;");
 
             block = block.End();
             block.Line(";");
