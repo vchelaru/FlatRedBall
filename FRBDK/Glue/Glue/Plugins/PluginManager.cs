@@ -42,10 +42,7 @@ namespace FlatRedBall.Glue.Plugins
 
         [ImportMany(AllowRecomposition = true)]
         public IEnumerable<IStateChange> StateChangePlugins { get; set; } = new List<IStateChange>();
-
-        [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IOpenVisualStudio> OpenVisualStudioPlugins { get; set; } = new List<IOpenVisualStudio>();
-
+        
         [ImportMany(AllowRecomposition = true)]
         public IEnumerable<ITreeItemSelect> TreeItemSelectPlugins { get; set; } = new List<ITreeItemSelect>();
 
@@ -168,7 +165,7 @@ namespace FlatRedBall.Glue.Plugins
 
             var allPlugins = new List<IEnumerable<IPlugin>>
             {
-                OpenVisualStudioPlugins, TreeItemSelectPlugins, MenuStripPlugins,
+                TreeItemSelectPlugins, MenuStripPlugins,
                 TopTabPlugins, LeftTabPlugins, BottomTabPlugins, RightTabPlugins, CenterTabPlugins,
                 GluxLoadPlugins, CodeGeneratorPlugins,
                 ContentFileChangePlugins, CurrentElementPlugins
@@ -206,7 +203,6 @@ namespace FlatRedBall.Glue.Plugins
         protected override void InstantiateAllListsAsEmpty()
         {
             ImportedPlugins = new List<PluginBase>();
-            OpenVisualStudioPlugins = new List<IOpenVisualStudio>();
             TreeItemSelectPlugins = new List<ITreeItemSelect>();
             MenuStripPlugins = new List<IMenuStripPlugin>();
             TopTabPlugins = new List<ITopTab>();
@@ -1110,25 +1106,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (var openSolutionPlugin in pluginManager.OpenVisualStudioPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[openSolutionPlugin];
-
-                    if (container.IsEnabled)
-                    {
-                        var shouldReturnTrue = false;
-                        PluginCommandWithThrow(() =>
-                            {
-                                if (openSolutionPlugin.OpenSolution(solutionName))
-                                {
-                                    shouldReturnTrue = true;
-                                }
-                            }, container, "Failed to Open Solution");
-
-                        if(shouldReturnTrue) return true;
-                    }
-                }
-
                 // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.OpenSolutionHandler != null);
                 foreach (var plugin in plugins)
@@ -1165,26 +1142,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (var openVisualStudio in pluginManager.OpenVisualStudioPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[openVisualStudio];
-
-                    if (container.IsEnabled)
-                    {
-                        IOpenVisualStudio studio = openVisualStudio;
-                        bool shouldReturnTrue = false;
-                        PluginCommandWithThrow(() =>
-                            {
-                                if (studio.OpenProject(projectName))
-                                {
-                                    shouldReturnTrue = true;
-                                }
-                            },container, "Failed to Open Project.");
-
-                        if (shouldReturnTrue) return true;
-                    }
-                }
-
                 // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.OpenProjectHandler != null);
                 foreach (var plugin in plugins)

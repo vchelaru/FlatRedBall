@@ -63,7 +63,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj" />
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
-    <ProjectReference Include="..\..\..\..\Tiled\TMXGlueLib\TMXGlueLib.csproj" />
+    <ProjectReference Include="..\..\..\..\Tiled\TMXGlueLib\TMXGlueLibCore.csproj" />
     <ProjectReference Include="..\..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj" />
     <ProjectReference Include="..\..\GlueCommon\GlueCommon.csproj" />
     <ProjectReference Include="..\..\GlueSaveClasses\GlueSaveClasses.csproj" />
@@ -98,7 +98,7 @@
 
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo PostBuild&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\&quot;&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\TiledPluginCore.dll&quot;&#xD;&#xA;echo Copied to &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\TiledPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\TiledPluginCore.pdb&quot;&#xD;&#xA;&#xD;&#xA;echo 3&#xD;&#xA;copy &quot;$(TargetDir)\TmxGlueLib.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\TmxGlueLib.dll&quot;" />
+    <Exec Command="echo PostBuild&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\&quot;&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\TiledPluginCore.dll&quot;&#xD;&#xA;echo Copied to &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\TiledPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\TiledPluginCore.pdb&quot;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)\TMXGlueLibCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\TMXGlueLibCore.dll&quot;&#xD;&#xA;echo Copied to &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\TMXGlueLibCore.dll&quot;" />
   </Target>
 
 
