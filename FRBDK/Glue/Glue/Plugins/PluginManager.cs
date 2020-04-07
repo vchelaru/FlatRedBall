@@ -41,15 +41,6 @@ namespace FlatRedBall.Glue.Plugins
         public IEnumerable<PluginBase> ImportedPlugins { get; set; } = new List<PluginBase>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<ITreeViewRightClick> TreeViewPlugins { get; set; } = new List<ITreeViewRightClick>();
-
-        [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IStateChange> StateChangePlugins { get; set; } = new List<IStateChange>();
-        
-        [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<ITreeItemSelect> TreeItemSelectPlugins { get; set; } = new List<ITreeItemSelect>();
-
-        [ImportMany(AllowRecomposition = true)]
         public IEnumerable<IMenuStripPlugin> MenuStripPlugins { get; set; } = new List<IMenuStripPlugin>();
 
         [ImportMany(AllowRecomposition = true)]
@@ -176,7 +167,7 @@ namespace FlatRedBall.Glue.Plugins
 
             var allPlugins = new List<IEnumerable<IPlugin>>
             {
-                TreeItemSelectPlugins, MenuStripPlugins,
+                MenuStripPlugins,
                 TopTabPlugins, LeftTabPlugins, BottomTabPlugins, RightTabPlugins, CenterTabPlugins,
                 GluxLoadPlugins, CodeGeneratorPlugins,
                 ContentFileChangePlugins, CurrentElementPlugins
@@ -214,7 +205,6 @@ namespace FlatRedBall.Glue.Plugins
         protected override void InstantiateAllListsAsEmpty()
         {
             ImportedPlugins = new List<PluginBase>();
-            TreeItemSelectPlugins = new List<ITreeItemSelect>();
             MenuStripPlugins = new List<IMenuStripPlugin>();
             TopTabPlugins = new List<ITopTab>();
             LeftTabPlugins = new List<ILeftTab>();
@@ -883,20 +873,6 @@ namespace FlatRedBall.Glue.Plugins
 
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (ITreeViewRightClick plugin in pluginManager.TreeViewPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        ITreeViewRightClick plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToRightClick(rightClickedTreeNode, menuToModify);
-                            }, container, "Failed in ReactToRightClick");
-                    }
-                }
-
                 // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToTreeViewRightClickHandler != null);
                 foreach (var plugin in plugins)
@@ -921,21 +897,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (IStateChange plugin in pluginManager.StateChangePlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        IStateChange plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToStateNameChange(element, oldName, newName);
-                            }, container, "Failed in ReactToStateNameChange");
-                    }
-                }
-
-                // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToStateNameChangeHandler != null);
                 foreach (var plugin in plugins)
                 {
@@ -956,21 +917,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (IStateChange plugin in pluginManager.StateChangePlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        IStateChange plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToStateRemoved(element, stateName);
-                            }, container, "Failed in ReactToStateRemoved");
-                    }
-                }
-
-                // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToStateRemovedHandler != null);
                 foreach (var plugin in plugins)
                 {
@@ -1219,21 +1165,6 @@ namespace FlatRedBall.Glue.Plugins
 
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (ITreeItemSelect plugin in pluginManager.TreeItemSelectPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        ITreeItemSelect plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToItemSelect(selectedTreeNode);
-                            },container, "Failed in ReactToItemSelect");
-                    }
-                }
-
-                // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToItemSelectHandler != null);
                 foreach (var plugin in plugins)
                 {
