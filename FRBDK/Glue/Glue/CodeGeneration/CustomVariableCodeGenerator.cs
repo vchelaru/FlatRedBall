@@ -655,6 +655,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             string scopeValue = customVariable.Scope.ToString().ToLower();
 
+            if(!string.IsNullOrWhiteSpace(customVariable.Summary))
+            {
+                codeBlock.Line("/// <summary>");
+                codeBlock.Line($"/// {customVariable.Summary}");
+                codeBlock.Line("/// </summary>");
+            }
+
             if (needsToBeProperty)
             {
                 // If the variable

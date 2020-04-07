@@ -194,16 +194,8 @@ namespace FlatRedBall.Glue.Plugins
 
                 AggregateCatalog catalog = instance.CreateCatalog(absoluteFilePath, pluginsToIgnore);
 
-                // Before we compose the parts, we want to pull out any .dll that doesn't have its references satisfied
-                // Update : this isn't going to work because sometimes a .dll references another .dll, but the other .dll
-                // isn't used.
-                //CleanUnreferencedDlls(catalog, instance);
-
-                    var container = new CompositionContainer(catalog);
-
-
-
-                    container.ComposeParts(instance);
+                var container = new CompositionContainer(catalog);
+                container.ComposeParts(instance);
 
                 succeeded = true;
 

@@ -479,7 +479,7 @@ namespace FlatRedBall.Glue.Controls
 
         private void RemoteActionButton_Click(object sender, EventArgs e)
         {
-            if (SelectedPlugin.DownloadState == DownloadState.InformationDownloaded)
+            if (SelectedPlugin?.DownloadState == DownloadState.InformationDownloaded)
             {
                 if (SelectedPlugin != null)
                 {
@@ -491,7 +491,7 @@ namespace FlatRedBall.Glue.Controls
                 }
 
             }
-            else if (SelectedPlugin.DownloadState == DownloadState.Error)
+            else if (SelectedPlugin?.DownloadState == DownloadState.Error)
             {
                 SelectedPlugin.ResetDownloadState();
 

@@ -41,17 +41,8 @@ namespace FlatRedBall.Glue.Plugins
         public IEnumerable<PluginBase> ImportedPlugins { get; set; } = new List<PluginBase>();
 
         [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<ITreeViewRightClick> TreeViewPlugins { get; set; } = new List<ITreeViewRightClick>();
-
-        [ImportMany(AllowRecomposition = true)]
         public IEnumerable<IStateChange> StateChangePlugins { get; set; } = new List<IStateChange>();
-
-        [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IPropertyGridRightClick> PropertyGridRightClickPlugins { get; set; } = new List<IPropertyGridRightClick>();
-
-        [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IOpenVisualStudio> OpenVisualStudioPlugins { get; set; } = new List<IOpenVisualStudio>();
-
+        
         [ImportMany(AllowRecomposition = true)]
         public IEnumerable<ITreeItemSelect> TreeItemSelectPlugins { get; set; } = new List<ITreeItemSelect>();
 
@@ -129,14 +120,6 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        [Export("GlueCommands")]
-        public IGlueCommands GlueCommands
-        {
-            get
-            {
-                return mGlueCommands;
-            }
-        }
 
         [Export("GlueState")]
         public IGlueState GlueState
@@ -182,8 +165,7 @@ namespace FlatRedBall.Glue.Plugins
 
             var allPlugins = new List<IEnumerable<IPlugin>>
             {
-                TreeViewPlugins, PropertyGridRightClickPlugins,
-                OpenVisualStudioPlugins, TreeItemSelectPlugins, MenuStripPlugins,
+                TreeItemSelectPlugins, MenuStripPlugins,
                 TopTabPlugins, LeftTabPlugins, BottomTabPlugins, RightTabPlugins, CenterTabPlugins,
                 GluxLoadPlugins, CodeGeneratorPlugins,
                 ContentFileChangePlugins, CurrentElementPlugins
@@ -221,9 +203,6 @@ namespace FlatRedBall.Glue.Plugins
         protected override void InstantiateAllListsAsEmpty()
         {
             ImportedPlugins = new List<PluginBase>();
-            TreeViewPlugins = new List<ITreeViewRightClick>();
-            PropertyGridRightClickPlugins = new List<IPropertyGridRightClick>();
-            OpenVisualStudioPlugins = new List<IOpenVisualStudio>();
             TreeItemSelectPlugins = new List<ITreeItemSelect>();
             MenuStripPlugins = new List<IMenuStripPlugin>();
             TopTabPlugins = new List<ITopTab>();
@@ -465,7 +444,13 @@ namespace FlatRedBall.Glue.Plugins
         private static void CopyIntalledPluginsToRunnableLocation()
         {
             string installedDirectory = AppDomain.CurrentDomain.BaseDirectory + @"InstalledPlugins\";
-            string pluginDirectory = AppDomain.CurrentDomain.BaseDirectory + @"Plugins\";
+
+            string pluginDirectory =
+                // As of Glue Forms Core, we now install in the bin folder
+                //AppDomain.CurrentDomain.BaseDirectory + @"Plugins\"
+                GlueCommands.Self.FileCommands.GetGlueExecutingFolder() + @"Plugins\";
+
+
             CopyInstalledPluginsToRunnableLocation(installedDirectory, pluginDirectory);
         }
 
@@ -893,20 +878,6 @@ namespace FlatRedBall.Glue.Plugins
 
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (ITreeViewRightClick plugin in pluginManager.TreeViewPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        ITreeViewRightClick plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToRightClick(rightClickedTreeNode, menuToModify);
-                            }, container, "Failed in ReactToRightClick");
-                    }
-                }
-
                 // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToTreeViewRightClickHandler != null);
                 foreach (var plugin in plugins)
@@ -1135,25 +1106,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (var openSolutionPlugin in pluginManager.OpenVisualStudioPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[openSolutionPlugin];
-
-                    if (container.IsEnabled)
-                    {
-                        var shouldReturnTrue = false;
-                        PluginCommandWithThrow(() =>
-                            {
-                                if (openSolutionPlugin.OpenSolution(solutionName))
-                                {
-                                    shouldReturnTrue = true;
-                                }
-                            }, container, "Failed to Open Solution");
-
-                        if(shouldReturnTrue) return true;
-                    }
-                }
-
                 // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.OpenSolutionHandler != null);
                 foreach (var plugin in plugins)
@@ -1190,26 +1142,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (var openVisualStudio in pluginManager.OpenVisualStudioPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[openVisualStudio];
-
-                    if (container.IsEnabled)
-                    {
-                        IOpenVisualStudio studio = openVisualStudio;
-                        bool shouldReturnTrue = false;
-                        PluginCommandWithThrow(() =>
-                            {
-                                if (studio.OpenProject(projectName))
-                                {
-                                    shouldReturnTrue = true;
-                                }
-                            },container, "Failed to Open Project.");
-
-                        if (shouldReturnTrue) return true;
-                    }
-                }
-
                 // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.OpenProjectHandler != null);
                 foreach (var plugin in plugins)
@@ -1342,20 +1274,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             foreach (PluginManager pluginManager in mInstances)
             {
-                foreach (IPropertyGridRightClick plugin in pluginManager.PropertyGridRightClickPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        IPropertyGridRightClick plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToRightClick(rightClickedPropertyGrid, menuToModify);
-                            },container, "Failed in ReactToRightClick");
-                    }
-                }
-
                 // Execute the new style plugins
                 var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToRightClickHandler != null);
                 foreach (var plugin in plugins)

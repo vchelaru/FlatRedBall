@@ -172,7 +172,7 @@ namespace FlatRedBall.Forms.Controls
 
                 var viewTop = -InnerPanel.Y;
                 var viewBottom = -InnerPanel.Y + clipContainer.GetAbsoluteHeight();
-                var isAboveView = visualBottom < viewTop;
+                var isAboveView = visualTop < viewTop;
                 var isBelowView = visualBottom > viewBottom;
 
                 if(isAboveView)
@@ -183,7 +183,6 @@ namespace FlatRedBall.Forms.Controls
                 else if(isBelowView)
                 {
                     var amountToScroll = visualBottom - viewBottom;
-
                     verticalScrollBar.Value += amountToScroll;
                 }
             }
