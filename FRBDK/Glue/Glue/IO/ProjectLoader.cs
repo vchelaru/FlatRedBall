@@ -412,7 +412,8 @@ namespace FlatRedBall.Glue.IO
                 CreateEntityTreeNodes();
                 Section.EndContextAndTime();
 
-                foreach(var rfs in ObjectFinder.Self.GetAllReferencedFiles())
+                var allReferencedFileSaves = ObjectFinder.Self.GetAllReferencedFiles();
+                foreach (var rfs in allReferencedFileSaves)
                 {
                     Managers.TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs), 
                         $"Refreshing file {rfs.ToString()}",

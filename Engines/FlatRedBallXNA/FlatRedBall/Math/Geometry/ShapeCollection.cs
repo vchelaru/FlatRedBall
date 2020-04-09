@@ -650,6 +650,11 @@ namespace FlatRedBall.Math.Geometry
             {
                 MakeTwoWay();
             }
+            else
+            {
+                // just in case its oneway already
+                Clear();
+            }
         }
 
         /// <summary>
