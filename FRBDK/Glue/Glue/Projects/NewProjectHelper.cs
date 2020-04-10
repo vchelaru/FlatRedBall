@@ -14,6 +14,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Controls;
 
 namespace FlatRedBall.Glue.Projects
 {
@@ -56,7 +57,19 @@ namespace FlatRedBall.Glue.Projects
 
             if (!File.Exists(newProjectCreatorFile))
             {
+                var result = MessageBox.Show("Could not find new project creator. Would you like to search for it on disk?", "", MessageBoxButtons.YesNo);
 
+                if(result == DialogResult.Yes)
+                {
+                    OpenFileDialog openFileDialog = new OpenFileDialog();
+
+                    openFileDialog.Multiselect = false;
+
+                    if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        newProjectCreatorFile = openFileDialog.FileName;
+                    }
+                }
             }
 
 
