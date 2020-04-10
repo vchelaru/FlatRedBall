@@ -854,9 +854,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         }
 
 
-        public void CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, FlatRedBall.Math.Geometry.AxisAlignedRectangle thisCollision, bool isCloudCollision = false)
+        public bool CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, FlatRedBall.Math.Geometry.AxisAlignedRectangle thisCollision, bool isCloudCollision = false)
         {
-            CollideAgainst(() => shapeCollection.CollideAgainstSolid(thisCollision), isCloudCollision);
+            return CollideAgainst(() => shapeCollection.CollideAgainstSolid(thisCollision), isCloudCollision);
         }
 
 ");

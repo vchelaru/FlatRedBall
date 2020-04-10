@@ -92,7 +92,7 @@ namespace OfficialPlugins.CollisionPlugin
             if(collisionType == CollisionType.PlatformerSolidCollision ||
                 collisionType == CollisionType.PlatformerCloudCollision)
             {
-                GeneratePlatformerCollision(codeBlock, firstCollidable, secondCollidable, collisionType, instanceName, isFirstList, firstType, isSecondList, secondType);
+                GeneratePlatformerCollision(codeBlock, firstCollidable, secondCollidable, firstSubCollision, collisionType, instanceName, isFirstList, firstType, isSecondList, secondType);
             }
             else if(collisionType == CollisionType.DelegateCollision)
             {
@@ -134,12 +134,16 @@ namespace OfficialPlugins.CollisionPlugin
             }
 
             if(!string.IsNullOrEmpty(firstSubCollision) && 
-                firstSubCollision != CollisionRelationshipViewModel.EntireObject)
+                firstSubCollision != CollisionRelationshipViewModel.EntireObject &&
+                collisionType != CollisionType.PlatformerCloudCollision &&
+                collisionType != CollisionType.PlatformerSolidCollision)
             {
                 codeBlock.Line($"{instanceName}.SetFirstSubCollision(item => item.{firstSubCollision});");
             }
             if(!string.IsNullOrEmpty(secondSubCollision) && 
-                secondSubCollision != CollisionRelationshipViewModel.EntireObject)
+                secondSubCollision != CollisionRelationshipViewModel.EntireObject &&
+                collisionType != CollisionType.PlatformerCloudCollision &&
+                collisionType != CollisionType.PlatformerSolidCollision)
             {
                 codeBlock.Line($"{instanceName}.SetSecondSubCollision(item => item.{secondSubCollision});");
             }
@@ -171,7 +175,9 @@ namespace OfficialPlugins.CollisionPlugin
             }
         }
 
-        private static void GeneratePlatformerCollision(ICodeBlock codeBlock, string firstCollidable, string secondCollidable, CollisionType collisionType,
+        private static void GeneratePlatformerCollision(ICodeBlock codeBlock, 
+            string firstCollidable, string secondCollidable, 
+            string firstSubCollision, CollisionType collisionType,
             string instanceName, bool isFirstList, string firstType, bool isSecondList, string secondType)
         {
             var block = codeBlock.Block();
@@ -210,13 +216,28 @@ namespace OfficialPlugins.CollisionPlugin
             // list vs list is internally handled already
             if( isSecondList)
             {
-                // it's an icollidable probably
-                block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, isCloud);");
+                if(firstSubCollision == null)
+                {
+                    // it's an icollidable probably
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, isCloud);");
+                }
+                else
+                {
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, first.{firstSubCollision}, isCloud);");
+                }
             }
             else // even if the first is list, we don't loop because we use a collision relationship type that handles the looping internally
             {
-                // assume it's a shape collection
-                block.Line($"return first.CollideAgainst({whatToCollideAgainst}, isCloud);");
+                if (firstSubCollision == null)
+                {
+                    // assume it's a shape collection
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, isCloud);");
+                }
+                else
+                {
+                    // assume it's a shape collection
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, first.{firstSubCollision}, isCloud);");
+                }
             }
 
             block = block.End();

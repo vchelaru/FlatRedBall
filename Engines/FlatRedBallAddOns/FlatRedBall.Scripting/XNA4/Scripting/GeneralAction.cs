@@ -42,7 +42,7 @@ namespace FlatRedBall.Scripting
 
 		public GeneralAction Lasting(double durationInSeconds)
 		{
-			IsCompleteFunction = () => TimeManager.CurrentScreenSecondsSince(durationInSeconds) > durationInSeconds;
+			IsCompleteFunction = () => hasExecuted && TimeManager.CurrentScreenSecondsSince(ScreenTimeExecuted) > durationInSeconds;
 
 			return this;
 		}
