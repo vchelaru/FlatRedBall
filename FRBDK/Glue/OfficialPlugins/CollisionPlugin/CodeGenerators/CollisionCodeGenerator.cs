@@ -69,8 +69,18 @@ namespace OfficialPlugins.CollisionPlugin
             var firstSubCollision = namedObject.Properties.GetValue<string>(
                 nameof(CollisionRelationshipViewModel.FirstSubCollisionSelectedItem));
 
+            if (firstSubCollision == "<Entire Object>")
+            {
+                firstSubCollision = null;
+            }
+
             var secondSubCollision = namedObject.Properties.GetValue<string>(
                 nameof(CollisionRelationshipViewModel.SecondSubCollisionSelectedItem));
+
+            if (secondSubCollision == "<Entire Object>")
+            {
+                secondSubCollision = null;
+            }
 
             var isCollisionActive = namedObject.Properties.GetValue<bool>(
                 nameof(CollisionRelationshipViewModel.IsCollisionActive));
