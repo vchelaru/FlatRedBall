@@ -200,7 +200,9 @@ namespace TileGraphicsPlugin
             // - TileEntityInstantiator.GetFactory is now public making it easier for other code to instantiate objects by name
             // 2.14
             // - Added new tooltip
-            get { return new Version(2, 14, 0, 0); }
+            // 2.15
+            // - Added TileShapeCollection.AssignAllShapesToRepositionOutward 
+            get { return new Version(2, 15, 0, 0); }
         }
 
         [Import("GlueProjectSave")]
