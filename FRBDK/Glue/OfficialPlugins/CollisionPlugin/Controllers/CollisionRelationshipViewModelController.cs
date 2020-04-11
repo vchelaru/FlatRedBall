@@ -451,6 +451,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                     break;
 
                 case nameof(viewModel.CollisionType):
+                    CollisionRelationshipViewModelController.TryFixSourceClassType(nos);
                     if (TryFixMassesForTileShapeCollisionRelationship(element, nos))
                     {
                         viewModel.UpdateFromGlueObject();
