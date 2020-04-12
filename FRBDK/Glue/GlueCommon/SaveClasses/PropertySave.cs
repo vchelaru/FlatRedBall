@@ -60,7 +60,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static T GetValue<T>(this List<PropertySave> propertySaveList, string nameToSearchFor)
         {
-            foreach (PropertySave propertySave in propertySaveList)
+            var copy = propertySaveList.ToArray();
+            foreach (PropertySave propertySave in copy)
             {
                 if (propertySave.Name == nameToSearchFor)
                 {
