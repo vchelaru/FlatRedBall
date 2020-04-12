@@ -64,7 +64,8 @@ namespace FlatRedBall.PlatformerPlugin
                 //         last values jumped with, allowing a player to jump out of water and have the push value reset
                 // 1.9   - Fixed input initialization so setting the input device calls custom input initialize
                 // 1.10  - CollideAgainst now returns true/false instead of void
-                return new Version(1, 10, 0);
+                // 1.11  - A successful collision now results in a force update dependencies deep
+                return new Version(1, 11, 0);
             }
         }
 
