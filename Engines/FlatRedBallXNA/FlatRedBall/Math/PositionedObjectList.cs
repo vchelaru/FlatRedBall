@@ -155,6 +155,12 @@ namespace FlatRedBall.Math
         /// <returns>The index of the first object after the given value. If low bound equals high bound, then the low bound is returned.</returns>
         public int GetFirstAfter(float value, Axis axis, int lowBoundIndex, int highBoundIndexExclusive)
         {
+#if DEBUG
+            if(float.IsNaN(value))
+            {
+                throw new ArgumentException("value cannot be float.NaN");
+            }
+#endif
             if (lowBoundIndex == highBoundIndexExclusive)
             {
                 return lowBoundIndex;
