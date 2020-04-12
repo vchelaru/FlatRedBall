@@ -712,6 +712,14 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 }
             }
 
+
+            // If a platformer object has multiple parts, one collision may move one set of shapes, but not the other
+            // shapes. Need to force that update
+            if(toReturn)
+            {
+                this.ForceUpdateDependenciesDeep();
+            }
+
             return toReturn;
         }
 "

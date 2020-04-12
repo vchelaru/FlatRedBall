@@ -117,11 +117,11 @@ namespace FlatRedBall.Input
             get { return downAsButton; }
         }
 
-        #region XML Docs
         /// <summary>
-        /// Returns the angle of the analog stick.  0 is to the right, Pi/2 is up, Pi is to the left, and 3*Pi/2 is down.
+        /// Returns the angle of the analog stick in radians.  
+        /// 0 is to the right, Pi/2 is up, Pi is to the left, and 3*Pi/2 is down.
+        /// If the analog stick's position is (0,0), the Angle returned is 0 (to the right).
         /// </summary>
-        #endregion
         public double Angle
         {
             get { return mAngle; }
@@ -306,6 +306,7 @@ namespace FlatRedBall.Input
 
         private void UpdateAccordingToPosition()
         {
+            // Atan2 of (0,0) returns 0
             mAngle = System.Math.Atan2(mPosition.Y, mPosition.X);
             mAngle = MathFunctions.RegulateAngle(mAngle);
             mMagnitude = mPosition.Length();
