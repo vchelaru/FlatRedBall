@@ -1,5 +1,7 @@
 ﻿using FlatRedBall;
 using Gum.Wireframe;
+using Microsoft.Xna.Framework;
+using RenderingLibrary;
 using RenderingLibrary.Graphics;
 using System;
 using System.Collections.Generic;
@@ -72,7 +74,7 @@ namespace GumCoreShared.FlatRedBall.Embedded
             FrbObject.ForceUpdateDependencies();
 
             // todo - need to support multiple cameras and layers
-            var camera = Camera.Main;
+            var camera = global::FlatRedBall.Camera.Main;
 
 
             int screenX = 0;
@@ -100,6 +102,31 @@ namespace GumCoreShared.FlatRedBall.Embedded
                 GumParent.Width = frbObjectAsScalable.ScaleX * 2;
                 GumParent.Height = frbObjectAsScalable.ScaleY * 2;
             }
+        }
+
+        public Vector3 GetAbsolutePositionInFrbSpace(GraphicalUiElement graphicalUiElement)
+        {
+            var parentX = GumObject.GetAbsoluteX();
+            var parentY = GumObject.GetAbsoluteY();
+
+            var gumObjectAsIpso = GumObject as IPositionedSizedObject;
+
+            var rectX = graphicalUiElement.GetAbsoluteX();
+            var rectY = graphicalUiElement.GetAbsoluteY();
+
+            var rectLeftOffset = rectX - parentX;
+            var rectTopOffset = rectY - parentY;
+
+            var toReturn = new Vector3();
+            
+            toReturn.X = FrbObject.X + gumObjectAsIpso.X + rectLeftOffset
+                + graphicalUiElement.Width / 2.0f;
+            toReturn.Y = FrbObject.Y - gumObjectAsIpso.Y - rectTopOffset
+                - graphicalUiElement.Height / 2.0f;
+
+            toReturn.Z = FrbObject.Z;
+
+            return toReturn;
         }
     }
 }
