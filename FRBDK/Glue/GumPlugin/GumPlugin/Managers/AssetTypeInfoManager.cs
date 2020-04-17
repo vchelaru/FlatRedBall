@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.CodeGeneration;
+using FlatRedBall.Glue.IO;
 
 namespace GumPlugin.Managers
 {
@@ -64,6 +65,7 @@ namespace GumPlugin.Managers
                     mComponentAti.AddToManagersMethod.Add("this.AddToManagers()");
                     mComponentAti.CustomLoadMethod =
                         "{THIS} = GumRuntime.ElementSaveExtensions.CreateGueForElement( Gum.Managers.ObjectFinder.Self.GetComponent(FlatRedBall.IO.FileManager.RemoveExtension(FlatRedBall.IO.FileManager.RemovePath(\"{FILE_NAME}\"))), true)";
+
                     mComponentAti.DestroyMethod = "this.RemoveFromManagers()";
                     mComponentAti.SupportsMakeOneWay = false;
                     mComponentAti.ShouldAttach = false;
@@ -99,8 +101,37 @@ namespace GumPlugin.Managers
                     screenAti.Extension = "gusx";
                     screenAti.AddToManagersMethod.Add("this.AddToManagers();" +
                         "FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += RefreshLayoutInternal");
-                    screenAti.CustomLoadMethod =
-                        "FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();{THIS} = GumRuntime.ElementSaveExtensions.CreateGueForElement( Gum.Managers.ObjectFinder.Self.GetScreen(FlatRedBall.IO.FileManager.RemoveExtension(FlatRedBall.IO.FileManager.RemovePath(\"{FILE_NAME}\"))), true)";
+
+                    //screenAti.CustomLoadMethod =
+                    //    "FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();
+                    //     {THIS} = GumRuntime.ElementSaveExtensions.CreateGueForElement( Gum.Managers.ObjectFinder.Self.GetScreen(FlatRedBall.IO.FileManager.RemoveExtension(FlatRedBall.IO.FileManager.RemovePath(\"{FILE_NAME}\"))), true)";
+
+                    screenAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) =>
+                    {
+                        var toReturn = "FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();";
+
+                        var fileName = rfs.Name;
+
+                        var filePath = new FilePath(fileName);
+
+
+                        var gumScreensFolder = $"content/gumproject/screens/";
+
+                        var strippedName = fileName;
+                        if(fileName.StartsWith(gumScreensFolder))
+                        {
+                            strippedName = fileName.Substring(gumScreensFolder.Length);
+                        }
+
+                        strippedName = FileManager.RemoveExtension(strippedName);
+
+                        toReturn += 
+                            $"{rfs.GetInstanceName()} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetScreen(\"{strippedName}\"), true)";
+
+                        return toReturn;
+                    };
+
+
                     screenAti.DestroyMethod = "this.RemoveFromManagers();" +
                         "FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged -= RefreshLayoutInternal";
                     screenAti.SupportsMakeOneWay = false;
@@ -392,12 +423,35 @@ namespace GumPlugin.Managers
             {
                 var qualifiedName = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
 
-                newAti.CustomLoadMethod = 
-                    // Now the camera setup code handles this, so we don't have to:
-                    //"FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();" +
-                    $"{{THIS}} = ({qualifiedName})GumRuntime.ElementSaveExtensions.CreateGueForElement( " +
-                        "Gum.Managers.ObjectFinder.Self.GetScreen(" +
-                            "FlatRedBall.IO.FileManager.RemoveExtension(FlatRedBall.IO.FileManager.RemovePath(\"{FILE_NAME}\"))), true)";
+                //newAti.CustomLoadMethod = 
+                //    // Now the camera setup code handles this, so we don't have to:
+                //    //"FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();" +
+                //    $"{{THIS}} = ({qualifiedName})GumRuntime.ElementSaveExtensions.CreateGueForElement( " +
+                //        "Gum.Managers.ObjectFinder.Self.GetScreen(" +
+                //            "FlatRedBall.IO.FileManager.RemoveExtension(FlatRedBall.IO.FileManager.RemovePath(\"{FILE_NAME}\"))), true)";
+
+                newAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) =>
+                {
+                    var fileName = rfs.Name;
+
+                    var filePath = new FilePath(fileName);
+
+
+                    var gumScreensFolder = $"gumproject/screens/";
+
+                    var strippedName = fileName;
+                    if (fileName.ToLowerInvariant().StartsWith(gumScreensFolder))
+                    {
+                        strippedName = fileName.Substring(gumScreensFolder.Length);
+                    }
+
+                    strippedName = FileManager.RemoveExtension(strippedName);
+
+                    var toReturn =
+                        $"{rfs.GetInstanceName()} = ({qualifiedName})GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetScreen(\"{strippedName}\"), true);";
+
+                    return toReturn;
+                };
 
                 newAti.AddToManagersFunc = null;
                 newAti.AddToManagersMethod.Clear();

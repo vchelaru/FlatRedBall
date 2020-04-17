@@ -475,20 +475,15 @@ namespace FlatRedBall.Graphics
             return GetNumberOfCharsIn(maxWidth, textToWrite, spacing, firstLetterShowing, mDefaultFont, HorizontalAlignment.Left);
         }
 
-#if SILVERLIGHT
-        static public int GetNumberOfCharsIn(float maxWidth, string textToWrite, float spacing, 
-            int firstLetterShowing, SpriteFont bitmapFont, HorizontalAlignment alignment)
-#else
+
         static public int GetNumberOfCharsIn(float maxWidth, string textToWrite, float spacing, 
             int firstLetterShowing, BitmapFont bitmapFont, HorizontalAlignment alignment)
-#endif
         {
             if (string.IsNullOrEmpty(textToWrite))
             {
                 return 0;
             }
 
-#if !SILVERLIGHT
             // GUIMan drawn objects use the default font, so they will pass null.  
             // Make sure that we have a default font in this case.  If not, throw
             // an exception.  
@@ -502,9 +497,7 @@ namespace FlatRedBall.Graphics
                 bitmapFont = mDefaultFont;
 
             }
-#else
-			maxWidth *= (float)(bitmapFont.FontSize / spacing);
-#endif
+
 
             float stringWidth = 0;
 
@@ -514,36 +507,22 @@ namespace FlatRedBall.Graphics
             {
                 for (i = 0; i + firstLetterShowing < textToWrite.Length; i++)
                 {
-#if SILVERLIGHT
-					float widthAfterNextLetter = bitmapFont.MeasureString(
-						textToWrite.Substring(firstLetterShowing, i)).X;
 
-					if (widthAfterNextLetter > maxWidth) break;
-					stringWidth = widthAfterNextLetter;
-#else
                     float characterWidth = bitmapFont.GetCharacterSpacing(textToWrite[i + firstLetterShowing]) * spacing;
                     if (stringWidth + characterWidth > maxWidth) break;
 
                     stringWidth += characterWidth;
-#endif
                 }
             }
             else if (alignment == HorizontalAlignment.Right)
             {
                 for (i = 0; firstLetterShowing - i > -1; i++)
                 {
-#if SILVERLIGHT
-					float widthAfterNextLeter = bitmapFont.MeasureString(
-						textToWrite.Substring(firstLetterShowing - i, i)).X;
 
-					if (widthAfterNextLeter > maxWidth) break;
-					stringWidth = widthAfterNextLeter;
-#else
                     float characterWidth = bitmapFont.GetCharacterSpacing(textToWrite[firstLetterShowing - i]) * spacing;
                     if (stringWidth + characterWidth > maxWidth) break;
 
                     stringWidth += characterWidth;
-#endif
                 }
             }
             else
@@ -559,30 +538,24 @@ namespace FlatRedBall.Graphics
                 {
                     if (movingLeft > -1)
                     {
-#if SILVERLIGHT
-						throw new NotImplementedException();
-#else
+
                         float characterWidth = bitmapFont.GetCharacterSpacing(textToWrite[movingLeft]) * spacing;
                         if(stringWidth + characterWidth > maxWidth) break;
                         stringWidth += characterWidth;
 
                         movingLeft--;
                         i++;
-#endif
                     }
 
                     if (movingRight < textToWrite.Length)
                     {
-#if SILVERLIGHT
 
-#else
                         float characterWidth = bitmapFont.GetCharacterSpacing(textToWrite[movingRight]) * spacing;
                         if(stringWidth + characterWidth > maxWidth) break;
                         stringWidth += characterWidth;
 
                         movingRight++;
                         i++;
-#endif
                     }
                 }
             }
@@ -622,15 +595,6 @@ namespace FlatRedBall.Graphics
             
             return GetWidth(text, spacing, font, startIndex, count, WidthList);
         }
-#if SILVERLIGHT
-		public static float GetWidth(string text, float spacing, SpriteFont font, int startIndex, int count, List<float> widthList)
-		{
-			return spacing * font.MeasureString(text).X / (int)font.FontSize;
-		}
-#else
-
-
-
 
         public static float GetWidth(string text, float spacing, BitmapFont font, int startIndex, int count, List<float> widthList)
         {
@@ -681,7 +645,6 @@ namespace FlatRedBall.Graphics
 
         }
 
-#endif
 
         public static float GetWidth(Text text)
         {
@@ -958,10 +921,6 @@ namespace FlatRedBall.Graphics
             if (txt == null || txt == "") return;
             float newlineShift = 0;
 
-#if SUPPORTS_FRB_DRAWN_GUI
-            if (TextManager.DefaultFont.Texture != GuiManager.guiTexture)
-                GuiManager.AddTextureSwitch(TextManager.DefaultFont.Texture, false);
-#endif
 
             if (txt.Contains("\n"))
             {
@@ -985,11 +944,6 @@ namespace FlatRedBall.Graphics
             {
                 DrawSingleLineString(ref txt, ref newlineShift);
             }
-
-#if SUPPORTS_FRB_DRAWN_GUI
-            if (TextManager.DefaultFont.Texture != GuiManager.guiTexture)
-                GuiManager.AddTextureSwitch(GuiManager.guiTexture, false);
-#endif
 
         }
 

@@ -1,25 +1,12 @@
 
 using System;
-using System.IO;
 using System.Text;
 using System.Linq;
-
-using System.Collections;
-using System.Globalization;
 using System.Collections.Generic;
-
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 using FlatRedBall.Input;
-using FlatRedBall.ManagedSpriteGroups;
-using FlatRedBall.Graphics;
-using FlatRedBall.Utilities;
 using System.Collections.ObjectModel;
-
-using Color = Microsoft.Xna.Framework.Color;
-using FlatRedBall.IO;
 
 
 namespace FlatRedBall.Gui
@@ -253,14 +240,10 @@ namespace FlatRedBall.Gui
             set { mToolTipText = value; }
         }
 
-#if !SILVERLIGHT
-
         public static ReadOnlyCollection<IWindow> Windows
         {
             get { return mReadOnlyWindowArray; }
         }
-
-#endif
 
         public static float XEdge
         {
@@ -284,7 +267,6 @@ namespace FlatRedBall.Gui
                 }
             }
         }
-
 
 		public static bool BringsClickedWindowsToFront { get; set; }
 
@@ -557,21 +539,6 @@ namespace FlatRedBall.Gui
 #endif
 
 
-#if !MONOGAME
-        static public void LoadSettingsFromText(string settingsTextFile)
-        {
-            TextReader tr = new StreamReader(settingsTextFile);
-            string buffer = tr.ReadToEnd();
-
-            float cursorSensitivity = StringFunctions.GetFloatAfter("Mouse Sensitivity: ", buffer);
-            if (!float.IsNaN(cursorSensitivity))
-                Cursor.sensitivity = cursorSensitivity;
-
-            FileManager.Close(tr);
-
-        }
-#endif
-
         [Obsolete("Use AddDominantWindow instead - this method will go away soon")]
         public static void MakeDominantWindow(IWindow window)
         {
@@ -604,7 +571,7 @@ namespace FlatRedBall.Gui
         /// Sorts all contained IWindows according to their
         /// Z values and Layers.  This will usually result in
         /// clicks being received in the same order that objects
-        /// are drawn, which is what the user will usually expect
+        /// are drawn, which is what the user will usually expect.
         /// </summary>
         public static void SortZAndLayerBased()
         {
