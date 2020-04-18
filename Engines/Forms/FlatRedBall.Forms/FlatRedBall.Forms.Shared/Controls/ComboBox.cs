@@ -5,6 +5,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using FlatRedBall.Gui;
+using Gum.DataTypes;
+using Gum.Converters;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -77,6 +79,28 @@ namespace FlatRedBall.Forms.Controls
             set { listBox.SelectedIndex = value; }
         }
 
+        // These values are the list box values before the list box has been expanded.
+        // The reason we need these is because the list box may have values (like Width)
+        // which depend on the combo box. Normal gum objects automatically handle layout,
+        // but the ListBox needs to be detached from its parent ComboBox when it is shown so
+        // that it can be moved above all other UI (a sorting issue). But since the ListBox is
+        // detached from its parent, we can't have it automatically update its size to the parent.
+        // Therefore, the list box showign process is as follows:
+        // 1. Apply the values below to the list box (force it to have the same values it had before it was shown)
+        // 2. Let the Gum layout engine do its updating
+        // 3. Read the absolute x,y,width, and height (this happens in the show function)
+        // 4. Detach the list box from its parent and add it with a positive infinity Z so it sorts on top
+        // 5. Apply the absolute values to the list box
+        // This will result in the list box shown at the proper location and size. Then when the list
+        DimensionUnitType listBoxWidthUnits;
+        DimensionUnitType listBoxHeightUnits;
+        GeneralUnitType listBoxXUnits;
+        GeneralUnitType listBoxYUnits;
+        float listBoxX;
+        float listBoxY;
+        float listBoxWidth;
+        float listBoxHeight;
+
         #endregion
 
         #region Events
@@ -107,6 +131,11 @@ namespace FlatRedBall.Forms.Controls
                 throw new Exception("Gum object must have an object called \"Text\"");
             }
 #endif
+            // remove it because it's gotta be a "popup"
+
+            Visual.Children.Remove(listBoxInstance);
+            listBoxInstance.RemoveFromManagers();
+
             coreTextObject = textComponent.RenderableComponent as RenderingLibrary.Graphics.Text;
 
             if(listBoxInstance.FormsControlAsObject == null)
@@ -177,8 +206,51 @@ namespace FlatRedBall.Forms.Controls
         private void ShowListBox()
         {
             listBox.IsVisible = true;
+            // this thing is going to be in front of everything:
+            listBox.Visual.Z = float.PositiveInfinity;
 
+            // Adding this to the Visual will force a layout....
+            this.Visual.Children.Add(listBox.Visual);
+            // ... so grab the absolute values:
+            var x = listBox.Visual.AbsoluteX;
+            var y = listBox.Visual.AbsoluteY;
+            var width = listBox.Visual.GetAbsoluteWidth();
+            var height = listBox.Visual.GetAbsoluteHeight();
+
+            listBoxWidthUnits = listBox.Visual.WidthUnits;
+            listBoxHeightUnits = listBox.Visual.HeightUnits;
+            listBoxXUnits = listBox.Visual.XUnits;
+            listBoxYUnits = listBox.Visual.YUnits;
+
+            listBoxX = listBox.Visual.X;
+            listBoxY = listBox.Visual.Y;
+            listBoxWidth = listBox.Visual.Width;
+            listBoxHeight = listBox.Visual.Height;
+
+            // Now that we have the values, detach it:
+            this.Visual.Children.Remove(listBox.Visual);
+
+            // and apply the absolutes:
+            listBox.Visual.XUnits = GeneralUnitType.PixelsFromSmall;
+            listBox.Visual.YUnits = GeneralUnitType.PixelsFromSmall;
+            listBox.Visual.WidthUnits = DimensionUnitType.Absolute;
+            listBox.Visual.HeightUnits = DimensionUnitType.Absolute;
+
+            listBox.X = x;
+            listBox.Y = y;
+            listBox.Width = width;
+            listBox.Height = height;
+
+            // let's just make sure it's removed
+            listBox.Visual.RemoveFromManagers();
+
+            // todo - what if this is on a layer?
+            listBox.Visual.AddToManagers(Visual.Managers,
+                Visual.Managers.Renderer.MainLayer);
             GuiManager.AddNextPushAction(TryHideFromPush);
+            GuiManager.SortZAndLayerBased();
+
+            listBox.RepositionToKeepInScreen();
 
             UpdateState();
         }
@@ -204,9 +276,26 @@ namespace FlatRedBall.Forms.Controls
 
         private void HideListBox()
         {
-            listBox.IsVisible = false;
+            if(Visual.Managers != null)
+            {
+                listBox.IsVisible = false;
+                listBox.Visual.RemoveFromManagers();
 
-            UpdateState();
+                listBox.Visual.XUnits = listBoxXUnits;
+                listBox.Visual.YUnits = listBoxYUnits;
+                listBox.Visual.WidthUnits = listBoxWidthUnits;
+                listBox.Visual.HeightUnits = listBoxHeightUnits;
+
+                listBox.Visual.X = listBoxX;
+                listBox.Visual.Y = listBoxY;
+                listBox.Visual.Width = listBoxWidth;
+                listBox.Visual.Height = listBoxHeight;
+
+                Visual.Managers.Renderer.MainLayer.Remove(listBox.Visual);
+
+
+                UpdateState();
+            }
         }
 
         private void HandleLosePush(IWindow window)
@@ -218,7 +307,7 @@ namespace FlatRedBall.Forms.Controls
         {
             coreTextObject.RawText = listBox.SelectedObject?.ToString();
 
-            listBox.IsVisible = false;
+            HideListBox();
 
             SelectionChanged?.Invoke(this, args);
         }

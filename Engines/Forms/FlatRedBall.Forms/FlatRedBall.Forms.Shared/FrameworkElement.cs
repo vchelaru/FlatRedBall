@@ -302,6 +302,34 @@ namespace FlatRedBall.Forms.Controls
             return isOnThisOrChild;
         }
 
+        public void RepositionToKeepInScreen()
+        {
+#if DEBUG
+            if(Visual == null)
+            {
+                throw new InvalidOperationException("Visual hasn't yet been set");
+            }
+            if(Visual.Parent != null)
+            {
+                throw new InvalidOperationException("This cannot be moved to keep in screen because it depends on its parent's position");
+            }
+#endif
+            var cameraTop = 0;
+            var cameraBottom = Renderer.Self.Camera.ClientHeight;
+            var cameraLeft = 0;
+            var cameraRight = Renderer.Self.Camera.ClientWidth;
+
+            var amountXToShift = 0;
+            var amountYToShift = 0;
+
+            var thisBottom = this.Visual.AbsoluteY + this.Visual.GetAbsoluteHeight();
+            if (thisBottom > cameraBottom)
+            {
+                // assume absolute positioning (for now?)
+                this.Y -= (thisBottom - cameraBottom);
+            }
+        }
+
         protected virtual void ReactToVisualChanged()
         {
 
