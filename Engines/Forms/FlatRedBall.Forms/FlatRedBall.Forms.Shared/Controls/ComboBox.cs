@@ -309,6 +309,9 @@ namespace FlatRedBall.Forms.Controls
 
             HideListBox();
 
+            PushValueToViewModel(nameof(SelectedObject));
+            PushValueToViewModel(nameof(SelectedIndex));
+
             SelectionChanged?.Invoke(this, args);
         }
 

@@ -423,7 +423,7 @@ namespace GumPlugin.Managers
             {
                 var qualifiedName = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
 
-                //newAti.CustomLoadMethod = 
+                //newAti.CustomLoadMethod =  
                 //    // Now the camera setup code handles this, so we don't have to:
                 //    //"FlatRedBall.Gum.GumIdb.UpdateDisplayToMainFrbCamera();" +
                 //    $"{{THIS}} = ({qualifiedName})GumRuntime.ElementSaveExtensions.CreateGueForElement( " +

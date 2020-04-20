@@ -19,85 +19,18 @@ namespace FlatRedBall.Forms.Controls
 
         Dictionary<string, string> vmPropsToUiProps = new Dictionary<string, string>();
 
-        object mInheritedBindingContext;
-        internal object InheritedBindingContext
-        {
-            get => mInheritedBindingContext;
-            set
-            {
-                if (value != EffectiveBindingContext)
-                {
-                    var oldBindingContext = EffectiveBindingContext;
-                    if (oldBindingContext is INotifyPropertyChanged oldViewModel)
-                    {
-                        oldViewModel.PropertyChanged -= HandleViewModelPropertyChanged;
-                    }
-                    mInheritedBindingContext = value;
-
-                    if (EffectiveBindingContext is INotifyPropertyChanged viewModel)
-                    {
-                        viewModel.PropertyChanged += HandleViewModelPropertyChanged;
-
-                        foreach (var vmProperty in vmPropsToUiProps.Keys)
-                        {
-                            UpdateToVmProperty(vmProperty);
-                        }
-                    }
-
-                    UpdateChildrenInheritedBindingContext(this.Visual.Children);
-                }
-            }
-        }
-
-        object mBindingContext;
         public object BindingContext
         {
-            get => EffectiveBindingContext;
+            get => Visual?.BindingContext;
             set
             {
-                if(value != EffectiveBindingContext)
+                if(value != BindingContext && Visual != null)
                 {
-                    var oldBindingContext = EffectiveBindingContext;
-                    if (oldBindingContext is INotifyPropertyChanged oldViewModel)
-                    {
-                        oldViewModel.PropertyChanged -= HandleViewModelPropertyChanged;
-                    }
-                    mBindingContext = value;
-
-                    if (EffectiveBindingContext is INotifyPropertyChanged viewModel)
-                    {
-                        viewModel.PropertyChanged += HandleViewModelPropertyChanged;
-
-                        foreach (var vmProperty in vmPropsToUiProps.Keys)
-                        {
-                            UpdateToVmProperty(vmProperty);
-                        }
-                    }
-
-                    UpdateChildrenInheritedBindingContext(this.Visual.Children);
+                    Visual.BindingContext = value;
                 }
                 
             }
         }
-
-        object EffectiveBindingContext => mBindingContext ?? InheritedBindingContext;
-
-        private void UpdateChildrenInheritedBindingContext(IEnumerable<IRenderableIpso> children)
-        {
-            foreach(var child in children)
-            {
-                if(child is GraphicalUiElement gue && 
-                    gue.FormsControlAsObject is FrameworkElement frameworkElement)
-                {
-                    frameworkElement.InheritedBindingContext = this.BindingContext;
-                }
-
-                UpdateChildrenInheritedBindingContext(child.Children);
-            }
-        }
-
-
-
 
         /// <summary>
         /// The height in pixels. This is a calculated value considering HeightUnits and Height.
@@ -359,14 +292,15 @@ namespace FlatRedBall.Forms.Controls
             var updated = false;
             if (vmPropsToUiProps.ContainsKey(vmPropertyName))
             {
-                var vmProperty = EffectiveBindingContext.GetType().GetProperty(vmPropertyName);
+                var vmProperty = BindingContext.GetType().GetProperty(vmPropertyName);
                 if (vmProperty == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Could not find property {vmPropertyName} in {mBindingContext.GetType()}");
+                    System.Diagnostics.Debug.WriteLine(
+                        $"Could not find property {vmPropertyName} in {BindingContext.GetType()}");
                 }
                 else
                 {
-                    var vmValue = vmProperty.GetValue(EffectiveBindingContext, null);
+                    var vmValue = vmProperty.GetValue(BindingContext, null);
 
                     var uiProperty = this.GetType().GetProperty(vmPropsToUiProps[vmPropertyName]);
 
@@ -398,7 +332,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 var vmPropName = kvp.Key;
 
-                var vmProperty = EffectiveBindingContext?.GetType().GetProperty(vmPropName);
+                var vmProperty = BindingContext?.GetType().GetProperty(vmPropName);
 
                 if(vmProperty != null)
                 {
@@ -407,7 +341,7 @@ namespace FlatRedBall.Forms.Controls
                     {
                         var uiValue = uiProperty.GetValue(this, null);
 
-                        vmProperty.SetValue(EffectiveBindingContext, uiValue, null);
+                        vmProperty.SetValue(BindingContext, uiValue, null);
                     }
                 }
             }
