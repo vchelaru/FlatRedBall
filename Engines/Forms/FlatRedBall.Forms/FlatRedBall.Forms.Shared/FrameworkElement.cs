@@ -139,7 +139,22 @@ namespace FlatRedBall.Forms.Controls
                     throw new ArgumentNullException("Visual cannot be assigned to null");
                 }
 #endif
-                visual = value; ReactToVisualChanged();
+                if(visual != value)
+                {
+                    if(visual != null)
+                    {
+                        // unsubscribe:
+                        visual.BindingContextChanged -= HandleVisualBindingContextChanged;
+                    }
+
+
+                    visual = value; 
+                    ReactToVisualChanged();
+                    UpdateAllUiPropertiesToVm();
+
+                    visual.BindingContextChanged += HandleVisualBindingContextChanged;
+                }
+
             }
         }
 
@@ -206,9 +221,7 @@ namespace FlatRedBall.Forms.Controls
         {
             if(visual != null)
             {
-                this.visual = visual;
-                ReactToVisualChanged();
-
+                this.Visual = visual;
             }
         }
 
@@ -271,7 +284,7 @@ namespace FlatRedBall.Forms.Controls
         private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var vmPropertyName = e.PropertyName;
-            var updated = UpdateToVmProperty(vmPropertyName);
+            var updated = UpdateUiToVmProperty(vmPropertyName);
             //if (updated)
             //{
             //    this.EffectiveManagers?.InvalidateSurface();
@@ -287,7 +300,23 @@ namespace FlatRedBall.Forms.Controls
             vmPropsToUiProps.Add(vmProperty, uiProperty);
         }
 
-        private bool UpdateToVmProperty(string vmPropertyName)
+        private void HandleVisualBindingContextChanged(object sender, EventArgs args)
+        {
+            if(BindingContext != null)
+            {
+                UpdateAllUiPropertiesToVm();
+            }
+        }
+
+        private void UpdateAllUiPropertiesToVm()
+        {
+            foreach (var vmProperty in vmPropsToUiProps.Keys)
+            {
+                UpdateUiToVmProperty(vmProperty);
+            }
+        }
+
+        private bool UpdateUiToVmProperty(string vmPropertyName)
         {
             var updated = false;
             if (vmPropsToUiProps.ContainsKey(vmPropertyName))
@@ -346,5 +375,7 @@ namespace FlatRedBall.Forms.Controls
                 }
             }
         }
+
+        
     }
 }

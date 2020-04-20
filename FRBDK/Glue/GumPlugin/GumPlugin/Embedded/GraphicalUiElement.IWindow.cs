@@ -723,7 +723,10 @@ namespace Gum.Wireframe
                         }
                     }
 
+                    BindingContextChanged?.Invoke(this, null);
+
                     UpdateChildrenInheritedBindingContext(this.Children);
+
                 }
             }
         }
@@ -753,11 +756,15 @@ namespace Gum.Wireframe
                         }
                     }
 
+                    BindingContextChanged?.Invoke(this, null);
+
                     UpdateChildrenInheritedBindingContext(this.Children);
                 }
 
             }
         }
+
+        public event EventHandler BindingContextChanged;
 
         object EffectiveBindingContext => mBindingContext ?? InheritedBindingContext;
 
