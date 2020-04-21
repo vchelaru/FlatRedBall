@@ -276,7 +276,7 @@ namespace FlatRedBall.Forms.Controls
 
         private void HideListBox()
         {
-            if(Visual.Managers != null)
+            if(Visual.Managers != null && listBox.IsVisible)
             {
                 listBox.IsVisible = false;
                 listBox.Visual.RemoveFromManagers();

@@ -67,7 +67,9 @@ namespace PluginTestbed.MoveToLayerPlugin
 
 
 
-                    if (nos.GetAssetTypeInfo() != null && !string.IsNullOrEmpty(nos.GetAssetTypeInfo().RemoveFromLayerMethod))
+                    var nosAti = nos.GetAssetTypeInfo();
+
+                    if (nosAti != null && !string.IsNullOrEmpty(nos.GetAssetTypeInfo().RemoveFromLayerMethod))
                     {
                         NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, nos);
                         bool shouldSkip = GetShouldSkip(nos);
@@ -83,7 +85,19 @@ namespace PluginTestbed.MoveToLayerPlugin
                                 .Line(nos.GetAssetTypeInfo().RemoveFromLayerMethod.Replace("this", nos.InstanceName).Replace("mLayer", "layerToRemoveFrom") + ";")
                             .End();
 
-                            codeBlock.Line(nos.GetAssetTypeInfo().LayeredAddToManagersMethod[0].Replace("this", nos.InstanceName).Replace("mLayer", "layerToMoveTo") + ";");
+                            var codeBlockForAddCall = codeBlock;
+
+                            // hardcoed special case
+                            if (nosAti.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Sprite")
+                            {
+                                codeBlockForAddCall = codeBlock.If($"layerToMoveTo != null || !SpriteManager.AutomaticallyUpdatedSprites.Contains({nos.InstanceName})");
+                            }
+                            else if (nosAti.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Graphics.Text")
+                            {
+                                codeBlockForAddCall = codeBlock.If($"layerToMoveTo != null || !TextManager.AutomaticallyUpdatedTexts.Contains({nos.InstanceName})");
+                            }
+
+                            codeBlockForAddCall.Line(nosAti.LayeredAddToManagersMethod[0].Replace("this", nos.InstanceName).Replace("mLayer", "layerToMoveTo") + ";");
 
                             if (shouldCheckForNull)
                             {
