@@ -21,7 +21,6 @@ namespace FlatRedBall.AnimationEditorForms
 
         #endregion
 
-
         #region Properties
 
         // See SelectedState
@@ -49,8 +48,8 @@ namespace FlatRedBall.AnimationEditorForms
 
         #region Events
 
-
         public event EventHandler AnimationChainsChange;
+
         public event EventHandler AnimationChainSelected;
 
         #endregion
@@ -213,7 +212,6 @@ namespace FlatRedBall.AnimationEditorForms
                 treeNode.Nodes.Add(frameNode);
             }
         }
-
 
         public void AfterTreeItemSelect()
         {

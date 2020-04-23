@@ -28,20 +28,7 @@ namespace FlatRedBall.AnimationEditorForms.Controls
                 return mZoomControlLogic.AvailableZoomLevels;
             }
         }
-
-        public bool ShowFullAlpha
-        {
-            get
-            {
-                return ShowFullAlphaCheckBox.Checked;
-            }
-            set
-            {
-                ShowFullAlphaCheckBox.Checked = value;
-                this.OnPropertyChanged(nameof(ShowFullAlpha));
-            }
-        }
-
+        
 
         public int PercentageValue
         {
@@ -96,9 +83,6 @@ namespace FlatRedBall.AnimationEditorForms.Controls
             }
         }
 
-        private void ShowFullAlpha_CheckedChanged(object sender, EventArgs e)
-        {
-            this.OnPropertyChanged(nameof(ShowFullAlpha));
-        }
+
     }
 }

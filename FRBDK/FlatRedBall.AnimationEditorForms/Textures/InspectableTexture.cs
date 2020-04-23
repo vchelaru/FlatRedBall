@@ -22,51 +22,51 @@ namespace FlatRedBall.AnimationEditorForms.Textures
             }
             set
             {
-                
-                mTexture = value;
-                if (mTexture != null)
-                {
-                    mImageData = FlatRedBall.Graphics.Texture.ImageData.FromTexture2D(mTexture);
-
-                    bool shouldRecreateVisited = mVisistedPoints == null;
-
-                    if (!shouldRecreateVisited)
-                    {
-                        shouldRecreateVisited = mVisistedPoints.Length < mTexture.Width;
-
-                        if (!shouldRecreateVisited)
-                        {
-                            shouldRecreateVisited = mVisistedPoints[0].Length < mTexture.Height;
-                        }
-                    }
-
-                    if (shouldRecreateVisited)
-                    {
-                        mVisistedPoints = new bool[mTexture.Width][];
-
-                        for (int i = 0; i < mTexture.Width; i++)
-                        {
-                            mVisistedPoints[i] = new bool[mTexture.Height];
-                        }
-
-                    }
-                }
-                else
+                if(mTexture != value)
                 {
                     mImageData = null;
+
                 }
+                mTexture = value;
+            }
+        }
+
+        private void TryCreateVisitedPoints()
+        {
+            bool shouldRecreateVisited = mVisistedPoints == null;
+
+            if (!shouldRecreateVisited)
+            {
+                shouldRecreateVisited = mVisistedPoints.Length < mTexture.Width;
+
+                if (!shouldRecreateVisited)
+                {
+                    shouldRecreateVisited = mVisistedPoints[0].Length < mTexture.Height;
+                }
+            }
+
+            if (shouldRecreateVisited)
+            {
+                mVisistedPoints = new bool[mTexture.Width][];
+
+                for (int i = 0; i < mTexture.Width; i++)
+                {
+                    mVisistedPoints[i] = new bool[mTexture.Height];
+                }
+
             }
         }
 
         public void GetOpaqueWandBounds(int xPixel, int yPixel, out int minX, out int minY, out int maxX, out int maxY)
         {
-#if DEBUG
             if(mImageData == null)
             {
-                throw new NullReferenceException(nameof(mImageData));
-            }
+                mImageData = FlatRedBall.Graphics.Texture.ImageData.FromTexture2D(mTexture);
 
-#endif
+            }
+                
+            TryCreateVisitedPoints();
+
             for (int i = 0; i < mVisistedPoints.Length; i++)
             {
                 Array.Clear(mVisistedPoints[i], 0, mVisistedPoints[i].Length);

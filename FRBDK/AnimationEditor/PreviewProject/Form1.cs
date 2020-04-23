@@ -22,6 +22,7 @@ namespace PreviewProject
             InitializeComponent();
 
             mMainControl = new FlatRedBall.AnimationEditorForms.MainControl();
+            mMainControl.AnimationChainChange += HandleAnimationChainChange;
             // We want to make sure to always have a good animation chain:
             this.Controls.Add(mMainControl);
             mMainControl.Dock = DockStyle.Fill;
@@ -121,11 +122,23 @@ namespace PreviewProject
             }
         }
 
-
         private void HandleSaveAsClick(object sender, EventArgs e)
         {
             AchxSaver.Self.InitateSaveProcess(ProjectManager.Self.FileName, mMainControl);
             this.Text = "AnimationEditor - " + ProjectManager.Self.FileName;
+        }
+
+        private void HandleAnimationChainChange(object sender, EventArgs e)
+        {
+            bool autosave = true;
+
+            if(autosave && !string.IsNullOrEmpty(ProjectManager.Self.FileName))
+            {
+                mMainControl.SaveCurrentAnimationChain();
+
+                this.Text = "AnimationEditor - " + ProjectManager.Self.FileName;
+
+            }
         }
 
         void HandleXnaInitialize()

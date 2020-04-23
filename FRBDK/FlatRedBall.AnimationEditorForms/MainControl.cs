@@ -183,7 +183,6 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void HandleEditorControlsPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            imageRegionSelectionControl1.ShowFullAlpha = WireframeTopUiControl.ShowFullAlpha;
         }
 
         private void ScrollBarHandleTextureChange()
@@ -506,5 +505,9 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
+        private void WireframeTopUiControl_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

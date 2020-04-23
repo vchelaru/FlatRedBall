@@ -26,7 +26,6 @@ namespace FlatRedBall.SpecializedXnaControls
         ImageData maxAlphaImageData;
 
         Texture2D mCurrentTexture;
-        Texture2D maxAlphaTexture;
 
         bool mRoundRectangleSelectorToUnit = true;
         List<RectangleSelector> mRectangleSelectors = new List<RectangleSelector>();
@@ -48,8 +47,6 @@ namespace FlatRedBall.SpecializedXnaControls
         }
 
         IList<int> mAvailableZoomLevels;
-
-        bool showFullAlpha;
 
         #endregion
 
@@ -146,72 +143,14 @@ namespace FlatRedBall.SpecializedXnaControls
                         }
                         else
                         {
-                            CreateMaxAlphaTexture();
                             mCurrentTextureSprite.Visible = true;
-                            if (showFullAlpha)
-                            {
-                                mCurrentTextureSprite.Texture = maxAlphaTexture;
-                            }
-                            else
-                            {
-                                mCurrentTextureSprite.Texture = mCurrentTexture;
-                            }
+                            mCurrentTextureSprite.Texture = mCurrentTexture;
                             mCurrentTextureSprite.Width = mCurrentTexture.Width;
                             mCurrentTextureSprite.Height = mCurrentTexture.Height;
 
                         }
                         this.RefreshDisplay();
                     }
-                }
-            }
-        }
-
-        private void CreateMaxAlphaTexture()
-        {
-            if (maxAlphaImageData == null)
-            {
-                maxAlphaImageData = new ImageData(mCurrentTexture.Width, mCurrentTexture.Height, mManagers);
-                maxAlphaImageData.CopyFrom(mCurrentTexture);
-
-                MaximizeAlpha();
-
-                maxAlphaTexture = maxAlphaImageData.ToTexture2D(generateMipmaps: false);
-            }
-            else
-            {
-                bool showingBiggerTexture = mCurrentTexture.Width > maxAlphaImageData.Width || mCurrentTexture.Height > maxAlphaImageData.Height;
-                if (showingBiggerTexture)
-                {
-                    maxAlphaImageData = new ImageData(mCurrentTexture.Width, mCurrentTexture.Height, mManagers);
-                }
-
-                maxAlphaImageData.CopyFrom(mCurrentTexture);
-
-                MaximizeAlpha();
-
-                if (showingBiggerTexture)
-                {
-                    if (maxAlphaTexture != null)
-                    {
-                        maxAlphaTexture.Dispose();
-                    }
-                    maxAlphaTexture = maxAlphaImageData.ToTexture2D(generateMipmaps: false);
-                }
-                else
-                {
-                    maxAlphaImageData.ToTexture2D(maxAlphaTexture);
-                }
-
-            }
-        }
-
-        private void MaximizeAlpha()
-        {
-            for (int i = 0; i < maxAlphaImageData.Data.Length; i++)
-            {
-                if (maxAlphaImageData.Data[i].A > 0)
-                {
-                    maxAlphaImageData.Data[i].A = 255;
                 }
             }
         }
@@ -300,30 +239,6 @@ namespace FlatRedBall.SpecializedXnaControls
 
                     selector.RemoveFromManagers();
                     mRectangleSelectors.RemoveAt(mRectangleSelectors.Count - 1);
-                }
-            }
-        }
-
-        public bool ShowFullAlpha
-        {
-            get
-            {
-                return showFullAlpha;
-            }
-            set
-            {
-                showFullAlpha = value;
-
-                if(mCurrentTextureSprite != null)
-                {
-                    if (showFullAlpha)
-                    {
-                        mCurrentTextureSprite.Texture = maxAlphaTexture;
-                    }
-                    else
-                    {
-                        mCurrentTextureSprite.Texture = mCurrentTexture;
-                    }
                 }
             }
         }

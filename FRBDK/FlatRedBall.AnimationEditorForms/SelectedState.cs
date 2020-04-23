@@ -10,12 +10,15 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace FlatRedBall.AnimationEditorForms
 {
+    #region SelectionSnapshot
+
     public class SelectionSnapshot
     {
         public AnimationChainSave AnimationChainSave;
         public AnimationFrameSave AnimationFrameSave;
-
     }
+
+    #endregion
 
     public class SelectedState
     {
@@ -174,7 +177,6 @@ namespace FlatRedBall.AnimationEditorForms
         }
 
         #endregion
-
 
         public void Initialize(TreeView treeView)
         {

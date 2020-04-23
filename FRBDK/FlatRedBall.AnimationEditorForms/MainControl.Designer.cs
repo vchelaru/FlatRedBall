@@ -91,7 +91,7 @@
             // TreeViewAndEverythingElse.Panel2
             // 
             this.TreeViewAndEverythingElse.Panel2.Controls.Add(this.splitContainer1);
-            this.TreeViewAndEverythingElse.Size = new System.Drawing.Size(771, 388);
+            this.TreeViewAndEverythingElse.Size = new System.Drawing.Size(1028, 393);
             this.TreeViewAndEverythingElse.SplitterDistance = 165;
             this.TreeViewAndEverythingElse.TabIndex = 0;
             this.TreeViewAndEverythingElse.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.TreeViewAndEverythingElse_SplitterMoved);
@@ -104,7 +104,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(161, 384);
+            this.tabControl1.Size = new System.Drawing.Size(161, 389);
             this.tabControl1.TabIndex = 1;
             // 
             // AnimationsTab
@@ -114,7 +114,7 @@
             this.AnimationsTab.Location = new System.Drawing.Point(4, 22);
             this.AnimationsTab.Name = "AnimationsTab";
             this.AnimationsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.AnimationsTab.Size = new System.Drawing.Size(153, 358);
+            this.AnimationsTab.Size = new System.Drawing.Size(153, 363);
             this.AnimationsTab.TabIndex = 0;
             this.AnimationsTab.Text = "Animations";
             this.AnimationsTab.UseVisualStyleBackColor = true;
@@ -128,7 +128,7 @@
             this.AnimationTreeView.HideSelection = false;
             this.AnimationTreeView.Location = new System.Drawing.Point(3, 33);
             this.AnimationTreeView.Name = "AnimationTreeView";
-            this.AnimationTreeView.Size = new System.Drawing.Size(147, 322);
+            this.AnimationTreeView.Size = new System.Drawing.Size(147, 327);
             this.AnimationTreeView.TabIndex = 0;
             this.AnimationTreeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.AnimationTreeView_ItemDrag);
             this.AnimationTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.AnimationTreeView_AfterSelect);
@@ -194,7 +194,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.PreviewSplitContainer);
-            this.splitContainer1.Size = new System.Drawing.Size(602, 388);
+            this.splitContainer1.Size = new System.Drawing.Size(859, 393);
             this.splitContainer1.SplitterDistance = 151;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -204,14 +204,14 @@
             this.SelectedItemPropertyGrid.HelpVisible = false;
             this.SelectedItemPropertyGrid.Location = new System.Drawing.Point(0, 21);
             this.SelectedItemPropertyGrid.Name = "SelectedItemPropertyGrid";
-            this.SelectedItemPropertyGrid.Size = new System.Drawing.Size(147, 252);
+            this.SelectedItemPropertyGrid.Size = new System.Drawing.Size(147, 257);
             this.SelectedItemPropertyGrid.TabIndex = 0;
             this.SelectedItemPropertyGrid.ToolbarVisible = false;
             // 
             // tileMapInfoWindow1
             // 
             this.tileMapInfoWindow1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tileMapInfoWindow1.Location = new System.Drawing.Point(0, 273);
+            this.tileMapInfoWindow1.Location = new System.Drawing.Point(0, 278);
             this.tileMapInfoWindow1.Name = "tileMapInfoWindow1";
             this.tileMapInfoWindow1.Size = new System.Drawing.Size(147, 111);
             this.tileMapInfoWindow1.TabIndex = 2;
@@ -246,8 +246,8 @@
             // 
             this.PreviewSplitContainer.Panel2.Controls.Add(this.PreviewGraphicsControl);
             this.PreviewSplitContainer.Panel2.Controls.Add(this.previewControls1);
-            this.PreviewSplitContainer.Size = new System.Drawing.Size(447, 388);
-            this.PreviewSplitContainer.SplitterDistance = 269;
+            this.PreviewSplitContainer.Size = new System.Drawing.Size(704, 393);
+            this.PreviewSplitContainer.SplitterDistance = 274;
             this.PreviewSplitContainer.TabIndex = 1;
             // 
             // WireframeTopUiControl
@@ -257,10 +257,10 @@
             this.WireframeTopUiControl.Location = new System.Drawing.Point(0, 0);
             this.WireframeTopUiControl.Name = "WireframeTopUiControl";
             this.WireframeTopUiControl.PercentageValue = 100;
-            this.WireframeTopUiControl.ShowFullAlpha = false;
-            this.WireframeTopUiControl.Size = new System.Drawing.Size(443, 23);
+            this.WireframeTopUiControl.Size = new System.Drawing.Size(700, 23);
             this.WireframeTopUiControl.TabIndex = 1;
             this.WireframeTopUiControl.ZoomChanged += new System.EventHandler(this.zoomControl1_ZoomChanged);
+            this.WireframeTopUiControl.Load += new System.EventHandler(this.WireframeTopUiControl_Load);
             // 
             // PreviewGraphicsControl
             // 
@@ -268,7 +268,7 @@
             this.PreviewGraphicsControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PreviewGraphicsControl.Location = new System.Drawing.Point(0, 22);
             this.PreviewGraphicsControl.Name = "PreviewGraphicsControl";
-            this.PreviewGraphicsControl.Size = new System.Drawing.Size(443, 89);
+            this.PreviewGraphicsControl.Size = new System.Drawing.Size(700, 89);
             this.PreviewGraphicsControl.TabIndex = 0;
             this.PreviewGraphicsControl.Text = "graphicsDeviceControl1";
             // 
@@ -280,7 +280,7 @@
             this.previewControls1.Name = "previewControls1";
             this.previewControls1.OffsetMultiplier = 1F;
             this.previewControls1.PercentageValue = 100;
-            this.previewControls1.Size = new System.Drawing.Size(443, 22);
+            this.previewControls1.Size = new System.Drawing.Size(700, 22);
             this.previewControls1.SpriteAlignment = FlatRedBall.AnimationEditorForms.Data.SpriteAlignment.Center;
             this.previewControls1.TabIndex = 1;
             this.previewControls1.ZoomChanged += new System.EventHandler(this.previewControls1_ZoomChanged);
@@ -293,7 +293,7 @@
             this.addToolStripMenuItem});
             this.MenuStrip.Location = new System.Drawing.Point(0, 0);
             this.MenuStrip.Name = "MenuStrip";
-            this.MenuStrip.Size = new System.Drawing.Size(771, 24);
+            this.MenuStrip.Size = new System.Drawing.Size(1028, 24);
             this.MenuStrip.TabIndex = 1;
             this.MenuStrip.Text = "menuStrip1";
             // 
@@ -361,9 +361,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.CursorStatusLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 412);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 417);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(771, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1028, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -381,7 +381,7 @@
             this.Controls.Add(this.MenuStrip);
             this.Controls.Add(this.statusStrip1);
             this.Name = "MainControl";
-            this.Size = new System.Drawing.Size(771, 434);
+            this.Size = new System.Drawing.Size(1028, 439);
             this.TreeViewAndEverythingElse.Panel1.ResumeLayout(false);
             this.TreeViewAndEverythingElse.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.TreeViewAndEverythingElse)).EndInit();

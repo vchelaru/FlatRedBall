@@ -97,7 +97,7 @@ namespace FlatRedBall.AnimationEditorForms
                 {
                     // The texture changed, so let the displayer know:
                     mAnimationFrameDisplayer.SetFrame(SelectedState.Self.SelectedFrame,
-                        WireframeManager.Self.Texture);
+                        SelectedState.Self.SelectedTexture);
                 }
             }
         }
@@ -114,7 +114,7 @@ namespace FlatRedBall.AnimationEditorForms
                 mAnimationChainDisplayer.PropertyGrid = null;
                 mAnimationFrameDisplayer.PropertyGrid = mPropertyGrid;
                 mAnimationFrameDisplayer.SetFrame(SelectedState.Self.SelectedFrame,
-                    WireframeManager.Self.Texture);
+                    SelectedState.Self.SelectedTexture);
                 mAnimationFrameDisplayer.RefreshOnTimer = true;
                 mPropertyGrid.Refresh();
 
