@@ -10,12 +10,25 @@ using FlatRedBall.AnimationEditorForms;
 using FlatRedBall.IO;
 using PreviewProject.IO;
 using FlatRedBall.AnimationEditor;
+using ToolsUtilities;
+using Newtonsoft.Json;
+using FlatRedBall.AnimationEditor.Models;
 
 namespace PreviewProject
 {
     public partial class Form1 : Form
     {
+        #region Fields/Properties
+
         FlatRedBall.AnimationEditorForms.MainControl mMainControl;
+
+        FilePath SettingsFilePath => System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\AESettings.json";
+
+        AppSettingsModel appSettings;
+
+        ToolStripMenuItem loadRecentToolStripItem;
+
+        #endregion
 
         public Form1()
         {
@@ -27,10 +40,43 @@ namespace PreviewProject
             this.Controls.Add(mMainControl);
             mMainControl.Dock = DockStyle.Fill;
 
+            // load the settings
+            LoadSettingsFile();
+
             CreateToolStripMenuItems();
 
             mMainControl.XnaInitialize += new Action(HandleXnaInitialize);
 
+        }
+
+        private void LoadSettingsFile()
+        {
+            var settingsFile = SettingsFilePath;
+            appSettings = null;
+            try
+            {
+                if(settingsFile.Exists())
+                {
+                    var contents = System.IO.File.ReadAllText(settingsFile.FullPath);
+                    appSettings = JsonConvert.DeserializeObject<AppSettingsModel>(contents);
+                }
+            }
+            catch
+            {
+                // do nothing?
+            }
+
+            if(appSettings == null)
+            {
+                appSettings = new AppSettingsModel();
+            }
+        }
+
+        private void SaveSettingsfile()
+        {
+            var settingsFile = SettingsFilePath;
+            var contents = JsonConvert.SerializeObject(appSettings);
+            System.IO.File.WriteAllText(settingsFile.FullPath, contents);
         }
 
         private void ProcessCommandLines(out bool wasAnimationLoaded)
@@ -60,16 +106,34 @@ namespace PreviewProject
             ToolStripMenuItem loadToolStripItem = new ToolStripMenuItem("Load...", null, HandleLoadClick);
             ToolStripMenuItem saveToolStripItem = new ToolStripMenuItem("Save", null, HandleSaveClick);
             ToolStripMenuItem saveAsToolStripItem = new ToolStripMenuItem("Save As...", null, HandleSaveAsClick);
+            loadRecentToolStripItem = new ToolStripMenuItem("Load Recent", null);
 
-            // Going backwards so I can just insert at index 0 every time
+            RefreshRecentFiles();
+
             mMainControl.AddToolStripMenuItem(newToolStripItem, "File");
             mMainControl.AddToolStripMenuItem(loadToolStripItem, "File");
+            mMainControl.AddToolStripMenuItem(loadRecentToolStripItem, "File");
             mMainControl.AddToolStripMenuItem(saveToolStripItem, "File");
             mMainControl.AddToolStripMenuItem(saveAsToolStripItem, "File");
 
 
             var about = new ToolStripMenuItem("About", null, HandleAboutClicked);
             mMainControl.AddToolStripMenuItem(about, "Help");
+        }
+
+        private void RefreshRecentFiles()
+        {
+            loadRecentToolStripItem.DropDownItems.Clear();
+            foreach (var file in this.appSettings.RecentFiles)
+            {
+                var filePath = new FilePath(file);
+                ToolStripMenuItem loadSubItem = new ToolStripMenuItem(filePath.FullPath, null, (not, used) =>
+                {
+                    LoadAnimationFile(file);
+                });
+
+                loadRecentToolStripItem.DropDownItems.Add(loadSubItem);
+            }
         }
 
         private void HandleAboutClicked(object sender, EventArgs e)
@@ -95,10 +159,20 @@ namespace PreviewProject
             {
                 fileName = dialog.FileName;
             }
+            LoadAnimationFile(fileName);
+        }
 
+        private void LoadAnimationFile(string fileName)
+        {
             if (!string.IsNullOrEmpty(fileName))
             {
                 mMainControl.LoadAnimationChain(fileName);
+
+                appSettings.AddFile(fileName);
+
+                SaveSettingsfile();
+
+                RefreshRecentFiles();
             }
 
             SetFormTextToLoadedFile();
