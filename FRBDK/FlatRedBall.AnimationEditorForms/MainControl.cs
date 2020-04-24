@@ -136,6 +136,8 @@ namespace FlatRedBall.AnimationEditorForms
             TreeViewManager.Self.AnimationChainsChange += RaiseAnimationChainChanges;
             TreeViewManager.Self.AnimationChainSelected += (not, used) => AnimationChainSelected?.Invoke(this, null);
 
+            RenderingLibrary.Graphics.Renderer.UseBasicEffectRendering = false;
+
             StatusBarManager.Self.Initialize(statusStrip1, CursorStatusLabel);
 
             WireframeManager.Self.AnimationFrameChange += HandleAnimationFrameChanges;
