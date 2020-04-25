@@ -20,6 +20,8 @@ using FlatRedBall.AnimationEditorForms.Gif;
 using Microsoft.Xna.Framework.Graphics;
 using FlatRedBall.AnimationEditorForms.ViewModels;
 using FlatRedBall.SpecializedXnaControls.Scrolling;
+using FlatRedBall.AnimationEditorForms.Content;
+using RenderingLibrary.Content;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -137,6 +139,7 @@ namespace FlatRedBall.AnimationEditorForms
             TreeViewManager.Self.AnimationChainSelected += (not, used) => AnimationChainSelected?.Invoke(this, null);
 
             RenderingLibrary.Graphics.Renderer.UseBasicEffectRendering = false;
+
 
             StatusBarManager.Self.Initialize(statusStrip1, CursorStatusLabel);
 
@@ -268,6 +271,8 @@ namespace FlatRedBall.AnimationEditorForms
                 WireframeManager.Self.AnimationChainChange += RaiseAnimationChainChanges;
 
                 mScrollBarControlLogic.Managers = imageRegionSelectionControl1.SystemManagers;
+                var contentLoader = new DateCheckingContentLoader(imageRegionSelectionControl1.SystemManagers);
+                LoaderManager.Self.ContentLoader = contentLoader;
 
                 if (XnaInitialize != null)
                 {
