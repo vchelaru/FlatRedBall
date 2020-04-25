@@ -134,6 +134,7 @@
     </Compile>
     <Compile Include="CommandsAndState\ApplicationEvents.cs" />
     <Compile Include="CommandsAndState\ApplicationState.cs" />
+    <Compile Include="Content\DateCheckingContentLoader.cs" />
     <Compile Include="Controls\AdjustOffsetControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
