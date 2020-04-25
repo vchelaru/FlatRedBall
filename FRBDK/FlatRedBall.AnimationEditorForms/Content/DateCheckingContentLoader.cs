@@ -10,9 +10,15 @@ using ToolsUtilities;
 
 namespace FlatRedBall.AnimationEditorForms.Content
 {
+    class DateReferencingContent
+    {
+        public DateTime? LastWriteTime { get; set; }
+        public IDisposable Disposable { get; set; }
+    }
+
     public class DateCheckingContentLoader : IContentLoader
     {
-        Dictionary<string, IDisposable> disposables = new Dictionary<string, IDisposable>();
+        Dictionary<string, DateReferencingContent> disposables = new Dictionary<string, DateReferencingContent>();
         SystemManagers systemManagers;
 
         public DateCheckingContentLoader(SystemManagers systemManagers)
@@ -22,13 +28,21 @@ namespace FlatRedBall.AnimationEditorForms.Content
 
         public void AddDisposable(string contentName, IDisposable disposable)
         {
+            AddDisposable(contentName, disposable, null);
+        }
+
+        public void AddDisposable(string contentName, IDisposable disposable, DateTime? lastWriteTime)
+        {
             if (disposables.ContainsKey(contentName))
             {
                 throw new Exception("This item has already been added");
             }
             else
             {
-                disposables.Add(contentName, disposable);
+                var content = new DateReferencingContent();
+                content.Disposable = disposable;
+                content.LastWriteTime = lastWriteTime;
+                disposables.Add(contentName, content);
             }
         }
 
@@ -45,16 +59,31 @@ namespace FlatRedBall.AnimationEditorForms.Content
 
             if(disposables.ContainsKey(fileNameStandardized))
             {
-                return (T)(object)disposables[fileNameStandardized];
+                var lastFileWriteTime = System.IO.File.GetLastWriteTime(fileNameStandardized);
+
+                var disposableContent = disposables[fileNameStandardized];
+
+                var isOutOfDate = lastFileWriteTime > disposableContent.LastWriteTime;
+
+                if(!isOutOfDate)
+                {
+                    return (T)(object)(disposableContent.Disposable);
+                }
+                else
+                {
+                    disposableContent.Disposable.Dispose();
+                    disposables.Remove(fileNameStandardized);
+                }
             }
 
             if (typeof(T) == typeof(Texture2D))
             {
                 var texture = LoaderManager.Self.LoadTextureFromFile(
-                    contentName, systemManagers);
+                    fileNameStandardized, systemManagers);
 
+                var lastWriteTime = System.IO.File.GetLastWriteTime(fileNameStandardized);
 
-                AddDisposable(contentName, texture);
+                AddDisposable(fileNameStandardized, texture, lastWriteTime);
                 return (T)(object)texture;
             }
             else
@@ -67,7 +96,7 @@ namespace FlatRedBall.AnimationEditorForms.Content
         {
             if (disposables.ContainsKey(contentName))
             {
-                return (T)disposables[contentName];
+                return (T)disposables[contentName].Disposable;
             }
             else
             {
