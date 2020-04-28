@@ -37,6 +37,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
 
         void AddContentFileToProject(string absoluteFileName, bool saveProjects = true);
+        bool TryAddCodeFileToProject(FilePath codeFilePath);
 
         void CopyToBuildFolder(ReferencedFileSave rfs);
         void CopyToBuildFolder(string absoluteSource);

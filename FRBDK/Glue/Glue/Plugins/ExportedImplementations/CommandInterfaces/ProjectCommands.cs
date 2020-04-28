@@ -397,6 +397,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return added;
         }
 
+        public bool TryAddCodeFileToProject(FilePath codeFilePath)
+        {
+            var wasAdded = false;
+            var mainProject = GlueState.Self.CurrentMainProject;
+            if (mainProject.CodeProject.IsFilePartOfProject(codeFilePath.FullPath) == false)
+            {
+                mainProject.CodeProject.AddCodeBuildItem(codeFilePath.FullPath);
+                wasAdded = true;
+            }
+            return wasAdded;
+        }
+
         public void CopyToBuildFolder(ReferencedFileSave rfs)
         {
             string source = GlueState.Self.ContentDirectory + rfs.Name;

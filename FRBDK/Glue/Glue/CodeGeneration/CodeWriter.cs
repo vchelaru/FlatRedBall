@@ -409,7 +409,12 @@ namespace FlatRedBallAddOns.Entities
             }
             #endregion
 
-
+            // This code will create and add above, but if the file already exists, the code above won't re-add it to the 
+            // project. This is a last chance to add it if necessary:
+            if(GlueCommands.Self.ProjectCommands.TryAddCodeFileToProject(GetAbsoluteGeneratedCodeFileFor(element)))
+            {
+                GlueCommands.Self.ProjectCommands.SaveProjectsTask();
+            }
         }
 
         private static ICodeBlock GenerateClassHeader(IElement element, ICodeBlock namespaceBlock)
@@ -547,7 +552,7 @@ namespace FlatRedBallAddOns.Entities
             return tryAgain;
         }
 
-        public static void CreateGeneratedFileIfNecessary(IElement saveObject)
+        static FilePath GetAbsoluteGeneratedCodeFileFor(IElement saveObject)
         {
             string fileName = saveObject.Name + ".Generated.cs";
 
@@ -555,10 +560,16 @@ namespace FlatRedBallAddOns.Entities
 
             if (FileManager.IsRelative(fileName))
             {
-                absoluteFileName = FileManager.RelativeDirectory + fileName;
+                absoluteFileName = GlueState.Self.CurrentGlueProjectDirectory + fileName;
             }
 
-            if (!File.Exists(absoluteFileName))
+            return absoluteFileName;
+        }
+
+        public static void CreateGeneratedFileIfNecessary(IElement saveObject)
+        {
+            var absoluteFilePath = GetAbsoluteGeneratedCodeFileFor(saveObject);
+            if (absoluteFilePath.Exists() == false)
             {
                 CreateAndAddGeneratedFile(saveObject);
             }
