@@ -33,7 +33,7 @@ namespace BuildServerUploaderConsole.Processes
                 {
                     if (file.ToLower().EndsWith("assemblyinfo.cs"))
                     {
-                        ModifyVersionInfo(file, VersionString);
+                        ModifyAssemblyInfoVersion(file, VersionString);
                         Results.WriteMessage("Modified " + file + " to " + VersionString);
                     }
                 }
@@ -50,8 +50,9 @@ namespace BuildServerUploaderConsole.Processes
             //ModifyVersionInfo(engineDirectory + @"\FlatSilverBall\FlatSilverBall\Properties\AssemblyInfo.cs", VersionString);
             //Results.WriteMessage("FlatSilverBall assembly version updated to " + VersionString);
 
-            ModifyVersionInfo(DirectoryHelper.FrbdkDirectory + @"\Glue\Glue\Properties\AssemblyInfo.cs", VersionString);
-            ModifyVersionInfo(DirectoryHelper.FrbdkDirectory + @"Glue\GlueSaveClasses\Properties\AssemblyInfo.cs", VersionString);
+            //ModifyAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"\Glue\Glue\Properties\AssemblyInfo.cs", VersionString);
+            ModifyCsprojAssemblyInfoVersion(@"\Glue\Glue\GlueFormsCore.csproj", VersionString);
+            ModifyAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"Glue\GlueSaveClasses\Properties\AssemblyInfo.cs", VersionString);
 
             Results.WriteMessage("Glue assembly versions updated to " + VersionString);
 
@@ -62,9 +63,10 @@ namespace BuildServerUploaderConsole.Processes
             Results.WriteMessage("VersionInfo file created.");
         }
 
-        private static void ModifyVersionInfo(string assemblyInfoLocation, string versionString)
+        private static void ModifyAssemblyInfoVersion(string assemblyInfoLocation, string versionString)
         {
             string assemblyInfoText = FileManager.FromFileText(assemblyInfoLocation);
+
             assemblyInfoText = System.Text.RegularExpressions.Regex.Replace(assemblyInfoText,
                         "AssemblyVersion\\(\"[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+",
                         "AssemblyVersion(\"" + versionString);
@@ -72,6 +74,18 @@ namespace BuildServerUploaderConsole.Processes
                         "AssemblyFileVersion\\(\"[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+",
                         "AssemblyFileVersion(\"" + versionString);
             FileManager.SaveText(assemblyInfoText, assemblyInfoLocation);
+
+        }
+
+        private static void ModifyCsprojAssemblyInfoVersion(string csprojLocation, string versionString)
+        {
+            // Look for <Version>1.1.0.0</Version>
+            string assemblyInfoText = FileManager.FromFileText(csprojLocation);
+
+            assemblyInfoText = System.Text.RegularExpressions.Regex.Replace(assemblyInfoText,
+                        "<Version>[0-9]*.[0-9]*.[0-9]*.[0-9]*</Version>",
+                        $"<Version>{versionString}</Version>");
+            FileManager.SaveText(assemblyInfoText, assemblyInfoText);
 
         }
 
