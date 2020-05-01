@@ -36,15 +36,15 @@ namespace FlatRedBall.Content
             }
             else if (!ObjectReader.UseReflection && valueType.Name == "AnimationChainListSaveContent")
             {
-                AnimationChainArrayWriter.WriteAnimationChainListSave(output, (AnimationChainListSaveContent)((object)value));
+                //AnimationChainArrayWriter.WriteAnimationChainListSave(output, (AnimationChainListSaveContent)((object)value));
             }
             else if (!ObjectReader.UseReflection && valueType.Name == "AnimationChainSaveContent")
             {
-                AnimationChainArrayWriter.WriteAnimationChainSave(output, (AnimationChainSaveContent)((object)value));
+                //AnimationChainArrayWriter.WriteAnimationChainSave(output, (AnimationChainSaveContent)((object)value));
             }
             else if (!ObjectReader.UseReflection && valueType.Name == "AnimationFrameSaveContent")
             {
-                AnimationChainArrayWriter.WriteAnimationFrameSave(output, (AnimationFrameSaveContent)((object)value));
+                //AnimationChainArrayWriter.WriteAnimationFrameSave(output, (AnimationFrameSaveContent)((object)value));
             }
             else
             {

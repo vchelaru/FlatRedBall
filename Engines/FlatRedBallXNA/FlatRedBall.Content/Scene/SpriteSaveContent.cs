@@ -18,13 +18,13 @@ namespace FlatRedBall.Content.Scene
         public ExternalReference<TextureContent> TextureReference;
 #endif
 
-#if !XBOX360 && !FRB_MDX
-        [XmlIgnore]
-        [InstanceMember("mAnimationChainListInstance")]
-        public ExternalReference<AnimationChainListSaveContent> AnimationChainReference;
-#endif
+//#if !XBOX360 && !FRB_MDX
+//        [XmlIgnore]
+//        [InstanceMember("mAnimationChainListInstance")]
+//        public ExternalReference<AnimationChainListSaveContent> AnimationChainReference;
+//#endif
 
-        [XmlIgnore]
-        public AnimationChainListSaveContent AnimationChains;
+//        [XmlIgnore]
+//        public AnimationChainListSaveContent AnimationChains;
     }
 }

@@ -36,9 +36,9 @@ namespace FlatRedBall.Content.Scene
             output.Write(value.TextureReference != null);
             if (value.TextureReference != null)
                 output.WriteExternalReference(value.TextureReference);
-            output.Write(value.AnimationChainReference != null);
-            if (value.AnimationChainReference != null)
-                output.WriteExternalReference(value.AnimationChainReference);
+            //output.Write(value.AnimationChainReference != null);
+            //if (value.AnimationChainReference != null)
+            //    output.WriteExternalReference(value.AnimationChainReference);
             output.Write(value.X);
             output.Write(value.Y);
             output.Write(value.Z);

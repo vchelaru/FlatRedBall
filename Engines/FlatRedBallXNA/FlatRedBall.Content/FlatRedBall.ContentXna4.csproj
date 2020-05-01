@@ -335,12 +335,6 @@
     <Compile Include="AI\Pathfinding\NodeNetworkImporter.cs" />
     <Compile Include="AI\Pathfinding\NodeNetworkProcessor.cs" />
     <Compile Include="AI\Pathfinding\NodeNetworkWriter.cs" />
-    <Compile Include="AnimationChain\AnimationChainArrayImporter.cs" />
-    <Compile Include="AnimationChain\AnimationChainArrayProcessor.cs" />
-    <Compile Include="AnimationChain\AnimationChainArrayWriter.cs" />
-    <Compile Include="AnimationChain\AnimationChainListSaveContent.cs" />
-    <Compile Include="AnimationChain\AnimationChainSaveContent.cs" />
-    <Compile Include="AnimationChain\AnimationFrameSaveContent.cs" />
     <Compile Include="BitmapTextureProcessor.cs" />
     <Compile Include="IO\Csv\BuildtimeCsvRepresentation.cs" />
     <Compile Include="IO\Csv\CsvImporter.cs" />
@@ -416,6 +410,7 @@
     <Content Include="Libraries\FlatRedBall.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="AnimationChain\" />
     <Folder Include="Gui\" />
     <Folder Include="Lighting\" />
   </ItemGroup>

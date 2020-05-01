@@ -16,7 +16,7 @@ namespace FlatRedBall.Content
         #region Fields
 
         string mDirectory;
-        AnimationChainArrayProcessor mAnimationChainArrayProcessor;
+        //AnimationChainArrayProcessor mAnimationChainArrayProcessor;
 
         #endregion
 
@@ -28,11 +28,11 @@ namespace FlatRedBall.Content
             set { mDirectory = value; }
         }
 
-        public AnimationChainArrayProcessor AchProcessor
-        {
-            get { return mAnimationChainArrayProcessor; }
-            set { mAnimationChainArrayProcessor = value; }
-        }
+        //public AnimationChainArrayProcessor AchProcessor
+        //{
+        //    get { return mAnimationChainArrayProcessor; }
+        //    set { mAnimationChainArrayProcessor = value; }
+        //}
 
         #endregion
 
@@ -58,15 +58,15 @@ namespace FlatRedBall.Content
             }
 
             //process the animation chain data
-            if (!string.IsNullOrEmpty(input.AnimationChainsFile))
-            {
-                input.AnimationChainReference =
-                    AnimationChainArrayProcessor.BuildExternalReference(mDirectory + @"\" + input.AnimationChainsFile, context);
-            }
-            else if (input.AnimationChains != null && input.AnimationChains.AnimationChains.Count > 0)
-            {
-                mAnimationChainArrayProcessor.Process(input.AnimationChains, context);
-            }
+            //if (!string.IsNullOrEmpty(input.AnimationChainsFile))
+            //{
+            //    input.AnimationChainReference =
+            //        AnimationChainArrayProcessor.BuildExternalReference(mDirectory + @"\" + input.AnimationChainsFile, context);
+            //}
+            //else if (input.AnimationChains != null && input.AnimationChains.AnimationChains.Count > 0)
+            //{
+            //    mAnimationChainArrayProcessor.Process(input.AnimationChains, context);
+            //}
 
             return input;
         }
