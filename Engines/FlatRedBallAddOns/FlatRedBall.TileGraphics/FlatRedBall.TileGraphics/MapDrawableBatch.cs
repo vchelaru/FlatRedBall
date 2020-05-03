@@ -349,9 +349,12 @@ namespace FlatRedBall.TileGraphics
         public void AddToManagers()
         {
             SpriteManager.AddDrawableBatch(this);
-            //SpriteManager.AddPositionedObject(mMapBatch);
         }
 
+        /// <summary>
+        /// Adds this MapDrawableBatch to the engine (for rendering) on the argument layer.
+        /// </summary>
+        /// <param name="layer">The layer to add to.</param>
         public void AddToManagers(Layer layer)
         {
             SpriteManager.AddToLayer(this, layer);

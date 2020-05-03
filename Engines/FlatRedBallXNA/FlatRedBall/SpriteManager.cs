@@ -23,7 +23,7 @@ using System.Diagnostics;
 using FlatRedBall.Instructions;
 using FlatRedBall.Performance.Measurement;
 
-#if WINDOWS_8 || UWP
+#if UWP
 using Windows.System.Threading;
 using Windows.Foundation;
 #endif
