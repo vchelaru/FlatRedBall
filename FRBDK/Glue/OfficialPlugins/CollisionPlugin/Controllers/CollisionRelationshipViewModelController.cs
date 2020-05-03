@@ -28,7 +28,9 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             viewModel.FirstCollisionItemSource.Clear();
             viewModel.SecondCollisionItemSource.Clear();
 
-            var namedObjects = element.AllNamedObjects.ToArray();
+            var namedObjects = element.AllNamedObjects
+                .OrderBy(item => item.InstanceName)
+                .ToArray();
 
             List<string> names = new List<string>();
 

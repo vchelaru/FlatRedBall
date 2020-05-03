@@ -1494,6 +1494,7 @@ namespace FlatRedBall.Math.Collision
         where FirstCollidableT : PositionedObject, ICollidable where SecondCollidableT : PositionedObject, ICollidable
 
     {
+        public LoopDirection LoopDirection { get; set; }
 
         public Func<FirstCollidableT, SecondCollidableT, bool> CollisionFunction { get; set; }
 
@@ -1537,20 +1538,44 @@ namespace FlatRedBall.Math.Collision
 
                 // todo - partition...
 
-                int j = 0;
-                for (int i = first.Count - 1; i > -1; i--)
+                if(LoopDirection == LoopDirection.FrontToBack)
                 {
-                    var firstItem = first[i];
-                    for (j = second.Count - 1; j > -1; j--)
+                    int j = 0;
+                    for (int i = 0; i < first.Count; i++)
                     {
-                        var secondItem = second[j];
-                        var collided = CollisionFunction(firstItem, secondItem);
-
-
-                        if (collided)
+                        // items could be removed, so need to do extra checks on front-to-back
+                        var firstItem = first[i];
+                        for (j = 0; j < second.Count; j++)
                         {
-                            CollisionOccurred?.Invoke(firstItem, secondItem);
-                            collisionOccurred = true;
+                            var secondItem = second[j];
+
+                            var collided = CollisionFunction(firstItem, secondItem);
+
+                            if (collided)
+                            {
+                                CollisionOccurred?.Invoke(firstItem, secondItem);
+                                collisionOccurred = true;
+                            }
+                        }
+                    }
+                }
+                else // back to front
+                {
+                    int j = 0;
+                    for (int i = first.Count - 1; i > -1; i--)
+                    {
+                        var firstItem = first[i];
+                        for (j = second.Count - 1; j > -1; j--)
+                        {
+                            var secondItem = second[j];
+                            var collided = CollisionFunction(firstItem, secondItem);
+
+
+                            if (collided)
+                            {
+                                CollisionOccurred?.Invoke(firstItem, secondItem);
+                                collisionOccurred = true;
+                            }
                         }
                     }
                 }
